@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { Button, Checkbox, Flex, Input, Table, Typography } from "antd";
+import { Button, Checkbox, Flex, Input, Spin, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 
 import { FilterUsers } from "@/components/atoms/FilterUsers/FilterUsers";
@@ -7,6 +7,7 @@ import { FilterUsers } from "@/components/atoms/FilterUsers/FilterUsers";
 import { DotsThree, Eye, Plus } from "phosphor-react";
 
 import "./usersprojecttable.scss";
+import { useUsers } from "@/hooks/useUsers";
 
 interface DataType {
   key: string;
@@ -21,7 +22,7 @@ interface DataType {
 }
 const { Text, Link } = Typography;
 
-const data: DataType[] = [
+const dataFake: DataType[] = [
   {
     key: "1",
     name: "John Brown",
@@ -114,11 +115,12 @@ const data: DataType[] = [
 
 const { Search } = Input;
 interface Props {
+  idProject: string;
   setIsCreateUser: Dispatch<SetStateAction<boolean>>;
   setIsViewDetails: Dispatch<SetStateAction<boolean>>;
 }
 
-export const UsersProjectTable = ({ setIsCreateUser, setIsViewDetails }: Props) => {
+export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails }: Props) => {
   const columns: TableProps<DataType>["columns"] = [
     {
       title: "",
@@ -189,30 +191,41 @@ export const UsersProjectTable = ({ setIsCreateUser, setIsViewDetails }: Props) 
       render: () => <Button onClick={() => setIsViewDetails(true)} icon={<Eye size={"1.3rem"} />} />
     }
   ];
+  const { data, loading } = useUsers({ idProject, page: 1 });
+  console.log(data);
+
   return (
-    <main className="mainUsersProjectTable">
-      <Flex justify="space-between" className="mainUsersProjectTable_header">
-        <Flex gap={"1.75rem"}>
-          <Search
-            className="inputSearch"
-            size="large"
-            placeholder="Buscar"
-            style={{ width: 300 }}
-          />
-          <FilterUsers />
-          <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
+    <>
+      {loading ? (
+        <Flex style={{ height: "30%" }} align="center" justify="center">
+          <Spin size="large" />
         </Flex>
-        <Button
-          type="primary"
-          className="buttonNewProject"
-          size="large"
-          onClick={() => setIsCreateUser(true)}
-          icon={<Plus size={13} />}
-        >
-          Nuevo Usuario
-        </Button>
-      </Flex>
-      <Table columns={columns} dataSource={data} />
-    </main>
+      ) : (
+        <main className="mainUsersProjectTable">
+          <Flex justify="space-between" className="mainUsersProjectTable_header">
+            <Flex gap={"1.75rem"}>
+              <Search
+                className="inputSearch"
+                size="large"
+                placeholder="Buscar"
+                style={{ width: 300 }}
+              />
+              <FilterUsers />
+              <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
+            </Flex>
+            <Button
+              type="primary"
+              className="buttonNewProject"
+              size="large"
+              onClick={() => setIsCreateUser(true)}
+              icon={<Plus size={13} />}
+            >
+              Nuevo Usuario
+            </Button>
+          </Flex>
+          <Table columns={columns} dataSource={dataFake} />
+        </main>
+      )}
+    </>
   );
 };

@@ -125,6 +125,7 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
           />
         ) : (
           <UsersProjectTable
+            idProject={idProjectParam}
             setIsViewDetails={setIsViewDetailsUser}
             setIsCreateUser={setIsCreateUser}
           />
