@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { Button, Flex, Input, Select, SelectProps, Space, Typography } from "antd";
+import { Button, Flex, Input, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowLineDown, ArrowLineUp, CaretLeft, Pencil, Trash } from "phosphor-react";
+import { SelectRoles } from "@/components/atoms/SelectRoles/SelectRoles";
+import { SelectZone } from "@/components/atoms/SelectZone/SelectZone";
 
 import "./userprojectform.scss";
+import { SelectStructure } from "@/components/molecules/selects/SelectStructure/SelectStructure";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 type UserType = {
   info: {
@@ -29,13 +32,16 @@ interface Props {
 }
 export const UserProjectForm = ({ isViewDetailsUser = false, onGoBackTable }: Props) => {
   const [isEditAvailable, setIsEditAvailable] = useState(isViewDetailsUser);
-  const { control } = useForm<UserType>({
+  const {
+    control,
+    formState: { errors }
+  } = useForm<UserType>({
     defaultValues: isViewDetailsUser ? initialDataDummy : initialData,
     disabled: isEditAvailable
   });
   return (
     <main className="newUserProjectForm">
-      <Flex vertical>
+      <Flex vertical style={{ height: "60%" }}>
         <Flex component={"header"} className="headerNewUserProyectsForm">
           {/* -------------------left buttons------------------------ */}
           <Button
@@ -65,7 +71,7 @@ export const UserProjectForm = ({ isViewDetailsUser = false, onGoBackTable }: Pr
             </Flex>
           )}
         </Flex>
-        <Flex vertical component={"main"}>
+        <Flex vertical component={"main"} style={{ border: "1px solid red", height: "100%" }}>
           <Title level={4}>Información del usuario</Title>
           {/* -----------------------------------Informacion del Usuario--------------------------------------- */}
           <Flex component={"section"} className="generalProject">
@@ -119,139 +125,15 @@ export const UserProjectForm = ({ isViewDetailsUser = false, onGoBackTable }: Pr
               <Controller
                 name="info.rol"
                 control={control}
-                render={({ field }) => (
-                  <Select
-                    mode="multiple"
-                    className="selectInput"
-                    placeholder="Selecciona un rol"
-                    optionLabelProp="label"
-                    variant="borderless"
-                    options={options}
-                    optionRender={(option) => (
-                      <Space>
-                        <span role="img" aria-label={option.data.label}>
-                          {option.data.emoji}
-                        </span>
-                        <Text style={{ color: "white" }}>{option.data.desc}</Text>
-                      </Space>
-                    )}
-                    {...field}
-                  />
-                )}
+                render={({ field }) => <SelectRoles errors={errors.info?.rol} field={field} />}
               />
             </Flex>
           </Flex>
           {/* -----------------------------------Experiencia----------------------------------- */}
           <Title level={4}>Reglas de Proyecto</Title>
-          <Flex component={"section"} className="generalProject">
-            <Flex vertical className="containerInput">
-              <Title level={5}>Responsabilidad</Title>
-              <Controller
-                name="contact.responsibility"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    mode="multiple"
-                    className="selectInput"
-                    placeholder="Selecciona un responsabilidad"
-                    // onChange={handleChange}
-                    optionLabelProp="label"
-                    variant="borderless"
-                    options={options}
-                    optionRender={(option) => (
-                      <Space>
-                        <span role="img" aria-label={option.data.label}>
-                          {option.data.emoji}
-                        </span>
-                        <Text style={{ color: "white" }}>{option.data.desc}</Text>
-                      </Space>
-                    )}
-                    {...field}
-                  />
-                )}
-              />
-            </Flex>
-            <Flex vertical className="containerInput">
-              <Title level={5}>Zona</Title>
-              <Controller
-                name="contact.zone"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    mode="multiple"
-                    className="selectInput"
-                    placeholder="Selecciona una zona"
-                    // onChange={handleChange}
-                    optionLabelProp="label"
-                    variant="borderless"
-                    options={options}
-                    optionRender={(option) => (
-                      <Space>
-                        <span role="img" aria-label={option.data.label}>
-                          {option.data.emoji}
-                        </span>
-                        <Text style={{ color: "white" }}>{option.data.desc}</Text>
-                      </Space>
-                    )}
-                    {...field}
-                  />
-                )}
-              />
-            </Flex>
-            <Flex vertical className="containerInput">
-              <Title level={5}>Canal</Title>
-              <Controller
-                name="contact.channel"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    mode="multiple"
-                    className="selectInput"
-                    placeholder="Selecciona un canal"
-                    // onChange={handleChange}
-                    optionLabelProp="label"
-                    variant="borderless"
-                    options={options}
-                    optionRender={(option) => (
-                      <Space>
-                        <span role="img" aria-label={option.data.label}>
-                          {option.data.emoji}
-                        </span>
-                        <Text style={{ color: "white" }}>{option.data.desc}</Text>
-                      </Space>
-                    )}
-                    {...field}
-                  />
-                )}
-              />
-            </Flex>
-            <Flex vertical className="containerInput">
-              <Title level={5}>Linea</Title>
-              <Controller
-                name="contact.line"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    mode="multiple"
-                    className="selectInput"
-                    placeholder="Selecciona una Linea"
-                    // onChange={handleChange}
-                    optionLabelProp="label"
-                    variant="borderless"
-                    options={options}
-                    optionRender={(option) => (
-                      <Space>
-                        <span role="img" aria-label={option.data.label}>
-                          {option.data.emoji}
-                        </span>
-                        <Text style={{ color: "white" }}>{option.data.desc}</Text>
-                      </Space>
-                    )}
-                    {...field}
-                  />
-                )}
-              />
-            </Flex>
+          <Flex component={"section"} gap={"1rem"} className="breRules">
+            <SelectZone />
+            <SelectStructure />
           </Flex>
         </Flex>
       </Flex>
@@ -273,33 +155,7 @@ export const UserProjectForm = ({ isViewDetailsUser = false, onGoBackTable }: Pr
     </main>
   );
 };
-// this is dummy data when the integrations is ready this will be remove
-const options: SelectProps["options"] = [
-  {
-    label: "China",
-    value: "china",
-    emoji: "🇨🇳",
-    desc: "China (中国)"
-  },
-  {
-    label: "USA",
-    value: "usa",
-    emoji: "🇺🇸",
-    desc: "USA (美国)"
-  },
-  {
-    label: "Japan",
-    value: "japan",
-    emoji: "🇯🇵",
-    desc: "Japan (日本)"
-  },
-  {
-    label: "Korea",
-    value: "korea",
-    emoji: "🇰🇷",
-    desc: "Korea (韩国)"
-  }
-];
+
 const initialData: UserType = {
   info: {
     name: "",

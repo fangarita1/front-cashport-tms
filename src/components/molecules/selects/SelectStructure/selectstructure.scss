@@ -1,0 +1,16 @@
+@import '../../../../styles/variables.scss';
+
+.selectstructure {
+    width: 80%;
+    height:95%;
+    .title{
+        font-size: 1.2rem;
+    }
+    .structure {
+        background-color: $background;
+        padding: .75rem;
+        border-radius: 0.5rem;
+        margin-top: .5rem;
+        height: 100%;
+    }
+}
