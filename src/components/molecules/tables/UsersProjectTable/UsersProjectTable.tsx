@@ -1,11 +1,12 @@
-import { Dispatch, SetStateAction } from "react";
-import { Button, Checkbox, Flex, Input, Spin, Table, Typography } from "antd";
+import { Dispatch, SetStateAction, useState } from "react";
+import { Button, Checkbox, Flex, Spin, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 
 import { DotsThree, Eye, Plus } from "phosphor-react";
 
 import "./usersprojecttable.scss";
 import { useUsers } from "@/hooks/useUsers";
+import { FilterUsers } from "@/components/atoms/FilterUsers/FilterUsers";
 
 interface DataType {
   key: string;
@@ -29,7 +30,6 @@ interface DataType {
 }
 const { Text, Link } = Typography;
 
-const { Search } = Input;
 interface Props {
   idProject: string;
   setIsCreateUser: Dispatch<SetStateAction<boolean>>;
@@ -107,9 +107,19 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
       render: () => <Button onClick={() => setIsViewDetails(true)} icon={<Eye size={"1.3rem"} />} />
     }
   ];
-  const { data, loading } = useUsers({ idProject, page: 1 });
-  console.log(data);
+  const [selectedUsers, setSelectedUsers] = useState({
+    zones: [],
+    roles: []
+  });
+  console.log(selectedUsers);
 
+  const { data, loading } = useUsers({
+    idProject,
+    page: 1,
+    rolesId: selectedUsers.roles,
+    zonesId: selectedUsers.zones
+  });
+  console.log(data);
   return (
     <>
       {loading ? (
@@ -120,12 +130,7 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
         <main className="mainUsersProjectTable">
           <Flex justify="space-between" className="mainUsersProjectTable_header">
             <Flex gap={"1.75rem"}>
-              <Search
-                className="inputSearch"
-                size="large"
-                placeholder="Buscar"
-                style={{ width: 300 }}
-              />
+              <FilterUsers setSelectedUsers={setSelectedUsers} idProject={idProject} />
               <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
             </Flex>
             <Button

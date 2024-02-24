@@ -66,6 +66,7 @@ export const ProjectFormTab = ({
     defaultValues,
     disabled: statusForm === "review"
   });
+  console.log(data);
 
   const validationButtonText =
     statusForm === "create"
@@ -269,7 +270,7 @@ export const ProjectFormTab = ({
   );
 };
 const dataToFormData = (data: IProject) => {
-  const currenciesFormated = data.CURRENCY.map(
+  const currenciesFormated = data?.CURRENCY?.map(
     (currency) => `${currency.id}-${currency.CURRENCY_NAME ?? currency.currency_name}`
   );
   return {
