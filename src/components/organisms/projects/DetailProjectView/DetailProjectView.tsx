@@ -122,6 +122,7 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
           <UserProjectForm
             onGoBackTable={onGoBackTableUsers}
             isViewDetailsUser={isViewDetailsUser}
+            setIsCreateUser={setIsCreateUser}
           />
         ) : (
           <UsersProjectTable

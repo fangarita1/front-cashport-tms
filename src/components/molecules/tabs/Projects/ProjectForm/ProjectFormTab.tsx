@@ -66,7 +66,6 @@ export const ProjectFormTab = ({
     defaultValues,
     disabled: statusForm === "review"
   });
-  console.log(data);
 
   const validationButtonText =
     statusForm === "create"

@@ -3,11 +3,10 @@ import { Flex, Input, Typography } from "antd";
 import { Control, Controller, FieldError } from "react-hook-form";
 
 import "./inputform.scss";
-import { IUpdateFormProject } from "@/types/projects/IUpdateFormProject";
 interface Props {
   titleInput: string;
   nameInput: string;
-  control: Control<IUpdateFormProject, any> | undefined;
+  control: Control<any> | undefined;
   error: FieldError | undefined;
   typeInput?: string;
 }
@@ -17,7 +16,7 @@ export const InputForm = ({ titleInput, nameInput, typeInput = "text", control, 
     <Flex vertical className="containerInput">
       <Typography.Title level={5}>{titleInput}</Typography.Title>
       <Controller
-        name={nameInput as any}
+        name={nameInput as string}
         rules={{ required: true, maxLength: 123 }}
         control={control}
         render={({ field }) => (

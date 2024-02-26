@@ -1,4 +1,4 @@
-import { Select } from "antd";
+import { Select, Typography } from "antd";
 import useSWR from "swr";
 
 import { fetcher } from "@/utils/api/api";
@@ -12,26 +12,26 @@ interface Props {
 }
 const { Option } = Select;
 export const SelectRoles = ({ errors, field }: Props) => {
-  const { data, isLoading } = useSWR<IRoles>("/rol", fetcher, {});
+  const { data, isLoading } = useSWR<IRoles>("/role", fetcher, {});
   const options = data?.data;
 
   return (
     <Select
-      mode="multiple"
       placeholder="Selecciona los roles"
-      className={errors?.general?.countries ? "selectInputRolesError" : "selectInputRoles"}
+      className={errors ? "selectInputRolesError" : "selectInputRoles"}
       loading={isLoading}
       variant="borderless"
       optionLabelProp="label"
       {...field}
     >
-      {options?.map((value, index) => {
+      {options?.map((value) => {
         return (
-          <Option value={`${value.ID}-${value.ROL_NAME}`} key={index}>
+          <Option value={`${value.ID}-${value.ROL_NAME}`} key={value.ID}>
             {`${value.ID}-${value.ROL_NAME}`}
           </Option>
         );
       })}
+      {errors && <Typography.Text className="textError">Rol es obligatorio *</Typography.Text>}
     </Select>
   );
 };

@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from "react";
 import { Checkbox, Flex, Spin, Typography } from "antd";
 import useSWR from "swr";
 import { fetcher } from "@/utils/api/api";
@@ -6,9 +7,23 @@ import { IZones } from "@/types/zones/IZones";
 
 import "./selectzone.scss";
 
-export const SelectZone = () => {
+interface Props {
+  zones: number[];
+  setZones: Dispatch<SetStateAction<number[]>>;
+}
+
+export const SelectZone = ({ zones, setZones }: Props) => {
   const project = useAppStore((state) => state.selectProject);
   const { data, isLoading } = useSWR<IZones>(`/zone/project/${project.ID}`, fetcher, {});
+
+  const activateZone = (zoneId: number) => {
+    setZones((s) => [...s, zoneId]);
+  };
+  const desactivateZone = (zoneId: number) => {
+    const filterZones = zones.filter((zone) => zone !== zoneId);
+    setZones(filterZones);
+  };
+  console.log(zones);
 
   return (
     <div className="selectzone">
@@ -18,12 +33,19 @@ export const SelectZone = () => {
           <Spin />
         ) : (
           <>
-            {data?.data.map((zone) => (
-              <Flex key={zone.ID} justify="space-between" className="zone">
-                <Typography.Text>{zone.ZONE_DESCRIPTION}</Typography.Text>
-                <Checkbox className="checboxzone" />
-              </Flex>
-            ))}
+            {data?.data.map((zone) => {
+              const filterZone = zones.filter((_zone) => _zone === zone.ID)[0];
+              return (
+                <Flex key={zone.ID} justify="space-between" className="zone">
+                  <Typography.Text>{zone.ZONE_DESCRIPTION}</Typography.Text>
+                  <Checkbox
+                    checked={!!filterZone}
+                    onClick={() => (!filterZone ? activateZone(zone.ID) : desactivateZone(zone.ID))}
+                    className="checboxzone"
+                  />
+                </Flex>
+              );
+            })}
           </>
         )}
       </Flex>

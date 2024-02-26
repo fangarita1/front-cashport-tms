@@ -11,9 +11,15 @@
     .headerselectchips {
         margin-bottom: .2rem;
     }
-
+    .titleLine{
+        font-weight: 600;
+        font-size: 1rem;
+    }
     .mainTags {
         padding: .45rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap:5px;
     }
 
     .tag {

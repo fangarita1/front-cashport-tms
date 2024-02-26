@@ -111,7 +111,6 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
     zones: [],
     roles: []
   });
-  console.log(selectedUsers);
 
   const { data, loading } = useUsers({
     idProject,
