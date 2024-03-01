@@ -29,11 +29,17 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
 
   const [isEditProject, setIsEditProject] = useState(isEdit);
   const [isCreateUser, setIsCreateUser] = useState(false);
-  const [isViewDetailsUser, setIsViewDetailsUser] = useState(false);
+  const [isViewDetailsUser, setIsViewDetailsUser] = useState({
+    active: false,
+    id: 0
+  });
 
   const onGoBackTableUsers = () => {
     setIsCreateUser(false);
-    setIsViewDetailsUser(false);
+    setIsViewDetailsUser({
+      active: false,
+      id: 0
+    });
   };
 
   const onUpdateProject = async (data: IUpdateFormProject) => {
@@ -118,11 +124,12 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
       key: "4",
       label: "Usuarios",
       children:
-        isCreateUser || isViewDetailsUser ? (
+        isCreateUser || isViewDetailsUser.active ? (
           <UserProjectForm
             onGoBackTable={onGoBackTableUsers}
             isViewDetailsUser={isViewDetailsUser}
             setIsCreateUser={setIsCreateUser}
+            setIsViewDetailsUser={setIsViewDetailsUser}
           />
         ) : (
           <UsersProjectTable

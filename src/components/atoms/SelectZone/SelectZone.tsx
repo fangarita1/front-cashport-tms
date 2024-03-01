@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { Checkbox, Flex, Spin, Typography } from "antd";
 import useSWR from "swr";
+
 import { fetcher } from "@/utils/api/api";
 import { useAppStore } from "@/lib/store/store";
 import { IZones } from "@/types/zones/IZones";
@@ -13,8 +14,8 @@ interface Props {
 }
 
 export const SelectZone = ({ zones, setZones }: Props) => {
-  const project = useAppStore((state) => state.selectProject);
-  const { data, isLoading } = useSWR<IZones>(`/zone/project/${project.ID}`, fetcher, {});
+  const { ID } = useAppStore((state) => state.selectProject);
+  const { data, isLoading } = useSWR<IZones>(`/zone/project/${ID}`, fetcher, {});
 
   const activateZone = (zoneId: number) => {
     setZones((s) => [...s, zoneId]);
@@ -23,7 +24,6 @@ export const SelectZone = ({ zones, setZones }: Props) => {
     const filterZones = zones.filter((zone) => zone !== zoneId);
     setZones(filterZones);
   };
-  console.log(zones);
 
   return (
     <div className="selectzone">
@@ -34,7 +34,8 @@ export const SelectZone = ({ zones, setZones }: Props) => {
         ) : (
           <>
             {data?.data.map((zone) => {
-              const filterZone = zones.filter((_zone) => _zone === zone.ID)[0];
+              const zonesData = JSON.parse(JSON.stringify(zones));
+              const filterZone = zonesData.filter((_zone: number) => _zone === zone.ID)[0];
               return (
                 <Flex key={zone.ID} justify="space-between" className="zone">
                   <Typography.Text>{zone.ZONE_DESCRIPTION}</Typography.Text>

@@ -13,8 +13,6 @@ export const getAllRoles = async (): Promise<AxiosResponse<IRoles>> => {
         Authorization: `Bearer ${token}`
       }
     });
-    console.log(response);
-
     return response;
   } catch (error) {
     return error as any;

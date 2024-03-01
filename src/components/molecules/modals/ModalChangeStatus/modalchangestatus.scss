@@ -16,6 +16,11 @@
         font-size: 1.3rem !important;
     }
 
+    .textRemove {
+        color: red;
+        text-decoration: underline;
+        cursor: pointer;
+    }
     .ant-modal-footer {
         display: flex;
         justify-content: center;

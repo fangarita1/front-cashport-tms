@@ -13,8 +13,8 @@ interface Props {
 const { Option } = Select;
 export const SelectRoles = ({ errors, field }: Props) => {
   const { data, isLoading } = useSWR<IRoles>("/role", fetcher, {});
-  const options = data?.data;
-
+  // doesn't show super admin role
+  const options = data?.data.filter((rol) => rol.ID !== 1);
   return (
     <Select
       placeholder="Selecciona los roles"

@@ -1,9 +1,8 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Empty, Flex, Spin, Typography } from "antd";
 import useSWR from "swr";
 
 import { SelectChanel } from "@/components/atoms/SelectChanel/SelectChanel";
-import { SelectLines } from "@/components/atoms/SelectLines/SelectLines";
 
 import { useAppStore } from "@/lib/store/store";
 import { fetcher } from "@/utils/api/api";
@@ -11,7 +10,9 @@ import { fetcher } from "@/utils/api/api";
 import { IBRE } from "@/types/bre/IBRE";
 
 import "./selectstructure.scss";
+import { filterBRbyIdSubline, transformFormat } from "@/utils/utils";
 interface Props {
+  sublinesUser?: number[];
   selectedSublines: {
     idChannel: number;
     idLine: number;
@@ -33,14 +34,26 @@ interface Props {
     >
   >;
 }
-export const SelectStructure = ({ selectedSublines, setSelectedSublines }: Props) => {
+export const SelectStructure = ({
+  sublinesUser = [],
+  selectedSublines,
+  setSelectedSublines
+}: Props) => {
   const { ID } = useAppStore((state) => state.selectProject);
   const { data, isLoading } = useSWR<IBRE>(`/bussines-rule/project/${ID}`, fetcher, {});
 
   const [selectChannel, setSelectChannel] = useState(0);
+  useEffect(() => {
+    if (!data?.data) return;
+    const dataFinal = JSON.parse(JSON.stringify(data?.data));
+    const brs = filterBRbyIdSubline(dataFinal, sublinesUser);
+    setSelectedSublines(transformFormat(brs));
 
-  const selectLine =
-    selectChannel !== 0 ? data?.data.filter((channel) => channel.CHANNEL_ID === selectChannel) : [];
+    // return () => {
+    //   second
+    // }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   return (
     <div className="selectstructure">
@@ -60,13 +73,6 @@ export const SelectStructure = ({ selectedSublines, setSelectedSublines }: Props
               />
             ) : (
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-            )}
-            {selectLine?.[0] && (
-              <SelectLines
-                lines={selectLine[0]}
-                selectedSubLines={selectedSublines}
-                setSelectedSublines={setSelectedSublines}
-              />
             )}
           </>
         )}

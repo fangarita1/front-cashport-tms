@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Button, Checkbox, Flex, Spin, Table, Typography } from "antd";
+import { Button, Checkbox, Flex, Popconfirm, Spin, Table, Typography, message } from "antd";
 import type { TableProps } from "antd";
 
 import { DotsThree, Eye, Plus } from "phosphor-react";
@@ -7,6 +7,8 @@ import { DotsThree, Eye, Plus } from "phosphor-react";
 import "./usersprojecttable.scss";
 import { useUsers } from "@/hooks/useUsers";
 import { FilterUsers } from "@/components/atoms/FilterUsers/FilterUsers";
+import { onResendInvitationUser } from "@/services/users/users";
+import { SUCCESS } from "@/utils/constants/globalConstants";
 
 interface DataType {
   key: string;
@@ -33,10 +35,26 @@ const { Text, Link } = Typography;
 interface Props {
   idProject: string;
   setIsCreateUser: Dispatch<SetStateAction<boolean>>;
-  setIsViewDetails: Dispatch<SetStateAction<boolean>>;
+  setIsViewDetails: Dispatch<SetStateAction<{ active: boolean; id: number }>>;
 }
 
 export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails }: Props) => {
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const onResendInvitation = async (email: string) => {
+    const response = await onResendInvitationUser(email);
+    if (response.status === SUCCESS) {
+      messageApi.open({
+        type: "success",
+        content: "La invitacion fue enviada nuevamente."
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Oops, hubo un error por favor intenta mas tarde."
+      });
+    }
+  };
   const columns: TableProps<DataType>["columns"] = [
     {
       title: "",
@@ -92,11 +110,32 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
       key: "status",
       width: "150px",
       dataIndex: "status",
-      render: (_, { ACTIVE }) => (
-        <Flex align="center" className={ACTIVE ? "statusContainer" : "statusContainerPending"}>
-          <div className={ACTIVE ? "statusActive" : "statusPending"} />
-          <Text>{ACTIVE ? "Activo" : "Inactivo"}</Text>
-        </Flex>
+      render: (_, { ACTIVE, EMAIL }) => (
+        <>
+          {ACTIVE ? (
+            <Flex align="center" className={ACTIVE ? "statusContainer" : "statusContainerPending"}>
+              <div className={ACTIVE ? "statusActive" : "statusPending"} />
+              <Text>{ACTIVE ? "Activo" : "Inactivo"}</Text>
+            </Flex>
+          ) : (
+            <Popconfirm
+              placement="topRight"
+              title={"Invitación pendiente de aprobación"}
+              description={"Volver a Enviar invitacion?"}
+              okText="Si"
+              cancelText="No"
+              onConfirm={() => onResendInvitation(EMAIL)}
+            >
+              <Flex
+                align="center"
+                className={ACTIVE ? "statusContainer" : "statusContainerPending"}
+              >
+                <div className={ACTIVE ? "statusActive" : "statusPending"} />
+                <Text>{ACTIVE ? "Activo" : "Inactivo"}</Text>
+              </Flex>
+            </Popconfirm>
+          )}
+        </>
       )
     },
     {
@@ -104,47 +143,64 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
       key: "seeProject",
       width: "40px",
       dataIndex: "",
-      render: () => <Button onClick={() => setIsViewDetails(true)} icon={<Eye size={"1.3rem"} />} />
+      render: (_, { ID }) => (
+        <Button
+          onClick={() => setIsViewDetails({ active: true, id: ID })}
+          icon={<Eye size={"1.3rem"} />}
+        />
+      )
     }
   ];
   const [selectedUsers, setSelectedUsers] = useState({
-    zones: [],
-    roles: []
+    zones: [] as any,
+    roles: [] as any,
+    status: "all" as "all" | "active" | "inactive",
+    channel: [] as { id: number; name: string }[],
+    line: [] as { id: number; name: string }[],
+    subline: [] as { id: number; name: string }[]
   });
 
   const { data, loading } = useUsers({
     idProject,
     page: 1,
     rolesId: selectedUsers.roles,
-    zonesId: selectedUsers.zones
+    zonesId: selectedUsers.zones,
+    activeUsers: selectedUsers.status,
+    channel: selectedUsers.channel,
+    line: selectedUsers.line,
+    subline: selectedUsers.subline
   });
-  console.log(data);
+  const onCreateUser = () => {
+    setIsViewDetails({ active: false, id: 0 });
+    setIsCreateUser(true);
+  };
   return (
     <>
-      {loading ? (
-        <Flex style={{ height: "30%" }} align="center" justify="center">
-          <Spin size="large" />
-        </Flex>
-      ) : (
-        <main className="mainUsersProjectTable">
-          <Flex justify="space-between" className="mainUsersProjectTable_header">
-            <Flex gap={"1.75rem"}>
-              <FilterUsers setSelectedUsers={setSelectedUsers} idProject={idProject} />
-              <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
-            </Flex>
-            <Button
-              type="primary"
-              className="buttonNewProject"
-              size="large"
-              onClick={() => setIsCreateUser(true)}
-              icon={<Plus weight="bold" size={15} />}
-            >
-              Nuevo Usuario
-            </Button>
+      {contextHolder}
+      <main className="mainUsersProjectTable">
+        <Flex justify="space-between" className="mainUsersProjectTable_header">
+          <Flex gap={"1.75rem"}>
+            <FilterUsers setSelectedUsers={setSelectedUsers} idProject={idProject} />
+            <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
           </Flex>
+          <Button
+            type="primary"
+            className="buttonNewProject"
+            size="large"
+            onClick={onCreateUser}
+            icon={<Plus weight="bold" size={15} />}
+          >
+            Nuevo Usuario
+          </Button>
+        </Flex>
+        {loading ? (
+          <Flex style={{ height: "30%" }} align="center" justify="center">
+            <Spin size="large" />
+          </Flex>
+        ) : (
           <Table columns={columns} dataSource={data} />
-        </main>
-      )}
+        )}
+      </main>
     </>
   );
 };

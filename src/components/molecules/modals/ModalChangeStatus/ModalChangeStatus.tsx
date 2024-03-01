@@ -6,10 +6,12 @@ import "./modalchangestatus.scss";
 const { Text } = Typography;
 interface Props {
   isOpen: boolean;
-  onClose: () => void;
+  name?: string;
   isActiveStatus: boolean;
+  onClose: () => void;
   onActive: () => void;
   onDesactivate: () => void;
+  onRemove?: () => void;
 }
 
 export const ModalChangeStatus = ({
@@ -17,9 +19,12 @@ export const ModalChangeStatus = ({
   isActiveStatus = false,
   onClose,
   onActive,
-  onDesactivate
+  onDesactivate,
+  name = "",
+  onRemove
 }: Props) => {
   const [isActive, setIsActive] = useState(isActiveStatus);
+
   const onOk = async () => {
     if (isActive) return await onActive();
     await onDesactivate();
@@ -45,6 +50,11 @@ export const ModalChangeStatus = ({
         <Checkbox checked={!isActive} className="option" onClick={() => setIsActive(false)}>
           Inactivo
         </Checkbox>
+        {onRemove && (
+          <Text onClick={onRemove} className="textRemove">
+            Eliminar {name}
+          </Text>
+        )}
       </Flex>
     </Modal>
   );

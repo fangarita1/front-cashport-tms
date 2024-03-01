@@ -3,23 +3,45 @@
 
 .selectchips {
     border: 1px solid $dark-gray;
+    background-color: $white;
     border-radius: 0.7rem;
     width: 100%;
     margin: .5rem 0;
     padding: .65rem;
+    height: max-content;
 
     .headerselectchips {
         margin-bottom: .2rem;
     }
-    .titleLine{
-        font-weight: 600;
+
+    .titleChannel {
+        font-weight: 500;
         font-size: 1rem;
     }
+
+    .titleLine {
+        font-weight: 400;
+        font-size: .8rem;
+    }
+
+    .line {
+        border: 1px solid $dark-gray;
+        width: 100%;
+        border-radius: 0.7rem;
+        gap: .74rem;
+        padding: 1rem;
+    }
+
+    .sublines {
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+
     .mainTags {
         padding: .45rem;
         display: flex;
         flex-wrap: wrap;
-        gap:5px;
+        gap: 5px;
     }
 
     .tag {

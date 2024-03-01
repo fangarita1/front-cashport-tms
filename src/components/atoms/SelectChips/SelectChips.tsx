@@ -1,18 +1,17 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Checkbox, Flex, Tag, Typography } from "antd";
 import { CheckCircle } from "phosphor-react";
 
-import { Subline } from "@/types/bre/IBRE";
+import { ChannelLine } from "@/types/bre/IBRE";
 
 import "./selectchips.scss";
+import { removeDuplicatesBySublineId, removeObjectsFromArray } from "@/utils/utils";
 
 const { Text } = Typography;
 
 interface Props {
   channelId: number;
-  lineId: number;
   channelName: string;
-  activeSublines?: Subline[];
   setSelectedSublines: Dispatch<
     SetStateAction<
       {
@@ -30,30 +29,59 @@ interface Props {
       description: string;
     };
   }[];
-  activeBox?: boolean;
-  setSelectChannel?: Dispatch<SetStateAction<number>>;
+
+  lines: ChannelLine[];
 }
 
 export const SelectChips = ({
-  activeBox,
   channelName,
-  activeSublines = [],
+  lines,
   channelId,
-  lineId,
   selectedSubLines = [],
-  setSelectChannel,
   setSelectedSublines = () => {}
 }: Props) => {
-  const onOpenChannel = ({ target }: any) => {
-    setSelectChannel ? setSelectChannel(target.checked ? channelId : 0) : () => {};
+  const [isAllSublinesSelected, setIsAllSublinesSelected] = useState(false);
+
+  const sublines = lines
+    ?.map((line) => line?.sublines?.map((subline) => subline?.id))
+    .flat()
+    .filter((subline) => typeof subline === "number");
+  const onSelectAllSublines = (e: any) => {
+    const lineData = lines
+      ?.map((line) =>
+        line.sublines?.map((subline) => ({
+          idChannel: channelId,
+          idLine: line.id,
+          subline
+        }))
+      )
+      .flat()
+      .filter((item) => typeof item !== "undefined");
+    if (e.target.checked) {
+      setSelectedSublines(removeDuplicatesBySublineId([...selectedSubLines, ...lineData]));
+      setIsAllSublinesSelected(true);
+    } else {
+      setSelectedSublines(removeObjectsFromArray(selectedSubLines, lineData));
+      setIsAllSublinesSelected(false);
+    }
   };
-  const onSelectSubline = (idSubline: number, description: string, isActiveSubline: boolean) => {
+  const onSelectSubline = (
+    lineId: number,
+    idSubline: number,
+    description: string,
+    isActiveSubline: boolean
+  ) => {
+    const allSublinesChannel = selectedSubLines.filter(
+      (line) => line.idChannel === channelId
+    ).length;
     if (isActiveSubline) {
       const desactivatedSublines = selectedSubLines.filter(
         (subline) => subline.subline.id !== idSubline
       );
+      setIsAllSublinesSelected((sublines.length ?? 0) === allSublinesChannel - 1);
       return setSelectedSublines(desactivatedSublines);
     }
+
     setSelectedSublines((s) => [
       ...s,
       {
@@ -65,38 +93,55 @@ export const SelectChips = ({
         }
       }
     ]);
+
+    setIsAllSublinesSelected((sublines.length ?? 0) === allSublinesChannel + 1);
   };
 
   return (
     <Flex className="selectchips" vertical>
       <Flex component="header" justify="space-between" className="headerselectchips">
-        <Text className="titleLine">{channelName}</Text>
-        {setSelectChannel && <Checkbox checked={activeBox} onClick={onOpenChannel} />}
+        <Text className="titleChannel">{channelName}</Text>
+        {lines && <Checkbox checked={isAllSublinesSelected} onChange={onSelectAllSublines} />}
       </Flex>
       <Flex component="main" className="mainTags">
-        {activeSublines?.length > 0 ? (
-          <>
-            {activeSublines.map(({ id, description }) => {
-              const activeSubline = selectedSubLines.filter((subline) => subline.subline.id === id);
-              return (
-                <Tag
-                  key={id}
-                  closeIcon={
-                    <CheckCircle
-                      color={activeSubline[0] ? "green" : "gray"}
-                      onClick={() => onSelectSubline(id, description, !!activeSubline[0])}
-                      size={"1.4rem"}
-                    />
-                  }
-                  className="tag"
-                >
-                  {description}
-                </Tag>
-              );
-            })}
-          </>
+        {lines?.length > 0 ? (
+          lines.map((line) => (
+            <Flex key={line.id} vertical className="line">
+              <Text className="titleLine">{line.description}</Text>
+              <Flex className="sublines">
+                {line.sublines?.length > 0 ? (
+                  <>
+                    {line.sublines.map(({ id, description }) => {
+                      const activeSubline = selectedSubLines.filter(
+                        (subline) => subline.subline.id === id
+                      );
+                      return (
+                        <Tag
+                          key={id}
+                          closeIcon={
+                            <CheckCircle
+                              color={activeSubline[0] ? "green" : "gray"}
+                              onClick={() =>
+                                onSelectSubline(line.id, id, description, !!activeSubline[0])
+                              }
+                              size={"1.4rem"}
+                            />
+                          }
+                          className="tag"
+                        >
+                          {description}
+                        </Tag>
+                      );
+                    })}
+                  </>
+                ) : (
+                  <Text>Sin sublineas actualmente.</Text>
+                )}
+              </Flex>
+            </Flex>
+          ))
         ) : (
-          <Text>Sin sublineas actualmente.</Text>
+          <Text>Sin Lineas actualmente.</Text>
         )}
       </Flex>
     </Flex>

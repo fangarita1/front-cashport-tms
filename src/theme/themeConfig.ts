@@ -9,6 +9,11 @@ const theme: ThemeConfig = {
     colorSplit: "#FFFFFF",
     colorBgElevated: "#575a6b",
     fontFamily: "inherit"
+  },
+  components: {
+    Message: {
+      contentBg: "#FFFFFF"
+    }
   }
 };
 

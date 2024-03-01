@@ -1,14 +1,24 @@
-import { Dispatch, SetStateAction, useState } from "react";
-import { Button, Flex, Typography, message } from "antd";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Button, Flex, Spin, Typography, message } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { CaretLeft, Pencil, Trash } from "phosphor-react";
+import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 
 import { SelectRoles } from "@/components/atoms/SelectRoles/SelectRoles";
 import { SelectZone } from "@/components/atoms/SelectZone/SelectZone";
 import { SelectStructure } from "@/components/molecules/selects/SelectStructure/SelectStructure";
 import { InputForm } from "@/components/atoms/InputForm/InputForm";
+import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
+
+import {
+  getUserById,
+  inviteUser,
+  onChangeStatusById,
+  onRemoveUserById,
+  updateUser
+} from "@/services/users/users";
 import { useAppStore } from "@/lib/store/store";
-import { inviteUser } from "@/services/users/users";
+import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
+import { IUserData } from "@/types/users/IUser";
 
 import "./userprojectform.scss";
 
@@ -25,83 +35,123 @@ export type UserType = {
 };
 
 interface Props {
-  isViewDetailsUser?: boolean;
+  isViewDetailsUser?: {
+    active: boolean;
+    id: number;
+  };
   onGoBackTable: () => void;
   setIsCreateUser: Dispatch<SetStateAction<boolean>>;
+  setIsViewDetailsUser: Dispatch<
+    SetStateAction<{
+      active: boolean;
+      id: number;
+    }>
+  >;
 }
 export const UserProjectForm = ({
-  isViewDetailsUser = false,
+  isViewDetailsUser,
   onGoBackTable,
-  setIsCreateUser
+  setIsCreateUser,
+  setIsViewDetailsUser
 }: Props) => {
-  const [isEditAvailable, setIsEditAvailable] = useState(isViewDetailsUser);
-  const { ID } = useAppStore((state) => state.selectProject);
   const [messageApi, contextHolder] = message.useMessage();
-
-  const [zones, setZones] = useState([] as number[]);
-  const [selectedSublines, setSelectedSublines] = useState<
-    { idChannel: number; idLine: number; subline: { id: number; description: string } }[]
-  >([]);
-  const [customFieldsError, setCustomFieldsError] = useState({
-    zone: false,
-    channel: false
-  });
-
+  const [isEditAvailable, setIsEditAvailable] = useState(isViewDetailsUser?.active);
+  const [dataUser, setDataUser] = useState({
+    data: {},
+    isLoading: false
+  } as { data: IUserData; isLoading: boolean });
   const {
     control,
     handleSubmit,
     formState: { errors }
   } = useForm<UserType>({
-    defaultValues: isViewDetailsUser ? initialDataDummy : initialData,
-    disabled: isEditAvailable
+    defaultValues: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : initialData,
+    disabled: isEditAvailable,
+    values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as UserType)
   });
+  const { ID } = useAppStore((state) => state.selectProject);
+
+  const [selectedSublines, setSelectedSublines] = useState<
+    { idChannel: number; idLine: number; subline: { id: number; description: string } }[]
+  >([]);
+  const [zones, setZones] = useState([] as number[]);
+  const [customFieldsError, setCustomFieldsError] = useState({
+    zone: false,
+    channel: false
+  });
+  const [isOpenModalStatus, setIsOpenModalStatus] = useState(initDataOpenModalStatus);
+
+  useEffect(() => {
+    (async () => {
+      if (isViewDetailsUser?.id === 0) return;
+      setDataUser({
+        isLoading: true,
+        data: {} as IUserData
+      });
+      const response = await getUserById(`${isViewDetailsUser?.id}`);
+      const finalData = response.data.data;
+      const zonesFinalData =
+        finalData.USER_ZONES?.map(
+          (zone: { ZONE_ID: number; ZONE_DESCRIPTION: string }) => zone.ZONE_ID
+        ) ?? [];
+      setDataUser({
+        isLoading: false,
+        data: finalData
+      });
+      setZones(zonesFinalData);
+    })();
+  }, [isViewDetailsUser]);
   const onSubmitHandler = async (data: UserType) => {
     setCustomFieldsError({
-      zone: !!(zones.length === 0),
-      channel: !!(selectedSublines.length === 0)
+      zone: zones.length === 0,
+      channel: selectedSublines.length === 0
     });
-    if (customFieldsError.zone || customFieldsError.channel) return;
-    const selectedChannel = selectedSublines.map((bre) => bre.idChannel);
-    const selectedLines = selectedSublines.map((bre) => bre.idLine);
-    const _selectedSublines = selectedSublines.map((bre) => bre.subline.id);
-    const rol = data.info.rol.split("-")[0];
-
-    const modelData = {
-      email: data.info.email,
-      user_name: data.info.name,
-      channel: selectedChannel,
-      line: selectedLines,
-      subline: _selectedSublines,
-      zone: zones,
-      password: "Pruebas12345.",
-      phone: data.info.phone,
-      position: data.info.cargo,
-      project_id: ID,
-      rol_id: rol
-    };
-    try {
-      const response = await inviteUser(modelData);
-      if (response.status === 200) {
-        messageApi.open({
-          type: "success",
-          content: "El usuario fue creado exitosamente."
-        });
-        setIsCreateUser(false);
-      } else if (response.status === 409) {
-        messageApi.open({
-          type: "success",
-          content: "Este emaiil esta en uso, prueba otro."
-        });
-      }
-    } catch (error) {
+    if (
+      zones.length === 0
+      // || (selectedSublines.length === 0)
+    )
+      return;
+    const response = isViewDetailsUser?.id
+      ? await updateUser(
+          data,
+          selectedSublines,
+          zones,
+          isViewDetailsUser?.id,
+          ID,
+          dataUser.data?.ACTIVE === 1
+        )
+      : await inviteUser(data, selectedSublines, zones, ID);
+    if (response.status === 200 || response.status === 202) {
+      const isEdit = isViewDetailsUser?.id ? "editado" : "creado";
+      messageApi.open({
+        type: "success",
+        content: `El usuario fue ${isEdit} exitosamente.`
+      });
+      !isViewDetailsUser?.id && setIsCreateUser(false);
+    } else if (response.response.status === 409) {
       messageApi.open({
         type: "error",
-        content: "Oops, no se pudo crear el usuario, intentalo mas tarde!"
+        content: "Este emaiil esta en uso, prueba otro."
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Oops ocurrio un error."
       });
     }
   };
-  console.log(customFieldsError);
-  console.log(errors);
+  const onRemoveUser = async () =>
+    await onRemoveUserById(dataUser.data.ID, ID, messageApi, () =>
+      setIsViewDetailsUser({ active: false, id: 0 })
+    );
+  const onActiveUser = async () =>
+    await onChangeStatusById(dataUser.data, 1, messageApi, () =>
+      setIsOpenModalStatus(initDataOpenModalStatus)
+    );
+  const onInactiveUser = async () =>
+    await onChangeStatusById(dataUser.data, 0, messageApi, () =>
+      setIsOpenModalStatus(initDataOpenModalStatus)
+    );
 
   return (
     <>
@@ -122,14 +172,27 @@ export const UserProjectForm = ({
             {/* -----------right buttons--------------- */}
             {isViewDetailsUser && (
               <Flex gap={"1rem"}>
-                <Button size="large" className="buttonOutlined" icon={<Trash size={"1.45rem"} />}>
-                  Eliminar Usuario
+                <Button
+                  size="large"
+                  htmlType="button"
+                  className="buttonOutlined"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsOpenModalStatus({ status: true, remove: false });
+                  }}
+                  icon={<ArrowsClockwise size={"1.45rem"} />}
+                >
+                  Cambiar Estado
                 </Button>
 
                 <Button
                   size="large"
-                  onClick={() => setIsEditAvailable(false)}
+                  onClick={(e) => {
+                    isEditAvailable && e.preventDefault();
+                    setIsEditAvailable(false);
+                  }}
                   className="buttonOutlined"
+                  htmlType={!isEditAvailable ? "submit" : "button"}
                   icon={<Pencil size={"1.45rem"} />}
                 >
                   Editar Usuario
@@ -152,68 +215,96 @@ export const UserProjectForm = ({
               </Flex>
             )}
           </Flex>
-          <Flex vertical component={"main"} className="mainUserForm">
-            <Title level={4}>Información del usuario</Title>
-            {/* -----------------------------------Informacion del Usuario--------------------------------------- */}
-            <Flex component={"section"} className="generalProject">
-              <InputForm
-                titleInput="Nombre del Contacto"
-                control={control}
-                nameInput="info.name"
-                error={errors.info?.name}
-              />
-              <InputForm
-                titleInput="Cargo"
-                control={control}
-                nameInput="info.cargo"
-                error={errors.info?.cargo}
-              />
-              <InputForm
-                typeInput="email"
-                titleInput="Correo electrónico"
-                control={control}
-                nameInput="info.email"
-                error={errors.info?.email}
-              />
-              <InputForm
-                typeInput="phone"
-                titleInput="Telefono"
-                control={control}
-                nameInput="info.phone"
-                error={errors.info?.phone}
-              />
-              <Flex vertical className="containerInput">
-                <Title level={5}>Rol</Title>
-                <Controller
-                  name="info.rol"
+          {!dataUser.isLoading ? (
+            <Flex vertical component={"main"} className="mainUserForm">
+              <Title level={4}>Información del usuario</Title>
+              {/* -----------------------------------Informacion del Usuario--------------------------------------- */}
+              <Flex component={"section"} className="generalProject">
+                <InputForm
+                  titleInput="Nombre del Contacto"
                   control={control}
-                  rules={{ required: true, minLength: 1 }}
-                  render={({ field }) => <SelectRoles errors={errors.info?.rol} field={field} />}
+                  nameInput="info.name"
+                  error={errors.info?.name}
                 />
+                <InputForm
+                  titleInput="Cargo"
+                  control={control}
+                  nameInput="info.cargo"
+                  error={errors.info?.cargo}
+                />
+                <InputForm
+                  typeInput="email"
+                  titleInput="Correo electrónico"
+                  control={control}
+                  nameInput="info.email"
+                  error={errors.info?.email}
+                />
+                <InputForm
+                  typeInput="phone"
+                  titleInput="Telefono"
+                  control={control}
+                  nameInput="info.phone"
+                  error={errors.info?.phone}
+                />
+                <Flex vertical className="containerInput">
+                  <Title level={5}>Rol</Title>
+                  <Controller
+                    name="info.rol"
+                    control={control}
+                    rules={{ required: true, minLength: 1 }}
+                    render={({ field }) => <SelectRoles errors={errors.info?.rol} field={field} />}
+                  />
+                </Flex>
+              </Flex>
+              {/* -----------------------------------Experiencia----------------------------------- */}
+              <Title level={4}>Reglas de Proyecto</Title>
+              <Flex component={"section"} gap={"1rem"} className="breRules">
+                <Flex vertical style={{ width: "30%" }}>
+                  <SelectZone zones={zones} setZones={setZones} />
+                  <Typography.Text className="textError">
+                    {customFieldsError.zone && `La Zona es obligatorio *`}
+                  </Typography.Text>
+                </Flex>
+                <Flex vertical style={{ width: "37%" }}>
+                  {dataUser?.data && (
+                    <SelectStructure
+                      selectedSublines={selectedSublines}
+                      sublinesUser={dataUser?.data?.USER_SUBLINES?.map((item) => item.ID)}
+                      setSelectedSublines={setSelectedSublines}
+                    />
+                  )}
+                  <Typography.Text className="textError">
+                    {customFieldsError.channel && `Las Reglas de negocio  son obligatorias *`}
+                  </Typography.Text>
+                </Flex>
+                <Flex vertical style={{ width: "30%" }}>
+                  -
+                </Flex>
               </Flex>
             </Flex>
-            {/* -----------------------------------Experiencia----------------------------------- */}
-            <Title level={4}>Reglas de Proyecto</Title>
-            <Flex component={"section"} gap={"1rem"} className="breRules">
-              <Flex vertical style={{ width: "20%" }}>
-                <SelectZone zones={zones} setZones={setZones} />
-                <Typography.Text className="textError">
-                  {customFieldsError.zone && `La Zona es obligatorio *`}
-                </Typography.Text>
-              </Flex>
-              <Flex vertical style={{ width: "80%" }}>
-                <SelectStructure
-                  selectedSublines={selectedSublines}
-                  setSelectedSublines={setSelectedSublines}
-                />
-                <Typography.Text className="textError">
-                  {customFieldsError.channel && `Las Reglas de negocio  es obligatorio *`}
-                </Typography.Text>
-              </Flex>
-            </Flex>
-          </Flex>
+          ) : (
+            <Spin />
+          )}
         </Flex>
       </form>
+      {dataUser.data?.ID >= 0 && (
+        <>
+          <ModalChangeStatus
+            isActiveStatus={dataUser.data?.ACTIVE === 1}
+            isOpen={isOpenModalStatus.status}
+            onActive={onActiveUser}
+            onDesactivate={onInactiveUser}
+            onRemove={() => setIsOpenModalStatus({ remove: true, status: false })}
+            onClose={() => setIsOpenModalStatus(initDataOpenModalStatus)}
+          />
+          <ModalRemove
+            name="usuario"
+            isOpen={isOpenModalStatus.remove}
+            onClose={() => setIsOpenModalStatus(initDataOpenModalStatus)}
+            onRemove={onRemoveUser}
+          />
+        </>
+      )}
     </>
   );
 };
@@ -226,25 +317,16 @@ const initialData: UserType = {
     email: "",
     phone: ""
   }
-  // contact: {
-  //   responsibility: [],
-  //   zone: [],
-  //   channel: [],
-  //   line: []
-  // }
 };
-const initialDataDummy: UserType = {
-  info: {
-    name: "Falcao Garcia",
-    rol: "Capitan",
-    cargo: "Delantero",
-    email: "falkao@gmail.com",
-    phone: "(+57) 123 456 789"
-  },
-  contact: {
-    responsibility: ["goles"],
-    zone: ["europe"],
-    channel: ["caracol"],
-    line: ["si"]
-  }
+const initDataOpenModalStatus = { status: false, remove: false };
+const dataToDataForm = (data: any) => {
+  return {
+    info: {
+      name: data.USER_NAME,
+      rol: `${data.ROL_ID}-${data.ROL_NAME}`,
+      cargo: data.POSITION,
+      email: data.EMAIL,
+      phone: data.PHONE
+    }
+  };
 };
