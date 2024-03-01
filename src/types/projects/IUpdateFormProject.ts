@@ -1,6 +1,7 @@
 export interface IUpdateFormProject {
   general: General;
   contact: Contact;
+  logo: any;
   personalization: Personalization;
 }
 

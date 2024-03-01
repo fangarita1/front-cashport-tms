@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Flex, Skeleton, Spin, Tabs, TabsProps, Typography, message } from "antd";
+import { Button, Flex, Result, Skeleton, Spin, Tabs, TabsProps, Typography, message } from "antd";
 
 //components
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
@@ -42,9 +42,9 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
     });
   };
 
-  const onUpdateProject = async (data: IUpdateFormProject) => {
+  const onUpdateProject = async (finalData: IUpdateFormProject) => {
     try {
-      const response = await updateProject(data, idProjectParam);
+      const response = await updateProject(finalData, idProjectParam, data.UUID);
       if (response.status === SUCCESS) {
         messageApi.open({
           type: "success",
@@ -152,7 +152,12 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
       <main className="mainDetailProject">
         <SideBar />
         <Flex vertical className="containerDetailProject">
-          <Flex component={"navbar"} align="center" justify="space-between">
+          <Flex
+            style={{ display: data.length === 0 && !loading ? "none" : "flex" }}
+            component={"navbar"}
+            align="center"
+            justify="space-between"
+          >
             <Flex className="infoHeaderProject">
               <Flex gap={"2rem"} align="center" style={{ width: "100%" }}>
                 {loading ? (
@@ -175,14 +180,33 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
             </Flex>
           </Flex>
           {/* ------------Main Info Project-------------- */}
-          <Flex className="tabsContainer">
-            <Tabs
-              style={{ width: "100%", height: "100%" }}
-              defaultActiveKey="1"
-              items={items}
-              size="large"
-            />
-          </Flex>
+          {!loading && data.length === 0 ? (
+            <Flex vertical>
+              <Flex align="center" gap={"2rem"}>
+                <Button href="/">Volver</Button>
+                <Text>Informacion No encontrada</Text>
+              </Flex>
+              <Result
+                status="404"
+                title="404"
+                subTitle="Lo siento este proyecto no existe"
+                extra={
+                  <Button type="primary" href="/">
+                    Back Home
+                  </Button>
+                }
+              />
+            </Flex>
+          ) : (
+            <Flex className="tabsContainer">
+              <Tabs
+                style={{ width: "100%", height: "100%" }}
+                defaultActiveKey="1"
+                items={items}
+                size="large"
+              />
+            </Flex>
+          )}
         </Flex>
       </main>
     </>

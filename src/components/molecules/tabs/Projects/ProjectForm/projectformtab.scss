@@ -5,6 +5,11 @@
     overflow-y: scroll;
     height: 100%;
 
+    .textError {
+        color: red;
+        padding-left: 0.5rem;
+    }
+
     .headerProyectsForm {
         padding: .5rem 0;
         padding-right: .5rem;
@@ -24,9 +29,6 @@
         margin-top: .75rem !important;
     }
 
-    .imageSection {
-        margin-bottom: 1rem;
-    }
 
     .ant-upload-wrapper {
         width: 50% !important;
@@ -96,7 +98,6 @@
 
         .textError {
             padding-left: 0.5rem;
-            color: red;
         }
 
         .inputError {

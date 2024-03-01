@@ -7,6 +7,7 @@
     padding-bottom: 0;
     margin-top: 1.5rem;
     width: 100%;
+
     .mainProjectsTable_header {
         margin: 1rem 0;
     }
@@ -25,7 +26,6 @@
         border: 1px solid $active;
     }
 
-
     .statusActive {
         width: .75rem;
         height: .75rem;
@@ -33,6 +33,7 @@
         margin-right: .5rem;
         background-color: $active ;
     }
+
     .statusInactive {
         width: .75rem;
         height: .75rem;
@@ -45,16 +46,21 @@
             color: black !important;
         }
     }
-
     .buttonNewProject {
         background-color: $secondary;
         color: black;
+        box-shadow: none;
+        display: flex;
+        align-items: center;
         font-weight: 600;
-
         &:hover {
             background-color: $secondary !important;
             opacity: 0.8;
             color: black;
         }
+    }
+    .imageWithoutImage {
+        background-color: $secondary !important;
+
     }
 }

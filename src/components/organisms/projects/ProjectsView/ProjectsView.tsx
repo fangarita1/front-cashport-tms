@@ -7,7 +7,7 @@ import { ProjectTable } from "@/components/molecules/tables/ProjectsTable/Projec
 
 import "./projects.scss";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 export const ProjectsView = () => {
   return (
@@ -16,10 +16,9 @@ export const ProjectsView = () => {
       <Flex vertical className="contentProject">
         <Flex justify="space-between" align="center">
           <Flex gap={"1rem"} align="center">
-            <Title level={1} className="titleName">
-              Cruz Verde
+            <Title level={2} className="titleName">
+              Proyectos
             </Title>
-            <Text className="subtitleNit">NIT 10122012334-5</Text>
           </Flex>
           <NavRightSection />
         </Flex>

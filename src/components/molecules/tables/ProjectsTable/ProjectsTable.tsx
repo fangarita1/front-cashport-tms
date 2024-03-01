@@ -1,10 +1,9 @@
-import { useEffect } from "react";
-import { Avatar, Button, Flex, Input, Table, Typography } from "antd";
+import { useEffect, useState } from "react";
+import { Avatar, Button, Flex, Table, Typography } from "antd";
 import type { TableProps } from "antd";
-import { DotsThree, Eye, Plus } from "phosphor-react";
+import { Clipboard, DotsThree, Eye, Plus } from "phosphor-react";
 
-import { FilterUsers } from "@/components/atoms/FilterUsers/FilterUsers";
-
+import { FilterProjects } from "@/components/atoms/FilterProjects/FilterProjects";
 import { useProjects } from "@/hooks/useProjects";
 import { useAppStore } from "@/lib/store/store";
 import { IProject } from "@/types/projects/IProjects";
@@ -12,12 +11,27 @@ import { IProject } from "@/types/projects/IProjects";
 import "./projectstable.scss";
 
 const { Text } = Typography;
-const { Search } = Input;
+// const { Search } = Input;
 
 export const ProjectTable = () => {
-  const { loading, data } = useProjects({ page: 1 });
+  const [selectFilters, setSelectFilters] = useState({
+    country: [] as string[],
+    currency: [] as string[]
+  });
+  const [page, setPage] = useState(1);
+  const { loading, data } = useProjects({
+    page: selectFilters.country.length !== 0 || selectFilters.currency.length !== 0 ? 1 : page,
+    currencyId: selectFilters.currency,
+    countryId: selectFilters.country
+  });
+
   const projects = useAppStore((state) => state.projects);
   const setProjects = useAppStore((state) => state.getProjects);
+
+  const onChangePage = (pagePagination: number) => {
+    setPage(pagePagination);
+  };
+
   useEffect(() => {
     setProjects(data.data);
   }, [data, setProjects]);
@@ -26,13 +40,7 @@ export const ProjectTable = () => {
     <main className="mainProjectsTable">
       <Flex justify="space-between" className="mainProjectsTable_header">
         <Flex gap={"1.75rem"}>
-          <Search
-            className="inputSearch"
-            size="large"
-            placeholder="Buscar"
-            style={{ width: 300 }}
-          />
-          <FilterUsers />
+          <FilterProjects setSelecetedProjects={setSelectFilters} />
           <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
         </Flex>
         <Button
@@ -40,7 +48,7 @@ export const ProjectTable = () => {
           className="buttonNewProject"
           size="large"
           href="/proyectos/new"
-          icon={<Plus size={13} />}
+          icon={<Plus weight="bold" size={14} />}
         >
           Nuevo Proyecto
         </Button>
@@ -49,7 +57,11 @@ export const ProjectTable = () => {
         loading={loading}
         scroll={{ y: "61dvh", x: undefined }}
         columns={columns as TableProps<any>["columns"]}
-        pagination={{ pageSize: 25 }}
+        pagination={{
+          pageSize: 25,
+          total: data.pagination.totalRows,
+          onChange: onChangePage
+        }}
         dataSource={projects}
       />
     </main>
@@ -62,12 +74,18 @@ const columns: TableProps<IProject>["columns"] = [
     dataIndex: "name",
     width: "140px",
     key: "name",
-    render: () => (
-      <Avatar
-        shape="square"
-        size={70}
-        src={<img src={"/images/cruz-verde.png"} style={{ objectFit: "contain" }} alt="avatar" />}
-      />
+    render: (_, { LOGO }) => (
+      <>
+        {LOGO ? (
+          <Avatar
+            shape="square"
+            size={70}
+            src={<img src={LOGO ?? ""} style={{ objectFit: "contain" }} alt="avatar" />}
+          />
+        ) : (
+          <Avatar shape="square" className="imageWithoutImage" size={65} icon={<Clipboard />} />
+        )}
+      </>
     )
   },
   {
@@ -107,7 +125,7 @@ const columns: TableProps<IProject>["columns"] = [
   {
     title: "Usuarios",
     key: "NUMBER_USERS",
-    width: "120px",
+    width: "100px",
     dataIndex: "NUMBER_USERS",
     render: (text) => <Text>{text}</Text>
   },
@@ -138,7 +156,7 @@ const columns: TableProps<IProject>["columns"] = [
         className={IS_ACTIVE ? "statusContainerActive" : "statusContainerInactive"}
       >
         <div className={IS_ACTIVE ? "statusActive" : "statusInactive"} />
-        <Text>{IS_ACTIVE ? "Activo" : "Desactivado"}</Text>
+        <Text>{IS_ACTIVE ? "Activo" : "Inactivo"}</Text>
       </Flex>
     )
   },

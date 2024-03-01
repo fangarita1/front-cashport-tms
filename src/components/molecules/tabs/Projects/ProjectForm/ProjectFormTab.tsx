@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, ColorPicker, Flex, Typography, Upload } from "antd";
+import { Button, ColorPicker, Flex, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 
@@ -8,6 +8,7 @@ import { SelectCountries } from "@/components/atoms/SelectCountries/SelectCountr
 import { SelectCurrencies } from "@/components/atoms/SelectCurrencies/SelectCurrencies";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
 import { IUpdateFormProject } from "@/types/projects/IUpdateFormProject";
+import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
 
 //interfaces
 import { ICreatePayload } from "@/types/projects/IProjects";
@@ -56,8 +57,9 @@ export const ProjectFormTab = ({
   onDesactivateProject = () => {}
 }: Props) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
-
-  const defaultValues = statusForm === "create" ? {} : dataToFormData(data);
+  const [imageFile, setImageFile] = useState(data.LOGO);
+  const [imageError, setImageError] = useState(false);
+  const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data);
   const {
     control,
     handleSubmit,
@@ -74,7 +76,11 @@ export const ProjectFormTab = ({
         ? "Guardar Cambios"
         : " Editar Proyecto";
 
-  const onSubmit = (data: any) => onSubmitForm(data);
+  const onSubmit = (data: any) => {
+    if (!imageFile) return setImageError(true);
+    setImageError(false);
+    onSubmitForm({ ...data, logo: imageFile });
+  };
 
   return (
     <>
@@ -128,12 +134,12 @@ export const ProjectFormTab = ({
         </Flex>
         <Flex component={"main"} vertical>
           {/* ------------Image Project-------------- */}
-          <Flex vertical className="imageSection">
-            <Upload listType="picture-card" style={{ width: "20%" }}>
-              {"+ Subir"}
-            </Upload>
-            <Text>*Sube la imagen del logo del proyecto que vas a crear</Text>
-          </Flex>
+          <UploadImg
+            disabled={statusForm === "review"}
+            imgDefault={data.LOGO}
+            setImgFile={setImageFile}
+          />
+          {imageError && <Text className="textError">{"Logo del proyecto es obligatorio *"}</Text>}
           {/* -----------------------------------General--------------------------------------- */}
           <Title level={4}>Informacion General</Title>
           <Flex component={"section"} className="generalProject" justify="flex-start">
@@ -268,10 +274,11 @@ export const ProjectFormTab = ({
     </>
   );
 };
-const dataToFormData = (data: IProject) => {
+const dataToProjectFormData = (data: IProject) => {
   const currenciesFormated = data?.CURRENCY?.map(
     (currency) => `${currency.id}-${currency.CURRENCY_NAME ?? currency.currency_name}`
   );
+
   return {
     general: {
       name: data.PROJECT_DESCRIPTION,

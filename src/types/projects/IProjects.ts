@@ -36,6 +36,7 @@ export interface Pagination {
 // -----Create--------
 export interface ICreatePayload {
   general: General;
+  logo: any;
   contact: Contact;
   personalization: Personalization;
 }

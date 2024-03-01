@@ -41,8 +41,13 @@ a {
   background-color: white !important;
 
 }
-
-.ant-cascader-menus {
+.ant-select-dropdown{
+  background-color: white !important;
+}
+.ant-select-item-option-selected{
+  background-color: rgba(255, 255, 255, 0.37) !important;
+}
+.ant-cascader-menus, .ant-cascader-menu-item{
   background-color: white !important;
 
 }

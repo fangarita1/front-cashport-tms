@@ -11,9 +11,9 @@ import { ICreatePayload } from "@/types/projects/IProjects";
 
 //vars
 import { CREATED } from "@/utils/constants/globalConstants";
+import { useRouter } from "next/navigation";
 
 import "./createproject.scss";
-import { useRouter } from "next/navigation";
 
 const { Title } = Typography;
 
@@ -21,6 +21,7 @@ export const CreateProjectView = () => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const onCreateProject = async (data: ICreatePayload) => {
+    if (!data.logo) return;
     try {
       const response = await addProject(data);
       if (response.status === CREATED) {
