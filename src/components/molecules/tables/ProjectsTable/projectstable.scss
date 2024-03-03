@@ -16,6 +16,7 @@
         padding: .25rem .5rem;
         border-radius: 1rem;
         width: auto;
+        border: 1px solid $pending;
 
     }
 
@@ -39,6 +40,8 @@
         height: .75rem;
         border-radius: 1rem;
         margin-right: .5rem;
+        background-color: $pending;
+
     }
 
     .inputSearch {
@@ -46,6 +49,7 @@
             color: black !important;
         }
     }
+
     .buttonNewProject {
         background-color: $secondary;
         color: black;
@@ -53,12 +57,14 @@
         display: flex;
         align-items: center;
         font-weight: 600;
+
         &:hover {
             background-color: $secondary !important;
             opacity: 0.8;
             color: black;
         }
     }
+
     .imageWithoutImage {
         background-color: $secondary !important;
 

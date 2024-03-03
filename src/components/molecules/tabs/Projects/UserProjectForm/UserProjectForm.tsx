@@ -170,7 +170,7 @@ export const UserProjectForm = ({
               Ver Usuarios
             </Button>
             {/* -----------right buttons--------------- */}
-            {isViewDetailsUser && (
+            {isViewDetailsUser?.active && (
               <Flex gap={"1rem"}>
                 <Button
                   size="large"
@@ -184,7 +184,6 @@ export const UserProjectForm = ({
                 >
                   Cambiar Estado
                 </Button>
-
                 <Button
                   size="large"
                   onClick={(e) => {
@@ -196,6 +195,18 @@ export const UserProjectForm = ({
                   icon={<Pencil size={"1.45rem"} />}
                 >
                   Editar Usuario
+                </Button>
+              </Flex>
+            )}
+            {!isViewDetailsUser?.active && (
+              <Flex gap={"1rem"}>
+                <Button
+                  size="large"
+                  className="buttonOutlined"
+                  htmlType={!isEditAvailable ? "submit" : "button"}
+                  icon={<Pencil size={"1.45rem"} />}
+                >
+                  Crear Usuario
                 </Button>
               </Flex>
             )}
