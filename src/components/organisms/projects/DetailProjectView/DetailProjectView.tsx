@@ -15,6 +15,7 @@ import { SUCCESS } from "@/utils/constants/globalConstants";
 import { IUpdateFormProject } from "@/types/projects/IUpdateFormProject";
 
 import "./detailproject.scss";
+import { ClientsProjectView } from "../ClientsProjectView/ClientsProjectView";
 
 const { Title, Text } = Typography;
 interface Props {
@@ -118,7 +119,7 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
     {
       key: "3",
       label: "Clientes",
-      children: "Content of Tab Pane 3"
+      children: <ClientsProjectView />
     },
     {
       key: "4",

@@ -1,0 +1,18 @@
+@import '../../../../styles/variables.scss';
+
+.mainShipToProjectTable {
+    width: 100%;
+    height: 100%;
+
+    .mainClientsProjectTable_header {
+        margin: 2rem 0;
+        padding-right: 1rem;
+        margin-top: 1rem;
+        align-items: center;
+    }
+
+    .buttonCreateShipTo {
+        margin-top: 1rem;
+        font-size: 1rem !important;
+    }
+}

@@ -9,11 +9,19 @@ interface Props {
   control: Control<any> | undefined;
   error: FieldError | undefined;
   typeInput?: string;
+  customStyle?: any;
 }
 
-export const InputForm = ({ titleInput, nameInput, typeInput = "text", control, error }: Props) => {
+export const InputForm = ({
+  titleInput,
+  nameInput,
+  typeInput = "text",
+  control,
+  error,
+  customStyle = {}
+}: Props) => {
   return (
-    <Flex vertical className="containerInput">
+    <Flex vertical className="containerInput" style={customStyle}>
       <Typography.Title level={5}>{titleInput}</Typography.Title>
       <Controller
         name={nameInput as string}
