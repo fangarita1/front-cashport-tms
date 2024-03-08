@@ -40,9 +40,8 @@ export const SelectLines = ({ lines, selectedSubLines, setSelectedSublines }: Pr
               {lines.CHANNEL_LINES.map((line) => (
                 <SelectChips
                   key={line.id}
-                  activeSublines={line.sublines}
+                  lines={[]}
                   channelId={lines.CHANNEL_ID}
-                  lineId={line.id}
                   channelName={line.description}
                   selectedSubLines={selectedSubLines}
                   setSelectedSublines={setSelectedSublines}

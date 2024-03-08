@@ -3,9 +3,9 @@ import { Checkbox, Flex, Tag, Typography } from "antd";
 import { CheckCircle } from "phosphor-react";
 
 import { ChannelLine } from "@/types/bre/IBRE";
+import { removeDuplicatesBySublineId, removeObjectsFromArray } from "@/utils/utils";
 
 import "./selectchips.scss";
-import { removeDuplicatesBySublineId, removeObjectsFromArray } from "@/utils/utils";
 
 const { Text } = Typography;
 

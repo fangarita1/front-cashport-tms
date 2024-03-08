@@ -62,17 +62,17 @@ export const filterBRbyIdSubline = (brs: any[], sublinesIds: number[]) => {
 };
 
 export const transformFormat = (original: any) => {
-  const result = [];
+  const result = [] as any;
 
-  original.forEach((channel) => {
+  original.forEach((channel: any) => {
     const idChannel = channel.CHANNEL_ID;
 
     if (channel.CHANNEL_LINES) {
-      channel.CHANNEL_LINES.forEach((line) => {
+      channel.CHANNEL_LINES.forEach((line: any) => {
         const idLine = line.id;
 
         if (line.sublines) {
-          line.sublines.forEach((subline) => {
+          line.sublines.forEach((subline: any) => {
             const transformedObject = {
               idChannel,
               idLine,
