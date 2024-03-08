@@ -1,11 +1,11 @@
 export interface IUsers {
   status: number;
   message: string;
-  data: Datum[];
+  data: IUserSingle[];
   pagination: Pagination;
 }
 
-export interface Datum {
+export interface IUserSingle {
   ID: number;
   LINE_ID: number | null;
   SUBLINE_ID: number | null;

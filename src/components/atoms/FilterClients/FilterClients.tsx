@@ -23,7 +23,7 @@ export const FilterClients = () => {
 const options: Option[] = [
   {
     value: "status",
-    label: "Estado de Usuario",
+    label: "Ciudad",
     isLeaf: false,
     disableCheckbox: true,
     children: [
@@ -39,31 +39,31 @@ const options: Option[] = [
   },
   {
     value: "Zona",
-    label: "Zona",
+    label: "Holding",
     isLeaf: false,
     disableCheckbox: true
   },
   {
     value: "Roles",
-    label: "Roles",
+    label: "Riesgo",
     isLeaf: false,
     disableCheckbox: true
   },
   {
     value: "channel",
-    label: "Canales",
+    label: "Condición de pago",
     isLeaf: false,
     disableCheckbox: true
   },
   {
     value: "line",
-    label: "Lineas",
+    label: "Tipo de radicación",
     isLeaf: false,
     disableCheckbox: true
   },
   {
     value: "subline",
-    label: "Sublineas",
+    label: "Estado de cliente",
     isLeaf: false,
     disableCheckbox: true
   }

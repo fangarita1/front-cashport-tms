@@ -1,10 +1,11 @@
+import axios, { AxiosResponse } from "axios";
+import { MessageInstance } from "antd/es/message/interface";
+
 import config from "@/config";
 import { IUserAxios } from "@/types/users/IUser";
 import { getIdToken } from "@/utils/api/api";
 import { SUCCESS } from "@/utils/constants/globalConstants";
 import { removeDuplicatesFromArrayNumbers } from "@/utils/utils";
-import { MessageInstance } from "antd/es/message/interface";
-import axios, { AxiosResponse } from "axios";
 
 export const getUserById = async (idUser: string): Promise<IUserAxios> => {
   const token = await getIdToken();
@@ -80,18 +81,22 @@ export const updateUser = async (
   project_id: number,
   isActive: boolean
 ): Promise<any> => {
-  // const selectedChannel = removeDuplicatesFromArrayNumbers(selectedSublines.map((bre: any) => bre.idChannel));
-  // const selectedLines = removeDuplicatesFromArrayNumbers(selectedSublines.map((bre: any) => bre.idLine));
-  // const _selectedSublines = selectedSublines.map((bre: any) => bre.subline.id);
+  const selectedChannel = removeDuplicatesFromArrayNumbers(
+    selectedSublines.map((bre: any) => bre.idChannel)
+  );
+  const selectedLines = removeDuplicatesFromArrayNumbers(
+    selectedSublines.map((bre: any) => bre.idLine)
+  );
+  const _selectedSublines = selectedSublines.map((bre: any) => bre.subline.id);
 
   const rol = Number(data.info.rol.split("-")[0]);
 
   const modelData = {
     email: data.info.email,
     user_name: data.info.name,
-    // channel: selectedChannel,
-    // line: selectedLines,
-    // subline: _selectedSublines,
+    channel: selectedChannel,
+    line: selectedLines,
+    subline: _selectedSublines,
     zones: zones.map((zone: number) => ({ ZONE_ID: zone })),
     phone: data.info.phone,
     position: data.info.cargo,

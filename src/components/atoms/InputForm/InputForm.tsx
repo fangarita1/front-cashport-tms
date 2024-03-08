@@ -3,6 +3,7 @@ import { Flex, Input, Typography } from "antd";
 import { Control, Controller, FieldError } from "react-hook-form";
 
 import "./inputform.scss";
+
 interface Props {
   titleInput: string;
   nameInput: string;
@@ -10,6 +11,8 @@ interface Props {
   error: FieldError | undefined;
   typeInput?: string;
   customStyle?: any;
+  hiddenTitle?: boolean;
+  placeholder?: string;
 }
 
 export const InputForm = ({
@@ -18,11 +21,13 @@ export const InputForm = ({
   typeInput = "text",
   control,
   error,
-  customStyle = {}
+  customStyle = {},
+  hiddenTitle = false,
+  placeholder = ""
 }: Props) => {
   return (
     <Flex vertical className="containerInput" style={customStyle}>
-      <Typography.Title level={5}>{titleInput}</Typography.Title>
+      {!hiddenTitle && <Typography.Title level={5}>{titleInput}</Typography.Title>}
       <Controller
         name={nameInput as string}
         rules={{ required: true, maxLength: 123 }}
@@ -32,7 +37,7 @@ export const InputForm = ({
             type={typeInput}
             className={!error ? "input" : "inputError"}
             variant="borderless"
-            placeholder={titleInput}
+            placeholder={placeholder?.length > 0 ? placeholder : titleInput}
             {...field}
           />
         )}

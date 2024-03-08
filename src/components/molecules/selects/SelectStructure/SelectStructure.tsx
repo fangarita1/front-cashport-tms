@@ -45,6 +45,7 @@ export const SelectStructure = ({
   const [selectChannel, setSelectChannel] = useState(0);
   useEffect(() => {
     if (!data?.data) return;
+    if (sublinesUser.length === 0) return;
     const dataFinal = JSON.parse(JSON.stringify(data?.data));
     const brs = filterBRbyIdSubline(dataFinal, sublinesUser);
     setSelectedSublines(transformFormat(brs));

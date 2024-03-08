@@ -5,16 +5,22 @@ import { FilterClients } from "@/components/atoms/FilterClients/FilterClients";
 
 import "./clientsprojecttable.scss";
 
-const { Text, Link, Title } = Typography;
+const { Text, Link } = Typography;
 
 interface Props {
-  setIsCreateUser: Dispatch<SetStateAction<boolean>>;
+  setIsCreateClient: Dispatch<SetStateAction<boolean>>;
+  setIsViewDetailsClients: Dispatch<
+    SetStateAction<{
+      active: boolean;
+      id: number;
+    }>
+  >;
 }
 
-export const ClientsProjectTable = ({ setIsCreateUser }: Props) => {
+export const ClientsProjectTable = ({ setIsCreateClient, setIsViewDetailsClients }: Props) => {
   // const [messageApi, contextHolder] = message.useMessage();
   const onCreateClient = () => {
-    setIsCreateUser(true);
+    setIsCreateClient(true);
   };
   const columns: TableProps<any>["columns"] = [
     {
@@ -110,9 +116,9 @@ export const ClientsProjectTable = ({ setIsCreateUser }: Props) => {
       key: "seeProject",
       width: "40px",
       dataIndex: "",
-      render: () => (
+      render: (_, { key }) => (
         <Button
-          // onClick={() => setIsViewDetails({ active: true, id: ID })}
+          onClick={() => setIsViewDetailsClients({ active: true, id: key })}
           icon={<Eye size={"1.3rem"} />}
         />
       )
@@ -122,7 +128,6 @@ export const ClientsProjectTable = ({ setIsCreateUser }: Props) => {
     <>
       {/* {contextHolder} */}
       <main className="mainClientsProjectTable">
-        <Title level={4}>Clientes con Holdings</Title>
         <Flex justify="space-between" className="mainClientsProjectTable_header">
           <Flex gap={"1.75rem"}>
             <FilterClients />

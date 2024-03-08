@@ -1,21 +1,7 @@
 @import '../../../../styles/variables.scss';
 
-.modalcreateshipto {
+.modaltimefacturaction {
     width: 100%;
-
-
-    .input {
-        background-color: $background;
-        margin-bottom: 0.2rem;
-        border-radius: 0;
-        border-radius: 0.25rem;
-        height: 3rem;
-
-        &::placeholder {
-            color: $secondary-gray;
-        }
-    }
-
     .buttonOk {
         width: 49%;
         height: 3rem;
@@ -29,7 +15,17 @@
             opacity: 0.8;
         }
     }
+    .input {
+        background-color: $background;
+        margin-bottom: 0.2rem;
+        border-radius: 0;
+        border-radius: 0.25rem;
+        height: 3rem;
 
+        &::placeholder {
+            color: $secondary-gray;
+        }
+    }
     .buttonCancel {
         width: 49%;
         height: 3rem;

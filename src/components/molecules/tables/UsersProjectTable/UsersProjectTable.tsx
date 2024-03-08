@@ -4,32 +4,14 @@ import type { TableProps } from "antd";
 
 import { DotsThree, Eye, Plus } from "phosphor-react";
 
-import "./usersprojecttable.scss";
 import { useUsers } from "@/hooks/useUsers";
 import { FilterUsers } from "@/components/atoms/FilterUsers/FilterUsers";
 import { onResendInvitationUser } from "@/services/users/users";
 import { SUCCESS } from "@/utils/constants/globalConstants";
 
-interface DataType {
-  key: string;
-  ID: number;
-  LINE_ID: number;
-  SUBLINE_ID: number;
-  ZONE_ID: number;
-  EMAIL: string;
-  PHONE: string;
-  USER_NAME: string;
-  POSITION: string;
-  NOTIFICATION_CONFIG: string;
-  UUID: string;
-  is_super_admin: number;
-  IS_DELETED: number;
-  ACTIVE: number;
-  ROL_ID: number;
-  PROJECT_ID: number;
-  PROJECT_DESCRIPTION: string;
-  ROL_NAME: string;
-}
+import "./usersprojecttable.scss";
+import { IUserSingle } from "@/types/users/IUsers";
+
 const { Text, Link } = Typography;
 
 interface Props {
@@ -55,7 +37,7 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
       });
     }
   };
-  const columns: TableProps<DataType>["columns"] = [
+  const columns: TableProps<IUserSingle>["columns"] = [
     {
       title: "",
       dataIndex: "active",
@@ -198,7 +180,7 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
             <Spin size="large" />
           </Flex>
         ) : (
-          <Table columns={columns} dataSource={data} />
+          <Table columns={columns} dataSource={data.map((data) => ({ ...data, key: data.ID }))} />
         )}
       </main>
     </>

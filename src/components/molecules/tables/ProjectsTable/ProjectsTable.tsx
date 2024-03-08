@@ -33,7 +33,8 @@ export const ProjectTable = () => {
   };
 
   useEffect(() => {
-    setProjects(data.data);
+    if (data.data?.length === 0) return;
+    setProjects(data.data?.map((data) => ({ ...data, key: data.ID })));
   }, [data, setProjects]);
 
   return (

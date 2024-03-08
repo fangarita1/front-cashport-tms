@@ -1,17 +1,19 @@
 @import '../../../../styles/variables.scss';
 
 .modalChangeStatus {
-    width: 40% !important;
+    width: 35% !important;
 
     .ant-modal-content,
     .ant-modal-header {
         background-color: $white !important;
         text-align: center;
     }
-    .ant-modal-body{
+
+    .ant-modal-body {
         width: 55%;
         margin: 0 auto;
     }
+
     .ant-modal-title {
         font-size: 1.3rem !important;
     }
@@ -21,6 +23,7 @@
         text-decoration: underline;
         cursor: pointer;
     }
+
     .ant-modal-footer {
         display: flex;
         justify-content: center;
@@ -39,23 +42,40 @@
 
     .acceptButton {
         color: black;
-        width: 55%;
+        width: 45%;
         height: 2.5rem;
         font-size: .9rem;
         font-weight: 500;
         background-color: $secondary;
         box-shadow: none;
+
         &:hover {
             opacity: .8;
-        box-shadow: none;
+            box-shadow: none;
             background-color: $secondary !important;
         }
     }
 
-    .ant-checkbox-inner{
+    .buttonCancel {
+        width: 45%;
+        height: 2.5rem;
+        box-shadow: none;
+        background-color: $white;
+        color: black;
+        font-weight: 600;
+        border: 1px solid black;
+
+        &:hover {
+            background-color: $white !important;
+            opacity: 0.8;
+        }
+    }
+
+    .ant-checkbox-inner {
         background-color: $secondary !important;
         border-color: $secondary !important;
     }
+
     .option {
         background-color: $background ;
         font-size: 1rem;

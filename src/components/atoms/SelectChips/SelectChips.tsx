@@ -72,11 +72,11 @@ export const SelectChips = ({
     isActiveSubline: boolean
   ) => {
     const allSublinesChannel = selectedSubLines.filter(
-      (line) => line.idChannel === channelId
+      (line) => line?.idChannel === channelId
     ).length;
     if (isActiveSubline) {
       const desactivatedSublines = selectedSubLines.filter(
-        (subline) => subline.subline.id !== idSubline
+        (subline) => subline?.subline?.id !== idSubline
       );
       setIsAllSublinesSelected((sublines.length ?? 0) === allSublinesChannel - 1);
       return setSelectedSublines(desactivatedSublines);
@@ -113,7 +113,7 @@ export const SelectChips = ({
                   <>
                     {line.sublines.map(({ id, description }) => {
                       const activeSubline = selectedSubLines.filter(
-                        (subline) => subline.subline.id === id
+                        (subline) => subline?.subline?.id === id
                       );
                       return (
                         <Tag

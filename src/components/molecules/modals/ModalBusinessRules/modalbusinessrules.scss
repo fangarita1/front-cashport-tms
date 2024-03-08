@@ -1,8 +1,18 @@
 @import '../../../../styles/variables.scss';
 
-.modalcreateshipto {
+.modalbusinessrules {
     width: 100%;
+    height: 70%;
 
+
+    .ant-modal-content{
+        height: 100%;
+
+    }
+    .ant-modal-body {
+        height: 85% !important;
+        overflow-y: auto;
+    }
 
     .input {
         background-color: $background;

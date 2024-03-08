@@ -72,10 +72,7 @@ export const ShipToProjectTable = ({ setIsCreateShipTo }: Props) => {
       width: "40px",
       dataIndex: "",
       render: () => (
-        <Button
-          // onClick={() => setIsViewDetails({ active: true, id: ID })}
-          icon={<Eye size={"1.3rem"} />}
-        />
+        <Button onClick={() => setIsCreateShipTo(true)} icon={<Eye size={"1.3rem"} />} />
       )
     }
   ];

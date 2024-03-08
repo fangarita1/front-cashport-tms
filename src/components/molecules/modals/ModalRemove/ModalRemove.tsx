@@ -13,9 +13,11 @@ export const ModalRemove = ({ isOpen, name, onClose, onRemove }: Props) => {
     <Modal
       open={isOpen}
       onCancel={onClose}
-      cancelButtonProps={{ style: { display: "none" } }}
-      okText="Aceptar"
       okButtonProps={{ className: "acceptButton" }}
+      okText="Aceptar"
+      cancelButtonProps={{
+        className: "buttonCancel"
+      }}
       className="modalChangeStatus"
       title={`¿Estás seguro que deseas eliminar este ${name}?`}
       onOk={onRemove}

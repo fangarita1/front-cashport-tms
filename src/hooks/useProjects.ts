@@ -13,7 +13,7 @@ export const useProjects = ({ page, countryId, currencyId }: Props) => {
   const pathKey = `/project?page=${page}${countryId.length > 0 ? `&country_id=${countryId.join(",")}` : ""}${currencyId.length > 0 ? `${`&currency_id=${currencyId.join(",")}`}` : ""}`;
   const { data, error } = useSWR<IProjects>(pathKey, fetcher, {});
   return {
-    data: data || ({ pagination: { total: 1 } } as any),
+    data: (data as IProjects) || ({ pagination: { totalRows: 1 } } as IProjects),
     loading: !error && !data
   };
 };

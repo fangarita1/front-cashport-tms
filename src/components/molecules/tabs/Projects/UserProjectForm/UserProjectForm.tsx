@@ -101,16 +101,13 @@ export const UserProjectForm = ({
       setZones(zonesFinalData);
     })();
   }, [isViewDetailsUser]);
+
   const onSubmitHandler = async (data: UserType) => {
     setCustomFieldsError({
       zone: zones.length === 0,
       channel: selectedSublines.length === 0
     });
-    if (
-      zones.length === 0
-      // || (selectedSublines.length === 0)
-    )
-      return;
+    if (zones.length === 0 || selectedSublines.length === 0) return;
     const response = isViewDetailsUser?.id
       ? await updateUser(
           data,
@@ -280,8 +277,8 @@ export const UserProjectForm = ({
                   {dataUser?.data && (
                     <SelectStructure
                       selectedSublines={selectedSublines}
-                      sublinesUser={dataUser?.data?.USER_SUBLINES?.map((item) => item.ID)}
                       setSelectedSublines={setSelectedSublines}
+                      sublinesUser={dataUser?.data?.USER_SUBLINES?.map((item) => item.ID)}
                     />
                   )}
                   <Typography.Text className="textError">

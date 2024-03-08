@@ -31,7 +31,7 @@ export interface Currency {
 
 export interface Pagination {
   page: number;
-  total: number;
+  totalRows: number;
 }
 // -----Create--------
 export interface ICreatePayload {

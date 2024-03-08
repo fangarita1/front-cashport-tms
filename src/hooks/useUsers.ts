@@ -1,7 +1,7 @@
 import useSWR from "swr";
 
 import { fetcher } from "@/utils/api/api";
-import { IUsers } from "@/types/users/IUsers";
+import { IUserSingle, IUsers } from "@/types/users/IUsers";
 
 interface Props {
   page?: number;
@@ -39,7 +39,7 @@ export const useUsers = ({
   const { data, error } = useSWR<IUsers>(pathKey, fetcher, {});
 
   return {
-    data: data?.data || ([] as any),
+    data: (data?.data as IUserSingle[]) || ([] as IUserSingle[]),
     loading: !error && !data
   };
 };

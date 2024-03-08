@@ -7,6 +7,7 @@ import { ProjectFormTab } from "@/components/molecules/tabs/Projects/ProjectForm
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 import { UsersProjectTable } from "@/components/molecules/tables/UsersProjectTable/UsersProjectTable";
 import { UserProjectForm } from "@/components/molecules/tabs/Projects/UserProjectForm/UserProjectForm";
+import { ClientsProjectView } from "../ClientsProjectView/ClientsProjectView";
 
 // tools
 import { useProject } from "@/hooks/useProject";
@@ -15,7 +16,6 @@ import { SUCCESS } from "@/utils/constants/globalConstants";
 import { IUpdateFormProject } from "@/types/projects/IUpdateFormProject";
 
 import "./detailproject.scss";
-import { ClientsProjectView } from "../ClientsProjectView/ClientsProjectView";
 
 const { Title, Text } = Typography;
 interface Props {

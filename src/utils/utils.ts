@@ -41,13 +41,14 @@ export function removeDuplicatesFromArrayNumbers(array: number[]): number[] {
 }
 
 export const filterBRbyIdSubline = (brs: any[], sublinesIds: number[]) => {
+  if (sublinesIds?.length === 0) return;
   const filteredResults = brs.filter((channel) => {
     if (channel.CHANNEL_LINES) {
       // Filter channels with non-null CHANNEL_LINES
-      channel.CHANNEL_LINES = channel.CHANNEL_LINES.filter((line) => {
-        if (line.sublines) {
+      channel.CHANNEL_LINES = channel.CHANNEL_LINES.filter((line: any) => {
+        if (line.sublines?.length > 0) {
           // Filter lines with non-null sublines
-          return line.sublines.some((subline) => sublinesIds.includes(subline.id));
+          return line?.sublines?.some((subline: any) => sublinesIds?.includes(subline.id));
         }
         return false; // No sublines in this line
       });

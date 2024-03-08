@@ -32,6 +32,14 @@ a {
 
 }
 
+.ant-radio-inner::after {
+  background-color: $secondary !important;
+}
+
+.ant-radio-checked  .ant-radio-inner{
+  border-color: black !important;
+}
+
 .ant-cascader-checkbox-disabled {
   display: none !important;
 }
@@ -41,13 +49,17 @@ a {
   background-color: white !important;
 
 }
-.ant-select-dropdown{
+
+.ant-select-dropdown {
   background-color: white !important;
 }
-.ant-select-item-option-selected{
+
+.ant-select-item-option-selected {
   background-color: rgba(255, 255, 255, 0.37) !important;
 }
-.ant-cascader-menus, .ant-cascader-menu-item{
+
+.ant-cascader-menus,
+.ant-cascader-menu-item {
   background-color: white !important;
 
 }

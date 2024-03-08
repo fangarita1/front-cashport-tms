@@ -1,18 +1,31 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Button, Flex, Typography } from "antd";
+import { Button, Flex, Input, Typography } from "antd";
 import { useForm } from "react-hook-form";
-import { ArrowLineDown, ArrowLineUp, CaretLeft, Plus } from "phosphor-react";
+import {
+  ArrowLineDown,
+  ArrowLineUp,
+  ArrowsClockwise,
+  CaretLeft,
+  Pencil,
+  Plus
+} from "phosphor-react";
 
 import { InputForm } from "@/components/atoms/InputForm/InputForm";
 // import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
 
 // import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
 
-import "./clientprojectform.scss";
 import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
 import { DividerCustom } from "@/components/atoms/DividerCustom/DividerCustom";
 import { ShipToProjectTable } from "@/components/molecules/tables/ShipToProjectTable/ShipToProjectTable";
+
+import { ModalUploadDocument } from "@/components/molecules/modals/ModalUploadDocument/ModalUploadDocument";
+import { ModalTimeFacturaction } from "@/components/molecules/modals/ModalTimeFacturaction/ModalTimeFacturaction";
 import { ModalCreateShipTo } from "@/components/molecules/modals/ModalCreateShipTo/ModalCreateShipTo";
+import { ModalStatusClient } from "@/components/molecules/modals/ModalStatusClient/ModalStatusClient";
+import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
+
+import "./clientprojectform.scss";
 
 const { Title } = Typography;
 
@@ -36,13 +49,12 @@ export type ClientType = {
 };
 
 interface Props {
-  isViewDetailsUser?: {
+  isViewDetailsClient: {
     active: boolean;
     id: number;
   };
   onGoBackTable: () => void;
-  setIsCreateUser: Dispatch<SetStateAction<boolean>>;
-  setIsViewDetailsUser: Dispatch<
+  setIsViewDetailsClient: Dispatch<
     SetStateAction<{
       active: boolean;
       id: number;
@@ -50,19 +62,26 @@ interface Props {
   >;
 }
 export const ClientProjectForm = ({
-  // isViewDetailsUser,
-  onGoBackTable
+  onGoBackTable,
+  isViewDetailsClient
+  // setIsViewDetailsClient
 }: Props) => {
   // const [messageApi, contextHolder] = message.useMessage();
   // const [isEditAvailable, setIsEditAvailable] = useState(isViewDetailsUser?.active);
-  const [isCreateShipTo, setisCreateShipTo] = useState(false);
+  const [isCreateShipTo, setIsCreateShipTo] = useState(false);
+  const [isUploadDocument, setIsUploadDocument] = useState(false);
+  const [isTimeFacturaction, setIsTimeFacturaction] = useState(false);
+  const [isModalStatus, setIsModalStatus] = useState({ status: false, remove: false });
+
+  const [isEditAvailable, setIsEditAvailable] = useState(isViewDetailsClient?.active);
+
   const {
     control,
     handleSubmit,
     formState: { errors }
   } = useForm<ClientType>({
-    defaultValues: {}
-    // disabled: isEditAvailable,
+    defaultValues: {},
+    disabled: isEditAvailable
   });
 
   const onSubmitHandler = () => {};
@@ -83,6 +102,34 @@ export const ClientProjectForm = ({
             >
               Ver Clientes
             </Button>
+            {isViewDetailsClient?.id > 0 && (
+              <Flex gap="1.5rem">
+                <Button
+                  size="large"
+                  htmlType="button"
+                  className="buttonOutlined"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsModalStatus({ status: true, remove: false });
+                  }}
+                  icon={<ArrowsClockwise size={"1.45rem"} />}
+                >
+                  Cambiar Estado
+                </Button>
+                <Button
+                  size="large"
+                  onClick={(e) => {
+                    isEditAvailable && e.preventDefault();
+                    setIsEditAvailable(false);
+                  }}
+                  className="buttonOutlined"
+                  htmlType={!isEditAvailable ? "submit" : "button"}
+                  icon={<Pencil size={"1.45rem"} />}
+                >
+                  Editar Usuario
+                </Button>
+              </Flex>
+            )}
           </Flex>
           <Flex vertical component={"main"} className="mainClientForm">
             <Title level={4}>Información del usuario</Title>
@@ -148,12 +195,15 @@ export const ClientProjectForm = ({
                 nameInput="infoClient.risk"
                 error={errors.infoClient?.risk}
               />
-              <InputForm
-                titleInput="Período de facturación"
-                control={control}
-                nameInput="infoClient.periodBilling"
-                error={errors.infoClient?.periodBilling}
-              />
+              <Flex vertical style={{ width: "24.5%" }} justify="center">
+                <Title level={5}>Período de facturación</Title>
+                <Input
+                  variant="borderless"
+                  className="input"
+                  placeholder="Segundo miércoles del mes"
+                  onClick={() => setIsTimeFacturaction(true)}
+                />
+              </Flex>
               <InputForm
                 titleInput="Tipo de radicación"
                 control={control}
@@ -172,36 +222,27 @@ export const ClientProjectForm = ({
                 nameInput="infoClient.address"
                 error={errors.infoClient?.address}
               />
-              {/* <InputForm
-                                    titleInput="Cargo"
-                                    control={control}
-                                    nameInput="info.cargo"
-                                    error={errors.info?.cargo}
-                                />
-                                <InputForm
-                                    typeInput="email"
-                                    titleInput="Correo electrónico"
-                                    control={control}
-                                    nameInput="info.email"
-                                    error={errors.info?.email}
-                                />
-                                <InputForm
-                                    typeInput="phone"
-                                    titleInput="Telefono"
-                                    control={control}
-                                    nameInput="info.phone"
-                                    error={errors.info?.phone}
-                                /> */}
             </Flex>
             {/* -----------------------------------Experiencia----------------------------------- */}
             <Title level={4}>Documentos</Title>
-            <Flex wrap="wrap" gap={"1rem"}>
-              {[1, 23, 45, 6, 7, 8, 9].map((document) => (
-                <DocumentButton key={document} fileName="Archivo1.pdf" fileSize="200KB" />
-              ))}
+            <Flex vertical align="flex-start">
+              <Flex wrap="wrap" gap={"1rem"} style={{ width: "100%" }}>
+                {[1, 23, 45, 6, 7, 8, 9].map((document) => (
+                  <DocumentButton key={document} fileName="Archivo1.pdf" fileSize="200KB" />
+                ))}
+              </Flex>
+              <Button
+                size="large"
+                type="text"
+                className="buttonUploadDocument"
+                onClick={() => setIsUploadDocument(true)}
+                icon={<Plus weight="bold" size={15} />}
+              >
+                Cargar Documento
+              </Button>
             </Flex>
             <DividerCustom />
-            <ShipToProjectTable setIsCreateShipTo={setisCreateShipTo} />
+            <ShipToProjectTable setIsCreateShipTo={setIsCreateShipTo} />
             <DividerCustom />
             <Flex gap={"1rem"} justify="flex-end">
               <Button
@@ -238,7 +279,19 @@ export const ClientProjectForm = ({
                     )} */}
         </Flex>
       </form>
-      <ModalCreateShipTo isOpen={isCreateShipTo} />
+      <ModalCreateShipTo isOpen={isCreateShipTo} setIsCreateShipTo={setIsCreateShipTo} />
+      <ModalUploadDocument isOpen={isUploadDocument} setIsOpenUpload={setIsUploadDocument} />
+      <ModalTimeFacturaction
+        isOpen={isTimeFacturaction}
+        setIsTimeFacturaction={setIsTimeFacturaction}
+      />
+      <ModalStatusClient isOpen={isModalStatus.status} setIsStatusClient={setIsModalStatus} />
+      <ModalRemove
+        name="cliente"
+        isOpen={isModalStatus.remove}
+        onClose={() => setIsModalStatus((s) => ({ ...s, remove: false }))}
+        onRemove={() => {}}
+      />
     </>
   );
 };
