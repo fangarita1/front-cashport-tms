@@ -28,8 +28,6 @@ interface Props {
   >;
 }
 export const SelectLines = ({ lines, selectedSubLines, setSelectedSublines }: Props) => {
-  // const allLines = lines.map((chanel) => chanel.CHANNEL_LINES);
-
   return (
     <div className="lineSelect">
       <Text>Lineas</Text>

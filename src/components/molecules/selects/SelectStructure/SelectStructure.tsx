@@ -50,9 +50,6 @@ export const SelectStructure = ({
     const brs = filterBRbyIdSubline(dataFinal, sublinesUser);
     setSelectedSublines(transformFormat(brs));
 
-    // return () => {
-    //   second
-    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 

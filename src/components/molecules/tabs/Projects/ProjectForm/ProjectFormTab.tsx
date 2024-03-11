@@ -40,7 +40,6 @@ export type ProyectType = {
   };
   contact: {
     name: string;
-    // position: string;
     email: string;
     phone: string;
   };
@@ -295,7 +294,6 @@ const dataToProjectFormData = (data: IProject) => {
     },
     personalization: {
       color: data.RGB_CONFIG
-      // description: "The best color"
     }
   };
 };

@@ -11,9 +11,6 @@ import {
 } from "phosphor-react";
 
 import { InputForm } from "@/components/atoms/InputForm/InputForm";
-// import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
-
-// import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
 
 import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
 import { DividerCustom } from "@/components/atoms/DividerCustom/DividerCustom";
@@ -61,13 +58,7 @@ interface Props {
     }>
   >;
 }
-export const ClientProjectForm = ({
-  onGoBackTable,
-  isViewDetailsClient
-  // setIsViewDetailsClient
-}: Props) => {
-  // const [messageApi, contextHolder] = message.useMessage();
-  // const [isEditAvailable, setIsEditAvailable] = useState(isViewDetailsUser?.active);
+export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props) => {
   const [isCreateShipTo, setIsCreateShipTo] = useState(false);
   const [isUploadDocument, setIsUploadDocument] = useState(false);
   const [isTimeFacturaction, setIsTimeFacturaction] = useState(false);
@@ -88,7 +79,6 @@ export const ClientProjectForm = ({
 
   return (
     <>
-      {/* {contextHolder} */}
       <form className="newClientProjectForm" onSubmit={handleSubmit(onSubmitHandler)}>
         <Flex vertical style={{ height: "100%" }}>
           <Flex component={"header"} className="headerNewUserProyectsForm">
@@ -249,7 +239,6 @@ export const ClientProjectForm = ({
                 type="primary"
                 className="buttonOutlined"
                 size="large"
-                // onClick={onCreateClient}
                 icon={<ArrowLineDown weight="bold" size={15} />}
               >
                 Descargar plantilla
@@ -258,7 +247,6 @@ export const ClientProjectForm = ({
                 type="primary"
                 className="buttonOutlined"
                 size="large"
-                // onClick={onCreateClient}
                 icon={<ArrowLineUp weight="bold" size={15} />}
               >
                 Cargar excel
@@ -267,16 +255,12 @@ export const ClientProjectForm = ({
                 type="primary"
                 className="buttonNewProject"
                 size="large"
-                // onClick={onCreateClient}
                 icon={<Plus weight="bold" size={15} />}
               >
                 Registrar Usuario
               </Button>
             </Flex>
           </Flex>
-          {/* ) : (
-                        <Spin />
-                    )} */}
         </Flex>
       </form>
       <ModalCreateShipTo isOpen={isCreateShipTo} setIsCreateShipTo={setIsCreateShipTo} />

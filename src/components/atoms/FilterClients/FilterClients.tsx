@@ -11,12 +11,6 @@ export const FilterClients = () => {
       placeholder="Filtrar"
       placement="bottomRight"
       options={options}
-      // onClear={() => setSelectedUsers(initValueFiltersData)}
-      // changeOnSelect
-      // loadData={loadData}
-      // value={selectOptions}
-      // onChange={onChange}
-      // onBlur={onBlur}
     />
   );
 };

@@ -17,19 +17,15 @@ export const SelectCustom = ({
   errors,
   options = []
 }: Props) => {
-  // const { data, isLoading } = useSWR<IRoles>("/role", fetcher, {});
   // doesn't show super admin role
-  // const options = data?.data.filter((rol) => rol.ID !== 1);
   return (
     <Flex vertical style={{ width: "48%" }}>
       {titleSelect.length > 0 && <Typography.Title level={5}>{titleSelect}</Typography.Title>}
       <Select
         placeholder={titleSelect.length > 0 ? titleSelect : placeHolder}
         className={errors ? "selectInputCustomError" : "selectInputCustom"}
-        // loading={isLoading}
         variant="borderless"
         optionLabelProp="label"
-        // {...field}
       >
         {options?.map((value) => {
           return (

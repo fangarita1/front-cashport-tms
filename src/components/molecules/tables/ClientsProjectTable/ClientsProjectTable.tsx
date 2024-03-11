@@ -18,7 +18,6 @@ interface Props {
 }
 
 export const ClientsProjectTable = ({ setIsCreateClient, setIsViewDetailsClients }: Props) => {
-  // const [messageApi, contextHolder] = message.useMessage();
   const onCreateClient = () => {
     setIsCreateClient(true);
   };
@@ -97,7 +96,6 @@ export const ClientsProjectTable = ({ setIsCreateClient, setIsViewDetailsClients
               description={"Volver a Enviar invitacion?"}
               okText="Si"
               cancelText="No"
-              // onConfirm={() => onResendInvitation(EMAIL)}
             >
               <Flex
                 align="center"
@@ -126,7 +124,6 @@ export const ClientsProjectTable = ({ setIsCreateClient, setIsViewDetailsClients
   ];
   return (
     <>
-      {/* {contextHolder} */}
       <main className="mainClientsProjectTable">
         <Flex justify="space-between" className="mainClientsProjectTable_header">
           <Flex gap={"1.75rem"}>
@@ -143,13 +140,8 @@ export const ClientsProjectTable = ({ setIsCreateClient, setIsViewDetailsClients
             Nuevo Cliente
           </Button>
         </Flex>
-        {/* {loading ? (
-                    <Flex style={{ height: "30%" }} align="center" justify="center">
-                        <Spin size="large" />
-                    </Flex>
-                ) : ( */}
+
         <Table columns={columns} dataSource={data} />
-        {/* )} */}
       </main>
     </>
   );

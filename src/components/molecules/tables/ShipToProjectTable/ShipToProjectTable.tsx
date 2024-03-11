@@ -1,8 +1,8 @@
+import { Dispatch, SetStateAction } from "react";
 import { Button, Checkbox, Flex, Table, TableProps, Typography } from "antd";
 import { Eye, Plus } from "phosphor-react";
 
 import "./shiptoprojecttable.scss";
-import { Dispatch, SetStateAction } from "react";
 
 const { Text, Link, Title } = Typography;
 
@@ -11,10 +11,6 @@ interface Props {
 }
 
 export const ShipToProjectTable = ({ setIsCreateShipTo }: Props) => {
-  // const [messageApi, contextHolder] = message.useMessage();
-  // const onCreateClient = () => {
-  //     setIsCreateUser(true);
-  // }
   const columns: TableProps<any>["columns"] = [
     {
       title: "",
@@ -78,7 +74,6 @@ export const ShipToProjectTable = ({ setIsCreateShipTo }: Props) => {
   ];
   return (
     <>
-      {/* {contextHolder} */}
       <main className="mainShipToProjectTable">
         <Flex justify="space-between" className="mainClientsProjectTable_header">
           <Title level={4}>Ship To</Title>
@@ -87,7 +82,6 @@ export const ShipToProjectTable = ({ setIsCreateShipTo }: Props) => {
               type="primary"
               className="buttonOutlined"
               size="large"
-              // onClick={onCreateClient}
               icon={<Plus weight="bold" size={15} />}
             >
               Descargar plantilla
@@ -96,25 +90,18 @@ export const ShipToProjectTable = ({ setIsCreateShipTo }: Props) => {
               type="primary"
               className="buttonOutlined"
               size="large"
-              // onClick={onCreateClient}
               icon={<Plus weight="bold" size={15} />}
             >
               Cargar excel
             </Button>
           </Flex>
         </Flex>
-        {/* {loading ? (
-                    <Flex style={{ height: "30%" }} align="center" justify="center">
-                        <Spin size="large" />
-                    </Flex>
-                ) : ( */}
         <Table
           style={{ padding: "0 1rem" }}
           pagination={false}
           columns={columns}
           dataSource={data}
         />
-        {/* )} */}
         <Button
           size="large"
           type="text"

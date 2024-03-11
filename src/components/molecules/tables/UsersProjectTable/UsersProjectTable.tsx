@@ -69,24 +69,6 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
       dataIndex: "ROL_NAME",
       render: (text) => <Text>{text}</Text>
     },
-    // {
-    //   title: "Clientes",
-    //   key: "clients",
-    //   dataIndex: "clients",
-    //   render: (text) => <Text>{text}</Text>
-    // },
-    // {
-    //   title: "Zona",
-    //   key: "zone",
-    //   dataIndex: "zone",
-    //   render: (text) => <Text>{text}</Text>
-    // },
-    // {
-    //   title: "Responsability",
-    //   key: "responsability",
-    //   dataIndex: "responsability",
-    //   render: (text) => <Text>{text}</Text>
-    // },
     {
       title: "Estado",
       key: "status",
