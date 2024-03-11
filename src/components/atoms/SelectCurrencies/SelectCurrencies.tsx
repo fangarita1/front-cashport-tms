@@ -2,9 +2,9 @@ import { Select } from "antd";
 import useSWR from "swr";
 
 import { fetcher } from "@/utils/api/api";
+import { ICurrencies } from "@/types/currencies/ICurrencies";
 
 import "./selectcurrencies.scss";
-import { ICurrencies } from "@/types/currencies/ICurrencies";
 
 interface Props {
   errors: any;

@@ -70,12 +70,12 @@ export const FilterProjects = ({ setSelecetedProjects }: Props) => {
 
   return (
     <Cascader
-      style={{ width: "22rem" }}
+      style={{ width: "15rem" }}
       multiple
       size="large"
       removeIcon
-      maxTagCount={2}
-      placeholder="Filtros"
+      maxTagCount={1}
+      placeholder="Filtrar"
       placement="bottomRight"
       onClear={() => setSelecetedProjects({ country: [], currency: [] })}
       options={optionsList}

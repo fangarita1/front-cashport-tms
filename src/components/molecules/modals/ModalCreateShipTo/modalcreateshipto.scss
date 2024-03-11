@@ -1,0 +1,47 @@
+@import '../../../../styles/variables.scss';
+
+.modalcreateshipto {
+    width: 100%;
+
+
+    .input {
+        background-color: $background;
+        margin-bottom: 0.2rem;
+        border-radius: 0;
+        border-radius: 0.25rem;
+        height: 3rem;
+
+        &::placeholder {
+            color: $secondary-gray;
+        }
+    }
+
+    .buttonOk {
+        width: 49%;
+        height: 3rem;
+        box-shadow: none;
+        background-color: $secondary;
+        color: black;
+        font-weight: 600;
+
+        &:hover {
+            background-color: $secondary !important;
+            opacity: 0.8;
+        }
+    }
+
+    .buttonCancel {
+        width: 49%;
+        height: 3rem;
+        box-shadow: none;
+        background-color: $white;
+        color: black;
+        font-weight: 600;
+        border: 1px solid black;
+
+        &:hover {
+            background-color: $white !important;
+            opacity: 0.8;
+        }
+    }
+}

@@ -7,6 +7,7 @@ import { ProjectFormTab } from "@/components/molecules/tabs/Projects/ProjectForm
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 import { UsersProjectTable } from "@/components/molecules/tables/UsersProjectTable/UsersProjectTable";
 import { UserProjectForm } from "@/components/molecules/tabs/Projects/UserProjectForm/UserProjectForm";
+import { ClientsProjectView } from "../ClientsProjectView/ClientsProjectView";
 
 // tools
 import { useProject } from "@/hooks/useProject";
@@ -29,11 +30,17 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
 
   const [isEditProject, setIsEditProject] = useState(isEdit);
   const [isCreateUser, setIsCreateUser] = useState(false);
-  const [isViewDetailsUser, setIsViewDetailsUser] = useState(false);
+  const [isViewDetailsUser, setIsViewDetailsUser] = useState({
+    active: false,
+    id: 0
+  });
 
   const onGoBackTableUsers = () => {
     setIsCreateUser(false);
-    setIsViewDetailsUser(false);
+    setIsViewDetailsUser({
+      active: false,
+      id: 0
+    });
   };
 
   const onUpdateProject = async (finalData: IUpdateFormProject) => {
@@ -112,19 +119,22 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
     {
       key: "3",
       label: "Clientes",
-      children: "Content of Tab Pane 3"
+      children: <ClientsProjectView />
     },
     {
       key: "4",
       label: "Usuarios",
       children:
-        isCreateUser || isViewDetailsUser ? (
+        isCreateUser || isViewDetailsUser.active ? (
           <UserProjectForm
             onGoBackTable={onGoBackTableUsers}
             isViewDetailsUser={isViewDetailsUser}
+            setIsCreateUser={setIsCreateUser}
+            setIsViewDetailsUser={setIsViewDetailsUser}
           />
         ) : (
           <UsersProjectTable
+            idProject={idProjectParam}
             setIsViewDetails={setIsViewDetailsUser}
             setIsCreateUser={setIsCreateUser}
           />

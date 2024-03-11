@@ -44,11 +44,6 @@ export const CreateProjectView = () => {
       label: "Crear Proyecto",
       children: <ProjectFormTab statusForm="create" onSubmitForm={onCreateProject} />
     }
-    // {
-    //   key: "2",
-    //   label: "Cuentas",
-    //   children: "Content of Tab Pane 2"
-    // }
   ];
 
   return (

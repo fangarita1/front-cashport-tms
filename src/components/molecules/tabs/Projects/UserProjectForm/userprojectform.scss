@@ -9,9 +9,15 @@
 
     .headerNewUserProyectsForm {
         margin-bottom: 1rem;
-        justify-content: space-between;        
+        justify-content: space-between;
 
     }
+
+    .mainUserForm {
+        height: 100%;
+        overflow-y: auto;
+    }
+
 
     .buttonOutlined {
         background-color: $white;
@@ -27,17 +33,20 @@
 
         }
     }
+
     .buttonGoBack {
         display: flex;
         justify-content: flex-start;
         color: black;
         box-shadow: none;
+
         &:hover {
             opacity: 0.8;
             color: black;
 
         }
     }
+
     .buttonAction {
         background-color: $dark-gray;
         display: flex;
@@ -63,6 +72,7 @@
     .generalProject {
         width: 100%;
         flex-wrap: wrap;
+        margin-bottom: 2rem;
 
         h2,
         h3,
@@ -89,6 +99,19 @@
         }
     }
 
+    .breRules {
+        height: 100%;
+        justify-content: space-between;
+    }
+
+    .footerNewUser {
+        
+    }
+
+    .textError {
+        padding-left: 0.5rem;
+        color: red;
+    }
 
     .selectInput {
         width: 100%;

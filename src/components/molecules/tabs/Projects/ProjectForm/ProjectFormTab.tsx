@@ -40,7 +40,6 @@ export type ProyectType = {
   };
   contact: {
     name: string;
-    // position: string;
     email: string;
     phone: string;
   };
@@ -275,7 +274,7 @@ export const ProjectFormTab = ({
   );
 };
 const dataToProjectFormData = (data: IProject) => {
-  const currenciesFormated = data.CURRENCY.map(
+  const currenciesFormated = data?.CURRENCY?.map(
     (currency) => `${currency.id}-${currency.CURRENCY_NAME ?? currency.currency_name}`
   );
 
@@ -295,7 +294,6 @@ const dataToProjectFormData = (data: IProject) => {
     },
     personalization: {
       color: data.RGB_CONFIG
-      // description: "The best color"
     }
   };
 };

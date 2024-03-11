@@ -9,6 +9,23 @@ const theme: ThemeConfig = {
     colorSplit: "#FFFFFF",
     colorBgElevated: "#575a6b",
     fontFamily: "inherit"
+  },
+  components: {
+    Message: {
+      contentBg: "#FFFFFF"
+    },
+    Switch: {
+      // handleBg: '#CBE71E',
+      colorPrimary: "#CBE71E"
+    },
+    Modal: {
+      colorBgElevated: "#FFFFFF"
+    },
+    Radio: {
+      colorPrimary: "#CBE71E",
+      colorBorder: "black",
+      colorPrimaryBorder: "black"
+    }
   }
 };
 

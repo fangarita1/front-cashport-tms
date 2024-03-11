@@ -1,123 +1,43 @@
-import { Dispatch, SetStateAction } from "react";
-import { Button, Checkbox, Flex, Input, Table, Typography } from "antd";
+import { Dispatch, SetStateAction, useState } from "react";
+import { Button, Checkbox, Flex, Popconfirm, Spin, Table, Typography, message } from "antd";
 import type { TableProps } from "antd";
 
 import { DotsThree, Eye, Plus } from "phosphor-react";
 
-import "./usersprojecttable.scss";
+import { useUsers } from "@/hooks/useUsers";
+import { FilterUsers } from "@/components/atoms/FilterUsers/FilterUsers";
+import { onResendInvitationUser } from "@/services/users/users";
+import { SUCCESS } from "@/utils/constants/globalConstants";
 
-interface DataType {
-  key: string;
-  name: string;
-  email: string;
-  phone: string;
-  role: string;
-  clients: string;
-  zone: string;
-  responsability: string;
-  status: "Pendiente";
-}
+import "./usersprojecttable.scss";
+import { IUserSingle } from "@/types/users/IUsers";
+
 const { Text, Link } = Typography;
 
-const data: DataType[] = [
-  {
-    key: "1",
-    name: "John Brown",
-    phone: "(+57) 3227049632",
-    email: "asdas@asdasd.com",
-    clients: "36",
-    responsability: "Canal mayorista",
-    zone: "America",
-    status: "Pendiente",
-    role: "Ejecutivo"
-  },
-  {
-    key: "2",
-    name: "Jim Green",
-    phone: "(+57) 3227049632",
-    email: "asdas@asdasd.com",
-    clients: "36",
-    responsability: "Canal mayorista",
-    zone: "America",
-    status: "Pendiente",
-    role: "Ejecutivo"
-  },
-  {
-    key: "3",
-    name: "Joe Black",
-    phone: "(+57) 3227049632",
-    email: "asdas@asdasd.com",
-    clients: "36",
-    responsability: "Canal mayorista",
-    zone: "America",
-    status: "Pendiente",
-    role: "Ejecutivo"
-  },
-  {
-    key: "4",
-    name: "Joe Black",
-    phone: "(+57) 3227049632",
-    email: "asdas@asdasd.com",
-    clients: "36",
-    responsability: "Canal mayorista",
-    zone: "America",
-    status: "Pendiente",
-    role: "Ejecutivo"
-  },
-  {
-    key: "5",
-    name: "Joe Black",
-    phone: "(+57) 3227049632",
-    email: "asdas@asdasd.com",
-    clients: "36",
-    responsability: "Canal mayorista",
-    zone: "America",
-    status: "Pendiente",
-    role: "Ejecutivo"
-  },
-  {
-    key: "6",
-    name: "Joe Black",
-    phone: "(+57) 3227049632",
-    email: "asdas@asdasd.com",
-    clients: "36",
-    responsability: "Canal mayorista",
-    zone: "America",
-    status: "Pendiente",
-    role: "Ejecutivo"
-  },
-  {
-    key: "7",
-    name: "Joe Black",
-    phone: "(+57) 3227049632",
-    email: "asdas@asdasd.com",
-    clients: "36",
-    responsability: "Canal mayorista",
-    zone: "America",
-    status: "Pendiente",
-    role: "Ejecutivo"
-  },
-  {
-    key: "8",
-    name: "Joe Black",
-    phone: "(+57) 3227049632",
-    email: "asdas@asdasd.com",
-    clients: "36",
-    responsability: "Canal mayorista",
-    zone: "America",
-    status: "Pendiente",
-    role: "Ejecutivo"
-  }
-];
-
-const { Search } = Input;
 interface Props {
+  idProject: string;
   setIsCreateUser: Dispatch<SetStateAction<boolean>>;
-  setIsViewDetails: Dispatch<SetStateAction<boolean>>;
+  setIsViewDetails: Dispatch<SetStateAction<{ active: boolean; id: number }>>;
 }
 
-export const UsersProjectTable = ({ setIsCreateUser, setIsViewDetails }: Props) => {
-  const columns: TableProps<DataType>["columns"] = [
+export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails }: Props) => {
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const onResendInvitation = async (email: string) => {
+    const response = await onResendInvitationUser(email);
+    if (response.status === SUCCESS) {
+      messageApi.open({
+        type: "success",
+        content: "La invitacion fue enviada nuevamente."
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Oops, hubo un error por favor intenta mas tarde."
+      });
+    }
+  };
+  const columns: TableProps<IUserSingle>["columns"] = [
     {
       title: "",
       dataIndex: "active",
@@ -127,90 +47,124 @@ export const UsersProjectTable = ({ setIsCreateUser, setIsViewDetails }: Props) 
     },
     {
       title: "Name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "USER_NAME",
+      key: "USER_NAME",
       render: (text) => <Link underline>{text}</Link>
     },
     {
       title: "Correo",
-      dataIndex: "email",
-      key: "email",
+      dataIndex: "EMAIL",
+      key: "EMAIL",
       render: (text) => <Text>{text}</Text>
     },
     {
       title: "Telefono",
-      key: "phone",
-      dataIndex: "phone",
+      key: "PHONE",
+      dataIndex: "PHONE",
       render: (text) => <Text>{text}</Text>
     },
     {
       title: "Rol",
-      key: "role",
-      dataIndex: "role",
-      render: (text) => <Text>{text}</Text>
-    },
-    {
-      title: "Clientes",
-      key: "clients",
-      dataIndex: "clients",
-      render: (text) => <Text>{text}</Text>
-    },
-    {
-      title: "Zona",
-      key: "zone",
-      dataIndex: "zone",
-      render: (text) => <Text>{text}</Text>
-    },
-    {
-      title: "Responsability",
-      key: "responsability",
-      dataIndex: "responsability",
+      key: "ROL_NAME",
+      dataIndex: "ROL_NAME",
       render: (text) => <Text>{text}</Text>
     },
     {
       title: "Estado",
       key: "status",
-      width: "160px",
+      width: "150px",
       dataIndex: "status",
-      render: (text) => (
-        <Flex align="center" className="statusContainer">
-          <div className="statusPending" />
-          <Text>{text}</Text>
-        </Flex>
+      render: (_, { ACTIVE, EMAIL }) => (
+        <>
+          {ACTIVE ? (
+            <Flex align="center" className={ACTIVE ? "statusContainer" : "statusContainerPending"}>
+              <div className={ACTIVE ? "statusActive" : "statusPending"} />
+              <Text>{ACTIVE ? "Activo" : "Inactivo"}</Text>
+            </Flex>
+          ) : (
+            <Popconfirm
+              placement="topRight"
+              title={"Invitación pendiente de aprobación"}
+              description={"Volver a Enviar invitacion?"}
+              okText="Si"
+              cancelText="No"
+              onConfirm={() => onResendInvitation(EMAIL)}
+            >
+              <Flex
+                align="center"
+                className={ACTIVE ? "statusContainer" : "statusContainerPending"}
+              >
+                <div className={ACTIVE ? "statusActive" : "statusPending"} />
+                <Text>{ACTIVE ? "Activo" : "Inactivo"}</Text>
+              </Flex>
+            </Popconfirm>
+          )}
+        </>
       )
     },
     {
-      title: "Estado",
-      key: "status",
+      title: "",
+      key: "seeProject",
       width: "40px",
       dataIndex: "",
-      render: () => <Button onClick={() => setIsViewDetails(true)} icon={<Eye size={"1.3rem"} />} />
+      render: (_, { ID }) => (
+        <Button
+          onClick={() => setIsViewDetails({ active: true, id: ID })}
+          icon={<Eye size={"1.3rem"} />}
+        />
+      )
     }
   ];
+  const [selectedUsers, setSelectedUsers] = useState({
+    zones: [] as any,
+    roles: [] as any,
+    status: "all" as "all" | "active" | "inactive",
+    channel: [] as { id: number; name: string }[],
+    line: [] as { id: number; name: string }[],
+    subline: [] as { id: number; name: string }[]
+  });
+
+  const { data, loading } = useUsers({
+    idProject,
+    page: 1,
+    rolesId: selectedUsers.roles,
+    zonesId: selectedUsers.zones,
+    activeUsers: selectedUsers.status,
+    channel: selectedUsers.channel,
+    line: selectedUsers.line,
+    subline: selectedUsers.subline
+  });
+  const onCreateUser = () => {
+    setIsViewDetails({ active: false, id: 0 });
+    setIsCreateUser(true);
+  };
   return (
-    <main className="mainUsersProjectTable">
-      <Flex justify="space-between" className="mainUsersProjectTable_header">
-        <Flex gap={"1.75rem"}>
-          <Search
-            className="inputSearch"
+    <>
+      {contextHolder}
+      <main className="mainUsersProjectTable">
+        <Flex justify="space-between" className="mainUsersProjectTable_header">
+          <Flex gap={"1.75rem"}>
+            <FilterUsers setSelectedUsers={setSelectedUsers} idProject={idProject} />
+            <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
+          </Flex>
+          <Button
+            type="primary"
+            className="buttonNewProject"
             size="large"
-            placeholder="Buscar"
-            style={{ width: 300 }}
-          />
-          {/* <FilterUsers /> */}
-          <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
+            onClick={onCreateUser}
+            icon={<Plus weight="bold" size={15} />}
+          >
+            Nuevo Usuario
+          </Button>
         </Flex>
-        <Button
-          type="primary"
-          className="buttonNewProject"
-          size="large"
-          onClick={() => setIsCreateUser(true)}
-          icon={<Plus size={13} />}
-        >
-          Nuevo Usuario
-        </Button>
-      </Flex>
-      <Table columns={columns} dataSource={data} />
-    </main>
+        {loading ? (
+          <Flex style={{ height: "30%" }} align="center" justify="center">
+            <Spin size="large" />
+          </Flex>
+        ) : (
+          <Table columns={columns} dataSource={data.map((data) => ({ ...data, key: data.ID }))} />
+        )}
+      </main>
+    </>
   );
 };

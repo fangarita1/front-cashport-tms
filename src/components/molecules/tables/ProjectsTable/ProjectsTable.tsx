@@ -11,7 +11,6 @@ import { IProject } from "@/types/projects/IProjects";
 import "./projectstable.scss";
 
 const { Text } = Typography;
-// const { Search } = Input;
 
 export const ProjectTable = () => {
   const [selectFilters, setSelectFilters] = useState({
@@ -33,7 +32,8 @@ export const ProjectTable = () => {
   };
 
   useEffect(() => {
-    setProjects(data.data);
+    if (data.data?.length === 0) return;
+    setProjects(data.data?.map((data) => ({ ...data, key: data.ID })));
   }, [data, setProjects]);
 
   return (
@@ -90,14 +90,14 @@ const columns: TableProps<IProject>["columns"] = [
   },
   {
     title: "Name",
-    // width: "150px",
+
     dataIndex: "PROJECT_DESCRIPTION",
     key: "PROJECT_DESCRIPTION",
     render: (text) => <Text>{text}</Text>
   },
   {
     title: "Pais",
-    // width: "150px",
+
     dataIndex: "COUNTRY_NAME",
     key: "COUNTRY_NAME",
     render: (text) => <Text>{text}</Text>
@@ -105,20 +105,17 @@ const columns: TableProps<IProject>["columns"] = [
   {
     title: "Direccion",
     dataIndex: "ADDRESS",
-    // width: "165px",
     key: "ADDRESS"
   },
   {
     title: "Contact",
     key: "CONTACT",
-    // width: "155px",
     dataIndex: "CONTACT",
     render: (text) => <Text>{text}</Text>
   },
   {
     title: "Telefono",
     key: "PHONE",
-    // width: "160px",
     dataIndex: "PHONE",
     render: (text) => <Text>{text}</Text>
   },
