@@ -1,0 +1,14 @@
+@import '../../../styles/variables.scss';
+
+.inputcreatezone {
+    background-color: $background;
+
+    .createButtonZone {
+        display: flex;
+        align-items: center;
+        height: 3rem;
+        margin-top: .3rem;
+        border: none;
+        color: $dark-gray;
+    }
+}

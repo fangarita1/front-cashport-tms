@@ -4,7 +4,7 @@ import { Flex, Input, Modal, Switch, Typography } from "antd";
 
 import { InputForm } from "@/components/atoms/InputForm/InputForm";
 import { ModalAddress } from "../ModalAddress/ModalAddress";
-import { SelectCustom } from "@/components/atoms/SelectCustom/SelectCustom";
+import { SelectCustom } from "@/components/molecules/selects/SelectCustom/SelectCustom";
 
 import "./modalcreateshipto.scss";
 const { Text, Title } = Typography;

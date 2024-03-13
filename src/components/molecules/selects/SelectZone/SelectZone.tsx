@@ -27,14 +27,14 @@ export const SelectZone = ({ zones, setZones }: Props) => {
 
   return (
     <div className="selectzone">
-      <Typography.Text className="title">Zona</Typography.Text>
+      <Typography.Text className="title">Zonas</Typography.Text>
       <Flex vertical className="zones">
         {isLoading ? (
           <Spin />
         ) : (
           <>
             {data?.data.map((zone) => {
-              const zonesData = JSON.parse(JSON.stringify(zones));
+              const zonesData = zones ? JSON.parse(JSON.stringify(zones)) : [];
               const filterZone = zonesData.filter((_zone: number) => _zone === zone.ID)[0];
               return (
                 <Flex key={zone.ID} justify="space-between" className="zone">

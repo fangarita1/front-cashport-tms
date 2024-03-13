@@ -1,20 +1,19 @@
-@import "../../../styles/variables.scss";
+@import '../../../../styles/variables.scss';
 
-.selectInputCustom {
+.selectInputCountry {
     width: 100%;
-    height: 3rem !important;
     margin-bottom: 0.2rem;
     background-color: $background;
-    padding: 0.7rem !important;
+    padding: 1.4rem 0.45rem !important;
     border-radius: 0.25rem;
     border-bottom: none;
 }
 
-.selectInputCustomError {
+.selectInputCountryError {
     border: 1px dashed red;
     width: 100%;
     margin-bottom: 0.2rem;
     background-color: $background;
-    padding: 0.7rem;
+    padding: 0.45rem;
     border-radius: 0.25rem;
 }

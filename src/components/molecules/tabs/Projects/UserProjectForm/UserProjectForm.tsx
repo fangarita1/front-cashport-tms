@@ -3,8 +3,8 @@ import { Button, Flex, Spin, Typography, message } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 
-import { SelectRoles } from "@/components/atoms/SelectRoles/SelectRoles";
-import { SelectZone } from "@/components/atoms/SelectZone/SelectZone";
+import { SelectRoles } from "@/components/molecules/selects/SelectRoles/SelectRoles";
+import { SelectZone } from "@/components/molecules/selects/SelectZone/SelectZone";
 import { SelectStructure } from "@/components/molecules/selects/SelectStructure/SelectStructure";
 import { InputForm } from "@/components/atoms/InputForm/InputForm";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";

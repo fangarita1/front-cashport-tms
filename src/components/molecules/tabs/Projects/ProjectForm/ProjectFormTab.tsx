@@ -4,8 +4,8 @@ import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 
 // components
-import { SelectCountries } from "@/components/atoms/SelectCountries/SelectCountries";
-import { SelectCurrencies } from "@/components/atoms/SelectCurrencies/SelectCurrencies";
+import { SelectCountries } from "@/components/molecules/selects/SelectCountries/SelectCountries";
+import { SelectCurrencies } from "@/components/molecules/selects/SelectCurrencies/SelectCurrencies";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
 import { IUpdateFormProject } from "@/types/projects/IUpdateFormProject";
 import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";

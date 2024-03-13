@@ -1,19 +1,20 @@
-@import "../../../styles/variables.scss";
+@import "../../../../styles/variables.scss";
 
-.selectInputRoles {
+.selectInputCustom {
     width: 100%;
+    height: 3rem !important;
     margin-bottom: 0.2rem;
     background-color: $background;
-    padding: 0.45rem !important;
+    padding: 0.7rem !important;
     border-radius: 0.25rem;
     border-bottom: none;
 }
 
-.selectInputRolesError {
+.selectInputCustomError {
     border: 1px dashed red;
     width: 100%;
     margin-bottom: 0.2rem;
     background-color: $background;
-    padding: 0.45rem;
+    padding: 0.7rem;
     border-radius: 0.25rem;
 }
