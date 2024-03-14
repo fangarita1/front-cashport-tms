@@ -1,15 +1,15 @@
-@import "../../../styles/variables.scss";
+@import "../../../../styles/variables.scss";
 
-.selectInputCountry {
+.selectInputRoles {
     width: 100%;
     margin-bottom: 0.2rem;
     background-color: $background;
-    padding: 1.4rem 0.45rem !important;
+    padding: 0.45rem !important;
     border-radius: 0.25rem;
     border-bottom: none;
 }
 
-.selectInputCountryError {
+.selectInputRolesError {
     border: 1px dashed red;
     width: 100%;
     margin-bottom: 0.2rem;
