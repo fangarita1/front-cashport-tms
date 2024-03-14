@@ -14,12 +14,10 @@ interface Props {
 export const InputCreateZone = ({ isEditAvailable = false }: Props) => {
   const {
     control,
-    // handleSubmit,
     formState: { errors }
   } = useForm<ZoneType>({
     defaultValues: { zone: "" },
     disabled: !isEditAvailable
-    // values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as ShipToType)
   });
   return (
     <Flex className="inputcreatezone" vertical>
