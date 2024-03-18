@@ -1,14 +1,15 @@
-@import '../../../styles/variables.scss';
+@import '../../../../styles/variables.scss';
 
-.inputcreatezone {
+.inputcreateholding {
     background-color: $background;
+    width: 100%;
 
-    .createButtonZone {
+    .createButtonHolding {
+        width: 98%;
         display: flex;
         align-items: center;
         height: 3rem;
         margin-top: .3rem;
         border: none;
-        color: $dark-gray;
     }
 }

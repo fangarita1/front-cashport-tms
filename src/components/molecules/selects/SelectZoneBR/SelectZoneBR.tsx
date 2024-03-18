@@ -1,41 +1,52 @@
-import { Button, Flex, Popover, Spin, Typography } from "antd";
-import useSWR from "swr";
+import { Button, Flex, Popover, Spin, Typography, message } from "antd";
 import { Plus, X } from "phosphor-react";
+import { InputCreateZone } from "@/components/atoms/inputs/InputCreateZone/InputCreateZone";
 
-import { fetcher } from "@/utils/api/api";
-import { useAppStore } from "@/lib/store/store";
-import { IZones } from "@/types/zones/IZones";
-import { InputCreateZone } from "@/components/atoms/InputCreateZone/InputCreateZone";
+import { useZone } from "@/hooks/useZone";
 
 import "./selectzonebr.scss";
 
-export const SelectZoneBR = () => {
-  const { ID } = useAppStore((state) => state.selectProject);
-  const { data, isLoading } = useSWR<IZones>(`/zone/project/${ID}`, fetcher, {});
+interface Props {
+  isDisabledEdit: boolean;
+}
 
+export const SelectZoneBR = ({ isDisabledEdit }: Props) => {
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const { data, isLoading, removeZone } = useZone();
   return (
     <div className="selectzonebr">
+      {contextHolder}
+
       <Typography.Text className="title">Zonas</Typography.Text>
       <Flex vertical className="zones">
         {isLoading ? (
           <Spin />
         ) : (
-          <>
+          <Flex vertical className="zonesItems">
             {data?.data.map((zone) => {
               return (
                 <Flex key={zone.ID} justify="space-between" className="zone">
                   <Typography.Text>{zone.ZONE_DESCRIPTION}</Typography.Text>
-                  <Button icon={<X size={"16px"} />} className="removebutton" />
+                  {!isDisabledEdit && (
+                    <Button
+                      onClick={() => removeZone(`${zone.ID}`, messageApi)}
+                      icon={<X size={"16px"} />}
+                      className="removebutton"
+                    />
+                  )}
                 </Flex>
               );
             })}
-          </>
+          </Flex>
         )}
-        <Popover content={<InputCreateZone isEditAvailable />} trigger="click" placement="bottom">
-          <Button icon={<Plus size={"16px"} />} className="addButton" type="text">
-            Agregar zona
-          </Button>
-        </Popover>
+        {!isDisabledEdit && (
+          <Popover content={<InputCreateZone isEditAvailable />} trigger="click" placement="bottom">
+            <Button icon={<Plus size={"16px"} />} className="addButton" type="text">
+              Agregar zona
+            </Button>
+          </Popover>
+        )}
       </Flex>
     </div>
   );

@@ -13,7 +13,7 @@ import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
 //interfaces
 import { ICreatePayload } from "@/types/projects/IProjects";
 import { IProject } from "@/types/projects/IProject";
-import { InputForm } from "@/components/atoms/InputForm/InputForm";
+import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import "./projectformtab.scss";
 

@@ -6,7 +6,7 @@ import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 import { SelectRoles } from "@/components/molecules/selects/SelectRoles/SelectRoles";
 import { SelectZone } from "@/components/molecules/selects/SelectZone/SelectZone";
 import { SelectStructure } from "@/components/molecules/selects/SelectStructure/SelectStructure";
-import { InputForm } from "@/components/atoms/InputForm/InputForm";
+import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
 
 import {

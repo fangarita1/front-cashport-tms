@@ -10,6 +10,11 @@
         margin-top: .5rem;
         justify-content: flex-start;
     }
+    .zonesItems{
+        overflow-y: auto;
+        max-height: 400px;
+        
+    }
 
     .title {
         font-size: 1.2rem;

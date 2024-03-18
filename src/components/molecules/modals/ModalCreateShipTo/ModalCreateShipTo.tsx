@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Flex, Input, Modal, Switch, Typography } from "antd";
 
-import { InputForm } from "@/components/atoms/InputForm/InputForm";
+import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { ModalAddress } from "../ModalAddress/ModalAddress";
 import { SelectCustom } from "@/components/molecules/selects/SelectCustom/SelectCustom";
 
