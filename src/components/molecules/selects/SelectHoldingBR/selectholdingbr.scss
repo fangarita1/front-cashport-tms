@@ -25,12 +25,14 @@
         padding: .3rem .5rem;
         margin: .5rem 0;
     }
-
     .removebutton {
-        width: 25px !important;
+        width: 20px !important;
         background-color: $dark-gray;
-        height: 25px;
+        height: 20px;
         border-radius: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .addButton {

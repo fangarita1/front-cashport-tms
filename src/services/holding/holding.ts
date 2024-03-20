@@ -53,7 +53,7 @@ export const removeHoldingById = async ({
   const token = await getIdToken();
   try {
     const response: AxiosResponse<any> = await axios.delete(
-      `${config.API_HOST}/zone/${idHolding}`,
+      `${config.API_HOST}/holding/${idHolding}`,
       {
         headers: {
           Accept: "application/json, text/plain, */*",

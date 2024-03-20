@@ -31,7 +31,7 @@ export const SelectZoneBR = ({ isDisabledEdit }: Props) => {
                   {!isDisabledEdit && (
                     <Button
                       onClick={() => removeZone(`${zone.ID}`, messageApi)}
-                      icon={<X size={"16px"} />}
+                      icon={<X size={"12px"} />}
                       className="removebutton"
                     />
                   )}

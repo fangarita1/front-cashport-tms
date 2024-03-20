@@ -62,7 +62,7 @@ export const ChannelBR = ({ isDisabledEdit, channel, setModalRemove }: Props) =>
           <Text className="titleLineBR">{channel.CHANNEL_NAME}</Text>
           {!isDisabledEdit && (
             <Button
-              icon={<X size={"16px"} />}
+              icon={<X size={"10px"} />}
               className="removebutton"
               onClick={() => setModalRemove({ active: true, idChannel: channel.CHANNEL_ID })}
             />
@@ -83,7 +83,7 @@ export const ChannelBR = ({ isDisabledEdit, channel, setModalRemove }: Props) =>
                       idLine: line.id
                     })
                   }
-                  icon={<X size={"16px"} />}
+                  icon={<X size={"10px"} />}
                   className="removebutton"
                 />
               )}
@@ -97,7 +97,7 @@ export const ChannelBR = ({ isDisabledEdit, channel, setModalRemove }: Props) =>
                   closeIcon={
                     !isDisabledEdit && (
                       <Button
-                        icon={<X size={"15px"} />}
+                        icon={<X size={"10px"} />}
                         onClick={() =>
                           setModalRemoveSubline({
                             active: true,

@@ -28,7 +28,7 @@ export const SelectHoldingBR = ({ isDisabledEdit }: Props) => {
                   {!isDisabledEdit && (
                     <Button
                       onClick={() => removeHolding(`${holding.id}`, messageApi)}
-                      icon={<X size={"16px"} />}
+                      icon={<X size={"10px"} />}
                       className="removebutton"
                     />
                   )}
