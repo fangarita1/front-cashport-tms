@@ -1,7 +1,7 @@
 import { Button, Flex, Popover, Typography } from "antd";
 import { Plus } from "phosphor-react";
 
-import { InputCreateZone } from "@/components/atoms/InputCreateZone/InputCreateZone";
+import { InputCreateZone } from "@/components/atoms/inputs/InputCreateZone/InputCreateZone";
 
 import "./selectzonebr.scss";
 import { DocumentClientBR } from "@/components/atoms/DocumentClientBR/DocumentClientBR";
