@@ -5,6 +5,7 @@ import { Pencil } from "phosphor-react";
 import { SelectHoldingBR } from "@/components/molecules/selects/SelectHoldingBR/SelectHoldingBR";
 import { SelectStructureBR } from "@/components/molecules/selects/SelectStructureBR/SelectStructureBR";
 import { SelectZoneBR } from "@/components/molecules/selects/SelectZoneBR/SelectZoneBR";
+import { DocumentClientBR } from "@/components/atoms/DocumentClientBR/DocumentClientBR";
 
 const { Title } = Typography;
 
@@ -29,7 +30,7 @@ export const BusinessRulesView = () => {
         <Flex style={{ width: "27%" }} vertical>
           <SelectZoneBR isDisabledEdit={isDisabledRules} />
           {/* -------------comment for future use, this is block cause we haven't definition---------------------- */}
-          {/* <DocumentClientBR /> */}
+          <DocumentClientBR isDisabledEdit={isDisabledRules} />
         </Flex>
         <Flex style={{ width: "38%" }}>
           <SelectStructureBR isDisabledEdit={isDisabledRules} />

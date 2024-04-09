@@ -6,7 +6,11 @@ import "./documentclientbr.scss";
 
 const { Text } = Typography;
 
-export const DocumentClientBR = () => {
+interface Props {
+  isDisabledEdit: boolean;
+}
+
+export const DocumentClientBR = ({ isDisabledEdit }: Props) => {
   const { data, isLoading } = useDocumentByClient();
   console.log(data);
 
@@ -22,12 +26,16 @@ export const DocumentClientBR = () => {
               <Flex className="documentclientbr" key={document.id} vertical>
                 <Flex justify="space-between">
                   <Text className="titleLineBR">Institucional</Text>
-                  <Button icon={<X size={"16px"} />} className="removebutton" />
+                  {!isDisabledEdit && (
+                    <Button icon={<X size={"16px"} />} className="removebutton" />
+                  )}
                 </Flex>
                 <Flex className="lineBR" vertical>
                   <Flex justify="space-between">
                     <Text className="subtitleLineBR">Creacion de Cliente</Text>
-                    <Button icon={<X size={"16px"} />} className="removebutton" />
+                    {!isDisabledEdit && (
+                      <Button icon={<X size={"16px"} />} className="removebutton" />
+                    )}
                   </Flex>
                   <Flex className="mainSublinesBR">
                     <Flex vertical>
@@ -43,21 +51,25 @@ export const DocumentClientBR = () => {
                       </Button>
                     </Flex>
                   </Flex>
+                  {!isDisabledEdit && (
+                    <Button
+                      icon={<CaretDoubleRight size={"16px"} />}
+                      className="addButtonLineSub"
+                      type="text"
+                    >
+                      Agregar documento
+                    </Button>
+                  )}
+                </Flex>
+                {!isDisabledEdit && (
                   <Button
                     icon={<CaretDoubleRight size={"16px"} />}
                     className="addButtonLineSub"
                     type="text"
                   >
-                    Agregar documento
+                    Agregar cliente
                   </Button>
-                </Flex>
-                <Button
-                  icon={<CaretDoubleRight size={"16px"} />}
-                  className="addButtonLineSub"
-                  type="text"
-                >
-                  Agregar cliente
-                </Button>
+                )}
               </Flex>
             ))}
           </>
