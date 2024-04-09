@@ -5,5 +5,13 @@ module.exports = {
   jsxBracketSameLine: true,
   printWidth: 100,
   tabWidth: 2,
-  semi: true
+  semi: true,
+  overrides: [
+    {
+      files: "*.scss",
+      options: {
+        tabWidth: 4
+      }
+    }
+  ]
 };
