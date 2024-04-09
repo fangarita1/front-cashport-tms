@@ -74,7 +74,7 @@ export const ShipToProjectTable = ({ setIsCreateShipTo }: Props) => {
   ];
   return (
     <>
-      <main className="mainShipToProjectTable">
+      <div className="mainShipToProjectTable">
         <Flex justify="space-between" className="mainClientsProjectTable_header">
           <Title level={4}>Ship To</Title>
           <Flex gap={"1rem"}>
@@ -97,7 +97,7 @@ export const ShipToProjectTable = ({ setIsCreateShipTo }: Props) => {
           </Flex>
         </Flex>
         <Table
-          style={{ padding: "0 1rem" }}
+          style={{ paddingRight: "1rem" }}
           pagination={false}
           columns={columns}
           dataSource={data}
@@ -111,7 +111,7 @@ export const ShipToProjectTable = ({ setIsCreateShipTo }: Props) => {
         >
           Crear Ship To
         </Button>
-      </main>
+      </div>
     </>
   );
 };
