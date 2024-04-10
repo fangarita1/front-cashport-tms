@@ -27,7 +27,11 @@ export const InputForm = ({
 }: Props) => {
   return (
     <Flex vertical className="containerInput" style={customStyle}>
-      {!hiddenTitle && <Typography.Title level={5}>{titleInput}</Typography.Title>}
+      {!hiddenTitle && (
+        <Typography.Title className="input-form-title" level={5}>
+          {titleInput}
+        </Typography.Title>
+      )}
       <Controller
         name={nameInput as string}
         rules={{ required: true, maxLength: 123 }}

@@ -140,7 +140,9 @@ export const ProjectFormTab = ({
           />
           {imageError && <Text className="textError">{"Logo del proyecto es obligatorio *"}</Text>}
           {/* -----------------------------------General--------------------------------------- */}
-          <Title level={4}>Informacion General</Title>
+          <Title className="title" level={4}>
+            Informacion General
+          </Title>
           <Flex component={"section"} className="generalProject" justify="flex-start">
             <InputForm
               titleInput="Nombre del Proyecto"
@@ -155,7 +157,9 @@ export const ProjectFormTab = ({
               error={errors.general?.nit}
             />
             <Flex vertical className="containerInput">
-              <Title level={5}>Divisas</Title>
+              <Title className="title" level={5}>
+                Divisas
+              </Title>
               <Controller
                 name="general.currencies"
                 control={control}
@@ -167,7 +171,9 @@ export const ProjectFormTab = ({
               </Text>
             </Flex>
             <Flex vertical className="containerInput">
-              <Title level={5}>Pais</Title>
+              <Title className="title" level={5}>
+                Pais
+              </Title>
               <Controller
                 name="general.country"
                 control={control}
@@ -186,7 +192,9 @@ export const ProjectFormTab = ({
             />
           </Flex>
           {/* -----------------------------------Contact----------------------------------- */}
-          <Title level={4}>Informacion de Contacto</Title>
+          <Title className="title" level={4}>
+            Informacion de Contacto
+          </Title>
           <Flex component={"section"} className="generalProject" justify="flex-start">
             <InputForm
               titleInput="Nombre"
@@ -227,10 +235,14 @@ export const ProjectFormTab = ({
             />
           </Flex>
           {/* -----------------------------------Project Config----------------------------------- */}
-          <Title level={4}>Personalizer Proyecto</Title>
+          <Title className="title" level={4}>
+            Personalizer Proyecto
+          </Title>
           <Flex component={"section"} className="generalProject" justify="flex-start">
             <Flex vertical className="containerInput">
-              <Title level={5}>Color Personalizado</Title>
+              <Title className="title" level={5}>
+                Color Personalizado
+              </Title>
               <Controller
                 name="personalization.color"
                 rules={{ required: true, maxLength: 123 }}

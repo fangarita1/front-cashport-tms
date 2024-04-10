@@ -172,7 +172,6 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
                     <Title level={1} className="titleName">
                       {data.PROJECT_DESCRIPTION ?? ""}
                     </Title>
-                    <Text className="subtitleNit">NIT {data.NIT ?? ""}</Text>
                   </>
                 )}
               </Flex>
