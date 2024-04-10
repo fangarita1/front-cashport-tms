@@ -1,4 +1,4 @@
-@import '../../../../styles/variables.scss';
+@import "../../../../styles/variables.scss";
 
 .mainUsersProjectTable {
     width: 100%;
@@ -12,14 +12,14 @@
     }
 
     .statusContainer {
-        padding: .25rem .5rem;
+        padding: 0.25rem 0.5rem;
         border-radius: 1rem;
         width: auto;
         border: 1px solid $active;
     }
 
     .statusContainerPending {
-        padding: .25rem .5rem;
+        padding: 0.25rem 0.5rem;
         border-radius: 1rem;
         width: auto;
         border: 1px solid $pending;
@@ -27,26 +27,25 @@
     }
 
     .statusPending {
-        width: .75rem;
-        height: .75rem;
+        width: 0.75rem;
+        height: 0.75rem;
         border-radius: 1rem;
-        margin-right: .5rem;
-        background-color: $pending ;
+        margin-right: 0.5rem;
+        background-color: $pending;
     }
 
     .statusActive {
-        width: .75rem;
-        height: .75rem;
+        width: 0.75rem;
+        height: 0.75rem;
         border-radius: 1rem;
-        margin-right: .5rem;
-        background-color: $active ;
+        margin-right: 0.5rem;
+        background-color: $active;
     }
 
     .inputSearch {
         &::placeholder {
             color: black !important;
         }
-
     }
 
     .buttonNewProject {
@@ -61,6 +60,15 @@
             background-color: $secondary !important;
             opacity: 0.8;
             color: black;
+        }
+    }
+
+    .buttonSeeProject {
+        background-color: #dddddd;
+        padding: 5px;
+
+        &:active {
+            background-color: $gray;
         }
     }
 }

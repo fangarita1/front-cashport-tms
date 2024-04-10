@@ -109,12 +109,14 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
       dataIndex: "",
       render: (_, { ID }) => (
         <Button
+          className="buttonSeeProject"
           onClick={() => setIsViewDetails({ active: true, id: ID })}
           icon={<Eye size={"1.3rem"} />}
         />
       )
     }
   ];
+
   const [selectedUsers, setSelectedUsers] = useState({
     zones: [] as any,
     roles: [] as any,
