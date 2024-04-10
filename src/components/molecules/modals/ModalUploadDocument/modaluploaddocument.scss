@@ -3,6 +3,14 @@
 .modaluploaddocument {
     width: 700px !important;
 
+    .ant-modal-content {
+        .ant-modal-close {
+            margin-right: 15px;
+            margin-top: 6px;
+            transform: scale(1.4);
+        }
+    }
+
     .description {
         font-size: 1.2rem;
         font-weight: 300;
@@ -25,7 +33,7 @@
 
     .mainUploadDocuments {
         gap: 1rem;
-        padding: 2rem 1rem;
+        margin: 20px 0px;
     }
 
     .buttonCancel {
