@@ -109,7 +109,7 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                   htmlType={!isEditAvailable ? "submit" : "button"}
                   icon={<Pencil size={"1.45rem"} />}
                 >
-                  Editar Usuario
+                  Editar Cliente
                 </Button>
               </Flex>
             )}
