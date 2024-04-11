@@ -22,6 +22,7 @@ const { Title, Text } = Typography;
 interface Props {
   idProjectForm?: string;
   data?: IProject;
+  disabled?: boolean;
   // eslint-disable-next-line no-unused-vars
   onEditProject?: () => void;
   // eslint-disable-next-line no-unused-vars
@@ -70,7 +71,7 @@ export const ProjectFormTab = ({
 
   const validationButtonText =
     statusForm === "create"
-      ? "Crear Proyecto"
+      ? "Crear nuevo proyecto"
       : statusForm === "edit"
         ? "Guardar Cambios"
         : " Editar Proyecto";
@@ -121,17 +122,11 @@ export const ProjectFormTab = ({
                 {validationButtonText}
               </Button>
             ) : (
-              <Button
-                style={{ display: "flex" }}
-                htmlType={"submit"}
-                icon={<Pencil size={"1.45rem"} />}
-              >
-                {validationButtonText}
-              </Button>
+              ""
             )}
           </Flex>
         </Flex>
-        <Flex component={"main"} vertical>
+        <Flex component={"main"} flex="1" vertical>
           {/* ------------Image Project-------------- */}
           <UploadImg
             disabled={statusForm === "review"}
@@ -272,6 +267,11 @@ export const ProjectFormTab = ({
               )}
             />
           </Flex> */}
+          </Flex>
+          <Flex className="buttonNewProject">
+            <Button className="button" style={{ display: "flex" }} htmlType={"submit"}>
+              {validationButtonText}
+            </Button>
           </Flex>
         </Flex>
       </form>

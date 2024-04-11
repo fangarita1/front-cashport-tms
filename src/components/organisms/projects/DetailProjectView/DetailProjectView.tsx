@@ -53,6 +53,7 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
           content: "El proyecto fue editado exitosamente."
         });
       }
+      setIsEditProject(false);
     } catch (error) {
       messageApi.open({
         type: "error",
