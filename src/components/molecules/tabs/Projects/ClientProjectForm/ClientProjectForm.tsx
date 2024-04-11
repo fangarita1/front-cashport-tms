@@ -1,14 +1,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { Button, Flex, Input, Typography } from "antd";
 import { useForm } from "react-hook-form";
-import {
-  ArrowLineDown,
-  ArrowLineUp,
-  ArrowsClockwise,
-  CaretLeft,
-  Pencil,
-  Plus
-} from "phosphor-react";
+import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
 
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
@@ -116,7 +109,7 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                   htmlType={!isEditAvailable ? "submit" : "button"}
                   icon={<Pencil size={"1.45rem"} />}
                 >
-                  Editar Usuario
+                  Editar Cliente
                 </Button>
               </Flex>
             )}
@@ -235,22 +228,6 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
             <ShipToProjectTable setIsCreateShipTo={setIsCreateShipTo} />
             <DividerCustom />
             <Flex gap={"1rem"} justify="flex-end">
-              <Button
-                type="primary"
-                className="buttonOutlined"
-                size="large"
-                icon={<ArrowLineDown weight="bold" size={15} />}
-              >
-                Descargar plantilla
-              </Button>
-              <Button
-                type="primary"
-                className="buttonOutlined"
-                size="large"
-                icon={<ArrowLineUp weight="bold" size={15} />}
-              >
-                Cargar excel
-              </Button>
               <Button
                 type="primary"
                 className="buttonNewProject"

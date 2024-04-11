@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Button, Checkbox, Flex, Popconfirm, Spin, Table, Typography, message } from "antd";
 import type { TableProps } from "antd";
 
-import { DotsThree, Eye, Plus } from "phosphor-react";
+import { DotsThree, Eye, Plus, Triangle } from "phosphor-react";
 
 import { useUsers } from "@/hooks/useUsers";
 import { FilterUsers } from "@/components/atoms/FilterUsers/FilterUsers";
@@ -109,12 +109,14 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
       dataIndex: "",
       render: (_, { ID }) => (
         <Button
+          className="buttonSeeProject"
           onClick={() => setIsViewDetails({ active: true, id: ID })}
           icon={<Eye size={"1.3rem"} />}
         />
       )
     }
   ];
+
   const [selectedUsers, setSelectedUsers] = useState({
     zones: [] as any,
     roles: [] as any,
@@ -162,7 +164,21 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
             <Spin size="large" />
           </Flex>
         ) : (
-          <Table columns={columns} dataSource={data.map((data) => ({ ...data, key: data.ID }))} />
+          <Table
+            className="usersTable"
+            pagination={{
+              itemRender: (page, type, originalElement) => {
+                if (type === "prev") {
+                  return <Triangle size={"0.8rem"} weight="fill" />;
+                } else if (type === "next") {
+                  return <Triangle size={"0.8rem"} weight="fill" />;
+                }
+                return originalElement;
+              }
+            }}
+            columns={columns}
+            dataSource={data.map((data) => ({ ...data, key: data.ID }))}
+          />
         )}
       </main>
     </>
