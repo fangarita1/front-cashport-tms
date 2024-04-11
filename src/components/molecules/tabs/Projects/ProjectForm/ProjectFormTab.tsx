@@ -22,6 +22,7 @@ const { Title, Text } = Typography;
 interface Props {
   idProjectForm?: string;
   data?: IProject;
+  disabled?: boolean;
   // eslint-disable-next-line no-unused-vars
   onEditProject?: () => void;
   // eslint-disable-next-line no-unused-vars
@@ -70,7 +71,7 @@ export const ProjectFormTab = ({
 
   const validationButtonText =
     statusForm === "create"
-      ? "Crear Proyecto"
+      ? "Crear nuevo proyecto"
       : statusForm === "edit"
         ? "Guardar Cambios"
         : " Editar Proyecto";
@@ -121,17 +122,11 @@ export const ProjectFormTab = ({
                 {validationButtonText}
               </Button>
             ) : (
-              <Button
-                style={{ display: "flex" }}
-                htmlType={"submit"}
-                icon={<Pencil size={"1.45rem"} />}
-              >
-                {validationButtonText}
-              </Button>
+              ""
             )}
           </Flex>
         </Flex>
-        <Flex component={"main"} vertical>
+        <Flex component={"main"} flex="1" vertical>
           {/* ------------Image Project-------------- */}
           <UploadImg
             disabled={statusForm === "review"}
@@ -140,7 +135,9 @@ export const ProjectFormTab = ({
           />
           {imageError && <Text className="textError">{"Logo del proyecto es obligatorio *"}</Text>}
           {/* -----------------------------------General--------------------------------------- */}
-          <Title level={4}>Informacion General</Title>
+          <Title className="title" level={4}>
+            Informacion General
+          </Title>
           <Flex component={"section"} className="generalProject" justify="flex-start">
             <InputForm
               titleInput="Nombre del Proyecto"
@@ -155,7 +152,9 @@ export const ProjectFormTab = ({
               error={errors.general?.nit}
             />
             <Flex vertical className="containerInput">
-              <Title level={5}>Divisas</Title>
+              <Title className="title" level={5}>
+                Divisas
+              </Title>
               <Controller
                 name="general.currencies"
                 control={control}
@@ -167,7 +166,9 @@ export const ProjectFormTab = ({
               </Text>
             </Flex>
             <Flex vertical className="containerInput">
-              <Title level={5}>Pais</Title>
+              <Title className="title" level={5}>
+                País
+              </Title>
               <Controller
                 name="general.country"
                 control={control}
@@ -186,7 +187,9 @@ export const ProjectFormTab = ({
             />
           </Flex>
           {/* -----------------------------------Contact----------------------------------- */}
-          <Title level={4}>Informacion de Contacto</Title>
+          <Title className="title" level={4}>
+            Informacion de Contacto
+          </Title>
           <Flex component={"section"} className="generalProject" justify="flex-start">
             <InputForm
               titleInput="Nombre"
@@ -227,10 +230,14 @@ export const ProjectFormTab = ({
             />
           </Flex>
           {/* -----------------------------------Project Config----------------------------------- */}
-          <Title level={4}>Personalizer Proyecto</Title>
+          <Title className="title" level={4}>
+            Personalizer Proyecto
+          </Title>
           <Flex component={"section"} className="generalProject" justify="flex-start">
             <Flex vertical className="containerInput">
-              <Title level={5}>Color Personalizado</Title>
+              <Title className="title" level={5}>
+                Color Personalizado
+              </Title>
               <Controller
                 name="personalization.color"
                 rules={{ required: true, maxLength: 123 }}
@@ -260,6 +267,11 @@ export const ProjectFormTab = ({
               )}
             />
           </Flex> */}
+          </Flex>
+          <Flex className="buttonNewProject">
+            <Button className="button" style={{ display: "flex" }} htmlType={"submit"}>
+              {validationButtonText}
+            </Button>
           </Flex>
         </Flex>
       </form>

@@ -33,8 +33,15 @@
         padding: 3rem;
         padding-top: 2rem;
         .titleName {
-            margin: 0;
-            font-weight: 600;
+					margin: auto;
+					font-weight: 600;
+					width: 398px;
+					height: 32px;
+					color: #141414;
+					line-height: 124%;
+					font-style: normal;
+					font-size: 24px;
+						
         }
 
         .subtitleNit {
@@ -49,7 +56,6 @@
     }
 
     .infoHeaderProject {
-        margin: 1rem 0;
         gap: 2rem;
         padding-left: 1.5rem;
         margin-top: 0rem;

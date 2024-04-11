@@ -43,6 +43,41 @@ export const CreateProjectView = () => {
       key: "1",
       label: "Crear Proyecto",
       children: <ProjectFormTab statusForm="create" onSubmitForm={onCreateProject} />
+    },
+    {
+      key: "1",
+      label: "Reglas de negocio",
+      children: <ProjectFormTab statusForm="review" onSubmitForm={() => {}} />
+    },
+    {
+      key: "",
+      label: "Clientes",
+      children: <ProjectFormTab statusForm="review" onSubmitForm={() => {}} />
+    },
+    {
+      key: "",
+      label: "Usuarios",
+      children: <ProjectFormTab statusForm="review" onSubmitForm={() => {}} />
+    },
+    {
+      key: "",
+      label: "Cuentas",
+      children: <ProjectFormTab statusForm="review" onSubmitForm={() => {}} />
+    },
+    {
+      key: "",
+      label: "Grupos de clientes",
+      children: <ProjectFormTab statusForm="review" onSubmitForm={() => {}} />
+    },
+    {
+      key: "",
+      label: "Aprobaciones",
+      children: <ProjectFormTab statusForm="review" onSubmitForm={() => {}} />
+    },
+    {
+      key: "",
+      label: "Comunicaciones",
+      children: <ProjectFormTab statusForm="review" onSubmitForm={() => {}} />
     }
   ];
 
@@ -54,7 +89,7 @@ export const CreateProjectView = () => {
         <Flex vertical className="containerCreateProject">
           <Flex className="infoHeaderProject">
             <Flex gap={"2rem"}>
-              <Title level={1} className="titleName">
+              <Title level={2} className="titleName">
                 Crear Proyecto
               </Title>
             </Flex>

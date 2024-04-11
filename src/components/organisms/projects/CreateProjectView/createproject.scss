@@ -32,10 +32,15 @@
     .containerCreateProject {
         width: 100%;
         padding: 2rem;
-
         .titleName {
-            margin: 0;
-            font-weight: 600;
+					margin: auto;
+					font-weight: 600;
+					width: 398px;
+					height: 32px;
+					color:var(--Black, #141414);
+					line-height: 124%;
+					font-style: normal;
+          font-size: 24px;
         }
 
         .subtitleNit {
@@ -50,9 +55,7 @@
 
 
     .infoHeaderProject {
-        margin: 1rem 0;
         gap: 2rem;
-        padding-left: 1.25rem;
         margin-bottom: 1.5rem;
         justify-content: space-between;
     }

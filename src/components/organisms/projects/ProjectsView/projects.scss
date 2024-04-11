@@ -4,27 +4,22 @@
     flex-direction: row;
     height: 100%;
     .contentProject {
-        height: 100%;
-        width: 100%;
-        background-color: white;
-        padding: 2rem;
-        padding-left: 2.5rem;
-        overflow-y: auto;
+			height: 100%;
+			width: 100%;
+			margin: 0 0 32px 0;
+			background-color: white;
+			padding: 2rem;
+			padding-left: 2.5rem;
+			overflow-y: auto;
         .titleName {
-            margin: 0;
+						margin: auto;
             font-weight: 600;
+						width: 398px;
+						height: 32px;
+						color: #141414;
+						line-height: 124%;
+						font-style: normal;
+						font-size: 24px;
         }
-
-        .subtitleNit {
-            font-weight: 300;
-            font-size: 1.5rem;
-            margin: 1rem 0;
-        }
-
-    }
-    .titleProjects{
-        font-weight: 600;
-        font-size: 2rem;
-        margin-left: 1rem;
     }
 }

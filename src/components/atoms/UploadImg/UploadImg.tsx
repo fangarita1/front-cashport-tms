@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { Flex, Spin, Typography, Upload, UploadProps, message } from "antd";
 import "./uploadimg.scss";
-
+import Image from "next/image";
 interface Props {
   imgDefault?: string;
   setImgFile: Dispatch<SetStateAction<any>>;
@@ -55,7 +55,11 @@ export const UploadImg = ({ disabled = false, imgDefault = "", setImgFile }: Pro
         disabled={disabled}
       >
         {loading && <Spin />}
-        {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: "100%" }} /> : "+ Subir"}
+        {imageUrl ? (
+          <img src={imageUrl} alt="avatar" style={{ width: "100%" }} />
+        ) : (
+          <Image src={"/images/watermark.svg"} alt="marca de agua" width={48} height={48} />
+        )}
       </Upload>
       <Typography.Text className="uploadText">
         * Sube la imagen del logo del proyecto que vas a crear
