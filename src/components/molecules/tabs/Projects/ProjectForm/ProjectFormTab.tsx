@@ -167,7 +167,7 @@ export const ProjectFormTab = ({
             </Flex>
             <Flex vertical className="containerInput">
               <Title className="title" level={5}>
-                Pais
+                País
               </Title>
               <Controller
                 name="general.country"
