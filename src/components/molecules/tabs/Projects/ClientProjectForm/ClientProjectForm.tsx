@@ -117,7 +117,7 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
           <Flex vertical component={"main"} className="mainClientForm">
             <Title level={4}>Información del usuario</Title>
             {/* -----------------------------------Informacion del Usuario--------------------------------------- */}
-            <Flex component={"section"} className="generalProject">
+            <div className="generalProject">
               <InputForm
                 titleInput="Tipo de Documento"
                 control={control}
@@ -205,7 +205,7 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                 nameInput="infoClient.address"
                 error={errors.infoClient?.address}
               />
-            </Flex>
+            </div>
             {/* -----------------------------------Experiencia----------------------------------- */}
             <Title level={4}>Documentos</Title>
             <Flex vertical align="flex-start">
