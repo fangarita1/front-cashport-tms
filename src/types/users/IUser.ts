@@ -59,9 +59,7 @@ export interface IUserData {
   ROL_NAME: string;
   USER_ZONES: UserZone[];
   USER_PERMISIONS: UserPermision[];
-  USER_CHANNELS: User[];
-  USER_LINES: User[];
-  USER_SUBLINES: User[];
+  BUSSINESS_RULES: IBusinessRules[];
 }
 
 export interface User {
@@ -82,6 +80,21 @@ export interface Permissions {
 export interface UserZone {
   ZONE_ID: number;
   ZONE_DESCRIPTION: string;
+}
+
+export interface ISubLines {
+  SUBLINE_DESCRIPTION: string;
+  SUBLINE_ID: number;
+}
+interface ILine {
+  DESCRIPTION_LINE: string;
+  LINE_ID: number;
+  SUBLINES: ISubLines[];
+}
+export interface IBusinessRules {
+  CHANNEL_DESCRIPTION: string;
+  CHANNEL_ID: number;
+  LINES: ILine[];
 }
 
 export interface WelcomeHeaders {

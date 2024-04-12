@@ -11,6 +11,7 @@ import { SUCCESS } from "@/utils/constants/globalConstants";
 
 import "./usersprojecttable.scss";
 import { IUserSingle } from "@/types/users/IUsers";
+import { UserZone, IBusinessRules } from "@/types/users/IUser";
 
 const { Text, Link } = Typography;
 
@@ -69,6 +70,44 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
       dataIndex: "ROL_NAME",
       render: (text) => <Text>{text}</Text>
     },
+    ////////////////////////////////////
+    {
+      title: "Clientes",
+      key: "COUTN_CLIENTS",
+      dataIndex: "COUTN_CLIENTS",
+      render: (text) => <Text className="cell -clients">{text}</Text>
+    },
+    {
+      title: "Zona",
+      key: "USER_ZONES",
+      dataIndex: "USER_ZONES",
+      width: "120px",
+      render: (arr) =>
+        arr ? (
+          arr.map((zone: UserZone) => (
+            <Text className="cell -zone" key={zone.ZONE_ID}>
+              {zone.ZONE_DESCRIPTION}
+            </Text>
+          ))
+        ) : (
+          <Text>-</Text>
+        )
+    },
+    {
+      title: "Responsabilidad",
+      key: "BUSSINES_RULES",
+      dataIndex: "BUSSINES_RULES",
+      width: "280px",
+      render: (arr) =>
+        arr ? (
+          arr.map((channel: IBusinessRules) => (
+            <Text key={channel.CHANNEL_ID}>{channel.CHANNEL_DESCRIPTION}</Text>
+          ))
+        ) : (
+          <Text>-</Text>
+        )
+    },
+
     {
       title: "Estado",
       key: "status",
