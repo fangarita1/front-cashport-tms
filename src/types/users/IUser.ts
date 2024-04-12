@@ -60,6 +60,9 @@ export interface IUserData {
   USER_ZONES: UserZone[];
   USER_PERMISIONS: UserPermision[];
   BUSSINESS_RULES: IBusinessRules[];
+  USER_CHANNELS: User[];
+  USER_LINES: User[];
+  USER_SUBLINES: User[];
 }
 
 export interface User {
