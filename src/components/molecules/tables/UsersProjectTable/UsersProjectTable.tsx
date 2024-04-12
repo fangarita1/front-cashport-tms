@@ -70,7 +70,6 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
       dataIndex: "ROL_NAME",
       render: (text) => <Text>{text}</Text>
     },
-    ////////////////////////////////////
     {
       title: "Clientes",
       key: "COUTN_CLIENTS",
@@ -101,7 +100,9 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
       render: (arr) =>
         arr ? (
           arr.map((channel: IBusinessRules) => (
-            <Text key={channel.CHANNEL_ID}>{channel.CHANNEL_DESCRIPTION}</Text>
+            <Text className="cell" key={channel.CHANNEL_ID}>
+              {channel.CHANNEL_DESCRIPTION}
+            </Text>
           ))
         ) : (
           <Text>-</Text>
