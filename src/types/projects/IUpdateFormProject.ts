@@ -18,6 +18,7 @@ export interface General {
   currencies: string[];
   country: string;
   address: string;
+  billing_period: Date;
 }
 
 export interface Personalization {
