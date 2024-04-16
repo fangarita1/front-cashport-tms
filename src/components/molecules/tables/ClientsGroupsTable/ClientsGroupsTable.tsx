@@ -2,6 +2,7 @@
 import { Button, Checkbox, Flex, Popconfirm, Table, TableProps, Typography, Spin } from "antd";
 import { DotsThree, Eye, Plus } from "phosphor-react";
 // import { FilterClients } from "@/components/atoms/FilterClients/FilterClients";
+import { ModalCreateClientsGroup } from "@/components/molecules/modals/ModalCreateClientsGroup/ModalCreateClientsGroup";
 import { useState } from "react";
 import { useClientsGroups } from "@/hooks/useClientsGroups";
 import { IClientsGroups } from "@/types/clientsGroups/IClientsGroups";
@@ -12,7 +13,6 @@ const { Text, Link } = Typography;
 
 interface Props {
   idProject: string;
-  // setIsCreateGroup: Dispatch<SetStateAction<boolean>>;
   // setIsViewDetailsGroup: Dispatch<
   //   SetStateAction<{
   //     active: boolean;
@@ -23,12 +23,11 @@ interface Props {
 
 export const ClientsGroupsTable = ({
   idProject
-  // setIsCreateGroup,
   // setIsViewDetailsGroup
 }: Props) => {
+  const [isCreateGroup, setIsCreateGroup] = useState(false);
   const onCreateClientsGroup = () => {
-    // setIsCreateGroup(true);
-    console.log("onCreateClientsGroup cliked");
+    setIsCreateGroup(true);
   };
 
   // eslint-disable-next-line no-unused-vars
@@ -141,7 +140,7 @@ export const ClientsGroupsTable = ({
             onClick={onCreateClientsGroup}
             icon={<Plus weight="bold" size={15} />}
           >
-            Nuevo Cliente
+            Crear Grupo de Clientes
           </Button>
         </Flex>
 
@@ -152,6 +151,7 @@ export const ClientsGroupsTable = ({
         ) : (
           <Table columns={columns} dataSource={data.map((data) => ({ ...data, key: data.id }))} />
         )}
+        <ModalCreateClientsGroup isOpen={isCreateGroup} setIsCreateGroup={setIsCreateGroup} />
       </main>
     </>
   );
