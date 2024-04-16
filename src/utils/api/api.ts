@@ -27,9 +27,9 @@ const instance = (token: string) =>
   });
 
 export const fetcher = async (url: string) => {
-  const data = (await getIdToken(false)) as string;
+  const token = (await getIdToken(false)) as string;
 
-  return instance(data)
+  return instance(token)
     .get(url)
     .then((res) => {
       if (!res.data) {
