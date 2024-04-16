@@ -13,7 +13,7 @@ interface Props {
   setIsViewDetailsClients?: Dispatch<
     SetStateAction<{
       active: boolean;
-      id: string;
+      id: number;
     }>
   >;
   placedIn?: string;
@@ -59,8 +59,8 @@ export const ClientsProjectTable = ({
       },
       {
         title: "Name",
-        dataIndex: "name",
-        key: "name",
+        dataIndex: "client_name",
+        key: "client_name",
         render: (text) => <Link underline>{text}</Link>
       },
       {
@@ -149,7 +149,7 @@ export const ClientsProjectTable = ({
           <Button
             onClick={() => {
               if (setIsViewDetailsClients) {
-                setIsViewDetailsClients({ active: true, id: nit });
+                setIsViewDetailsClients({ active: true, id: parseInt(nit) });
               }
             }}
             icon={<Eye size={"1.3rem"} />}
