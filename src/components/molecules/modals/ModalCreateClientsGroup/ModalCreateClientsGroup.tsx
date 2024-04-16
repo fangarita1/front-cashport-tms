@@ -3,8 +3,10 @@ import { Flex, Modal, Typography } from "antd";
 import { useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { ClientsProjectTable } from "@/components/molecules/tables/ClientsProjectTable/ClientsProjectTable";
+import { createGroup } from "@/services/groupClients/groupClients";
 
 import "./modalCreateClientsGroup.scss";
+import { IClient } from "@/types/clients/IClients";
 
 const { Text } = Typography;
 
@@ -36,6 +38,31 @@ export const ModalCreateClientsGroup = ({ isOpen, setIsCreateGroup }: CreateGrou
   const onCancel = () => {
     setIsCreateGroup(false);
     setGroupName("");
+  };
+
+  const onCreateGroup = () => {
+    console.log("Crear Grupo clickeado");
+    if (selectedRows.length <= 0) {
+      alert("Selecciona clientes para añadir al grupo");
+      return;
+    }
+    if (selectedRows.length > 0) {
+      try {
+        console.log(selectedRows);
+        const group = {
+          name: groupName,
+          clients: selectedRows.map((client: IClient) => client.nit)
+        };
+        createGroup(group);
+        console.log(group);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    setIsCreateGroup(false);
+    setGroupName("");
+    setSelectedRows([]);
   };
 
   return (
@@ -93,8 +120,7 @@ export const ModalCreateClientsGroup = ({ isOpen, setIsCreateGroup }: CreateGrou
           cancelText="Cancelar"
           className="modalCreateClientsGroup"
           onOk={() => {
-            console.log("Crear Grupo clickeado");
-            console.log(selectedRows);
+            onCreateGroup();
           }}
         >
           <Flex vertical>

@@ -4,6 +4,7 @@ import { DotsThree, Eye, Plus } from "phosphor-react";
 import { FilterClients } from "@/components/atoms/FilterClients/FilterClients";
 
 import "./clientsprojecttable.scss";
+import { IClient } from "@/types/clients/IClients";
 
 const { Text, Link } = Typography;
 
@@ -12,7 +13,7 @@ interface Props {
   setIsViewDetailsClients?: Dispatch<
     SetStateAction<{
       active: boolean;
-      id: number;
+      id: string;
     }>
   >;
   placedIn?: string;
@@ -46,7 +47,7 @@ export const ClientsProjectTable = ({
     }
   };
 
-  let columns: TableProps<any>["columns"] = [];
+  let columns: TableProps<IClient>["columns"] = [];
   if (placedIn === "tab") {
     columns = [
       {
@@ -58,20 +59,20 @@ export const ClientsProjectTable = ({
       },
       {
         title: "Name",
-        dataIndex: "client_name",
-        key: "client_name",
+        dataIndex: "name",
+        key: "name",
         render: (text) => <Link underline>{text}</Link>
       },
       {
         title: "NIT",
-        dataIndex: "NIT",
-        key: "NIT",
+        dataIndex: "nit",
+        key: "nit",
         render: (text) => <Text>{text}</Text>
       },
       {
         title: "Tipo de Cliente",
-        key: "TypeClient",
-        dataIndex: "TypeClient",
+        key: "client_type_id",
+        dataIndex: "client_type_id",
         render: (text) => <Text>{text}</Text>
       },
       {
@@ -100,8 +101,8 @@ export const ClientsProjectTable = ({
       },
       {
         title: "Holding",
-        key: "holding",
-        dataIndex: "holding",
+        key: "holding_name",
+        dataIndex: "holding_name",
         render: (text) => <Text>{text}</Text>
       },
       {
@@ -144,11 +145,11 @@ export const ClientsProjectTable = ({
         key: "seeProject",
         width: "40px",
         dataIndex: "",
-        render: (_, { key }) => (
+        render: (_, { nit }) => (
           <Button
             onClick={() => {
               if (setIsViewDetailsClients) {
-                setIsViewDetailsClients({ active: true, id: key });
+                setIsViewDetailsClients({ active: true, id: nit });
               }
             }}
             icon={<Eye size={"1.3rem"} />}
@@ -179,7 +180,13 @@ export const ClientsProjectTable = ({
             ) : null}
           </Flex>
 
-          <Table columns={columns} dataSource={data} />
+          <Table
+            columns={columns}
+            dataSource={data.map((client) => ({
+              key: client.nit,
+              ...client
+            }))}
+          />
         </main>
       </>
     );
@@ -193,8 +200,8 @@ export const ClientsProjectTable = ({
       },
       {
         title: "NIT",
-        dataIndex: "NIT",
-        key: "NIT",
+        dataIndex: "nit",
+        key: "nit",
         render: (text) => <Text>{text}</Text>
       },
       {
@@ -205,8 +212,8 @@ export const ClientsProjectTable = ({
       },
       {
         title: "Holding",
-        key: "holding",
-        dataIndex: "holding",
+        key: "holding_name",
+        dataIndex: "holding_name",
         render: (text) => <Text>{text}</Text>
       },
       {
@@ -233,150 +240,55 @@ export const ClientsProjectTable = ({
           </Flex>
           <Table
             columns={columns}
-            dataSource={data}
+            dataSource={data.map((client) => ({
+              key: client.nit,
+              ...client
+            }))}
             pagination={{ pageSize: 8 }}
             rowSelection={rowSelection}
-            rowClassName={(record) => (selectedRowKeys.includes(record.key) ? "selectedRow" : "")}
+            rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
           />
         </main>
       </>
     );
   }
 };
-const data = [
-  {
-    key: "1",
-    active: "",
+const data: IClient[] = [];
+
+for (let i = 0; i < 9; i++) {
+  data.push({
+    nit: `${i}347623472-5643`,
+    project_id: 1,
+    client_type_id: 1,
+    uuid: "123e4567-e89b-12d3-a456-426655440000",
+    document_type: "CC",
     client_name: "Coopidrogas",
-    NIT: "347623472-5643",
-    TypeClient: "Persona natural",
-    users: "36",
-    bills: "36",
-    budget: "180.000.00",
-    risk: "Alto",
-    holding: "Grupo SURA",
-    status: true,
-    shipTo: 13,
-    groups: 1
-  },
-  {
-    key: "2",
-    active: "",
-    client_name: "Coopidrogas2",
-    NIT: "347623472-5643",
-    TypeClient: "Persona natural",
-    users: "36",
-    bills: "36",
-    budget: "180.000.00",
-    risk: "Alto",
-    holding: "Grupo SURA",
-    status: false,
-    shipTo: 13,
-    groups: 1
-  },
-  {
-    key: "3",
-    active: "",
-    client_name: "Coopidrogas",
-    NIT: "347623472-5643",
-    TypeClient: "Persona natural",
-    users: "36",
-    bills: "36",
-    budget: "180.000.00",
-    risk: "Alto",
-    holding: "Grupo SURA",
-    status: true,
-    shipTo: 13,
-    groups: 1
-  },
-  {
-    key: "4",
-    active: "",
-    client_name: "Coopidrogas2",
-    NIT: "347623472-5643",
-    TypeClient: "Persona natural",
-    users: "36",
-    bills: "36",
-    budget: "180.000.00",
-    risk: "Alto",
-    holding: "Grupo SURA",
-    status: false,
-    shipTo: 13,
-    groups: 1
-  },
-  {
-    key: "5",
-    active: "",
-    client_name: "Coopidrogas",
-    NIT: "347623472-5643",
-    TypeClient: "Persona natural",
-    users: "36",
-    bills: "36",
-    budget: "180.000.00",
-    risk: "Alto",
-    holding: "Grupo SURA",
-    status: true,
-    shipTo: 13,
-    groups: 1
-  },
-  {
-    key: "6",
-    active: "",
-    client_name: "Coopidrogas2",
-    NIT: "347623472-5643",
-    TypeClient: "Persona natural",
-    users: "36",
-    bills: "36",
-    budget: "180.000.00",
-    risk: "Alto",
-    holding: "Grupo SURA",
-    status: false,
-    shipTo: 13,
-    groups: 1
-  },
-  {
-    key: "7",
-    active: "",
-    client_name: "Coopidrogas",
-    NIT: "347623472-5643",
-    TypeClient: "Persona natural",
-    users: "36",
-    bills: "36",
-    budget: "180.000.00",
-    risk: "Alto",
-    holding: "Grupo SURA",
-    status: true,
-    shipTo: 13,
-    groups: 1
-  },
-  {
-    key: "8",
-    active: "",
-    client_name: "Coopidrogas",
-    NIT: "347623472-5643",
-    TypeClient: "Persona natural",
-    users: "36",
-    bills: "36",
-    budget: "180.000.00",
-    risk: "Alto",
-    holding: "Grupo SURA",
-    status: true,
-    shipTo: 13,
-    groups: 1
-  },
-  {
-    key: "9",
-    active: "",
-    client_name: "Coopidrogas",
-    NIT: "347623472-5643",
-    TypeClient: "Persona natural",
-    users: "36",
-    bills: "36",
-    budget: "180.000.00",
-    risk: "Alto",
-    holding: "Grupo SURA",
-    status: true,
-    shipTo: 13,
-    groups: 1
-  }
-];
+    business_name: "Coopidrogas S.A.",
+    holding_id: 1,
+    holding_name: "Profit Hold",
+    phone: "+57 1 234 5678",
+    email: "info@coopidrogas.com",
+    risk: "Medio",
+    billing_period: "Mensual",
+    locations: [
+      {
+        id: 1,
+        nit: "3819389183912-9",
+        city: "Bogota",
+        address: "calle falsa 123 tabogo actualizado",
+        position: {
+          lat: " 4.698931",
+          lon: "-74.1146624"
+        }
+      }
+    ],
+    radication_type: 1,
+    ACTIVE: true,
+    client_type: "Persona Jurídica",
+    status: "Creado",
+    is_deleted: 0
+    // users: 36,
+    // bills: 36,
+    // budget: 180000
+  });
+}
