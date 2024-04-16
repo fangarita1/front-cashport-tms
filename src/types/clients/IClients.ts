@@ -12,7 +12,7 @@ export interface IClient {
   email: string;
   billing_period: string;
   radication_type: number;
-  holding_id: number;
+  holding_id?: number;
   holding_name?: string;
   document_type: string;
   locations: ILocation[];
