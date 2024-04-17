@@ -7,22 +7,12 @@ interface Props {
   idProject: string;
   clients: any[];
   subscribers: any[];
-  // shipToCount: number;
   activeUsers: "all" | "active" | "inactive";
 }
 
-export const useClientsGroups = ({
-  page,
-  idProject,
-  clients,
-  subscribers,
-  // shipToCount,
-  activeUsers
-}: Props) => {
+export const useClientsGroups = ({ page, idProject, clients, subscribers, activeUsers }: Props) => {
   const clientsQuery = clients.length > 0 ? `&zone=${clients.join(",")}` : "";
   const subsQuery = subscribers.length > 0 ? `&rol=${subscribers.join(",")}` : "";
-
-  // const shipToQuery = shipToCount.length > 0 ? `&chanel=${shipToCount.join(",")}` : "";
 
   const statusQuery =
     activeUsers === "active" || activeUsers === "inactive"

@@ -23,13 +23,11 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     setIsOpenModal(true);
   };
 
-  // eslint-disable-next-line no-unused-vars
-  const [selectedFilters, setSelectedFilters] = useState({
+  const selectedFilters = {
     clients: [] as any,
     subscribers: [] as any,
-    status: "all" as "all" | "active" | "inactive",
-    shipTo: [] as any
-  });
+    status: "all" as "all" | "active" | "inactive"
+  };
 
   const { data, loading } = useClientsGroups({
     page: 1,
@@ -37,7 +35,6 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     clients: selectedFilters.clients,
     subscribers: selectedFilters.subscribers,
     activeUsers: selectedFilters.status
-    // shipTo: selectedFilters.shipTo,
   });
 
   function handleSeeGroupDetails() {
