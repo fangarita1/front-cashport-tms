@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { Button, Checkbox, Flex, Popconfirm, Table, TableProps, Typography } from "antd";
 import { DotsThree, Eye, Plus } from "phosphor-react";
 import { FilterClients } from "@/components/atoms/FilterClients/FilterClients";
@@ -18,15 +18,31 @@ interface Props {
   >;
   placedIn?: string;
   setSelectedRows?: Dispatch<SetStateAction<{}>>;
+  selectedClientsKeys?: string[];
 }
 
 export const ClientsProjectTable = ({
   setIsCreateClient,
   setIsViewDetailsClients,
   placedIn = "tab",
-  setSelectedRows
+  setSelectedRows,
+  selectedClientsKeys
 }: Props) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  useEffect(() => {
+    // Este useEffect es para seleccionar las filas
+    // de clientes que ya pertenecen al grupo
+    // cuando se va hacer PUT
+    if (
+      placedIn === "modal" &&
+      selectedClientsKeys &&
+      selectedClientsKeys.length > 0 &&
+      selectedRowKeys.length === 0
+    ) {
+      setSelectedRowKeys(selectedClientsKeys);
+    }
+  }, [placedIn, selectedClientsKeys, selectedRowKeys.length]);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
     setSelectedRowKeys(newSelectedRowKeys);

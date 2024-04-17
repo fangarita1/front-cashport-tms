@@ -3,23 +3,24 @@ import { Flex, Modal, Typography } from "antd";
 import { useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { ClientsProjectTable } from "@/components/molecules/tables/ClientsProjectTable/ClientsProjectTable";
-import { createGroup } from "@/services/groupClients/groupClients";
+import { createGroup, updateGroup } from "@/services/groupClients/groupClients";
 
-import "./modalCreateClientsGroup.scss";
+import "./modalClientsGroup.scss";
 import { IClient } from "@/types/clients/IClients";
 
 const { Text } = Typography;
 
 interface CreateGroupProps {
   isOpen: boolean;
-  setIsCreateGroup: Dispatch<SetStateAction<boolean>>;
+  isEditGroup?: boolean;
+  setIsOpenModal: Dispatch<SetStateAction<boolean>>;
 }
 
 export type NameType = {
   name: string;
 };
 
-export const ModalCreateClientsGroup = ({ isOpen, setIsCreateGroup }: CreateGroupProps) => {
+export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: CreateGroupProps) => {
   const [groupName, setGroupName] = useState("");
   const [selectedRows, setSelectedRows] = useState<any>([]);
 
@@ -36,38 +37,53 @@ export const ModalCreateClientsGroup = ({ isOpen, setIsCreateGroup }: CreateGrou
   };
 
   const onCancel = () => {
-    setIsCreateGroup(false);
+    setIsOpenModal(false);
     setGroupName("");
   };
 
   const onCreateGroup = () => {
-    console.log("Crear Grupo clickeado");
     if (selectedRows.length <= 0) {
       alert("Selecciona clientes para añadir al grupo");
       return;
     }
     if (selectedRows.length > 0) {
       try {
-        console.log(selectedRows);
         const group = {
           name: groupName,
           clients: selectedRows.map((client: IClient) => client.nit)
         };
         createGroup(group);
-        console.log(group);
       } catch (error) {
         console.log(error);
       }
     }
 
-    setIsCreateGroup(false);
+    setIsOpenModal(false);
+    setGroupName("");
+    setSelectedRows([]);
+  };
+
+  const onUpdateGroup = () => {
+    if (selectedRows.length > 0) {
+      try {
+        const group = {
+          group_id: 3,
+          clients: selectedRows.map((client: IClient) => client.nit)
+        };
+        updateGroup(group);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    setIsOpenModal(false);
     setGroupName("");
     setSelectedRows([]);
   };
 
   return (
     <>
-      {groupName === "" ? (
+      {groupName === "" && !isEditGroup ? (
         <Modal
           title="Nuevo Grupo de Clientes"
           open={isOpen}
@@ -107,7 +123,7 @@ export const ModalCreateClientsGroup = ({ isOpen, setIsCreateGroup }: CreateGrou
       ) : (
         <Modal
           width={900}
-          title={groupName}
+          title={isEditGroup ? "Nombre grupo a editar" : groupName}
           open={isOpen}
           onCancel={onCancel}
           okButtonProps={{
@@ -116,16 +132,24 @@ export const ModalCreateClientsGroup = ({ isOpen, setIsCreateGroup }: CreateGrou
           cancelButtonProps={{
             className: "buttonCancel"
           }}
-          okText="Crear Grupo"
+          okText={isEditGroup ? "Actualizar grupo" : "Crear Grupo"}
           cancelText="Cancelar"
           className="modalCreateClientsGroup"
           onOk={() => {
-            onCreateGroup();
+            isEditGroup ? onUpdateGroup() : onCreateGroup();
           }}
         >
           <Flex vertical>
-            <Text>Selecciona los clientes para añadir al grupo</Text>
-            <ClientsProjectTable placedIn="modal" setSelectedRows={setSelectedRows} />
+            <Text>
+              {isEditGroup
+                ? "Selecciona los clientes para añadir/quitar del grupo"
+                : "Selecciona los clientes para añadir al grupo"}
+            </Text>
+            <ClientsProjectTable
+              placedIn="modal"
+              setSelectedRows={setSelectedRows}
+              selectedClientsKeys={["0347623472-5643", "4347623472-5643"]}
+            />
           </Flex>
         </Modal>
       )}

@@ -1,8 +1,7 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Button, Checkbox, Flex, Popconfirm, Table, TableProps, Typography, Spin } from "antd";
 import { DotsThree, Eye, Plus } from "phosphor-react";
-import { ModalCreateClientsGroup } from "@/components/molecules/modals/ModalCreateClientsGroup/ModalCreateClientsGroup";
-import { useState } from "react";
+import { ModalClientsGroup } from "@/components/molecules/modals/ModalClientsGroup/ModalClientsGroup";
 import { useClientsGroups } from "@/hooks/useClientsGroups";
 import { IClientsGroups } from "@/types/clientsGroups/IClientsGroups";
 
@@ -18,10 +17,10 @@ interface PropsClientsGroupsTable {
 
 export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTable) => {
   const { id: idProject } = useParams<{ id: string }>();
-  const [isCreateGroup, setIsCreateGroup] = useState(false);
+  const [isOpenModal, setIsOpenModal] = useState(false);
 
   const onCreateClientsGroup = () => {
-    setIsCreateGroup(true);
+    setIsOpenModal(true);
   };
 
   // eslint-disable-next-line no-unused-vars
@@ -143,7 +142,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
         ) : (
           <Table columns={columns} dataSource={data.map((data) => ({ ...data, key: data.id }))} />
         )}
-        <ModalCreateClientsGroup isOpen={isCreateGroup} setIsCreateGroup={setIsCreateGroup} />
+        <ModalClientsGroup isOpen={isOpenModal} setIsOpenModal={setIsOpenModal} />
       </main>
     </>
   );

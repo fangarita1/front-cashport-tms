@@ -7,8 +7,10 @@ import "./groupTable.scss";
 
 interface PropsGroupTable {
   onClickBack: () => void;
+  onClickEdit: () => void;
+  onClickChangeState: () => void;
 }
-export const GroupTable = ({ onClickBack }: PropsGroupTable) => {
+export const GroupTable = ({ onClickBack, onClickEdit, onClickChangeState }: PropsGroupTable) => {
   return (
     <>
       <Flex component={"header"} className="headerGroupTable">
@@ -27,18 +29,14 @@ export const GroupTable = ({ onClickBack }: PropsGroupTable) => {
             size="large"
             htmlType="button"
             className="buttonOutlined"
-            onClick={() => {
-              console.log("Click en cambiar estado de grupo");
-            }}
+            onClick={onClickChangeState}
             icon={<ArrowsClockwise size={"1.45rem"} />}
           >
             Cambiar Estado
           </Button>
           <Button
             size="large"
-            onClick={() => {
-              console.log("Abrir Modal de crear grupo");
-            }}
+            onClick={onClickEdit}
             className="buttonOutlined"
             icon={<Pencil size={"1.45rem"} />}
           >
