@@ -17,7 +17,7 @@ import { IUpdateFormProject } from "@/types/projects/IUpdateFormProject";
 
 import { BusinessRulesView } from "../BusinessRulesView/BusinessRulesView";
 
-import { ClientsGroupsTable } from "@/components/molecules/tables/ClientsGroupsTable/ClientsGroupsTable";
+import { ClientsGroupsProjectView } from "../ClientsGroupsProjectView/ClientsGroupsProjectView";
 
 import "./detailproject.scss";
 
@@ -153,7 +153,7 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
     {
       key: "6",
       label: "Grupos de clientes",
-      children: <ClientsGroupsTable idProject={idProjectParam} />
+      children: <ClientsGroupsProjectView />
     }
   ];
 

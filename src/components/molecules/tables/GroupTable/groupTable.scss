@@ -1,0 +1,22 @@
+@import "@styles/variables.scss";
+
+.headerGroupTable {
+    margin: 0 2rem 1rem 0;
+    justify-content: space-between;
+
+    .buttonOutlined {
+        background-color: $white;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        color: black;
+        box-shadow: none;
+        border: 1px solid black;
+        padding: 1.5rem 2rem !important;
+
+        &:hover {
+            opacity: 0.8;
+            color: black;
+        }
+    }
+}

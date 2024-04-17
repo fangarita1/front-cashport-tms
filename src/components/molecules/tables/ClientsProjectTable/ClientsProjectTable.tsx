@@ -251,6 +251,106 @@ export const ClientsProjectTable = ({
         </main>
       </>
     );
+  } else if (placedIn === "groupTable") {
+    columns = [
+      {
+        title: "Nombre",
+        dataIndex: "client_name",
+        key: "client_name",
+        render: (text) => <Link underline>{text}</Link>
+      },
+      {
+        title: "NIT",
+        dataIndex: "nit",
+        key: "nit",
+        render: (text) => <Text>{text}</Text>
+      },
+      {
+        title: "Cartera",
+        key: "budget",
+        dataIndex: "budget",
+        render: (text) => <Text>{text}</Text>
+      },
+      {
+        title: "Usuarios",
+        key: "usuarios",
+        dataIndex: "usuarios",
+        render: (text) => <Text>{text}</Text>
+      },
+      {
+        title: "Ship To",
+        key: "shipTo",
+        dataIndex: "shipTo",
+        render: (text) => <Text>{text}</Text>
+      },
+      {
+        title: "Grupos",
+        key: "budget",
+        dataIndex: "budget",
+        render: (text) => <Text>{text}</Text>
+      },
+      {
+        title: "Holding",
+        key: "holding_name",
+        dataIndex: "holding_name",
+        render: (text) => <Text>{text}</Text>
+      },
+      {
+        title: "Estado",
+        key: "status",
+        width: "150px",
+        dataIndex: "status",
+        render: (_, { ACTIVE = true }) => (
+          <>
+            {ACTIVE ? (
+              <Flex
+                align="center"
+                className={ACTIVE ? "statusContainer" : "statusContainerPending"}
+              >
+                <div className={ACTIVE ? "statusActive" : "statusPending"} />
+                <Text>{ACTIVE ? "Activo" : "Inactivo"}</Text>
+              </Flex>
+            ) : (
+              <Popconfirm
+                placement="topRight"
+                title={"Invitación pendiente de aprobación"}
+                description={"Volver a Enviar invitacion?"}
+                okText="Si"
+                cancelText="No"
+              >
+                <Flex
+                  align="center"
+                  className={ACTIVE ? "statusContainer" : "statusContainerPending"}
+                >
+                  <div className={ACTIVE ? "statusActive" : "statusPending"} />
+                  <Text>{ACTIVE ? "Activo" : "Inactivo"}</Text>
+                </Flex>
+              </Popconfirm>
+            )}
+          </>
+        )
+      }
+    ];
+
+    return (
+      <>
+        <main className="mainClientsProjectTable">
+          <Flex justify="space-between" className="mainClientsProjectTable_header">
+            <Flex>
+              <FilterClients />
+            </Flex>
+          </Flex>
+          <Table
+            columns={columns}
+            dataSource={data.map((client) => ({
+              key: client.nit,
+              ...client
+            }))}
+            pagination={{ pageSize: 8 }}
+          />
+        </main>
+      </>
+    );
   }
 };
 const data: IClient[] = [];

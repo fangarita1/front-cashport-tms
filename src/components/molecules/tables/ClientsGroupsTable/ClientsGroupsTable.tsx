@@ -1,31 +1,25 @@
-// import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { Button, Checkbox, Flex, Popconfirm, Table, TableProps, Typography, Spin } from "antd";
 import { DotsThree, Eye, Plus } from "phosphor-react";
-// import { FilterClients } from "@/components/atoms/FilterClients/FilterClients";
 import { ModalCreateClientsGroup } from "@/components/molecules/modals/ModalCreateClientsGroup/ModalCreateClientsGroup";
 import { useState } from "react";
 import { useClientsGroups } from "@/hooks/useClientsGroups";
 import { IClientsGroups } from "@/types/clientsGroups/IClientsGroups";
 
+import { useParams } from "next/navigation";
+
 import "./ClientsGroupsTable.scss";
 
 const { Text, Link } = Typography;
 
-interface Props {
-  idProject: string;
-  // setIsViewDetailsGroup: Dispatch<
-  //   SetStateAction<{
-  //     active: boolean;
-  //     id: number;
-  //   }>
-  // >;
+interface PropsClientsGroupsTable {
+  setShowGroupDetails: Dispatch<SetStateAction<boolean>>;
 }
 
-export const ClientsGroupsTable = ({
-  idProject
-  // setIsViewDetailsGroup
-}: Props) => {
+export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTable) => {
+  const { id: idProject } = useParams<{ id: string }>();
   const [isCreateGroup, setIsCreateGroup] = useState(false);
+
   const onCreateClientsGroup = () => {
     setIsCreateGroup(true);
   };
@@ -46,6 +40,10 @@ export const ClientsGroupsTable = ({
     activeUsers: selectedFilters.status
     // shipTo: selectedFilters.shipTo,
   });
+
+  function handleSeeGroupDetails() {
+    setShowGroupDetails(true);
+  }
 
   const columns: TableProps<IClientsGroups>["columns"] = [
     {
@@ -116,12 +114,7 @@ export const ClientsGroupsTable = ({
       key: "seeProject",
       width: "40px",
       dataIndex: "",
-      render: (_, { id }) => (
-        <Button
-          onClick={() => console.log(`group with id:${id} clicked`)}
-          icon={<Eye size={"1.3rem"} />}
-        />
-      )
+      render: () => <Button onClick={handleSeeGroupDetails} icon={<Eye size={"1.3rem"} />} />
     }
   ];
 
@@ -130,7 +123,6 @@ export const ClientsGroupsTable = ({
       <main className="mainClientsGroupsTable">
         <Flex justify="space-between" className="mainClientsGroupsTable_header">
           <Flex gap={"1.75rem"}>
-            {/* <FilterClients /> */}
             <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
           </Flex>
           <Button
