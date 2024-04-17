@@ -205,23 +205,6 @@ export const ProjectFormTab = ({
               control={control}
               error={errors.contact?.name}
             />
-            {/* <Flex vertical className="containerInput">
-            <Title level={5}>Posicion</Title>
-            <Controller
-              name="contact.position"
-              rules={{ required: true, maxLength: 123 }}
-              control={control}
-              render={({ field }) => (
-                <Input
-                  className="input"
-                  variant="borderless"
-                  placeholder="Posicion"
-                  {...field}
-                />
-              )}
-            />
-            <Text className='textError'>{errors?.contact?.position && 'Posicion es obligatorio *'}</Text>
-          </Flex> */}
             <InputForm
               typeInput="email"
               titleInput="Correo"
@@ -258,23 +241,6 @@ export const ProjectFormTab = ({
                 {errors?.personalization?.color && "Color Personalizado es obligatorio *"}
               </Text>
             </Flex>
-            {/* <Flex vertical className="containerInput">
-            <Title level={5}>Descripcion</Title>
-            <Controller
-              name="personalization.description"
-              control={control}
-              rules={{ required: true, maxLength: 123 }}
-              render={({ field }) => (
-                <TextArea
-                  rows={2}
-                  className="input"
-                  variant="borderless"
-                  placeholder="Ingresar Descripcion"
-                  {...field}
-                />
-              )}
-            />
-          </Flex> */}
           </Flex>
           <Flex className="buttonNewProject">
             <Button className="button" style={{ display: "flex" }} htmlType={"submit"}>

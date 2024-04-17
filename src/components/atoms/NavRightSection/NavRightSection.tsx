@@ -1,6 +1,4 @@
 import { Flex } from "antd";
-
-// import { NotificationButton } from "../NotificationButton/NotificationButton";
 import Search from "antd/es/input/Search";
 
 interface Props {
