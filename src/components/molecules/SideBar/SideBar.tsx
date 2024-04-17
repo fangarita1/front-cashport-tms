@@ -31,9 +31,6 @@ export const SideBar = () => {
         <Button type="primary" size="large" icon={<User size="26" />} className="buttonIcon">
           {isSideBarLarge && "Clientes"}
         </Button>
-        {/* <Button type="primary" size="large" icon={<Gear size="26" />} className="buttonIconActive">
-          {isSideBarLarge && "Administracion"}
-        </Button> */}
       </Flex>
       <Flex>
         <Button

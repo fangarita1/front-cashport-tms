@@ -192,15 +192,6 @@ export const ProjectFormTab = ({
               control={control}
               error={errors.general?.billing_period}
             />
-            {/* <Flex vertical style={{ width: "24.5%" }} justify="center">
-                <Title level={5}>Período de facturación</Title>
-                <Input
-                  variant="borderless"
-                  className="input"
-                  placeholder="Segundo miércoles del mes"
-                  onClick={() => setIsTimeFacturaction(true)}
-                />
-              </Flex> */}
           </Flex>
 
           {/* -----------------------------------Contact----------------------------------- */}
