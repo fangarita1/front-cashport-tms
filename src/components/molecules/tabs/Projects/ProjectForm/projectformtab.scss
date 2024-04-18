@@ -30,6 +30,9 @@
 			line-height: normal;
 			justify-content: center;
 			background: var(--Dark-Grey, #DDD);
+			&.active{
+				background-color:	#CBE71E;
+			}
 		}
 	}
 
