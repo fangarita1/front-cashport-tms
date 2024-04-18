@@ -1,11 +1,24 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Button, Checkbox, Flex, Popconfirm, Table, TableProps, Typography, Spin } from "antd";
-import { DotsThree, Eye, Plus } from "phosphor-react";
+import {
+  Button,
+  Checkbox,
+  Flex,
+  Popconfirm,
+  Table,
+  TableProps,
+  Typography,
+  Spin,
+  MenuProps
+} from "antd";
+
+import { Eye, Plus } from "phosphor-react";
 import { ModalClientsGroup } from "@/components/molecules/modals/ModalClientsGroup/ModalClientsGroup";
 import { useClientsGroups } from "@/hooks/useClientsGroups";
 import { IClientsGroups } from "@/types/clientsGroups/IClientsGroups";
 
 import { useParams } from "next/navigation";
+
+import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 
 import "./ClientsGroupsTable.scss";
 
@@ -40,6 +53,17 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
   function handleSeeGroupDetails() {
     setShowGroupDetails(true);
   }
+
+  const items: MenuProps["items"] = [
+    {
+      key: "1",
+      label: <Button className="buttonOutlined">Cambiar de estado</Button>
+    },
+    {
+      key: "2",
+      label: <Button className="buttonOutlined">Eliminar grupo</Button>
+    }
+  ];
 
   const columns: TableProps<IClientsGroups>["columns"] = [
     {
@@ -119,7 +143,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
       <main className="mainClientsGroupsTable">
         <Flex justify="space-between" className="mainClientsGroupsTable_header">
           <Flex gap={"1.75rem"}>
-            <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
+            <DotsDropdown items={items} />
           </Flex>
           <Button
             type="primary"
