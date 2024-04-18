@@ -210,12 +210,6 @@ export const UserProjectForm = ({
             {!isViewDetailsUser && (
               <Flex component={"footer"} className="footerNewUser" justify="flex-end">
                 <Flex gap={"1rem"}>
-                  {/* <Button className="buttonOutlined" icon={<ArrowLineDown size="1.3rem" />} size="large">
-              Descargar Plantilla
-            </Button>
-            <Button className="buttonOutlined" icon={<ArrowLineUp size="1.3rem" />} size="large">
-              Cargar Excel
-            </Button> */}
                   <Button size="large" type="primary" className="buttonAction" htmlType="submit">
                     Registrar Usuario
                   </Button>
