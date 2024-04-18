@@ -1,11 +1,12 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Button, Checkbox, Flex, Popconfirm, Spin, Table, Typography, message } from "antd";
-import type { TableProps } from "antd";
+import { Button, Flex, Popconfirm, Spin, Table, Typography, message } from "antd";
+import type { MenuProps, TableProps } from "antd";
 
-import { DotsThree, Eye, Plus, Triangle } from "phosphor-react";
+import { Eye, Plus, Triangle } from "phosphor-react";
 
 import { useUsers } from "@/hooks/useUsers";
 import { FilterUsers } from "@/components/atoms/FilterUsers/FilterUsers";
+import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 import { onResendInvitationUser } from "@/services/users/users";
 import { SUCCESS } from "@/utils/constants/globalConstants";
 
@@ -22,6 +23,8 @@ interface Props {
 }
 
 export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails }: Props) => {
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [selectedRows, setSelectedRows] = useState();
   const [messageApi, contextHolder] = message.useMessage();
 
   const onResendInvitation = async (email: string) => {
@@ -39,13 +42,6 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
     }
   };
   const columns: TableProps<IUserSingle>["columns"] = [
-    {
-      title: "",
-      dataIndex: "active",
-      key: "active",
-      render: () => <Checkbox />,
-      width: "30px"
-    },
     {
       title: "Name",
       dataIndex: "USER_NAME",
@@ -176,10 +172,46 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
     line: selectedUsers.line,
     subline: selectedUsers.subline
   });
+
   const onCreateUser = () => {
     setIsViewDetails({ active: false, id: 0 });
     setIsCreateUser(true);
   };
+
+  const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+    setSelectedRows(newSelectedRow);
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange
+  };
+
+  const deleteUsers = () => {
+    console.log("deleteUsers", selectedRows);
+  };
+
+  const changeUsersState = () => {};
+
+  const items: MenuProps["items"] = [
+    {
+      key: "1",
+      label: (
+        <Button className="buttonOutlined" onClick={deleteUsers}>
+          Reenviar invitación
+        </Button>
+      )
+    },
+    {
+      key: "2",
+      label: (
+        <Button className="buttonOutlined" onClick={changeUsersState}>
+          Cambiar estado
+        </Button>
+      )
+    }
+  ];
   return (
     <>
       {contextHolder}
@@ -187,7 +219,7 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
         <Flex justify="space-between" className="mainUsersProjectTable_header">
           <Flex gap={"1.75rem"}>
             <FilterUsers setSelectedUsers={setSelectedUsers} idProject={idProject} />
-            <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
+            <DotsDropdown items={items} />
           </Flex>
           <Button
             type="primary"
@@ -218,6 +250,8 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
             }}
             columns={columns}
             dataSource={data.map((data) => ({ ...data, key: data.ID }))}
+            rowSelection={rowSelection}
+            rowClassName={(record) => (selectedRowKeys.includes(record.ID) ? "selectedRow" : "")}
           />
         )}
       </main>
