@@ -15,18 +15,10 @@ export const ClientsGroupsProjectView = () => {
     setIsOpenModal(true);
   };
 
-  const changeGroupState = () => {
-    console.log("Change state of Group");
-  };
-
   return (
     <>
       {showGroupDetails ? (
-        <GroupTable
-          onClickBack={goBackToClientsGroups}
-          onClickEdit={openEditModal}
-          onClickChangeState={changeGroupState}
-        />
+        <GroupTable onClickBack={goBackToClientsGroups} onClickEdit={openEditModal} />
       ) : (
         <ClientsGroupsTable setShowGroupDetails={setShowGroupDetails} />
       )}

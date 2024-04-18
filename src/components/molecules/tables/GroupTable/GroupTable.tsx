@@ -1,16 +1,34 @@
-// import { Dispatch, SetStateAction, useState } from "react";
-import { ClientsProjectTable } from "../ClientsProjectTable/ClientsProjectTable";
+import { useState } from "react";
 import { Button, Flex } from "antd";
 import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
+import { ClientsProjectTable } from "../ClientsProjectTable/ClientsProjectTable";
+import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
+import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
 
 import "./groupTable.scss";
 
 interface PropsGroupTable {
   onClickBack: () => void;
   onClickEdit: () => void;
-  onClickChangeState: () => void;
 }
-export const GroupTable = ({ onClickBack, onClickEdit, onClickChangeState }: PropsGroupTable) => {
+export const GroupTable = ({ onClickBack, onClickEdit }: PropsGroupTable) => {
+  const [isOpenModalStatus, setIsOpenModalStatus] = useState({ status: false, remove: false });
+
+  const onRemoveGroup = async () => {
+    setIsOpenModalStatus({ status: false, remove: false });
+  };
+
+  const onActiveGroup = async () => {
+    setIsOpenModalStatus({ status: false, remove: false });
+  };
+
+  const onInactiveGroup = async () => {
+    setIsOpenModalStatus({ status: false, remove: false });
+  };
+  const onClickChangeState = () => {
+    setIsOpenModalStatus({ status: true, remove: false });
+  };
+
   return (
     <>
       <Flex component={"header"} className="headerGroupTable">
@@ -46,6 +64,21 @@ export const GroupTable = ({ onClickBack, onClickEdit, onClickChangeState }: Pro
       </Flex>
 
       <ClientsProjectTable placedIn="groupTable" />
+
+      <ModalChangeStatus
+        isActiveStatus={true}
+        isOpen={isOpenModalStatus.status}
+        onActive={onActiveGroup}
+        onDesactivate={onInactiveGroup}
+        onRemove={() => setIsOpenModalStatus({ remove: true, status: false })}
+        onClose={() => setIsOpenModalStatus({ status: false, remove: false })}
+      />
+      <ModalRemove
+        name="usuario"
+        isOpen={isOpenModalStatus.remove}
+        onClose={() => setIsOpenModalStatus({ status: false, remove: false })}
+        onRemove={onRemoveGroup}
+      />
     </>
   );
 };
