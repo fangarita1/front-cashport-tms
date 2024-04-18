@@ -1,11 +1,11 @@
 @import "@styles/variables.scss";
 
-.mainClientsProjectTable {
+.mainClientsGroupsTable {
     width: 100%;
     overflow-y: scroll;
     height: 100%;
 
-    .mainClientsProjectTable_header {
+    .mainClientsGroupsTable_header {
         margin: 2rem 0;
         padding-right: 1rem;
         margin-top: 1rem;
@@ -60,12 +60,6 @@
             background-color: $secondary !important;
             opacity: 0.8;
             color: black;
-        }
-    }
-
-    .selectedRow {
-        td {
-            background-color: inherit !important;
         }
     }
 }

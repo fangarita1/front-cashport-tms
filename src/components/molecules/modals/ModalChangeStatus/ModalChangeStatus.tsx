@@ -33,16 +33,17 @@ export const ModalChangeStatus = ({
     <Modal
       open={isOpen}
       onCancel={onClose}
-      cancelButtonProps={{ style: { display: "none" } }}
-      okText="Aceptar"
+      cancelButtonProps={{
+        className: "buttonCancel"
+      }}
+      okText="Cambiar de estado"
       okButtonProps={{ className: "acceptButton" }}
       className="modalChangeStatus"
-      title="Cambiar de Estado"
+      title="Cambio de Estado"
       onOk={onOk}
+      cancelText="Cancelar"
     >
-      <Text className="textModal">
-        Las siguientes entradas son inválidas o tienen campos requeridos vacíos:
-      </Text>
+      <Text className="textModal">Selecciona el nuevo estado</Text>
       <Flex vertical className="options">
         <Checkbox className="option" checked={isActive} onClick={() => setIsActive(true)}>
           Activo
