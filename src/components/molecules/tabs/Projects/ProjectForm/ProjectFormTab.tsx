@@ -64,7 +64,8 @@ export const ProjectFormTab = ({
   const {
     control,
     handleSubmit,
-    formState: { errors }
+    reset,
+    formState: { errors, isDirty }
   } = useForm<IUpdateFormProject>({
     defaultValues,
     disabled: statusForm === "review"
@@ -75,12 +76,13 @@ export const ProjectFormTab = ({
       ? "Crear nuevo proyecto"
       : statusForm === "edit"
         ? "Guardar Cambios"
-        : " Editar Proyecto";
+        : "Editar Proyecto";
 
   const onSubmit = (data: any) => {
     if (!imageFile) return setImageError(true);
     setImageError(false);
     onSubmitForm({ ...data, logo: imageFile });
+    reset(data);
   };
 
   return (
@@ -97,7 +99,7 @@ export const ProjectFormTab = ({
             Ver Proyectos
           </Button>
           <Flex gap={"1rem"}>
-            {statusForm === "review" && (
+            {(statusForm === "review" || statusForm === "edit") && (
               <Button
                 style={{ display: "flex" }}
                 htmlType="button"
@@ -243,9 +245,16 @@ export const ProjectFormTab = ({
             </Flex>
           </Flex>
           <Flex className="buttonNewProject">
-            <Button className="button" style={{ display: "flex" }} htmlType={"submit"}>
-              {validationButtonText}
-            </Button>
+            {statusForm === "edit" && (
+              <Button
+                disabled={!isDirty}
+                className={`button ${isDirty ? "active" : ""}`}
+                style={{ display: "flex" }}
+                htmlType={"submit"}
+              >
+                {validationButtonText}
+              </Button>
+            )}
           </Flex>
         </Flex>
       </form>
