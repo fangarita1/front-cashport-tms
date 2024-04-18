@@ -1,7 +1,8 @@
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
-import { Button, Checkbox, Flex, Popconfirm, Table, TableProps, Typography } from "antd";
-import { DotsThree, Eye, Plus } from "phosphor-react";
+import { Button, Flex, MenuProps, Popconfirm, Table, TableProps, Typography } from "antd";
+import { Eye, Plus } from "phosphor-react";
 import { FilterClients } from "@/components/atoms/FilterClients/FilterClients";
+import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 
 import "./clientsprojecttable.scss";
 import { IClient } from "@/types/clients/IClients";
@@ -66,13 +67,6 @@ export const ClientsProjectTable = ({
   let columns: TableProps<IClient>["columns"] = [];
   if (placedIn === "tab") {
     columns = [
-      {
-        title: "",
-        dataIndex: "active",
-        key: "active",
-        render: () => <Checkbox />,
-        width: "30px"
-      },
       {
         title: "Name",
         dataIndex: "client_name",
@@ -174,26 +168,67 @@ export const ClientsProjectTable = ({
       }
     ];
 
+    const deleteClients = () => {};
+
+    const bulkLoadShipTo = () => {};
+
+    const downloadTemplateShipTo = () => {};
+
+    const changeClientsState = () => {};
+
+    const items: MenuProps["items"] = [
+      {
+        key: "1",
+        label: (
+          <Button className="buttonOutlined" onClick={deleteClients}>
+            Eliminar clientes
+          </Button>
+        )
+      },
+      {
+        key: "2",
+        label: (
+          <Button className="buttonOutlined" onClick={bulkLoadShipTo}>
+            Carga Masiva Ship To
+          </Button>
+        )
+      },
+      {
+        key: "3",
+        label: (
+          <Button className="buttonOutlined" onClick={downloadTemplateShipTo}>
+            Descarga Plantilla Ship To
+          </Button>
+        )
+      },
+      {
+        key: "4",
+        label: (
+          <Button className="buttonOutlined" onClick={changeClientsState}>
+            Cambiar estado
+          </Button>
+        )
+      }
+    ];
+
     return (
       <>
         <main className="mainClientsProjectTable">
           <Flex justify="space-between" className="mainClientsProjectTable_header">
             <Flex gap={"1.75rem"}>
               <FilterClients />
-              <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
+              <DotsDropdown items={items} />{" "}
             </Flex>
 
-            {placedIn === "tab" ? (
-              <Button
-                type="primary"
-                className="buttonNewProject"
-                size="large"
-                onClick={onCreateClient}
-                icon={<Plus weight="bold" size={15} />}
-              >
-                Nuevo Cliente
-              </Button>
-            ) : null}
+            <Button
+              type="primary"
+              className="buttonNewProject"
+              size="large"
+              onClick={onCreateClient}
+              icon={<Plus weight="bold" size={15} />}
+            >
+              Nuevo Cliente
+            </Button>
           </Flex>
 
           <Table
@@ -202,6 +237,8 @@ export const ClientsProjectTable = ({
               key: client.nit,
               ...client
             }))}
+            rowSelection={rowSelection}
+            rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
           />
         </main>
       </>
