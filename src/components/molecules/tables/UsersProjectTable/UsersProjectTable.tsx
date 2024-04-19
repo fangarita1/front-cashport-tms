@@ -189,7 +189,7 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
   };
 
   const deleteUsers = () => {
-    console.log("deleteUsers", selectedRows);
+    return selectedRows;
   };
 
   const changeUsersState = () => {};
