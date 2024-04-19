@@ -1,5 +1,22 @@
-export interface IClient {
+interface IPosition {
+  lat: string;
+  lon: string;
+}
+
+interface ILocation {
+  id: number;
   nit: string;
+  city: string;
+  address: string;
+  position: IPosition;
+}
+
+interface IDocument {
+  URL: string;
+}
+
+export interface IClient {
+  nit: number;
   uuid: string;
   project_id: number;
   client_name: string;
@@ -12,22 +29,23 @@ export interface IClient {
   email: string;
   billing_period: string;
   radication_type: number;
-  holding_id?: number;
-  holding_name?: string;
+  holding_id: number;
+  holding_name: string;
   document_type: string;
   locations: ILocation[];
   is_deleted: number;
-  documents?: any;
+  documents: IDocument[];
   ACTIVE: boolean;
 }
 
-interface ILocation {
-  id: number;
-  nit: string;
-  city: string;
-  address: string;
-  position: {
-    lat: string;
-    lon: string;
-  };
+export interface Pagination {
+  page: number;
+  total: number;
+}
+
+export interface IClients {
+  status: number;
+  message: string;
+  data: IClient[];
+  pagination: Pagination;
 }
