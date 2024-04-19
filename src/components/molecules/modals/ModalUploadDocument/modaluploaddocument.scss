@@ -1,0 +1,53 @@
+@import "../../../../styles/variables.scss";
+
+.modaluploaddocument {
+    width: 700px !important;
+
+    .ant-modal-content {
+        .ant-modal-close {
+            margin-right: 15px;
+            margin-top: 6px;
+            transform: scale(1.4);
+        }
+    }
+
+    .description {
+        font-size: 1.2rem;
+        font-weight: 300;
+        margin-top: 1rem;
+    }
+
+    .buttonOk {
+        width: 49%;
+        height: 3rem;
+        box-shadow: none;
+        background-color: $secondary;
+        color: black;
+        font-weight: 600;
+
+        &:hover {
+            background-color: $secondary !important;
+            opacity: 0.8;
+        }
+    }
+
+    .mainUploadDocuments {
+        gap: 1rem;
+        margin: 20px 0px;
+    }
+
+    .buttonCancel {
+        width: 49%;
+        height: 3rem;
+        box-shadow: none;
+        background-color: $white;
+        color: black;
+        font-weight: 600;
+        border: 1px solid black;
+
+        &:hover {
+            background-color: $white !important;
+            opacity: 0.8;
+        }
+    }
+}

@@ -1,0 +1,141 @@
+@import "@styles/variables.scss";
+
+.mainUsersProjectTable {
+    width: 100%;
+    overflow-y: scroll;
+    height: 100%;
+    // border: 3px blue solid;
+
+    .mainUsersProjectTable_header {
+        margin: 2rem 0;
+        margin-top: 1rem;
+        padding-right: 1rem;
+    }
+
+    .statusContainer {
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        width: auto;
+        border: 1px solid $active;
+    }
+
+    .statusContainerPending {
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        width: auto;
+        border: 1px solid $pending;
+        cursor: pointer;
+    }
+
+    .statusPending {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 1rem;
+        margin-right: 0.5rem;
+        background-color: $pending;
+    }
+
+    .statusActive {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 1rem;
+        margin-right: 0.5rem;
+        background-color: $active;
+    }
+
+    .inputSearch {
+        &::placeholder {
+            color: black !important;
+        }
+    }
+
+    .buttonNewProject {
+        background-color: $secondary;
+        color: black;
+        font-weight: 600;
+        box-shadow: none;
+        display: flex;
+        align-items: center;
+
+        &:hover {
+            background-color: $secondary !important;
+            opacity: 0.8;
+            color: black;
+        }
+    }
+
+    .buttonSeeProject {
+        background-color: #dddddd;
+        padding: 5px;
+
+        &:active {
+            background-color: $gray;
+        }
+    }
+
+    .usersTable {
+        .ant-table-cell {
+            padding: 12px;
+        }
+        .cell {
+            display: inline-block;
+
+            &.-zone {
+                width: 100%;
+            }
+
+            &.-clients {
+                display: flex;
+                justify-content: flex-end;
+                padding-right: 5px;
+            }
+        }
+
+        li {
+            background-color: transparent;
+            border: 1px solid transparent;
+            border-radius: 50%;
+            font-weight: 600;
+
+            &:hover {
+                border: 1px solid $gray;
+            }
+
+            &.ant-pagination-item {
+                color: white;
+
+                &-active {
+                    background-color: black;
+                    color: white;
+                    a {
+                        color: inherit;
+                    }
+                }
+            }
+
+            &.ant-pagination {
+                &-prev {
+                    border-radius: 50%;
+                    transform: rotate(-90deg);
+
+                    &:hover {
+                        background-color: #f0f0f0;
+                    }
+                }
+
+                &-next {
+                    border-radius: 50%;
+                    transform: rotate(90deg);
+
+                    &:hover {
+                        background-color: #f0f0f0;
+                    }
+                }
+
+                &-disabled {
+                    opacity: 30%;
+                }
+            }
+        }
+    }
+}

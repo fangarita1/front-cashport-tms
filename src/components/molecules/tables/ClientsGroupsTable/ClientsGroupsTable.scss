@@ -1,0 +1,65 @@
+@import "@styles/variables.scss";
+
+.mainClientsGroupsTable {
+    width: 100%;
+    overflow-y: scroll;
+    height: 100%;
+
+    .mainClientsGroupsTable_header {
+        margin: 2rem 0;
+        padding-right: 1rem;
+        margin-top: 1rem;
+    }
+
+    .statusContainer {
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        width: auto;
+        border: 1px solid $active;
+    }
+
+    .statusContainerPending {
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        width: auto;
+        border: 1px solid $pending;
+        cursor: pointer;
+    }
+
+    .statusPending {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 1rem;
+        margin-right: 0.5rem;
+        background-color: $pending;
+    }
+
+    .statusActive {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 1rem;
+        margin-right: 0.5rem;
+        background-color: $active;
+    }
+
+    .inputSearch {
+        &::placeholder {
+            color: black !important;
+        }
+    }
+
+    .buttonNewProject {
+        background-color: $secondary;
+        color: black;
+        font-weight: 600;
+        box-shadow: none;
+        display: flex;
+        align-items: center;
+
+        &:hover {
+            background-color: $secondary !important;
+            opacity: 0.8;
+            color: black;
+        }
+    }
+}

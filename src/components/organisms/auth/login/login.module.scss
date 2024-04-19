@@ -1,0 +1,81 @@
+
+$layout-breakpoint-small: 960px;
+
+.home{
+    background-color: #09131D;
+    height: 100vh;
+    width: 100%;
+    @media (max-width: $layout-breakpoint-small) {
+        background-color: #121E2C;
+    
+    }
+}
+.container{
+    height: 100%;
+    max-width: 1400px;
+     margin: 0 auto;
+     @media (max-width: $layout-breakpoint-small) {
+        flex-direction: column;
+    }
+}
+.textCompanyContainer{
+    @media (max-width: $layout-breakpoint-small) {
+    display: none;
+    }
+}
+.text{
+    font-size: 2rem;
+    color:white;
+}
+.companySection{
+    width:60%;
+    height: 80%;
+    flex-direction: column;
+    padding-top: 10rem;
+    padding-right: 3rem;
+    @media (max-width: $layout-breakpoint-small) {
+        width:100%;
+        height: auto;
+        flex-direction: column;
+        padding-top: 0;
+        padding-right: 0;
+        display: flex;
+        align-items: center;
+    
+    }
+      
+}
+.loginSection{
+    width:40%;
+    height: 80%;
+    @media (max-width: $layout-breakpoint-small) {
+        width:100%;
+        height: auto;
+    }
+}
+.login{
+    width: 75%;
+    height: auto;
+    padding: 3rem 0;
+    border-radius: 12px;
+    background-color: #121E2C;
+    @media (max-width: $layout-breakpoint-small) {
+        width: 100%;
+    
+    }
+}
+.title{
+    text-align: center;
+    color: white;
+}
+
+.imageLogo{
+    width: 10rem;
+    margin: 2rem 0;
+    @media (max-width: $layout-breakpoint-small) {
+        width: 100% ;
+        margin: 0;
+        padding: 1rem;
+        margin-top: 3rem;
+    }
+}

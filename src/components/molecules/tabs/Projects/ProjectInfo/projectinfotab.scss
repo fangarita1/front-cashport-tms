@@ -1,0 +1,38 @@
+@import "../../../../../styles/variables";
+
+.mainProyectsDetails {
+    width: 100%;
+    max-width: 1300px;
+    .headerProyectsForm{
+        margin-top: 1rem;
+        margin-bottom: 1.75rem;
+        h2,h3,h4{
+            color: $secondary-gray;
+        }
+    }
+     .buttonNewProject{
+         background-color: $background;
+         color: black;
+         &:hover{
+         background-color: $background !important;
+         opacity: 0.8;
+         color: black;
+
+         }
+     }
+
+    .generalProject{
+        width: 30%;
+        h2,h3,h4{
+            color: $secondary-gray;
+        }
+        .input{
+            margin-bottom: 1rem;
+            border-bottom: 1px solid  $secondary-gray;
+            border-radius: 0;
+            &::placeholder{
+                color: $secondary-gray;
+            }
+        }
+    }
+}

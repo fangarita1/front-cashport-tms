@@ -1,19 +1,19 @@
-import { StateCreator } from 'zustand'
+import { StateCreator } from "zustand";
 
 export interface User {
-  id: number
-  name: string
-  email: string
+  id: number;
+  name: string;
+  email: string;
 }
 
 export interface UserSlice {
-  user: User
+  user: User;
 }
 
 export const createUserSlice: StateCreator<UserSlice> = () =>
   // set
   ({
     user: {
-      name: 'felipe'
+      name: "felipe"
     } as User
-  })
+  });
