@@ -138,4 +138,10 @@
             }
         }
     }
+
+    .selectedRow {
+        td {
+            background-color: inherit !important;
+        }
+    }
 }

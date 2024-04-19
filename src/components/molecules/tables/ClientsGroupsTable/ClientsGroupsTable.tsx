@@ -1,15 +1,5 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import {
-  Button,
-  Checkbox,
-  Flex,
-  Popconfirm,
-  Table,
-  TableProps,
-  Typography,
-  Spin,
-  MenuProps
-} from "antd";
+import { Button, Flex, Popconfirm, Table, TableProps, Typography, Spin, MenuProps } from "antd";
 
 import { Eye, Plus } from "phosphor-react";
 import { ModalClientsGroup } from "@/components/molecules/modals/ModalClientsGroup/ModalClientsGroup";
@@ -31,6 +21,8 @@ interface PropsClientsGroupsTable {
 export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTable) => {
   const { id: idProject } = useParams<{ id: string }>();
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [selectedRows, setSelectedRows] = useState<any>([]);
 
   const onCreateClientsGroup = () => {
     setIsOpenModal(true);
@@ -54,25 +46,44 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     setShowGroupDetails(true);
   }
 
+  const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+    setSelectedRows(newSelectedRow);
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange
+  };
+
+  const changeGroupsState = () => {
+    console.log("change groups state for ", selectedRows);
+  };
+
+  const deleteGroups = () => {
+    console.log("delete groups ", selectedRows);
+  };
+
   const items: MenuProps["items"] = [
     {
       key: "1",
-      label: <Button className="buttonOutlined">Cambiar de estado</Button>
+      label: (
+        <Button className="buttonOutlined" onClick={changeGroupsState}>
+          Cambiar de estado
+        </Button>
+      )
     },
     {
       key: "2",
-      label: <Button className="buttonOutlined">Eliminar grupo</Button>
+      label: (
+        <Button className="buttonOutlined" onClick={deleteGroups}>
+          Eliminar grupo
+        </Button>
+      )
     }
   ];
 
   const columns: TableProps<IClientsGroups>["columns"] = [
-    {
-      title: "",
-      dataIndex: "active",
-      key: "active",
-      render: () => <Checkbox />,
-      width: "30px"
-    },
     {
       title: "Nombre Grupo",
       dataIndex: "group_name",
@@ -161,7 +172,12 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
             <Spin size="large" />
           </Flex>
         ) : (
-          <Table columns={columns} dataSource={data.map((data) => ({ ...data, key: data.id }))} />
+          <Table
+            columns={columns}
+            dataSource={data.map((data) => ({ ...data, key: data.id }))}
+            rowSelection={rowSelection}
+            rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
+          />
         )}
         <ModalClientsGroup isOpen={isOpenModal} setIsOpenModal={setIsOpenModal} />
       </main>
