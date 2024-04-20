@@ -241,7 +241,7 @@ export const ClientsProjectTable = ({
         <main className="mainClientsProjectTable">
           <Flex justify="space-between" className="mainClientsProjectTable_header">
             <Flex gap={"1.75rem"}>
-              <FilterClients />
+              <FilterClients setFilterClients={setFilterClients} clientsData={data} />
               <DotsDropdown items={items} />{" "}
             </Flex>
 
@@ -319,7 +319,7 @@ export const ClientsProjectTable = ({
         <main className="mainClientsProjectTable">
           <Flex justify="space-between" className="mainClientsProjectTable_header">
             <Flex>
-              <FilterClients />
+              <FilterClients setFilterClients={setFilterClients} clientsData={data} />
             </Flex>
           </Flex>
 
@@ -428,7 +428,7 @@ export const ClientsProjectTable = ({
         <main className="mainClientsProjectTable">
           <Flex justify="space-between" className="mainClientsProjectTable_header">
             <Flex>
-              <FilterClients />
+              <FilterClients setFilterClients={setFilterClients} clientsData={data} />
             </Flex>
           </Flex>
 
