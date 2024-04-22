@@ -87,8 +87,6 @@ export const ClientsProjectTable = ({
     status: filterClients.status
   });
 
-  console.log(data);
-
   let columns: TableProps<IClient>["columns"] = [];
   if (placedIn === "tab") {
     columns = [

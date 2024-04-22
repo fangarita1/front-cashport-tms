@@ -1,5 +1,5 @@
 import { Cascader } from "antd";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { IClient } from "@/types/clients/IClients";
 
 interface Option {
@@ -9,14 +9,6 @@ interface Option {
   isLeaf?: boolean;
   children?: Option[];
 }
-
-// FILTER:
-// city: [] as any,
-// holding: [] as any,
-// risk: [] as any,
-// payment_condition: [] as any,
-// radication_type: [] as any,
-// status: [] as any
 
 interface FilterClientsProps {
   setFilterClients: Dispatch<
@@ -33,9 +25,15 @@ interface FilterClientsProps {
 }
 
 export const FilterClients = ({ setFilterClients, clientsData }: FilterClientsProps) => {
+  const [filterOptions] = useState(() => clientsData);
+
   const onChange = (selectedValue: any[]) => {
     const city: number[] = [];
     const holding: number[] = [];
+    const risk: number[] = [];
+    const radication_type: number[] = [];
+    const status: number[] = [];
+
     selectedValue.forEach((arraySelectedValues: any[]) => {
       if (arraySelectedValues.includes("cities")) {
         city.push(arraySelectedValues[arraySelectedValues.length - 1]);
@@ -44,8 +42,28 @@ export const FilterClients = ({ setFilterClients, clientsData }: FilterClientsPr
       if (arraySelectedValues.includes("holdings")) {
         holding.push(arraySelectedValues[arraySelectedValues.length - 1]);
       }
+
+      if (arraySelectedValues.includes("status")) {
+        status.push(arraySelectedValues[arraySelectedValues.length - 1]);
+      }
+
+      if (arraySelectedValues.includes("risks")) {
+        risk.push(arraySelectedValues[arraySelectedValues.length - 1]);
+      }
+
+      if (arraySelectedValues.includes("radicationTypes")) {
+        radication_type.push(arraySelectedValues[arraySelectedValues.length - 1]);
+      }
     });
-    setFilterClients((prevState) => ({ ...prevState, city, holding }));
+
+    setFilterClients((prevState) => ({
+      ...prevState,
+      city,
+      holding,
+      status,
+      risk,
+      radication_type
+    }));
   };
 
   const createCitiesChildren = (clients: IClient[]) => {
@@ -79,14 +97,110 @@ export const FilterClients = ({ setFilterClients, clientsData }: FilterClientsPr
     return holdingsArray;
   };
 
-  const captureRisk = (client: IClient[]) => {
-    console.log("capturing risk", client);
-    return [{ value: "capturing", label: "AAAAA" }];
+  const createChildrenRisk = (client: IClient[]) => {
+    const riskSet = new Set();
+
+    client.forEach((client) => {
+      let risk = {};
+
+      if (client.risk) {
+        switch (client.risk) {
+          case "Bajo":
+            risk = { value: 1, label: client.risk };
+            break;
+          case "Medio bajo":
+            risk = { value: 2, label: client.risk };
+            break;
+          case "Medio":
+            risk = { value: 3, label: client.risk };
+            break;
+          case "Medio alto":
+            risk = { value: 4, label: client.risk };
+            break;
+          case "Alto":
+            risk = { value: 5, label: client.risk };
+            break;
+          case "No calculado":
+            risk = { value: 6, label: client.risk };
+            break;
+        }
+        riskSet.add(JSON.stringify(risk));
+      }
+    });
+    const riskArray = Array.from(riskSet).map((city: any) => JSON.parse(city));
+    return riskArray;
   };
 
-  const cities = createCitiesChildren(clientsData);
-  const holdings = createHoldings(clientsData);
-  const risks = captureRisk(clientsData);
+  const createChildrenRadicationType = (client: IClient[]) => {
+    const radicationTypeSet = new Set();
+
+    client.forEach((client: IClient) => {
+      let radication_type = {};
+
+      if (client.radication_type) {
+        switch (client.radication_type) {
+          case 1:
+            radication_type = { value: client.radication_type, label: "email" };
+            break;
+          case 2:
+            radication_type = { value: client.radication_type, label: "web" };
+            break;
+          case 3:
+            radication_type = { value: client.radication_type, label: "radian" };
+            break;
+          case 4:
+            radication_type = { value: client.radication_type, label: "fisica" };
+            break;
+          case 5:
+            radication_type = { value: client.radication_type, label: "fisica y web" };
+            break;
+        }
+        radicationTypeSet.add(JSON.stringify(radication_type));
+      }
+    });
+    const radicationTypeArray = Array.from(radicationTypeSet).map((city: any) => JSON.parse(city));
+    return radicationTypeArray;
+  };
+
+  const createStatusChildren = (client: IClient[]) => {
+    const statusSet = new Set();
+
+    client.forEach((client) => {
+      let status = {};
+      if (client.status) {
+        switch (client.status) {
+          case "creado":
+            status = { value: 1, label: client.status };
+            break;
+          case "aprobado":
+            status = { value: 2, label: client.status };
+            break;
+          case "rechazado":
+            status = { value: 3, label: client.status };
+            break;
+          case "bloqueado":
+            status = { value: 4, label: client.status };
+            break;
+          case "juridico":
+            status = { value: 5, label: client.status };
+            break;
+          case "casa de cobro":
+            status = { value: 6, label: client.status };
+            break;
+        }
+        statusSet.add(JSON.stringify(status));
+      }
+    });
+    const statusArray = Array.from(statusSet).map((city: any) => JSON.parse(city));
+
+    return statusArray;
+  };
+
+  const cities = createCitiesChildren(filterOptions);
+  const holdings = createHoldings(filterOptions);
+  const risks = createChildrenRisk(filterOptions);
+  const radicationTypes = createChildrenRadicationType(filterOptions);
+  const status = createStatusChildren(filterOptions);
 
   const options: Option[] = [
     {
@@ -108,7 +222,21 @@ export const FilterClients = ({ setFilterClients, clientsData }: FilterClientsPr
       label: "Estado",
       isLeaf: false,
       disableCheckbox: true,
+      children: status
+    },
+    {
+      value: "risks",
+      label: "Riesgo",
+      isLeaf: false,
+      disableCheckbox: true,
       children: risks
+    },
+    {
+      value: "radicationTypes",
+      label: "Tipo de radicado",
+      isLeaf: false,
+      disableCheckbox: true,
+      children: radicationTypes
     }
   ];
 
