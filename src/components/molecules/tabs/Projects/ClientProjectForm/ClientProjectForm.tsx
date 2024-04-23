@@ -20,6 +20,7 @@ import "./clientprojectform.scss";
 import { getClientById } from "@/services/clients/clients";
 import { IClient } from "@/types/clients/IClients";
 import { SelectRisks } from "@/components/molecules/selects/SelectRisks/SelectRisks";
+import { SelectDocumentTypes } from "@/components/molecules/selects/SelectDocumentTypes/SelectDocumentType";
 
 const { Title } = Typography;
 
@@ -160,12 +161,19 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
               <Title level={4}>Información del usuario</Title>
               {/* -----------------------------------Informacion del Cliente--------------------------------------- */}
               <div className="generalProject">
-                <InputForm
-                  titleInput="Tipo de Documento"
-                  control={control}
-                  nameInput="infoClient.document_type"
-                  error={errors.infoClient?.document_type}
-                />
+                <Flex vertical className="inputContainer">
+                  <Title className="inputContainer__title" level={5}>
+                    Tipo de documento
+                  </Title>
+                  <Controller
+                    name="infoClient.document_type"
+                    control={control}
+                    rules={{ required: true, minLength: 1 }}
+                    render={({ field }) => (
+                      <SelectDocumentTypes errors={errors.infoClient?.risk} field={field} />
+                    )}
+                  />
+                </Flex>
                 <InputForm
                   titleInput="No. de documento"
                   control={control}
@@ -184,12 +192,19 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                   nameInput="infoClient.business_name"
                   error={errors.infoClient?.business_name}
                 />
-                <InputForm
-                  titleInput="Tipo de Cliente"
-                  control={control}
-                  nameInput="infoClient.cliet_type"
-                  error={errors.infoClient?.cliet_type}
-                />
+                {/* <Flex vertical className="inputContainer">
+                  <Title className="inputContainer__title" level={5}>
+                    Tipo de documento
+                  </Title>
+                  <Controller
+                    name="infoClient.document_type"
+                    control={control}
+                    rules={{ required: true, minLength: 1 }}
+                    render={({ field }) => (
+                      <SelectClientType errors={errors.infoClient?.risk} field={field} />
+                    )}
+                  />
+                </Flex> */}
                 <InputForm
                   titleInput="Holding"
                   control={control}

@@ -30,7 +30,9 @@ export const SelectRisks = ({ errors, field }: Props) => {
           </Option>
         );
       })}
-      {errors && <Typography.Text className="textError">Risk es obligatorio *</Typography.Text>}
+      {errors && (
+        <Typography.Text className="textError">El riesgo es obligatorio *</Typography.Text>
+      )}
     </Select>
   );
 };
