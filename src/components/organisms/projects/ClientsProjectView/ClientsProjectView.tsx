@@ -10,7 +10,7 @@ export const ClientsProjectView = () => {
     id: 0
   });
 
-  const onGoBackTableUsers = () => {
+  const onGoBackTableClients = () => {
     setIsCreateClient(false);
     setIsViewDetailsClients({
       active: false,
@@ -24,7 +24,8 @@ export const ClientsProjectView = () => {
         <ClientProjectForm
           isViewDetailsClient={isViewDetailsClient}
           setIsViewDetailsClient={setIsViewDetailsClients}
-          onGoBackTable={onGoBackTableUsers}
+          onGoBackTable={onGoBackTableClients}
+          setIsCreateClient={setIsCreateClient}
         />
       ) : (
         <ClientsProjectTable
