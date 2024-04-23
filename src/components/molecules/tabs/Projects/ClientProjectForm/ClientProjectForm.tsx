@@ -23,6 +23,7 @@ import { SelectRisks } from "@/components/molecules/selects/clients/SelectRisks/
 import { SelectDocumentTypes } from "@/components/molecules/selects/clients/SelectDocumentTypes/SelectDocumentTypes";
 import { SelectClientTypes } from "@/components/molecules/selects/clients/SelectClientTypes/SelectClientTypes";
 import { SelectRadicationTypes } from "@/components/molecules/selects/clients/SelectRadicationTypes/SelectRadicationTypes";
+import { SelectLocations } from "@/components/molecules/selects/clients/SelectLocations/SelectLocations";
 
 const { Title } = Typography;
 
@@ -224,12 +225,21 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                   nameInput="infoClient.email"
                   error={errors.infoClient?.email}
                 />
-                <InputForm
-                  titleInput="Ciudad"
-                  control={control}
-                  nameInput="infoClient.city"
-                  error={errors.infoClient?.city}
-                />
+                <Flex vertical className="inputContainer">
+                  <Title className="inputContainer__title" level={5}>
+                    Ciudad
+                  </Title>
+                  <Controller
+                    name="infoClient.locations"
+                    control={control}
+                    rules={{ required: true, minLength: 1 }}
+                    render={({ field }) => {
+                      return (
+                        <SelectLocations errors={errors.infoClient?.locations} field={field} />
+                      );
+                    }}
+                  />
+                </Flex>
                 <Flex vertical className="inputContainer">
                   <Title className="inputContainer__title" level={5}>
                     Riesgo
@@ -260,12 +270,6 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                     value={dataClient.data.billing_period}
                   />
                 </Flex>
-                {/* <InputForm
-                  titleInput="Tipo de radicación"
-                  control={control}
-                  nameInput="infoClient.radication_type"
-                  error={errors.infoClient?.radication_type}
-                /> */}
                 <Flex vertical className="inputContainer">
                   <Title className="inputContainer__title" level={5}>
                     Tipo de radicación
