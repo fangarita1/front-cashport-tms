@@ -19,8 +19,9 @@ import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemo
 import "./clientprojectform.scss";
 import { getClientById } from "@/services/clients/clients";
 import { IClient } from "@/types/clients/IClients";
-import { SelectRisks } from "@/components/molecules/selects/SelectRisks/SelectRisks";
-import { SelectDocumentTypes } from "@/components/molecules/selects/SelectDocumentTypes/SelectDocumentType";
+import { SelectRisks } from "@/components/molecules/selects/clients/SelectRisks/SelectRisks";
+import { SelectDocumentTypes } from "@/components/molecules/selects/clients/SelectDocumentTypes/SelectDocumentType";
+import { SelectClientTypes } from "@/components/molecules/selects/clients/SelectClientTypes/SelectClientTypes";
 
 const { Title } = Typography;
 
@@ -192,19 +193,19 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                   nameInput="infoClient.business_name"
                   error={errors.infoClient?.business_name}
                 />
-                {/* <Flex vertical className="inputContainer">
+                <Flex vertical className="inputContainer">
                   <Title className="inputContainer__title" level={5}>
-                    Tipo de documento
+                    Tipo de cliente
                   </Title>
                   <Controller
-                    name="infoClient.document_type"
+                    name="infoClient.cliet_type"
                     control={control}
                     rules={{ required: true, minLength: 1 }}
                     render={({ field }) => (
-                      <SelectClientType errors={errors.infoClient?.risk} field={field} />
+                      <SelectClientTypes errors={errors.infoClient?.risk} field={field} />
                     )}
                   />
-                </Flex> */}
+                </Flex>
                 <InputForm
                   titleInput="Holding"
                   control={control}

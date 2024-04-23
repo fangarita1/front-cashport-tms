@@ -4,7 +4,7 @@ import useSWR from "swr";
 import { fetcher } from "@/utils/api/api";
 import { IRisks } from "@/types/risks/IRisks";
 
-import "./selectRisks.scss";
+import "../commonInputStyles.scss";
 
 interface Props {
   errors: any;

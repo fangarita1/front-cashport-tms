@@ -2,17 +2,17 @@ import { Select, Typography } from "antd";
 import useSWR from "swr";
 
 import { fetcher } from "@/utils/api/api";
-import { IDocumentsTypes } from "@/types/documentTypes/IDocumentsTypes";
+import { IClientTypes } from "@/types/clientTypes/clientTypes";
 
-import "./SelectDocumentTypes.scss";
+import "../commonInputStyles.scss";
 
 interface Props {
   errors: any;
   field: any;
 }
 const { Option } = Select;
-export const SelectDocumentTypes = ({ errors, field }: Props) => {
-  const { data, isLoading } = useSWR<IDocumentsTypes>("/document-type", fetcher, {});
+export const SelectClientTypes = ({ errors, field }: Props) => {
+  const { data, isLoading } = useSWR<IClientTypes>("/client/types", fetcher, {});
   const options = data?.data;
   return (
     <Select
@@ -25,8 +25,8 @@ export const SelectDocumentTypes = ({ errors, field }: Props) => {
     >
       {options?.map((value) => {
         return (
-          <Option value={`${value.id}-${value.document_name}`} key={value.id}>
-            {`${value.id}-${value.document_name}`}
+          <Option value={`${value.id}-${value.clientType}`} key={value.id}>
+            {`${value.id}-${value.clientType}`}
           </Option>
         );
       })}
