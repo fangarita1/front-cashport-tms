@@ -1,3 +1,19 @@
+import { Config } from "../users/IUser";
+
+export interface IClientAxios {
+  data: IClientFullResponse;
+  status: number;
+  statusText: string;
+  headers: any;
+  config: Config;
+  request: Request;
+}
+
+export interface IClientFullResponse {
+  status: number;
+  message: string;
+  data: IClient;
+}
 interface IPosition {
   lat: string;
   lon: string;
