@@ -20,8 +20,9 @@ import "./clientprojectform.scss";
 import { getClientById } from "@/services/clients/clients";
 import { IClient } from "@/types/clients/IClients";
 import { SelectRisks } from "@/components/molecules/selects/clients/SelectRisks/SelectRisks";
-import { SelectDocumentTypes } from "@/components/molecules/selects/clients/SelectDocumentTypes/SelectDocumentType";
+import { SelectDocumentTypes } from "@/components/molecules/selects/clients/SelectDocumentTypes/SelectDocumentTypes";
 import { SelectClientTypes } from "@/components/molecules/selects/clients/SelectClientTypes/SelectClientTypes";
+import { SelectRadicationTypes } from "@/components/molecules/selects/clients/SelectRadicationTypes/SelectRadicationTypes";
 
 const { Title } = Typography;
 
@@ -90,7 +91,7 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
       });
       const response = await getClientById(isViewDetailsClient.id.toString(), idProject);
       const finalData = response.data.data;
-      // console.log("final data: ", finalData);
+
       setDataClient({
         isLoading: false,
         data: finalData
@@ -99,7 +100,6 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
   }, [isViewDetailsClient, idProject]);
 
   console.log("RAW dataClient: ", dataClient);
-  // console.log("Como se ve esto? ", { infoClient: { ...dataClient.data.data } });
 
   const onSubmitHandler = async (data: any) => {
     //ACA SE HARIA EL POST DE UN NUEVO CLIENTE Y EL EDIT
@@ -260,12 +260,25 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                     value={dataClient.data.billing_period}
                   />
                 </Flex>
-                <InputForm
+                {/* <InputForm
                   titleInput="Tipo de radicación"
                   control={control}
                   nameInput="infoClient.radication_type"
                   error={errors.infoClient?.radication_type}
-                />
+                /> */}
+                <Flex vertical className="inputContainer">
+                  <Title className="inputContainer__title" level={5}>
+                    Tipo de radicación
+                  </Title>
+                  <Controller
+                    name="infoClient.radication_type"
+                    control={control}
+                    rules={{ required: true, minLength: 1 }}
+                    render={({ field }) => (
+                      <SelectRadicationTypes errors={errors.infoClient?.risk} field={field} />
+                    )}
+                  />
+                </Flex>
                 <InputForm
                   titleInput="Condición de pago"
                   control={control}
