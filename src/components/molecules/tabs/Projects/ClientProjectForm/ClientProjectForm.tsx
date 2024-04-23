@@ -24,12 +24,13 @@ import { SelectDocumentTypes } from "@/components/molecules/selects/clients/Sele
 import { SelectClientTypes } from "@/components/molecules/selects/clients/SelectClientTypes/SelectClientTypes";
 import { SelectRadicationTypes } from "@/components/molecules/selects/clients/SelectRadicationTypes/SelectRadicationTypes";
 import { SelectLocations } from "@/components/molecules/selects/clients/SelectLocations/SelectLocations";
+import { SelectPaymentConditions } from "@/components/molecules/selects/clients/SelectPaymentConditions/SelectPaymentCondition";
 
 const { Title } = Typography;
 
 export type ClientType = {
   infoClient: {
-    document_type: "NIT" | "Cedula" | "Pasaporte";
+    document_type: string;
     nit: string;
     client_name: string;
     business_name: string;
@@ -42,7 +43,7 @@ export type ClientType = {
     risk: string;
     periodBilling: string;
     radication_type: string;
-    conditionPay: string;
+    payment_condition: string;
     address: string;
   };
 };
@@ -283,12 +284,21 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                     )}
                   />
                 </Flex>
-                <InputForm
-                  titleInput="Condición de pago"
-                  control={control}
-                  nameInput="infoClient.conditionPay"
-                  error={errors.infoClient?.conditionPay}
-                />
+                <Flex vertical className="inputContainer">
+                  <Title className="inputContainer__title" level={5}>
+                    Condición de pago
+                  </Title>
+                  <Controller
+                    name="infoClient.payment_condition"
+                    control={control}
+                    rules={{ required: true, minLength: 1 }}
+                    render={({ field }) => {
+                      return (
+                        <SelectPaymentConditions errors={errors.infoClient?.risk} field={field} />
+                      );
+                    }}
+                  />
+                </Flex>
                 <InputForm
                   titleInput="Ingresar dirección"
                   control={control}

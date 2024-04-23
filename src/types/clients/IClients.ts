@@ -52,6 +52,7 @@ export interface IClient {
   is_deleted: number;
   documents: IDocument[];
   ACTIVE: boolean;
+  payment_condition: number;
 }
 
 export interface Pagination {
