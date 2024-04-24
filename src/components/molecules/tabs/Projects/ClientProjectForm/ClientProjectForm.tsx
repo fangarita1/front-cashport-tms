@@ -25,6 +25,7 @@ import { SelectClientTypes } from "@/components/molecules/selects/clients/Select
 import { SelectRadicationTypes } from "@/components/molecules/selects/clients/SelectRadicationTypes/SelectRadicationTypes";
 import { SelectLocations } from "@/components/molecules/selects/clients/SelectLocations/SelectLocations";
 import { SelectPaymentConditions } from "@/components/molecules/selects/clients/SelectPaymentConditions/SelectPaymentCondition";
+import { SelectHoldings } from "@/components/molecules/selects/clients/SelectHoldings/SelectHoldings";
 
 const { Title } = Typography;
 
@@ -34,17 +35,15 @@ export type ClientType = {
     nit: string;
     client_name: string;
     business_name: string;
-    cliet_type: string;
+    client_type: string;
     holding_name: string;
     phone: string;
     email: string;
     locations: any[];
     city: string;
     risk: string;
-    periodBilling: string;
     radication_type: string;
     payment_condition: string;
-    address: string;
   };
 };
 
@@ -75,13 +74,32 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
 
   const { id: idProject } = useParams<{ id: string }>();
 
+  const dataToDataForm = (data: any) => {
+    return {
+      infoClient: {
+        document_type: data.document_type,
+        nit: data.nit,
+        client_name: data.client_name,
+        business_name: data.business_name,
+        client_type: data.cliet_type,
+        holding_name: data.holding_name,
+        phone: data.phone,
+        email: data.email,
+        locations: data.locations,
+        risk: data.risk,
+        radication_type: data.radication_type,
+        payment_condition: 1
+      }
+    };
+  };
+
   const {
     control,
     handleSubmit,
     formState: { errors }
   } = useForm<ClientType>({
     disabled: !isEditAvailable,
-    values: isViewDetailsClient?.active ? { infoClient: { ...dataClient.data } } : ({} as any)
+    values: isViewDetailsClient?.active ? dataToDataForm(dataClient.data) : ({} as any)
   });
 
   useEffect(() => {
@@ -173,7 +191,10 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                     control={control}
                     rules={{ required: true, minLength: 1 }}
                     render={({ field }) => (
-                      <SelectDocumentTypes errors={errors.infoClient?.risk} field={field} />
+                      <SelectDocumentTypes
+                        errors={errors.infoClient?.document_type}
+                        field={field}
+                      />
                     )}
                   />
                 </Flex>
@@ -200,20 +221,27 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                     Tipo de cliente
                   </Title>
                   <Controller
-                    name="infoClient.cliet_type"
+                    name="infoClient.client_type"
                     control={control}
                     rules={{ required: true, minLength: 1 }}
                     render={({ field }) => (
-                      <SelectClientTypes errors={errors.infoClient?.risk} field={field} />
+                      <SelectClientTypes errors={errors.infoClient?.client_type} field={field} />
                     )}
                   />
                 </Flex>
-                <InputForm
-                  titleInput="Holding"
-                  control={control}
-                  nameInput="infoClient.holding_name"
-                  error={errors.infoClient?.holding_name}
-                />
+                <Flex vertical className="inputContainer">
+                  <Title className="inputContainer__title" level={5}>
+                    Holding
+                  </Title>
+                  <Controller
+                    name="infoClient.holding_name"
+                    control={control}
+                    rules={{ required: true, minLength: 1 }}
+                    render={({ field }) => (
+                      <SelectHoldings errors={errors.infoClient?.holding_name} field={field} />
+                    )}
+                  />
+                </Flex>
                 <InputForm
                   titleInput="Teléfono"
                   control={control}
@@ -299,12 +327,6 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                     }}
                   />
                 </Flex>
-                <InputForm
-                  titleInput="Ingresar dirección"
-                  control={control}
-                  nameInput="infoClient.address"
-                  error={errors.infoClient?.address}
-                />
               </div>
               {/* -----------------------------------Experiencia----------------------------------- */}
               <Title level={4}>Documentos</Title>
