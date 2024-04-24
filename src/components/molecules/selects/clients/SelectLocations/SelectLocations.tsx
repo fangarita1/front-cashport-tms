@@ -14,7 +14,13 @@ const { Option } = Select;
 export const SelectLocations = ({ errors, field }: Props) => {
   const { data, isLoading } = useSWR<ILocations>("/location", fetcher, {});
   const options = data?.data;
-  const cities = field?.value?.map((location: ILocation) => location.city);
+  let cities: [] | string = [];
+  if (Array.isArray(field?.value)) {
+    cities = field.value.map((location: ILocation) => location.city);
+  }
+  if (typeof field?.value === "string") {
+    cities = field.value;
+  }
   const locationField = { ...field, value: cities };
 
   return (
