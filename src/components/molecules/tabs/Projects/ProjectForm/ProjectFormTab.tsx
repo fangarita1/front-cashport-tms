@@ -15,7 +15,7 @@ import { IProject } from "@/types/projects/IProject";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import "./projectformtab.scss";
-import { ModalTimeFacturaction } from "@/components/molecules/modals/ModalTimeFacturaction/ModalTimeFacturaction";
+import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
 
 const { Title, Text } = Typography;
 
@@ -57,7 +57,7 @@ export const ProjectFormTab = ({
   onDesactivateProject = () => {}
 }: Props) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [isTimeFacturaction, setIsTimeFacturaction] = useState(false);
+  const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
   const [imageFile, setImageFile] = useState(data.LOGO);
   const [imageError, setImageError] = useState(false);
   const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data);
@@ -258,9 +258,9 @@ export const ProjectFormTab = ({
           </Flex>
         </Flex>
       </form>
-      <ModalTimeFacturaction
-        isOpen={isTimeFacturaction}
-        setIsTimeFacturaction={setIsTimeFacturaction}
+      <ModalBillingPeriod
+        isOpen={isBillingPeriodOpen}
+        setIsBillingPeriodOpen={setIsBillingPeriodOpen}
       />
       <ModalChangeStatus
         isActiveStatus={data?.IS_ACTIVE!}

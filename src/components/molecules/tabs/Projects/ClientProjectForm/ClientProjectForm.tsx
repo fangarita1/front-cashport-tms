@@ -11,7 +11,7 @@ import { DividerCustom } from "@/components/atoms/DividerCustom/DividerCustom";
 import { ShipToProjectTable } from "@/components/molecules/tables/ShipToProjectTable/ShipToProjectTable";
 
 import { ModalUploadDocument } from "@/components/molecules/modals/ModalUploadDocument/ModalUploadDocument";
-import { ModalTimeFacturaction } from "@/components/molecules/modals/ModalTimeFacturaction/ModalTimeFacturaction";
+import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
 import { ModalCreateShipTo } from "@/components/molecules/modals/ModalCreateShipTo/ModalCreateShipTo";
 import { ModalStatusClient } from "@/components/molecules/modals/ModalStatusClient/ModalStatusClient";
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
@@ -26,10 +26,11 @@ import { SelectRadicationTypes } from "@/components/molecules/selects/clients/Se
 import { SelectLocations } from "@/components/molecules/selects/clients/SelectLocations/SelectLocations";
 import { SelectPaymentConditions } from "@/components/molecules/selects/clients/SelectPaymentConditions/SelectPaymentCondition";
 import { SelectHoldings } from "@/components/molecules/selects/clients/SelectHoldings/SelectHoldings";
+import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 
 const { Title } = Typography;
 
-export type ClientType = {
+export type ClientFormType = {
   infoClient: {
     document_type: string;
     nit: string;
@@ -43,7 +44,8 @@ export type ClientType = {
     city: string;
     risk: string;
     radication_type: string;
-    payment_condition: string;
+    condition_payment: string;
+    billing_period: string | IBillingPeriodForm;
   };
 };
 
@@ -64,13 +66,14 @@ interface Props {
 export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props) => {
   const [isCreateShipTo, setIsCreateShipTo] = useState(false);
   const [isUploadDocument, setIsUploadDocument] = useState(false);
-  const [isTimeFacturaction, setIsTimeFacturaction] = useState(false);
+  const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
   const [isModalStatus, setIsModalStatus] = useState({ status: false, remove: false });
   const [isEditAvailable, setIsEditAvailable] = useState(false);
   const [dataClient, setDataClient] = useState({
     data: {},
     isLoading: false
   } as { data: IClient; isLoading: boolean });
+  const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm>();
 
   const { id: idProject } = useParams<{ id: string }>();
 
@@ -82,13 +85,14 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
         client_name: data.client_name,
         business_name: data.business_name,
         client_type: data.cliet_type,
-        holding_name: data.holding_name,
+        holding_name: data.holding_name || "",
         phone: data.phone,
         email: data.email,
         locations: data.locations,
         risk: data.risk,
-        radication_type: data.radication_type,
-        payment_condition: 1
+        radication_type: data.radication_type_name,
+        condition_payment: data.condition_payment,
+        billing_period: data.billing_period
       }
     };
   };
@@ -97,7 +101,7 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
     control,
     handleSubmit,
     formState: { errors }
-  } = useForm<ClientType>({
+  } = useForm<ClientFormType>({
     disabled: !isEditAvailable,
     values: isViewDetailsClient?.active ? dataToDataForm(dataClient.data) : ({} as any)
   });
@@ -111,6 +115,7 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
       });
       const response = await getClientById(isViewDetailsClient.id.toString(), idProject);
       const finalData = response.data.data;
+      // console.log("finalData: ", finalData);
 
       setDataClient({
         isLoading: false,
@@ -128,8 +133,12 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
     //       //La funcion para hacer PUT de un cliente
     //       return null;
     //     }
-    //   : await createClient(data);
-    console.log("Form data: ", data);
+    //   :
+    //ACA HACER POST DE LA UBICACION Y CUANDO ESTÉ
+    //CREADA LA UBICACION HACER POST DEL CLIENTE
+    //FALSEAR LOCATION
+    //await createClient(data);
+    console.log("Form data y billingPeriod: ", data, " - ", billingPeriod);
   };
 
   return (
@@ -236,7 +245,7 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                   <Controller
                     name="infoClient.holding_name"
                     control={control}
-                    rules={{ required: true, minLength: 1 }}
+                    rules={{ required: false, minLength: 1 }}
                     render={({ field }) => (
                       <SelectHoldings errors={errors.infoClient?.holding_name} field={field} />
                     )}
@@ -292,11 +301,19 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                     Período de facturación
                   </Title>
                   <Input
+                    // QWERTY
+                    disabled={!isEditAvailable}
                     variant="borderless"
                     className="input"
                     placeholder="Segundo miércoles del mes"
-                    onClick={() => setIsTimeFacturaction(true)}
-                    value={dataClient.data.billing_period}
+                    onClick={() => setIsBillingPeriodOpen(true)}
+                    value={
+                      billingPeriod
+                        ? billingPeriod.day_flag
+                          ? `El dia ${billingPeriod.day}`
+                          : `El ${billingPeriod.order} ${billingPeriod.day_of_week}`
+                        : dataClient.data.billing_period
+                    }
                   />
                 </Flex>
                 <Flex vertical className="inputContainer">
@@ -317,7 +334,7 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                     Condición de pago
                   </Title>
                   <Controller
-                    name="infoClient.payment_condition"
+                    name="infoClient.condition_payment"
                     control={control}
                     rules={{ required: true, minLength: 1 }}
                     render={({ field }) => {
@@ -366,9 +383,10 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
       </form>
       <ModalCreateShipTo isOpen={isCreateShipTo} setIsCreateShipTo={setIsCreateShipTo} />
       <ModalUploadDocument isOpen={isUploadDocument} setIsOpenUpload={setIsUploadDocument} />
-      <ModalTimeFacturaction
-        isOpen={isTimeFacturaction}
-        setIsTimeFacturaction={setIsTimeFacturaction}
+      <ModalBillingPeriod
+        isOpen={isBillingPeriodOpen}
+        setIsBillingPeriodOpen={setIsBillingPeriodOpen}
+        setBillingPeriod={setBillingPeriod}
       />
       <ModalStatusClient isOpen={isModalStatus.status} setIsStatusClient={setIsModalStatus} />
       <ModalRemove

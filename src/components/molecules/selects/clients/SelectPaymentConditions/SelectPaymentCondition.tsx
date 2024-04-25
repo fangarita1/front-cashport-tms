@@ -31,8 +31,8 @@ export const SelectPaymentConditions = ({ errors, field }: Props) => {
     >
       {options?.map((value) => {
         return (
-          <Option value={value.id} key={value.id}>
-            {value.id}
+          <Option value={`${value.id} - ${value.condition_day}`} key={value.id}>
+            {`${value.id} - ${value.condition_day}`}
           </Option>
         );
       })}

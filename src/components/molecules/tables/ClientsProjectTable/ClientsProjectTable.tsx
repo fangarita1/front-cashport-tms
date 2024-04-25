@@ -31,7 +31,7 @@ export const ClientsProjectTable = ({
   selectedClientsKeys
 }: Props) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  // eslint-disable-next-line no-unused-vars
+
   const [filterClients, setFilterClients] = useState({
     city: [] as any,
     holding: [] as any,
@@ -449,43 +449,3 @@ export const ClientsProjectTable = ({
     );
   }
 };
-
-// const data: IClient[] = [];
-
-// for (let i = 0; i < 9; i++) {
-//   data.push({
-//     nit: `${i}347623472-5643`,
-//     project_id: 1,
-//     client_type_id: 1,
-//     uuid: "123e4567-e89b-12d3-a456-426655440000",
-//     document_type: "CC",
-//     client_name: "Coopidrogas",
-//     business_name: "Coopidrogas S.A.",
-//     holding_id: 1,
-//     holding_name: "Profit Hold",
-//     phone: "+57 1 234 5678",
-//     email: "info@coopidrogas.com",
-//     risk: "Medio",
-//     billing_period: "Mensual",
-//     locations: [
-//       {
-//         id: 1,
-//         nit: "3819389183912-9",
-//         city: "Bogota",
-//         address: "calle falsa 123 tabogo actualizado",
-//         position: {
-//           lat: " 4.698931",
-//           lon: "-74.1146624"
-//         }
-//       }
-//     ],
-//     radication_type: 1,
-//     ACTIVE: true,
-//     client_type: "Persona Jurídica",
-//     status: "Creado",
-//     is_deleted: 0
-//     // users: 36,
-//     // bills: 36,
-//     // budget: 180000
-//   });
-// }

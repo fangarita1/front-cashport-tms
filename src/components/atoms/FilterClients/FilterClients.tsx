@@ -69,14 +69,16 @@ export const FilterClients = ({ setFilterClients, clientsData }: FilterClientsPr
   const createCitiesChildren = (clients: IClient[]) => {
     const cities = new Set();
 
-    clients.forEach((client) => {
-      client.locations.forEach((location) => {
-        if (location.id && location.city) {
-          const city = { value: location.id, label: location.city };
+    clients?.forEach((client) => {
+      if (Array.isArray(client.locations)) {
+        client?.locations?.forEach((location) => {
+          if (location.id && location.city) {
+            const city = { value: location.id, label: location.city };
 
-          cities.add(JSON.stringify(city));
-        }
-      });
+            cities.add(JSON.stringify(city));
+          }
+        });
+      }
     });
     const citiesArray = Array.from(cities).map((city: any) => JSON.parse(city));
 
