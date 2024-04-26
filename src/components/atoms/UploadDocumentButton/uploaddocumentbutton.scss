@@ -1,5 +1,8 @@
 .uploaddocumentbutton {
+    display: grid;
+    grid-template-columns: 1fr minmax(1px, 3fr);
     justify-content: space-between;
+    gap: 20px;
 
     .titleDocument {
         font-size: 0.9rem;
@@ -7,6 +10,5 @@
 
     .descriptionDocument {
         font-size: 0.8rem;
-
     }
 }

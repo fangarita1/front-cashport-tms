@@ -48,6 +48,10 @@ export type ClientFormType = {
     billing_period: string | IBillingPeriodForm;
   };
 };
+interface FileObject {
+  docReference: string;
+  file: File;
+}
 
 interface Props {
   isViewDetailsClient: {
@@ -74,6 +78,7 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
     isLoading: false
   } as { data: IClient; isLoading: boolean });
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm>();
+  const [clientDocuments, setClientDocuments] = useState<FileObject[] | any[]>([]);
 
   const { id: idProject } = useParams<{ id: string }>();
 
@@ -108,14 +113,16 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
 
   useEffect(() => {
     (async () => {
-      if (isViewDetailsClient?.id === 0) return;
+      if (isViewDetailsClient?.id === 0) {
+        setIsEditAvailable(true);
+        return;
+      }
       setDataClient({
         isLoading: true,
         data: {} as IClient
       });
       const response = await getClientById(isViewDetailsClient.id.toString(), idProject);
       const finalData = response.data.data;
-      // console.log("finalData: ", finalData);
 
       setDataClient({
         isLoading: false,
@@ -138,7 +145,14 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
     //CREADA LA UBICACION HACER POST DEL CLIENTE
     //FALSEAR LOCATION
     //await createClient(data);
-    console.log("Form data y billingPeriod: ", data, " - ", billingPeriod);
+    console.log(
+      "Form data - billingPeriod - documents: ",
+      data,
+      " - ",
+      billingPeriod,
+      " - ",
+      clientDocuments
+    );
   };
 
   return (
@@ -349,40 +363,54 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
               <Title level={4}>Documentos</Title>
               <Flex vertical align="flex-start">
                 <Flex wrap="wrap" gap={"1rem"} style={{ width: "100%" }}>
-                  {[1, 23, 45, 6, 7, 8, 9].map((document) => (
-                    <DocumentButton key={document} fileName="Archivo1.pdf" fileSize="200KB" />
+                  {/* ACA PODRIA PINTAR UN DOCUMENT BUTTON POR CADA UNO DE LOS QUE LLEGA DEL BACK Y LOS SUBIDOS? */}
+                  {[1, 23, 45].map((document) => (
+                    <DocumentButton
+                      key={document}
+                      fileName="Archivo Subido"
+                      fileSize="NA"
+                      disabled
+                    />
                   ))}
                 </Flex>
-                <Button
-                  size="large"
-                  type="text"
-                  className="buttonUploadDocument"
-                  onClick={() => setIsUploadDocument(true)}
-                  icon={<Plus weight="bold" size={15} />}
-                >
-                  Cargar Documento
-                </Button>
+                {isEditAvailable && (
+                  <Button
+                    size="large"
+                    type="text"
+                    className="buttonUploadDocument"
+                    onClick={() => setIsUploadDocument(true)}
+                    icon={<Plus weight="bold" size={15} />}
+                  >
+                    Cargar Documento
+                  </Button>
+                )}
               </Flex>
               <DividerCustom />
               <ShipToProjectTable setIsCreateShipTo={setIsCreateShipTo} />
               <DividerCustom />
-              <Flex gap={"1rem"} justify="flex-end">
-                <Button
-                  type="primary"
-                  className="buttonNewProject"
-                  htmlType={isEditAvailable ? "submit" : "button"}
-                  size="large"
-                  icon={<Plus weight="bold" size={15} />}
-                >
-                  Registrar Usuario
-                </Button>
-              </Flex>
+              {isEditAvailable && (
+                <Flex gap={"1rem"} justify="flex-end">
+                  <Button
+                    type="primary"
+                    className="buttonNewProject"
+                    htmlType={isEditAvailable ? "submit" : "button"}
+                    size="large"
+                    icon={<Plus weight="bold" size={15} />}
+                  >
+                    {isViewDetailsClient?.id ? "Actualizar cliente" : "Registrar cliente"}
+                  </Button>
+                </Flex>
+              )}
             </Flex>
           )}
         </Flex>
       </form>
       <ModalCreateShipTo isOpen={isCreateShipTo} setIsCreateShipTo={setIsCreateShipTo} />
-      <ModalUploadDocument isOpen={isUploadDocument} setIsOpenUpload={setIsUploadDocument} />
+      <ModalUploadDocument
+        isOpen={isUploadDocument}
+        setIsOpenUpload={setIsUploadDocument}
+        setClientDocuments={setClientDocuments}
+      />
       <ModalBillingPeriod
         isOpen={isBillingPeriodOpen}
         setIsBillingPeriodOpen={setIsBillingPeriodOpen}

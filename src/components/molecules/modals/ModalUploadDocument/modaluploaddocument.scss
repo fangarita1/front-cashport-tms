@@ -1,4 +1,4 @@
-@import "../../../../styles/variables.scss";
+@import "@styles/variables.scss";
 
 .modaluploaddocument {
     width: 700px !important;
@@ -34,6 +34,12 @@
     .mainUploadDocuments {
         gap: 1rem;
         margin: 20px 0px;
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
     }
 
     .buttonCancel {

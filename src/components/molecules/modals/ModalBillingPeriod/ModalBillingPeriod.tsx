@@ -11,7 +11,7 @@ const { Text } = Typography;
 interface Props {
   isOpen: boolean;
   setIsBillingPeriodOpen: Dispatch<SetStateAction<boolean>>;
-  setBillingPeriod: Dispatch<SetStateAction<any>>;
+  setBillingPeriod?: Dispatch<SetStateAction<any>>;
 }
 
 export const ModalBillingPeriod = ({ isOpen, setIsBillingPeriodOpen, setBillingPeriod }: Props) => {
@@ -37,8 +37,9 @@ export const ModalBillingPeriod = ({ isOpen, setIsBillingPeriodOpen, setBillingP
   const daysOptions = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
 
   const onSaveChanges = () => {
-    //Aca un set a un estado del padre entregando billigPeriodValue
-    setBillingPeriod(billingPeriodValue);
+    if (setBillingPeriod) {
+      setBillingPeriod(billingPeriodValue);
+    }
     setIsBillingPeriodOpen(false);
   };
   return (
