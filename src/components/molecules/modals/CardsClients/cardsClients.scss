@@ -1,47 +1,58 @@
 .wrapper {
+  flex: 1;
   padding: 20px;
   border-radius: 8px;
+  position: relative;
   text-align: center;
-  background-color: #f8f8f8;
-  flex-direction: column;
-  flex: 1;
   align-items: center;
+  flex-direction: column;
+  background-color: #f8f8f8;
+}
+.icon {
+  top: 16px;
+  right: 16px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  position: absolute;
+  border-radius: 6px;
+  align-items: center;
+  justify-content: center;
+  background-color: #CBE71E;
 }
 .header {
-  gap: 8px;
   flex: 1;
+  gap: 8px;
   display: flex;
   .title {
     margin: 0;
     color: #333;
     font-size: 16px;
     line-height: 24px;
-  }
-  .icon {
-    padding: 2px;
-    display: flex;
-    border-radius: 6px;
-    background-color: #CBE71E;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 .content {
-  overflow: hidden;
+  gap: 4px;
+  display: flex;
   font-size: 24px;
+  overflow: hidden;
+  font-weight: 500;
   margin: 10px 0 0;
   color: #141414;
   line-height: 40px;
-  font-weight: 500;
-  display: flex;
-  gap: 4px;
   align-items: center;
   .total {
     font-size: 20px;
     color: #141414;
+    position: relative;
+    overflow: hidden;
     line-height: 20px;
     white-space: nowrap;
-    overflow: hidden;
+    width: 50px;
     text-overflow: ellipsis;
-    max-width: 100px;
   }
   .amount {
     font-size: 20px;

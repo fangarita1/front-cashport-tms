@@ -53,38 +53,34 @@ export const ClientsViewTable = () => {
         <CardsClients
           title={"Total cartera"}
           total={clients?.grandTotal.total_wallet || 0}
-          icon={<Money size={20} />}
+          icon={<Money />}
         />
         <CardsClients
           title={"C. vencida"}
           total={clients?.grandTotal.total_past_due || 0}
-          icon={<CalendarX size={20} />}
+          icon={<CalendarX />}
         />
         <CardsClients
           title={"Presupuesto"}
           total={clients?.grandTotal.total_budget || 0}
-          icon={<CalendarBlank size={20} />}
+          icon={<CalendarBlank />}
         />
         <CardsClients
           title={"R. aplicado"}
           total={clients?.grandTotal.applied_payments_ammount || 0}
-          icon={<Receipt size={20} />}
+          icon={<Receipt />}
         />
         <CardsClients
           title={"Pagos no ap."}
           total={clients?.grandTotal.unapplied_payments_ammount || 0}
-          icon={<XCircle size={20} />}
+          icon={<XCircle />}
         />
         <CardsClients
           title={"Pagos no id."}
           total={clients?.grandTotal.unidentified_payment_ammount || 0}
-          icon={<MagnifyingGlassMinus size={20} />}
+          icon={<MagnifyingGlassMinus />}
         />
-        <CardsClients
-          title={"DSO"}
-          total={clients?.grandTotal.dso || 0}
-          icon={<Calendar size={20} />}
-        />
+        <CardsClients title={"DSO"} total={clients?.grandTotal.dso || 0} icon={<Calendar />} />
       </Flex>
       <Table
         loading={loading}
