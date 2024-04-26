@@ -17,21 +17,23 @@ import { ModalStatusClient } from "@/components/molecules/modals/ModalStatusClie
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
 
 import "./clientprojectform.scss";
-import { getClientById } from "@/services/clients/clients";
+import { createClient, getClientById } from "@/services/clients/clients";
 import { IClient } from "@/types/clients/IClients";
 import { SelectRisks } from "@/components/molecules/selects/clients/SelectRisks/SelectRisks";
 import { SelectDocumentTypes } from "@/components/molecules/selects/clients/SelectDocumentTypes/SelectDocumentTypes";
 import { SelectClientTypes } from "@/components/molecules/selects/clients/SelectClientTypes/SelectClientTypes";
 import { SelectRadicationTypes } from "@/components/molecules/selects/clients/SelectRadicationTypes/SelectRadicationTypes";
-import { SelectLocations } from "@/components/molecules/selects/clients/SelectLocations/SelectLocations";
+// import { SelectLocations } from "@/components/molecules/selects/clients/SelectLocations/SelectLocations";
 import { SelectPaymentConditions } from "@/components/molecules/selects/clients/SelectPaymentConditions/SelectPaymentCondition";
 import { SelectHoldings } from "@/components/molecules/selects/clients/SelectHoldings/SelectHoldings";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
+import { createLocation } from "@/services/locations/locations";
 
 const { Title } = Typography;
 
 export type ClientFormType = {
   infoClient: {
+    address: string;
     document_type: string;
     nit: string;
     client_name: string;
@@ -45,13 +47,8 @@ export type ClientFormType = {
     risk: string;
     radication_type: string;
     condition_payment: string;
-    billing_period: string | IBillingPeriodForm;
   };
 };
-interface FileObject {
-  docReference: string;
-  file: File;
-}
 
 interface Props {
   isViewDetailsClient: {
@@ -77,14 +74,22 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
     data: {},
     isLoading: false
   } as { data: IClient; isLoading: boolean });
-  const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm>();
-  const [clientDocuments, setClientDocuments] = useState<FileObject[] | any[]>([]);
+  const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
+  const [clientDocuments, setClientDocuments] = useState<File[] | any[]>([]);
 
   const { id: idProject } = useParams<{ id: string }>();
 
   const dataToDataForm = (data: any) => {
     return {
       infoClient: {
+        address:
+          Array.isArray(data?.locations) && data.locations.length > 0
+            ? data.locations[0].address
+            : undefined,
+        city:
+          Array.isArray(data?.locations) && data.locations.length > 0
+            ? data.locations[0].city
+            : undefined,
         document_type: data.document_type,
         nit: data.nit,
         client_name: data.client_name,
@@ -144,15 +149,20 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
     //ACA HACER POST DE LA UBICACION Y CUANDO ESTÉ
     //CREADA LA UBICACION HACER POST DEL CLIENTE
     //FALSEAR LOCATION
-    //await createClient(data);
-    console.log(
-      "Form data - billingPeriod - documents: ",
-      data,
-      " - ",
-      billingPeriod,
-      " - ",
-      clientDocuments
-    );
+    const locationResponse = await createLocation(data.infoClient);
+    console.log("LocRes: ", locationResponse);
+
+    if (billingPeriod) {
+      const response = await createClient(
+        idProject,
+        data,
+        billingPeriod,
+        clientDocuments,
+        locationResponse
+      );
+
+      console.log("RES POST client: ", response);
+    }
   };
 
   return (
@@ -277,7 +287,13 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                   nameInput="infoClient.email"
                   error={errors.infoClient?.email}
                 />
-                <Flex vertical className="inputContainer">
+                <InputForm
+                  titleInput="Ciudad"
+                  control={control}
+                  nameInput="infoClient.city"
+                  error={errors.infoClient?.city}
+                />
+                {/* <Flex vertical className="inputContainer">
                   <Title className="inputContainer__title" level={5}>
                     Ciudad
                   </Title>
@@ -291,7 +307,13 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                       );
                     }}
                   />
-                </Flex>
+                </Flex> */}
+                <InputForm
+                  titleInput="Dirección"
+                  control={control}
+                  nameInput="infoClient.address"
+                  error={errors.infoClient?.address}
+                />
                 <Flex vertical className="inputContainer">
                   <Title className="inputContainer__title" level={5}>
                     Riesgo
@@ -315,7 +337,6 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                     Período de facturación
                   </Title>
                   <Input
-                    // QWERTY
                     disabled={!isEditAvailable}
                     variant="borderless"
                     className="input"

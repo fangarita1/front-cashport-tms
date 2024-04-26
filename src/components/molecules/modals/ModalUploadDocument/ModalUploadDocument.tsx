@@ -7,7 +7,7 @@ import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/Up
 interface Props {
   isOpen: boolean;
   setIsOpenUpload: Dispatch<SetStateAction<boolean>>;
-  setClientDocuments: Dispatch<SetStateAction<FileObject[]>>;
+  setClientDocuments: Dispatch<SetStateAction<File[]>>;
 }
 
 interface FileObject {
@@ -32,8 +32,9 @@ export const ModalUploadDocument = ({ isOpen, setIsOpenUpload, setClientDocument
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
   const handleOnSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    console.log("files en ModalUploadDoc: ", files);
-    setClientDocuments(files);
+
+    const justDocuments = files.map((file) => file.file);
+    setClientDocuments(justDocuments);
     setIsOpenUpload(false);
   };
 

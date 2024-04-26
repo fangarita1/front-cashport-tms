@@ -1,35 +1,66 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { getIdToken } from "@/utils/api/api";
-import { IClientAxios } from "@/types/clients/IClients";
+import { IClientAxios, ICreateClient } from "@/types/clients/IClients";
+import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
+import { ClientFormType } from "@/components/molecules/tabs/Projects/ClientProjectForm/ClientProjectForm";
 
 // create
 
-export const createClient = async (data: any): Promise<any> => {
-  const modelData = {
-    // QUE DATA NECESITO PARA CREAR UN CLIENTE?
-    nit: data.number,
-    project_id: data.project_id,
+export const createClient = async (
+  idProject: string,
+  rawData: ClientFormType,
+  billingPeriod: IBillingPeriodForm,
+  documents: any[],
+  locationResponse: any
+): Promise<any> => {
+  const { infoClient: data } = rawData;
+  const payment_condition = data.condition_payment?.split("-")[0].trim();
+  const radication_type = data.condition_payment?.split("-")[0].trim();
+  const document_type = data.document_type?.split("-")[0].trim();
+  const client_type = data.client_type?.split("-")[0].trim();
+  const holding = data.holding_name?.split("-")[0].trim();
+
+  const formatLocations = JSON.stringify(new Array(locationResponse.data.data));
+
+  const formatDocuments = documents.map((doc) => doc.originFileObj);
+
+  const modelData: ICreateClient = {
+    nit: parseInt(data.nit),
+    project_id: parseInt(idProject),
     client_name: data.client_name,
     business_name: data.business_name,
     phone: data.phone,
-    condition_payment: data.condition_payment,
+    condition_payment: parseInt(payment_condition),
     email: data.email,
-    billing_period: data.billing_period,
-    radication_type: data.radication_type,
-    document_type: data.document_type,
-    locations: data.locations,
-    documents: data.documents,
-    client_type_id: data.client_type_id
+    radication_type: parseInt(radication_type),
+    document_type: parseInt(document_type),
+    locations: formatLocations,
+    documents: formatDocuments,
+    client_type_id: parseInt(client_type),
+    holding_id: parseInt(holding),
+    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod.day_flag,
+    day: typeof billingPeriod === "string" ? undefined : billingPeriod.day
   };
+
+  const formData = new FormData();
+  // Agregar los campos del modelo de datos al objeto FormData
+  Object.keys(modelData).forEach((key) => {
+    if (key === "documents" && Array.isArray(modelData[key])) {
+      modelData[key].forEach((file: File) => {
+        formData.append("documents", file);
+      });
+    } else {
+      formData.append(key, modelData[key]);
+    }
+  });
 
   const token = await getIdToken();
 
   try {
-    const response: AxiosResponse = await axios.post(`${config.API_HOST}/client`, modelData, {
+    const response: AxiosResponse = await axios.post(`${config.API_HOST}/client`, formData, {
       headers: {
         Accept: "application/json, text/plain, */*",
-        "Content-Type": "application/json; charset=utf-8",
         Authorization: `Bearer ${token}`
       }
     });

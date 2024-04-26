@@ -66,3 +66,24 @@ export interface IClients {
   data: IClient[];
   pagination: Pagination;
 }
+
+export interface ICreateClient {
+  [key: string]: any; // Añade esta línea
+  nit: number;
+  project_id: number;
+  client_name: string;
+  business_name: string;
+  phone: number | string;
+  condition_payment: number;
+  email: string;
+  radication_type: number;
+  document_type: number;
+  locations: string;
+  documents: File[];
+  client_type_id: number;
+  holding_id?: number;
+  day_flag?: boolean;
+  day?: number;
+  order?: string;
+  day_of_week?: number;
+}
