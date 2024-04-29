@@ -39,7 +39,7 @@ export const ProjectTable = () => {
   return (
     <main className="mainProjectsTable">
       <Flex justify="space-between" className="mainProjectsTable_header">
-        <Flex gap={"1.75rem"}>
+        <Flex gap={"10px"}>
           <FilterProjects setSelecetedProjects={setSelectFilters} />
           <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
         </Flex>

@@ -70,7 +70,7 @@ export const FilterProjects = ({ setSelecetedProjects }: Props) => {
 
   return (
     <Cascader
-      style={{ width: "15rem" }}
+      style={{ width: "112px" }}
       multiple
       size="large"
       removeIcon

@@ -1,19 +1,13 @@
+import { UserByTokenResponse } from "@/types/users/IUserByToken";
 import { StateCreator } from "zustand";
 
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-}
-
 export interface UserSlice {
-  user: User;
+  user: UserByTokenResponse;
+  // eslint-disable-next-line no-unused-vars
+  setUser: (u: any) => void;
 }
 
-export const createUserSlice: StateCreator<UserSlice> = () =>
-  // set
-  ({
-    user: {
-      name: "felipe"
-    } as User
-  });
+export const createUserSlice: StateCreator<UserSlice> = (set) => ({
+  user: {} as any,
+  setUser: (u: any) => set(() => ({ user: u }))
+});
