@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Flex, Table, Typography } from "antd";
+import { Button, Col, Flex, Row, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import {
   CalendarBlank,
@@ -49,39 +49,57 @@ export const ClientsViewTable = () => {
           <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
         </Flex>
       </Flex>
-      <Flex className="cards">
-        <CardsClients
-          title={"Total cartera"}
-          total={clients?.grandTotal.total_wallet || 0}
-          icon={<Money />}
-        />
-        <CardsClients
-          title={"C. vencida"}
-          total={clients?.grandTotal.total_past_due || 0}
-          icon={<CalendarX />}
-        />
-        <CardsClients
-          title={"Presupuesto"}
-          total={clients?.grandTotal.total_budget || 0}
-          icon={<CalendarBlank />}
-        />
-        <CardsClients
-          title={"R. aplicado"}
-          total={clients?.grandTotal.applied_payments_ammount || 0}
-          icon={<Receipt />}
-        />
-        <CardsClients
-          title={"Pagos no ap."}
-          total={clients?.grandTotal.unapplied_payments_ammount || 0}
-          icon={<XCircle />}
-        />
-        <CardsClients
-          title={"Pagos no id."}
-          total={clients?.grandTotal.unidentified_payment_ammount || 0}
-          icon={<MagnifyingGlassMinus />}
-        />
-        <CardsClients title={"DSO"} total={clients?.grandTotal.dso || 0} icon={<Calendar />} />
-      </Flex>
+      <Row gutter={8}>
+        <Col span={21} className="cards">
+          <Row gutter={8}>
+            <Col span={4}>
+              <CardsClients
+                title={"Total cartera"}
+                total={clients?.grandTotal.total_wallet || 0}
+                icon={<Money />}
+              />
+            </Col>
+            <Col span={4}>
+              <CardsClients
+                title={"C. vencida"}
+                total={clients?.grandTotal.total_past_due || 0}
+                icon={<CalendarX />}
+              />
+            </Col>
+            <Col span={4}>
+              <CardsClients
+                title={"Presupuesto"}
+                total={clients?.grandTotal.total_budget || 0}
+                icon={<CalendarBlank />}
+              />
+            </Col>
+            <Col span={4}>
+              <CardsClients
+                title={"R. aplicado"}
+                total={clients?.grandTotal.applied_payments_ammount || 0}
+                icon={<Receipt />}
+              />
+            </Col>
+            <Col span={4}>
+              <CardsClients
+                title={"Pagos no ap."}
+                total={clients?.grandTotal.unapplied_payments_ammount || 0}
+                icon={<XCircle />}
+              />
+            </Col>
+            <Col span={4}>
+              <CardsClients
+                title={"Pagos no id."}
+                total={clients?.grandTotal.unidentified_payment_ammount || 0}
+                icon={<MagnifyingGlassMinus />}
+              />
+            </Col>
+          </Row>
+        </Col>
+        <Col span={3}>
+          <CardsClients title={"DSO"} total={clients?.grandTotal.dso || 0} icon={<Calendar />} />
+        </Col>
+      </Row>
       <Table
         loading={loading}
         scroll={{ y: "61dvh", x: undefined }}
@@ -154,7 +172,7 @@ const columns: TableProps<IProject>["columns"] = [
   {
     title: "",
     key: "buttonSee",
-    width: "60px",
+    width: "80px",
     dataIndex: "",
     render: () => <Button icon={<Eye size={"1.3rem"} />} />
   }

@@ -11,15 +11,13 @@ interface Props {
 const CardsClients = ({ total, icon, title }: Props) => {
   return (
     <Flex className="wrapper">
+      <Flex className="icon">{icon}</Flex>
       <Flex className="header">
         <Flex className="title">{title}</Flex>
-        <Flex className="icon">{icon}</Flex>
       </Flex>
-      <Flex className="content">
+      <Flex className="card-client-value">
         <Flex className="total">${total.toLocaleString()}</Flex>
-        <Flex className="amount">
-          <p>M</p>
-        </Flex>
+        <span>M</span>
       </Flex>
     </Flex>
   );
