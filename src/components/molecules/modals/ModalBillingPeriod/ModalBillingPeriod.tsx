@@ -32,7 +32,7 @@ export const ModalBillingPeriod = ({ isOpen, setIsBillingPeriodOpen, setBillingP
   });
   const [billingPeriodValue, setBillingPeriodValue] = useState<IBillingPeriodForm>();
 
-  const orderOptions = ["Primer", "Segundo", "Tercero", "Cuarto", "Ultimo"];
+  const orderOptions = ["Primero", "Segundo", "Tercero", "Cuarto", "Ultimo"];
 
   const daysOptions = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
 
@@ -104,10 +104,10 @@ export const ModalBillingPeriod = ({ isOpen, setIsBillingPeriodOpen, setBillingP
         </Radio.Group>
 
         <Text>
-          El periodo de facturación inicia el{" "}
+          El periodo de facturación inicia el
           {dayValueRadio.day
-            ? `día ${dayValueRadio.day}`
-            : `${orderValueRadio.order} ${orderValueRadio.day_of_week}`}{" "}
+            ? ` día ${dayValueRadio.day}`
+            : ` ${orderValueRadio.order} ${orderValueRadio.day_of_week} `}
           de cada mes
         </Text>
       </Flex>

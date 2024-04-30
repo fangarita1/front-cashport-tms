@@ -1,6 +1,13 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  Dispatch,
+  JSXElementConstructor,
+  ReactElement,
+  SetStateAction,
+  useEffect,
+  useState
+} from "react";
 import { useParams } from "next/navigation";
-import { Button, Col, Flex, Input, Row, Spin, Typography, message } from "antd";
+import { Button, Col, Flex, Input, Row, Spin, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
 
@@ -33,6 +40,7 @@ import { SelectHoldings } from "@/components/molecules/selects/clients/SelectHol
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { createLocation } from "@/services/locations/locations";
 import { stringBasedOnDocumentType } from "@/utils/utils";
+import { MessageInstance } from "antd/es/message/interface";
 
 const { Title } = Typography;
 
@@ -69,11 +77,16 @@ interface Props {
     }>
   >;
   setIsCreateClient: Dispatch<SetStateAction<boolean>>;
+  messageApi: MessageInstance;
+  messageContext?: ReactElement<any, string | JSXElementConstructor<any>>;
 }
 export const ClientProjectForm = ({
   onGoBackTable,
   isViewDetailsClient,
-  setIsViewDetailsClient
+  setIsViewDetailsClient,
+  setIsCreateClient,
+  messageApi,
+  messageContext
 }: Props) => {
   const [isCreateShipTo, setIsCreateShipTo] = useState(false);
   const [isUploadDocument, setIsUploadDocument] = useState(false);
@@ -86,7 +99,7 @@ export const ClientProjectForm = ({
   } as { data: IClient; isLoading: boolean });
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
   const [clientDocuments, setClientDocuments] = useState<File[] | any[]>([]);
-  const [messageApi, contextHolder] = message.useMessage();
+  // const [messageApi, contextHolder] = message.useMessage();
 
   const { id: idProject } = useParams<{ id: string }>();
 
@@ -207,11 +220,9 @@ export const ClientProjectForm = ({
           locationResponse
         );
 
-        console.log("response: ", response);
-
         if (response.status === 200) {
-          setIsViewDetailsClient({ active: true, id: data.infoClient });
-          setIsEditAvailable(false);
+          setIsCreateClient(false);
+
           messageApi.open({
             type: "success",
             content: `El cliente fue creado exitosamente.`
@@ -236,7 +247,7 @@ export const ClientProjectForm = ({
 
   return (
     <>
-      {contextHolder}
+      {messageContext}
       <form className="newClientProjectForm" onSubmit={handleSubmit(onSubmitHandler)}>
         <Flex vertical style={{ height: "100%" }}>
           <Flex component={"header"} className="headerNewUserProyectsForm">

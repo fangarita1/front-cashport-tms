@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { ClientsProjectTable } from "@/components/molecules/tables/ClientsProjectTable/ClientsProjectTable";
 import { ClientProjectForm } from "@/components/molecules/tabs/Projects/ClientProjectForm/ClientProjectForm";
+import { message } from "antd";
 
 export const ClientsProjectView = () => {
   const [isCreateClient, setIsCreateClient] = useState(false);
@@ -9,6 +10,7 @@ export const ClientsProjectView = () => {
     active: false,
     id: 0
   });
+  const [messageApi, contextHolder] = message.useMessage();
 
   const onGoBackTableClients = () => {
     setIsCreateClient(false);
@@ -26,11 +28,14 @@ export const ClientsProjectView = () => {
           setIsViewDetailsClient={setIsViewDetailsClients}
           onGoBackTable={onGoBackTableClients}
           setIsCreateClient={setIsCreateClient}
+          messageApi={messageApi}
+          messageContext={contextHolder}
         />
       ) : (
         <ClientsProjectTable
           setIsViewDetailsClients={setIsViewDetailsClients}
           setIsCreateClient={setIsCreateClient}
+          messageContext={contextHolder}
         />
       )}
     </>

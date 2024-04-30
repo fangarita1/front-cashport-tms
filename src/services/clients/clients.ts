@@ -73,7 +73,6 @@ export const createClient = async (
         }
       }
     );
-    console.log("Succesfull creating new client: ", response);
 
     return response;
   } catch (error) {

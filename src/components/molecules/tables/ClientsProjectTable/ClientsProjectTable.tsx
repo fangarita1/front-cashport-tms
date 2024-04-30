@@ -1,4 +1,11 @@
-import { Dispatch, SetStateAction, useState, useEffect } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useState,
+  useEffect,
+  ReactElement,
+  JSXElementConstructor
+} from "react";
 import { useParams } from "next/navigation";
 import { Button, Flex, MenuProps, Popconfirm, Spin, Table, TableProps, Typography } from "antd";
 import { Eye, Plus } from "phosphor-react";
@@ -21,6 +28,7 @@ interface Props {
   placedIn?: string;
   setSelectedRows?: Dispatch<SetStateAction<{}>>;
   selectedClientsKeys?: string[];
+  messageContext?: ReactElement<any, string | JSXElementConstructor<any>>;
 }
 
 export const ClientsProjectTable = ({
@@ -28,7 +36,8 @@ export const ClientsProjectTable = ({
   setIsViewDetailsClients,
   placedIn = "tab",
   setSelectedRows,
-  selectedClientsKeys
+  selectedClientsKeys,
+  messageContext
 }: Props) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
@@ -236,6 +245,7 @@ export const ClientsProjectTable = ({
 
     return (
       <>
+        {messageContext}
         <main className="mainClientsProjectTable">
           <Flex justify="space-between" className="mainClientsProjectTable_header">
             <Flex gap={"1.75rem"}>
