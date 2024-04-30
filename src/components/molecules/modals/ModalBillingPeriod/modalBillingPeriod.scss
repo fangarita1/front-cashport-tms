@@ -15,12 +15,13 @@
             opacity: 0.8;
         }
     }
+
     .input {
         background-color: $background;
-        margin-bottom: 0.2rem;
         border-radius: 0;
         border-radius: 0.25rem;
         height: 3rem;
+        font-size: 1rem;
 
         &::placeholder {
             color: $secondary-gray;
@@ -39,5 +40,10 @@
             background-color: $white !important;
             opacity: 0.8;
         }
+    }
+
+    .textPre-input {
+        width: 3rem;
+        font-size: 1rem;
     }
 }

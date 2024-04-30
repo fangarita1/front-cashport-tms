@@ -6,7 +6,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 
 interface FileObject {
   docReference: string;
-  file: File;
+  file: File | undefined;
 }
 interface infoObject {
   file: File;
@@ -56,6 +56,25 @@ export const UploadDocumentButton = ({ title, isMandatory, setFiles }: DocumentP
     }
   };
 
+  const handleOnDelete = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    console.log("Hello world");
+    setUploadedFile(null);
+    const fileObject = { docReference: title, file: undefined };
+
+    setFiles((prevState: FileObject[]) => {
+      const existingFileIndex = prevState.findIndex(
+        (file) => file.docReference === fileObject.docReference
+      );
+
+      if (existingFileIndex !== -1) {
+        prevState.splice(existingFileIndex, 1);
+      }
+
+      return prevState;
+    });
+  };
+
   const updateFiles = (newFile: FileObject) => {
     setFiles((prevState: FileObject[]) => {
       // Busca si ya existe un archivo con la misma docReference
@@ -86,6 +105,7 @@ export const UploadDocumentButton = ({ title, isMandatory, setFiles }: DocumentP
         title={title}
         handleOnChange={handleOnChange}
         handleOnDrop={handleOnDrop}
+        handleOnDelete={handleOnDelete}
         fileName={uploadedFile?.name}
         fileSize={uploadedFile?.size}
       />

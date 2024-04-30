@@ -26,7 +26,7 @@ export const SelectLocations = ({ errors, field }: Props) => {
   return (
     <Select
       placeholder="Seleccione la ciudad"
-      className={errors ? "selectInputRolesError" : "selectInputRoles"}
+      className={errors ? "selectInputError" : "selectInputCustom"}
       loading={isLoading}
       variant="borderless"
       optionLabelProp="label"

@@ -1,9 +1,6 @@
-@import '../../../../styles/variables.scss';
+@import "@styles/variables.scss";
 
 .containerInput {
-    width: 23%;
-    margin: 0.25rem 0.5rem;
-
     .ant-color-picker-trigger {
         background-color: $background;
         justify-content: flex-start;
@@ -13,35 +10,34 @@
 
     .ant-popover-inner {
         background-color: $background;
-
     }
 
-		.input-form-title {
-			color: #909090;
-			font-size: 12px;
-			font-style: normal;
-			font-weight: 600;
-			line-height: normal;
-		}
+    .input-form-title {
+        color: #909090;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+    }
 
     .ant-select-selection-item-content {
         color: black;
-
     }
 
     .ant-input-disabled {
         color: black;
     }
 
-    .input {
+    .inputForm {
         background-color: $background;
         margin-bottom: 0.2rem;
         border-radius: 0;
         padding: 0.7rem;
         border-radius: 0.25rem;
+        font-size: 1rem;
 
         &::placeholder {
-            color: $secondary-gray;
+            color: $dark-gray !important;
         }
     }
 
@@ -50,13 +46,14 @@
         color: red;
     }
 
-    .inputError {
+    .inputFormError {
         border: 1px dashed red;
         background-color: $background;
         margin-bottom: 0.2rem;
         border-radius: 0;
         padding: 0.7rem;
         border-radius: 0.25rem;
+        font-size: 1rem;
 
         &::placeholder {
             color: $secondary-gray;

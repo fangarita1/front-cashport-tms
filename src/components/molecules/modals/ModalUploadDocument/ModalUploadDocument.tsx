@@ -12,7 +12,7 @@ interface Props {
 
 interface FileObject {
   docReference: string;
-  file: File;
+  file: File | undefined;
 }
 
 const { Title, Text } = Typography;

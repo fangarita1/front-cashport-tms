@@ -21,26 +21,33 @@ export const SelectPaymentConditions = ({ errors, field }: Props) => {
   }
 
   return (
-    <Select
-      placeholder="Condicion de pago"
-      className={errors ? "selectInputRolesError" : "selectInputRoles"}
-      loading={isLoading}
-      variant="borderless"
-      optionLabelProp="label"
-      {...field}
-    >
-      {options?.map((value) => {
-        return (
-          <Option value={`${value.id} - ${value.condition_day}`} key={value.id}>
-            {`${value.id} - ${value.condition_day}`}
-          </Option>
-        );
-      })}
+    <>
+      <Select
+        placeholder="A 30 días"
+        className={errors ? "selectInputError" : "selectInputCustom"}
+        loading={isLoading}
+        variant="borderless"
+        optionLabelProp="label"
+        {...field}
+        popupClassName="selectDrop"
+      >
+        {options?.map((value) => {
+          return (
+            <Option
+              className="selectOptions"
+              value={`${value.id} - A ${value.condition_day} días`}
+              key={value.id}
+            >
+              {`${value.id} - A ${value.condition_day} días`}
+            </Option>
+          );
+        })}
+      </Select>
       {errors && (
         <Typography.Text className="textError">
           La condición de pago es obligatoria *
         </Typography.Text>
       )}
-    </Select>
+    </>
   );
 };

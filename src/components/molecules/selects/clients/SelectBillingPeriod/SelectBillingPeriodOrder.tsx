@@ -23,14 +23,14 @@ export const SelectBillingPeriodOrder = ({
   setValueSelected
 }: Props) => {
   const onChangeSelect = (value: string) => {
-    setValueSelected({ ...orderRadioValue, order: value });
+    setValueSelected({ ...orderRadioValue, day_flag: false, order: value });
   };
   return (
     <Flex vertical style={{ width: "100%" }}>
       {titleSelect.length > 0 && <Typography.Title level={5}>{titleSelect}</Typography.Title>}
       <Select
         placeholder={titleSelect.length > 0 ? titleSelect : placeHolder}
-        className={errors ? "selectInputCustomError" : "selectInputCustom"}
+        className={errors ? "selectInputError" : "selectInputCustom"}
         variant="borderless"
         optionLabelProp="label"
         onChange={onChangeSelect}

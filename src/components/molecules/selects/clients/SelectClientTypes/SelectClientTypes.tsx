@@ -15,26 +15,33 @@ export const SelectClientTypes = ({ errors, field }: Props) => {
   const { data, isLoading } = useSWR<IClientTypes>("/client/types", fetcher, {});
   const options = data?.data;
   return (
-    <Select
-      placeholder="Seleccione Tipo de Documento"
-      className={errors ? "selectInputRolesError" : "selectInputRoles"}
-      loading={isLoading}
-      variant="borderless"
-      optionLabelProp="label"
-      {...field}
-    >
-      {options?.map((value) => {
-        return (
-          <Option value={`${value.id}-${value.clientType}`} key={value.id}>
-            {`${value.id}-${value.clientType}`}
-          </Option>
-        );
-      })}
+    <>
+      <Select
+        placeholder="Seleccione Tipo de Documento"
+        className={errors ? "selectInputError" : "selectInputCustom"}
+        loading={isLoading}
+        variant="borderless"
+        optionLabelProp="label"
+        {...field}
+        popupClassName="selectDrop"
+      >
+        {options?.map((value) => {
+          return (
+            <Option
+              className="selectOptions"
+              value={`${value.id}-${value.clientType}`}
+              key={value.id}
+            >
+              {`${value.id}-${value.clientType}`}
+            </Option>
+          );
+        })}
+      </Select>
       {errors && (
         <Typography.Text className="textError">
           El tipo de documento es obligatorio *
         </Typography.Text>
       )}
-    </Select>
+    </>
   );
 };

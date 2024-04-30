@@ -16,15 +16,16 @@ export const SelectHoldings = ({ errors, field }: Props) => {
   return (
     <Select
       placeholder="Seleccione un Holding"
-      className={errors ? "selectInputRolesError" : "selectInputRoles"}
+      className={errors ? "selectInputError" : "selectInputCustom"}
       loading={isLoading}
       variant="borderless"
       optionLabelProp="label"
       {...field}
+      popupClassName="selectDrop"
     >
       {options?.map((value) => {
         return (
-          <Option value={`${value.id}-${value.name}`} key={value.id}>
+          <Option className="selectOptions" value={`${value.id}-${value.name}`} key={value.id}>
             {`${value.id}-${value.name}`}
           </Option>
         );

@@ -30,7 +30,7 @@ export const SelectBillingPeriodDay = ({
       {titleSelect.length > 0 && <Typography.Title level={5}>{titleSelect}</Typography.Title>}
       <Select
         placeholder={titleSelect.length > 0 ? titleSelect : placeHolder}
-        className={errors ? "selectInputCustomError" : "selectInputCustom"}
+        className={errors ? "selectInputError" : "selectInputCustom"}
         variant="borderless"
         optionLabelProp="label"
         onChange={onChangeSelect}

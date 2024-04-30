@@ -70,9 +70,9 @@ export const FilterClients = ({ setFilterClients, clientsData }: FilterClientsPr
     const cities = new Set();
 
     clients?.forEach((client) => {
-      if (Array.isArray(client.locations)) {
+      if (Array.isArray(client?.locations)) {
         client?.locations?.forEach((location) => {
-          if (location.id && location.city) {
+          if (location?.id && location?.city) {
             const city = { value: location.id, label: location.city };
 
             cities.add(JSON.stringify(city));
