@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { getIdToken } from "@/utils/api/api";
-import { IClientAxios, ICreateClient } from "@/types/clients/IClients";
+import { IClientAxios, ICreateClient, IUpdateClient } from "@/types/clients/IClients";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { ClientFormType } from "@/components/molecules/tabs/Projects/ClientProjectForm/ClientProjectForm";
 
@@ -88,6 +88,63 @@ export const getClientById = async (idUser: string, projectId: string): Promise<
     return response;
   } catch (error) {
     console.log("Error getting client by Id: ", error);
+    return error as any;
+  }
+};
+
+export const updateClient = async (
+  rawData: ClientFormType,
+  idProject: string,
+  locationResponse?: any,
+  billingPeriod?: IBillingPeriodForm
+): Promise<any> => {
+  const { infoClient: data } = rawData;
+
+  const payment_condition = data.condition_payment?.split("-")[0].trim();
+  const radication_type = data.condition_payment?.split("-")[0].trim();
+  const document_type = data.document_type?.split("-")[0].trim();
+  const holding = data.holding_name?.split("-")[0].trim();
+
+  const formatLocations = JSON.stringify(new Array(locationResponse?.data?.data));
+
+  const clientId = data.nit;
+
+  const modelData: IUpdateClient = {
+    business_name: data.business_name,
+    phone: data.phone,
+    condition_payment: parseInt(payment_condition),
+    email: data.email,
+    radication_type: parseInt(radication_type),
+    document_type: parseInt(document_type),
+    locations: formatLocations,
+    holding_id: holding ? holding : undefined,
+    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag,
+    day: typeof billingPeriod === "string" ? undefined : billingPeriod?.day
+  };
+
+  const formData = new FormData();
+
+  Object.keys(modelData).forEach((key) => {
+    if (modelData[key] !== undefined && modelData[key] !== null && modelData[key] !== "") {
+      formData.append(key, modelData[key]);
+    }
+  });
+
+  const token = await getIdToken();
+  try {
+    const response: AxiosResponse = await axios.put(
+      `${config.API_HOST}/client/${clientId}/project/${idProject}`,
+      modelData,
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    return response;
+  } catch (error) {
+    console.log("Error updating client: ", error);
     return error as any;
   }
 };

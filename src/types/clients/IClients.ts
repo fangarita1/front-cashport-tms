@@ -87,3 +87,19 @@ export interface ICreateClient {
   order?: string;
   day_of_week?: number;
 }
+
+export interface IUpdateClient {
+  [key: string]: any;
+  business_name?: string;
+  condition_payment?: number;
+  document_type?: number;
+  email?: string;
+  holding_id?: string;
+  locations: string;
+  day_flag?: boolean;
+  day?: number;
+  order?: string;
+  day_of_week?: number;
+  phone?: string;
+  radication_type: number;
+}

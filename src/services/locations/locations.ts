@@ -1,13 +1,13 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { getIdToken } from "@/utils/api/api";
+import { ICreateLocation } from "@/types/locations/ILocations";
 
-export const createLocation = async (data: any): Promise<any> => {
-  console.log("dataCreateLoc: ", data);
-  const modelData = {
+export const createLocation = async (data: any, clientId: number): Promise<any> => {
+  const modelData: ICreateLocation = {
     address: data.address,
     city: data.city,
-    nit: data.nit,
+    nit: data.nit ? data.nit : `${clientId}`,
     position: {}
   };
 
@@ -22,7 +22,7 @@ export const createLocation = async (data: any): Promise<any> => {
     });
     return response;
   } catch (error) {
-    console.log("Error creating new client: ", error);
+    console.log("Error creating new location: ", error);
     return error as any;
   }
 };

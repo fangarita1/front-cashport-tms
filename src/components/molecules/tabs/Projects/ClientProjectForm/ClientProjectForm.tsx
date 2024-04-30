@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Button, Flex, Input, Spin, Typography } from "antd";
+import { Button, Col, Flex, Input, Row, Spin, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
 
@@ -17,17 +17,17 @@ import { ModalStatusClient } from "@/components/molecules/modals/ModalStatusClie
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
 
 import "./clientprojectform.scss";
-import { createClient, getClientById } from "@/services/clients/clients";
+import { createClient, getClientById, updateClient } from "@/services/clients/clients";
 import { IClient } from "@/types/clients/IClients";
 import { SelectRisks } from "@/components/molecules/selects/clients/SelectRisks/SelectRisks";
 import { SelectDocumentTypes } from "@/components/molecules/selects/clients/SelectDocumentTypes/SelectDocumentTypes";
 import { SelectClientTypes } from "@/components/molecules/selects/clients/SelectClientTypes/SelectClientTypes";
 import { SelectRadicationTypes } from "@/components/molecules/selects/clients/SelectRadicationTypes/SelectRadicationTypes";
-// import { SelectLocations } from "@/components/molecules/selects/clients/SelectLocations/SelectLocations";
 import { SelectPaymentConditions } from "@/components/molecules/selects/clients/SelectPaymentConditions/SelectPaymentCondition";
 import { SelectHoldings } from "@/components/molecules/selects/clients/SelectHoldings/SelectHoldings";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { createLocation } from "@/services/locations/locations";
+import { stringBasedOnDocumentType } from "@/utils/utils";
 
 const { Title } = Typography;
 
@@ -47,6 +47,7 @@ export type ClientFormType = {
     risk: string;
     radication_type: string;
     condition_payment: string;
+    billing_period: string;
   };
 };
 
@@ -84,25 +85,26 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
       infoClient: {
         address:
           Array.isArray(data?.locations) && data.locations.length > 0
-            ? data.locations[0].address
+            ? data?.locations[0]?.address
             : undefined,
         city:
           Array.isArray(data?.locations) && data.locations.length > 0
-            ? data.locations[0].city
+            ? data.locations[0]?.city
             : undefined,
-        document_type: data.document_type,
+        document_type: stringBasedOnDocumentType(data.document_type),
         nit: data.nit,
         client_name: data.client_name,
         business_name: data.business_name,
-        client_type: data.cliet_type,
-        holding_name: data.holding_name || "",
+        client_type: `${data.client_type_id} - ${data.cliet_type}`,
+        holding_name: data.holding_id ? `${data.holding_id} - ${data.holding_name}` : "",
         phone: data.phone,
         email: data.email,
         locations: data.locations,
         risk: data.risk,
-        radication_type: data.radication_type_name,
-        condition_payment: data.condition_payment,
-        billing_period: data.billing_period
+        radication_type: `${data.radication_type} - ${data.radication_type_name}`,
+        condition_payment: `${data.condition_payment_id} - ${data.condition_payment} días`,
+        billing_period: data.billing_period,
+        documents: data.documents
       }
     };
   };
@@ -110,11 +112,27 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
   const {
     control,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    setValue
   } = useForm<ClientFormType>({
     disabled: !isEditAvailable,
     values: isViewDetailsClient?.active ? dataToDataForm(dataClient.data) : ({} as any)
   });
+
+  useEffect(() => {
+    // UseEffect para actualizar el valor de billingPeriod
+    if (!billingPeriod) {
+      setValue("infoClient.billing_period", dataClient.data.billing_period);
+      return;
+    }
+
+    const formattedBillingPeriod = billingPeriod.day_flag
+      ? `El dia ${billingPeriod.day} del mes`
+      : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`;
+
+    // Establecer el valor formateado al string de billing period
+    setValue("infoClient.billing_period", formattedBillingPeriod, { shouldValidate: true });
+  }, [billingPeriod, setValue, dataClient.data.billing_period]);
 
   useEffect(() => {
     (async () => {
@@ -133,35 +151,32 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
         isLoading: false,
         data: finalData
       });
+      setClientDocuments(finalData.documents);
     })();
   }, [isViewDetailsClient, idProject]);
 
   console.log("RAW dataClient: ", dataClient);
 
   const onSubmitHandler = async (data: any) => {
-    //ACA SE HARIA EL POST DE UN NUEVO CLIENTE Y EL EDIT
-    // const response = isViewDetailsClient?.id
-    //   ? () => {
-    //       //La funcion para hacer PUT de un cliente
-    //       return null;
-    //     }
-    //   :
-    //ACA HACER POST DE LA UBICACION Y CUANDO ESTÉ
-    //CREADA LA UBICACION HACER POST DEL CLIENTE
-    //FALSEAR LOCATION
-    const locationResponse = await createLocation(data.infoClient);
-    console.log("LocRes: ", locationResponse);
+    // Si hay un client id estamos editando un cliente de lo contrario estamos creando un cliente
+    if (isViewDetailsClient?.id) {
+      const locationResponse = await createLocation(data.infoClient, isViewDetailsClient?.id);
+      const response = await updateClient(data, idProject, locationResponse);
+      console.log("RES PUT client: ", response);
+    } else {
+      const locationResponse = await createLocation(data.infoClient, isViewDetailsClient?.id);
 
-    if (billingPeriod) {
-      const response = await createClient(
-        idProject,
-        data,
-        billingPeriod,
-        clientDocuments,
-        locationResponse
-      );
+      if (billingPeriod) {
+        const response = await createClient(
+          idProject,
+          data,
+          billingPeriod,
+          clientDocuments,
+          locationResponse
+        );
 
-      console.log("RES POST client: ", response);
+        console.log("RES POST client: ", response);
+      }
     }
   };
 
@@ -236,18 +251,21 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                   control={control}
                   nameInput="infoClient.nit"
                   error={errors.infoClient?.nit}
+                  disabled={isViewDetailsClient.id && isEditAvailable ? true : false}
                 />
                 <InputForm
                   titleInput="Razon Social"
                   control={control}
                   nameInput="infoClient.client_name"
                   error={errors.infoClient?.client_name}
+                  disabled={isViewDetailsClient.id && isEditAvailable ? true : false}
                 />
                 <InputForm
                   titleInput="Nombre de la compañía"
                   control={control}
                   nameInput="infoClient.business_name"
                   error={errors.infoClient?.business_name}
+                  disabled={isViewDetailsClient.id && !isEditAvailable ? true : false}
                 />
                 <Flex vertical className="inputContainer">
                   <Title className="inputContainer__title" level={5}>
@@ -257,6 +275,7 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                     name="infoClient.client_type"
                     control={control}
                     rules={{ required: true, minLength: 1 }}
+                    disabled={isViewDetailsClient.id && isEditAvailable ? true : false}
                     render={({ field }) => (
                       <SelectClientTypes errors={errors.infoClient?.client_type} field={field} />
                     )}
@@ -293,21 +312,6 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                   nameInput="infoClient.city"
                   error={errors.infoClient?.city}
                 />
-                {/* <Flex vertical className="inputContainer">
-                  <Title className="inputContainer__title" level={5}>
-                    Ciudad
-                  </Title>
-                  <Controller
-                    name="infoClient.locations"
-                    control={control}
-                    rules={{ required: true, minLength: 1 }}
-                    render={({ field }) => {
-                      return (
-                        <SelectLocations errors={errors.infoClient?.locations} field={field} />
-                      );
-                    }}
-                  />
-                </Flex> */}
                 <InputForm
                   titleInput="Dirección"
                   control={control}
@@ -322,6 +326,7 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                     name="infoClient.risk"
                     control={control}
                     rules={{ required: true, minLength: 1 }}
+                    disabled={isViewDetailsClient.id && isEditAvailable ? true : false}
                     render={({ field }) => (
                       <SelectRisks errors={errors.infoClient?.risk} field={field} />
                     )}
@@ -336,19 +341,36 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
                   <Title className="inputContainer__title" level={5}>
                     Período de facturación
                   </Title>
-                  <Input
-                    disabled={!isEditAvailable}
-                    variant="borderless"
-                    className="input"
-                    placeholder="Segundo miércoles del mes"
-                    onClick={() => setIsBillingPeriodOpen(true)}
-                    value={
-                      billingPeriod
-                        ? billingPeriod.day_flag
-                          ? `El dia ${billingPeriod.day}`
-                          : `El ${billingPeriod.order} ${billingPeriod.day_of_week}`
-                        : dataClient.data.billing_period
-                    }
+                  <Controller
+                    name="infoClient.billing_period"
+                    control={control}
+                    rules={{ required: true, minLength: 1 }}
+                    render={({ field, fieldState: { error } }) => (
+                      <>
+                        <Input
+                          disabled={!isEditAvailable}
+                          variant="borderless"
+                          className={error ? "inputError" : "input"}
+                          placeholder="Segundo miércoles del mes"
+                          onClick={() => setIsBillingPeriodOpen(true)}
+                          {...field}
+                          value={
+                            billingPeriod
+                              ? billingPeriod.day_flag
+                                ? `El dia ${billingPeriod.day} del mes`
+                                : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`
+                              : dataClient.data.billing_period
+                                ? dataClient.data.billing_period
+                                : undefined
+                          }
+                        />
+                        {error && (
+                          <Typography.Text className="textError">
+                            El Periodo de facturacion es obligatorio *
+                          </Typography.Text>
+                        )}
+                      </>
+                    )}
                   />
                 </Flex>
                 <Flex vertical className="inputContainer">
@@ -383,17 +405,19 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
               {/* -----------------------------------Experiencia----------------------------------- */}
               <Title level={4}>Documentos</Title>
               <Flex vertical align="flex-start">
-                <Flex wrap="wrap" gap={"1rem"} style={{ width: "100%" }}>
+                <Row className="clientDocuments" gutter={16}>
                   {/* ACA PODRIA PINTAR UN DOCUMENT BUTTON POR CADA UNO DE LOS QUE LLEGA DEL BACK Y LOS SUBIDOS? */}
-                  {[1, 23, 45].map((document) => (
-                    <DocumentButton
-                      key={document}
-                      fileName="Archivo Subido"
-                      fileSize="NA"
-                      disabled
-                    />
+                  {clientDocuments?.map((document) => (
+                    <Col key={document.name} span={6}>
+                      <DocumentButton
+                        // key={document}
+                        fileName={document.name}
+                        fileSize={document.size}
+                        disabled
+                      />
+                    </Col>
                   ))}
-                </Flex>
+                </Row>
                 {isEditAvailable && (
                   <Button
                     size="large"

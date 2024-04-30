@@ -16,3 +16,10 @@ interface IPosition {
   lat: string;
   lon: string;
 }
+
+export interface ICreateLocation {
+  address: string;
+  city: string;
+  nit: string;
+  position: IPosition | {};
+}
