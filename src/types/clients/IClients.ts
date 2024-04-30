@@ -68,7 +68,7 @@ export interface IClients {
 }
 
 export interface ICreateClient {
-  [key: string]: any; // Añade esta línea
+  [key: string]: any;
   nit: number;
   project_id: number;
   client_name: string;
@@ -85,7 +85,7 @@ export interface ICreateClient {
   day_flag?: boolean;
   day?: number;
   order?: string;
-  day_of_week?: number;
+  day_of_week?: string;
 }
 
 export interface IUpdateClient {

@@ -32,7 +32,7 @@ export const ModalBillingPeriod = ({ isOpen, setIsBillingPeriodOpen, setBillingP
   });
   const [billingPeriodValue, setBillingPeriodValue] = useState<IBillingPeriodForm>();
 
-  const orderOptions = ["primer", "segundo", "tercero", "cuarto", "ultimo"];
+  const orderOptions = ["Primer", "Segundo", "Tercero", "Cuarto", "Ultimo"];
 
   const daysOptions = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
 

@@ -106,7 +106,7 @@ export const ClientProjectForm = ({
         client_name: data.client_name,
         business_name: data.business_name,
         client_type: `${data.client_type_id} - ${data.cliet_type}`,
-        holding_name: data.holding_id ? `${data.holding_id} - ${data.holding_name}` : "",
+        holding_name: data.holding_id ? `${data.holding_id} - ${data.holding_name}` : undefined,
         phone: data.phone,
         email: data.email,
         locations: data.locations,
@@ -170,12 +170,58 @@ export const ClientProjectForm = ({
     // Si hay un client id estamos editando un cliente de lo contrario estamos creando un cliente
     if (isViewDetailsClient?.id) {
       const locationResponse = await createLocation(data.infoClient, isViewDetailsClient?.id);
-      await updateClient(idProject, isViewDetailsClient?.id, data, locationResponse, billingPeriod);
+      const response = await updateClient(
+        idProject,
+        isViewDetailsClient?.id,
+        data,
+        locationResponse,
+        billingPeriod
+      );
+
+      if (response.status === 200 || response.status === 202) {
+        setIsEditAvailable(false);
+        messageApi.open({
+          type: "success",
+          content: `El cliente fue editado exitosamente.`
+        });
+      } else if (response.response.status === 400) {
+        messageApi.open({
+          type: "error",
+          content: "Algo salio mal con los datos subidos."
+        });
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "Oops ocurrio un error."
+        });
+      }
     } else {
       const locationResponse = await createLocation(data.infoClient, isViewDetailsClient?.id);
 
       if (billingPeriod) {
-        await createClient(idProject, data, billingPeriod, clientDocuments, locationResponse);
+        const response = await createClient(
+          idProject,
+          data,
+          billingPeriod,
+          clientDocuments,
+          locationResponse
+        );
+
+        console.log("response: ", response);
+
+        if (response.status === 200) {
+          setIsViewDetailsClient({ active: true, id: data.infoClient });
+          setIsEditAvailable(false);
+          messageApi.open({
+            type: "success",
+            content: `El cliente fue creado exitosamente.`
+          });
+        } else {
+          messageApi.open({
+            type: "error",
+            content: "Oops ocurrió un error."
+          });
+        }
       }
     }
   };
@@ -221,13 +267,13 @@ export const ClientProjectForm = ({
                 <Button
                   size="large"
                   onClick={() => {
-                    setIsEditAvailable(true);
+                    setIsEditAvailable(!isEditAvailable);
                   }}
                   className="buttonOutlined"
-                  htmlType={isEditAvailable ? "submit" : "button"}
+                  htmlType="button"
                   icon={<Pencil size={"1.45rem"} />}
                 >
-                  Editar Cliente
+                  {isEditAvailable ? "Cancelar" : "Editar Cliente"}
                 </Button>
               </Flex>
             )}
@@ -415,19 +461,13 @@ export const ClientProjectForm = ({
               <Title level={4}>Documentos</Title>
               <Flex vertical align="flex-start">
                 <Row className="clientDocuments" gutter={16}>
-                  {/* ACA PODRIA PINTAR UN DOCUMENT BUTTON POR CADA UNO DE LOS QUE LLEGA DEL BACK Y LOS SUBIDOS? */}
-                  {clientDocuments?.map((document) => (
-                    <Col key={document.name} span={6}>
-                      <DocumentButton
-                        // key={document}
-                        fileName={document.name}
-                        fileSize={document.size}
-                        disabled
-                      />
+                  {clientDocuments?.map((document, index) => (
+                    <Col key={`${index}${document.name}`} span={6}>
+                      <DocumentButton fileName={document.name} fileSize={document.size} disabled />
                     </Col>
                   ))}
                 </Row>
-                {isEditAvailable && (
+                {!isViewDetailsClient.id && isEditAvailable ? (
                   <Button
                     size="large"
                     type="text"
@@ -437,7 +477,7 @@ export const ClientProjectForm = ({
                   >
                     Cargar Documento
                   </Button>
-                )}
+                ) : null}
               </Flex>
               <DividerCustom />
               <ShipToProjectTable setIsCreateShipTo={setIsCreateShipTo} />

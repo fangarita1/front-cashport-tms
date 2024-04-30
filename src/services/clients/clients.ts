@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import config from "@/config";
 import { getIdToken } from "@/utils/api/api";
 import { IClientAxios, ICreateClient, IUpdateClient } from "@/types/clients/IClients";
@@ -40,9 +40,12 @@ export const createClient = async (
     locations: formatLocations,
     documents: formatDocuments,
     client_type_id: parseInt(client_type),
-    holding_id: parseInt(holding),
+    holding_id: holding ? parseInt(holding) : undefined,
     day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod.day_flag,
-    day: typeof billingPeriod === "string" ? undefined : billingPeriod.day
+    day: typeof billingPeriod === "string" ? undefined : billingPeriod.day,
+    order: typeof billingPeriod === "string" ? undefined : billingPeriod.order?.toLowerCase(),
+    day_of_week:
+      typeof billingPeriod === "string" ? undefined : billingPeriod.day_of_week?.toLowerCase()
   };
 
   const formData = new FormData();
@@ -52,7 +55,7 @@ export const createClient = async (
       modelData[key].forEach((file: File) => {
         formData.append("documents", file);
       });
-    } else {
+    } else if (modelData[key] !== undefined && modelData[key] !== null && modelData[key] !== "") {
       formData.append(key, modelData[key]);
     }
   });
@@ -60,16 +63,22 @@ export const createClient = async (
   const token = await getIdToken();
 
   try {
-    const response: AxiosResponse = await axios.post(`${config.API_HOST}/client`, formData, {
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${token}`
+    const response: AxiosResponse | AxiosError = await axios.post(
+      `${config.API_HOST}/client`,
+      formData,
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          Authorization: `Bearer ${token}`
+        }
       }
-    });
+    );
+    console.log("Succesfull creating new client: ", response);
+
     return response;
   } catch (error) {
     console.log("Error creating new client: ", error);
-    return error as any;
+    return error as AxiosError;
   }
 };
 
@@ -133,7 +142,7 @@ export const updateClient = async (
 
   const token = await getIdToken();
   try {
-    const response: AxiosResponse = await axios.put(
+    const response: AxiosResponse | AxiosError = await axios.put(
       `${config.API_HOST}/client/${clientId}/project/${idProject}`,
       modelData,
       {
@@ -146,7 +155,7 @@ export const updateClient = async (
     return response;
   } catch (error) {
     console.log("Error updating client: ", error);
-    return error as any;
+    return error as AxiosError;
   }
 };
 

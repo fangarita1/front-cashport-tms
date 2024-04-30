@@ -58,7 +58,6 @@ export const UploadDocumentButton = ({ title, isMandatory, setFiles }: DocumentP
 
   const handleOnDelete = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
-    console.log("Hello world");
     setUploadedFile(null);
     const fileObject = { docReference: title, file: undefined };
 
