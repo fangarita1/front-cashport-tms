@@ -95,8 +95,9 @@ export const getClientById = async (idUser: string, projectId: string): Promise<
 };
 
 export const updateClient = async (
-  rawData: ClientFormType,
   idProject: string,
+  clientId: number,
+  rawData: ClientFormType,
   locationResponse?: any,
   billingPeriod?: IBillingPeriodForm
 ): Promise<any> => {
@@ -108,8 +109,6 @@ export const updateClient = async (
   const holding = data.holding_name?.split("-")[0].trim();
 
   const formatLocations = JSON.stringify(new Array(locationResponse?.data?.data));
-
-  const clientId = data.nit;
 
   const modelData: IUpdateClient = {
     business_name: data.business_name,

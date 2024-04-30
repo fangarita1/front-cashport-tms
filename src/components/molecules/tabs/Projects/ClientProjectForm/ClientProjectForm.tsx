@@ -145,6 +145,7 @@ export const ClientProjectForm = ({
   }, [billingPeriod, setValue, dataClient.data.billing_period]);
 
   useEffect(() => {
+    // UseEffect para dar un valor a dataClient, para pintar el form
     (async () => {
       if (isViewDetailsClient?.id === 0) {
         setIsEditAvailable(true);
@@ -165,33 +166,21 @@ export const ClientProjectForm = ({
     })();
   }, [isViewDetailsClient, idProject]);
 
-  console.log("RAW dataClient: ", dataClient);
-
   const onSubmitHandler = async (data: any) => {
     // Si hay un client id estamos editando un cliente de lo contrario estamos creando un cliente
     if (isViewDetailsClient?.id) {
       const locationResponse = await createLocation(data.infoClient, isViewDetailsClient?.id);
-      const response = await updateClient(data, idProject, locationResponse);
-      console.log("RES PUT client: ", response);
+      await updateClient(idProject, isViewDetailsClient?.id, data, locationResponse, billingPeriod);
     } else {
       const locationResponse = await createLocation(data.infoClient, isViewDetailsClient?.id);
 
       if (billingPeriod) {
-        const response = await createClient(
-          idProject,
-          data,
-          billingPeriod,
-          clientDocuments,
-          locationResponse
-        );
-
-        console.log("RES POST client: ", response);
+        await createClient(idProject, data, billingPeriod, clientDocuments, locationResponse);
       }
     }
   };
 
   const onDeleteClient = async () => {
-    console.log("onDeleteClient: ");
     if (isViewDetailsClient?.id) {
       await deleteClientById(isViewDetailsClient?.id, idProject, messageApi, () =>
         setIsViewDetailsClient({ active: false, id: 0 })
