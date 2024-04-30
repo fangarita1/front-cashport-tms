@@ -4,6 +4,8 @@ import { getIdToken } from "@/utils/api/api";
 import { IClientAxios, ICreateClient, IUpdateClient } from "@/types/clients/IClients";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { ClientFormType } from "@/components/molecules/tabs/Projects/ClientProjectForm/ClientProjectForm";
+import { SUCCESS } from "@/utils/constants/globalConstants";
+import { MessageInstance } from "antd/es/message/interface";
 
 // create
 
@@ -145,6 +147,46 @@ export const updateClient = async (
     return response;
   } catch (error) {
     console.log("Error updating client: ", error);
+    return error as any;
+  }
+};
+
+export const deleteClientById = async (
+  idUser: number,
+  projectId: string,
+  messageApi: MessageInstance,
+  onClose: () => void
+): Promise<IClientAxios> => {
+  const token = await getIdToken();
+  try {
+    const response: IClientAxios = await axios.delete(
+      `${config.API_HOST}/client/${idUser}/project/${projectId}`,
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json; charset=utf-8",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (response.status === SUCCESS) {
+      messageApi.open({
+        type: "success",
+        content: "El Cliente fue eliminado exitosamente."
+      });
+      onClose();
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Oops ocurrio un error."
+      });
+      onClose();
+    }
+
+    return response;
+  } catch (error) {
+    console.log("Error deleting client by Id: ", error);
     return error as any;
   }
 };

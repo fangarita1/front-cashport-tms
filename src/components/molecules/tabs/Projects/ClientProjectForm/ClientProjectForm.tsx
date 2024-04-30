@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Button, Col, Flex, Input, Row, Spin, Typography } from "antd";
+import { Button, Col, Flex, Input, Row, Spin, Typography, message } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
 
@@ -17,7 +17,12 @@ import { ModalStatusClient } from "@/components/molecules/modals/ModalStatusClie
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
 
 import "./clientprojectform.scss";
-import { createClient, getClientById, updateClient } from "@/services/clients/clients";
+import {
+  createClient,
+  deleteClientById,
+  getClientById,
+  updateClient
+} from "@/services/clients/clients";
 import { IClient } from "@/types/clients/IClients";
 import { SelectRisks } from "@/components/molecules/selects/clients/SelectRisks/SelectRisks";
 import { SelectDocumentTypes } from "@/components/molecules/selects/clients/SelectDocumentTypes/SelectDocumentTypes";
@@ -65,7 +70,11 @@ interface Props {
   >;
   setIsCreateClient: Dispatch<SetStateAction<boolean>>;
 }
-export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props) => {
+export const ClientProjectForm = ({
+  onGoBackTable,
+  isViewDetailsClient,
+  setIsViewDetailsClient
+}: Props) => {
   const [isCreateShipTo, setIsCreateShipTo] = useState(false);
   const [isUploadDocument, setIsUploadDocument] = useState(false);
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
@@ -77,6 +86,7 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
   } as { data: IClient; isLoading: boolean });
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
   const [clientDocuments, setClientDocuments] = useState<File[] | any[]>([]);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const { id: idProject } = useParams<{ id: string }>();
 
@@ -180,8 +190,18 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
     }
   };
 
+  const onDeleteClient = async () => {
+    console.log("onDeleteClient: ");
+    if (isViewDetailsClient?.id) {
+      await deleteClientById(isViewDetailsClient?.id, idProject, messageApi, () =>
+        setIsViewDetailsClient({ active: false, id: 0 })
+      );
+    }
+  };
+
   return (
     <>
+      {contextHolder}
       <form className="newClientProjectForm" onSubmit={handleSubmit(onSubmitHandler)}>
         <Flex vertical style={{ height: "100%" }}>
           <Flex component={"header"} className="headerNewUserProyectsForm">
@@ -466,7 +486,7 @@ export const ClientProjectForm = ({ onGoBackTable, isViewDetailsClient }: Props)
         name="cliente"
         isOpen={isModalStatus.remove}
         onClose={() => setIsModalStatus((s) => ({ ...s, remove: false }))}
-        onRemove={() => {}}
+        onRemove={onDeleteClient}
       />
     </>
   );
