@@ -1,10 +1,11 @@
+import { AxiosHeaders } from "axios";
 import { Config } from "../users/IUser";
 
 export interface IClientAxios {
   data: IClientFullResponse;
   status: number;
   statusText: string;
-  headers: any;
+  headers: AxiosHeaders;
   config: Config;
   request: Request;
 }
@@ -103,3 +104,23 @@ export interface IUpdateClient {
   phone?: string;
   radication_type: number;
 }
+
+export type ClientFormType = {
+  infoClient: {
+    address: string;
+    document_type: string;
+    nit: string;
+    client_name: string;
+    business_name: string;
+    client_type: string;
+    holding_name: string;
+    phone: string;
+    email: string;
+    locations: any[];
+    city: string;
+    risk: string;
+    radication_type: string;
+    condition_payment: string;
+    billing_period: string;
+  };
+};

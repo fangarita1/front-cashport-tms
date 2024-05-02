@@ -1,9 +1,14 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import config from "@/config";
 import { getIdToken } from "@/utils/api/api";
-import { IClientAxios, ICreateClient, IUpdateClient } from "@/types/clients/IClients";
+import {
+  ClientFormType,
+  IClientAxios,
+  ICreateClient,
+  IUpdateClient
+} from "@/types/clients/IClients";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
-import { ClientFormType } from "@/components/molecules/tabs/Projects/ClientProjectForm/ClientProjectForm";
+
 import { SUCCESS } from "@/utils/constants/globalConstants";
 import { MessageInstance } from "antd/es/message/interface";
 

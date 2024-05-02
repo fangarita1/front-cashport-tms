@@ -30,7 +30,7 @@ import {
   getClientById,
   updateClient
 } from "@/services/clients/clients";
-import { IClient } from "@/types/clients/IClients";
+import { ClientFormType, IClient } from "@/types/clients/IClients";
 import { SelectRisks } from "@/components/molecules/selects/clients/SelectRisks/SelectRisks";
 import { SelectDocumentTypes } from "@/components/molecules/selects/clients/SelectDocumentTypes/SelectDocumentTypes";
 import { SelectClientTypes } from "@/components/molecules/selects/clients/SelectClientTypes/SelectClientTypes";
@@ -43,26 +43,6 @@ import { stringBasedOnDocumentType } from "@/utils/utils";
 import { MessageInstance } from "antd/es/message/interface";
 
 const { Title } = Typography;
-
-export type ClientFormType = {
-  infoClient: {
-    address: string;
-    document_type: string;
-    nit: string;
-    client_name: string;
-    business_name: string;
-    client_type: string;
-    holding_name: string;
-    phone: string;
-    email: string;
-    locations: any[];
-    city: string;
-    risk: string;
-    radication_type: string;
-    condition_payment: string;
-    billing_period: string;
-  };
-};
 
 interface Props {
   isViewDetailsClient: {
@@ -99,7 +79,6 @@ export const ClientProjectForm = ({
   } as { data: IClient; isLoading: boolean });
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
   const [clientDocuments, setClientDocuments] = useState<File[] | any[]>([]);
-  // const [messageApi, contextHolder] = message.useMessage();
 
   const { id: idProject } = useParams<{ id: string }>();
 

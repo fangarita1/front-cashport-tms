@@ -15,12 +15,12 @@ interface Option {
 interface FilterClientsProps {
   setFilterClients: Dispatch<
     SetStateAction<{
-      city: any[];
-      holding: any[];
-      risk: any[];
-      payment_condition: any[];
-      radication_type: any[];
-      status: any[];
+      city: number[];
+      holding: number[];
+      risk: number[];
+      payment_condition: number[];
+      radication_type: number[];
+      status: number[];
     }>
   >;
 }
@@ -30,13 +30,12 @@ export const FilterClients = ({ setFilterClients }: FilterClientsProps) => {
 
   const { data: filterOptions } = useClients({
     idProject,
-    page: 1,
-    city: [] as any,
-    holding: [] as any,
-    risk: [] as any,
-    payment_condition: [] as any,
-    radication_type: [] as any,
-    status: [] as any
+    city: [] as number[],
+    holding: [] as number[],
+    risk: [] as number[],
+    payment_condition: [] as number[],
+    radication_type: [] as number[],
+    status: [] as number[]
   });
 
   const onChange = (selectedValue: any[]) => {

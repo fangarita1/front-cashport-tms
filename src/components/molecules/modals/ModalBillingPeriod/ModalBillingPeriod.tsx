@@ -87,14 +87,12 @@ export const ModalBillingPeriod = ({ isOpen, setIsBillingPeriodOpen, setBillingP
                 <SelectBillingPeriodOrder
                   options={orderOptions}
                   placeHolder="Segundo"
-                  errors={false}
                   orderRadioValue={orderValueRadio}
                   setValueSelected={setOrderValueRadio}
                 />
                 <SelectBillingPeriodDay
                   options={daysOptions}
                   placeHolder="Miercoles"
-                  errors={false}
                   orderRadioValue={orderValueRadio}
                   setValueSelected={setOrderValueRadio}
                 />

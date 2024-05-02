@@ -1,12 +1,14 @@
 import { Select, Typography } from "antd";
+import { ControllerRenderProps, FieldError } from "react-hook-form";
 
 import { useHolding } from "@/hooks/useHolding";
+import { ClientFormType } from "@/types/clients/IClients";
 
 import "../commonInputStyles.scss";
 
 interface Props {
-  errors: any;
-  field: any;
+  errors: FieldError | undefined;
+  field: ControllerRenderProps<ClientFormType, "infoClient.holding_name">;
 }
 const { Option } = Select;
 export const SelectHoldings = ({ errors, field }: Props) => {

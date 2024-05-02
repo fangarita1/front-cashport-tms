@@ -3,12 +3,14 @@ import useSWR from "swr";
 
 import { fetcher } from "@/utils/api/api";
 import { IClientTypes } from "@/types/clientTypes/clientTypes";
+import { ControllerRenderProps, FieldError } from "react-hook-form";
+import { ClientFormType } from "@/types/clients/IClients";
 
 import "../commonInputStyles.scss";
 
 interface Props {
-  errors: any;
-  field: any;
+  errors: FieldError | undefined;
+  field: ControllerRenderProps<ClientFormType, "infoClient.client_type">;
 }
 const { Option } = Select;
 export const SelectClientTypes = ({ errors, field }: Props) => {

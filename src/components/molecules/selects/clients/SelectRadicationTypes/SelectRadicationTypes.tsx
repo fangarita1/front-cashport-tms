@@ -3,12 +3,14 @@ import useSWR from "swr";
 
 import { fetcher } from "@/utils/api/api";
 import { IRadicationTypes } from "@/types/radicationTypes/IRadicationTypes";
+import { ClientFormType } from "@/types/clients/IClients";
+import { FieldError, ControllerRenderProps } from "react-hook-form";
 
 import "../commonInputStyles.scss";
 
 interface Props {
-  errors: any;
-  field: any;
+  errors: FieldError | undefined;
+  field: ControllerRenderProps<ClientFormType, "infoClient.radication_type">;
 }
 const { Option } = Select;
 export const SelectRadicationTypes = ({ errors, field }: Props) => {

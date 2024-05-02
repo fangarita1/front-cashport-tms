@@ -1,20 +1,22 @@
 import { Select, Typography } from "antd";
 import useSWR from "swr";
+import { ControllerRenderProps, FieldError } from "react-hook-form";
 
 import { fetcher } from "@/utils/api/api";
 import { ILocation, ILocations } from "@/types/locations/ILocations";
+import { ClientFormType } from "@/types/clients/IClients";
 
 import "../commonInputStyles.scss";
 
 interface Props {
-  errors: any;
-  field: any;
+  errors: FieldError | undefined;
+  field: ControllerRenderProps<ClientFormType, "infoClient.locations">;
 }
 const { Option } = Select;
 export const SelectLocations = ({ errors, field }: Props) => {
   const { data, isLoading } = useSWR<ILocations>("/location", fetcher, {});
   const options = data?.data;
-  let cities: [] | string = [];
+  let cities: string[] | string = [];
   if (Array.isArray(field?.value)) {
     cities = field.value.map((location: ILocation) => location.city);
   }

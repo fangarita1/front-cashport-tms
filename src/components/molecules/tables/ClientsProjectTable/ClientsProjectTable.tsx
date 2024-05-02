@@ -42,12 +42,12 @@ export const ClientsProjectTable = ({
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const [filterClients, setFilterClients] = useState({
-    city: [] as any,
-    holding: [] as any,
-    risk: [] as any,
-    payment_condition: [] as any,
-    radication_type: [] as any,
-    status: [] as any
+    city: [] as number[],
+    holding: [] as number[],
+    risk: [] as number[],
+    payment_condition: [] as number[],
+    radication_type: [] as number[],
+    status: [] as number[]
   });
 
   const { id: idProject } = useParams<{ id: string }>();

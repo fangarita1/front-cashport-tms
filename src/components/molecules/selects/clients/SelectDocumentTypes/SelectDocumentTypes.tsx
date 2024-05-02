@@ -1,14 +1,17 @@
 import { Select, Typography } from "antd";
 import useSWR from "swr";
+import { ControllerRenderProps, FieldError } from "react-hook-form";
 
 import { fetcher } from "@/utils/api/api";
+
 import { IDocumentsTypes } from "@/types/documentTypes/IDocumentsTypes";
+import { ClientFormType } from "@/types/clients/IClients";
 
 import "../commonInputStyles.scss";
 
 interface Props {
-  errors: any;
-  field: any;
+  errors: FieldError | undefined;
+  field: ControllerRenderProps<ClientFormType, "infoClient.document_type">;
 }
 const { Option } = Select;
 export const SelectDocumentTypes = ({ errors, field }: Props) => {

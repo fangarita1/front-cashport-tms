@@ -3,22 +3,19 @@ import useSWR from "swr";
 
 import { fetcher } from "@/utils/api/api";
 import { IPaymentConditions } from "@/types/paymentConditions/IPaymentConditions";
+import { ControllerRenderProps, FieldError } from "react-hook-form";
+import { ClientFormType } from "@/types/clients/IClients";
 
 import "../commonInputStyles.scss";
 
 interface Props {
-  errors: any;
-  field: any;
+  errors: FieldError | undefined;
+  field: ControllerRenderProps<ClientFormType, "infoClient.condition_payment">;
 }
 const { Option } = Select;
 export const SelectPaymentConditions = ({ errors, field }: Props) => {
   const { data, isLoading } = useSWR<IPaymentConditions>("/client/condition-payments", fetcher, {});
   const options = data?.data;
-
-  if (!field.value) {
-    const HARDCODED_VALUE = 1;
-    field.value = HARDCODED_VALUE;
-  }
 
   return (
     <>

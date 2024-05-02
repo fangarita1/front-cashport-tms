@@ -9,9 +9,9 @@ interface PropsUseClients {
   city: number[];
   holding: number[];
   risk: number[];
-  payment_condition: number;
+  payment_condition: number[];
   radication_type: number[];
-  status: number;
+  status: number[];
 }
 
 export const useClients = ({

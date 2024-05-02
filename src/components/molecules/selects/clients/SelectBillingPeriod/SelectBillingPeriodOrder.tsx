@@ -7,8 +7,6 @@ import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 interface Props {
   titleSelect?: string;
   placeHolder?: string;
-  errors: any;
-  field?: any;
   options: any[];
   orderRadioValue: IBillingPeriodForm;
   setValueSelected: Dispatch<SetStateAction<IBillingPeriodForm>>;
@@ -17,7 +15,6 @@ const { Option } = Select;
 export const SelectBillingPeriodOrder = ({
   titleSelect = "",
   placeHolder = "",
-  errors,
   options = [],
   orderRadioValue,
   setValueSelected
@@ -30,7 +27,7 @@ export const SelectBillingPeriodOrder = ({
       {titleSelect.length > 0 && <Typography.Title level={5}>{titleSelect}</Typography.Title>}
       <Select
         placeholder={titleSelect.length > 0 ? titleSelect : placeHolder}
-        className={errors ? "selectInputError" : "selectInputCustom"}
+        className="selectInputCustom"
         variant="borderless"
         optionLabelProp="label"
         onChange={onChangeSelect}
@@ -42,9 +39,6 @@ export const SelectBillingPeriodOrder = ({
             </Option>
           );
         })}
-        {errors && (
-          <Typography.Text className="textError">El orden es obligatorio *</Typography.Text>
-        )}
       </Select>
     </Flex>
   );

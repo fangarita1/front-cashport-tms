@@ -2,13 +2,16 @@ import { Select, Typography } from "antd";
 import useSWR from "swr";
 
 import { fetcher } from "@/utils/api/api";
+
 import { IRisks } from "@/types/risks/IRisks";
+import { ClientFormType } from "@/types/clients/IClients";
+import { FieldError, ControllerRenderProps } from "react-hook-form";
 
 import "../commonInputStyles.scss";
 
 interface Props {
-  errors: any;
-  field: any;
+  errors: FieldError | undefined;
+  field: ControllerRenderProps<ClientFormType, "infoClient.risk">;
 }
 const { Option } = Select;
 export const SelectRisks = ({ errors, field }: Props) => {
