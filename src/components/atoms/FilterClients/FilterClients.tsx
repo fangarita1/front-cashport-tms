@@ -1,6 +1,8 @@
 import { Cascader } from "antd";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { IClient } from "@/types/clients/IClients";
+import { useClients } from "@/hooks/useClients";
+import { useParams } from "next/navigation";
 
 interface Option {
   value: string;
@@ -21,11 +23,21 @@ interface FilterClientsProps {
       status: any[];
     }>
   >;
-  clientsData: IClient[];
 }
 
-export const FilterClients = ({ setFilterClients, clientsData }: FilterClientsProps) => {
-  const [filterOptions] = useState(() => clientsData);
+export const FilterClients = ({ setFilterClients }: FilterClientsProps) => {
+  const { id: idProject } = useParams<{ id: string }>();
+
+  const { data: filterOptions } = useClients({
+    idProject,
+    page: 1,
+    city: [] as any,
+    holding: [] as any,
+    risk: [] as any,
+    payment_condition: [] as any,
+    radication_type: [] as any,
+    status: [] as any
+  });
 
   const onChange = (selectedValue: any[]) => {
     const city: number[] = [];
@@ -88,7 +100,7 @@ export const FilterClients = ({ setFilterClients, clientsData }: FilterClientsPr
   const createHoldings = (clients: IClient[]) => {
     const holdings = new Set();
 
-    clients.forEach((client) => {
+    clients?.forEach((client) => {
       if (client.holding_id && client.holding_name) {
         const holding = { value: client.holding_id, label: client.holding_name };
         holdings.add(JSON.stringify(holding));
@@ -102,7 +114,7 @@ export const FilterClients = ({ setFilterClients, clientsData }: FilterClientsPr
   const createChildrenRisk = (client: IClient[]) => {
     const riskSet = new Set();
 
-    client.forEach((client) => {
+    client?.forEach((client) => {
       let risk = {};
 
       if (client.risk) {
@@ -136,7 +148,7 @@ export const FilterClients = ({ setFilterClients, clientsData }: FilterClientsPr
   const createChildrenRadicationType = (client: IClient[]) => {
     const radicationTypeSet = new Set();
 
-    client.forEach((client: IClient) => {
+    client?.forEach((client: IClient) => {
       let radication_type = {};
 
       if (client.radication_type) {
@@ -167,7 +179,7 @@ export const FilterClients = ({ setFilterClients, clientsData }: FilterClientsPr
   const createStatusChildren = (client: IClient[]) => {
     const statusSet = new Set();
 
-    client.forEach((client) => {
+    client?.forEach((client) => {
       let status = {};
       if (client.status) {
         switch (client.status) {
