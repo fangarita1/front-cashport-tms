@@ -1,169 +1,164 @@
 @import "../../../../../styles/variables";
 
 .mainProyectsForm {
-	width: 100%;
-	height: 100%;
-	display: flex;
-	overflow-y: scroll;
-	flex-direction: column;
-	.title{
-		font-size: 16px;
-		color: #141414; 
-		font-weight: 600;
-		font-style: normal;
-		line-height: normal;
-	}
-	.buttonNewProject{
-		display: flex;
-		padding: 0 24px;
-		margin: auto 24px 24px 0;
-		justify-content: flex-end;
-		.button {
-			width: 240px;
-			height: 40px;
-			display: flex;
-			font-size: 16px;;
-			font-weight: 600;
-			color: #141414;
-			border-radius: 8px;
-			align-items: center;
-			line-height: normal;
-			justify-content: center;
-			background: var(--Dark-Grey, #DDD);
-			&.active{
-				background-color:	#CBE71E;
-			}
-		}
-	}
+    width: 100%;
+    height: 100%;
+    display: flex;
+    overflow-y: scroll;
+    flex-direction: column;
+    .title {
+        font-size: 16px;
+        color: #141414;
+        font-weight: 600;
+        font-style: normal;
+        line-height: normal;
+    }
+    .buttonNewProject {
+        display: flex;
+        padding: 0 24px;
+        margin: auto 24px 24px 0;
+        justify-content: flex-end;
+        .button {
+            width: 240px;
+            height: 40px;
+            display: flex;
+            font-size: 16px;
+            font-weight: 600;
+            color: #141414;
+            border-radius: 8px;
+            align-items: center;
+            line-height: normal;
+            justify-content: center;
+            background: var(--Dark-Grey, #ddd);
+            &.active {
+                background-color: #cbe71e;
+            }
+        }
+    }
 
-	.textError {
-			color: red;
-			padding-left: 0.5rem;
-	}
+    .textError {
+        color: red;
+        padding-left: 0.5rem;
+    }
 
-	.headerProyectsForm {
-			padding: .5rem 0;
-			padding-right: .5rem;
-			justify-content: space-between;
-			align-items: center;	
-			h2,
-			h3,
-			h4 {
-					color: $secondary-gray;
-			}
-			.buttonGoBack {
-				justify-content: flex-start;
-				color: #141414;
-				box-shadow: none;
-				padding: inherit;
-				font-weight: 600;
-				&:hover {
-					opacity: 0.8;
-					color: black;
-				}
-			}
+    .headerProyectsForm {
+        padding: 0.5rem 0;
+        padding-right: 0.5rem;
+        justify-content: space-between;
+        align-items: center;
+        h2,
+        h3,
+        h4 {
+            color: $secondary-gray;
+        }
+        .buttonGoBack {
+            justify-content: flex-start;
+            color: #141414;
+            box-shadow: none;
+            padding: inherit;
+            font-weight: 600;
+            &:hover {
+                opacity: 0.8;
+                color: black;
+            }
+        }
+    }
 
-	}
+    .ant-upload-wrapper {
+        width: 50% !important;
+    }
+    .ant-upload-select {
+        width: 180px !important;
+        height: 120px !important;
+        flex-shrink: 0;
+        border-radius: 8px;
+        background: #f7f7f7;
+    }
 
-	.ant-upload-wrapper {
-		width: 50% !important;
-	}
-	.ant-upload-select {
-		width: 180px !important; 
-		height: 120px !important;
-		flex-shrink: 0;
-		border-radius: 8px;
-		background: #F7F7F7;
-	}
+    .buttonAction {
+        color: #141414;
+        display: flex;
 
-	.buttonAction {
-			color: #141414;
-			display: flex;
+        &:hover {
+            opacity: 0.8;
+            color: #141414;
+        }
+    }
+    .generalProject {
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+        h2,
+        h3,
+        h4 {
+            color: $secondary-gray;
+            font-size: 26px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+        }
 
-			&:hover {
-					opacity: 0.8;
-					color: #141414;
-			}
-	}
-	.generalProject {
-			display: flex;
-			width: 100%;
-			flex-wrap: wrap;
-			h2,
-			h3,
-			h4 {
-				color: $secondary-gray;
-				font-size: 26px;
-				font-style: normal;
-				font-weight: 600;
-				line-height: normal;
-			}
+        h5 {
+            color: $gray;
+        }
+        .containerInput {
+            width: 23%;
+            margin: 0.25rem 0.5rem;
+            .title {
+                font-size: 12px;
+                color: #909090;
+                font-weight: 600;
+                font-style: normal;
+                line-height: normal;
+            }
 
-			h5 {
-					color: $gray;
-			}
-			.containerInput {
-					width: 23%;
-					margin: 0.25rem 0.5rem;
-					.title{
-						font-size: 12px;
-						color: #909090;
-						font-weight: 600;
-						font-style: normal;
-						line-height: normal;
-					}
+            .ant-color-picker-trigger {
+                background-color: $background;
+                justify-content: flex-start;
+                padding: 1.5rem;
+                border: none;
+            }
 
-					.ant-color-picker-trigger {
-							background-color: $background;
-							justify-content: flex-start;
-							padding: 1.5rem;
-							border: none;
-					}
+            .ant-popover-inner {
+                background-color: $background;
+            }
 
-					.ant-popover-inner {
-							background-color: $background;
+            .ant-select-selection-item-content {
+                color: black;
+            }
 
-					}
+            .ant-input-disabled {
+                color: black;
+            }
+        }
 
-					.ant-select-selection-item-content {
-							color: black;
+        .input {
+            background-color: $background;
+            margin-bottom: 0.2rem;
+            border-radius: 0;
+            padding: 0.7rem;
+            border-radius: 0.25rem;
 
-					}
+            &::placeholder {
+                color: $secondary-gray;
+            }
+        }
 
-					.ant-input-disabled {
-							color: black;
-					}
-			}
+        .textError {
+            padding-left: 0.5rem;
+        }
 
-			.input {
-					background-color: $background;
-					margin-bottom: 0.2rem;
-					border-radius: 0;
-					padding: 0.7rem;
-					border-radius: 0.25rem;
+        .inputError {
+            border: 1px dashed red;
+            background-color: $background;
+            margin-bottom: 0.2rem;
+            border-radius: 0;
+            padding: 0.7rem;
+            border-radius: 0.25rem;
 
-					&::placeholder {
-							color: $secondary-gray;
-					}
-			}
-
-			.textError {
-					padding-left: 0.5rem;
-			}
-
-			.inputError {
-					border: 1px dashed red;
-					background-color: $background;
-					margin-bottom: 0.2rem;
-					border-radius: 0;
-					padding: 0.7rem;
-					border-radius: 0.25rem;
-
-					&::placeholder {
-							color: $secondary-gray;
-					}
-			}
-	}
-
-
+            &::placeholder {
+                color: $secondary-gray;
+            }
+        }
+    }
 }

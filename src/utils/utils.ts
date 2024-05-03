@@ -128,3 +128,18 @@ export const extractChannelLineSublines = (brs: IChanel[]) => {
   });
   return extractedData;
 };
+
+export const stringBasedOnDocumentType = (documentType: string) => {
+  switch (documentType) {
+    case "NIT":
+      return "1 - NIT";
+    case "Cedula":
+      return "2 - Cedula";
+    case "Pasaporte":
+      return "3 - Pasaporte";
+    case "Cedula de extranjeria":
+      return "4 - Cedula de extranjeria";
+    default:
+      return "0 - No seleccionado";
+  }
+};

@@ -18,14 +18,14 @@ import { IProject } from "@/types/projects/IProjects";
 
 import "./ClientsViewTable.scss";
 import CardsClients from "../../modals/CardsClients/CardsClients";
-import { useClients } from "@/hooks/useClients";
+import { usePortfolios } from "@/hooks/usePortfolios";
 import { useUserByToken } from "@/hooks/useUserByToken";
 
 const { Text } = Typography;
 
 export const ClientsViewTable = () => {
   const { data: userData } = useUserByToken();
-  const { data: clients } = useClients({ id: userData?.projectId });
+  const { data: clients } = usePortfolios({ id: userData?.projectId });
 
   const [selectFilters] = useState({
     country: [] as string[],
