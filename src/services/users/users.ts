@@ -260,3 +260,30 @@ export const deleteUsersById = async (
     return error as any;
   }
 };
+
+export const resendInvitationUsers = async (users_id: number[]): Promise<AxiosResponse<any>> => {
+  const token = await getIdToken();
+
+  const modelData = {
+    users: users_id
+  };
+
+  try {
+    const response: AxiosResponse = await axios.post(
+      `${config.API_HOST}/massive-action/user/resend-invitation`,
+      modelData,
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json; charset=utf-8",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    return response;
+  } catch (error) {
+    console.log("Error re-sending invite to users: ", error);
+    return error as any;
+  }
+};

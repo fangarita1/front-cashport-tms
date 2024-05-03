@@ -1,4 +1,4 @@
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 
 import { fetcher } from "@/utils/api/api";
 import { IUserSingle, IUsers } from "@/types/users/IUsers";
@@ -40,6 +40,7 @@ export const useUsers = ({
 
   return {
     data: (data?.data as IUserSingle[]) || ([] as IUserSingle[]),
-    loading: !error && !data
+    loading: !error && !data,
+    mutate
   };
 };
