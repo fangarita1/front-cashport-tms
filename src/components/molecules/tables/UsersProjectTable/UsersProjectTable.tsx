@@ -7,7 +7,7 @@ import { Eye, Plus, Triangle } from "phosphor-react";
 import { useUsers } from "@/hooks/useUsers";
 import { FilterUsers } from "@/components/atoms/FilterUsers/FilterUsers";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
-import { onResendInvitationUser } from "@/services/users/users";
+import { deleteUsersById, onResendInvitationUser } from "@/services/users/users";
 import { SUCCESS } from "@/utils/constants/globalConstants";
 
 import "./usersprojecttable.scss";
@@ -95,8 +95,8 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
       width: "280px",
       render: (arr) =>
         arr ? (
-          arr.map((channel: IBusinessRules) => (
-            <Text className="cell" key={channel.CHANNEL_ID}>
+          arr.map((channel: IBusinessRules, index: number) => (
+            <Text className="cell" key={`${index}${channel.CHANNEL_ID}`}>
               {channel.CHANNEL_DESCRIPTION}
             </Text>
           ))
@@ -104,7 +104,6 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
           <Text>-</Text>
         )
     },
-
     {
       title: "Estado",
       key: "status",
@@ -173,6 +172,8 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
     subline: selectedUsers.subline
   });
 
+  // console.log("ESTO ES DATA: ", data);
+
   const onCreateUser = () => {
     setIsViewDetails({ active: false, id: 0 });
     setIsCreateUser(true);
@@ -189,16 +190,19 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
   };
 
   const deleteUsers = () => {
+    const response = deleteUsersById(selectedRowKeys as number[], idProject);
+    //Crearle algo de contexto con el loading o algo mientras y mostrar el message api
+    console.log(response);
     return selectedRows;
   };
 
-  const changeUsersState = () => {};
+  const onResendInviteSelectedUsers = () => {};
 
   const items: MenuProps["items"] = [
     {
       key: "1",
       label: (
-        <Button className="buttonOutlined" onClick={deleteUsers}>
+        <Button className="buttonOutlined" onClick={onResendInviteSelectedUsers}>
           Reenviar invitación
         </Button>
       )
@@ -206,8 +210,8 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
     {
       key: "2",
       label: (
-        <Button className="buttonOutlined" onClick={changeUsersState}>
-          Cambiar estado
+        <Button className="buttonOutlined" onClick={deleteUsers}>
+          Eliminar
         </Button>
       )
     }
