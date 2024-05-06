@@ -7,12 +7,17 @@ import { Eye, Plus, Triangle } from "phosphor-react";
 import { useUsers } from "@/hooks/useUsers";
 import { FilterUsers } from "@/components/atoms/FilterUsers/FilterUsers";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
-import { onResendInvitationUser } from "@/services/users/users";
+import {
+  deleteUsersById,
+  onResendInvitationUser,
+  resendInvitationUsers
+} from "@/services/users/users";
 import { SUCCESS } from "@/utils/constants/globalConstants";
 
 import "./usersprojecttable.scss";
 import { IUserSingle } from "@/types/users/IUsers";
 import { UserZone, IBusinessRules } from "@/types/users/IUser";
+import { ModalRemove } from "../../modals/ModalRemove/ModalRemove";
 
 const { Text, Link } = Typography;
 
@@ -25,6 +30,7 @@ interface Props {
 export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails }: Props) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState();
+  const [isOpenModalRemove, setIsOpenModalRemove] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
 
   const onResendInvitation = async (email: string) => {
@@ -92,19 +98,23 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
       title: "Responsabilidad",
       key: "BUSSINES_RULES",
       dataIndex: "BUSSINES_RULES",
-      width: "280px",
+      width: "210px",
       render: (arr) =>
         arr ? (
-          arr.map((channel: IBusinessRules) => (
-            <Text className="cell" key={channel.CHANNEL_ID}>
-              {channel.CHANNEL_DESCRIPTION}
-            </Text>
-          ))
+          <div className="responsabilityCell">
+            {arr.map((channel: IBusinessRules, index: number) => (
+              <Text
+                className="cell -individualResponsability"
+                key={`${index}${channel.CHANNEL_ID}`}
+              >
+                {channel.CHANNEL_DESCRIPTION}
+              </Text>
+            ))}
+          </div>
         ) : (
           <Text>-</Text>
         )
     },
-
     {
       title: "Estado",
       key: "status",
@@ -162,7 +172,7 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
     subline: [] as { id: number; name: string }[]
   });
 
-  const { data, loading } = useUsers({
+  const { data, loading, mutate } = useUsers({
     idProject,
     page: 1,
     rolesId: selectedUsers.roles,
@@ -173,7 +183,7 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
     subline: selectedUsers.subline
   });
 
-  const onCreateUser = () => {
+  const onCreateUser = async () => {
     setIsViewDetails({ active: false, id: 0 });
     setIsCreateUser(true);
   };
@@ -188,17 +198,47 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
     onChange: onSelectChange
   };
 
-  const deleteUsers = () => {
+  const deleteUsers = async () => {
+    const response = await deleteUsersById(selectedRowKeys as number[], idProject);
+
+    if (response.status === 200) {
+      messageApi.open({
+        type: "success",
+        content: "Los clientes seleccionados fueron eliminados correctamente."
+      });
+      mutate(`/user/project/${idProject}?page=1`);
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Oops, hubo un error por favor intenta mas tarde."
+      });
+    }
+    setSelectedRowKeys([]);
+    setIsOpenModalRemove(false);
     return selectedRows;
   };
 
-  const changeUsersState = () => {};
+  const onResendInviteSelectedUsers = async () => {
+    const response = await resendInvitationUsers(selectedRowKeys as number[]);
+
+    if (response.status === 200) {
+      messageApi.open({
+        type: "success",
+        content: "Invitación reenviada correctamente."
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Oops, hubo un error por favor intenta mas tarde."
+      });
+    }
+  };
 
   const items: MenuProps["items"] = [
     {
       key: "1",
       label: (
-        <Button className="buttonOutlined" onClick={deleteUsers}>
+        <Button className="buttonOutlined" onClick={onResendInviteSelectedUsers}>
           Reenviar invitación
         </Button>
       )
@@ -206,8 +246,8 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
     {
       key: "2",
       label: (
-        <Button className="buttonOutlined" onClick={changeUsersState}>
-          Cambiar estado
+        <Button className="buttonOutlined" onClick={() => setIsOpenModalRemove(true)}>
+          Eliminar
         </Button>
       )
     }
@@ -251,9 +291,18 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
             columns={columns}
             dataSource={data.map((data) => ({ ...data, key: data.ID }))}
             rowSelection={rowSelection}
-            rowClassName={(record) => (selectedRowKeys.includes(record.ID) ? "selectedRow" : "")}
+            rowClassName={(record) =>
+              selectedRowKeys.includes(record.ID) ? "selectedRow" : "regularRow"
+            }
           />
         )}
+        <ModalRemove
+          isMassiveAction={true}
+          name="usuarios"
+          isOpen={isOpenModalRemove}
+          onClose={() => setIsOpenModalRemove(false)}
+          onRemove={deleteUsers}
+        />
       </main>
     </>
   );
