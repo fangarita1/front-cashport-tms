@@ -3,47 +3,27 @@
 .contianerdocumentclientbr {
     margin-top: 2rem;
     .title {
-        font-size: 1.2rem;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .clientTypes {
+        background-color: $background;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+        border-radius: 0.5rem;
     }
 }
 .documentclientbr {
-    width: 100%;
-    background-color: $background;
-    padding: 1rem;
-    border-radius: 0.25rem;
-    margin-top: 1rem;
-
-    .lineBR {
+    .clientTypeCard {
         background-color: $white;
         border: 1px solid $dark-gray;
         border-radius: 0.5rem;
         padding: 1rem;
         margin-top: 1rem;
-    }
-
-    .titleLineBR {
-        font-size: 1.2rem;
-    }
-
-    .subtitleLineBR {
-        font-size: 1.1rem;
-    }
-
-    .mainSublinesBR {
-        flex-wrap: wrap;
-        margin-top: 1rem;
-        gap: 0.5rem;
-    }
-
-    .tagSubLineBR {
-        border: none;
-        display: flex;
-        align-items: center;
-        padding: 0.5rem;
-        background-color: $background;
-        font-weight: 500;
-        font-size: 0.9rem;
-        gap: 1.2rem;
+        &__title {
+            font-size: 1rem;
+        }
     }
 
     .addButtonLineSub {
@@ -51,13 +31,6 @@
         align-items: center;
         color: $gray;
         margin-top: 0.5rem;
-    }
-
-    .buttonTextDocument {
-        padding: 0;
-        display: flex;
-        align-items: center;
-        text-decoration: underline;
     }
 
     .removebutton {
