@@ -1,5 +1,10 @@
 @import "@styles/variables.scss";
 
+.documentCards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
 .documentCard {
     border: 1.4px solid $dark-gray;
     border-radius: 0.5rem;

@@ -3,8 +3,8 @@ import { CaretDoubleRight, X } from "phosphor-react";
 
 import "./documentclientbr.scss";
 import { useClientTypes } from "@/hooks/useClientTypes";
-import { InputCreateClientType } from "../inputs/InputCreateClientType/InputCreateClientType";
-import { DocumentCard } from "../DocumentCard/DocumentCard";
+import { InputCreateClientType } from "@/components/atoms/inputs/InputCreateClientType/InputCreateClientType";
+import { DocumentCards } from "@/components/atoms/DocumentCards/DocumentCards";
 
 const { Text } = Typography;
 
@@ -34,10 +34,14 @@ export const DocumentClientBR = ({ isDisabledEdit }: Props) => {
                     <Button icon={<X size={"16px"} />} className="removebutton" />
                   )}
                 </Flex>
-                <DocumentCard />
+                <DocumentCards clientTypeId={document.id} />
 
                 {!isDisabledEdit && (
-                  <Popover content={<p>HELLO</p>} trigger="click" placement="bottom">
+                  <Popover
+                    content={<p>INPUT PARA CREAR DOCUMENTO</p>}
+                    trigger="click"
+                    placement="bottom"
+                  >
                     <Button
                       icon={<CaretDoubleRight size={"16px"} />}
                       className="addButtonLineSub"
