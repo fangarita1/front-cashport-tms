@@ -1,5 +1,5 @@
 import { Flex, Checkbox, Button, Typography, Spin } from "antd";
-import { FileArrowUp } from "phosphor-react";
+import { FileArrowUp, X } from "phosphor-react";
 import { useDocumentByClient } from "@/hooks/useDocumentByClient";
 import "./documentCards.scss";
 
@@ -7,11 +7,11 @@ const { Text } = Typography;
 
 interface Props {
   clientTypeId: number;
+  isDisabledEdit: boolean;
 }
 
-export const DocumentCards = ({ clientTypeId }: Props) => {
+export const DocumentCards = ({ clientTypeId, isDisabledEdit }: Props) => {
   const { data, isLoading } = useDocumentByClient(clientTypeId);
-  console.log("data en DOCCARD: ", data?.data);
   const documents = data?.data;
   return (
     <>
@@ -21,7 +21,10 @@ export const DocumentCards = ({ clientTypeId }: Props) => {
         <div className="documentCards">
           {documents?.map((doc) => (
             <Flex className="documentCard" key={doc.id} vertical>
-              <Text className="documentCard__title">nombre documento</Text>
+              <Flex justify="space-between">
+                <Text className="documentCard__title">{doc.format_document.split("/").pop()}</Text>
+                {!isDisabledEdit && <Button icon={<X size={"16px"} />} className="removebutton" />}
+              </Flex>
               <Checkbox className="documentCard__check" checked={Boolean(doc.required)}>
                 Obligatorio
               </Checkbox>

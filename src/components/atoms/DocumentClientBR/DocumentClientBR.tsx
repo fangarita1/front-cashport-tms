@@ -1,11 +1,12 @@
 import { Button, Flex, Popover, Spin, Typography } from "antd";
-import { CaretDoubleRight, X } from "phosphor-react";
+import { CaretRight, X, Plus } from "phosphor-react";
 
-import "./documentclientbr.scss";
 import { useClientTypes } from "@/hooks/useClientTypes";
 import { InputCreateClientType } from "@/components/atoms/inputs/InputCreateClientType/InputCreateClientType";
 import { DocumentCards } from "@/components/atoms/DocumentCards/DocumentCards";
-import { InputCreateDocument } from "../inputs/inputCreate/InputCreateDocument";
+import { InputCreateDocument } from "@/components/atoms/inputs/inputCreate/InputCreateDocument";
+
+import "./documentclientbr.scss";
 
 const { Text } = Typography;
 
@@ -15,9 +16,6 @@ interface Props {
 
 export const DocumentClientBR = ({ isDisabledEdit }: Props) => {
   const { data, loading } = useClientTypes();
-  // const data = [];
-  // const loading = false;
-  console.log(data);
 
   return (
     <div className="contianerdocumentclientbr">
@@ -26,7 +24,7 @@ export const DocumentClientBR = ({ isDisabledEdit }: Props) => {
         {loading ? (
           <Spin />
         ) : (
-          <Flex className="documentclientbr" vertical>
+          <Flex className="documentclientbr" vertical gap={"0.5rem"}>
             {data?.map((document) => (
               <Flex className="clientTypeCard" vertical key={document.id}>
                 <Flex justify="space-between">
@@ -35,16 +33,16 @@ export const DocumentClientBR = ({ isDisabledEdit }: Props) => {
                     <Button icon={<X size={"16px"} />} className="removebutton" />
                   )}
                 </Flex>
-                <DocumentCards clientTypeId={document.id} />
+                <DocumentCards clientTypeId={document.id} isDisabledEdit={isDisabledEdit} />
 
                 {!isDisabledEdit && (
                   <Popover
-                    content={<InputCreateDocument isEditAvailable={false} />}
+                    content={<InputCreateDocument clientTypeId={document.id} />}
                     trigger="click"
                     placement="bottom"
                   >
                     <Button
-                      icon={<CaretDoubleRight size={"16px"} />}
+                      icon={<CaretRight size={"16px"} />}
                       className="addButtonLineSub"
                       type="text"
                     >
@@ -60,11 +58,7 @@ export const DocumentClientBR = ({ isDisabledEdit }: Props) => {
                 trigger="click"
                 placement="bottom"
               >
-                <Button
-                  icon={<CaretDoubleRight size={"16px"} />}
-                  className="addButtonLineSub"
-                  type="text"
-                >
+                <Button icon={<Plus size={"16px"} />} className="addButtonLineSub" type="text">
                   Agregar cliente
                 </Button>
               </Popover>

@@ -24,7 +24,6 @@
         border: 1px solid $dark-gray;
         border-radius: 0.5rem;
         padding: 1rem;
-        margin-top: 1rem;
         &__title {
             font-size: 1rem;
         }
@@ -34,6 +33,11 @@
         align-items: center;
         color: $gray;
         margin-top: 0.5rem;
+        padding: 0;
+        span {
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
     }
 
     .removebutton {

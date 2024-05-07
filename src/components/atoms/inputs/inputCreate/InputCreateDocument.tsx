@@ -1,52 +1,105 @@
 import { useState } from "react";
-import { Button, message } from "antd";
-import { useForm } from "react-hook-form";
+import { Button, Checkbox, message, Upload, UploadProps } from "antd";
+import { Controller, useForm } from "react-hook-form";
 
 import { InputForm } from "../InputForm/InputForm";
-import { useStructureBR } from "@/hooks/useBusinessRules";
-
 import "./inputcreatedocument.scss";
 import { FileArrowUp } from "phosphor-react";
+import { useClientTypes } from "@/hooks/useClientTypes";
+import { ICreateDocumentForm } from "@/types/clientTypes/clientTypes";
 
-export type ChannelType = {
-  channel: string;
-};
-interface Props {
-  isEditAvailable: boolean;
-}
-export const InputCreateDocument = ({ isEditAvailable = false }: Props) => {
+export const InputCreateDocument = ({ clientTypeId }: { clientTypeId: number }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { addChannel } = useStructureBR();
+  const initialValueLabel = "Cargar plantilla";
+  const [uploadLabel, setUploadLabel] = useState(initialValueLabel);
+
+  const { addDocument } = useClientTypes();
   const [messageApi, contextHolder] = message.useMessage();
   const {
     control,
     handleSubmit,
     formState: { errors },
+    setValue,
     reset
-  } = useForm<ChannelType>({
-    defaultValues: { channel: "" },
-    disabled: !isEditAvailable
-  });
-  const onSubmit = async (data: ChannelType) => {
+  } = useForm<ICreateDocumentForm>({});
+
+  const onSubmit = async (data: ICreateDocumentForm) => {
     setIsLoading(true);
-    await addChannel(data.channel, messageApi);
+
+    const formData = new FormData();
+    formData.append("client_type", clientTypeId.toString());
+    formData.append("required", data.required ? "1" : "0");
+    formData.append("document_name", data.document_name);
+    if (data.template) {
+      formData.append("template", data.template);
+    }
+
+    await addDocument(formData, messageApi);
+
     reset();
+    setUploadLabel(initialValueLabel);
     setIsLoading(false);
   };
+
+  const handleUploadChange = (info: any) => {
+    const file = info.file.originFileObj || info.file;
+    setValue("template", file);
+    setUploadLabel(file.name);
+  };
+
+  const props: UploadProps = {
+    name: "title",
+    accept: ".pdf",
+    showUploadList: false,
+    customRequest: () => {
+      return;
+    }
+  };
+
   return (
     <>
       {contextHolder}
-      <form className="inputcreatezone" onSubmit={handleSubmit(onSubmit)}>
+      <form className="inputCreateDocument" onSubmit={handleSubmit(onSubmit)}>
         <InputForm
           titleInput=""
           control={control}
-          nameInput="channel"
-          error={errors.channel}
+          nameInput="document_name"
+          error={errors.document_name}
           placeholder="Ingresar nombre del documento"
         />
-        <Button htmlType="submit" loading={isLoading} className="createButtonZone">
-          <FileArrowUp size={16} />
-          Cargar plantilla
+        <Controller
+          name="required"
+          control={control}
+          defaultValue={false}
+          render={({ field }) => (
+            <Checkbox className="inputCreateDocument__check" checked={field.value} {...field}>
+              Obligatorio
+            </Checkbox>
+          )}
+        />
+
+        <Controller
+          name="template"
+          control={control}
+          render={({ field }) => (
+            <Upload
+              className="uploadDocumentButton"
+              {...props}
+              onChange={(info) => {
+                field.onChange(info.file.originFileObj || info.file);
+                handleUploadChange(info);
+              }}
+            >
+              <Button htmlType="button" loading={isLoading} className="">
+                <FileArrowUp size={16} />
+                {uploadLabel}
+              </Button>{" "}
+            </Upload>
+          )}
+        />
+
+        <Button htmlType="submit" loading={isLoading} className="createButton">
+          Crear
         </Button>
       </form>
     </>

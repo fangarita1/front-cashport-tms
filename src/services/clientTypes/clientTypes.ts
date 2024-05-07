@@ -4,7 +4,6 @@ import { getIdToken } from "@/utils/api/api";
 
 import { SUCCESS } from "@/utils/constants/globalConstants";
 import { MessageInstance } from "antd/es/message/interface";
-import { ICreateDocumentByClient } from "@/types/clientTypes/clientTypes";
 
 export const addClientType = async (name: string, messageApi: MessageInstance) => {
   const token = await getIdToken();
@@ -38,26 +37,7 @@ export const addClientType = async (name: string, messageApi: MessageInstance) =
   }
 };
 
-export const addDocumentsClientType = async () => {
-  const modelData: ICreateDocumentByClient = {
-    client_type: 4,
-    required: 1,
-    document_name: "ddd",
-    template: undefined
-  };
-
-  const formData = new FormData();
-  // Agregar los campos del modelo de datos al objeto FormData
-  Object.keys(modelData).forEach((key) => {
-    if (modelData[key] !== undefined && modelData[key] !== null && modelData[key] !== "") {
-      if (modelData[key] instanceof File) {
-        formData.append("documents", modelData[key]);
-      } else {
-        formData.append(key, modelData[key]);
-      }
-    }
-  });
-
+export const addDocumentsClientType = async (formData: FormData, messageApi: MessageInstance) => {
   const token = await getIdToken();
 
   try {
@@ -71,10 +51,20 @@ export const addDocumentsClientType = async () => {
         }
       }
     );
-
+    if (response.status === SUCCESS) {
+      messageApi.open({
+        type: "success",
+        content: "Tipo de Documento creado exitosamente."
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Oops ocurrio un error creando tipo de documento."
+      });
+    }
     return response;
   } catch (error) {
-    console.log("Error creating new client: ", error);
+    console.log("Error creando tipo de documento: ", error);
     return error as AxiosError;
   }
 };

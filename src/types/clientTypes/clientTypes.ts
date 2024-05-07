@@ -16,3 +16,9 @@ export interface ICreateDocumentByClient {
   document_name: string;
   template?: File;
 }
+
+export interface ICreateDocumentForm {
+  required: boolean;
+  document_name: string;
+  template?: File;
+}

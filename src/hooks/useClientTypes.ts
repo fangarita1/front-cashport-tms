@@ -1,4 +1,4 @@
-import { addClientType } from "@/services/clientTypes/clientTypes";
+import { addClientType, addDocumentsClientType } from "@/services/clientTypes/clientTypes";
 import { IClientTypes } from "@/types/clientTypes/clientTypes";
 import { fetcher } from "@/utils/api/api";
 import { MessageInstance } from "antd/es/message/interface";
@@ -12,9 +12,15 @@ export const useClientTypes = () => {
     mutate();
   };
 
+  const addDocument = async (formData: FormData, messageApi: MessageInstance) => {
+    await addDocumentsClientType(formData, messageApi);
+    mutate();
+  };
+
   return {
     data: data?.data,
     loading: isLoading,
-    addClient
+    addClient,
+    addDocument
   };
 };
