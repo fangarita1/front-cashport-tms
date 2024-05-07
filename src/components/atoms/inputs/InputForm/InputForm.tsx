@@ -14,6 +14,7 @@ interface Props {
   hiddenTitle?: boolean;
   placeholder?: string;
   disabled?: boolean;
+  className?: string;
 }
 
 export const InputForm = ({
@@ -25,10 +26,11 @@ export const InputForm = ({
   customStyle = {},
   hiddenTitle = false,
   placeholder = "",
-  disabled
+  disabled,
+  className
 }: Props) => {
   return (
-    <Flex vertical className="containerInput" style={customStyle}>
+    <Flex vertical className={`containerInput ${className}`} style={customStyle}>
       {!hiddenTitle && (
         <Typography.Title className="input-form-title" level={5}>
           {titleInput}
