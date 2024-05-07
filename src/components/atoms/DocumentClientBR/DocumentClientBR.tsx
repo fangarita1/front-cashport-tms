@@ -1,8 +1,10 @@
-import { Button, Checkbox, Flex, Popover, Spin, Typography } from "antd";
-import { CaretDoubleRight, FileArrowUp, X } from "phosphor-react";
+import { Button, Flex, Popover, Spin, Typography } from "antd";
+import { CaretDoubleRight, X } from "phosphor-react";
 
-import { useDocumentByClient } from "@/hooks/useDocumentByClient";
 import "./documentclientbr.scss";
+import { useClientTypes } from "@/hooks/useClientTypes";
+import { InputCreateClientType } from "@/components/atoms/inputs/InputCreateClientType/InputCreateClientType";
+import { DocumentCards } from "@/components/atoms/DocumentCards/DocumentCards";
 import { InputCreateDocument } from "../inputs/inputCreate/InputCreateDocument";
 
 const { Text } = Typography;
@@ -12,73 +14,62 @@ interface Props {
 }
 
 export const DocumentClientBR = ({ isDisabledEdit }: Props) => {
-  const { data, isLoading } = useDocumentByClient();
+  const { data, loading } = useClientTypes();
+  // const data = [];
+  // const loading = false;
+  console.log(data);
+
   return (
     <div className="contianerdocumentclientbr">
       <Typography.Text className="title">Documentos por cliente</Typography.Text>
-      <Flex vertical className="holdings">
-        {isLoading ? (
+      <Flex vertical className="clientTypes">
+        {loading ? (
           <Spin />
         ) : (
-          <>
-            {data?.data.map((document) => (
-              <Flex className="documentclientbr" key={document.id} vertical>
+          <Flex className="documentclientbr" vertical>
+            {data?.map((document) => (
+              <Flex className="clientTypeCard" vertical key={document.id}>
                 <Flex justify="space-between">
-                  <Text className="titleLineBR">Institucional</Text>
+                  <Text className="clientTypeCard__title">{document.clientType}</Text>
                   {!isDisabledEdit && (
                     <Button icon={<X size={"16px"} />} className="removebutton" />
                   )}
                 </Flex>
-                <Flex className="lineBR" vertical>
-                  <Flex justify="space-between">
-                    <Text className="subtitleLineBR">Creacion de Cliente</Text>
-                    {!isDisabledEdit && (
-                      <Button icon={<X size={"16px"} />} className="removebutton" />
-                    )}
-                  </Flex>
-                  <Flex className="mainSublinesBR">
-                    <Flex vertical>
-                      <Checkbox checked={document.required === 1}>Obligatorio</Checkbox>
-                      <Button
-                        type="text"
-                        icon={<FileArrowUp size={"16px"} />}
-                        className="buttonTextDocument"
-                        href={document.format_document}
-                        target="_blank"
-                      >
-                        Plantilla_Creacion_de_Cliente
-                      </Button>
-                    </Flex>
-                  </Flex>
-                  {!isDisabledEdit && (
-                    <Popover
-                      className=""
-                      content={<InputCreateDocument isEditAvailable />}
-                      trigger="click"
-                      placement="bottom"
-                    >
-                      <Button
-                        icon={<CaretDoubleRight size={"16px"} />}
-                        className="addButtonLineSub"
-                        type="text"
-                      >
-                        Agregar documento
-                      </Button>
-                    </Popover>
-                  )}
-                </Flex>
+                <DocumentCards clientTypeId={document.id} />
+
                 {!isDisabledEdit && (
-                  <Button
-                    icon={<CaretDoubleRight size={"16px"} />}
-                    className="addButtonLineSub"
-                    type="text"
+                  <Popover
+                    content={<InputCreateDocument isEditAvailable={false} />}
+                    trigger="click"
+                    placement="bottom"
                   >
-                    Agregar cliente
-                  </Button>
+                    <Button
+                      icon={<CaretDoubleRight size={"16px"} />}
+                      className="addButtonLineSub"
+                      type="text"
+                    >
+                      Agregar documento
+                    </Button>
+                  </Popover>
                 )}
               </Flex>
             ))}
-          </>
+            {!isDisabledEdit && (
+              <Popover
+                content={<InputCreateClientType isEditAvailable={!isDisabledEdit} />}
+                trigger="click"
+                placement="bottom"
+              >
+                <Button
+                  icon={<CaretDoubleRight size={"16px"} />}
+                  className="addButtonLineSub"
+                  type="text"
+                >
+                  Agregar cliente
+                </Button>
+              </Popover>
+            )}
+          </Flex>
         )}
       </Flex>
     </div>
