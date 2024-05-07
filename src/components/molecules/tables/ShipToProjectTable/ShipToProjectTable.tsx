@@ -127,16 +127,5 @@ const data = [
     subline: "Analgesicos",
     zone: "Norte",
     heritage: "Si"
-  },
-  {
-    key: "2",
-    active: "",
-    id: "31223",
-    city: "metrallo",
-    channel: "Institucional",
-    line: "Medicamentos",
-    subline: "Analgesicos",
-    zone: "Norte",
-    heritage: "Si"
   }
 ];

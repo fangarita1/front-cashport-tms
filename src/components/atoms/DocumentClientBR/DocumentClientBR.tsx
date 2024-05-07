@@ -1,8 +1,9 @@
-import { Button, Checkbox, Flex, Spin, Typography } from "antd";
+import { Button, Checkbox, Flex, Popover, Spin, Typography } from "antd";
 import { CaretDoubleRight, FileArrowUp, X } from "phosphor-react";
 
 import { useDocumentByClient } from "@/hooks/useDocumentByClient";
 import "./documentclientbr.scss";
+import { InputCreateDocument } from "../inputs/inputCreate/InputCreateDocument";
 
 const { Text } = Typography;
 
@@ -12,8 +13,6 @@ interface Props {
 
 export const DocumentClientBR = ({ isDisabledEdit }: Props) => {
   const { data, isLoading } = useDocumentByClient();
-  console.log(data);
-
   return (
     <div className="contianerdocumentclientbr">
       <Typography.Text className="title">Documentos por cliente</Typography.Text>
@@ -52,13 +51,20 @@ export const DocumentClientBR = ({ isDisabledEdit }: Props) => {
                     </Flex>
                   </Flex>
                   {!isDisabledEdit && (
-                    <Button
-                      icon={<CaretDoubleRight size={"16px"} />}
-                      className="addButtonLineSub"
-                      type="text"
+                    <Popover
+                      className=""
+                      content={<InputCreateDocument isEditAvailable />}
+                      trigger="click"
+                      placement="bottom"
                     >
-                      Agregar documento
-                    </Button>
+                      <Button
+                        icon={<CaretDoubleRight size={"16px"} />}
+                        className="addButtonLineSub"
+                        type="text"
+                      >
+                        Agregar documento
+                      </Button>
+                    </Popover>
                   )}
                 </Flex>
                 {!isDisabledEdit && (

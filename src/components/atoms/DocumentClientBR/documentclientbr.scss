@@ -3,7 +3,10 @@
 .contianerdocumentclientbr {
     margin-top: 2rem;
     .title {
-        font-size: 1.2rem;
+        color: var(--Black, #141414);
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: normal;
     }
 }
 .documentclientbr {
@@ -45,7 +48,6 @@
         font-size: 0.9rem;
         gap: 1.2rem;
     }
-
     .addButtonLineSub {
         display: flex;
         align-items: center;

@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { InputForm } from "../InputForm/InputForm";
 import { useStructureBR } from "@/hooks/useBusinessRules";
 
-import "./inputcreatechannel.scss";
+import "./inputcreatedocument.scss";
+import { FileArrowUp } from "phosphor-react";
 
 export type ChannelType = {
   channel: string;
@@ -13,7 +14,7 @@ export type ChannelType = {
 interface Props {
   isEditAvailable: boolean;
 }
-export const InputCreateChannel = ({ isEditAvailable = false }: Props) => {
+export const InputCreateDocument = ({ isEditAvailable = false }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const { addChannel } = useStructureBR();
   const [messageApi, contextHolder] = message.useMessage();
@@ -41,15 +42,11 @@ export const InputCreateChannel = ({ isEditAvailable = false }: Props) => {
           control={control}
           nameInput="channel"
           error={errors.channel}
-          customStyle={{
-            width: "96%",
-            backgroundColor: "transparent !important",
-            borderRadius: ".8rem"
-          }}
-          placeholder="Ingresar nombre del canal"
+          placeholder="Ingresar nombre del documento"
         />
         <Button htmlType="submit" loading={isLoading} className="createButtonZone">
-          Crear{" "}
+          <FileArrowUp size={16} />
+          Cargar plantilla
         </Button>
       </form>
     </>
