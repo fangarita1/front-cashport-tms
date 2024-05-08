@@ -10,6 +10,7 @@ export interface Contact {
   position: string;
   email: string;
   phone: string;
+  description: string;
 }
 
 export interface General {
