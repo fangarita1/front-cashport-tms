@@ -5,6 +5,9 @@ export interface IProjectById {
 }
 
 export interface IProject {
+  ACCEPT_DATE: number;
+  DSO_DAYS: number;
+  DSO_CURRENTLY_YEAR: number;
   ID: number;
   UUID: string;
   PROJECT_DESCRIPTION: string;
@@ -22,26 +25,7 @@ export interface IProject {
   ADDRESS_FORMAT: string;
   is_deleted: number;
   NUMBER_USERS: number;
-}
-export interface IProject {
-  ID: number;
-  UUID: string;
-  PROJECT_DESCRIPTION: string;
-  RGB_CONFIG: string;
-  LOGO: string;
-  NIT: string;
-  CONTACT: string;
-  PHONE: string;
-  ADDRESS: string;
   BILLING_PERIOD: string;
-  COUNTRY_ID: number;
-  CURRENCY: Currency[];
-  EMAIL: string;
-  IS_ACTIVE: boolean;
-  COUNTRY_NAME: string;
-  ADDRESS_FORMAT: string;
-  is_deleted: number;
-  NUMBER_USERS: number;
 }
 
 export interface Currency {

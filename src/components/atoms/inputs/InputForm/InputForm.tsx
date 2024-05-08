@@ -1,6 +1,6 @@
 import { Flex, Input, Typography } from "antd";
 
-import { Control, Controller, FieldError } from "react-hook-form";
+import { Control, Controller, FieldError, RegisterOptions } from "react-hook-form";
 
 import "./inputform.scss";
 
@@ -14,6 +14,7 @@ interface Props {
   hiddenTitle?: boolean;
   placeholder?: string;
   disabled?: boolean;
+  validationRules?: RegisterOptions;
 }
 
 export const InputForm = ({
@@ -25,7 +26,8 @@ export const InputForm = ({
   customStyle = {},
   hiddenTitle = false,
   placeholder = "",
-  disabled
+  disabled,
+  validationRules
 }: Props) => {
   return (
     <Flex vertical className="containerInput" style={customStyle}>
@@ -36,7 +38,7 @@ export const InputForm = ({
       )}
       <Controller
         name={nameInput as string}
-        rules={{ required: true, maxLength: 123 }}
+        rules={{ required: true, maxLength: 123, ...validationRules }}
         control={control}
         disabled={disabled}
         render={({ field }) => (
@@ -50,7 +52,8 @@ export const InputForm = ({
         )}
       />
       <Typography.Text className="textError">
-        {error && `${titleInput} es obligatorio *`}
+        {/* {error && `${titleInput} es obligatorio *`} */}
+        {error ? (error.message ? ` ${error.message}` : `${titleInput} es obligatorio *`) : ""}
       </Typography.Text>
     </Flex>
   );

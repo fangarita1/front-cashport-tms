@@ -1,4 +1,4 @@
-@import "../../../../../styles/variables";
+@import "@styles/variables";
 
 .mainProyectsForm {
     width: 100%;
@@ -132,33 +132,26 @@
             }
         }
 
-        .input {
-            background-color: $background;
+        .selectInput {
+            width: 100%;
             margin-bottom: 0.2rem;
-            border-radius: 0;
-            padding: 0.7rem;
+            background-color: $background;
+            padding: 1.4rem 0.45rem !important;
             border-radius: 0.25rem;
+            border-bottom: none;
 
-            &::placeholder {
-                color: $secondary-gray;
+            span {
+                font-size: 1rem;
             }
         }
 
-        .textError {
-            padding-left: 0.5rem;
-        }
-
-        .inputError {
+        .selectInputError {
             border: 1px dashed red;
-            background-color: $background;
+            width: 100%;
             margin-bottom: 0.2rem;
-            border-radius: 0;
-            padding: 0.7rem;
+            background-color: $background;
+            padding: 0.45rem;
             border-radius: 0.25rem;
-
-            &::placeholder {
-                color: $secondary-gray;
-            }
         }
     }
 }
