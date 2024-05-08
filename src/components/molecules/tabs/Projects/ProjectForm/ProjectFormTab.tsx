@@ -256,6 +256,18 @@ export const ProjectFormTab = ({
               </Button>
             )}
           </Flex>
+          <Flex className="buttonNewProject">
+            {statusForm === "create" && (
+              <Button
+                disabled={!isDirty}
+                className={`button ${isDirty ? "active" : ""}`}
+                style={{ display: "flex" }}
+                htmlType={"submit"}
+              >
+                {validationButtonText}
+              </Button>
+            )}
+          </Flex>
         </Flex>
       </form>
       <ModalBillingPeriod
