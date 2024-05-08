@@ -5,10 +5,12 @@ const { Text } = Typography;
 interface Props {
   isOpen: boolean;
   name?: string;
+  isMassiveAction?: boolean;
   onClose: () => void;
   onRemove?: () => void;
 }
-export const ModalRemove = ({ isOpen, name, onClose, onRemove }: Props) => {
+export const ModalRemove = ({ isOpen, name, onClose, onRemove, isMassiveAction }: Props) => {
+  const titleFix = isMassiveAction ? "estos" : "este";
   return (
     <Modal
       open={isOpen}
@@ -19,7 +21,7 @@ export const ModalRemove = ({ isOpen, name, onClose, onRemove }: Props) => {
         className: "buttonCancel"
       }}
       className="modalChangeStatus"
-      title={`¿Estás seguro que deseas eliminar este ${name}?`}
+      title={`¿Estás seguro que deseas eliminar ${titleFix} ${name}?`}
       onOk={onRemove}
     >
       <Text className="textModal">Esta acción es definitiva</Text>

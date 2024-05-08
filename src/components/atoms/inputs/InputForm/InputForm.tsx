@@ -13,6 +13,8 @@ interface Props {
   customStyle?: any;
   hiddenTitle?: boolean;
   placeholder?: string;
+  disabled?: boolean;
+  className?: string;
 }
 
 export const InputForm = ({
@@ -23,10 +25,12 @@ export const InputForm = ({
   error,
   customStyle = {},
   hiddenTitle = false,
-  placeholder = ""
+  placeholder = "",
+  disabled,
+  className
 }: Props) => {
   return (
-    <Flex vertical className="containerInput" style={customStyle}>
+    <Flex vertical className={`containerInput ${className}`} style={customStyle}>
       {!hiddenTitle && (
         <Typography.Title className="input-form-title" level={5}>
           {titleInput}
@@ -36,10 +40,11 @@ export const InputForm = ({
         name={nameInput as string}
         rules={{ required: true, maxLength: 123 }}
         control={control}
+        disabled={disabled}
         render={({ field }) => (
           <Input
             type={typeInput}
-            className={!error ? "input" : "inputError"}
+            className={!error ? "inputForm" : "inputFormError"}
             variant="borderless"
             placeholder={placeholder?.length > 0 ? placeholder : titleInput}
             {...field}

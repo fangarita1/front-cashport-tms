@@ -15,7 +15,7 @@ import { IProject } from "@/types/projects/IProject";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import "./projectformtab.scss";
-import { ModalTimeFacturaction } from "@/components/molecules/modals/ModalTimeFacturaction/ModalTimeFacturaction";
+import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
 
 const { Title, Text } = Typography;
 
@@ -57,7 +57,7 @@ export const ProjectFormTab = ({
   onDesactivateProject = () => {}
 }: Props) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [isTimeFacturaction, setIsTimeFacturaction] = useState(false);
+  const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
   const [imageFile, setImageFile] = useState(data.LOGO);
   const [imageError, setImageError] = useState(false);
   const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data);
@@ -101,28 +101,28 @@ export const ProjectFormTab = ({
           <Flex gap={"1rem"}>
             {(statusForm === "review" || statusForm === "edit") && (
               <Button
-                style={{ display: "flex" }}
+                className="buttons"
                 htmlType="button"
                 onClick={(e) => {
                   e.preventDefault();
                   setIsOpenModal(true);
                 }}
-                icon={<ArrowsClockwise size={"1.45rem"} />}
               >
                 Cambiar Estado
+                <ArrowsClockwise size={"1.2rem"} />
               </Button>
             )}
             {statusForm === "review" ? (
               <Button
-                style={{ display: "flex" }}
+                className="buttons"
                 htmlType="button"
                 onClick={(e) => {
                   e.preventDefault();
                   onEditProject();
                 }}
-                icon={<Pencil size={"1.45rem"} />}
               >
                 {validationButtonText}
+                <Pencil size={"1.2rem"} />
               </Button>
             ) : (
               ""
@@ -208,6 +208,13 @@ export const ProjectFormTab = ({
               error={errors.contact?.name}
             />
             <InputForm
+              typeInput="cargo"
+              titleInput="Cargo"
+              nameInput="contact.cargo"
+              control={control}
+              error={errors.contact?.position}
+            />
+            <InputForm
               typeInput="email"
               titleInput="Correo"
               nameInput="contact.email"
@@ -224,7 +231,7 @@ export const ProjectFormTab = ({
           </Flex>
           {/* -----------------------------------Project Config----------------------------------- */}
           <Title className="title" level={4}>
-            Personalizer Proyecto
+            Personalizar Proyecto
           </Title>
           <Flex component={"section"} className="generalProject" justify="flex-start">
             <Flex vertical className="containerInput">
@@ -235,14 +242,20 @@ export const ProjectFormTab = ({
                 name="personalization.color"
                 rules={{ required: true, maxLength: 123 }}
                 control={control}
-                render={({ field }) => (
-                  <ColorPicker format="rgb" size="large" showText {...field} />
-                )}
+                render={({ field }) => <ColorPicker format="rgb" showText {...field} />}
               />
               <Text className="textError">
                 {errors?.personalization?.color && "Color Personalizado es obligatorio *"}
               </Text>
             </Flex>
+            <InputForm
+              typeInput="general.description"
+              titleInput="Descripción"
+              nameInput="general.description"
+              className="description "
+              control={control}
+              error={errors.contact?.description}
+            />
           </Flex>
           <Flex className="buttonNewProject">
             {statusForm === "edit" && (
@@ -256,11 +269,23 @@ export const ProjectFormTab = ({
               </Button>
             )}
           </Flex>
+          <Flex className="buttonNewProject">
+            {statusForm === "create" && (
+              <Button
+                disabled={!isDirty}
+                className={`button ${isDirty ? "active" : ""}`}
+                style={{ display: "flex" }}
+                htmlType={"submit"}
+              >
+                {validationButtonText}
+              </Button>
+            )}
+          </Flex>
         </Flex>
       </form>
-      <ModalTimeFacturaction
-        isOpen={isTimeFacturaction}
-        setIsTimeFacturaction={setIsTimeFacturaction}
+      <ModalBillingPeriod
+        isOpen={isBillingPeriodOpen}
+        setIsBillingPeriodOpen={setIsBillingPeriodOpen}
       />
       <ModalChangeStatus
         isActiveStatus={data?.IS_ACTIVE!}
@@ -284,7 +309,8 @@ const dataToProjectFormData = (data: IProject) => {
       currencies: currenciesFormated,
       country: `${data.COUNTRY_ID}-${data.COUNTRY_NAME}`,
       address: data.ADDRESS,
-      billing_period: data.BILLING_PERIOD
+      billing_period: data.BILLING_PERIOD,
+      description: data.PROJECT_DESCRIPTION
     },
     contact: {
       name: data.CONTACT,

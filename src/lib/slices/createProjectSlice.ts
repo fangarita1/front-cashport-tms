@@ -19,8 +19,5 @@ export const createProjectSlice: StateCreator<ProjectSlice> = (set) =>
       set(() => ({
         projects: by
       })),
-    setSelectedProject: (by: IProject) =>
-      set(() => ({
-        selectProject: by
-      }))
+    setSelectedProject: (by: IProject) => set(() => ({ selectProject: by }))
   });

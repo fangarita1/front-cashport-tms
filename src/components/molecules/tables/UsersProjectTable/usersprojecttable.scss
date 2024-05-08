@@ -4,7 +4,6 @@
     width: 100%;
     overflow-y: scroll;
     height: 100%;
-    // border: 3px blue solid;
 
     .mainUsersProjectTable_header {
         margin: 2rem 0;
@@ -77,6 +76,7 @@
         .ant-table-cell {
             padding: 12px;
         }
+
         .cell {
             display: inline-block;
 
@@ -89,6 +89,18 @@
                 justify-content: flex-end;
                 padding-right: 5px;
             }
+
+            &.-individualResponsability {
+                max-width: 210px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+
+        .responsabilityCell {
+            max-height: 4.24rem;
+            overflow: hidden;
         }
 
         li {

@@ -2,16 +2,19 @@
 import { useState } from "react";
 import { Button, Flex } from "antd";
 
-import { ArrowLineRight, User } from "phosphor-react";
+import { ArrowLineRight, Gear, User } from "phosphor-react";
 import Image from "next/image";
 
 import "./sidebar.scss";
+import { usePathname } from "next/navigation";
 
 export const SideBar = () => {
   const [isSideBarLarge, setIsSideBarLarge] = useState(false);
+  const path = usePathname();
+
   return (
     <div className={isSideBarLarge ? "mainLarge" : "main"}>
-      <Flex vertical justify="center" align="center" className="containerButtons">
+      <Flex vertical className="containerButtons">
         <Flex className="logoContainer">
           <Image
             width={isSideBarLarge ? 75 : 50}
@@ -20,24 +23,31 @@ export const SideBar = () => {
             src="/images/cruz-verde.png"
           />
         </Flex>
-        {/* <Button
+        <Button
           type="primary"
           size="large"
-          icon={<SquaresFour size="26" />}
-          className="buttonIconActive"
+          icon={<User size={26} />}
+          className={path === "/clientes" ? "buttonIcon" : "buttonIconActive"}
+          href="/clientes"
         >
-          {isSideBarLarge && "Dashboard"}
-        </Button> */}
-        <Button type="primary" size="large" icon={<User size="26" />} className="buttonIcon">
           {isSideBarLarge && "Clientes"}
         </Button>
+        <Button
+          type="primary"
+          size="large"
+          icon={<Gear size={26} />}
+          className={path === "/" ? "buttonIcon" : "buttonIconActive"}
+          href="/"
+        >
+          {isSideBarLarge && "Ajustes"}
+        </Button>
       </Flex>
-      <Flex>
+      <Flex className="exit">
         <Button
           type="text"
           size="large"
           onClick={() => setIsSideBarLarge(!isSideBarLarge)}
-          icon={<ArrowLineRight size="26" />}
+          icon={<ArrowLineRight size={26} />}
           className="buttonExit"
         >
           {isSideBarLarge && "Salir"}

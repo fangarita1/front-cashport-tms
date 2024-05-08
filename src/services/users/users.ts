@@ -229,3 +229,61 @@ export const onResendInvitationUser = async (email: string): Promise<AxiosRespon
     return error as any;
   }
 };
+
+export const deleteUsersById = async (
+  users_id: number[],
+  project_id: string
+): Promise<AxiosResponse<any>> => {
+  const token = await getIdToken();
+
+  const modelData = {
+    users: users_id,
+    project_id
+  };
+
+  try {
+    const response: AxiosResponse = await axios.put(
+      `${config.API_HOST}/massive-action/user/delete`,
+      modelData,
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json; charset=utf-8",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    return response;
+  } catch (error) {
+    console.log("Error deleting users: ", error);
+    return error as any;
+  }
+};
+
+export const resendInvitationUsers = async (users_id: number[]): Promise<AxiosResponse<any>> => {
+  const token = await getIdToken();
+
+  const modelData = {
+    users: users_id
+  };
+
+  try {
+    const response: AxiosResponse = await axios.post(
+      `${config.API_HOST}/massive-action/user/resend-invitation`,
+      modelData,
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json; charset=utf-8",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    return response;
+  } catch (error) {
+    console.log("Error re-sending invite to users: ", error);
+    return error as any;
+  }
+};

@@ -1,5 +1,39 @@
-export interface IClient {
+import { AxiosHeaders } from "axios";
+import { Config } from "../users/IUser";
+
+export interface IClientAxios {
+  data: IClientFullResponse;
+  status: number;
+  statusText: string;
+  headers: AxiosHeaders;
+  config: Config;
+  request: Request;
+}
+
+export interface IClientFullResponse {
+  status: number;
+  message: string;
+  data: IClient;
+}
+interface IPosition {
+  lat: string;
+  lon: string;
+}
+
+interface ILocation {
+  id: number;
   nit: string;
+  city: string;
+  address: string;
+  position: IPosition;
+}
+
+interface IDocument {
+  URL: string;
+}
+
+export interface IClient {
+  nit: number;
   uuid: string;
   project_id: number;
   client_name: string;
@@ -12,22 +46,81 @@ export interface IClient {
   email: string;
   billing_period: string;
   radication_type: number;
-  holding_id?: number;
-  holding_name?: string;
+  holding_id: number;
+  holding_name: string;
   document_type: string;
   locations: ILocation[];
   is_deleted: number;
-  documents?: any;
+  documents: IDocument[];
   ACTIVE: boolean;
+  payment_condition: number;
 }
 
-interface ILocation {
-  id: number;
-  nit: string;
-  city: string;
-  address: string;
-  position: {
-    lat: string;
-    lon: string;
-  };
+export interface Pagination {
+  page: number;
+  total: number;
 }
+
+export interface IClients {
+  status: number;
+  message: string;
+  data: IClient[];
+  pagination: Pagination;
+}
+
+export interface ICreateClient {
+  [key: string]: any;
+  nit: number;
+  project_id: number;
+  client_name: string;
+  business_name: string;
+  phone: number | string;
+  condition_payment: number;
+  email: string;
+  radication_type: number;
+  document_type: number;
+  locations: string;
+  documents: File[];
+  client_type_id: number;
+  holding_id?: number;
+  day_flag?: boolean;
+  day?: number;
+  order?: string;
+  day_of_week?: string;
+}
+
+export interface IUpdateClient {
+  [key: string]: any;
+  business_name?: string;
+  condition_payment?: number;
+  document_type?: number;
+  email?: string;
+  holding_id?: string;
+  locations: string;
+  day_flag?: boolean;
+  day?: number;
+  order?: string;
+  day_of_week?: number;
+  phone?: string;
+  radication_type: number;
+}
+
+export type ClientFormType = {
+  infoClient: {
+    address: string;
+    document_type: string;
+    nit: string;
+    client_name: string;
+    business_name: string;
+    client_type: string;
+    holding_name: string;
+    phone: string;
+    email: string;
+    locations: any[];
+    city: string;
+    risk: string;
+    radication_type: string;
+    condition_payment: string;
+    billing_period: string;
+  };
+};

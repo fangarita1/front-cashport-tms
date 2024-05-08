@@ -1,11 +1,19 @@
-import { Dispatch, SetStateAction, useState, useEffect } from "react";
-import { Button, Flex, MenuProps, Popconfirm, Table, TableProps, Typography } from "antd";
+import {
+  Dispatch,
+  SetStateAction,
+  useState,
+  useEffect,
+  ReactElement,
+  JSXElementConstructor
+} from "react";
+import { useParams } from "next/navigation";
+import { Button, Flex, MenuProps, Popconfirm, Spin, Table, TableProps, Typography } from "antd";
 import { Eye, Plus } from "phosphor-react";
 import { FilterClients } from "@/components/atoms/FilterClients/FilterClients";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
-
-import "./clientsprojecttable.scss";
 import { IClient } from "@/types/clients/IClients";
+import { useClients } from "@/hooks/useClients";
+import "./clientsprojecttable.scss";
 
 const { Text, Link } = Typography;
 
@@ -20,6 +28,7 @@ interface Props {
   placedIn?: string;
   setSelectedRows?: Dispatch<SetStateAction<{}>>;
   selectedClientsKeys?: string[];
+  messageContext?: ReactElement<any, string | JSXElementConstructor<any>>;
 }
 
 export const ClientsProjectTable = ({
@@ -27,9 +36,21 @@ export const ClientsProjectTable = ({
   setIsViewDetailsClients,
   placedIn = "tab",
   setSelectedRows,
-  selectedClientsKeys
+  selectedClientsKeys,
+  messageContext
 }: Props) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  const [filterClients, setFilterClients] = useState({
+    city: [] as number[],
+    holding: [] as number[],
+    risk: [] as number[],
+    payment_condition: [] as number[],
+    radication_type: [] as number[],
+    status: [] as number[]
+  });
+
+  const { id: idProject } = useParams<{ id: string }>();
 
   useEffect(() => {
     // Este useEffect es para seleccionar las filas
@@ -64,6 +85,17 @@ export const ClientsProjectTable = ({
     }
   };
 
+  const { data, loading } = useClients({
+    idProject,
+    page: 1,
+    city: filterClients.city,
+    holding: filterClients.holding,
+    risk: filterClients.risk,
+    payment_condition: filterClients.payment_condition,
+    radication_type: filterClients.radication_type,
+    status: filterClients.status
+  });
+
   let columns: TableProps<IClient>["columns"] = [];
   if (placedIn === "tab") {
     columns = [
@@ -81,8 +113,8 @@ export const ClientsProjectTable = ({
       },
       {
         title: "Tipo de Cliente",
-        key: "client_type_id",
-        dataIndex: "client_type_id",
+        key: "cliet_type",
+        dataIndex: "cliet_type",
         render: (text) => <Text>{text}</Text>
       },
       {
@@ -159,7 +191,7 @@ export const ClientsProjectTable = ({
           <Button
             onClick={() => {
               if (setIsViewDetailsClients) {
-                setIsViewDetailsClients({ active: true, id: parseInt(nit) });
+                setIsViewDetailsClients({ active: true, id: nit });
               }
             }}
             icon={<Eye size={"1.3rem"} />}
@@ -213,10 +245,11 @@ export const ClientsProjectTable = ({
 
     return (
       <>
+        {messageContext}
         <main className="mainClientsProjectTable">
           <Flex justify="space-between" className="mainClientsProjectTable_header">
             <Flex gap={"1.75rem"}>
-              <FilterClients />
+              <FilterClients setFilterClients={setFilterClients} />
               <DotsDropdown items={items} />{" "}
             </Flex>
 
@@ -231,15 +264,21 @@ export const ClientsProjectTable = ({
             </Button>
           </Flex>
 
-          <Table
-            columns={columns}
-            dataSource={data.map((client) => ({
-              key: client.nit,
-              ...client
-            }))}
-            rowSelection={rowSelection}
-            rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
-          />
+          {loading ? (
+            <Flex style={{ height: "30%" }} align="center" justify="center">
+              <Spin size="large" />
+            </Flex>
+          ) : (
+            <Table
+              columns={columns}
+              dataSource={data.map((client) => ({
+                key: client.nit,
+                ...client
+              }))}
+              rowSelection={rowSelection}
+              rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
+            />
+          )}
         </main>
       </>
     );
@@ -288,19 +327,26 @@ export const ClientsProjectTable = ({
         <main className="mainClientsProjectTable">
           <Flex justify="space-between" className="mainClientsProjectTable_header">
             <Flex>
-              <FilterClients />
+              <FilterClients setFilterClients={setFilterClients} />
             </Flex>
           </Flex>
-          <Table
-            columns={columns}
-            dataSource={data.map((client) => ({
-              key: client.nit,
-              ...client
-            }))}
-            pagination={{ pageSize: 8 }}
-            rowSelection={rowSelection}
-            rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
-          />
+
+          {loading ? (
+            <Flex style={{ height: "30%" }} align="center" justify="center">
+              <Spin size="large" />
+            </Flex>
+          ) : (
+            <Table
+              columns={columns}
+              dataSource={data.map((client) => ({
+                key: client.nit,
+                ...client
+              }))}
+              pagination={{ pageSize: 8 }}
+              rowSelection={rowSelection}
+              rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
+            />
+          )}
         </main>
       </>
     );
@@ -390,58 +436,26 @@ export const ClientsProjectTable = ({
         <main className="mainClientsProjectTable">
           <Flex justify="space-between" className="mainClientsProjectTable_header">
             <Flex>
-              <FilterClients />
+              <FilterClients setFilterClients={setFilterClients} />
             </Flex>
           </Flex>
-          <Table
-            columns={columns}
-            dataSource={data.map((client) => ({
-              key: client.nit,
-              ...client
-            }))}
-            pagination={{ pageSize: 8 }}
-          />
+
+          {loading ? (
+            <Flex style={{ height: "30%" }} align="center" justify="center">
+              <Spin size="large" />
+            </Flex>
+          ) : (
+            <Table
+              columns={columns}
+              dataSource={data.map((client) => ({
+                key: client.nit,
+                ...client
+              }))}
+              pagination={{ pageSize: 8 }}
+            />
+          )}
         </main>
       </>
     );
   }
 };
-const data: IClient[] = [];
-
-for (let i = 0; i < 9; i++) {
-  data.push({
-    nit: `${i}347623472-5643`,
-    project_id: 1,
-    client_type_id: 1,
-    uuid: "123e4567-e89b-12d3-a456-426655440000",
-    document_type: "CC",
-    client_name: "Coopidrogas",
-    business_name: "Coopidrogas S.A.",
-    holding_id: 1,
-    holding_name: "Profit Hold",
-    phone: "+57 1 234 5678",
-    email: "info@coopidrogas.com",
-    risk: "Medio",
-    billing_period: "Mensual",
-    locations: [
-      {
-        id: 1,
-        nit: "3819389183912-9",
-        city: "Bogota",
-        address: "calle falsa 123 tabogo actualizado",
-        position: {
-          lat: " 4.698931",
-          lon: "-74.1146624"
-        }
-      }
-    ],
-    radication_type: 1,
-    ACTIVE: true,
-    client_type: "Persona Jurídica",
-    status: "Creado",
-    is_deleted: 0
-    // users: 36,
-    // bills: 36,
-    // budget: 180000
-  });
-}

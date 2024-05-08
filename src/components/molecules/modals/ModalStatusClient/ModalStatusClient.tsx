@@ -26,7 +26,7 @@ export const ModalStatusClient = ({ isOpen, setIsStatusClient }: Props) => {
       onOk={() => setIsStatusClient({ status: false, remove: false })}
     >
       <Flex vertical>
-        <Text>Selecciona el nuevo estado del usuario</Text>
+        <Text>Selecciona el nuevo estado del cliente</Text>
         <Radio.Group style={{ padding: "1rem 0", width: "100%" }}>
           <Space direction="vertical" style={{ width: "100%" }}>
             <Flex className="radioStatus">
@@ -46,7 +46,7 @@ export const ModalStatusClient = ({ isOpen, setIsStatusClient }: Props) => {
           className="deleteText"
           onClick={() => setIsStatusClient({ status: true, remove: true })}
         >
-          Eliminar Usuario
+          Eliminar Cliente
         </Text>
       </Flex>
     </Modal>

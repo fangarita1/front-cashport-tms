@@ -189,7 +189,7 @@ export const FilterUsers = ({ idProject, setSelectedUsers }: Props) => {
       removeIcon
       maxTagCount={1}
       placeholder="Filtrar"
-      placement="bottomRight"
+      placement="bottomLeft"
       onClear={() => setSelectedUsers(initValueFiltersData)}
       options={optionsList}
       changeOnSelect
