@@ -14,6 +14,7 @@ interface Props {
   hiddenTitle?: boolean;
   placeholder?: string;
   disabled?: boolean;
+  className?: string;
 }
 
 export const InputForm = ({

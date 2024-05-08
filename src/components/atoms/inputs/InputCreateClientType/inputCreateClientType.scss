@@ -1,14 +1,15 @@
-@import '../../../../styles/variables.scss';
+@import "@/styles/variables.scss";
 
-.inputcreatezone {
+.inputCreateClientType {
     background-color: $background;
     width: 100%;
-    .createButtonZone {
+
+    .createButton {
         width: 98%;
         display: flex;
         align-items: center;
         height: 3rem;
-        margin-top: .3rem;
+        margin-top: 0.3rem;
         border: none;
     }
 }

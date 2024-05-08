@@ -8,3 +8,17 @@ export interface IClientType {
   id: number;
   clientType: string;
 }
+
+export interface ICreateDocumentByClient {
+  [key: string]: any;
+  client_type: number;
+  required: number;
+  document_name: string;
+  template?: File;
+}
+
+export interface ICreateDocumentForm {
+  required: boolean;
+  document_name: string;
+  template?: File;
+}

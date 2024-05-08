@@ -2,13 +2,12 @@ import useSWR from "swr";
 import { IDocumentsByClientId } from "@/types/documentsByClientId/IDocumentsByClientId";
 import { fetcher } from "@/utils/api/api";
 
-export const useDocumentByClient = () => {
+export const useDocumentByClient = (clientTypeId: number) => {
   const { data, isLoading } = useSWR<IDocumentsByClientId>(
-    `/client/documents/bytype/2`,
+    `/client/documents/bytype/${clientTypeId}`,
     fetcher,
     {}
   );
-  console.log(data);
 
   return {
     data,

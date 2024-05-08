@@ -54,7 +54,7 @@ export const SelectStructure = ({
 
   return (
     <div className="selectstructure">
-      <Typography.Text className="title">Estructura</Typography.Text>
+      <Typography.Text className="title">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</Typography.Text>
       <Flex className="structure" gap={"1rem"}>
         {isLoading ? (
           <Spin />
