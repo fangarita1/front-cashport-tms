@@ -7,23 +7,19 @@ import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSect
 import "./clientsview.scss";
 import { ClientsViewTable } from "@/components/molecules/tables/ClientsViewTable/ClientsViewTable";
 import { useState } from "react";
-import { DetailClientView } from "@/components/organisms/Customers/DetailClientView/DetailClientView";
+import {
+  DetailClientView,
+  IViewClientDetails
+} from "@/components/organisms/Customers/DetailClientView/DetailClientView";
 
 const { Title } = Typography;
-
-interface IViewClientDetails {
-  active: boolean;
-  clientId: number | undefined;
-  clientName: string | undefined;
-  projectId: number | undefined;
-}
 
 export const ClientsView = () => {
   const [isViewClientDetails, setIsViewClientDetails] = useState<IViewClientDetails>({
     active: false,
-    clientId: undefined,
+    clientId: 0,
     clientName: undefined,
-    projectId: undefined
+    projectId: 0
   });
 
   return (

@@ -20,18 +20,12 @@ import CardsClients from "../../modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { useUserByToken } from "@/hooks/useUserByToken";
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
+import { IViewClientDetails } from "@/components/organisms/Customers/DetailClientView/DetailClientView";
 
 const { Text } = Typography;
 
 interface Props {
-  setIsViewClientDetails: Dispatch<
-    SetStateAction<{
-      active: boolean;
-      clientId: number | undefined;
-      clientName: string | undefined;
-      projectId: number | undefined;
-    }>
-  >;
+  setIsViewClientDetails: Dispatch<SetStateAction<IViewClientDetails>>;
 }
 
 export const ClientsViewTable = ({ setIsViewClientDetails }: Props) => {

@@ -3,14 +3,15 @@ import { Button, Flex, Tabs, TabsProps } from "antd";
 import "./detailclientview.scss";
 import { CaretLeft } from "phosphor-react";
 import { Dispatch, SetStateAction } from "react";
+import { WalletTab } from "@/components/organisms/Customers/WalletTab/WalletTab";
 
 // const { Title } = Typography;
 
-interface IViewClientDetails {
+export interface IViewClientDetails {
   active: boolean;
-  clientId: number | undefined;
+  clientId: number;
   clientName: string | undefined;
-  projectId: number | undefined;
+  projectId: number;
 }
 
 interface Props {
@@ -36,7 +37,7 @@ export const DetailClientView = ({
       label: "Cartera",
       children: (
         <>
-          <p>Cartera</p>
+          <WalletTab clientId={client.clientId} projectId={client.projectId} />
         </>
       )
     }
@@ -54,9 +55,9 @@ export const DetailClientView = ({
                 onClick={() =>
                   setIsViewClientDetails({
                     active: false,
-                    clientId: undefined,
+                    clientId: 0,
                     clientName: undefined,
-                    projectId: undefined
+                    projectId: 0
                   })
                 }
                 className="buttonGoBack"
