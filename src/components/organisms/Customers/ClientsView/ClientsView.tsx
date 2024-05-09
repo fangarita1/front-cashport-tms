@@ -6,10 +6,26 @@ import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSect
 
 import "./clientsview.scss";
 import { ClientsViewTable } from "@/components/molecules/tables/ClientsViewTable/ClientsViewTable";
+import { useState } from "react";
+import { DetailClientView } from "@/components/organisms/Customers/DetailClientView/DetailClientView";
 
 const { Title } = Typography;
 
-export const CustomersView = () => {
+interface IViewClientDetails {
+  active: boolean;
+  clientId: number | undefined;
+  clientName: string | undefined;
+  projectId: number | undefined;
+}
+
+export const ClientsView = () => {
+  const [isViewClientDetails, setIsViewClientDetails] = useState<IViewClientDetails>({
+    active: false,
+    clientId: undefined,
+    clientName: undefined,
+    projectId: undefined
+  });
+
   return (
     <main className="mainClients">
       <SideBar />
@@ -22,7 +38,14 @@ export const CustomersView = () => {
           </Flex>
           <NavRightSection />
         </Flex>
-        <ClientsViewTable />
+        {isViewClientDetails.active ? (
+          <DetailClientView
+            setIsViewClientDetails={setIsViewClientDetails}
+            isViewClientDetails={isViewClientDetails}
+          />
+        ) : (
+          <ClientsViewTable setIsViewClientDetails={setIsViewClientDetails} />
+        )}
       </Flex>
     </main>
   );

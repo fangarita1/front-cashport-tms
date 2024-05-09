@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Button, Col, Flex, Row, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import {
@@ -14,16 +14,27 @@ import {
 } from "phosphor-react";
 
 import { useProjects } from "@/hooks/useProjects";
-import { IProject } from "@/types/projects/IProjects";
 
 import "./ClientsViewTable.scss";
 import CardsClients from "../../modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { useUserByToken } from "@/hooks/useUserByToken";
+import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
 
 const { Text } = Typography;
 
-export const ClientsViewTable = () => {
+interface Props {
+  setIsViewClientDetails: Dispatch<
+    SetStateAction<{
+      active: boolean;
+      clientId: number | undefined;
+      clientName: string | undefined;
+      projectId: number | undefined;
+    }>
+  >;
+}
+
+export const ClientsViewTable = ({ setIsViewClientDetails }: Props) => {
   const { data: userData } = useUserByToken();
   const { data: clients } = usePortfolios({ id: userData?.projectId });
 
@@ -41,6 +52,88 @@ export const ClientsViewTable = () => {
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);
   };
+
+  const columns: TableProps<IClientsPortfolio>["columns"] = [
+    {
+      title: "Nombre",
+      dataIndex: "client_name",
+      key: "client_name",
+      render: (text) => <Text className="text">{text}</Text>
+    },
+    {
+      title: "Cartera",
+      dataIndex: "total_portfolio",
+      key: "total_portfolio",
+      render: (text) => <Text>{text}</Text>
+    },
+    {
+      title: "Vencida",
+      dataIndex: "past_due_ammount",
+      key: "past_due_ammount"
+    },
+    {
+      title: "Presupuesto",
+      key: "budget_ammount",
+      dataIndex: "budget_ammount",
+      render: (text) => <Text>{text}</Text>
+    },
+    {
+      title: "R. Aplicado",
+      key: "applied_payments_ammount",
+      dataIndex: "applied_payments_ammount",
+      render: (text) => <Text>{text}</Text>
+    },
+    {
+      title: "Ejecutado",
+      key: "executed_percentage",
+      dataIndex: "executed_percentage",
+      render: (text) => <Text>{text} %</Text>
+    },
+    {
+      title: "PNA",
+      key: "unapplied_payments_ammount",
+      dataIndex: "unapplied_payments_ammount",
+      render: (text) => <Text>{text}</Text>
+    },
+    {
+      title: "Saldos",
+      key: "executed_percentage",
+      dataIndex: "executed_percentage",
+      render: (text) => <Text>{text}</Text>
+    },
+    {
+      title: "Holding",
+      key: "holding_name",
+      dataIndex: "holding_name",
+      render: (text) => <Text className="text">{text}</Text>
+    },
+    {
+      title: "client_id",
+      key: "client_id",
+      dataIndex: "client_id",
+      render: (text) => <Text className="text">{text}</Text>
+    },
+    {
+      title: "",
+      key: "buttonSee",
+      width: "80px",
+      dataIndex: "",
+      render: (_, row: IClientsPortfolio) => (
+        <Button
+          className="buttonSeeProject"
+          onClick={() =>
+            setIsViewClientDetails({
+              active: true,
+              clientId: row.client_id,
+              clientName: row.client_name,
+              projectId: row.project_id
+            })
+          }
+          icon={<Eye size={"1.3rem"} />}
+        />
+      )
+    }
+  ];
 
   return (
     <main className="mainClientsTable">
@@ -114,66 +207,3 @@ export const ClientsViewTable = () => {
     </main>
   );
 };
-
-const columns: TableProps<IProject>["columns"] = [
-  {
-    title: "Nombre",
-    dataIndex: "client_name",
-    key: "client_name",
-    render: (text) => <Text className="text">{text}</Text>
-  },
-  {
-    title: "Cartera",
-    dataIndex: "total_portfolio",
-    key: "total_portfolio",
-    render: (text) => <Text>{text}</Text>
-  },
-  {
-    title: "Vencida",
-    dataIndex: "past_due_ammount",
-    key: "past_due_ammount"
-  },
-  {
-    title: "Presupuesto",
-    key: "budget_ammount",
-    dataIndex: "budget_ammount",
-    render: (text) => <Text>{text}</Text>
-  },
-  {
-    title: "R. Aplicado",
-    key: "applied_payments_ammount",
-    dataIndex: "applied_payments_ammount",
-    render: (text) => <Text>{text}</Text>
-  },
-  {
-    title: "Ejecutado",
-    key: "executed_percentage",
-    dataIndex: "executed_percentage",
-    render: (text) => <Text>{text} %</Text>
-  },
-  {
-    title: "PNA",
-    key: "unapplied_payments_ammount",
-    dataIndex: "unapplied_payments_ammount",
-    render: (text) => <Text>{text}</Text>
-  },
-  {
-    title: "Saldos",
-    key: "executed_percentage",
-    dataIndex: "executed_percentage",
-    render: (text) => <Text>{text}</Text>
-  },
-  {
-    title: "Holding",
-    key: "holding_name",
-    dataIndex: "holding_name",
-    render: (text) => <Text className="text">{text}</Text>
-  },
-  {
-    title: "",
-    key: "buttonSee",
-    width: "80px",
-    dataIndex: "",
-    render: () => <Button icon={<Eye size={"1.3rem"} />} />
-  }
-];

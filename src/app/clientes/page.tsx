@@ -1,9 +1,9 @@
 "use client";
 
-import { CustomersView } from "@/components/organisms/Customers/ClientsView/ClientsView";
+import { ClientsView } from "@/components/organisms/Customers/ClientsView/ClientsView";
 
 function ClientsPage() {
-  return <CustomersView />;
+  return <ClientsView />;
 }
 
 export default ClientsPage;
