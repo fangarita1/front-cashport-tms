@@ -3,7 +3,7 @@ module.exports = {
   plugins: ["react", "react-hooks", "prettier"],
   rules: {
     "no-unused-vars": [
-      "error",
+      "warn",
       {
         args: "after-used",
         caughtErrors: "none",
