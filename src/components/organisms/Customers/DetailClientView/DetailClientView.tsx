@@ -2,26 +2,44 @@ import { Button, Flex, Tabs, TabsProps } from "antd";
 
 import "./detailclientview.scss";
 import { CaretLeft } from "phosphor-react";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { WalletTab } from "@/components/organisms/Customers/WalletTab/WalletTab";
-
-// const { Title } = Typography;
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { extractSingleParam } from "@/utils/utils";
+import { getPortfolioFromClient } from "@/services/portfolios/portfolios";
+import { IDataSection } from "@/types/portfolios/portfolios";
 
 export interface IViewClientDetails {
   active: boolean;
-  clientId: number;
   clientName: string | undefined;
-  projectId: number;
 }
 
 interface Props {
-  setIsViewClientDetails: Dispatch<SetStateAction<IViewClientDetails>>;
-  isViewClientDetails: IViewClientDetails;
+  setIsViewClientDetails?: Dispatch<SetStateAction<IViewClientDetails>>;
+  isViewClientDetails?: IViewClientDetails;
 }
-export const DetailClientView = ({
-  setIsViewClientDetails,
-  isViewClientDetails: client
-}: Props) => {
+export const DetailClientView = ({}: Props) => {
+  const [portfolioData, setPortfolioData] = useState<IDataSection | undefined>(undefined);
+  const params = useParams();
+
+  const clientIdParam = extractSingleParam(params.clientId);
+  const projectIdParam = extractSingleParam(params.projectId);
+
+  const clientId = clientIdParam ? parseInt(clientIdParam) : undefined;
+  const projectId = projectIdParam ? parseInt(projectIdParam) : undefined;
+
+  useEffect(() => {
+    const fetchPortfolioData = async () => {
+      if (!portfolioData) {
+        const response: IDataSection = await getPortfolioFromClient(projectId, clientId);
+        console.log("This is response:  ", response);
+        setPortfolioData(response);
+      }
+    };
+    fetchPortfolioData();
+  }, [clientId, portfolioData, projectId]);
+
   const items: TabsProps["items"] = [
     {
       key: "1",
@@ -37,7 +55,7 @@ export const DetailClientView = ({
       label: "Cartera",
       children: (
         <>
-          <WalletTab clientId={client.clientId} projectId={client.projectId} />
+          <WalletTab />
         </>
       )
     }
@@ -49,22 +67,16 @@ export const DetailClientView = ({
         <Flex vertical className="containerDetailClient">
           <Flex component={"navbar"} align="center" justify="space-between">
             <Flex className="infoHeader" align="center" justify="center">
-              <Button
-                type="text"
-                size="large"
-                onClick={() =>
-                  setIsViewClientDetails({
-                    active: false,
-                    clientId: 0,
-                    clientName: undefined,
-                    projectId: 0
-                  })
-                }
-                className="buttonGoBack"
-                icon={<CaretLeft size={"1.6rem"} />}
-              >
-                {client.clientName}
-              </Button>
+              <Link href={`/clientes/all`}>
+                <Button
+                  type="text"
+                  size="large"
+                  className="buttonGoBack"
+                  icon={<CaretLeft size={"1.6rem"} />}
+                >
+                  {portfolioData ? portfolioData.data_wallet.client_name : "AAAAA"}
+                </Button>
+              </Link>
             </Flex>
           </Flex>
           {/* ------------Main Info Project-------------- */}

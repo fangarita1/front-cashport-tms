@@ -143,3 +143,10 @@ export const stringBasedOnDocumentType = (documentType: string) => {
       return "0 - No seleccionado";
   }
 };
+
+export function extractSingleParam(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+  return value;
+}

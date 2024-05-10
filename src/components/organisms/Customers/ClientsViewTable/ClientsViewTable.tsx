@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
+import Link from "next/link";
 import { Button, Col, Flex, Row, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import {
@@ -16,21 +17,16 @@ import {
 import { useProjects } from "@/hooks/useProjects";
 
 import "./ClientsViewTable.scss";
-import CardsClients from "../../modals/CardsClients/CardsClients";
+import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { useUserByToken } from "@/hooks/useUserByToken";
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
-import { IViewClientDetails } from "@/components/organisms/Customers/DetailClientView/DetailClientView";
 
 const { Text } = Typography;
 
-interface Props {
-  setIsViewClientDetails: Dispatch<SetStateAction<IViewClientDetails>>;
-}
-
-export const ClientsViewTable = ({ setIsViewClientDetails }: Props) => {
+export const ClientsViewTable = () => {
   const { data: userData } = useUserByToken();
-  const { data: clients } = usePortfolios({ id: userData?.projectId });
+  const { data: clients } = usePortfolios({ projectId: userData?.projectId });
 
   const [selectFilters] = useState({
     country: [] as string[],
@@ -52,7 +48,11 @@ export const ClientsViewTable = ({ setIsViewClientDetails }: Props) => {
       title: "Nombre",
       dataIndex: "client_name",
       key: "client_name",
-      render: (text) => <Text className="text">{text}</Text>
+      render: (_, row: IClientsPortfolio) => (
+        <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
+          <Text className="text">{row.client_name}</Text>
+        </Link>
+      )
     },
     {
       title: "Cartera",
@@ -113,18 +113,9 @@ export const ClientsViewTable = ({ setIsViewClientDetails }: Props) => {
       width: "80px",
       dataIndex: "",
       render: (_, row: IClientsPortfolio) => (
-        <Button
-          className="buttonSeeProject"
-          onClick={() =>
-            setIsViewClientDetails({
-              active: true,
-              clientId: row.client_id,
-              clientName: row.client_name,
-              projectId: row.project_id
-            })
-          }
-          icon={<Eye size={"1.3rem"} />}
-        />
+        <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
+          <Button className="buttonSeeProject" icon={<Eye size={"1.3rem"} />} />
+        </Link>
       )
     }
   ];
