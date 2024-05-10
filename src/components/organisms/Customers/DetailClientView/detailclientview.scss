@@ -24,10 +24,14 @@
     }
 
     .tabsContainer {
-        width: 100%;
-        height: 90%;
-
         background-color: $white;
+
+        .ant-tabs {
+            .ant-tabs-nav {
+                margin: 0;
+            }
+        }
+
         .ant-tabs-content,
         .ant-tabs-tabpane {
             height: 100%;

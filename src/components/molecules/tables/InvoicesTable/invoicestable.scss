@@ -1,0 +1,21 @@
+@import "@styles/variables.scss";
+
+.invoicesTable {
+    .selectedRow {
+        td {
+            background-color: inherit !important;
+        }
+    }
+}
+
+.logos {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: flex-end;
+
+    svg {
+        padding: 0.37rem;
+        background-color: $background;
+        border-radius: 0.25rem;
+    }
+}

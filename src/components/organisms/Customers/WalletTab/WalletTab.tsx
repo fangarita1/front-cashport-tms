@@ -1,15 +1,11 @@
 import { useInvoices } from "@/hooks/useInvoices";
 import { extractSingleParam } from "@/utils/utils";
-import { Collapse } from "antd";
+import { Button, Collapse, Flex } from "antd";
 import { useParams } from "next/navigation";
-import "./wallettab.scss";
+import { DotsThree } from "phosphor-react";
 import { LabelCollapseInvoice } from "@/components/atoms/LabelCollapseInvoice/LabelCollapseInvoice";
-
-const text = `
-  A dog is a type of domesticated animal.
-  Known for its loyalty and faithfulness,
-  it can be found:a welcome guest in many households across the world.
-`;
+import "./wallettab.scss";
+import { InvoicesTable } from "@/components/molecules/tables/InvoicesTable/InvoicesTable";
 
 export const WalletTab = () => {
   const params = useParams();
@@ -33,6 +29,21 @@ export const WalletTab = () => {
         "loading"
       ) : (
         <>
+          <Flex justify="space-between" className="walletTab_header">
+            <Button className="button__actions" size="large" icon={<DotsThree size={"1.5rem"} />}>
+              Generar acción
+            </Button>
+
+            <Button
+              type="primary"
+              className="button__adjustments"
+              size="large"
+              onClick={() => console.log("click ajustes contables")}
+            >
+              Ajustes contables
+            </Button>
+          </Flex>
+
           {data?.map((invoice, index) => {
             if (invoice.count > 0) {
               return (
@@ -52,7 +63,7 @@ export const WalletTab = () => {
                             quantity={invoice.count}
                           />
                         ),
-                        children: <p>{text}</p>
+                        children: <InvoicesTable dataSingleInvoice={invoice.invoices} />
                       }
                     ]}
                   />

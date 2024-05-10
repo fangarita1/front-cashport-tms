@@ -1,5 +1,37 @@
 @import "@styles/variables.scss";
 
+.walletTab_header {
+    margin: 1.5rem 0;
+    .button {
+        &__actions {
+            padding: 0.75rem 1rem;
+            background-color: $background;
+            border: solid 1px transparent;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+
+            &:hover {
+                border: solid 1px $dark-gray;
+            }
+        }
+        &__adjustments {
+            background-color: $secondary;
+            color: black;
+            font-weight: 600;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+
+            &:hover {
+                background-color: $secondary !important;
+                opacity: 0.8;
+                color: black;
+            }
+        }
+    }
+}
+
 .collapseByStatus {
     .ant-collapse-header {
         display: flex;

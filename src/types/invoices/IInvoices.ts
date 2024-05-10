@@ -1,4 +1,4 @@
-export interface IInvocies {
+export interface IInvoices {
   error: boolean;
   data: InvoicesData[];
 }
