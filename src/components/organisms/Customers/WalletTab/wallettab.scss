@@ -1,0 +1,17 @@
+@import "@styles/variables.scss";
+
+.collapseByStatus {
+    .ant-collapse-header {
+        display: flex;
+        align-items: center !important;
+        padding: 0 !important;
+        margin-bottom: 1rem;
+        margin-left: -0.5rem;
+
+        &-text {
+            h4 {
+                margin: 0;
+            }
+        }
+    }
+}

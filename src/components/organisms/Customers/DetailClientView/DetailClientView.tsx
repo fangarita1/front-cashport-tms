@@ -33,7 +33,6 @@ export const DetailClientView = ({}: Props) => {
     const fetchPortfolioData = async () => {
       if (!portfolioData) {
         const response: IDataSection = await getPortfolioFromClient(projectId, clientId);
-        console.log("This is response:  ", response);
         setPortfolioData(response);
       }
     };
@@ -74,7 +73,7 @@ export const DetailClientView = ({}: Props) => {
                   className="buttonGoBack"
                   icon={<CaretLeft size={"1.6rem"} />}
                 >
-                  {portfolioData ? portfolioData.data_wallet.client_name : "AAAAA"}
+                  {portfolioData ? portfolioData.data_wallet.client_name : "Loading..."}
                 </Button>
               </Link>
             </Flex>
