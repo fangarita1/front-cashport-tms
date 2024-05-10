@@ -33,22 +33,33 @@ export const WalletTab = () => {
         "loading"
       ) : (
         <>
-          {data?.map((invoice) => {
-            return (
-              <Collapse
-                className="collapseByStatus"
-                defaultActiveKey={[invoice.status_id]}
-                key={invoice.status_id}
-                ghost
-                items={[
-                  {
-                    key: invoice.status_id,
-                    label: <LabelCollapseInvoice />,
-                    children: <p>{text}</p>
-                  }
-                ]}
-              />
-            );
+          {data?.map((invoice, index) => {
+            if (invoice.count > 0) {
+              return (
+                <>
+                  <Collapse
+                    className="collapseByStatus"
+                    defaultActiveKey={[invoice.status_id]}
+                    key={invoice.status_id}
+                    ghost
+                    items={[
+                      {
+                        key: invoice.status_id,
+                        label: (
+                          <LabelCollapseInvoice
+                            status={invoice.status}
+                            total={invoice.total}
+                            quantity={invoice.count}
+                          />
+                        ),
+                        children: <p>{text}</p>
+                      }
+                    ]}
+                  />
+                  {index < data.length - 1 && <hr className="collapse-separator" />}
+                </>
+              );
+            }
           })}
         </>
       )}
