@@ -143,6 +143,10 @@
             span {
                 font-size: 1rem;
             }
+
+            .ant-select-selection-placeholder {
+                color: $dark-gray;
+            }
         }
 
         .selectInputError {

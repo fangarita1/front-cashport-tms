@@ -11,6 +11,12 @@
     span {
         font-size: 1rem;
     }
+
+    div {
+        .ant-select-selection-placeholder {
+            color: $dark-gray;
+        }
+    }
 }
 
 .selectInputCountryError {

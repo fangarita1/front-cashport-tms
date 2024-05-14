@@ -57,6 +57,9 @@ export interface General {
   currencies: string[];
   country: string;
   address: string;
+  accept_date: string;
+  DSO_currenly_year: string;
+  DSO_days: number | undefined;
 }
 
 export interface Personalization {
