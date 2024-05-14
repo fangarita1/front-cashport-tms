@@ -6,26 +6,32 @@ export interface IProjectById {
 
 export interface IProject {
   ACCEPT_DATE: number;
+  ADDRESS: string;
+  ADDRESS_FORMAT: string;
+  BILLING_PERIOD: string;
+  CONTACT: string;
+  COUNTRY_ID: number;
+  COUNTRY_NAME: string;
+  CURRENCY: Currency[];
+  DSO_CURRENLY_YEAR: number;
   DSO_DAYS: number;
-  DSO_CURRENTLY_YEAR: number;
+  EMAIL: string;
   ID: number;
-  UUID: string;
-  PROJECT_DESCRIPTION: string;
-  RGB_CONFIG: string;
+  IS_ACTIVE: boolean;
   LOGO: string;
   NIT: string;
-  CONTACT: string;
-  PHONE: string;
-  ADDRESS: string;
-  COUNTRY_ID: number;
-  CURRENCY: Currency[];
-  EMAIL: string;
-  IS_ACTIVE: boolean;
-  COUNTRY_NAME: string;
-  ADDRESS_FORMAT: string;
-  is_deleted: number;
   NUMBER_USERS: number;
-  BILLING_PERIOD: string;
+  PHONE: string;
+  PROJECT_DESCRIPTION: string;
+  RGB_CONFIG: string;
+  UUID: string;
+  is_deleted: number;
+}
+
+export interface Currency {
+  id: string;
+  CURRENCY_NAME: string;
+  currency_name: string;
 }
 
 export interface Currency {

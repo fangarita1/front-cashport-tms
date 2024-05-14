@@ -19,9 +19,9 @@ export interface General {
   country: string;
   address: string;
   billing_period: Date;
-  accept_date: boolean;
-  DSO_currently_year: boolean;
-  DSO_days: number;
+  accept_date: string;
+  DSO_currenly_year: string;
+  DSO_days: number | undefined;
 }
 
 export interface Personalization {
