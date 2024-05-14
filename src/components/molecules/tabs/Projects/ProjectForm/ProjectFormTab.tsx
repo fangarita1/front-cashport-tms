@@ -82,8 +82,6 @@ export const ProjectFormTab = ({
     }
   }, [generalDSOCurrentlyYear, setValue]);
 
-  console.log("data ", data);
-
   const validationButtonText =
     statusForm === "create"
       ? "Crear nuevo proyecto"

@@ -17,6 +17,12 @@
             color: $dark-gray;
         }
     }
+
+    &.ant-select-disabled {
+        span {
+            color: $dark-gray !important;
+        }
+    }
 }
 
 .selectInputCountryError {

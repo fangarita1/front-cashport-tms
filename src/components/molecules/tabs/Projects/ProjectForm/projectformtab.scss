@@ -51,19 +51,19 @@
         h4 {
             color: $secondary-gray;
         }
-				.buttons {
-					gap: 10px;
-					width: 210px;
-					display: flex;
-					font-size: 16px;
-					font-weight: 600;
-					border-radius: 8px;
-					line-height: normal;
-					align-items: center;
-					justify-content: center;
-					color: var(--Black, #141414);
-					border: 1px solid #DDD;
-				}
+        .buttons {
+            gap: 10px;
+            width: 210px;
+            display: flex;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            line-height: normal;
+            align-items: center;
+            justify-content: center;
+            color: var(--Black, #141414);
+            border: 1px solid #ddd;
+        }
         .buttonGoBack {
             justify-content: flex-start;
             color: #141414;
@@ -101,9 +101,9 @@
         display: flex;
         width: 100%;
         flex-wrap: wrap;
-				.description {
-					width: 47% !important;
-				}
+        .description {
+            width: 47% !important;
+        }
         h2,
         h3,
         h4 {
@@ -144,15 +144,15 @@
             .ant-input-disabled {
                 color: black;
             }
-						.ant-select-selection-item {
-							color: #141414;
-						}
-						.ant-input-disabled {
-							color: #141414;
-						}
-						.ant-color-picker-trigger-text {
-							color: #141414;
-						}
+            .ant-select-selection-item {
+                color: #141414;
+            }
+            .ant-input-disabled {
+                color: #141414;
+            }
+            .ant-color-picker-trigger-text {
+                color: #141414;
+            }
         }
 
         .selectInput {
@@ -169,6 +169,12 @@
 
             .ant-select-selection-placeholder {
                 color: $dark-gray;
+            }
+
+            &.ant-select-disabled {
+                span {
+                    color: $dark-gray !important;
+                }
             }
         }
 

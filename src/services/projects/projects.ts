@@ -59,6 +59,7 @@ export const addProject = async (data: ICreatePayload): Promise<ICreateProject> 
     });
     return response;
   } catch (error) {
+    console.log("ERROR: ", error);
     return error as any;
   }
 };
@@ -95,7 +96,7 @@ export const updateProject = async (
     dso_days: data.general.DSO_days,
     dso_currenly_year: data.general.DSO_currenly_year === "Sí" ? true : undefined
   };
-  console.log("FD: ", finalData);
+
   const formData = new FormData();
   formData.append("id", id);
   formData.append("uuid", UUID);

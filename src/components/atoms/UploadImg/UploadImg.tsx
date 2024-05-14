@@ -43,16 +43,25 @@ export const UploadImg = ({ disabled = false, imgDefault = "", setImgFile }: Pro
       });
     }
   };
+
+  const customRequest = ({ onSuccess, onProgress }: any) => {
+    // Simula upload y se ocmpleta en medio segundo
+    setTimeout(() => {
+      onProgress({ percent: 100 });
+      onSuccess("ok");
+    }, 500);
+  };
   return (
     <Flex vertical className="uploadimg">
       <Upload
+        accept=".jpg,.jpeg,.png"
         name="avatar"
         listType="picture-card"
         showUploadList={false}
-        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
         beforeUpload={beforeUpload}
         onChange={handleChange}
         disabled={disabled}
+        customRequest={customRequest}
       >
         {loading && <Spin />}
         {imageUrl ? (
