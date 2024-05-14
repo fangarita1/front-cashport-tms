@@ -44,51 +44,13 @@
     display: flex;
     flex-direction: column;
     .tabs {
-      width: 100%;
-      display: flex;
       margin: 0 0 24px 0;
-      border-bottom: 2px solid #F7F7F7;
-      .tab {
-        height: 32px;
-        display: flex;
-        padding: 0 16px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: 600;
-        color: #DDDDDD;
-        line-height: 24px;
-        align-items: center;
-        &:hover {
-          background-color: #F7F7F7;
-        }
-        &.active {
-          color: #141414;
-          border-bottom: 2px solid #141414;
-        }
-      }
     }
     .searcher {
       width: 100%;
       display: flex;
       column-gap: 16px;
       margin: 0 0 24px 0;
-      .filterButton {
-        display: flex;
-        column-gap: 4px;
-        font-size: 16px;
-        cursor: pointer;
-        font-weight: 600;
-        line-height: 24px;
-        padding: 10px 14px;
-        border-radius: 8px;
-        align-items: center;
-        box-sizing: border-box;
-        border: 1px solid #141414;
-        .icon {
-          font-size: 20px;
-          font-weight: bold;
-        }
-      }
     }
     .listItems {
       flex: 1;
