@@ -10,7 +10,7 @@ const DashboardExpiredPortfolio: FC<DashboardExpiredPortfolioProps> = ({ classNa
   return (
     <div className={`${styles.wrapper} ${className}`}>
       <DashboardGenericItem name="C. vencida" badgeText="12%" value="$34.230" unit="M" />
-      <div className={styles.img}></div>
+      <img src="/images/graph-2.svg" alt="Graph" className={styles.img} />
     </div>
   );
 };

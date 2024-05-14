@@ -10,7 +10,7 @@ const DashboardBudget: FC<DashboardBudgetProps> = ({ className }) => {
   return (
     <div className={`${styles.wrapper} ${className}`}>
       <DashboardGenericItem name="Presupuesto" value="$54.540" unit="M" />
-      <div className={styles.img}></div>
+      <img src="/images/graph-3.svg" alt="Graph" className={styles.img} />
     </div>
   );
 };

@@ -7,6 +7,8 @@ import DashboardPortfolioAges from "../../components/dashboard-porfolio-ages";
 import DashboardInvoiceStatus from "../../components/dashboard-invoice-status";
 import DashboardAlerts from "../../components/dashboard-alerts";
 import DashboardGenericItem from "../../components/dashboard-generic-item";
+import DashboardSellsVsPayments from "../../components/dashboard-sells-vs-payments";
+import DashboardHistoricDso from "../../components/dashboard-historic-dso";
 
 interface DashboardProps {}
 
@@ -39,9 +41,8 @@ const Dashboard: FC<DashboardProps> = () => {
         </div>
       </div>
       <div className={styles.c}>
-        {[1, 2].map((_, index) => (
-          <div key={index} className={`${styles.item} ${styles[`item-c-${index + 1}`]}`}></div>
-        ))}
+        <DashboardSellsVsPayments className={styles.item} />
+        <DashboardHistoricDso className={styles.item} />
       </div>
     </div>
   );
