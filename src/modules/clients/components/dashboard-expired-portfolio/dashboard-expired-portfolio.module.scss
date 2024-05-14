@@ -1,0 +1,12 @@
+.wrapper {
+  height: 100%;
+  display: flex;
+  padding: 0 24px;
+  align-items: center;
+  justify-content: space-between;
+  .img {
+    width: 78px;
+    height: 48px;
+    background-color: #CBE71E4D;
+  }
+}
