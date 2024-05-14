@@ -1,12 +1,10 @@
 import { Select, Typography } from "antd";
-import useSWR from "swr";
 
-import { fetcher } from "@/utils/api/api";
-import { IClientTypes } from "@/types/clientTypes/clientTypes";
 import { ControllerRenderProps, FieldError } from "react-hook-form";
 import { ClientFormType } from "@/types/clients/IClients";
 
 import "../commonInputStyles.scss";
+import { useClientTypes } from "@/hooks/useClientTypes";
 
 interface Props {
   errors: FieldError | undefined;
@@ -14,14 +12,14 @@ interface Props {
 }
 const { Option } = Select;
 export const SelectClientTypes = ({ errors, field }: Props) => {
-  const { data, isLoading } = useSWR<IClientTypes>("/client/types", fetcher, {});
-  const options = data?.data;
+  const { data, loading } = useClientTypes();
+  const options = data;
   return (
     <>
       <Select
         placeholder="Seleccione Tipo de Documento"
         className={errors ? "selectInputError" : "selectInputCustom"}
-        loading={isLoading}
+        loading={loading}
         variant="borderless"
         optionLabelProp="label"
         {...field}

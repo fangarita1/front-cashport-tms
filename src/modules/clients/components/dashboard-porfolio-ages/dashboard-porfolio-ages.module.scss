@@ -1,0 +1,16 @@
+.wrapper {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  .name {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 24px;
+    margin: 0 0 16px 0;
+  }
+  .img {
+    flex: 1;
+    width: 100%;
+     background-color: #CBE71E4D;
+  }
+}

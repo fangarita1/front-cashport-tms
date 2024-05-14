@@ -15,6 +15,7 @@ interface Props {
   placeholder?: string;
   disabled?: boolean;
   validationRules?: RegisterOptions;
+  className?: string;
 }
 
 export const InputForm = ({
@@ -27,10 +28,11 @@ export const InputForm = ({
   hiddenTitle = false,
   placeholder = "",
   disabled,
-  validationRules
+  validationRules,
+  className
 }: Props) => {
   return (
-    <Flex vertical className="containerInput" style={customStyle}>
+    <Flex vertical className={`containerInput ${className}`} style={customStyle}>
       {!hiddenTitle && (
         <Typography.Title className="input-form-title" level={5}>
           {titleInput}
@@ -52,7 +54,6 @@ export const InputForm = ({
         )}
       />
       <Typography.Text className="textError">
-        {/* {error && `${titleInput} es obligatorio *`} */}
         {error ? (error.message ? ` ${error.message}` : `${titleInput} es obligatorio *`) : ""}
       </Typography.Text>
     </Flex>

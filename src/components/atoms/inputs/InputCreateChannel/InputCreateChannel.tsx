@@ -44,7 +44,6 @@ export const InputCreateChannel = ({ isEditAvailable = false }: Props) => {
           customStyle={{
             width: "96%",
             backgroundColor: "transparent !important",
-            border: "1px solid white",
             borderRadius: ".8rem"
           }}
           placeholder="Ingresar nombre del canal"

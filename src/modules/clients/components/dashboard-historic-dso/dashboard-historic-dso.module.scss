@@ -1,0 +1,35 @@
+.wrapper {
+  display: flex;
+  padding: 24px;
+  flex-direction: column;
+  .name {
+    display: flex;
+    font-size: 16px;
+    column-gap: 16px;
+    font-weight: 300;
+    line-height: 24px;
+    margin: 0 0 20px 0;
+    align-items: center;
+    .legends {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      .legend {
+        display: flex;
+        column-gap: 4px;
+        font-size: 12px;
+        font-weight: 300;
+        line-height: 0.8;
+        .circle {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+  .chart {
+    flex: 1;
+  }
+}

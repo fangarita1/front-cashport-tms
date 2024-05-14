@@ -14,7 +14,7 @@
 
     .input-form-title {
         color: #909090;
-        font-size: 12px;
+        font-size: 0.75rem;
         font-style: normal;
         font-weight: 600;
         line-height: normal;
@@ -35,6 +35,7 @@
         padding: 0.7rem;
         border-radius: 0.25rem;
         font-size: 1rem;
+        font-weight: 300;
 
         &::placeholder {
             color: $dark-gray !important;
