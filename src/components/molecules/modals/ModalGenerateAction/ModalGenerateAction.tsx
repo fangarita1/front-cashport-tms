@@ -1,14 +1,15 @@
 import { Collapse, Flex, Modal, Typography } from "antd";
+
 import {
   ArrowsClockwise,
   Calculator,
   Handshake,
   NewspaperClipping,
-  Warning,
-  HandPointing,
   LinkBreak,
-  CaretRight
-} from "phosphor-react";
+  CaretRight,
+  WarningDiamond,
+  HandTap
+} from "@phosphor-icons/react";
 
 import "./modalgenerateaction.scss";
 
@@ -97,7 +98,7 @@ const actionsOptions = [
     key: 3,
     label: (
       <div className="collapseByAction__label">
-        <Warning size={16} />
+        <WarningDiamond size={16} />
         <Title className="collapseByAction__label__text" level={4}>
           Registrar novedad
         </Title>
@@ -145,7 +146,7 @@ const actionsOptions = [
     key: 6,
     label: (
       <div className="collapseByAction__label">
-        <HandPointing size={16} />
+        <HandTap size={16} />
         <Title className="collapseByAction__label__text" level={4}>
           Aplicar pagos
         </Title>
