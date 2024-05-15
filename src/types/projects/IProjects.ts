@@ -21,6 +21,9 @@ export interface IProject {
   EMAIL: string;
   IS_ACTIVE: boolean;
   NUMBER_USERS: number;
+  DSO_CURRENTLY_YEAR: number;
+  DSO_DAYS: number;
+  ACCEPT_DATE: number;
 }
 
 export interface Currency {
@@ -54,6 +57,9 @@ export interface General {
   currencies: string[];
   country: string;
   address: string;
+  accept_date: string;
+  DSO_currenly_year: string;
+  DSO_days: number | undefined;
 }
 
 export interface Personalization {

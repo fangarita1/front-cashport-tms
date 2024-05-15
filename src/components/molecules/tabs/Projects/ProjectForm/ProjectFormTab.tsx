@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Button, ColorPicker, Flex, Typography } from "antd";
+import { useEffect, useState } from "react";
+import { Button, ColorPicker, Flex, Select, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 
@@ -18,6 +18,7 @@ import "./projectformtab.scss";
 import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
 
 const { Title, Text } = Typography;
+const { Option } = Select;
 
 interface Props {
   idProjectForm?: string;
@@ -62,6 +63,8 @@ export const ProjectFormTab = ({
   const [imageError, setImageError] = useState(false);
   const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data);
   const {
+    watch,
+    setValue,
     control,
     handleSubmit,
     reset,
@@ -70,6 +73,14 @@ export const ProjectFormTab = ({
     defaultValues,
     disabled: statusForm === "review"
   });
+
+  const generalDSOCurrentlyYear = watch("general.DSO_currenly_year");
+
+  useEffect(() => {
+    if (generalDSOCurrentlyYear === "Sí") {
+      setValue("general.DSO_days", undefined);
+    }
+  }, [generalDSOCurrentlyYear, setValue]);
 
   const validationButtonText =
     statusForm === "create"
@@ -194,6 +205,88 @@ export const ProjectFormTab = ({
               control={control}
               error={errors.general?.billing_period}
             />
+
+            <Flex vertical className="containerInput">
+              <Title className="title" level={5}>
+                Fecha de vigencia de factura
+              </Title>
+              <Controller
+                name="general.accept_date"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => {
+                  return (
+                    <Select
+                      placeholder="Fecha de aceptación"
+                      className={errors?.general?.accept_date ? "selectInputError" : "selectInput"}
+                      loading={false}
+                      variant="borderless"
+                      optionLabelProp="label"
+                      {...field}
+                    >
+                      <Option value={`Fecha de aceptación`} key={1}>
+                        Fecha de aceptación
+                      </Option>
+                      <Option value={`Fecha de emisión`} key={2}>
+                        Fecha de emisión
+                      </Option>
+                    </Select>
+                  );
+                }}
+              />
+              <Text className="textError">
+                {errors?.general?.accept_date && "Campo obligatorio *"}
+              </Text>
+            </Flex>
+            <Flex vertical className="containerInput">
+              <Title className="title" level={5}>
+                DSO - Calculo solo del año actual
+              </Title>
+              <Controller
+                name="general.DSO_currenly_year"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => {
+                  return (
+                    <Select
+                      placeholder="Si | No"
+                      className={
+                        errors?.general?.DSO_currenly_year ? "selectInputError" : "selectInput"
+                      }
+                      loading={false}
+                      variant="borderless"
+                      optionLabelProp="label"
+                      {...field}
+                    >
+                      <Option value={`Sí`} key={1}>
+                        {`Sí`}
+                      </Option>
+                      <Option value={`No`} key={2}>
+                        {`No`}
+                      </Option>
+                    </Select>
+                  );
+                }}
+              />
+              <Text className="textError">
+                {errors?.general?.DSO_currenly_year && "Campo obligatorio *"}
+              </Text>
+            </Flex>
+            <InputForm
+              disabled={generalDSOCurrentlyYear === "Sí"}
+              titleInput="DSO - Días de ventas para el cálculo"
+              nameInput="general.DSO_days"
+              typeInput="number"
+              validationRules={{
+                required: generalDSOCurrentlyYear === "Sí" ? false : "Campo obligatorio *",
+                min: {
+                  value: 1,
+                  message: "El valor debe ser mayor que 1"
+                }
+              }}
+              control={control}
+              error={errors.general?.DSO_days}
+            />
           </Flex>
 
           {/* -----------------------------------Contact----------------------------------- */}
@@ -310,7 +403,10 @@ const dataToProjectFormData = (data: IProject) => {
       country: `${data.COUNTRY_ID}-${data.COUNTRY_NAME}`,
       address: data.ADDRESS,
       billing_period: data.BILLING_PERIOD,
-      description: data.PROJECT_DESCRIPTION
+      description: data.PROJECT_DESCRIPTION,
+      DSO_currenly_year: data.DSO_CURRENLY_YEAR === 0 ? "No" : "Sí",
+      DSO_days: data.DSO_DAYS,
+      accept_date: data?.ACCEPT_DATE === 0 ? "Fecha de emisión" : "Fecha de aceptación"
     },
     contact: {
       name: data.CONTACT,

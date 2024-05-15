@@ -1,4 +1,4 @@
-@import "../../../../../styles/variables";
+@import "@styles/variables";
 
 .mainProyectsForm {
     width: 100%;
@@ -51,19 +51,19 @@
         h4 {
             color: $secondary-gray;
         }
-				.buttons {
-					gap: 10px;
-					width: 210px;
-					display: flex;
-					font-size: 16px;
-					font-weight: 600;
-					border-radius: 8px;
-					line-height: normal;
-					align-items: center;
-					justify-content: center;
-					color: var(--Black, #141414);
-					border: 1px solid #DDD;
-				}
+        .buttons {
+            gap: 10px;
+            width: 210px;
+            display: flex;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            line-height: normal;
+            align-items: center;
+            justify-content: center;
+            color: var(--Black, #141414);
+            border: 1px solid #ddd;
+        }
         .buttonGoBack {
             justify-content: flex-start;
             color: #141414;
@@ -101,9 +101,9 @@
         display: flex;
         width: 100%;
         flex-wrap: wrap;
-				.description {
-					width: 47% !important;
-				}
+        .description {
+            width: 47% !important;
+        }
         h2,
         h3,
         h4 {
@@ -144,44 +144,47 @@
             .ant-input-disabled {
                 color: black;
             }
-						.ant-select-selection-item {
-							color: #141414;
-						}
-						.ant-input-disabled {
-							color: #141414;
-						}
-						.ant-color-picker-trigger-text {
-							color: #141414;
-						}
-        }
-
-        .input {
-            background-color: $background;
-            margin-bottom: 0.2rem;
-            border-radius: 0;
-            padding: 0.7rem;
-            border-radius: 0.25rem;
-
-            &::placeholder {
-                color: $secondary-gray;
+            .ant-select-selection-item {
+                color: #141414;
+            }
+            .ant-input-disabled {
+                color: #141414;
+            }
+            .ant-color-picker-trigger-text {
+                color: #141414;
             }
         }
 
-        .textError {
-            padding-left: 0.5rem;
+        .selectInput {
+            width: 100%;
+            margin-bottom: 0.2rem;
+            background-color: $background;
+            padding: 1.4rem 0.45rem !important;
+            border-radius: 0.25rem;
+            border-bottom: none;
+
+            span {
+                font-size: 1rem;
+            }
+
+            .ant-select-selection-placeholder {
+                color: $dark-gray;
+            }
+
+            &.ant-select-disabled {
+                span {
+                    color: $dark-gray !important;
+                }
+            }
         }
 
-        .inputError {
+        .selectInputError {
             border: 1px dashed red;
-            background-color: $background;
+            width: 100%;
             margin-bottom: 0.2rem;
-            border-radius: 0;
-            padding: 0.7rem;
+            background-color: $background;
+            padding: 0.45rem;
             border-radius: 0.25rem;
-
-            &::placeholder {
-                color: $secondary-gray;
-            }
         }
     }
 }
