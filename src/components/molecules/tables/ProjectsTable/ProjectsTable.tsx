@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Avatar, Button, Flex, Table, Typography } from "antd";
 import type { TableProps } from "antd";
-import { Clipboard, DotsThree, Eye, Plus } from "phosphor-react";
+import { Clipboard, DotsThree, Eye, Plus, Triangle } from "phosphor-react";
 
 import { FilterProjects } from "@/components/atoms/FilterProjects/FilterProjects";
 import { useProjects } from "@/hooks/useProjects";
@@ -9,6 +9,8 @@ import { useAppStore } from "@/lib/store/store";
 import { IProject } from "@/types/projects/IProjects";
 
 import "./projectstable.scss";
+import UiSearchInput from "@/components/ui/search-input";
+import { countries } from "@/utils/countries";
 
 const { Text } = Typography;
 
@@ -18,6 +20,7 @@ export const ProjectTable = () => {
     currency: [] as string[]
   });
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   const { loading, data } = useProjects({
     page: selectFilters.country.length !== 0 || selectFilters.currency.length !== 0 ? 1 : page,
     currencyId: selectFilters.currency,
@@ -33,24 +36,40 @@ export const ProjectTable = () => {
 
   useEffect(() => {
     if (data.data?.length === 0) return;
-    setProjects(data.data?.map((data) => ({ ...data, key: data.ID })));
+    setProjects(
+      data.data
+        ?.filter((f) => f.ID !== 44)
+        .map((data) => {
+          return { ...data, key: data.ID };
+        })
+    );
   }, [data, setProjects]);
+
+  const invFiltered =
+    projects &&
+    projects.filter((f) => {
+      return f.PROJECT_DESCRIPTION.toLowerCase().includes(search.trim().toLowerCase());
+    });
 
   return (
     <main className="mainProjectsTable">
       <Flex justify="space-between" className="mainProjectsTable_header">
         <Flex gap={"10px"}>
+          <UiSearchInput
+            className="search"
+            placeholder="Buscar"
+            onChange={(event) => {
+              setTimeout(() => {
+                setSearch(event.target.value);
+              }, 1000);
+            }}
+          />
           <FilterProjects setSelecetedProjects={setSelectFilters} />
-          <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
+          <Button className="options" icon={<DotsThree size={"1.5rem"} />} />
         </Flex>
-        <Button
-          type="primary"
-          className="buttonNewProject"
-          size="large"
-          href="/proyectos/new"
-          icon={<Plus weight="bold" size={14} />}
-        >
+        <Button type="primary" className="buttonNewProject" size="large" href="/proyectos/new">
           Nuevo Proyecto
+          {<Plus weight="bold" size={14} />}
         </Button>
       </Flex>
       <Table
@@ -60,9 +79,19 @@ export const ProjectTable = () => {
         pagination={{
           pageSize: 25,
           total: data.pagination.totalRows,
-          onChange: onChangePage
+          onChange: onChangePage,
+          itemRender: (page, type, originalElement) => {
+            if (type === "prev") {
+              return <Triangle size={".75rem"} weight="fill" className="prev" />;
+            } else if (type === "next") {
+              return <Triangle size={".75rem"} weight="fill" className="next" />;
+            } else if (type === "page") {
+              return <Flex className="pagination">{page}</Flex>;
+            }
+            return originalElement;
+          }
         }}
-        dataSource={projects}
+        dataSource={invFiltered}
       />
     </main>
   );
@@ -72,7 +101,7 @@ const columns: TableProps<IProject>["columns"] = [
   {
     title: "Proyecto",
     dataIndex: "name",
-    width: "140px",
+    className: "tableTitle",
     key: "name",
     render: (_, { LOGO }) => (
       <>
@@ -89,47 +118,55 @@ const columns: TableProps<IProject>["columns"] = [
     )
   },
   {
-    title: "Name",
-
+    title: "Nombre",
     dataIndex: "PROJECT_DESCRIPTION",
+    className: "tableTitle",
     key: "PROJECT_DESCRIPTION",
     render: (text) => <Text>{text}</Text>
   },
   {
-    title: "Pais",
-
+    title: "País",
     dataIndex: "COUNTRY_NAME",
+    className: "tableTitle",
     key: "COUNTRY_NAME",
-    render: (text) => <Text>{text}</Text>
+    render: (text) => (
+      <Text className="text">
+        {countries(text)}
+        {text}
+      </Text>
+    )
   },
   {
-    title: "Direccion",
+    title: "Dirección",
+    className: "tableTitle",
     dataIndex: "ADDRESS",
     key: "ADDRESS"
   },
   {
-    title: "Contact",
+    title: "Contacto",
     key: "CONTACT",
+    className: "tableTitle",
     dataIndex: "CONTACT",
     render: (text) => <Text>{text}</Text>
   },
   {
-    title: "Telefono",
+    title: "Teléfono",
     key: "PHONE",
+    className: "tableTitle",
     dataIndex: "PHONE",
     render: (text) => <Text>{text}</Text>
   },
   {
     title: "Usuarios",
     key: "NUMBER_USERS",
-    width: "100px",
+    className: "tableTitle",
     dataIndex: "NUMBER_USERS",
     render: (text) => <Text>{text}</Text>
   },
   {
     title: "Divisas",
     key: "CURRENCY",
-    width: "140px",
+    className: "tableTitle",
     dataIndex: "CURRENCY",
     render: (_, { CURRENCY }) => {
       return (
@@ -145,25 +182,28 @@ const columns: TableProps<IProject>["columns"] = [
   {
     title: "Estado",
     key: "status",
-    width: "140px",
+    className: "tableTitle",
+    width: "130px",
     dataIndex: "status",
     render: (_, { IS_ACTIVE }) => (
-      <Flex
-        align="center"
-        className={IS_ACTIVE ? "statusContainerActive" : "statusContainerInactive"}
-      >
-        <div className={IS_ACTIVE ? "statusActive" : "statusInactive"} />
-        <Text>{IS_ACTIVE ? "Activo" : "Inactivo"}</Text>
+      <Flex>
+        <Flex
+          align="center"
+          className={IS_ACTIVE ? "statusContainerActive" : "statusContainerInactive"}
+        >
+          <div className={IS_ACTIVE ? "statusActive" : "statusInactive"} />
+          <Text>{IS_ACTIVE ? "Activo" : "Inactivo"}</Text>
+        </Flex>
       </Flex>
     )
   },
   {
     title: "",
     key: "buttonSee",
-    width: "60px",
+    width: "54px",
     dataIndex: "",
     render: (_, { ID }) => (
-      <Button href={`/proyectos/review/${ID}`} icon={<Eye size={"1.3rem"} />} />
+      <Button href={`/proyectos/review/${ID}`} className="icon-detail" icon={<Eye size={20} />} />
     )
   }
 ];

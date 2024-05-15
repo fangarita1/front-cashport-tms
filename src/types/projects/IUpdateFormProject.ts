@@ -20,6 +20,9 @@ export interface General {
   country: string;
   address: string;
   billing_period: Date;
+  accept_date: string;
+  DSO_currenly_year: string;
+  DSO_days: number | undefined;
 }
 
 export interface Personalization {

@@ -1,27 +1,27 @@
-import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
-import "./layout.scss";
-
+import Header from "@/components/organisms/header";
 import { Metadata } from "next";
+import { FC, ReactNode } from "react";
 
 export const metadata: Metadata = {
   title: "Clientes",
   description: "Clientes"
 };
 
-export default function ClientsLayout({ children }: { children: React.ReactNode }) {
+interface ClientsLayoutProps {
+  children?: ReactNode;
+}
+
+const ClientsLayout: FC<ClientsLayoutProps> = ({ children }) => {
   return (
-    <div className="clientsLayout">
+    <div className="page">
       <SideBar />
-      <div className="clientsView">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-            <div className="titleName">Clientes</div>
-          </div>
-          <NavRightSection />
-        </div>
-        <div className="contentClients">{children}</div>
+      <div className="mainContent">
+        <Header title="Clientes" />
+        {children}
       </div>
     </div>
   );
-}
+};
+
+export default ClientsLayout;

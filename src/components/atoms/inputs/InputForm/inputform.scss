@@ -40,6 +40,11 @@
         &::placeholder {
             color: $dark-gray !important;
         }
+
+        &:disabled {
+            // background-color: #909090;
+            color: $dark-gray !important;
+        }
     }
 
     .textError {

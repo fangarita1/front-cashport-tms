@@ -4,6 +4,12 @@
     width: 100%;
     overflow-y: scroll;
     height: 100%;
+		.pagination {
+			margin-top: 20px;
+		}
+		.ant-table-pagination.ant-pagination{
+			margin-top: 20px;
+		}
 
     .mainUsersProjectTable_header {
         margin: 2rem 0;
@@ -47,15 +53,13 @@
             color: black !important;
         }
     }
-
     .buttonNewProject {
-        background-color: $secondary;
-        color: black;
-        font-weight: 600;
-        box-shadow: none;
-        display: flex;
-        align-items: center;
-
+			background-color: $secondary;
+			color: black;
+			font-weight: 600;
+			box-shadow: none;
+			display: flex;
+			align-items: center;
         &:hover {
             background-color: $secondary !important;
             opacity: 0.8;
@@ -76,7 +80,6 @@
         .ant-table-cell {
             padding: 12px;
         }
-
         .cell {
             display: inline-block;
 

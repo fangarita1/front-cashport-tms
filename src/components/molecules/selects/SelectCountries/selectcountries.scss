@@ -1,4 +1,4 @@
-@import '../../../../styles/variables.scss';
+@import "@styles/variables.scss";
 
 .selectInputCountry {
     width: 100%;
@@ -7,6 +7,22 @@
     padding: 1.4rem 0.45rem !important;
     border-radius: 0.25rem;
     border-bottom: none;
+
+    span {
+        font-size: 1rem;
+    }
+
+    div {
+        .ant-select-selection-placeholder {
+            color: $dark-gray;
+        }
+    }
+
+    &.ant-select-disabled {
+        span {
+            color: $dark-gray !important;
+        }
+    }
 }
 
 .selectInputCountryError {
