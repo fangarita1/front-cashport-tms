@@ -1,15 +1,16 @@
 import { Button, Flex, Tabs, TabsProps } from "antd";
 
-import "./detailclientview.scss";
 import { CaretLeft } from "phosphor-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { WalletTab } from "@/components/organisms/Customers/WalletTab/WalletTab";
+import Dashboard from "../../../../modules/clients/containers/dashboard/dashboard";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { extractSingleParam } from "@/utils/utils";
 import { getPortfolioFromClient } from "@/services/portfolios/portfolios";
 import { IDataSection } from "@/types/portfolios/portfolios";
 
+import "./detailclientview.scss";
 export interface IViewClientDetails {
   active: boolean;
   clientName: string | undefined;
@@ -45,7 +46,7 @@ export const DetailClientView = ({}: Props) => {
       label: "Dashboard",
       children: (
         <>
-          <p>Dashboard</p>
+          <Dashboard />
         </>
       )
     },

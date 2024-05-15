@@ -1,6 +1,6 @@
 import { useInvoices } from "@/hooks/useInvoices";
 import { extractSingleParam } from "@/utils/utils";
-import { Button, Collapse, Flex } from "antd";
+import { Button, Collapse, Flex, Spin } from "antd";
 import { useParams } from "next/navigation";
 import { DotsThree } from "phosphor-react";
 import { LabelCollapseInvoice } from "@/components/atoms/LabelCollapseInvoice/LabelCollapseInvoice";
@@ -8,9 +8,11 @@ import "./wallettab.scss";
 import { InvoicesTable } from "@/components/molecules/tables/InvoicesTable/InvoicesTable";
 import { ModalGenerateAction } from "@/components/molecules/modals/ModalGenerateAction/ModalGenerateAction";
 import { useState } from "react";
+import UiSearchInput from "@/components/ui/search-input";
 
 export const WalletTab = () => {
   const [isGenerateActionOpen, setisGenerateActionOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
@@ -30,18 +32,32 @@ export const WalletTab = () => {
   return (
     <>
       {isLoading ? (
-        "loading"
+        <Flex justify="center" align="center" style={{ height: "3rem" }}>
+          <Spin />
+        </Flex>
       ) : (
         <>
           <Flex justify="space-between" className="walletTab_header">
-            <Button
-              className="button__actions"
-              size="large"
-              icon={<DotsThree size={"1.5rem"} />}
-              onClick={handleisGenerateActionOpen}
-            >
-              Generar acción
-            </Button>
+            <Flex gap={"0.5rem"}>
+              <UiSearchInput
+                className="search"
+                placeholder="Buscar"
+                onChange={(event) => {
+                  setTimeout(() => {
+                    setSearch(event.target.value);
+                    console.log("search", search);
+                  }, 1000);
+                }}
+              />
+              <Button
+                className="button__actions"
+                size="large"
+                icon={<DotsThree size={"1.5rem"} />}
+                onClick={handleisGenerateActionOpen}
+              >
+                Generar acción
+              </Button>
+            </Flex>
 
             <Button
               type="primary"
