@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Table, TableProps, Tooltip, Typography } from "antd";
 
 import { IInvoice } from "@/types/invoices/IInvoices";
@@ -14,10 +14,6 @@ export const InvoicesTable = ({ dataSingleInvoice: data }: PropsInvoicesTable) =
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<any>([]);
 
-  useEffect(() => {
-    console.log(selectedRows);
-  }, [selectedRows]);
-
   const openInvoiceDetail = () => {
     console.log("openInvoiceDetail");
   };
@@ -25,6 +21,7 @@ export const InvoicesTable = ({ dataSingleInvoice: data }: PropsInvoicesTable) =
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
     setSelectedRowKeys(newSelectedRowKeys);
     setSelectedRows(newSelectedRow);
+    console.log("selectedRows: ", selectedRows);
   };
 
   const rowSelection = {

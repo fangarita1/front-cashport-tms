@@ -6,8 +6,11 @@ import { DotsThree } from "phosphor-react";
 import { LabelCollapseInvoice } from "@/components/atoms/LabelCollapseInvoice/LabelCollapseInvoice";
 import "./wallettab.scss";
 import { InvoicesTable } from "@/components/molecules/tables/InvoicesTable/InvoicesTable";
+import { ModalGenerateAction } from "@/components/molecules/modals/ModalGenerateAction/ModalGenerateAction";
+import { useState } from "react";
 
 export const WalletTab = () => {
+  const [isGenerateActionOpen, setisGenerateActionOpen] = useState(false);
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
@@ -20,17 +23,23 @@ export const WalletTab = () => {
     projectId: projectId || 0
   });
 
-  console.log("DATA INVOICES: ", data);
+  const handleisGenerateActionOpen = () => {
+    setisGenerateActionOpen(!isGenerateActionOpen);
+  };
 
   return (
     <>
-      {" "}
       {isLoading ? (
         "loading"
       ) : (
         <>
           <Flex justify="space-between" className="walletTab_header">
-            <Button className="button__actions" size="large" icon={<DotsThree size={"1.5rem"} />}>
+            <Button
+              className="button__actions"
+              size="large"
+              icon={<DotsThree size={"1.5rem"} />}
+              onClick={handleisGenerateActionOpen}
+            >
               Generar acción
             </Button>
 
@@ -74,6 +83,7 @@ export const WalletTab = () => {
           })}
         </>
       )}
+      <ModalGenerateAction isOpen={isGenerateActionOpen} onClose={handleisGenerateActionOpen} />
     </>
   );
 };
