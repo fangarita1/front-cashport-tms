@@ -5,6 +5,7 @@ import UiFilterDropdown from "@/components/ui/ui-filter-dropdown";
 import styles from "./client-details.module.scss";
 import UiTabs from "@/components/ui/ui-tabs";
 import Dashboard from "../dashboard";
+import InvoiceActionsModal from "../invoice-actions-modal";
 
 interface ClientDetailsProps {}
 
@@ -35,6 +36,7 @@ const ClientDetails: FC<ClientDetailsProps> = () => {
         onTabClick={setSelectedTab}
       />
       {selectedTab === 0 && <Dashboard />}
+      <InvoiceActionsModal />
     </div>
   );
 };

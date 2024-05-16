@@ -68,6 +68,16 @@ a {
     border-color: $secondary !important;
   }
 }
+.ant-collapse-header {
+  display: flex !important;
+  align-items: center !important;
+  .ant-collapse-expand-icon {
+    padding: 0 16px 0 0 !important;
+  }
+}
+.ant-collapse-content-box {
+  background-color: white !important;
+}
 
 .page {
   width: 100%;
