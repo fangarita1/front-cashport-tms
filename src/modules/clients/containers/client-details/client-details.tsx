@@ -1,12 +1,14 @@
-import { Button, Flex, Tabs, TabsProps } from "antd";
+import { Button, Flex } from "antd";
+import Link from "next/link";
 
 import { CaretLeft } from "phosphor-react";
 import { FC } from "react";
 import { WalletTab } from "@/components/organisms/Customers/WalletTab/WalletTab";
+import UiTab from "@/components/ui/ui-tab";
 import Dashboard from "../dashboard/dashboard";
-import Link from "next/link";
 
 import styles from "./client-details.module.scss";
+
 import { useClientDetails } from "../../hooks/client-details/client-details.hook";
 
 interface ClientDetailsProps {}
@@ -14,7 +16,7 @@ interface ClientDetailsProps {}
 export const ClientDetails: FC<ClientDetailsProps> = () => {
   const { portfolioData } = useClientDetails();
 
-  const items: TabsProps["items"] = [
+  const items = [
     {
       key: "1",
       label: "Dashboard",
@@ -38,8 +40,8 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
   return (
     <>
       <main className={styles.mainDetail}>
-        <Flex vertical className={styles.containerDetailClient}>
-          <Flex component={"navbar"} align="center" justify="space-between">
+        <Flex vertical className={styles.containerDetailClient} gap={"1.5rem"}>
+          <Flex align="center" justify="space-between">
             <Flex className={styles.infoHeader} align="center" justify="center">
               <Link href={`/clientes/all`}>
                 <Button
@@ -54,14 +56,7 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
             </Flex>
           </Flex>
 
-          <Flex className={styles.tabsContainer}>
-            <Tabs
-              style={{ width: "100%", height: "100%" }}
-              defaultActiveKey="1"
-              items={items}
-              size="large"
-            />
-          </Flex>
+          <UiTab tabs={items} />
         </Flex>
       </main>
     </>

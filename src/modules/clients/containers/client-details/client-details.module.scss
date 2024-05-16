@@ -7,10 +7,11 @@
     background-color: $white;
     padding-bottom: 0;
     margin-top: 1.5rem;
-    padding: 1rem 2rem;
+    padding: 1.5rem;
     border-radius: 0.5rem;
 
     .buttonGoBack {
+        height: fit-content;
         display: flex;
         align-items: center;
         color: $black !important;
@@ -25,28 +26,5 @@
 
     .infoHeader {
         gap: 2rem;
-    }
-
-    .tabsContainer {
-        .ant-tabs {
-            &-nav {
-                margin-bottom: 1.5rem;
-            }
-        }
-
-        .ant-tabs-content,
-        .ant-tabs-tabpane {
-            height: 100%;
-        }
-
-        .ant-tabs-tab {
-            padding-bottom: 4px !important;
-
-            &-btn {
-                color: $black !important;
-                font-size: 1rem;
-                font-weight: 700;
-            }
-        }
     }
 }

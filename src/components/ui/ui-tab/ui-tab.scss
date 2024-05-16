@@ -1,0 +1,18 @@
+@import "@/styles/variables.scss";
+
+.tabsContainer {
+    .ant-tabs-nav .ant-tabs-tab .ant-tabs-tab-btn {
+        color: $dark-gray;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .ant-tabs-nav .ant-tabs-tab {
+        padding-bottom: 0.25rem !important;
+
+        &.ant-tabs-tab-active .ant-tabs-tab-btn {
+            color: $black;
+            font-weight: 700;
+        }
+    }
+}

@@ -72,11 +72,10 @@ export const WalletTab = () => {
           {data?.map((invoice, index) => {
             if (invoice.count > 0) {
               return (
-                <>
+                <div key={invoice.status_id}>
                   <Collapse
                     className="collapseByStatus"
                     defaultActiveKey={[invoice.status_id]}
-                    key={invoice.status_id}
                     ghost
                     items={[
                       {
@@ -93,7 +92,7 @@ export const WalletTab = () => {
                     ]}
                   />
                   {index < data.length - 1 && <hr className="collapse-separator" />}
-                </>
+                </div>
               );
             }
           })}
