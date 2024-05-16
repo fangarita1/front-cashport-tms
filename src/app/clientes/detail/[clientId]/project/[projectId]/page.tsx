@@ -1,9 +1,9 @@
 "use client";
 
-import { DetailClientView } from "@/components/organisms/Customers/DetailClientView/DetailClientView";
+import ClientDetails from "@/modules/clients/containers/client-details";
 
-function ClientsPage() {
-  return <DetailClientView />;
+function ClientDetailPage() {
+  return <ClientDetails />;
 }
 
-export default ClientsPage;
+export default ClientDetailPage;
