@@ -22,6 +22,15 @@
 
     .containerDetailClient {
         width: 100%;
+
+        .stickyHeader {
+            position: -webkit-sticky;
+            position: sticky;
+            top: -2rem;
+            background-color: $white;
+            z-index: 2;
+            padding: 1rem 0;
+        }
     }
 
     .infoHeader {

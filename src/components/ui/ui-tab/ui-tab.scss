@@ -1,6 +1,18 @@
 @import "@/styles/variables.scss";
 
 .tabsContainer {
+    .ant-tabs:first-child {
+        &:first-child {
+            margin-bottom: 200px;
+        }
+    }
+    .ant-tabs-nav {
+        position: -webkit-sticky; /* For Safari */
+        position: sticky !important;
+        top: 1rem;
+        background-color: $white;
+        z-index: 2;
+    }
     .ant-tabs-nav .ant-tabs-tab .ant-tabs-tab-btn {
         color: $dark-gray;
         font-size: 1rem;

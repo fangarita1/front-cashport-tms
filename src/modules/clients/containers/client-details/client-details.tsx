@@ -41,7 +41,7 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
     <>
       <main className={styles.mainDetail}>
         <Flex vertical className={styles.containerDetailClient} gap={"1.5rem"}>
-          <Flex align="center" justify="space-between">
+          <Flex className={styles.stickyHeader} align="center" justify="space-between">
             <Flex className={styles.infoHeader} align="center" justify="center">
               <Link href={`/clientes/all`}>
                 <Button
