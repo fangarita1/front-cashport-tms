@@ -25,6 +25,37 @@
 
     .ant-table-column-title {
         font-size: 1rem;
+        margin: 0.5rem 0;
+    }
+
+    .ant-table-content {
+        table {
+            .ant-table-cell {
+                padding-top: 0.4rem;
+                padding-bottom: 0.4rem;
+            }
+        }
+    }
+
+    .cell {
+        display: inline-block;
+
+        &.-zone {
+            width: 100%;
+        }
+
+        &.-alignRight {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 5px;
+        }
+
+        &.-individualResponsability {
+            max-width: 210px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     }
 }
 
@@ -48,5 +79,12 @@
 
     button {
         background-color: $background;
+        padding: 0;
+
+        border: none;
+
+        &:hover {
+            border: 1px solid $black;
+        }
     }
 }

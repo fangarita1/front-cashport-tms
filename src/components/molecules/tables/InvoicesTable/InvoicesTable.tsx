@@ -40,7 +40,6 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
           {text}
         </Text>
       ),
-      defaultSortOrder: "descend",
       sorter: (a, b) => a.id - b.id,
       showSorterTooltip: false
     },
@@ -48,8 +47,7 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
       title: "Emisión",
       dataIndex: "create_at",
       key: "create_at",
-      render: (text) => <Text>{formatDate(text)}</Text>,
-      defaultSortOrder: "descend",
+      render: (text) => <Text className="cell -alignRight">{formatDate(text)}</Text>,
       sorter: (a, b) => Date.parse(a.create_at) - Date.parse(b.create_at),
       showSorterTooltip: false
     },
@@ -57,8 +55,7 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
       title: "Pronto pago",
       key: "earlypay_date",
       dataIndex: "earlypay_date",
-      render: (text) => <Text>{formatDate(text)}</Text>,
-      defaultSortOrder: "descend",
+      render: (text) => <Text className="cell -alignRight">{formatDate(text)}</Text>,
       sorter: (a, b) => Date.parse(a.earlypay_date) - Date.parse(b.earlypay_date),
       showSorterTooltip: false
     },
@@ -80,12 +77,11 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
           color={"#f7f7f7"}
           key={record.id}
         >
-          <Text className="expirationText">
+          <Text className="expirationText cell -alignRight">
             {daysLeft(text)} días <WarningCircle size={16} />
           </Text>
         </Tooltip>
       ),
-      defaultSortOrder: "descend",
       sorter: (a, b) => Date.parse(a.expiration_date) - Date.parse(b.expiration_date),
       showSorterTooltip: false
     },
@@ -93,8 +89,7 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
       title: "Monto inicial",
       key: "initial_value",
       dataIndex: "initial_value",
-      render: (text) => <Text className="cell">${text}</Text>,
-      defaultSortOrder: "descend",
+      render: (text) => <Text className="cell -alignRight">${text}</Text>,
       sorter: (a, b) => a.initial_value - b.initial_value,
       showSorterTooltip: false
     },
@@ -104,11 +99,10 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
       dataIndex: "ajust_value",
       render: (text) =>
         text === 0 ? null : text > 0 ? (
-          <Text>${text}</Text>
+          <Text className="cell -alignRight">${text}</Text>
         ) : (
-          <Text className="negativeAdjustment">${text}</Text>
+          <Text className="negativeAdjustment cell -alignRight">${text}</Text>
         ),
-      defaultSortOrder: "descend",
       sorter: (a, b) => a.ajust_value - b.ajust_value,
       showSorterTooltip: false
     },
@@ -116,8 +110,7 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
       title: "Pendiente",
       key: "current_value",
       dataIndex: "current_value",
-      render: (text) => <Text>${text}</Text>,
-      defaultSortOrder: "descend",
+      render: (text) => <Text className="cell -alignRight">${text}</Text>,
       sorter: (a, b) => a.current_value - b.current_value,
       showSorterTooltip: false
     },
@@ -142,7 +135,7 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
             color={"#f7f7f7"}
             key={`A${record.id}`}
           >
-            <Button onClick={openInvoiceDetail} icon={<Handshake size={"1.4rem"} />} />
+            <Button onClick={openInvoiceDetail} icon={<Handshake size={"1.2rem"} />} />
           </Tooltip>
 
           <Tooltip
@@ -161,7 +154,7 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
             color={"#f7f7f7"}
             key={`B${record.id}`}
           >
-            <Button onClick={openInvoiceDetail} icon={<Warning size={"1.4rem"} />} />
+            <Button onClick={openInvoiceDetail} icon={<Warning size={"1.2rem"} />} />
           </Tooltip>
 
           <Tooltip
@@ -175,10 +168,10 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
             color={"#f7f7f7"}
             key={`C${record.id}`}
           >
-            <Button onClick={openInvoiceDetail} icon={<CheckCircle size={"1.4rem"} />} />
+            <Button onClick={openInvoiceDetail} icon={<CheckCircle size={"1.2rem"} />} />
           </Tooltip>
 
-          <Button onClick={openInvoiceDetail} icon={<Eye size={"1.4rem"} />} />
+          <Button onClick={openInvoiceDetail} icon={<Eye size={"1.2rem"} />} />
         </div>
       )
     }
