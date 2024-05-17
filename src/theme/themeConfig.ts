@@ -31,6 +31,10 @@ const theme: ThemeConfig = {
     },
     Checkbox: {
       colorPrimary: "#CBE71E"
+    },
+    Table: {
+      headerBg: "#FFF",
+      headerColor: "#141414"
     }
   }
 };

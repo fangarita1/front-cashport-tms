@@ -29,6 +29,7 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
     selectedRowKeys,
     onChange: onSelectChange
   };
+
   const columns: TableProps<IInvoice>["columns"] = [
     {
       title: "ID",
@@ -39,19 +40,27 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
           {text}
         </Text>
       ),
-      defaultSortOrder: "descend"
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.id - b.id,
+      showSorterTooltip: false
     },
     {
       title: "Emisión",
       dataIndex: "create_at",
       key: "create_at",
-      render: (text) => <Text>{formatDate(text)}</Text>
+      render: (text) => <Text>{formatDate(text)}</Text>,
+      defaultSortOrder: "descend",
+      sorter: (a, b) => Date.parse(a.create_at) - Date.parse(b.create_at),
+      showSorterTooltip: false
     },
     {
       title: "Pronto pago",
       key: "earlypay_date",
       dataIndex: "earlypay_date",
-      render: (text) => <Text>{formatDate(text)}</Text>
+      render: (text) => <Text>{formatDate(text)}</Text>,
+      defaultSortOrder: "descend",
+      sorter: (a, b) => Date.parse(a.earlypay_date) - Date.parse(b.earlypay_date),
+      showSorterTooltip: false
     },
     {
       title: "Vence",
@@ -75,13 +84,19 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
             {daysLeft(text)} días <WarningCircle size={16} />
           </Text>
         </Tooltip>
-      )
+      ),
+      defaultSortOrder: "descend",
+      sorter: (a, b) => Date.parse(a.expiration_date) - Date.parse(b.expiration_date),
+      showSorterTooltip: false
     },
     {
       title: "Monto inicial",
       key: "initial_value",
       dataIndex: "initial_value",
-      render: (text) => <Text className="cell">${text}</Text>
+      render: (text) => <Text className="cell">${text}</Text>,
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.initial_value - b.initial_value,
+      showSorterTooltip: false
     },
     {
       title: "Ajustes",
@@ -92,13 +107,19 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
           <Text>${text}</Text>
         ) : (
           <Text className="negativeAdjustment">${text}</Text>
-        )
+        ),
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.ajust_value - b.ajust_value,
+      showSorterTooltip: false
     },
     {
       title: "Pendiente",
       key: "current_value",
       dataIndex: "current_value",
-      render: (text) => <Text>${text}</Text>
+      render: (text) => <Text>${text}</Text>,
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.current_value - b.current_value,
+      showSorterTooltip: false
     },
     {
       title: "",
