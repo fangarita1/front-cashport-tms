@@ -1,16 +1,20 @@
-import { useInvoices } from "@/hooks/useInvoices";
-import { extractSingleParam } from "@/utils/utils";
+import { useState } from "react";
 import { Button, Collapse, Flex, Spin } from "antd";
 import { useParams } from "next/navigation";
 import { DotsThree } from "phosphor-react";
+import { extractSingleParam } from "@/utils/utils";
+import { useInvoices } from "@/hooks/useInvoices";
 import { LabelCollapseInvoice } from "@/components/atoms/LabelCollapseInvoice/LabelCollapseInvoice";
-import "./wallettab.scss";
 import { InvoicesTable } from "@/components/molecules/tables/InvoicesTable/InvoicesTable";
 import { ModalGenerateAction } from "@/components/molecules/modals/ModalGenerateAction/ModalGenerateAction";
-import { useState } from "react";
 import UiSearchInput from "@/components/ui/search-input";
+import { ModalEstimateTotalInvoices } from "@/components/molecules/modals/modal-estimate-total-invoices/modal-estimate-total-invoices";
+import { IInvoice } from "@/types/invoices/IInvoices";
+
+import "./wallettab.scss";
 
 export const WalletTab = () => {
+  const [selectedRows, setSelectedRows] = useState<IInvoice[] | undefined>(undefined);
   const [isGenerateActionOpen, setisGenerateActionOpen] = useState(false);
   const [search, setSearch] = useState("");
   const params = useParams();
@@ -31,6 +35,9 @@ export const WalletTab = () => {
 
   return (
     <>
+      {selectedRows && selectedRows?.length > 0 && (
+        <ModalEstimateTotalInvoices selectedInvoices={selectedRows} />
+      )}
       {isLoading ? (
         <Flex justify="center" align="center" style={{ height: "3rem" }}>
           <Spin />
@@ -87,7 +94,12 @@ export const WalletTab = () => {
                             quantity={invoice.count}
                           />
                         ),
-                        children: <InvoicesTable dataSingleInvoice={invoice.invoices} />
+                        children: (
+                          <InvoicesTable
+                            dataSingleInvoice={invoice.invoices}
+                            setSelectedRows={setSelectedRows}
+                          />
+                        )
                       }
                     ]}
                   />
@@ -98,6 +110,7 @@ export const WalletTab = () => {
           })}
         </>
       )}
+
       <ModalGenerateAction isOpen={isGenerateActionOpen} onClose={handleisGenerateActionOpen} />
     </>
   );

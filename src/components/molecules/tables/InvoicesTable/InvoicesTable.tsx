@@ -1,18 +1,20 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Button, Table, TableProps, Tooltip, Typography } from "antd";
 
 import { IInvoice } from "@/types/invoices/IInvoices";
 import { CheckCircle, Eye, Handshake, Warning, WarningCircle } from "phosphor-react";
 import "./invoicestable.scss";
+import { daysLeft, formatDate } from "@/utils/utils";
 
 const { Text } = Typography;
 
 interface PropsInvoicesTable {
   dataSingleInvoice: IInvoice[];
+  setSelectedRows: Dispatch<SetStateAction<IInvoice[] | undefined>>;
 }
-export const InvoicesTable = ({ dataSingleInvoice: data }: PropsInvoicesTable) => {
+
+export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: PropsInvoicesTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [selectedRows, setSelectedRows] = useState<any>([]);
 
   const openInvoiceDetail = () => {
     console.log("openInvoiceDetail");
@@ -21,7 +23,6 @@ export const InvoicesTable = ({ dataSingleInvoice: data }: PropsInvoicesTable) =
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
     setSelectedRowKeys(newSelectedRowKeys);
     setSelectedRows(newSelectedRow);
-    console.log("selectedRows: ", selectedRows);
   };
 
   const rowSelection = {
@@ -174,23 +175,3 @@ export const InvoicesTable = ({ dataSingleInvoice: data }: PropsInvoicesTable) =
     </>
   );
 };
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-
-  return `${day}/${month}/${year}`;
-}
-
-function daysLeft(dateString: string): number {
-  const today = new Date();
-  const expirationDate = new Date(dateString);
-
-  const diffInMs = expirationDate.getTime() - today.getTime();
-
-  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-
-  return diffInDays;
-}

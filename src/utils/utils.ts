@@ -150,3 +150,23 @@ export function extractSingleParam(value: string | string[] | undefined): string
   }
   return value;
 }
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
+export function daysLeft(dateString: string): number {
+  const today = new Date();
+  const expirationDate = new Date(dateString);
+
+  const diffInMs = expirationDate.getTime() - today.getTime();
+
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  return diffInDays;
+}
