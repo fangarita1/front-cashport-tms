@@ -1,0 +1,301 @@
+.wrapper {
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  position: fixed;
+  max-width: 630px;
+  padding: 18px 24px;
+  flex-direction: column;
+  transition: transform 0.3s;
+  background-color: #FFFFFF;
+  justify-content: space-between;
+  box-shadow: 0px 4px 82px 0px #0000003D;
+  &.show {
+    transform: translateX(0);
+  }
+  &.hide {
+    transform: translateX(100%);
+  }
+  .header {
+    gap: 16px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    .numberInvoice {
+      flex: 1;
+      display: flex;
+      font-weight: 600;
+      color: #141414;
+      font-size: 1.25rem;
+      text-align: center;
+      line-height: normal;
+    }
+    .viewInvoice {
+      gap: 8px;
+      display: flex;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 300;
+      color: #141414;
+      line-height: 18px;
+      align-items: center;
+    }
+    .action {
+      gap: 8px;
+      display: flex;
+      cursor: pointer;
+      font-size: 16px;
+      color: #141414;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 12px 16px;
+      align-items: center;
+      line-height: normal;
+      background: #F7F7F7;
+    }
+  }
+  .idOrder {
+    margin-top: 6px;
+    font-size: 14px;
+    font-weight: 300;
+    color: #141414;
+    line-height: 18px; 
+  }
+  .body {
+    display: flex;
+    margin-top: 24px;
+    flex-direction: column ;
+    border-top: 1px solid #DDD;
+    .headerBody {
+      width: 100%;
+      display: flex;
+      margin-top: 16px;
+      align-items: center;
+      justify-content: space-between;
+      .title {
+        font-size: 16px;
+        font-weight: 500;
+        color: #141414;
+        line-height: normal;
+      }
+      .status {
+        color: #FFF;
+        display: flex;
+        margin-right: 0px;
+        padding: 6px 12px;
+        border-radius: 8px;
+        background: #969696;
+      }
+    }
+    .content {
+      width: 100%;
+      display: flex;
+      margin-top: 10px;
+      max-height: 550px;
+      overflow-y: scroll;
+      .progress {
+        width: 40px;
+        display: flex;
+        flex-direction: column;
+        .iconContainer{
+          display: flex;
+          justify-content: start;
+          .iconProgress {
+            width: 24px;
+            height: 24px;
+            padding: 6px;
+            display: flex;
+            cursor: pointer;
+            border-radius: 4px;
+            background: #F7F7F7;
+            justify-content: center;
+          }
+        }
+      }
+      .description {
+        display: flex;
+        flex-direction: column;
+        .stepperContainer {
+          display: flex;
+          justify-content: center;
+          .stepperContent {
+            .mainStep {
+              height: 90px;
+              display: flex;
+              column-gap: 10px;
+              position: relative;
+              &:lastChild {
+                height: auto;
+              }
+              .stepLine {
+                width: 1px;
+                height: 100%;
+                background-color: #DDDDDD;
+                &.active {
+                  background-color: transparent;
+                  border-left: 1px dashed #CBE71E;
+                }
+              }
+              .stepCircle {
+                top: 0px;
+                left: -5px;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                position: absolute;
+                background-color: #DDDDDD;
+                cursor: pointer;
+                &.active {
+                  background-color: #CBE71E;
+                }
+              }
+              .stepLabel {
+                margin-top: -5px;
+                margin-bottom: 50px;
+                display: flex;
+                .quantity {
+                  gap: 6px;
+                  height: 32px;
+                  display: flex;
+                  padding-left: 8px;
+                  .button { 
+                    display: flex;
+                    cursor: pointer;
+                    padding: 10px 6px;
+                    border-radius: 4px;
+                    background: #F7F7F7;
+                    justify-content: center;
+                  }
+                  .number {
+                    display: flex;
+                    height: 32px;
+                    width: 40px;
+                    font-weight: 400;
+                    color: #141414;
+                    padding: 6px 8px;
+                    text-align: center;
+                    border-radius: 4px;
+                    align-items: center;
+                    line-height: normal;
+                    background: #F7F7F7; 
+                    justify-content: center;
+                  }
+                }
+                .cardInvoiceFiling {
+                  display: flex;
+                  flex-direction: column;
+                  .title {
+                    display: flex;
+                    font-size: 1rem;
+                    font-weight: 300;
+                    padding-left: 8px;
+                    color: #141414;
+                    line-height: normal;
+                  }
+                  .date {
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: #A5A5A5;
+                    padding-left: 8px;
+                    line-height: normal;
+                  }
+                  .dateAndYears {
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: #A5A5A5;
+                    padding-left: 8px;
+                    line-height: normal;
+                  }
+                  .name {
+                    font-size: 12px;
+                    font-weight: 400;
+                    color: #A5A5A5;
+                    padding-left: 8px;
+                    line-height: normal;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .footer {
+    width: 100%;
+    display: flex;
+    margin-bottom: 0px;
+    flex-direction: column;
+    .resume{
+      color: #141414;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: normal;
+      padding: 10px 0 10px 0;
+    }
+    .initialValue {
+      width: 100%;
+      display: flex;
+      background: #F7F7F7;
+      padding: 14px 24px 14px 24px;
+      border-radius: 8px 8px 0 0;
+      justify-content: space-between;
+      border-bottom: 1px solid white;
+      .value {
+        font-size: 16px;
+        font-weight: 300;
+        color: #141414;
+        line-height: normal;
+      }
+      .result {
+        display: flex;
+        font-size: 16px;
+        font-weight: 300;
+        color: #141414;
+        line-height: normal;
+      }
+    }
+    .total {
+      width: 100%;
+      display: flex;
+      background: #F7F7F7;
+      padding: 14px 24px 14px 24px;
+      border-radius: 0 0 8px 8px;
+      justify-content: space-between;
+      .value {
+        display: flex;
+        font-size: 16px;
+        font-weight: 600;
+        color: #141414;
+        line-height: normal;
+      }
+      .result {
+        display: flex;
+        font-size: 16px;
+        font-weight: 600;
+        color: #141414;
+        line-height: normal;
+      }
+    }
+  }
+  .modalTopSide {
+    display: flex;
+    column-gap: 12px;
+    margin: 0 0 16px 0;
+    align-items: center;
+    .back {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      font-size: 20px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      &:hover {
+        background-color: #F7F7F7;
+      }
+    }
+  }
+}

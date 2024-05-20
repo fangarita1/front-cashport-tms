@@ -174,6 +174,6 @@ const columns: TableProps<IProject>["columns"] = [
     key: "buttonSee",
     width: "80px",
     dataIndex: "",
-    render: () => <Button icon={<Eye size={"1.3rem"} />} />
+    render: () => <Button icon={<Eye size={"1.3rem"} onClick={() => {}} />} />
   }
 ];
