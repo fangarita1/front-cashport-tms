@@ -10,11 +10,12 @@ interface ITab {
 
 interface UiTabProps {
   tabs: ITab[];
+  sticky?: boolean;
 }
 
-const UiTab: FC<UiTabProps> = ({ tabs }) => {
+const UiTab: FC<UiTabProps> = ({ tabs, sticky = false }: UiTabProps) => {
   return (
-    <div className="tabsContainer">
+    <div className={`tabsContainer ${sticky && "-sticky"}`}>
       <Tabs
         style={{ width: "100%", height: "100%" }}
         defaultActiveKey="1"

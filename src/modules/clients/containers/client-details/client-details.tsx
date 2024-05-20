@@ -40,7 +40,7 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
   return (
     <>
       <main className={styles.mainDetail}>
-        <Flex vertical className={styles.containerDetailClient} gap={"1.5rem"}>
+        <Flex vertical className={styles.containerDetailClient}>
           <Flex className={styles.stickyHeader} align="center" justify="space-between">
             <Flex className={styles.infoHeader} align="center" justify="center">
               <Link href={`/clientes/all`}>
@@ -56,7 +56,7 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
             </Flex>
           </Flex>
 
-          <UiTab tabs={items} />
+          <UiTab tabs={items} sticky />
         </Flex>
       </main>
     </>
