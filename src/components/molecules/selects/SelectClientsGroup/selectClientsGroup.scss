@@ -1,0 +1,39 @@
+@import "@styles/variables.scss";
+
+.selectClientsGroup {
+    width: 100%;
+
+    .cardGroups {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        background-color: $background;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        margin-top: 0.5rem;
+
+        &__group {
+            background-color: $white;
+            width: 100%;
+            border-radius: 0.25rem;
+            padding: 0.75rem 1rem;
+
+            span {
+                font-weight: 300;
+                font-size: 1rem;
+            }
+        }
+    }
+
+    .title {
+        font-size: 1rem;
+        font-weight: 300;
+    }
+
+    .checboxzone {
+        .ant-checkbox-inner {
+            background-color: $secondary !important;
+            border: none;
+        }
+    }
+}

@@ -21,6 +21,7 @@ import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemo
 import { IUserData } from "@/types/users/IUser";
 
 import "./userprojectform.scss";
+import { SelectClientsGroup } from "@/components/molecules/selects/SelectClientsGroup/SelectClientsGroup";
 
 const { Title } = Typography;
 
@@ -60,6 +61,17 @@ export const UserProjectForm = ({
     data: {},
     isLoading: false
   } as { data: IUserData; isLoading: boolean });
+  const [selectedSublines, setSelectedSublines] = useState<
+    { idChannel: number; idLine: number; subline: { id: number; description: string } }[]
+  >([]);
+  const [zones, setZones] = useState([] as number[]);
+  const [customFieldsError, setCustomFieldsError] = useState({
+    zone: false,
+    channel: false
+  });
+  const [isOpenModalStatus, setIsOpenModalStatus] = useState(initDataOpenModalStatus);
+  const [assignedGroups, setAssignedGroups] = useState([] as any[]);
+
   const {
     control,
     handleSubmit,
@@ -70,16 +82,6 @@ export const UserProjectForm = ({
     values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as UserType)
   });
   const { ID } = useAppStore((state) => state.selectProject);
-
-  const [selectedSublines, setSelectedSublines] = useState<
-    { idChannel: number; idLine: number; subline: { id: number; description: string } }[]
-  >([]);
-  const [zones, setZones] = useState([] as number[]);
-  const [customFieldsError, setCustomFieldsError] = useState({
-    zone: false,
-    channel: false
-  });
-  const [isOpenModalStatus, setIsOpenModalStatus] = useState(initDataOpenModalStatus);
 
   useEffect(() => {
     (async () => {
@@ -280,7 +282,13 @@ export const UserProjectForm = ({
                   </Typography.Text>
                 </Flex>
                 <Flex vertical style={{ width: "30%" }}>
-                  -
+                  <SelectClientsGroup
+                    assignedGroups={assignedGroups}
+                    setAssignedGroups={setAssignedGroups}
+                  />
+                  {/* <Typography.Text className="textError">
+                    {customFieldsError.zone && `La Zona es obligatorio *`}
+                  </Typography.Text> */}
                 </Flex>
               </Flex>
             </Flex>
