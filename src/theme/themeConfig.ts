@@ -30,7 +30,9 @@ const theme: ThemeConfig = {
       colorBgElevated: "#F7F7F7"
     },
     Checkbox: {
-      colorPrimary: "#CBE71E"
+      colorPrimary: "#CBE71E",
+      colorWhite: "#141414",
+      colorPrimaryHover: "#CBE71E"
     }
   }
 };

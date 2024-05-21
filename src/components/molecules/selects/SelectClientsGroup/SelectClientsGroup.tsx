@@ -9,9 +9,10 @@ import { useClientsGroups } from "@/hooks/useClientsGroups";
 interface Props {
   assignedGroups: number[];
   setAssignedGroups: Dispatch<SetStateAction<number[]>>;
+  disabled?: boolean;
 }
 
-export const SelectClientsGroup = ({ assignedGroups, setAssignedGroups }: Props) => {
+export const SelectClientsGroup = ({ assignedGroups, setAssignedGroups, disabled }: Props) => {
   const { ID } = useAppStore((state) => state.selectProject);
   const { data, loading: isLoading } = useClientsGroups({
     idProject: `${ID}`
@@ -30,6 +31,7 @@ export const SelectClientsGroup = ({ assignedGroups, setAssignedGroups }: Props)
                 <Flex key={group.id} justify="space-between" className="cardGroups__group">
                   <Typography.Text>{group.group_name}</Typography.Text>
                   <Checkbox
+                    disabled={disabled}
                     onChange={(e) => {
                       if (e.target.checked) {
                         if (!assignedGroups.includes(group.id)) {

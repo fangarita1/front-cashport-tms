@@ -31,6 +31,7 @@ interface Props {
   }[];
 
   lines: ChannelLine[];
+  disabled?: boolean;
 }
 
 export const SelectChips = ({
@@ -38,7 +39,8 @@ export const SelectChips = ({
   lines,
   channelId,
   selectedSubLines = [],
-  setSelectedSublines = () => {}
+  setSelectedSublines = () => {},
+  disabled
 }: Props) => {
   const [isAllSublinesSelected, setIsAllSublinesSelected] = useState(false);
 
@@ -101,7 +103,13 @@ export const SelectChips = ({
     <Flex className="selectchips" vertical>
       <Flex component="header" justify="space-between" className="headerselectchips">
         <Text className="titleChannel">{channelName}</Text>
-        {lines && <Checkbox checked={isAllSublinesSelected} onChange={onSelectAllSublines} />}
+        {lines && (
+          <Checkbox
+            disabled={disabled}
+            checked={isAllSublinesSelected}
+            onChange={onSelectAllSublines}
+          />
+        )}
       </Flex>
       <Flex component="main" className="mainTags">
         {lines?.length > 0 ? (

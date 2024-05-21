@@ -17,7 +17,7 @@ export const SelectClientTypes = ({ errors, field }: Props) => {
   return (
     <>
       <Select
-        placeholder="Seleccione Tipo de Documento"
+        placeholder="Seleccione Tipo de Cliente"
         className={errors ? "selectInputError" : "selectInputCustom"}
         loading={loading}
         variant="borderless"
@@ -38,9 +38,7 @@ export const SelectClientTypes = ({ errors, field }: Props) => {
         })}
       </Select>
       {errors && (
-        <Typography.Text className="textError">
-          El tipo de documento es obligatorio *
-        </Typography.Text>
+        <Typography.Text className="textError">El tipo de cliente es obligatorio *</Typography.Text>
       )}
     </>
   );
