@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Link from "next/link";
 import { Button, Col, Flex, Row, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import {
@@ -49,9 +48,9 @@ export const ClientsViewTable = () => {
       dataIndex: "client_name",
       key: "client_name",
       render: (_, row: IClientsPortfolio) => (
-        <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
+        <a href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
           <Text className="text">{row.client_name}</Text>
-        </Link>
+        </a>
       )
     },
     {
@@ -113,9 +112,11 @@ export const ClientsViewTable = () => {
       width: "80px",
       dataIndex: "",
       render: (_, row: IClientsPortfolio) => (
-        <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
-          <Button className="buttonSeeProject" icon={<Eye size={"1.3rem"} />} />
-        </Link>
+        <Button
+          href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}
+          className="buttonSeeProject"
+          icon={<Eye size={"1.3rem"} />}
+        />
       )
     }
   ];
