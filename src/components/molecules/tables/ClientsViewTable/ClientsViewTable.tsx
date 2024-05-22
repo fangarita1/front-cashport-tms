@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Button, Col, Flex, Row, Table, Typography } from "antd";
+import { Button, Col, Row, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import {
   CalendarBlank,
   CalendarX,
-  DotsThree,
   Eye,
   Money,
   Calendar,
@@ -16,10 +15,14 @@ import {
 import { useProjects } from "@/hooks/useProjects";
 import { IProject } from "@/types/projects/IProjects";
 
-import "./ClientsViewTable.scss";
 import CardsClients from "../../modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { useUserByToken } from "@/hooks/useUserByToken";
+import UiSearchInput from "@/components/ui/search-input";
+import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
+import ClientsViewTableFilterClients from "@/modules/clients/components/clients-view-table-filter-clients";
+
+import "./ClientsViewTable.scss";
 
 const { Text } = Typography;
 
@@ -44,11 +47,19 @@ export const ClientsViewTable = () => {
 
   return (
     <main className="mainClientsTable">
-      <Flex justify="space-between" className="mainClientsTable_header">
-        <Flex gap={"10px"}>
-          <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
-        </Flex>
-      </Flex>
+      <div className="mainClientsTable__header">
+        <UiSearchInput
+          className="search"
+          placeholder="Buscar"
+          onChange={(event) => {
+            setTimeout(() => {
+              console.log(event.target.value);
+            }, 1000);
+          }}
+        />
+        <ClientsViewTableFilterClients />
+        <DotsDropdown />
+      </div>
       <Row gutter={8}>
         <Col span={21} className="cards">
           <Row gutter={8}>
