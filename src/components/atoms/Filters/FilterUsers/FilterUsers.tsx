@@ -7,6 +7,8 @@ import { getBusinessRulesByProjectId } from "@/services/businessRules/BR";
 import { useAppStore } from "@/lib/store/store";
 import { extractChannelLineSublines } from "@/utils/utils";
 
+import "../filterCascader.scss";
+
 interface Props {
   idProject: string;
   setSelectedUsers: Dispatch<
@@ -183,11 +185,12 @@ export const FilterUsers = ({ idProject, setSelectedUsers }: Props) => {
 
   return (
     <Cascader
+      className="filterCascader"
       style={{ width: "15rem" }}
       multiple
       size="large"
       removeIcon
-      maxTagCount={1}
+      maxTagCount="responsive"
       placeholder="Filtrar"
       placement="bottomLeft"
       onClear={() => setSelectedUsers(initValueFiltersData)}

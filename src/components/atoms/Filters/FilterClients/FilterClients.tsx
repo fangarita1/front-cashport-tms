@@ -4,6 +4,8 @@ import { IClient } from "@/types/clients/IClients";
 import { useClients } from "@/hooks/useClients";
 import { useParams } from "next/navigation";
 
+import "../filterCascader.scss";
+
 interface Option {
   value: string;
   label: string;
@@ -255,6 +257,7 @@ export const FilterClients = ({ setFilterClients }: FilterClientsProps) => {
 
   return (
     <Cascader
+      className="filterCascader"
       style={{ width: "15rem" }}
       multiple
       size="large"

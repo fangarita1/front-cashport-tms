@@ -9,7 +9,7 @@ import {
 import { useParams } from "next/navigation";
 import { Button, Flex, MenuProps, Popconfirm, Spin, Table, TableProps, Typography } from "antd";
 import { Eye, Plus } from "phosphor-react";
-import { FilterClients } from "@/components/atoms/FilterClients/FilterClients";
+import { FilterClients } from "@/components/atoms/Filters/FilterClients/FilterClients";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 import { IClient } from "@/types/clients/IClients";
 import { useClients } from "@/hooks/useClients";
@@ -248,7 +248,7 @@ export const ClientsProjectTable = ({
         {messageContext}
         <main className="mainClientsProjectTable">
           <Flex justify="space-between" className="mainClientsProjectTable_header">
-            <Flex gap={"1.75rem"}>
+            <Flex gap={"0.625rem"}>
               <FilterClients setFilterClients={setFilterClients} />
               <DotsDropdown items={items} />{" "}
             </Flex>
