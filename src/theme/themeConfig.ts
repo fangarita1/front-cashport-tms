@@ -23,7 +23,7 @@ const theme: ThemeConfig = {
     },
     Radio: {
       colorPrimary: "#CBE71E",
-      colorBorder: "black",
+      colorBorder: "#b3b2b2",
       colorPrimaryBorder: "black"
     },
     Popover: {
