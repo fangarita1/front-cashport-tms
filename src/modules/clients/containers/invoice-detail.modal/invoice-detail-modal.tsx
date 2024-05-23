@@ -23,27 +23,27 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
 
   const statusClass = (status: string): string => {
     switch (status) {
-      case "identifiedReconciled":
+      case "Identificado" || "Coinciliadas":
         return styles.identifiedReconciled;
-      case "inAudit":
+      case "En auditoría":
         return styles.inAudit;
-      case "unidentified":
+      case "No identificado":
         return styles.unidentified;
-      case "applied":
+      case "Aplicado":
         return styles.applied;
-      case "partially":
+      case "Ap. parcialmente":
         return styles.partially;
       case "sin conciliar":
         return styles.noReconcile;
-      case "novelty":
+      case "Novedades":
         return styles.novelty;
-      case "balances":
+      case "Saldos":
         return styles.balances;
-      case "glossed":
+      case "Glosado":
         return styles.glossed;
-      case "return":
+      case "Devolución":
         return styles.return;
-      case "annulment":
+      case "Anulación":
         return styles.annulment;
       default:
         return "";
