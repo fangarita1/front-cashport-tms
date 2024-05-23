@@ -86,14 +86,46 @@
         margin-right: 0px;
         padding: 6px 12px;
         border-radius: 8px;
-        background: #969696;
+        &.identifiedReconciled{
+          background: #0085FF;
+        }
+        &.inAudit {
+          background: #FE7A01;
+        }
+        &.unidentified {
+          background: #E53261;
+        }
+        &.applied {
+          background: #CBE61E;
+        }
+        &.partially {
+          background: #E0F07E;
+        }
+        &.noReconcile {
+          background: #969696;
+        }
+        &.novelty {
+          background: #F4076A;
+        }
+        &.balances {
+          background: #3D3D3D;
+        }
+        &.glossed {
+          background: #00C2FF;
+        }
+        &.return {
+          background: #FF6B00;
+        }
+        &.annulment {
+          background: #C80000;
+        }
       }
     }
     .content {
       width: 100%;
       display: flex;
       margin-top: 10px;
-      max-height: 550px;
+      max-height: 540px;
       overflow-y: scroll;
       .progress {
         width: 40px;
@@ -122,10 +154,11 @@
           justify-content: center;
           .stepperContent {
             .mainStep {
-              height: 90px;
+              height: 100px;
               display: flex;
               column-gap: 10px;
               position: relative;
+              border-bottom: 10px;
               &:lastChild {
                 height: auto;
               }
@@ -146,15 +179,13 @@
                 border-radius: 50%;
                 position: absolute;
                 background-color: #DDDDDD;
-                cursor: pointer;
                 &.active {
                   background-color: #CBE71E;
                 }
               }
               .stepLabel {
-                margin-top: -5px;
-                margin-bottom: 50px;
                 display: flex;
+                margin-top: -5px;
                 .quantity {
                   gap: 6px;
                   height: 32px;
@@ -186,6 +217,13 @@
                 .cardInvoiceFiling {
                   display: flex;
                   flex-direction: column;
+                  .icons {
+                    width: 16px;
+                    cursor: pointer;
+                    margin-top: -26px;
+                    position: absolute;
+                    margin-left: -46px;
+                  }
                   .title {
                     display: flex;
                     font-size: 1rem;
@@ -235,26 +273,35 @@
       line-height: normal;
       padding: 10px 0 10px 0;
     }
-    .initialValue {
+    .bodyContent {
       width: 100%;
       display: flex;
-      background: #F7F7F7;
-      padding: 14px 24px 14px 24px;
-      border-radius: 8px 8px 0 0;
-      justify-content: space-between;
-      border-bottom: 1px solid white;
-      .value {
-        font-size: 16px;
-        font-weight: 300;
-        color: #141414;
-        line-height: normal;
-      }
-      .result {
+      display: flex;
+      height: 160px;
+      overflow-y: auto;
+      margin-bottom: 0px;
+      flex-direction: column;
+      .initialValue {
+        width: 100%;
         display: flex;
-        font-size: 16px;
-        font-weight: 300;
-        color: #141414;
-        line-height: normal;
+        background: #F7F7F7;
+        padding: 14px 24px 14px 24px;
+        border-radius: 8px 8px 0 0;
+        justify-content: space-between;
+        border-bottom: 1px solid white;
+        .value {
+          font-size: 16px;
+          font-weight: 300;
+          color: #141414;
+          line-height: normal;
+        }
+        .result {
+          display: flex;
+          font-size: 16px;
+          font-weight: 300;
+          color: #141414;
+          line-height: normal;
+        }
       }
     }
     .total {

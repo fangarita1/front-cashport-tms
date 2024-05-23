@@ -9,7 +9,7 @@ import {
   Receipt
 } from "phosphor-react";
 import styles from "./invoice-detail-modal.module.scss";
-import { date, number } from "yup";
+import { useInvoiceDetail } from "@/hooks/useInvoiceDetail";
 
 interface InvoiceDetailModalProps {
   show: boolean;
@@ -17,80 +17,38 @@ interface InvoiceDetailModalProps {
 }
 
 const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
+  const { data: invoiceData } = useInvoiceDetail({ invoiceId: 2, clientId: 98765232 });
   const [currentStep, setCurrentStep] = useState(0);
   const [quantity, setQuantity] = useState(0);
-  const step = [
-    {
-      id: 1,
-      title: "Emision de factura",
-      date: "15 octubre, 2023",
-      name: "Responsable Maria Camila Osorio",
-      number: 0,
-      value: "",
-      adjustment: "",
-      status: true
-    },
-    {
-      id: 2,
-      title: "Radicacion",
-      date: "15 octubre, 2023",
-      name: "Responsable Maria Camila Osorio",
-      number: 0,
-      value: "",
-      adjustment: "",
-      status: true
-    },
-    {
-      id: 3,
-      title: "Aviso de vencimiento",
-      date: "15 octubre, 2023",
-      name: "",
-      number: 0,
-      value: "",
-      adjustment: "",
-      status: true
-    },
-    {
-      id: 4,
-      title: "Novedad",
-      date: "15 octubre, 2023",
-      name: "",
-      number: 0,
-      value: "",
-      adjustment: "",
-      status: true
-    },
-    {
-      id: 5,
-      title: "Acuerdo de pago",
-      date: "15 octubre, 2023",
-      name: "",
-      number: 0,
-      value: "",
-      adjustment: "",
-      status: true
-    },
-    {
-      id: 6,
-      title: "Vencimiento acuerdo de pago",
-      date: "15 octubre, 2023",
-      name: "",
-      number: 0,
-      value: "",
-      adjustment: "",
-      status: true
-    },
-    {
-      id: 7,
-      title: "Nota crédito aplicada ",
-      date: "15 octubre, 2023",
-      name: "Acción: Maria Camila Osorio",
-      number: 0,
-      value: "Valor: $2.000.000",
-      adjustment: "ID del ajuste: 730244",
-      status: true
+
+  const statusClass = (status: string): string => {
+    switch (status) {
+      case "identifiedReconciled":
+        return styles.identifiedReconciled;
+      case "inAudit":
+        return styles.inAudit;
+      case "unidentified":
+        return styles.unidentified;
+      case "applied":
+        return styles.applied;
+      case "partially":
+        return styles.partially;
+      case "sin conciliar":
+        return styles.noReconcile;
+      case "novelty":
+        return styles.novelty;
+      case "balances":
+        return styles.balances;
+      case "glossed":
+        return styles.glossed;
+      case "return":
+        return styles.return;
+      case "annulment":
+        return styles.annulment;
+      default:
+        return "";
     }
-  ];
+  };
 
   return (
     <div className={`${styles.wrapper} ${show ? styles.show : styles.hide}`}>
@@ -101,7 +59,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
           </div>
         </div>
         <div className={styles.header}>
-          <div className={styles.numberInvoice}>Factura 123456</div>
+          <div className={styles.numberInvoice}>Factura {2}</div>
           <div className={styles.viewInvoice}>
             <Receipt size={20} />
             Ver factura
@@ -115,25 +73,18 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
         <div className={styles.body}>
           <div className={styles.headerBody}>
             <div className={styles.title}>Trazabilidad</div>
-            <div className={styles.status}>Emitida</div>
+            <div
+              className={`${styles.status} ${statusClass(invoiceData ? invoiceData[0].status_name : "")}`}
+            >
+              {invoiceData ? invoiceData[0].status_name : ""}
+            </div>
           </div>
           <div className={styles.content}>
-            <div className={styles.progress}>
-              <div className={styles.iconContainer}>
-                <div className={styles.iconProgress}>
-                  <ArrowLineDown size={14} />
-                </div>
-              </div>
-              <div className={styles.iconContainer}>
-                <div className={styles.iconProgress}>
-                  <Envelope size={14} />
-                </div>
-              </div>
-            </div>
+            <div className={styles.progress}></div>
             <div className={styles.description}>
               <div className={styles.stepperContainer}>
                 <div className={styles.stepperContent}>
-                  {step.map((item, index) => {
+                  {(invoiceData ?? []).map((item, index) => {
                     return (
                       <div key={item.id} className={styles.mainStep}>
                         <div className={`${styles.stepLine} ${item.status && styles.active}`} />
@@ -143,41 +94,125 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
                         />
                         <div className={styles.stepLabel}>
                           <div className={styles.cardInvoiceFiling}>
-                            <div className={styles.title}>{item.title}</div>
-                            <div className={styles.date}>{item.date}</div>
-                            <div className={styles.name}>{item.name}</div>
-                            {index === 6 ? (
+                            <div className={styles.title}>{item.event_type_name}</div>
+                            <div className={styles.date}>{""}</div>
+                            {item.event_type_name === "Aviso de vencimiento" ? (
+                              <div className={styles.quantity}>
+                                <div
+                                  className={styles.button}
+                                  onClick={() => {
+                                    setQuantity(quantity - 1);
+                                  }}
+                                >
+                                  <Minus size={12} />
+                                </div>
+                                <div className={styles.number}>{quantity}</div>
+                                <div
+                                  className={styles.button}
+                                  onClick={() => {
+                                    setQuantity(quantity + 1);
+                                  }}
+                                >
+                                  <Plus size={12} />
+                                </div>
+                              </div>
+                            ) : (
+                              ""
+                            )}
+                            {item.event_type_name === "Nota crédito aplicada por legalizar" ? (
                               <div>
-                                <div className={styles.name}>{item.value}</div>
-                                <div className={styles.name}>{item.adjustment}</div>
+                                <div className={styles.icons}>
+                                  <ArrowLineDown size={14} />
+                                </div>
+                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                <div className={styles.name}>{`Valor: ${""}`}</div>
+                                <div className={styles.name}>{`ID del ajuste: ${""}`}</div>
+                              </div>
+                            ) : (
+                              ""
+                            )}
+                            {item.event_type_name === "Nota débito aplicada Por legalizar" ? (
+                              <div>
+                                <div className={styles.icons}>
+                                  <ArrowLineDown size={14} />
+                                </div>
+                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                <div className={styles.name}>{`Valor: ${""}`}</div>
+                                <div className={styles.name}>{`ID del ajuste: ${""}`}</div>
+                              </div>
+                            ) : (
+                              ""
+                            )}
+                            {item.event_type_name === "Nueva novedad" ? (
+                              <div>
+                                <div className={styles.icons}>
+                                  <ArrowLineDown size={14} />
+                                </div>
+                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                <div className={styles.name}>{`Tipo novedad:: ${""}`}</div>
+                                <div className={styles.name}>{`ID de la novedad: ${""}`}</div>
+                              </div>
+                            ) : (
+                              ""
+                            )}
+                            {item.event_type_name === "Descuento aplicado" ? (
+                              <div>
+                                <div className={styles.icons}>
+                                  <ArrowLineDown size={14} />
+                                </div>
+                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                <div className={styles.name}>{`Valor: ${""}`}</div>
+                                <div className={styles.name}>{`ID del ajuste: ${""}`}</div>
+                              </div>
+                            ) : (
+                              ""
+                            )}
+                            {item.event_type_name === "Acuerdo de pago" ? (
+                              <div>
+                                <div className={styles.icons}>
+                                  <Envelope size={14} />
+                                </div>
+                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                <div className={styles.name}>{`Valor: ${""}`}</div>
+                                <div className={styles.name}>{`Fecha de pago acordada: ${""}`}</div>
+                              </div>
+                            ) : (
+                              ""
+                            )}
+                            {item.event_type_name === "Vencimiento acuerdo de pago" ? (
+                              <div>
+                                <div className={styles.icons}>
+                                  <Envelope size={14} />
+                                </div>
+                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                <div className={styles.name}>{`Valor: ${""}`}</div>
+                              </div>
+                            ) : (
+                              ""
+                            )}
+                            {item.event_type_name === "Factura radicada" ? (
+                              <div>
+                                <div className={styles.icons}>
+                                  <ArrowLineDown size={14} />
+                                </div>
+                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                              </div>
+                            ) : (
+                              ""
+                            )}
+                            {item.event_type_name === "Cambio de estado" ? (
+                              <div>
+                                <div className={styles.icons}>
+                                  <ArrowLineDown size={14} />
+                                </div>
+                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                <div className={styles.name}>{`Estado inicial: ${""}`}</div>
+                                <div className={styles.name}>{`Estado final: ${""}`}</div>
                               </div>
                             ) : (
                               ""
                             )}
                           </div>
-                          {index === 2 ? (
-                            <div className={styles.quantity}>
-                              <div
-                                className={styles.button}
-                                onClick={() => {
-                                  setQuantity(quantity - 1);
-                                }}
-                              >
-                                <Minus size={12} />
-                              </div>
-                              <div className={styles.number}>{quantity}</div>
-                              <div
-                                className={styles.button}
-                                onClick={() => {
-                                  setQuantity(quantity + 1);
-                                }}
-                              >
-                                <Plus size={12} />
-                              </div>
-                            </div>
-                          ) : (
-                            ""
-                          )}
                         </div>
                       </div>
                     );
@@ -190,13 +225,27 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
       </div>
       <div className={styles.footer}>
         <div className={styles.resume}>Resumen</div>
-        <div className={styles.initialValue}>
-          <div className={styles.value}>Valor inicial</div>
-          <div className={styles.result}>$30.000.000</div>
-        </div>
-        <div className={styles.total}>
-          <div className={styles.value}>Total</div>
-          <div className={styles.result}>$32.000.000</div>
+        <div className={styles.bodyContent}>
+          <div className={styles.initialValue}>
+            <div className={styles.value}>Valor inicial</div>
+            <div className={styles.result}>$30.000.000</div>
+          </div>
+          <div className={styles.initialValue}>
+            <div className={styles.value}>Valor inicial</div>
+            <div className={styles.result}>$30.000.000</div>
+          </div>
+          <div className={styles.initialValue}>
+            <div className={styles.value}>Valor inicial</div>
+            <div className={styles.result}>$30.000.000</div>
+          </div>
+          <div className={styles.initialValue}>
+            <div className={styles.value}>Valor inicial</div>
+            <div className={styles.result}>$30.000.000</div>
+          </div>
+          <div className={styles.total}>
+            <div className={styles.value}>Total</div>
+            <div className={styles.result}>$32.000.000</div>
+          </div>
         </div>
       </div>
     </div>
