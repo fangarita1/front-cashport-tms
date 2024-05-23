@@ -87,9 +87,11 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
                   {(invoiceData ?? []).map((item, index) => {
                     return (
                       <div key={item.id} className={styles.mainStep}>
-                        <div className={`${styles.stepLine} ${item.status && styles.active}`} />
                         <div
-                          className={`${styles.stepCircle} ${item.status && styles.active}`}
+                          className={`${styles.stepLine} ${item.status_name && styles.active}`}
+                        />
+                        <div
+                          className={`${styles.stepCircle} ${item.status_name && styles.active}`}
                           onClick={() => setCurrentStep(index)}
                         />
                         <div className={styles.stepLabel}>
