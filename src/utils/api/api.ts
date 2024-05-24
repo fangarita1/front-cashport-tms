@@ -40,4 +40,26 @@ export const fetcher = async (url: string) => {
     });
 };
 
+const API = axios.create({
+  responseType: "json",
+  baseURL: config.API_HOST
+});
+
+API.interceptors.request.use(async (request) => {
+  request.headers.set("Accept", "application/json, text/plain, */*");
+  request.headers.set("Content-Type", "application/json; charset=utf-8");
+  request.headers.set("Authorization", `Bearer ${await getIdToken()}`);
+  return request;
+});
+
+API.interceptors.response.use(
+  function (response) {
+    return response.data;
+  },
+  function (error) {
+    return Promise.resolve(error);
+  }
+);
+
+export { API };
 export default instance;

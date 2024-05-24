@@ -22,7 +22,7 @@ export const DocumentCards = ({ clientTypeId, isDisabledEdit }: Props) => {
           {documents?.map((doc) => (
             <Flex className="documentCard" key={doc.id} vertical>
               <Flex justify="space-between">
-                <Text className="documentCard__title">{doc.format_document.split("/").pop()}</Text>
+                <Text className="documentCard__title">{doc.document_name.split("/").pop()}</Text>
                 {!isDisabledEdit && <Button icon={<X size={"16px"} />} className="removebutton" />}
               </Flex>
               <Checkbox className="documentCard__check" checked={Boolean(doc.required)}>
