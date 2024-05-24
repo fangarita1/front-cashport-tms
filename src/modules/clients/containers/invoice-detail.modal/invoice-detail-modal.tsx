@@ -10,6 +10,7 @@ import {
 } from "phosphor-react";
 import styles from "./invoice-detail-modal.module.scss";
 import { useInvoiceDetail } from "@/hooks/useInvoiceDetail";
+import InvoiceDownloadModal from "../../components/invoice-download-modal";
 
 interface InvoiceDetailModalProps {
   show: boolean;
@@ -19,6 +20,7 @@ interface InvoiceDetailModalProps {
 const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
   const { data: invoiceData } = useInvoiceDetail({ invoiceId: 2, clientId: 98765232 });
   const [currentStep, setCurrentStep] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(0);
 
   const statusClass = (status: string): string => {
@@ -52,6 +54,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
 
   return (
     <div className={`${styles.wrapper} ${show ? styles.show : styles.hide}`}>
+      <InvoiceDownloadModal isModalOpen={isModalOpen} handleCloseModal={setIsModalOpen} />
       <div>
         <div className={styles.modalTopSide}>
           <div className={styles.back} onClick={onClose}>
@@ -69,7 +72,10 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
             Generar acción
           </div>
         </div>
-        <div className={styles.idOrder}>ID orden de compra 34897</div>
+        <div className={styles.idOrder}>
+          ID orden de compra
+          <div className={styles.id}>231231</div>
+        </div>
         <div className={styles.body}>
           <div className={styles.headerBody}>
             <div className={styles.title}>Trazabilidad</div>
@@ -124,11 +130,19 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
                             {item.event_type_name === "Nota crédito aplicada por legalizar" ? (
                               <div>
                                 <div className={styles.icons}>
-                                  <ArrowLineDown size={14} />
+                                  <ArrowLineDown
+                                    size={14}
+                                    onClick={() => {
+                                      setIsModalOpen;
+                                    }}
+                                  />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
                                 <div className={styles.name}>{`Valor: ${""}`}</div>
-                                <div className={styles.name}>{`ID del ajuste: ${""}`}</div>
+                                <div className={styles.adjustment}>
+                                  ID del ajuste:
+                                  <div className={styles.idAdjustment}>{"233123"}</div>
+                                </div>
                               </div>
                             ) : (
                               ""
@@ -136,23 +150,34 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
                             {item.event_type_name === "Nota débito aplicada Por legalizar" ? (
                               <div>
                                 <div className={styles.icons}>
-                                  <ArrowLineDown size={14} />
+                                  <ArrowLineDown size={14} onClick={() => {}} />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
                                 <div className={styles.name}>{`Valor: ${""}`}</div>
-                                <div className={styles.name}>{`ID del ajuste: ${""}`}</div>
+                                <div className={styles.adjustment}>
+                                  ID del ajuste:
+                                  <div className={styles.idAdjustment}>{"233123"}</div>
+                                </div>
                               </div>
                             ) : (
                               ""
                             )}
-                            {item.event_type_name === "Nueva novedad" ? (
+                            {item.event_type_name === "Emision de factura" ? (
                               <div>
                                 <div className={styles.icons}>
-                                  <ArrowLineDown size={14} />
+                                  <ArrowLineDown
+                                    size={14}
+                                    onClick={() => {
+                                      setIsModalOpen(true), console.log("boton prueba");
+                                    }}
+                                  />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
                                 <div className={styles.name}>{`Tipo novedad:: ${""}`}</div>
-                                <div className={styles.name}>{`ID de la novedad: ${""}`}</div>
+                                <div className={styles.adjustment}>
+                                  ID de la novedad:
+                                  <div className={styles.idAdjustment}>{"233123"}</div>
+                                </div>
                               </div>
                             ) : (
                               ""
@@ -160,11 +185,14 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
                             {item.event_type_name === "Descuento aplicado" ? (
                               <div>
                                 <div className={styles.icons}>
-                                  <ArrowLineDown size={14} />
+                                  <ArrowLineDown size={14} onClick={() => {}} />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
                                 <div className={styles.name}>{`Valor: ${""}`}</div>
-                                <div className={styles.name}>{`ID del ajuste: ${""}`}</div>
+                                <div className={styles.adjustment}>
+                                  ID del ajuste:
+                                  <div className={styles.idAdjustment}>{"233123"}</div>
+                                </div>
                               </div>
                             ) : (
                               ""
@@ -172,7 +200,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
                             {item.event_type_name === "Acuerdo de pago" ? (
                               <div>
                                 <div className={styles.icons}>
-                                  <Envelope size={14} />
+                                  <Envelope size={14} onClick={() => {}} />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
                                 <div className={styles.name}>{`Valor: ${""}`}</div>
@@ -184,7 +212,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
                             {item.event_type_name === "Vencimiento acuerdo de pago" ? (
                               <div>
                                 <div className={styles.icons}>
-                                  <Envelope size={14} />
+                                  <Envelope size={14} onClick={() => {}} />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
                                 <div className={styles.name}>{`Valor: ${""}`}</div>
@@ -195,7 +223,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
                             {item.event_type_name === "Factura radicada" ? (
                               <div>
                                 <div className={styles.icons}>
-                                  <ArrowLineDown size={14} />
+                                  <ArrowLineDown size={14} onClick={() => {}} />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
                               </div>
@@ -205,7 +233,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
                             {item.event_type_name === "Cambio de estado" ? (
                               <div>
                                 <div className={styles.icons}>
-                                  <ArrowLineDown size={14} />
+                                  <ArrowLineDown size={14} onClick={() => {}} />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
                                 <div className={styles.name}>{`Estado inicial: ${""}`}</div>
@@ -244,6 +272,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ show, onClose }) => {
             <div className={styles.value}>Valor inicial</div>
             <div className={styles.result}>$30.000.000</div>
           </div>
+          <hr />
           <div className={styles.total}>
             <div className={styles.value}>Total</div>
             <div className={styles.result}>$32.000.000</div>

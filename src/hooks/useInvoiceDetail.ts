@@ -16,7 +16,6 @@ export const useInvoiceDetail = (props: UseInvoiceDetailProps) => {
     `/invoice/${props.invoiceId}/client/${props.clientId}/project/${projectId.projectId}`,
     fetcher
   );
-  console.log(data, "data desde el servicio");
 
   return {
     data: data?.data,
