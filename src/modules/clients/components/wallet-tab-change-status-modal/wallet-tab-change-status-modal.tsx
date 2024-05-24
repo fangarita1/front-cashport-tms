@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Flex, Modal, Radio } from "antd";
+import { Button, Flex, Modal, Radio, RadioChangeEvent } from "antd";
 import styles from "./wallet-tab-change-status-modal.module.scss";
 import { CaretLeft } from "phosphor-react";
 import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
@@ -13,34 +13,43 @@ interface FileObject {
 }
 
 const WalletTabChangeStatusModal: React.FC<Props> = ({ isOpen }) => {
-  const [selectedState, setSelectedState] = useState();
-  const [selectedEvidence, setSelectedEvidence] = useState<File | undefined>();
-  const [description, setDescription] = useState();
+  const [selectedState, setSelectedState] = useState<string | undefined>();
+  const [selectedEvidence, setSelectedEvidence] = useState<File[]>([]);
+  const [commentary, setCommentary] = useState<string | undefined>();
   const [isSecondView, setIsSecondView] = useState(false);
 
-  const handleOnChangeRadioGroup = (e) => {
-    console.log("radio checked", e.target.value);
+  const handleOnChangeRadioGroup = (e: RadioChangeEvent) => {
     setSelectedState(e.target.value);
   };
 
   const handlegoBackToFirstView = () => {
     setIsSecondView(false);
     setSelectedState(undefined);
+    setSelectedEvidence([]);
+    setCommentary(undefined);
   };
 
-  const handleOnChangeTextArea = (e) => {
-    setDescription(e.target.value);
+  const handleOnChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCommentary(e.target.value);
   };
 
   const handleAttachEvidence = () => {
     console.log("evidencia adjuntada: ", selectedEvidence);
     console.log("state: ", selectedState);
-    console.log("description: ", description);
+    console.log("commentary: ", commentary);
   };
 
   const handleOnChangeDocument: any = (info: FileObject) => {
     const { file } = info;
-    setSelectedEvidence(file);
+    if (file) {
+      setSelectedEvidence([...selectedEvidence, file]);
+    }
+  };
+
+  const handleOnDeleteDocument = (fileName: string) => {
+    console.log("delete");
+    const updatedFiles = selectedEvidence?.filter((file) => file.name !== fileName);
+    setSelectedEvidence(updatedFiles);
   };
 
   const firstViewModal = {
@@ -86,16 +95,38 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({ isOpen }) => {
           <em className="descriptionDocument">*Obligatorio</em>
         </Flex>
         <DocumentButton
-          title={"meh"}
           handleOnChange={handleOnChangeDocument}
-          handleOnDrop={() => console.log("handleOnDrop")}
-          handleOnDelete={() => console.log("handleOnDelete")}
-          fileName={selectedEvidence?.name}
-          fileSize={selectedEvidence?.size}
+          handleOnDelete={() => handleOnDeleteDocument(selectedEvidence[0]?.name)}
+          fileName={selectedEvidence[0]?.name}
+          fileSize={selectedEvidence[0]?.size}
         />
+        {selectedEvidence?.map((file) => {
+          if (!file) {
+            return (
+              <DocumentButton
+                key={selectedEvidence[0]?.name}
+                handleOnChange={handleOnChangeDocument}
+                handleOnDelete={() => handleOnDeleteDocument(selectedEvidence[0]?.name)}
+                fileName={selectedEvidence[0]?.name}
+                fileSize={selectedEvidence[0]?.size}
+              />
+            );
+          }
+          return (
+            <React.Fragment key={file.name}>
+              <p>.</p>
+              <DocumentButton
+                handleOnChange={handleOnChangeDocument}
+                handleOnDelete={() => handleOnDeleteDocument(file.name)}
+                fileName={file.name}
+                fileSize={file.size}
+              />
+            </React.Fragment>
+          );
+        })}
 
         <p>Comentarios</p>
-        <textarea onClick={handleOnChangeTextArea} placeholder="Ingresar un comentario" />
+        <textarea onChange={handleOnChangeTextArea} placeholder="Ingresar un comentario" />
       </div>
     ),
     footer: (
@@ -103,7 +134,7 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({ isOpen }) => {
         <Button className={styles.cancelButton}>Cancelar</Button>
         <Button
           onClick={handleAttachEvidence}
-          disabled={description && selectedEvidence ? false : true}
+          disabled={commentary && selectedEvidence ? false : true}
           className={styles.acceptButton}
         >
           Adjuntar evidencia

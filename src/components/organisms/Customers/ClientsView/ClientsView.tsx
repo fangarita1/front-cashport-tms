@@ -8,6 +8,7 @@ import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSect
 import "./clientsview.scss";
 import { ClientsViewTable } from "@/components/molecules/tables/ClientsViewTable/ClientsViewTable";
 import AccountingAdjustmentsModal from "@/modules/clients/containers/accounting-adjustments-modal";
+import WalletTabChangeStatusModal from "@/modules/clients/components/wallet-tab-change-status-modal";
 
 const { Title } = Typography;
 
@@ -29,6 +30,7 @@ export const CustomersView = () => {
         <ClientsViewTable />
       </Flex>
       <AccountingAdjustmentsModal show={showModal} onClose={() => setShowModal(false)} />
+      <WalletTabChangeStatusModal isOpen={true} />
     </main>
   );
 };
