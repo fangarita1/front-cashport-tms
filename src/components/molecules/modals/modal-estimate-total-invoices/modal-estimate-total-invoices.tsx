@@ -3,9 +3,10 @@ import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import styles from "./modal-estimate-total-invoices.module.scss";
 import { NewspaperClipping } from "phosphor-react";
 import { IInvoice } from "@/types/invoices/IInvoices";
+import { insertPeriodEveryThreeDigits } from "@/utils/utils";
 
 interface Props {
-  selectedInvoices?: IInvoice[];
+  selectedInvoices: IInvoice[];
 }
 
 export const ModalEstimateTotalInvoices = ({ selectedInvoices }: Props) => {
@@ -53,7 +54,7 @@ export const ModalEstimateTotalInvoices = ({ selectedInvoices }: Props) => {
     >
       <div ref={draggleRef}>
         <p className={styles.modal__title}>Total</p>
-        <p className={styles.modal__total}>${totalInfo?.total}</p>
+        <p className={styles.modal__total}>${insertPeriodEveryThreeDigits(totalInfo?.total)}</p>
         <div className={styles.modal__invoices}>
           <NewspaperClipping size={16} />
           <p>

@@ -2,6 +2,7 @@ import { Flex, Typography } from "antd";
 import { Files, Money } from "phosphor-react";
 
 import "./labelcollapseinvoice.scss";
+import { insertPeriodEveryThreeDigits } from "@/utils/utils";
 
 const { Title } = Typography;
 
@@ -34,7 +35,7 @@ export const LabelCollapseInvoice = ({ status, total, quantity }: PropsLabelColl
       <Flex className="labelCollapse__total">
         <Money size={16} className="labelCollapse__total__icon" />
         <Title className="labelCollapse__total__title" level={5}>
-          ${total}
+          ${insertPeriodEveryThreeDigits(total)}
         </Title>
       </Flex>
       <Flex className="labelCollapse__total">

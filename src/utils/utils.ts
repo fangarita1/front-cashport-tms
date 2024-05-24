@@ -170,3 +170,7 @@ export function daysLeft(dateString: string): number {
 
   return diffInDays;
 }
+
+export const insertPeriodEveryThreeDigits = (number: number) => {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};

@@ -4,7 +4,7 @@ import { Button, Table, TableProps, Tooltip, Typography } from "antd";
 import { IInvoice } from "@/types/invoices/IInvoices";
 import { CheckCircle, Eye, Handshake, Warning, WarningCircle } from "phosphor-react";
 import "./invoicestable.scss";
-import { daysLeft, formatDate } from "@/utils/utils";
+import { daysLeft, formatDate, insertPeriodEveryThreeDigits } from "@/utils/utils";
 
 const { Text } = Typography;
 
@@ -41,7 +41,8 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
         </Text>
       ),
       sorter: (a, b) => a.id - b.id,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      width: 70
     },
     {
       title: "Emisión",
@@ -49,7 +50,8 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
       key: "create_at",
       render: (text) => <Text className="cell -alignRight">{formatDate(text)}</Text>,
       sorter: (a, b) => Date.parse(a.create_at) - Date.parse(b.create_at),
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      align: "right"
     },
     {
       title: "Pronto pago",
@@ -57,7 +59,8 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
       dataIndex: "earlypay_date",
       render: (text) => <Text className="cell -alignRight">{formatDate(text)}</Text>,
       sorter: (a, b) => Date.parse(a.earlypay_date) - Date.parse(b.earlypay_date),
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      align: "right"
     },
     {
       title: "Vence",
@@ -83,36 +86,46 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
         </Tooltip>
       ),
       sorter: (a, b) => Date.parse(a.expiration_date) - Date.parse(b.expiration_date),
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      align: "right"
     },
     {
       title: "Monto inicial",
       key: "initial_value",
       dataIndex: "initial_value",
-      render: (text) => <Text className="cell -alignRight">${text}</Text>,
+      render: (amount) => (
+        <Text className="cell -alignRight">${insertPeriodEveryThreeDigits(amount)}</Text>
+      ),
       sorter: (a, b) => a.initial_value - b.initial_value,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      align: "right"
     },
     {
       title: "Ajustes",
       key: "ajust_value",
       dataIndex: "ajust_value",
-      render: (text) =>
-        text === 0 ? null : text > 0 ? (
-          <Text className="cell -alignRight">${text}</Text>
+      render: (amount) =>
+        amount === 0 ? null : amount > 0 ? (
+          <Text className="cell -alignRight">${insertPeriodEveryThreeDigits(amount)}</Text>
         ) : (
-          <Text className="negativeAdjustment cell -alignRight">${text}</Text>
+          <Text className="negativeAdjustment cell -alignRight">
+            ${insertPeriodEveryThreeDigits(amount)}
+          </Text>
         ),
       sorter: (a, b) => a.ajust_value - b.ajust_value,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      align: "right"
     },
     {
       title: "Pendiente",
       key: "current_value",
       dataIndex: "current_value",
-      render: (text) => <Text className="cell -alignRight">${text}</Text>,
+      render: (amount) => (
+        <Text className="cell -alignRight">${insertPeriodEveryThreeDigits(amount)}</Text>
+      ),
       sorter: (a, b) => a.current_value - b.current_value,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      align: "right"
     },
     {
       title: "",
@@ -173,7 +186,13 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
 
           <Button onClick={openInvoiceDetail} icon={<Eye size={"1.2rem"} />} />
         </div>
-      )
+      ),
+      onCell: () => ({
+        style: {
+          flex: 2
+        }
+      }),
+      className: ""
     }
   ];
 
