@@ -1,4 +1,5 @@
 import { IChanel } from "@/types/bre/IBRE";
+import { CountryCode } from "@/types/global/IGlobal";
 
 interface Subline {
   id: number;
@@ -173,4 +174,29 @@ export function daysLeft(dateString: string): number {
 
 export const insertPeriodEveryThreeDigits = (number: number) => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
+export function formatMoney(text: string, countryCode?: CountryCode): string {
+  const { currency, id } = countryFormater(countryCode);
+  const number = parseFloat(text);
+  const formatter = new Intl.NumberFormat(id, {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 0
+  });
+
+  return formatter.format(number);
+}
+
+const countryFormater = (currency: CountryCode = "en") => {
+  return intFormat[currency];
+};
+
+const intFormat = {
+  en: { currency: "USD", id: "en-US" },
+  eur: { currency: "EUR", id: "en-DE" },
+  jpn: { currency: "JPY", id: "ja-JP" },
+  ch: { currency: "CNY", id: "zh-CN" },
+  kr: { currency: "KRW", id: "ko-KR" },
+  es: { currency: "EUR", id: "es-ES" }
 };

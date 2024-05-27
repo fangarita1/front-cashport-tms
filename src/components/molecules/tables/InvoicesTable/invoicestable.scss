@@ -72,19 +72,22 @@
     }
 }
 
-.logos {
-    display: flex;
-    gap: 0.25rem;
-    justify-content: flex-end;
+.logosWrapper {
+    padding-right: 0.3rem !important;
+    .logos {
+        display: flex;
+        gap: 0.25rem;
+        justify-content: flex-end;
 
-    button {
-        background-color: $background;
-        padding: 0;
+        button {
+            background-color: $background;
+            padding: 0;
 
-        border: none;
+            border: none;
 
-        &:hover {
-            border: 1px solid $black;
+            &:hover {
+                border: 1px solid $black;
+            }
         }
     }
 }

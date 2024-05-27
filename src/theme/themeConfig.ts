@@ -34,7 +34,8 @@ const theme: ThemeConfig = {
     },
     Table: {
       headerBg: "#FFF",
-      headerColor: "#141414"
+      headerColor: "#141414",
+      headerSplitColor: "transparent"
     }
   }
 };

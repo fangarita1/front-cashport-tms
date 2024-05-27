@@ -41,8 +41,7 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
         </Text>
       ),
       sorter: (a, b) => a.id - b.id,
-      showSorterTooltip: false,
-      width: 70
+      showSorterTooltip: false
     },
     {
       title: "Emisión",
@@ -51,7 +50,8 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
       render: (text) => <Text className="cell -alignRight">{formatDate(text)}</Text>,
       sorter: (a, b) => Date.parse(a.create_at) - Date.parse(b.create_at),
       showSorterTooltip: false,
-      align: "right"
+      align: "right",
+      width: 120
     },
     {
       title: "Pronto pago",
@@ -60,7 +60,8 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
       render: (text) => <Text className="cell -alignRight">{formatDate(text)}</Text>,
       sorter: (a, b) => Date.parse(a.earlypay_date) - Date.parse(b.earlypay_date),
       showSorterTooltip: false,
-      align: "right"
+      align: "right",
+      width: 150
     },
     {
       title: "Vence",
@@ -87,7 +88,8 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
       ),
       sorter: (a, b) => Date.parse(a.expiration_date) - Date.parse(b.expiration_date),
       showSorterTooltip: false,
-      align: "right"
+      align: "right",
+      width: 116
     },
     {
       title: "Monto inicial",
@@ -129,8 +131,7 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
     },
     {
       title: "",
-      key: "",
-      dataIndex: "",
+      className: "logosWrapper",
       render: (_, record) => (
         <div className="logos">
           <Tooltip
@@ -187,12 +188,12 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
           <Button onClick={openInvoiceDetail} icon={<Eye size={"1.2rem"} />} />
         </div>
       ),
+      width: 100,
       onCell: () => ({
         style: {
           flex: 2
         }
-      }),
-      className: ""
+      })
     }
   ];
 
