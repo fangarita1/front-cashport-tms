@@ -11,13 +11,19 @@ const { Text } = Typography;
 interface PropsInvoicesTable {
   dataSingleInvoice: IInvoice[];
   setSelectedRows: Dispatch<SetStateAction<IInvoice[] | undefined>>;
+  setShowInvoiceDetailModal: Dispatch<SetStateAction<boolean>>;
 }
 
-export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: PropsInvoicesTable) => {
+export const InvoicesTable = ({
+  dataSingleInvoice: data,
+  setSelectedRows,
+  setShowInvoiceDetailModal
+}: PropsInvoicesTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const openInvoiceDetail = () => {
     console.log("openInvoiceDetail");
+    setShowInvoiceDetailModal(true);
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
@@ -149,7 +155,7 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
             color={"#f7f7f7"}
             key={`A${record.id}`}
           >
-            <Button onClick={openInvoiceDetail} icon={<Handshake size={"1.2rem"} />} />
+            <Button icon={<Handshake size={"1.2rem"} />} />
           </Tooltip>
 
           <Tooltip
@@ -168,7 +174,7 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
             color={"#f7f7f7"}
             key={`B${record.id}`}
           >
-            <Button onClick={openInvoiceDetail} icon={<Warning size={"1.2rem"} />} />
+            <Button icon={<Warning size={"1.2rem"} />} />
           </Tooltip>
 
           <Tooltip
@@ -182,7 +188,7 @@ export const InvoicesTable = ({ dataSingleInvoice: data, setSelectedRows }: Prop
             color={"#f7f7f7"}
             key={`C${record.id}`}
           >
-            <Button onClick={openInvoiceDetail} icon={<CheckCircle size={"1.2rem"} />} />
+            <Button icon={<CheckCircle size={"1.2rem"} />} />
           </Tooltip>
 
           <Button onClick={openInvoiceDetail} icon={<Eye size={"1.2rem"} />} />

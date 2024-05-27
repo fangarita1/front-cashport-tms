@@ -9,6 +9,7 @@ import { InvoicesTable } from "@/components/molecules/tables/InvoicesTable/Invoi
 import { ModalGenerateAction } from "@/components/molecules/modals/ModalGenerateAction/ModalGenerateAction";
 import UiSearchInput from "@/components/ui/search-input";
 import { ModalEstimateTotalInvoices } from "@/components/molecules/modals/modal-estimate-total-invoices/modal-estimate-total-invoices";
+import InvoiceDetailModalProps from "@/modules/clients/containers/invoice-detail.modal";
 import { IInvoice } from "@/types/invoices/IInvoices";
 
 import "./wallettab.scss";
@@ -20,6 +21,7 @@ export const WalletTab = () => {
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
+  const [showInvoiceDetailModal, setShowInvoiceDetailModal] = useState(false);
 
   const clientId = clientIdParam ? parseInt(clientIdParam) : undefined;
   const projectId = projectIdParam ? parseInt(projectIdParam) : undefined;
@@ -98,6 +100,7 @@ export const WalletTab = () => {
                           <InvoicesTable
                             dataSingleInvoice={invoice.invoices}
                             setSelectedRows={setSelectedRows}
+                            setShowInvoiceDetailModal={setShowInvoiceDetailModal}
                           />
                         )
                       }
@@ -112,6 +115,10 @@ export const WalletTab = () => {
       )}
 
       <ModalGenerateAction isOpen={isGenerateActionOpen} onClose={handleisGenerateActionOpen} />
+      <InvoiceDetailModalProps
+        isOpen={showInvoiceDetailModal}
+        onClose={() => setShowInvoiceDetailModal(false)}
+      />
     </>
   );
 };

@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Flex, Typography } from "antd";
 
-import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 
 import "./clientsview.scss";
@@ -16,7 +15,6 @@ export const CustomersView = () => {
 
   return (
     <main className="mainClients">
-      <SideBar />
       <Flex vertical className="contentClients">
         <Flex justify="space-between" align="center">
           <Flex gap={"1rem"} align="center">
@@ -28,7 +26,7 @@ export const CustomersView = () => {
         </Flex>
         <ClientsViewTable />
       </Flex>
-      <AccountingAdjustmentsModal show={showModal} onClose={() => setShowModal(false)} />
+      {/* <AccountingAdjustmentsModal show={showModal} onClose={() => setShowModal(false)} /> */}
     </main>
   );
 };
