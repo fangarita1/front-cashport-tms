@@ -1,15 +1,27 @@
 import React, { useState } from "react";
 import { Button, Flex, Modal, Radio, RadioChangeEvent } from "antd";
 import styles from "./wallet-tab-change-status-modal.module.scss";
-import { CaretLeft } from "phosphor-react";
+import { CaretLeft, Plus } from "phosphor-react";
 import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
 
 interface Props {
   isOpen: boolean;
 }
-interface FileObject {
-  docReference: string;
-  file: File | undefined;
+
+interface FileFromDragger {
+  lastModified: number;
+  lastModifiedDate: Date;
+  name: string;
+  originFileObj: File;
+  percent: number;
+  size: number;
+  status: string;
+  type: string;
+  uid: string;
+}
+interface FileObjectFromButton {
+  file: FileFromDragger;
+  fileList: FileFromDragger[];
 }
 
 const WalletTabChangeStatusModal: React.FC<Props> = ({ isOpen }) => {
@@ -34,22 +46,41 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({ isOpen }) => {
   };
 
   const handleAttachEvidence = () => {
-    console.log("evidencia adjuntada: ", selectedEvidence);
-    console.log("state: ", selectedState);
-    console.log("commentary: ", commentary);
+    // Aqui se debe hacer la llamada a la API para adjuntar la evidencia
+    // que esta en los estados de selectedEvidence, selectedState y commentary
   };
 
-  const handleOnChangeDocument: any = (info: FileObject) => {
+  const handleOnChangeDocument: any = (info: FileObjectFromButton) => {
     const { file } = info;
-    if (file) {
-      setSelectedEvidence([...selectedEvidence, file]);
+    const rawFile = file.originFileObj;
+    if (rawFile) {
+      const fileSizeInMB = rawFile.size / (1024 * 1024);
+
+      if (fileSizeInMB > 30) {
+        alert("El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB.");
+        return;
+      }
+
+      setSelectedEvidence([...selectedEvidence, rawFile]);
     }
   };
 
   const handleOnDeleteDocument = (fileName: string) => {
-    console.log("delete");
     const updatedFiles = selectedEvidence?.filter((file) => file.name !== fileName);
     setSelectedEvidence(updatedFiles);
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files as FileList);
+
+    for (let i = 0; i < files.length; i++) {
+      if (selectedEvidence.some((file) => file.name === files[i].name)) {
+        alert("Ya existe un archivo con el mismo nombre");
+        return;
+      }
+    }
+
+    setSelectedEvidence((prevFiles) => [...prevFiles, ...files]);
   };
 
   const firstViewModal = {
@@ -58,12 +89,7 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({ isOpen }) => {
     innerContent: (
       <div className={styles.content__status}>
         {invoiceStates.map((state) => (
-          <Radio.Group
-            className={styles.content__status}
-            onChange={handleOnChangeRadioGroup}
-            value={selectedState}
-            key={state}
-          >
+          <Radio.Group onChange={handleOnChangeRadioGroup} value={selectedState} key={state}>
             <Radio className={styles.content__status__item} value={state}>
               {state}
             </Radio>
@@ -95,35 +121,50 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({ isOpen }) => {
           <em className="descriptionDocument">*Obligatorio</em>
         </Flex>
         <DocumentButton
+          title={selectedEvidence[0]?.name}
           handleOnChange={handleOnChangeDocument}
           handleOnDelete={() => handleOnDeleteDocument(selectedEvidence[0]?.name)}
           fileName={selectedEvidence[0]?.name}
           fileSize={selectedEvidence[0]?.size}
         />
-        {selectedEvidence?.map((file) => {
-          if (!file) {
-            return (
-              <DocumentButton
-                key={selectedEvidence[0]?.name}
-                handleOnChange={handleOnChangeDocument}
-                handleOnDelete={() => handleOnDeleteDocument(selectedEvidence[0]?.name)}
-                fileName={selectedEvidence[0]?.name}
-                fileSize={selectedEvidence[0]?.size}
-              />
-            );
-          }
-          return (
-            <React.Fragment key={file.name}>
-              <p>.</p>
-              <DocumentButton
-                handleOnChange={handleOnChangeDocument}
-                handleOnDelete={() => handleOnDeleteDocument(file.name)}
-                fileName={file.name}
-                fileSize={file.size}
-              />
-            </React.Fragment>
-          );
-        })}
+        {selectedEvidence.length > 0
+          ? selectedEvidence.slice(1).map((file) => {
+              return (
+                <DocumentButton
+                  key={file.name}
+                  className={styles.documentButton}
+                  title={file.name}
+                  handleOnChange={handleOnChangeDocument}
+                  handleOnDelete={() => handleOnDeleteDocument(file.name)}
+                  fileName={file.name}
+                  fileSize={file.size}
+                />
+              );
+            })
+          : null}
+        {selectedEvidence.length > 0 && (
+          <>
+            <Button
+              onClick={() => {
+                const fileInput = document.getElementById("fileInput");
+                if (fileInput) {
+                  fileInput.click();
+                }
+              }}
+              className={styles.addDocument}
+              icon={<Plus size={"1rem"} />}
+            >
+              <p>Cargar otro documento</p>
+            </Button>
+            <input
+              type="file"
+              id="fileInput"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+              accept=".pdf,.png,.doc,.docx"
+            />
+          </>
+        )}
 
         <p>Comentarios</p>
         <textarea onChange={handleOnChangeTextArea} placeholder="Ingresar un comentario" />
@@ -134,7 +175,7 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({ isOpen }) => {
         <Button className={styles.cancelButton}>Cancelar</Button>
         <Button
           onClick={handleAttachEvidence}
-          disabled={commentary && selectedEvidence ? false : true}
+          disabled={commentary && selectedEvidence.length > 0 ? false : true}
           className={styles.acceptButton}
         >
           Adjuntar evidencia

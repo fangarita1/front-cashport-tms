@@ -30,7 +30,7 @@ export const CustomersView = () => {
         <ClientsViewTable />
       </Flex>
       <AccountingAdjustmentsModal show={showModal} onClose={() => setShowModal(false)} />
-      <WalletTabChangeStatusModal isOpen={true} />
+      <WalletTabChangeStatusModal isOpen={false} />
     </main>
   );
 };
