@@ -1,25 +1,20 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import config from "@/config";
-import { getIdToken } from "@/utils/api/api";
+import { API, getIdToken } from "@/utils/api/api";
 
 import { SUCCESS } from "@/utils/constants/globalConstants";
 import { MessageInstance } from "antd/es/message/interface";
 
-export const addClientType = async (name: string, messageApi: MessageInstance) => {
-  const token = await getIdToken();
-
+export const addClientType = async (
+  name: string,
+  project_id: number,
+  messageApi: MessageInstance
+) => {
   try {
-    const response: AxiosResponse = await axios.post(
-      `${config.API_HOST}/client/types`,
-      { name },
-      {
-        headers: {
-          Accept: "application/json, text/plain, */*",
-          "Content-Type": "application/json; charset=utf-8",
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+    const response: AxiosResponse = await API.post(`/client/types`, {
+      name,
+      project_id
+    });
     if (response.status === SUCCESS) {
       messageApi.open({
         type: "success",

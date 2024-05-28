@@ -10,4 +10,5 @@ export interface Datum {
   required: number;
   client_type_id: number;
   is_deleted: number;
+  document_name: string;
 }

@@ -23,7 +23,7 @@ const theme: ThemeConfig = {
     },
     Radio: {
       colorPrimary: "#CBE71E",
-      colorBorder: "black",
+      colorBorder: "#b3b2b2",
       colorPrimaryBorder: "black"
     },
     Popover: {
@@ -31,6 +31,11 @@ const theme: ThemeConfig = {
     },
     Checkbox: {
       colorPrimary: "#CBE71E"
+    },
+    Table: {
+      headerBg: "#FFF",
+      headerColor: "#141414",
+      headerSplitColor: "transparent"
     }
   }
 };
