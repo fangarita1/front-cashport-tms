@@ -1,4 +1,5 @@
 import { IChanel } from "@/types/bre/IBRE";
+import { CountryCode } from "@/types/global/IGlobal";
 
 interface Subline {
   id: number;
@@ -142,4 +143,60 @@ export const stringBasedOnDocumentType = (documentType: string) => {
     default:
       return "0 - No seleccionado";
   }
+};
+
+export function extractSingleParam(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+  return value;
+}
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
+export function daysLeft(dateString: string): number {
+  const today = new Date();
+  const expirationDate = new Date(dateString);
+
+  const diffInMs = expirationDate.getTime() - today.getTime();
+
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  return diffInDays;
+}
+
+export const insertPeriodEveryThreeDigits = (number: number) => {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
+export function formatMoney(text: string, countryCode?: CountryCode): string {
+  const { currency, id } = countryFormater(countryCode);
+  const number = parseFloat(text);
+  const formatter = new Intl.NumberFormat(id, {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 0
+  });
+
+  return formatter.format(number);
+}
+
+const countryFormater = (currency: CountryCode = "en") => {
+  return intFormat[currency];
+};
+
+const intFormat = {
+  en: { currency: "USD", id: "en-US" },
+  eur: { currency: "EUR", id: "en-DE" },
+  jpn: { currency: "JPY", id: "ja-JP" },
+  ch: { currency: "CNY", id: "zh-CN" },
+  kr: { currency: "KRW", id: "ko-KR" },
+  es: { currency: "EUR", id: "es-ES" }
 };
