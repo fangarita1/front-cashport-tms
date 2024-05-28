@@ -1,0 +1,61 @@
+@import "@styles/variables.scss";
+
+.walletTab_header {
+    .button {
+        &__actions {
+            padding: 0.75rem 1rem;
+            background-color: $background;
+            border: solid 1px transparent;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            height: 3rem;
+
+            &:hover {
+                border: solid 1px $dark-gray;
+            }
+        }
+        &__adjustments {
+            background-color: $secondary;
+            color: black;
+            font-weight: 600;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+
+            &:hover {
+                background-color: $secondary !important;
+                opacity: 0.8;
+                color: black;
+            }
+        }
+    }
+}
+
+.collapseByStatus {
+    .ant-collapse-header {
+        display: flex;
+        align-items: center !important;
+        padding: 0 !important;
+        margin-top: 1.5rem;
+        margin-left: -0.5rem;
+
+        &-text {
+            h4 {
+                margin: 0;
+            }
+        }
+    }
+
+    .ant-collapse-content {
+        &-box {
+            padding: 0.75rem 0.5rem !important;
+        }
+    }
+}
+
+.collapse-separator {
+    border: none;
+    border-top: 1px solid $dark-gray;
+    margin: 1rem;
+}
