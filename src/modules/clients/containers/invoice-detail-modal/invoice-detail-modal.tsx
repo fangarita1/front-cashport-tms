@@ -29,7 +29,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
   handleisGenerateActionOpen
 }) => {
   const { data: invoiceData } = useInvoiceDetail({ invoiceId, clientId });
-  console.log("invoiceData: ", invoiceData);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(0);
 
