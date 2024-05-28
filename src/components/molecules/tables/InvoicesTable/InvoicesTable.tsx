@@ -11,7 +11,12 @@ const { Text } = Typography;
 interface PropsInvoicesTable {
   dataSingleInvoice: IInvoice[];
   setSelectedRows: Dispatch<SetStateAction<IInvoice[] | undefined>>;
-  setShowInvoiceDetailModal: Dispatch<SetStateAction<boolean>>;
+  setShowInvoiceDetailModal: Dispatch<
+    SetStateAction<{
+      isOpen: boolean;
+      invoiceId: number;
+    }>
+  >;
 }
 
 export const InvoicesTable = ({
@@ -21,9 +26,8 @@ export const InvoicesTable = ({
 }: PropsInvoicesTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
-  const openInvoiceDetail = () => {
-    console.log("openInvoiceDetail");
-    setShowInvoiceDetailModal(true);
+  const openInvoiceDetail = (invoiceId: number) => {
+    setShowInvoiceDetailModal({ isOpen: true, invoiceId });
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
@@ -41,9 +45,9 @@ export const InvoicesTable = ({
       title: "ID",
       dataIndex: "id",
       key: "id",
-      render: (text) => (
-        <Text onClick={openInvoiceDetail} className="invoicesTable__id">
-          {text}
+      render: (invoiceId) => (
+        <Text onClick={() => openInvoiceDetail(invoiceId)} className="invoicesTable__id">
+          {invoiceId}
         </Text>
       ),
       sorter: (a, b) => a.id - b.id,
@@ -191,7 +195,7 @@ export const InvoicesTable = ({
             <Button icon={<CheckCircle size={"1.2rem"} />} />
           </Tooltip>
 
-          <Button onClick={openInvoiceDetail} icon={<Eye size={"1.2rem"} />} />
+          <Button onClick={() => openInvoiceDetail(record.id)} icon={<Eye size={"1.2rem"} />} />
         </div>
       ),
       width: 100,

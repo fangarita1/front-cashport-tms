@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { Dispatch, FC, SetStateAction, useState } from "react";
 import {
   ArrowLineDown,
   CaretDoubleRight,
@@ -11,15 +11,25 @@ import {
 import styles from "./invoice-detail-modal.module.scss";
 import { useInvoiceDetail } from "@/hooks/useInvoiceDetail";
 import InvoiceDownloadModal from "../../components/invoice-download-modal";
+import { Button } from "antd";
 
 interface InvoiceDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
+  invoiceId: number;
+  clientId: number;
+  handleisGenerateActionOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ isOpen, onClose }) => {
-  const { data: invoiceData } = useInvoiceDetail({ invoiceId: 2, clientId: 98765232 });
-  const [currentStep, setCurrentStep] = useState(0);
+const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
+  isOpen,
+  onClose,
+  invoiceId,
+  clientId,
+  handleisGenerateActionOpen
+}) => {
+  const { data: invoiceData } = useInvoiceDetail({ invoiceId, clientId });
+  console.log("invoiceData: ", invoiceData);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(0);
 
@@ -53,29 +63,34 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ isOpen, onClose }) =>
   };
 
   return (
-    <div className={`${styles.wrapper} ${isOpen ? styles.show : styles.hide}`}>
+    <aside className={`${styles.wrapper} ${isOpen ? styles.show : styles.hide}`}>
       <InvoiceDownloadModal isModalOpen={isModalOpen} handleCloseModal={setIsModalOpen} />
       <div>
         <div className={styles.modalTopSide}>
-          <div className={styles.back} onClick={onClose}>
+          <button type="button" className={styles.back} onClick={onClose}>
             <CaretDoubleRight />
-          </div>
+          </button>
         </div>
         <div className={styles.header}>
-          <div className={styles.numberInvoice}>Factura {2}</div>
+          <h4 className={styles.numberInvoice}>Factura {invoiceId}</h4>
           <div className={styles.viewInvoice}>
             <Receipt size={20} />
             Ver factura
           </div>
-          <div className={styles.action}>
-            <DotsThree size={24} />
+          <Button
+            className={styles.button__actions}
+            size="large"
+            icon={<DotsThree size={"1.5rem"} />}
+            onClick={() => handleisGenerateActionOpen(true)}
+          >
             Generar acción
-          </div>
+          </Button>
         </div>
         <div className={styles.idOrder}>
           ID orden de compra
-          <div className={styles.id}>231231</div>
+          <div className={styles.id}>XXXXX</div>
         </div>
+
         <div className={styles.body}>
           <div className={styles.headerBody}>
             <div className={styles.title}>Trazabilidad</div>
@@ -90,7 +105,8 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ isOpen, onClose }) =>
             <div className={styles.description}>
               <div className={styles.stepperContainer}>
                 <div className={styles.stepperContent}>
-                  {(invoiceData ?? []).map((item, index) => {
+                  {/*  */}
+                  {(invoiceData ?? []).map((item) => {
                     return (
                       <div key={item.id} className={styles.mainStep}>
                         <div
@@ -98,11 +114,10 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ isOpen, onClose }) =>
                         />
                         <div
                           className={`${styles.stepCircle} ${item.status_name && styles.active}`}
-                          onClick={() => setCurrentStep(index)}
                         />
                         <div className={styles.stepLabel}>
                           <div className={styles.cardInvoiceFiling}>
-                            <div className={styles.title}>{item.event_type_name}</div>
+                            <h5 className={styles.title}>{item.event_type_name}</h5>
                             <div className={styles.date}>{""}</div>
                             {item.event_type_name === "Aviso de vencimiento" ? (
                               <div className={styles.quantity}>
@@ -124,9 +139,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ isOpen, onClose }) =>
                                   <Plus size={12} />
                                 </div>
                               </div>
-                            ) : (
-                              ""
-                            )}
+                            ) : null}
                             {item.event_type_name === "Nota crédito aplicada por legalizar" ? (
                               <div>
                                 <div className={styles.icons}>
@@ -254,32 +267,25 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({ isOpen, onClose }) =>
         </div>
       </div>
       <div className={styles.footer}>
-        <div className={styles.resume}>Resumen</div>
+        <h4 className={styles.resume}>Resumen</h4>
         <div className={styles.bodyContent}>
           <div className={styles.initialValue}>
-            <div className={styles.value}>Valor inicial</div>
-            <div className={styles.result}>$30.000.000</div>
+            <p className={styles.value}>Valor inicial</p>
+            <p className={styles.result}>$XX.XXX.XXX</p>
           </div>
           <div className={styles.initialValue}>
-            <div className={styles.value}>Valor inicial</div>
-            <div className={styles.result}>$30.000.000</div>
+            <p className={styles.value}>Nota debito</p>
+            <p className={styles.result}>$XX.XXX.XXX</p>
           </div>
-          <div className={styles.initialValue}>
-            <div className={styles.value}>Valor inicial</div>
-            <div className={styles.result}>$30.000.000</div>
-          </div>
-          <div className={styles.initialValue}>
-            <div className={styles.value}>Valor inicial</div>
-            <div className={styles.result}>$30.000.000</div>
-          </div>
+
           <hr />
           <div className={styles.total}>
-            <div className={styles.value}>Total</div>
-            <div className={styles.result}>$32.000.000</div>
+            <p className={styles.value}>Total</p>
+            <p className={styles.result}>$32.000.000</p>
           </div>
         </div>
       </div>
-    </div>
+    </aside>
   );
 };
 

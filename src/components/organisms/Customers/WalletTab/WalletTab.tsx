@@ -9,7 +9,7 @@ import { InvoicesTable } from "@/components/molecules/tables/InvoicesTable/Invoi
 import { ModalGenerateAction } from "@/components/molecules/modals/ModalGenerateAction/ModalGenerateAction";
 import UiSearchInput from "@/components/ui/search-input";
 import { ModalEstimateTotalInvoices } from "@/components/molecules/modals/modal-estimate-total-invoices/modal-estimate-total-invoices";
-import InvoiceDetailModalProps from "@/modules/clients/containers/invoice-detail.modal";
+import InvoiceDetailModalProps from "@/modules/clients/containers/invoice-detail-modal";
 import { IInvoice } from "@/types/invoices/IInvoices";
 
 import "./wallettab.scss";
@@ -21,10 +21,16 @@ export const WalletTab = () => {
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
-  const [showInvoiceDetailModal, setShowInvoiceDetailModal] = useState(false);
+  const [showInvoiceDetailModal, setShowInvoiceDetailModal] = useState<{
+    isOpen: boolean;
+    invoiceId: number;
+  }>({
+    isOpen: false,
+    invoiceId: 0
+  });
 
-  const clientId = clientIdParam ? parseInt(clientIdParam) : undefined;
-  const projectId = projectIdParam ? parseInt(projectIdParam) : undefined;
+  const clientId = clientIdParam ? parseInt(clientIdParam) : 0;
+  const projectId = projectIdParam ? parseInt(projectIdParam) : 0;
 
   const { data, isLoading } = useInvoices({
     clientId: clientId || 0,
@@ -115,10 +121,15 @@ export const WalletTab = () => {
       )}
 
       <ModalGenerateAction isOpen={isGenerateActionOpen} onClose={handleisGenerateActionOpen} />
-      <InvoiceDetailModalProps
-        isOpen={showInvoiceDetailModal}
-        onClose={() => setShowInvoiceDetailModal(false)}
-      />
+      {showInvoiceDetailModal?.isOpen && (
+        <InvoiceDetailModalProps
+          isOpen={showInvoiceDetailModal?.isOpen || false}
+          onClose={() => setShowInvoiceDetailModal({ isOpen: false, invoiceId: 0 })}
+          invoiceId={showInvoiceDetailModal?.invoiceId || 0}
+          clientId={clientId}
+          handleisGenerateActionOpen={handleisGenerateActionOpen}
+        />
+      )}
     </>
   );
 };

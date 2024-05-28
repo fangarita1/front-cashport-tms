@@ -43,7 +43,7 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
         <Flex vertical className={styles.containerDetailClient}>
           <Flex className={styles.stickyHeader} align="center" justify="space-between">
             <Flex className={styles.infoHeader} align="center" justify="center">
-              <Link href={`/clientes/all`}>
+              <a href={`/clientes/all`}>
                 <Button
                   type="text"
                   size="large"
@@ -52,7 +52,7 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
                 >
                   {portfolioData ? portfolioData.data_wallet.client_name : "Loading..."}
                 </Button>
-              </Link>
+              </a>
             </Flex>
           </Flex>
 
