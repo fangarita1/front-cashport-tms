@@ -78,6 +78,7 @@ export const ProjectTable = () => {
         columns={columns as TableProps<any>["columns"]}
         pagination={{
           pageSize: 25,
+          showSizeChanger: false,
           total: data.pagination.totalRows,
           onChange: onChangePage,
           itemRender: (page, type, originalElement) => {

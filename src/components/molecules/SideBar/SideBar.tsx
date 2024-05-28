@@ -27,8 +27,8 @@ export const SideBar = () => {
           type="primary"
           size="large"
           icon={<User size={26} />}
-          className={path === "/clientes" ? "buttonIcon" : "buttonIconActive"}
-          href="/clientes"
+          className={path.startsWith("/clientes") ? "buttonIcon" : "buttonIconActive"}
+          href="/clientes/all"
         >
           {isSideBarLarge && "Clientes"}
         </Button>
