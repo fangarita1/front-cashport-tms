@@ -31,6 +31,7 @@ export const SelectBillingPeriodOrder = ({
         variant="borderless"
         optionLabelProp="label"
         onChange={onChangeSelect}
+        value={!orderRadioValue.order ? undefined : orderRadioValue.order}
       >
         {options?.map((value) => {
           return (

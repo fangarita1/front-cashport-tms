@@ -19,7 +19,7 @@ export interface General {
   currencies: string[];
   country: string;
   address: string;
-  billing_period: Date;
+  billing_period: Date | string;
   accept_date: string;
   DSO_currenly_year: string;
   DSO_days: number | undefined;

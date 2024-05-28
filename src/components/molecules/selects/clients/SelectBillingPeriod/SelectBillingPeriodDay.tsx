@@ -31,6 +31,7 @@ export const SelectBillingPeriodDay = ({
         variant="borderless"
         optionLabelProp="label"
         onChange={onChangeSelect}
+        value={orderRadioValue.day_of_week ? orderRadioValue.day_of_week : undefined}
       >
         {options?.map((value) => {
           return (
