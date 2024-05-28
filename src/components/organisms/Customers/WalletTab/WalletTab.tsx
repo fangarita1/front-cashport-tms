@@ -13,6 +13,7 @@ import InvoiceDetailModalProps from "@/modules/clients/containers/invoice-detail
 import { IInvoice } from "@/types/invoices/IInvoices";
 
 import "./wallettab.scss";
+import WalletTabChangeStatusModal from "@/modules/clients/components/wallet-tab-change-status-modal";
 
 export const WalletTab = () => {
   const [selectedRows, setSelectedRows] = useState<IInvoice[] | undefined>(undefined);
@@ -130,6 +131,7 @@ export const WalletTab = () => {
           handleisGenerateActionOpen={handleisGenerateActionOpen}
         />
       )}
+      <WalletTabChangeStatusModal isOpen={false} />
     </>
   );
 };
