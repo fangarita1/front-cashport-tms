@@ -3,15 +3,14 @@ import axios from "axios";
 import { getIdToken } from "@/utils/api/api";
 import config from "@/config";
 
-import { ICreatePayload } from "@/types/projects/IProjects";
 import { ICreateProject } from "../../types/projects/ICreateProject";
-import { IUpdateFormProject } from "@/types/projects/IUpdateFormProject";
+import { IFormProject } from "@/types/projects/IFormProject";
 
-export const addProject = async (data: ICreatePayload): Promise<ICreateProject> => {
+export const addProject = async (data: IFormProject): Promise<ICreateProject> => {
   const token = await getIdToken();
   const currenciesFinal = data.general.currencies.map((currency) => ({
-    id: currency.split("-")[0],
-    currency_name: currency.split("-")[1]
+    id: currency.value,
+    currency_name: currency.label
   }));
   const colorRgb = data.personalization.color.metaColor;
   const finalColorRgb = `rgb(${Math.trunc(colorRgb.r)},${Math.trunc(colorRgb.g)},${Math.trunc(colorRgb.b)})`;
@@ -24,11 +23,13 @@ export const addProject = async (data: ICreatePayload): Promise<ICreateProject> 
     contact: data.contact.name,
     phone: data.contact.phone,
     address: data.general.address,
-    country_id: data.general.country.split("-")[0],
+    country_id: data.general.country.value,
     currency: JSON.stringify(currenciesFinal),
     accept_date: data.general.accept_date === "Fecha de emisión" ? false : true,
     dso_days: data.general.DSO_days,
-    dso_currenly_year: data.general.DSO_currenly_year === "Sí" ? true : undefined
+    dso_currenly_year: data.general.DSO_currenly_year === "Sí" ? true : undefined,
+    name: data.general.name,
+    position_contact: data.contact.position_contact
   };
   const formData = new FormData();
   formData.append("logo", finalData.logo);
@@ -39,7 +40,7 @@ export const addProject = async (data: ICreatePayload): Promise<ICreateProject> 
   formData.append("contact", finalData.contact);
   formData.append("phone", finalData.phone);
   formData.append("address", finalData.address);
-  formData.append("country_id", finalData.country_id);
+  formData.append("country_id", finalData.country_id.toString());
   formData.append("currency", finalData.currency);
   formData.append("accept_date", finalData.accept_date.toString());
   if (finalData.dso_days) {
@@ -48,6 +49,8 @@ export const addProject = async (data: ICreatePayload): Promise<ICreateProject> 
   if (finalData.dso_currenly_year) {
     formData.append("dso_currenly_year", finalData.dso_currenly_year.toString());
   }
+  formData.append("name", finalData.name);
+  formData.append("position_contact", finalData.position_contact);
 
   try {
     const response: ICreateProject = await axios.post(`${config.API_HOST}/project`, formData, {
@@ -65,14 +68,14 @@ export const addProject = async (data: ICreatePayload): Promise<ICreateProject> 
 };
 
 export const updateProject = async (
-  data: IUpdateFormProject,
+  data: IFormProject,
   id: string,
   UUID: string
 ): Promise<ICreateProject> => {
   const token = await getIdToken();
   const currenciesFinal = data.general.currencies.map((currency) => ({
-    id: currency.split("-")[0],
-    currency_name: currency.split("-")[1]
+    id: currency.value,
+    currency_name: currency.label
   }));
   const colorRgb = data.personalization.color.metaColor;
   const finalColorRgb = colorRgb
@@ -90,11 +93,13 @@ export const updateProject = async (
     contact: data.contact.name,
     phone: data.contact.phone,
     address: data.general.address,
-    country_id: data.general.country.split("-")[0],
+    country_id: data.general.country.value,
     currency: JSON.stringify(currenciesFinal),
     accept_date: data.general.accept_date === "Fecha de emisión" ? false : true,
     dso_days: data.general.DSO_days,
-    dso_currenly_year: data.general.DSO_currenly_year === "Sí" ? true : undefined
+    dso_currenly_year: data.general.DSO_currenly_year === "Sí" ? true : undefined,
+    name: data.general.name,
+    position_contact: data.contact.position_contact
   };
 
   const formData = new FormData();
@@ -108,7 +113,7 @@ export const updateProject = async (
   formData.append("contact", finalData.contact);
   formData.append("phone", finalData.phone);
   formData.append("address", finalData.address);
-  formData.append("country_id", finalData.country_id);
+  formData.append("country_id", finalData.country_id.toString());
   formData.append("currency", finalData.currency);
   formData.append("accept_date", finalData.accept_date.toString());
   if (finalData.dso_days) {
@@ -117,6 +122,9 @@ export const updateProject = async (
   if (finalData.dso_currenly_year) {
     formData.append("dso_currenly_year", finalData.dso_currenly_year.toString());
   }
+  formData.append("name", finalData.name);
+  formData.append("position_contact", finalData.position_contact);
+
   try {
     const response: ICreateProject = await axios.put(`${config.API_HOST}/project`, formData, {
       headers: {

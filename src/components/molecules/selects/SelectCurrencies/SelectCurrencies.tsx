@@ -10,15 +10,20 @@ interface Props {
   errors: any;
   field: any;
 }
-const { Option } = Select;
+
 export const SelectCurrencies = ({ errors, field }: Props) => {
   const { data, isLoading } = useSWR<ICurrencies>("/currency", fetcher, {});
-  const options = data?.data;
+  const options = data?.data.map((option) => {
+    return {
+      value: option.ID,
+      label: option.CURRENCY_NAME
+    };
+  });
 
   return (
     <Select
       mode="multiple"
-      placeholder="Selecciona las currency"
+      placeholder="Selecciona las divisas"
       className={
         errors?.general?.countries ? "selectInputCurrenciesError" : "selectInputCurrencies"
       }
@@ -26,14 +31,8 @@ export const SelectCurrencies = ({ errors, field }: Props) => {
       variant="borderless"
       optionLabelProp="label"
       {...field}
-    >
-      {options?.map((value, index) => {
-        return (
-          <Option value={`${value.ID}-${value.CURRENCY_NAME}`} key={index}>
-            {`${value.ID}-${value.CURRENCY_NAME}`}
-          </Option>
-        );
-      })}
-    </Select>
+      options={options}
+      labelInValue
+    />
   );
 };

@@ -10,10 +10,15 @@ interface Props {
   errors: any;
   field: any;
 }
-const { Option } = Select;
+
 export const SelectCountries = ({ errors, field }: Props) => {
   const { data, isLoading } = useSWR<ICountries>("/country", fetcher, {});
-  const options = data?.data;
+  const options = data?.data.map((option) => {
+    return {
+      value: option.id,
+      label: option.country_name
+    };
+  });
 
   return (
     <Select
@@ -23,14 +28,8 @@ export const SelectCountries = ({ errors, field }: Props) => {
       variant="borderless"
       optionLabelProp="label"
       {...field}
-    >
-      {options?.map((value, index) => {
-        return (
-          <Option value={`${value.id}-${value.country_name}`} key={index}>
-            {`${value.id}-${value.country_name}`}
-          </Option>
-        );
-      })}
-    </Select>
+      options={options}
+      labelInValue
+    />
   );
 };

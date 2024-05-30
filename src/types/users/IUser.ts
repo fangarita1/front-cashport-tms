@@ -42,30 +42,34 @@ export interface WelcomeData {
   data: IUserData;
 }
 
+// export interface IUserData {
+
+//   BUSSINESS_RULES: IBusinessRules[];
+// }
+
 export interface IUserData {
-  ID: number;
+  ACTIVE: number;
   EMAIL: string;
+  ID: number;
+  IS_DELETED: number;
+  NOTIFICATION_CONFIG: any | null;
   PHONE: string;
-  USER_NAME: string;
+  PHOTO: string;
   POSITION: string;
-  NOTIFICATION_CONFIG: null;
+  PROJECT_DESCRIPTION: string;
+  PROJECT_ID: number;
+  ROL_ID: number;
+  ROL_NAME: string;
+  USER_CHANNELS: ID[];
+  USER_LINES: ID[];
+  USER_NAME: string;
+  USER_PERMISSIONS: UserPermision[];
+  USER_SUBLINES: ID[];
+  USER_ZONES: UserZone[];
   UUID: string;
   is_super_admin: number;
-  IS_DELETED: number;
-  ACTIVE: number;
-  ROL_ID: number;
-  PROJECT_ID: number;
-  PROJECT_DESCRIPTION: string;
-  ROL_NAME: string;
-  USER_ZONES: UserZone[];
-  USER_PERMISIONS: UserPermision[];
-  BUSSINESS_RULES: IBusinessRules[];
-  USER_CHANNELS: User[];
-  USER_LINES: User[];
-  USER_SUBLINES: User[];
 }
-
-export interface User {
+export interface ID {
   ID: number;
 }
 
@@ -102,4 +106,21 @@ export interface IBusinessRules {
 
 export interface WelcomeHeaders {
   "content-type": string;
+}
+
+export interface IUserForm {
+  info: IUserInfo;
+}
+
+interface IUserInfo {
+  name: string;
+  cargo: string;
+  email: string;
+  phone: string;
+  rol: ISelectType;
+}
+
+interface ISelectType {
+  value: number;
+  label: string;
 }

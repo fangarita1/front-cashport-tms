@@ -13,10 +13,17 @@ interface Props {
   errors: FieldError | undefined;
   field: ControllerRenderProps<ClientFormType, "infoClient.risk">;
 }
-const { Option } = Select;
+
 export const SelectRisks = ({ errors, field }: Props) => {
   const { data, isLoading } = useSWR<IRisks>("/risk", fetcher, {});
-  const options = data?.data;
+  const options = data?.data.map((option) => {
+    return {
+      value: option.id,
+      label: option.risk_name,
+      className: "selectOptions"
+    };
+  });
+
   return (
     <>
       <Select
@@ -27,19 +34,8 @@ export const SelectRisks = ({ errors, field }: Props) => {
         optionLabelProp="label"
         {...field}
         popupClassName="selectDrop"
-      >
-        {options?.map((value) => {
-          return (
-            <Option
-              className="selectOptions"
-              value={`${value.id}-${value.risk_name}`}
-              key={value.id}
-            >
-              {`${value.id}-${value.risk_name}`}
-            </Option>
-          );
-        })}
-      </Select>
+        options={options}
+      />
       {errors && (
         <Typography.Text className="textError">El riesgo es obligatorio *</Typography.Text>
       )}

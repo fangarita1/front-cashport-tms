@@ -12,7 +12,7 @@ import { ClientsProjectView } from "../ClientsProjectView/ClientsProjectView";
 import { useProject } from "@/hooks/useProject";
 import { activateProject, desactiveProject, updateProject } from "@/services/projects/projects";
 import { SUCCESS } from "@/utils/constants/globalConstants";
-import { IUpdateFormProject } from "@/types/projects/IUpdateFormProject";
+import { IFormProject } from "@/types/projects/IFormProject";
 
 import { BusinessRulesView } from "../BusinessRulesView/BusinessRulesView";
 
@@ -46,7 +46,7 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
     });
   };
 
-  const onUpdateProject = async (finalData: IUpdateFormProject) => {
+  const onUpdateProject = async (finalData: IFormProject) => {
     try {
       const response = await updateProject(finalData, idProjectParam, data.UUID);
       if (response.status === SUCCESS) {

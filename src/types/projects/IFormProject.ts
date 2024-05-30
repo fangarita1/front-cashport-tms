@@ -1,4 +1,4 @@
-export interface IUpdateFormProject {
+export interface IFormProject {
   general: General;
   contact: Contact;
   logo: any;
@@ -7,19 +7,18 @@ export interface IUpdateFormProject {
 
 export interface Contact {
   name: string;
-  position: string;
+  position_contact: string;
   email: string;
   phone: string;
-  description: string;
 }
 
 export interface General {
   name: string;
   nit: string;
-  currencies: string[];
-  country: string;
+  currencies: ISelectType[];
+  country: ISelectType;
   address: string;
-  billing_period: Date;
+  billing_period: any;
   accept_date: string;
   DSO_currenly_year: string;
   DSO_days: number | undefined;
@@ -27,4 +26,10 @@ export interface General {
 
 export interface Personalization {
   color: string | any;
+  description: string;
+}
+
+interface ISelectType {
+  value: number;
+  label: string;
 }

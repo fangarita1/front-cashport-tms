@@ -130,18 +130,18 @@ export const extractChannelLineSublines = (brs: IChanel[]) => {
   return extractedData;
 };
 
-export const stringBasedOnDocumentType = (documentType: string) => {
+export const docTypeIdBasedOnDocType = (documentType: string) => {
   switch (documentType) {
     case "NIT":
-      return "1 - NIT";
+      return 1;
     case "Cedula":
-      return "2 - Cedula";
+      return 2;
     case "Pasaporte":
-      return "3 - Pasaporte";
+      return 3;
     case "Cedula de extranjeria":
-      return "4 - Cedula de extranjeria";
+      return 4;
     default:
-      return "0 - No seleccionado";
+      return 0;
   }
 };
 
