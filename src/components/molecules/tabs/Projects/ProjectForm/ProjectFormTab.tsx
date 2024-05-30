@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, ColorPicker, Flex, Select, Typography } from "antd";
+import { Button, ColorPicker, Flex, Input, Select, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 
@@ -16,6 +16,7 @@ import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import "./projectformtab.scss";
 import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
+import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -61,6 +62,7 @@ export const ProjectFormTab = ({
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
   const [imageFile, setImageFile] = useState(data.LOGO);
   const [imageError, setImageError] = useState(false);
+  const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
   const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data);
   const {
     watch,
@@ -80,7 +82,11 @@ export const ProjectFormTab = ({
     if (generalDSOCurrentlyYear === "Sí") {
       setValue("general.DSO_days", undefined);
     }
-  }, [generalDSOCurrentlyYear, setValue]);
+
+    if (billingPeriod) {
+      setValue("general.billing_period", JSON.stringify(billingPeriod));
+    }
+  }, [billingPeriod, generalDSOCurrentlyYear, setValue]);
 
   const validationButtonText =
     statusForm === "create"
@@ -199,12 +205,42 @@ export const ProjectFormTab = ({
               control={control}
               error={errors.general?.address}
             />
-            <InputForm
-              titleInput="Período de facturación"
-              nameInput="general.billing_period"
-              control={control}
-              error={errors.general?.billing_period}
-            />
+            <Flex className="containerInput" vertical style={{ width: "24.5%" }} justify="center">
+              <Title className="title" level={5}>
+                Período de facturación
+              </Title>
+              <Controller
+                name="general.billing_period"
+                control={control}
+                rules={{ required: true, minLength: 1 }}
+                render={({ field, fieldState: { error } }) => (
+                  <>
+                    <Input
+                      disabled={statusForm === "review"}
+                      variant="borderless"
+                      className={error ? "inputError" : "input"}
+                      placeholder="Segundo miércoles del mes"
+                      onClick={() => setIsBillingPeriodOpen(true)}
+                      {...field}
+                      value={
+                        billingPeriod
+                          ? billingPeriod.day_flag
+                            ? `El dia ${billingPeriod.day} del mes`
+                            : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`
+                          : data.BILLING_PERIOD
+                            ? data.BILLING_PERIOD
+                            : undefined
+                      }
+                    />
+                    {error && (
+                      <Typography.Text className="textError">
+                        El Periodo de facturacion es obligatorio *
+                      </Typography.Text>
+                    )}
+                  </>
+                )}
+              />
+            </Flex>
 
             <Flex vertical className="containerInput">
               <Title className="title" level={5}>
@@ -345,7 +381,7 @@ export const ProjectFormTab = ({
               typeInput="general.description"
               titleInput="Descripción"
               nameInput="general.description"
-              className="description "
+              className="description"
               control={control}
               error={errors.contact?.description}
             />
@@ -379,6 +415,7 @@ export const ProjectFormTab = ({
       <ModalBillingPeriod
         isOpen={isBillingPeriodOpen}
         setIsBillingPeriodOpen={setIsBillingPeriodOpen}
+        setBillingPeriod={setBillingPeriod}
       />
       <ModalChangeStatus
         isActiveStatus={data?.IS_ACTIVE!}
