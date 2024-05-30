@@ -19,28 +19,17 @@ export interface IProject {
   ID: number;
   IS_ACTIVE: boolean;
   LOGO: string;
+  NAME: string;
   NIT: string;
   NUMBER_USERS: number;
   PHONE: string;
   PROJECT_DESCRIPTION: string;
+  POSITION_CONTACT: string;
   RGB_CONFIG: string;
   UUID: string;
   is_deleted: number;
 }
-
 export interface Currency {
-  id: string;
+  id: number;
   CURRENCY_NAME: string;
-  currency_name: string;
-}
-
-export interface Currency {
-  id: string;
-  currency_name: string;
-}
-
-export interface Currency {
-  id: string;
-  CURRENCY_NAME: string;
-  currency_name: string;
 }

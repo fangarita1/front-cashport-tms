@@ -7,7 +7,7 @@ import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 import { SelectCountries } from "@/components/molecules/selects/SelectCountries/SelectCountries";
 import { SelectCurrencies } from "@/components/molecules/selects/SelectCurrencies/SelectCurrencies";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
-import { IUpdateFormProject } from "@/types/projects/IUpdateFormProject";
+import { IFormProject } from "@/types/projects/IFormProject";
 import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
 
 //interfaces
@@ -71,7 +71,7 @@ export const ProjectFormTab = ({
     handleSubmit,
     reset,
     formState: { errors, isDirty }
-  } = useForm<IUpdateFormProject>({
+  } = useForm<IFormProject>({
     defaultValues,
     disabled: statusForm === "review"
   });
@@ -339,9 +339,9 @@ export const ProjectFormTab = ({
             <InputForm
               typeInput="cargo"
               titleInput="Cargo"
-              nameInput="contact.cargo"
+              nameInput="contact.position_contact"
               control={control}
-              error={errors.contact?.position}
+              error={errors.contact?.position_contact}
             />
             <InputForm
               typeInput="email"
@@ -378,12 +378,12 @@ export const ProjectFormTab = ({
               </Text>
             </Flex>
             <InputForm
-              typeInput="general.description"
+              typeInput="personalization.description"
               titleInput="Descripción"
-              nameInput="general.description"
+              nameInput="personalization.description"
               className="description"
               control={control}
-              error={errors.contact?.description}
+              error={errors.personalization?.description}
             />
           </Flex>
           <Flex className="buttonNewProject">
@@ -427,32 +427,35 @@ export const ProjectFormTab = ({
     </>
   );
 };
-const dataToProjectFormData = (data: IProject) => {
-  const currenciesFormated = data?.CURRENCY?.map(
-    (currency) => `${currency.id}-${currency.CURRENCY_NAME ?? currency.currency_name}`
-  );
+const dataToProjectFormData = (data: IProject): IFormProject => {
+  const currenciesFormated = data?.CURRENCY?.map((currency) => ({
+    value: currency.id,
+    label: currency.CURRENCY_NAME
+  }));
 
   return {
+    logo: data.LOGO,
     general: {
-      name: data.PROJECT_DESCRIPTION,
+      name: data.NAME,
       nit: data.NIT,
       currencies: currenciesFormated,
-      country: `${data.COUNTRY_ID}-${data.COUNTRY_NAME}`,
+      country: { value: data.COUNTRY_ID, label: data.COUNTRY_NAME },
       address: data.ADDRESS,
       billing_period: data.BILLING_PERIOD,
-      description: data.PROJECT_DESCRIPTION,
+      // billing_period: Date.now(),
       DSO_currenly_year: data.DSO_CURRENLY_YEAR === 0 ? "No" : "Sí",
       DSO_days: data.DSO_DAYS,
       accept_date: data?.ACCEPT_DATE === 0 ? "Fecha de emisión" : "Fecha de aceptación"
     },
     contact: {
       name: data.CONTACT,
-      position: "",
+      position_contact: data.POSITION_CONTACT,
       email: data.EMAIL,
       phone: data.PHONE
     },
     personalization: {
-      color: data.RGB_CONFIG
+      color: data.RGB_CONFIG,
+      description: data.PROJECT_DESCRIPTION
     }
   };
 };

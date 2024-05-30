@@ -39,7 +39,7 @@ import { SelectPaymentConditions } from "@/components/molecules/selects/clients/
 import { SelectHoldings } from "@/components/molecules/selects/clients/SelectHoldings/SelectHoldings";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { createLocation } from "@/services/locations/locations";
-import { stringBasedOnDocumentType } from "@/utils/utils";
+import { docTypeIdBasedOnDocType } from "@/utils/utils";
 import { MessageInstance } from "antd/es/message/interface";
 
 const { Title } = Typography;
@@ -93,18 +93,30 @@ export const ClientProjectForm = ({
           Array.isArray(data?.locations) && data.locations.length > 0
             ? data.locations[0]?.city
             : undefined,
-        document_type: stringBasedOnDocumentType(data.document_type),
+        document_type: {
+          value: docTypeIdBasedOnDocType(data.document_type),
+          label: data.document_type
+        },
         nit: data.nit,
         client_name: data.client_name,
         business_name: data.business_name,
-        client_type: `${data.client_type_id} - ${data.cliet_type}`,
-        holding_name: data.holding_id ? `${data.holding_id} - ${data.holding_name}` : undefined,
+        client_type: `${data.cliet_type}`,
+        holding_id: {
+          value: data.holding_id,
+          label: data.holding_name
+        },
         phone: data.phone,
         email: data.email,
         locations: data.locations,
         risk: data.risk,
-        radication_type: `${data.radication_type} - ${data.radication_type_name}`,
-        condition_payment: `${data.condition_payment_id} - ${data.condition_payment} días`,
+        radication_type: {
+          value: data.radication_type,
+          label: data.radication_type_name
+        },
+        condition_payment: {
+          value: data.condition_payment_id,
+          label: `A ${data.condition_payment} días`
+        },
         billing_period: data.billing_period,
         documents: data.documents
       }
@@ -115,7 +127,8 @@ export const ClientProjectForm = ({
     control,
     handleSubmit,
     formState: { errors },
-    setValue
+    setValue,
+    watch
   } = useForm<ClientFormType>({
     disabled: !isEditAvailable,
     values: isViewDetailsClient?.active ? dataToDataForm(dataClient.data) : ({} as any)
@@ -321,9 +334,16 @@ export const ClientProjectForm = ({
                     control={control}
                     rules={{ required: true, minLength: 1 }}
                     disabled={isViewDetailsClient.id && isEditAvailable ? true : false}
-                    render={({ field }) => (
-                      <SelectClientTypes errors={errors.infoClient?.client_type} field={field} />
-                    )}
+                    render={({ field }) => {
+                      return (
+                        <SelectClientTypes
+                          errors={errors.infoClient?.client_type}
+                          field={field}
+                          setValue={setValue}
+                          watch={watch}
+                        />
+                      );
+                    }}
                   />
                 </Flex>
                 <Flex vertical className="inputContainer">
@@ -331,11 +351,11 @@ export const ClientProjectForm = ({
                     Holding
                   </Title>
                   <Controller
-                    name="infoClient.holding_name"
+                    name="infoClient.holding_id"
                     control={control}
                     rules={{ required: false, minLength: 1 }}
                     render={({ field }) => (
-                      <SelectHoldings errors={errors.infoClient?.holding_name} field={field} />
+                      <SelectHoldings errors={errors.infoClient?.holding_id} field={field} />
                     )}
                   />
                 </Flex>

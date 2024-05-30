@@ -18,21 +18,11 @@ import {
 } from "@/services/users/users";
 import { useAppStore } from "@/lib/store/store";
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
-import { IUserData } from "@/types/users/IUser";
+import { IUserData, IUserForm } from "@/types/users/IUser";
 
 import "./userprojectform.scss";
 
 const { Title } = Typography;
-
-export type UserType = {
-  info: {
-    name: string;
-    cargo: string;
-    email: string;
-    phone: string;
-    rol: string;
-  };
-};
 
 interface Props {
   isViewDetailsUser?: {
@@ -64,10 +54,10 @@ export const UserProjectForm = ({
     control,
     handleSubmit,
     formState: { errors }
-  } = useForm<UserType>({
+  } = useForm<IUserForm>({
     defaultValues: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : initialData,
     disabled: isEditAvailable,
-    values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as UserType)
+    values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as IUserForm)
   });
   const { ID } = useAppStore((state) => state.selectProject);
 
@@ -102,7 +92,7 @@ export const UserProjectForm = ({
     })();
   }, [isViewDetailsUser]);
 
-  const onSubmitHandler = async (data: UserType) => {
+  const onSubmitHandler = async (data: IUserForm) => {
     setCustomFieldsError({
       zone: zones.length === 0,
       channel: selectedSublines.length === 0
@@ -249,7 +239,9 @@ export const UserProjectForm = ({
                   error={errors.info?.phone}
                 />
                 <Flex vertical className="containerInput">
-                  <Title level={5}>Rol</Title>
+                  <Title className="containerInput__title" level={5}>
+                    Rol
+                  </Title>
                   <Controller
                     name="info.rol"
                     control={control}
@@ -311,10 +303,10 @@ export const UserProjectForm = ({
   );
 };
 
-const initialData: UserType = {
+const initialData: IUserForm = {
   info: {
     name: "",
-    rol: "",
+    rol: { value: 0, label: "" },
     cargo: "",
     email: "",
     phone: ""
@@ -325,7 +317,7 @@ const dataToDataForm = (data: any) => {
   return {
     info: {
       name: data.USER_NAME,
-      rol: `${data.ROL_ID}-${data.ROL_NAME}`,
+      rol: { value: data.ROL_ID, label: data.ROL_NAME },
       cargo: data.POSITION,
       email: data.EMAIL,
       phone: data.PHONE
