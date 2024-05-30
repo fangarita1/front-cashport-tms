@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Flex, Input, Modal, Radio, Typography } from "antd";
+import { Flex, Input, Modal, Radio, RadioChangeEvent, Typography } from "antd";
 
 import { SelectBillingPeriodOrder } from "@/components/molecules/selects/clients/SelectBillingPeriod/SelectBillingPeriodOrder";
 import { SelectBillingPeriodDay } from "@/components/molecules/selects/clients/SelectBillingPeriod/SelectBillingPeriodDay";
@@ -18,18 +18,8 @@ export const ModalBillingPeriod = ({ isOpen, setIsBillingPeriodOpen, setBillingP
   // Son tres estados
   // 1 para cada input radio
   // 1 para capturar el estado seleccionado
-  const [dayValueRadio, setDayValueRadio] = useState<IBillingPeriodForm>({
-    day_flag: true,
-    day: undefined,
-    day_of_week: undefined,
-    order: undefined
-  });
-  const [orderValueRadio, setOrderValueRadio] = useState<IBillingPeriodForm>({
-    day_flag: false,
-    day: undefined,
-    day_of_week: "",
-    order: ""
-  });
+  const [dayValueRadio, setDayValueRadio] = useState<IBillingPeriodForm>(InitDayValueRadio);
+  const [orderValueRadio, setOrderValueRadio] = useState<IBillingPeriodForm>(initOrderValueRadio);
   const [billingPeriodValue, setBillingPeriodValue] = useState<IBillingPeriodForm>();
 
   const orderOptions = ["Primero", "Segundo", "Tercero", "Cuarto", "Ultimo"];
@@ -42,13 +32,22 @@ export const ModalBillingPeriod = ({ isOpen, setIsBillingPeriodOpen, setBillingP
     }
     setIsBillingPeriodOpen(false);
   };
+
+  const onChangeSelectRadio = (e: RadioChangeEvent) => {
+    if (e.target.value) {
+      setBillingPeriodValue(e.target.value);
+    } else {
+      setBillingPeriodValue(undefined);
+    }
+  };
   return (
     <Modal
       open={isOpen}
       onCancel={() => setIsBillingPeriodOpen(false)}
       title="Periodo de facturación"
       okButtonProps={{
-        className: "buttonOk"
+        className: "buttonOk",
+        disabled: billingPeriodValue?.day || billingPeriodValue?.order ? false : true
       }}
       cancelButtonProps={{
         className: "buttonCancel"
@@ -63,13 +62,19 @@ export const ModalBillingPeriod = ({ isOpen, setIsBillingPeriodOpen, setBillingP
 
         <Radio.Group
           style={{ padding: "1.2rem .5rem", display: "flex", flexDirection: "column", gap: "1rem" }}
-          onChange={(e) => setBillingPeriodValue(e.target.value)}
+          onChange={onChangeSelectRadio}
         >
-          <Radio value={dayValueRadio}>
+          <Radio
+            value={dayValueRadio}
+            onChange={() => {
+              setOrderValueRadio(initOrderValueRadio);
+            }}
+          >
             <Flex align="center" gap="1rem">
               <Text className="textPre-input">El día</Text>
               <Flex vertical style={{ width: "80.5%" }} justify="center">
                 <Input
+                  value={dayValueRadio.day}
                   variant="borderless"
                   className="input"
                   placeholder="10"
@@ -80,7 +85,13 @@ export const ModalBillingPeriod = ({ isOpen, setIsBillingPeriodOpen, setBillingP
               </Flex>
             </Flex>
           </Radio>
-          <Radio value={orderValueRadio} style={{ width: "100%" }}>
+          <Radio
+            onChange={() => {
+              setDayValueRadio(InitDayValueRadio);
+            }}
+            value={orderValueRadio}
+            style={{ width: "100%" }}
+          >
             <Flex align="center" gap="1rem" style={{ width: "100%" }}>
               <Text className="textPre-input">El</Text>
               <Flex style={{ width: "20rem", gap: "1rem" }}>
@@ -104,11 +115,25 @@ export const ModalBillingPeriod = ({ isOpen, setIsBillingPeriodOpen, setBillingP
         <Text>
           El periodo de facturación inicia el
           {dayValueRadio.day
-            ? ` día ${dayValueRadio.day}`
+            ? ` día ${dayValueRadio.day} `
             : ` ${orderValueRadio.order} ${orderValueRadio.day_of_week} `}
           de cada mes
         </Text>
       </Flex>
     </Modal>
   );
+};
+
+const InitDayValueRadio = {
+  day_flag: true,
+  day: undefined,
+  day_of_week: undefined,
+  order: undefined
+};
+
+const initOrderValueRadio = {
+  day_flag: false,
+  day: undefined,
+  day_of_week: "",
+  order: ""
 };
