@@ -3,7 +3,11 @@ import axios from "axios";
 import { getIdToken } from "@/utils/api/api";
 import config from "@/config";
 
-import { ICreateProject } from "../../types/projects/ICreateProject";
+import {
+  ICreateProject,
+  IProjectForFormData,
+  IUpdateProjectData
+} from "@/types/projects/ICreateProject";
 import { IFormProject } from "@/types/projects/IFormProject";
 
 export const addProject = async (data: IFormProject): Promise<ICreateProject> => {
@@ -14,7 +18,10 @@ export const addProject = async (data: IFormProject): Promise<ICreateProject> =>
   }));
   const colorRgb = data.personalization.color.metaColor;
   const finalColorRgb = `rgb(${Math.trunc(colorRgb.r)},${Math.trunc(colorRgb.g)},${Math.trunc(colorRgb.b)})`;
-  const finalData = {
+
+  const billingPeriod = JSON.parse(data.general.billing_period);
+
+  const finalData: IProjectForFormData = {
     logo: data.logo,
     project_description: data.general.name,
     rgb_config: finalColorRgb,
@@ -29,7 +36,11 @@ export const addProject = async (data: IFormProject): Promise<ICreateProject> =>
     dso_days: data.general.DSO_days,
     dso_currenly_year: data.general.DSO_currenly_year === "Sí" ? true : undefined,
     name: data.general.name,
-    position_contact: data.contact.position_contact
+    position_contact: data.contact.position_contact,
+    day_flag: billingPeriod.day_flag,
+    day: billingPeriod.day_flag ? billingPeriod.day : undefined,
+    order: billingPeriod.day_flag ? undefined : billingPeriod.order,
+    day_of_week: billingPeriod.day_flag ? undefined : billingPeriod.day_of_week
   };
   const formData = new FormData();
   formData.append("logo", finalData.logo);
@@ -51,6 +62,16 @@ export const addProject = async (data: IFormProject): Promise<ICreateProject> =>
   }
   formData.append("name", finalData.name);
   formData.append("position_contact", finalData.position_contact);
+  formData.append("day_flag", finalData?.day_flag.toString());
+  if (finalData.day) {
+    formData.append("day", finalData.day.toString());
+  }
+  if (finalData.order) {
+    formData.append("order", finalData.order);
+  }
+  if (finalData.day_of_week) {
+    formData.append("day_of_week", finalData.day_of_week);
+  }
 
   try {
     const response: ICreateProject = await axios.post(`${config.API_HOST}/project`, formData, {
@@ -62,7 +83,7 @@ export const addProject = async (data: IFormProject): Promise<ICreateProject> =>
     });
     return response;
   } catch (error) {
-    console.log("ERROR: ", error);
+    console.log("Error creating project: ", error);
     return error as any;
   }
 };
@@ -82,8 +103,10 @@ export const updateProject = async (
     ? `rgb(${Math.trunc(colorRgb.r)},${Math.trunc(colorRgb.g)},${Math.trunc(colorRgb.b)})`
     : data.personalization.color;
 
-  const finalData = {
-    id,
+  const billingPeriod = JSON.parse(data.general.billing_period);
+  console.log("billingPeriod en UPDATE: ", billingPeriod);
+  const finalData: IUpdateProjectData = {
+    id: id,
     is_active: true,
     project_description: data.general.name,
     rgb_config: finalColorRgb,
@@ -99,7 +122,11 @@ export const updateProject = async (
     dso_days: data.general.DSO_days,
     dso_currenly_year: data.general.DSO_currenly_year === "Sí" ? true : undefined,
     name: data.general.name,
-    position_contact: data.contact.position_contact
+    position_contact: data.contact.position_contact,
+    day_flag: billingPeriod.day_flag,
+    day: billingPeriod.day_flag ? billingPeriod.day : undefined,
+    order: billingPeriod.day_flag ? undefined : billingPeriod.order,
+    day_of_week: billingPeriod.day_flag ? undefined : billingPeriod.day_of_week
   };
 
   const formData = new FormData();
@@ -124,6 +151,16 @@ export const updateProject = async (
   }
   formData.append("name", finalData.name);
   formData.append("position_contact", finalData.position_contact);
+  formData.append("day_flag", finalData?.day_flag.toString());
+  if (finalData.day) {
+    formData.append("day", finalData.day.toString());
+  }
+  if (finalData.order) {
+    formData.append("order", finalData.order);
+  }
+  if (finalData.day_of_week) {
+    formData.append("day_of_week", finalData.day_of_week);
+  }
 
   try {
     const response: ICreateProject = await axios.put(`${config.API_HOST}/project`, formData, {
@@ -135,7 +172,7 @@ export const updateProject = async (
     });
     return response;
   } catch (error) {
-    console.log("ERROR: ", error);
+    console.log("ERROR updating project: ", error);
     return error as any;
   }
 };
