@@ -14,7 +14,6 @@ interface Props {
 export const SelectRoles = ({ errors, field }: Props) => {
   const { data, isLoading } = useSWR<IRoles>("/role", fetcher, {});
   // doesn't show super admin role
-  console.log("DATA ROLES: ", data);
   const filteredOptions = data?.data.filter((rol) => rol.ID !== 1);
   const options = filteredOptions?.map((option) => {
     return {

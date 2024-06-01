@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { Empty, Flex, Spin, Typography } from "antd";
 import useSWR from "swr";
 
@@ -6,51 +6,18 @@ import { SelectChanel } from "@/components/molecules/selects/SelectChanel/Select
 
 import { useAppStore } from "@/lib/store/store";
 import { fetcher } from "@/utils/api/api";
-import { IBRE } from "@/types/bre/IBRE";
-import { filterBRbyIdSubline, transformFormat } from "@/utils/utils";
+import { IBRE, ISelectedBussinessRules } from "@/types/bre/IBRE";
 
 import "./selectstructure.scss";
 interface Props {
   sublinesUser?: number[];
-  selectedSublines: {
-    idChannel: number;
-    idLine: number;
-    subline: {
-      id: number;
-      description: string;
-    };
-  }[];
-  setSelectedSublines: Dispatch<
-    SetStateAction<
-      {
-        idChannel: number;
-        idLine: number;
-        subline: {
-          id: number;
-          description: string;
-        };
-      }[]
-    >
-  >;
+  selectedBusinessRules: ISelectedBussinessRules;
+
+  setSelectedBusinessRules: Dispatch<SetStateAction<ISelectedBussinessRules>>;
 }
-export const SelectStructure = ({
-  sublinesUser = [],
-  selectedSublines,
-  setSelectedSublines
-}: Props) => {
+export const SelectStructure = ({ selectedBusinessRules, setSelectedBusinessRules }: Props) => {
   const { ID } = useAppStore((state) => state.selectProject);
   const { data, isLoading } = useSWR<IBRE>(`/bussines-rule/project/${ID}`, fetcher, {});
-
-  const [selectChannel, setSelectChannel] = useState(0);
-  useEffect(() => {
-    if (!data?.data) return;
-    if (sublinesUser.length === 0) return;
-    const dataFinal = JSON.parse(JSON.stringify(data?.data));
-    const brs = filterBRbyIdSubline(dataFinal, sublinesUser);
-    setSelectedSublines(transformFormat(brs));
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
 
   return (
     <div className="selectstructure">
@@ -62,11 +29,9 @@ export const SelectStructure = ({
           <>
             {data?.data ? (
               <SelectChanel
-                idActiveLine={selectChannel}
-                setSelectChannel={setSelectChannel}
                 chanels={data.data}
-                setSelectedSublines={setSelectedSublines}
-                selectedSubLines={selectedSublines}
+                setSelectedBusinessRules={setSelectedBusinessRules}
+                selectedBusinessRules={selectedBusinessRules}
               />
             ) : (
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />

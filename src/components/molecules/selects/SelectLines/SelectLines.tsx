@@ -2,32 +2,17 @@ import { Dispatch, SetStateAction } from "react";
 import { Empty, Flex, Typography } from "antd";
 
 import { SelectChips } from "../SelectChips/SelectChips";
-import { IChanel } from "@/types/bre/IBRE";
+import { IChanel, ISelectedBussinessRules } from "@/types/bre/IBRE";
 
 import "./selectlines.scss";
 
 const { Text } = Typography;
 interface Props {
   lines: IChanel;
-  selectedSubLines: {
-    idChannel: number;
-    idLine: number;
-    subline: {
-      id: number;
-      description: string;
-    };
-  }[];
-  setSelectedSublines: Dispatch<
-    SetStateAction<
-      {
-        idChannel: number;
-        idLine: number;
-        subline: { id: number; description: string };
-      }[]
-    >
-  >;
+  selectedBusinessRules: ISelectedBussinessRules;
+  setSelectedBusinessRules: Dispatch<SetStateAction<ISelectedBussinessRules>>;
 }
-export const SelectLines = ({ lines, selectedSubLines, setSelectedSublines }: Props) => {
+export const SelectLines = ({ lines, selectedBusinessRules, setSelectedBusinessRules }: Props) => {
   return (
     <div className="lineSelect">
       <Text>Lineas</Text>
@@ -41,8 +26,8 @@ export const SelectLines = ({ lines, selectedSubLines, setSelectedSublines }: Pr
                   lines={[]}
                   channelId={lines.CHANNEL_ID}
                   channelName={line.description}
-                  selectedSubLines={selectedSubLines}
-                  setSelectedSublines={setSelectedSublines}
+                  selectedBusinessRules={selectedBusinessRules}
+                  setSelectedBusinessRules={setSelectedBusinessRules}
                 />
               ))}
             </>

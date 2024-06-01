@@ -3,6 +3,7 @@ import { Modal, Typography } from "antd";
 
 import "./modalbusinessrules.scss";
 import { SelectStructure } from "../../selects/SelectStructure/SelectStructure";
+import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 const { Title } = Typography;
 interface Props {
   isOpen: boolean;
@@ -19,9 +20,9 @@ export type ShipToType = {
 };
 
 export const ModalBusinessRules = ({ isOpen, setIsBR }: Props) => {
-  const [selectedSublines, setSelectedSublines] = useState<
-    { idChannel: number; idLine: number; subline: { id: number; description: string } }[]
-  >([]);
+  const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
+    initDatSelectedBusinessRules
+  );
 
   return (
     <Modal
@@ -40,10 +41,15 @@ export const ModalBusinessRules = ({ isOpen, setIsBR }: Props) => {
       onCancel={() => setIsBR(false)}
     >
       <SelectStructure
-        selectedSublines={selectedSublines}
-        setSelectedSublines={setSelectedSublines}
-        sublinesUser={[] as any}
+        selectedBusinessRules={selectedBusinessRules}
+        setSelectedBusinessRules={setSelectedBusinessRules}
       />
     </Modal>
   );
+};
+
+const initDatSelectedBusinessRules: ISelectedBussinessRules = {
+  channels: [],
+  lines: [],
+  sublines: []
 };

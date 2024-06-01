@@ -6,6 +6,7 @@ import { IUserAxios, IUserForm } from "@/types/users/IUser";
 import { getIdToken } from "@/utils/api/api";
 import { SUCCESS } from "@/utils/constants/globalConstants";
 import { removeDuplicatesFromArrayNumbers } from "@/utils/utils";
+import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 
 export const getUserById = async (idUser: string): Promise<IUserAxios> => {
   const token = await getIdToken();
@@ -75,34 +76,26 @@ export const inviteUser = async (
 //update
 export const updateUser = async (
   data: IUserForm,
-  selectedSublines: any,
+  selectedBusinessRules: ISelectedBussinessRules,
   zones: any,
   ID: any,
   project_id: number,
   isActive: boolean
 ): Promise<any> => {
-  const selectedChannel = removeDuplicatesFromArrayNumbers(
-    selectedSublines.map((bre: any) => bre.idChannel)
-  );
-  const selectedLines = removeDuplicatesFromArrayNumbers(
-    selectedSublines.map((bre: any) => bre.idLine)
-  );
-  const _selectedSublines = selectedSublines.map((bre: any) => bre.subline.id);
-
   console.log("data in UPDATE: ", data);
   const modelData = {
+    active: isActive ? 1 : 0,
+    channel: selectedBusinessRules.channels,
     email: data.info.email,
-    user_name: data.info.name,
-    channel: selectedChannel,
-    line: selectedLines,
-    subline: _selectedSublines,
-    zones: zones.map((zone: number) => ({ ZONE_ID: zone })),
+    id: ID,
+    line: selectedBusinessRules.lines,
     phone: data.info.phone,
     position: data.info.cargo,
-    id: ID,
-    rol_id: data.info.rol.value,
     project_id: `${project_id}`,
-    active: isActive ? 1 : 0
+    rol_id: data.info.rol.value,
+    subline: selectedBusinessRules.sublines,
+    user_name: data.info.name,
+    zones: zones.map((zone: number) => ({ ZONE_ID: zone }))
   };
   const token = await getIdToken();
   try {

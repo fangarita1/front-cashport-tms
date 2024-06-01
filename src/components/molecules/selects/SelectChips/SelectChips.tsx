@@ -1,9 +1,7 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useCallback } from "react";
 import { Checkbox, Flex, Tag, Typography } from "antd";
-import { CheckCircle } from "phosphor-react";
 
-import { ChannelLine } from "@/types/bre/IBRE";
-import { removeDuplicatesBySublineId, removeObjectsFromArray } from "@/utils/utils";
+import { ISelectedBussinessRules, Line } from "@/types/bre/IBRE";
 
 import "./selectchips.scss";
 
@@ -12,124 +10,102 @@ const { Text } = Typography;
 interface Props {
   channelId: number;
   channelName: string;
-  setSelectedSublines: Dispatch<
-    SetStateAction<
-      {
-        idChannel: number;
-        idLine: number;
-        subline: { id: number; description: string };
-      }[]
-    >
-  >;
-  selectedSubLines: {
-    idChannel: number;
-    idLine: number;
-    subline: {
-      id: number;
-      description: string;
-    };
-  }[];
-
-  lines: ChannelLine[];
+  setSelectedBusinessRules: Dispatch<SetStateAction<ISelectedBussinessRules>>;
+  selectedBusinessRules: ISelectedBussinessRules;
+  lines: Line[];
 }
 
 export const SelectChips = ({
   channelName,
   lines,
   channelId,
-  selectedSubLines = [],
-  setSelectedSublines = () => {}
+  selectedBusinessRules,
+  setSelectedBusinessRules = () => {}
 }: Props) => {
-  const [isAllSublinesSelected, setIsAllSublinesSelected] = useState(false);
+  const {
+    channels: selectedChannelsId,
+    lines: selectedLinesId,
+    sublines: selectedSublinesId
+  } = selectedBusinessRules;
 
-  const sublines = lines
-    ?.map((line) => line?.sublines?.map((subline) => subline?.id))
-    .flat()
-    .filter((subline) => typeof subline === "number");
-  const onSelectAllSublines = (e: any) => {
-    const lineData = lines
-      ?.map((line) =>
-        line.sublines?.map((subline) => ({
-          idChannel: channelId,
-          idLine: line.id,
-          subline
-        }))
-      )
-      .flat()
-      .filter((item) => typeof item !== "undefined");
-    if (e.target.checked) {
-      setSelectedSublines(removeDuplicatesBySublineId([...selectedSubLines, ...lineData]));
-      setIsAllSublinesSelected(true);
-    } else {
-      setSelectedSublines(removeObjectsFromArray(selectedSubLines, lineData));
-      setIsAllSublinesSelected(false);
-    }
+  const onChannelSelected = (channelId: number) => {
+    return selectedChannelsId.some((id) => id === channelId);
   };
-  const onSelectSubline = (
-    lineId: number,
-    idSubline: number,
-    description: string,
-    isActiveSubline: boolean
-  ) => {
-    const allSublinesChannel = selectedSubLines.filter(
-      (line) => line?.idChannel === channelId
-    ).length;
-    if (isActiveSubline) {
-      const desactivatedSublines = selectedSubLines.filter(
-        (subline) => subline?.subline?.id !== idSubline
-      );
-      setIsAllSublinesSelected((sublines.length ?? 0) === allSublinesChannel - 1);
-      return setSelectedSublines(desactivatedSublines);
-    }
 
-    setSelectedSublines((s) => [
-      ...s,
-      {
-        idChannel: channelId,
-        idLine: lineId,
-        subline: {
-          id: idSubline,
-          description: description
-        }
-      }
-    ]);
-
-    setIsAllSublinesSelected((sublines.length ?? 0) === allSublinesChannel + 1);
+  const onLineSelected = (lineId: number) => {
+    return selectedLinesId.some((id) => id === lineId);
   };
+
+  const onSublineSelected = (sublineId: number) => {
+    return selectedSublinesId.some((id) => id === sublineId);
+  };
+
+  const handleChannelChange = useCallback(() => {
+    setSelectedBusinessRules((prev) => {
+      const isChannelSelected = prev.channels.includes(channelId);
+      const updatedChannels = isChannelSelected
+        ? prev.channels.filter((id) => id !== channelId)
+        : [...prev.channels, channelId];
+      return { ...prev, channels: updatedChannels };
+    });
+  }, [channelId, setSelectedBusinessRules]);
+
+  const handleLineChange = useCallback(
+    (lineId: number) => {
+      setSelectedBusinessRules((prev) => {
+        const isLineSelected = prev.lines.includes(lineId);
+        const updatedLines = isLineSelected
+          ? prev.lines.filter((id) => id !== lineId)
+          : [...prev.lines, lineId];
+        return { ...prev, lines: updatedLines };
+      });
+    },
+    [setSelectedBusinessRules]
+  );
+
+  const handleSublineChange = useCallback(
+    (sublineId: number) => {
+      setSelectedBusinessRules((prev) => {
+        const isSublineSelected = prev.sublines.includes(sublineId);
+        const updatedSublines = isSublineSelected
+          ? prev.sublines.filter((id) => id !== sublineId)
+          : [...prev.sublines, sublineId];
+        return { ...prev, sublines: updatedSublines };
+      });
+    },
+    [setSelectedBusinessRules]
+  );
 
   return (
     <Flex className="selectchips" vertical>
       <Flex component="header" justify="space-between" className="headerselectchips">
         <Text className="titleChannel">{channelName}</Text>
-        {lines && <Checkbox checked={isAllSublinesSelected} onChange={onSelectAllSublines} />}
+        {lines && (
+          <Checkbox checked={onChannelSelected(channelId)} onChange={handleChannelChange} />
+        )}
       </Flex>
       <Flex component="main" className="mainTags">
         {lines?.length > 0 ? (
           lines.map((line) => (
             <Flex key={line.id} vertical className="line">
-              <Text className="titleLine">{line.description}</Text>
+              <Flex justify="space-between">
+                <Text className="titleLine">{line.description}</Text>
+                <Checkbox
+                  checked={onLineSelected(line.id)}
+                  onChange={() => handleLineChange(line.id)}
+                />
+              </Flex>
               <Flex className="sublines">
                 {line.sublines?.length > 0 ? (
                   <>
-                    {line.sublines.map(({ id, description }) => {
-                      const activeSubline = selectedSubLines.filter(
-                        (subline) => subline?.subline?.id === id
-                      );
+                    {line.sublines.map((subline) => {
                       return (
-                        <Tag
-                          key={id}
-                          closeIcon={
-                            <CheckCircle
-                              color={activeSubline[0] ? "green" : "gray"}
-                              onClick={() =>
-                                onSelectSubline(line.id, id, description, !!activeSubline[0])
-                              }
-                              size={"1.4rem"}
-                            />
-                          }
-                          className="tag"
-                        >
-                          {description}
+                        <Tag key={subline.id} className="tag">
+                          {subline.description}
+                          <Checkbox
+                            checked={onSublineSelected(subline.id)}
+                            onChange={() => handleSublineChange(subline.id)}
+                          />
                         </Tag>
                       );
                     })}

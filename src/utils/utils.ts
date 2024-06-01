@@ -59,6 +59,7 @@ export const filterBRbyIdSubline = (brs: any[], sublinesIds: number[]) => {
     }
     return false; // No CHANNEL_LINES in this channel
   });
+  console.log("filteredResults: ", filteredResults);
   return filteredResults;
 };
 

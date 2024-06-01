@@ -21,6 +21,7 @@ import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemo
 import { IUserData, IUserForm } from "@/types/users/IUser";
 
 import "./userprojectform.scss";
+import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 
 const { Title } = Typography;
 
@@ -61,9 +62,9 @@ export const UserProjectForm = ({
   });
   const { ID } = useAppStore((state) => state.selectProject);
 
-  const [selectedSublines, setSelectedSublines] = useState<
-    { idChannel: number; idLine: number; subline: { id: number; description: string } }[]
-  >([]);
+  const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
+    initDatSelectedBusinessRules
+  );
   const [zones, setZones] = useState([] as number[]);
   const [customFieldsError, setCustomFieldsError] = useState({
     zone: false,
@@ -79,6 +80,7 @@ export const UserProjectForm = ({
         data: {} as IUserData
       });
       const response = await getUserById(`${isViewDetailsUser?.id}`);
+      console.log("dataBACK-USER: ", response.data.data);
       const finalData = response.data.data;
       const zonesFinalData =
         finalData.USER_ZONES?.map(
@@ -89,25 +91,35 @@ export const UserProjectForm = ({
         data: finalData
       });
       setZones(zonesFinalData);
+
+      setSelectedBusinessRules({
+        channels: finalData.USER_CHANNELS.map((channel) => channel.ID),
+        lines: finalData.USER_LINES.map((line) => line.ID),
+        sublines: finalData.USER_SUBLINES.map((subline) => subline.ID)
+      });
     })();
   }, [isViewDetailsUser]);
 
   const onSubmitHandler = async (data: IUserForm) => {
     setCustomFieldsError({
       zone: zones.length === 0,
-      channel: selectedSublines.length === 0
+      channel: selectedBusinessRules?.channels.length === 0
     });
-    if (zones.length === 0 || selectedSublines.length === 0) return;
+    if (zones.length === 0 || selectedBusinessRules?.channels.length === 0) return;
+
+    // console.log("data: ", data);
+    console.log("selectedBusinessRulesINSUBMIT: ", selectedBusinessRules);
+    // console.log("zones: ", zones);
     const response = isViewDetailsUser?.id
       ? await updateUser(
           data,
-          selectedSublines,
+          selectedBusinessRules,
           zones,
           isViewDetailsUser?.id,
           ID,
           dataUser.data?.ACTIVE === 1
         )
-      : await inviteUser(data, selectedSublines, zones, ID);
+      : await inviteUser(data, selectedBusinessRules, zones, ID);
     if (response.status === 200 || response.status === 202) {
       const isEdit = isViewDetailsUser?.id ? "editado" : "creado";
       messageApi.open({
@@ -262,8 +274,8 @@ export const UserProjectForm = ({
                 <Flex vertical style={{ width: "37%" }}>
                   {dataUser?.data && (
                     <SelectStructure
-                      selectedSublines={selectedSublines}
-                      setSelectedSublines={setSelectedSublines}
+                      selectedBusinessRules={selectedBusinessRules}
+                      setSelectedBusinessRules={setSelectedBusinessRules}
                       sublinesUser={dataUser?.data?.USER_SUBLINES?.map((item) => item.ID)}
                     />
                   )}
@@ -323,4 +335,10 @@ const dataToDataForm = (data: any) => {
       phone: data.PHONE
     }
   };
+};
+
+const initDatSelectedBusinessRules: ISelectedBussinessRules = {
+  channels: [],
+  lines: [],
+  sublines: []
 };
