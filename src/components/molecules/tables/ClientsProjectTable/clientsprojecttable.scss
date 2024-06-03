@@ -5,6 +5,27 @@
     overflow-y: scroll;
     height: 100%;
 
+    .name {
+        border: none;
+        color: $link;
+        box-shadow: none;
+        padding: 0;
+        width: fit-content;
+        background-color: transparent;
+        text-decoration: underline;
+        font-size: 0.875rem;
+
+        &:hover {
+            background-color: transparent;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+        &:active {
+            background-color: transparent;
+            opacity: 1;
+        }
+    }
+
     .mainClientsProjectTable_header {
         margin: 2rem 0;
         padding-right: 1rem;

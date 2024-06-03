@@ -2,6 +2,7 @@
 
 .selectInputRoles {
     height: 2.75rem !important;
+    height: 100% !important;
     margin-bottom: 1rem;
     background-color: $background;
     border-radius: 0.25rem;
@@ -13,6 +14,11 @@
         .ant-select-selection-placeholder {
             color: $dark-gray !important;
         }
+    }
+
+    .ant-select-selection-item {
+        font-size: 1rem;
+        font-weight: 300 !important;
     }
 }
 

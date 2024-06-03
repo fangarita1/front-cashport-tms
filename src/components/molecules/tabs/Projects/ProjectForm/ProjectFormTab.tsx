@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, ColorPicker, Flex, Select, Typography } from "antd";
+import { Button, ColorPicker, Flex, Input, Select, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 
@@ -7,7 +7,7 @@ import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 import { SelectCountries } from "@/components/molecules/selects/SelectCountries/SelectCountries";
 import { SelectCurrencies } from "@/components/molecules/selects/SelectCurrencies/SelectCurrencies";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
-import { IUpdateFormProject } from "@/types/projects/IUpdateFormProject";
+import { IFormProject } from "@/types/projects/IFormProject";
 import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
 
 //interfaces
@@ -16,6 +16,7 @@ import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import "./projectformtab.scss";
 import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
+import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -61,6 +62,7 @@ export const ProjectFormTab = ({
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
   const [imageFile, setImageFile] = useState(data.LOGO);
   const [imageError, setImageError] = useState(false);
+  const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
   const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data);
   const {
     watch,
@@ -69,7 +71,7 @@ export const ProjectFormTab = ({
     handleSubmit,
     reset,
     formState: { errors, isDirty }
-  } = useForm<IUpdateFormProject>({
+  } = useForm<IFormProject>({
     defaultValues,
     disabled: statusForm === "review"
   });
@@ -80,7 +82,11 @@ export const ProjectFormTab = ({
     if (generalDSOCurrentlyYear === "Sí") {
       setValue("general.DSO_days", undefined);
     }
-  }, [generalDSOCurrentlyYear, setValue]);
+
+    if (billingPeriod) {
+      setValue("general.billing_period", JSON.stringify(billingPeriod));
+    }
+  }, [billingPeriod, generalDSOCurrentlyYear, setValue]);
 
   const validationButtonText =
     statusForm === "create"
@@ -199,12 +205,42 @@ export const ProjectFormTab = ({
               control={control}
               error={errors.general?.address}
             />
-            <InputForm
-              titleInput="Período de facturación"
-              nameInput="general.billing_period"
-              control={control}
-              error={errors.general?.billing_period}
-            />
+            <Flex className="containerInput" vertical style={{ width: "24.5%" }} justify="center">
+              <Title className="title" level={5}>
+                Período de facturación
+              </Title>
+              <Controller
+                name="general.billing_period"
+                control={control}
+                rules={{ required: true, minLength: 1 }}
+                render={({ field, fieldState: { error } }) => (
+                  <>
+                    <Input
+                      disabled={statusForm === "review"}
+                      variant="borderless"
+                      className={error ? "inputError" : "input"}
+                      placeholder="Segundo miércoles del mes"
+                      onClick={() => setIsBillingPeriodOpen(true)}
+                      {...field}
+                      value={
+                        billingPeriod
+                          ? billingPeriod.day_flag
+                            ? `El dia ${billingPeriod.day} del mes`
+                            : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`
+                          : data.BILLING_PERIOD
+                            ? data.BILLING_PERIOD
+                            : undefined
+                      }
+                    />
+                    {error && (
+                      <Typography.Text className="textError">
+                        El Periodo de facturacion es obligatorio *
+                      </Typography.Text>
+                    )}
+                  </>
+                )}
+              />
+            </Flex>
 
             <Flex vertical className="containerInput">
               <Title className="title" level={5}>
@@ -303,9 +339,9 @@ export const ProjectFormTab = ({
             <InputForm
               typeInput="cargo"
               titleInput="Cargo"
-              nameInput="contact.cargo"
+              nameInput="contact.position_contact"
               control={control}
-              error={errors.contact?.position}
+              error={errors.contact?.position_contact}
             />
             <InputForm
               typeInput="email"
@@ -342,12 +378,12 @@ export const ProjectFormTab = ({
               </Text>
             </Flex>
             <InputForm
-              typeInput="general.description"
+              typeInput="personalization.description"
               titleInput="Descripción"
-              nameInput="general.description"
-              className="description "
+              nameInput="personalization.description"
+              className="description"
               control={control}
-              error={errors.contact?.description}
+              error={errors.personalization?.description}
             />
           </Flex>
           <Flex className="buttonNewProject">
@@ -379,6 +415,7 @@ export const ProjectFormTab = ({
       <ModalBillingPeriod
         isOpen={isBillingPeriodOpen}
         setIsBillingPeriodOpen={setIsBillingPeriodOpen}
+        setBillingPeriod={setBillingPeriod}
       />
       <ModalChangeStatus
         isActiveStatus={data?.IS_ACTIVE!}
@@ -390,32 +427,35 @@ export const ProjectFormTab = ({
     </>
   );
 };
-const dataToProjectFormData = (data: IProject) => {
-  const currenciesFormated = data?.CURRENCY?.map(
-    (currency) => `${currency.id}-${currency.CURRENCY_NAME ?? currency.currency_name}`
-  );
+const dataToProjectFormData = (data: IProject): IFormProject => {
+  const currenciesFormated = data?.CURRENCY?.map((currency) => ({
+    value: currency.id,
+    label: currency.CURRENCY_NAME
+  }));
 
   return {
+    logo: data.LOGO,
     general: {
-      name: data.PROJECT_DESCRIPTION,
+      name: data.NAME,
       nit: data.NIT,
       currencies: currenciesFormated,
-      country: `${data.COUNTRY_ID}-${data.COUNTRY_NAME}`,
+      country: { value: data.COUNTRY_ID, label: data.COUNTRY_NAME },
       address: data.ADDRESS,
       billing_period: data.BILLING_PERIOD,
-      description: data.PROJECT_DESCRIPTION,
+      // billing_period: Date.now(),
       DSO_currenly_year: data.DSO_CURRENLY_YEAR === 0 ? "No" : "Sí",
       DSO_days: data.DSO_DAYS,
       accept_date: data?.ACCEPT_DATE === 0 ? "Fecha de emisión" : "Fecha de aceptación"
     },
     contact: {
       name: data.CONTACT,
-      position: "",
+      position_contact: data.POSITION_CONTACT,
       email: data.EMAIL,
       phone: data.PHONE
     },
     personalization: {
-      color: data.RGB_CONFIG
+      color: data.RGB_CONFIG,
+      description: data.PROJECT_DESCRIPTION
     }
   };
 };

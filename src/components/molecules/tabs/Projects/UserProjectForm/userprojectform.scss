@@ -15,6 +15,8 @@
     .mainUserForm {
         height: 100%;
         overflow-y: auto;
+        width: 100%;
+        padding-right: 0.5rem;
     }
 
     .buttonOutlined {
@@ -68,11 +70,10 @@
 
     .generalProject {
         width: 100%;
-        padding-right: 24px;
-        margin-bottom: 2rem;
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 1rem;
+        grid-gap: 1rem;
+        margin-bottom: 1rem;
 
         > * {
             width: 100% !important;
@@ -85,10 +86,11 @@
             color: $gray;
         }
 
-        .inputContainer {
+        .containerInput {
             width: 100%;
+
             &__title {
-                font-size: 12px;
+                font-size: 0.75rem;
             }
         }
 

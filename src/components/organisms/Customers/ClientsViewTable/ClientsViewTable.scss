@@ -1,12 +1,13 @@
-@import "@/styles/variables.scss";
+@import "@styles/variables.scss";
 
 .mainClientsTable {
     width: 100%;
+    background-color: $white;
     padding-bottom: 0;
     margin-top: 1.5rem;
     padding: 1rem 2rem;
-    border-radius: 15px;
-    box-shadow: -6px 6px 32px 0px rgba(0, 0, 0, 0.2);
+    border-radius: 0.5rem;
+
     .ant-table-cell {
         white-space: nowrap;
         overflow: hidden;
@@ -16,11 +17,8 @@
     .text {
         color: #0085ff;
     }
-    &__header {
+    .mainClientsTable_header {
         margin: 1rem 0;
-        display: flex;
-        justify-content: flex-start;
-        gap: 0.675rem;
     }
 
     .statusContainerInactive {

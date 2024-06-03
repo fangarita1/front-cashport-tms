@@ -19,23 +19,13 @@ import {
 } from "@/services/users/users";
 import { useAppStore } from "@/lib/store/store";
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
-import { IUserData } from "@/types/users/IUser";
+import { IUserData, IUserForm } from "@/types/users/IUser";
 
 import { SelectClientsGroup } from "@/components/molecules/selects/SelectClientsGroup/SelectClientsGroup";
 
 import "./userprojectform.scss";
 import { IGroupByUser } from "@/types/clientsGroups/IClientsGroups";
 const { Title } = Typography;
-
-export type UserType = {
-  info: {
-    name: string;
-    cargo: string;
-    email: string;
-    phone: string;
-    rol: string;
-  };
-};
 
 interface Props {
   isViewDetailsUser: {
@@ -63,6 +53,17 @@ export const UserProjectForm = ({
     data: {},
     isLoading: false
   } as { data: IUserData; isLoading: boolean });
+  const {
+    control,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<IUserForm>({
+    defaultValues: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : initialData,
+    disabled: isEditAvailable,
+    values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as IUserForm)
+  });
+  const { ID } = useAppStore((state) => state.selectProject);
+
   const [selectedSublines, setSelectedSublines] = useState<
     { idChannel: number; idLine: number; subline: { id: number; description: string } }[]
   >([]);
@@ -73,17 +74,6 @@ export const UserProjectForm = ({
   });
   const [isOpenModalStatus, setIsOpenModalStatus] = useState(initDataOpenModalStatus);
   const [assignedGroups, setAssignedGroups] = useState([] as any[]);
-
-  const {
-    control,
-    handleSubmit,
-    formState: { errors }
-  } = useForm<UserType>({
-    defaultValues: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : initialData,
-    disabled: !isEditAvailable,
-    values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as UserType)
-  });
-  const { ID } = useAppStore((state) => state.selectProject);
 
   useEffect(() => {
     (async () => {
@@ -116,7 +106,7 @@ export const UserProjectForm = ({
     })();
   }, [ID, isViewDetailsUser, messageApi]);
 
-  const onSubmitHandler = async (data: UserType) => {
+  const onSubmitHandler = async (data: IUserForm) => {
     setCustomFieldsError({
       zone: zones.length === 0,
       channel: selectedSublines.length === 0
@@ -242,8 +232,8 @@ export const UserProjectForm = ({
                   nameInput="info.phone"
                   error={errors.info?.phone}
                 />
-                <Flex vertical className="inputContainer">
-                  <Title className="inputContainer__title" level={5}>
+                <Flex vertical className="containerInput">
+                  <Title className="containerInput__title" level={5}>
                     Rol
                   </Title>
                   <Controller
@@ -327,10 +317,10 @@ export const UserProjectForm = ({
   );
 };
 
-const initialData: UserType = {
+const initialData: IUserForm = {
   info: {
     name: "",
-    rol: "",
+    rol: { value: 0, label: "" },
     cargo: "",
     email: "",
     phone: ""
@@ -341,7 +331,7 @@ const dataToDataForm = (data: any) => {
   return {
     info: {
       name: data.USER_NAME,
-      rol: `${data.ROL_ID}-${data.ROL_NAME}`,
+      rol: { value: data.ROL_ID, label: data.ROL_NAME },
       cargo: data.POSITION,
       email: data.EMAIL,
       phone: data.PHONE

@@ -103,7 +103,19 @@ export const ClientsProjectTable = ({
         title: "Name",
         dataIndex: "client_name",
         key: "client_name",
-        render: (text) => <Link underline>{text}</Link>
+        render: (text, { nit }) => (
+          <button
+            type="button"
+            className="name"
+            onClick={() => {
+              if (setIsViewDetailsClients) {
+                setIsViewDetailsClients({ active: true, id: nit });
+              }
+            }}
+          >
+            {text}
+          </button>
+        )
       },
       {
         title: "NIT",
