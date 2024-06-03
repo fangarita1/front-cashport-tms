@@ -13,6 +13,7 @@ interface Props {
   setSelectedBusinessRules: Dispatch<SetStateAction<ISelectedBussinessRules>>;
   selectedBusinessRules: ISelectedBussinessRules;
   lines: Line[];
+  disabled: boolean;
 }
 
 export const SelectChips = ({
@@ -20,7 +21,8 @@ export const SelectChips = ({
   lines,
   channelId,
   selectedBusinessRules,
-  setSelectedBusinessRules = () => {}
+  setSelectedBusinessRules = () => {},
+  disabled
 }: Props) => {
   const {
     channels: selectedChannelsId,
@@ -81,7 +83,11 @@ export const SelectChips = ({
       <Flex component="header" justify="space-between" className="headerselectchips">
         <Text className="titleChannel">{channelName}</Text>
         {lines && (
-          <Checkbox checked={onChannelSelected(channelId)} onChange={handleChannelChange} />
+          <Checkbox
+            checked={onChannelSelected(channelId)}
+            onChange={handleChannelChange}
+            disabled={disabled}
+          />
         )}
       </Flex>
       <Flex component="main" className="mainTags">
@@ -93,6 +99,7 @@ export const SelectChips = ({
                 <Checkbox
                   checked={onLineSelected(line.id)}
                   onChange={() => handleLineChange(line.id)}
+                  disabled={disabled}
                 />
               </Flex>
               <Flex className="sublines">
@@ -105,6 +112,7 @@ export const SelectChips = ({
                           <Checkbox
                             checked={onSublineSelected(subline.id)}
                             onChange={() => handleSublineChange(subline.id)}
+                            disabled={disabled}
                           />
                         </Tag>
                       );

@@ -10,12 +10,15 @@ import { IBRE, ISelectedBussinessRules } from "@/types/bre/IBRE";
 
 import "./selectstructure.scss";
 interface Props {
-  sublinesUser?: number[];
   selectedBusinessRules: ISelectedBussinessRules;
-
+  disabled: boolean;
   setSelectedBusinessRules: Dispatch<SetStateAction<ISelectedBussinessRules>>;
 }
-export const SelectStructure = ({ selectedBusinessRules, setSelectedBusinessRules }: Props) => {
+export const SelectStructure = ({
+  disabled,
+  selectedBusinessRules,
+  setSelectedBusinessRules
+}: Props) => {
   const { ID } = useAppStore((state) => state.selectProject);
   const { data, isLoading } = useSWR<IBRE>(`/bussines-rule/project/${ID}`, fetcher, {});
 
@@ -32,6 +35,7 @@ export const SelectStructure = ({ selectedBusinessRules, setSelectedBusinessRule
                 chanels={data.data}
                 setSelectedBusinessRules={setSelectedBusinessRules}
                 selectedBusinessRules={selectedBusinessRules}
+                disabled={disabled}
               />
             ) : (
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />

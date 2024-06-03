@@ -6,12 +6,13 @@ import { SelectChips } from "../SelectChips/SelectChips";
 import "./selectchanel.scss";
 interface Props {
   chanels: IChanel[];
-
+  disabled: boolean;
   setSelectedBusinessRules: Dispatch<SetStateAction<ISelectedBussinessRules>>;
   selectedBusinessRules: ISelectedBussinessRules;
 }
 export const SelectChanel = ({
   chanels,
+  disabled,
   selectedBusinessRules,
   setSelectedBusinessRules
 }: Props) => {
@@ -27,6 +28,7 @@ export const SelectChanel = ({
             selectedBusinessRules={selectedBusinessRules}
             setSelectedBusinessRules={setSelectedBusinessRules}
             channelName={CHANNEL_NAME}
+            disabled={disabled}
           />
         );
       })}

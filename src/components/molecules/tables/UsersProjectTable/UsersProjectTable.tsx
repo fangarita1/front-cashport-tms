@@ -5,7 +5,7 @@ import type { MenuProps, TableProps } from "antd";
 import { Eye, Plus, Triangle } from "phosphor-react";
 
 import { useUsers } from "@/hooks/useUsers";
-import { FilterUsers } from "@/components/atoms/FilterUsers/FilterUsers";
+import { FilterUsers } from "@/components/atoms/Filters/FilterUsers/FilterUsers";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 import {
   deleteUsersById,
@@ -257,7 +257,7 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
       {contextHolder}
       <main className="mainUsersProjectTable">
         <Flex justify="space-between" className="mainUsersProjectTable_header">
-          <Flex gap={"1.75rem"}>
+          <Flex gap={"0.625rem"} align="center">
             <FilterUsers setSelectedUsers={setSelectedUsers} idProject={idProject} />
             <DotsDropdown items={items} />
           </Flex>

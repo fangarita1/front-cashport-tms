@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Avatar, Button, Flex, Table, Typography } from "antd";
 import type { TableProps } from "antd";
-import { Clipboard, DotsThree, Eye, Plus, Triangle } from "phosphor-react";
+import { Clipboard, Eye, Plus, Triangle } from "phosphor-react";
 
-import { FilterProjects } from "@/components/atoms/FilterProjects/FilterProjects";
+import { FilterProjects } from "@/components/atoms/Filters/FilterProjects/FilterProjects";
 import { useProjects } from "@/hooks/useProjects";
 import { useAppStore } from "@/lib/store/store";
 import { IProject } from "@/types/projects/IProjects";
@@ -11,6 +11,7 @@ import { IProject } from "@/types/projects/IProjects";
 import "./projectstable.scss";
 import UiSearchInput from "@/components/ui/search-input";
 import { countries } from "@/utils/countries";
+import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 
 const { Text } = Typography;
 
@@ -65,7 +66,7 @@ export const ProjectTable = () => {
             }}
           />
           <FilterProjects setSelecetedProjects={setSelectFilters} />
-          <Button className="options" icon={<DotsThree size={"1.5rem"} />} />
+          <DotsDropdown />
         </Flex>
         <Button type="primary" className="buttonNewProject" size="large" href="/proyectos/new">
           Nuevo Proyecto

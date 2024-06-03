@@ -4,6 +4,8 @@ import { Cascader } from "antd";
 import { getAllCountries } from "@/services/countries/countries";
 import { getAllCurrencies } from "@/services/currencies/currencies";
 
+import "../filterCascader.scss";
+
 interface Option {
   value: string;
   label: string;
@@ -70,11 +72,12 @@ export const FilterProjects = ({ setSelecetedProjects }: Props) => {
 
   return (
     <Cascader
-      style={{ width: "112px" }}
+      className="filterCascader"
+      style={{ width: "130px" }}
       multiple
       size="large"
       removeIcon
-      maxTagCount={1}
+      maxTagCount="responsive"
       placeholder="Filtrar"
       placement="bottomRight"
       onClear={() => setSelecetedProjects({ country: [], currency: [] })}

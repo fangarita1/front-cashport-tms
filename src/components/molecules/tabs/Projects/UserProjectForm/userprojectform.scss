@@ -45,14 +45,18 @@
         }
     }
 
-    .buttonAction {
-        background-color: $dark-gray;
-        display: flex;
-        justify-content: flex-start;
+    .buttonNewProject {
+        background-color: $secondary;
         color: black;
+        font-weight: 600;
         box-shadow: none;
+        display: flex;
+        align-items: center;
+        padding: 1.5rem 2rem !important;
+        margin-right: 1rem;
 
         &:hover {
+            background-color: $secondary !important;
             opacity: 0.8;
             color: black;
         }

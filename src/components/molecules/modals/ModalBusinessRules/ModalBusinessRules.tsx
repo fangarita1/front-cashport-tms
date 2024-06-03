@@ -43,6 +43,7 @@ export const ModalBusinessRules = ({ isOpen, setIsBR }: Props) => {
       <SelectStructure
         selectedBusinessRules={selectedBusinessRules}
         setSelectedBusinessRules={setSelectedBusinessRules}
+        disabled={false}
       />
     </Modal>
   );

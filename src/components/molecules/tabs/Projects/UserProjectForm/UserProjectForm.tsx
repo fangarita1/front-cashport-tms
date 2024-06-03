@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Flex, Spin, Typography, message } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
+import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
 
 import { SelectRoles } from "@/components/molecules/selects/SelectRoles/SelectRoles";
 import { SelectZone } from "@/components/molecules/selects/SelectZone/SelectZone";
@@ -10,6 +10,7 @@ import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
 
 import {
+  getGroupsByUser,
   getUserById,
   inviteUser,
   onChangeStatusById,
@@ -20,13 +21,15 @@ import { useAppStore } from "@/lib/store/store";
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
 import { IUserData, IUserForm } from "@/types/users/IUser";
 
+import { SelectClientsGroup } from "@/components/molecules/selects/SelectClientsGroup/SelectClientsGroup";
+
 import "./userprojectform.scss";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
-
+import { IGroupByUser } from "@/types/clientsGroups/IClientsGroups";
 const { Title } = Typography;
 
 interface Props {
-  isViewDetailsUser?: {
+  isViewDetailsUser: {
     active: boolean;
     id: number;
   };
@@ -46,7 +49,7 @@ export const UserProjectForm = ({
   setIsViewDetailsUser
 }: Props) => {
   const [messageApi, contextHolder] = message.useMessage();
-  const [isEditAvailable, setIsEditAvailable] = useState(isViewDetailsUser?.active);
+  const [isEditAvailable, setIsEditAvailable] = useState(false);
   const [dataUser, setDataUser] = useState({
     data: {},
     isLoading: false
@@ -71,10 +74,14 @@ export const UserProjectForm = ({
     channel: false
   });
   const [isOpenModalStatus, setIsOpenModalStatus] = useState(initDataOpenModalStatus);
+  const [assignedGroups, setAssignedGroups] = useState([] as any[]);
 
   useEffect(() => {
     (async () => {
-      if (isViewDetailsUser?.id === 0) return;
+      if (isViewDetailsUser?.id === 0) {
+        setIsEditAvailable(true);
+        return;
+      }
       setDataUser({
         isLoading: true,
         data: {} as IUserData
@@ -82,6 +89,7 @@ export const UserProjectForm = ({
       const response = await getUserById(`${isViewDetailsUser?.id}`);
       console.log("dataBACK-USER: ", response.data.data);
       const finalData = response.data.data;
+      console.log("arrivingData: ", finalData);
       const zonesFinalData =
         finalData.USER_ZONES?.map(
           (zone: { ZONE_ID: number; ZONE_DESCRIPTION: string }) => zone.ZONE_ID
@@ -97,8 +105,14 @@ export const UserProjectForm = ({
         lines: finalData.USER_LINES.map((line) => line.ID),
         sublines: finalData.USER_SUBLINES.map((subline) => subline.ID)
       });
+
+      const groupsByUserResponse = await getGroupsByUser(isViewDetailsUser?.id, ID);
+      if (groupsByUserResponse.data) {
+        console.log("Grupos asignados.data: ", groupsByUserResponse.data);
+        setAssignedGroups(groupsByUserResponse.data.map((group: IGroupByUser) => group.group_id));
+      }
     })();
-  }, [isViewDetailsUser]);
+  }, [ID, isViewDetailsUser, messageApi]);
 
   const onSubmitHandler = async (data: IUserForm) => {
     setCustomFieldsError({
@@ -110,6 +124,8 @@ export const UserProjectForm = ({
     // console.log("data: ", data);
     console.log("selectedBusinessRulesINSUBMIT: ", selectedBusinessRules);
     // console.log("zones: ", zones);
+
+    console.log("Aca van los grupos: ", assignedGroups);
     const response = isViewDetailsUser?.id
       ? await updateUser(
           data,
@@ -169,8 +185,8 @@ export const UserProjectForm = ({
               Ver Usuarios
             </Button>
             {/* -----------right buttons--------------- */}
-            {isViewDetailsUser?.active && (
-              <Flex gap={"1rem"}>
+            {isViewDetailsUser?.id > 0 && (
+              <Flex gap={"1.5rem"}>
                 <Button
                   size="large"
                   htmlType="button"
@@ -185,37 +201,15 @@ export const UserProjectForm = ({
                 </Button>
                 <Button
                   size="large"
-                  onClick={(e) => {
-                    isEditAvailable && e.preventDefault();
-                    setIsEditAvailable(false);
+                  onClick={() => {
+                    setIsEditAvailable(!isEditAvailable);
                   }}
                   className="buttonOutlined"
-                  htmlType={!isEditAvailable ? "submit" : "button"}
+                  htmlType="button"
                   icon={<Pencil size={"1.45rem"} />}
                 >
-                  Editar Usuario
+                  {isEditAvailable ? "Cancelar" : "Editar Usuario"}
                 </Button>
-              </Flex>
-            )}
-            {!isViewDetailsUser?.active && (
-              <Flex gap={"1rem"}>
-                <Button
-                  size="large"
-                  className="buttonOutlined"
-                  htmlType={!isEditAvailable ? "submit" : "button"}
-                  icon={<Pencil size={"1.45rem"} />}
-                >
-                  Crear Usuario
-                </Button>
-              </Flex>
-            )}
-            {!isViewDetailsUser && (
-              <Flex component={"footer"} className="footerNewUser" justify="flex-end">
-                <Flex gap={"1rem"}>
-                  <Button size="large" type="primary" className="buttonAction" htmlType="submit">
-                    Registrar Usuario
-                  </Button>
-                </Flex>
               </Flex>
             )}
           </Flex>
@@ -223,7 +217,7 @@ export const UserProjectForm = ({
             <Flex vertical component={"main"} className="mainUserForm">
               <Title level={4}>Información del usuario</Title>
               {/* -----------------------------------Informacion del Usuario--------------------------------------- */}
-              <Flex component={"section"} className="generalProject">
+              <div className="generalProject">
                 <InputForm
                   titleInput="Nombre del Contacto"
                   control={control}
@@ -261,12 +255,12 @@ export const UserProjectForm = ({
                     render={({ field }) => <SelectRoles errors={errors.info?.rol} field={field} />}
                   />
                 </Flex>
-              </Flex>
+              </div>
               {/* -----------------------------------Experiencia----------------------------------- */}
               <Title level={4}>Reglas de Proyecto</Title>
               <Flex component={"section"} gap={"1rem"} className="breRules">
                 <Flex vertical style={{ width: "30%" }}>
-                  <SelectZone zones={zones} setZones={setZones} />
+                  <SelectZone zones={zones} setZones={setZones} disabled={!isEditAvailable} />
                   <Typography.Text className="textError">
                     {customFieldsError.zone && `La Zona es obligatorio *`}
                   </Typography.Text>
@@ -276,7 +270,7 @@ export const UserProjectForm = ({
                     <SelectStructure
                       selectedBusinessRules={selectedBusinessRules}
                       setSelectedBusinessRules={setSelectedBusinessRules}
-                      sublinesUser={dataUser?.data?.USER_SUBLINES?.map((item) => item.ID)}
+                      disabled={!isEditAvailable}
                     />
                   )}
                   <Typography.Text className="textError">
@@ -284,7 +278,13 @@ export const UserProjectForm = ({
                   </Typography.Text>
                 </Flex>
                 <Flex vertical style={{ width: "30%" }}>
-                  -
+                  <SelectClientsGroup
+                    userID={dataUser?.data?.ID}
+                    projectID={ID}
+                    disabled={!isEditAvailable}
+                    assignedGroups={assignedGroups}
+                    setAssignedGroups={setAssignedGroups}
+                  />
                 </Flex>
               </Flex>
             </Flex>
@@ -292,6 +292,19 @@ export const UserProjectForm = ({
             <Spin />
           )}
         </Flex>
+        {isEditAvailable && (
+          <Flex gap={"1rem"} justify="flex-end">
+            <Button
+              type="primary"
+              className="buttonNewProject"
+              htmlType="submit"
+              size="large"
+              icon={<Plus weight="bold" size={15} />}
+            >
+              {isViewDetailsUser?.id ? "Actualizar usuario" : "Registrar usuario"}
+            </Button>
+          </Flex>
+        )}
       </form>
       {dataUser.data?.ID >= 0 && (
         <>

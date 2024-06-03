@@ -5,9 +5,14 @@ import { fetcher } from "@/utils/api/api";
 import { IRoles } from "@/types/roles/IRoles";
 
 import "./selectroles.scss";
+import { FieldErrorsImpl, Merge, FieldError as OriginalFieldError } from "react-hook-form";
+
+type ExtendedFieldError =
+  | OriginalFieldError
+  | Merge<OriginalFieldError, FieldErrorsImpl<{ value: number; label: string }>>;
 
 interface Props {
-  errors: any;
+  errors: ExtendedFieldError | undefined;
   field: any;
 }
 
