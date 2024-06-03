@@ -1,21 +1,25 @@
 import { Dispatch, SetStateAction } from "react";
 import { Checkbox, Flex, Spin, Typography } from "antd";
-
-import { useAppStore } from "@/lib/store/store";
-
-import "./selectClientsGroup.scss";
 import { useClientsGroups } from "@/hooks/useClientsGroups";
 
+import "./selectClientsGroup.scss";
+
 interface Props {
-  assignedGroups: number[];
-  setAssignedGroups: Dispatch<SetStateAction<number[]>>;
+  userID: number;
+  projectID: number;
   disabled?: boolean;
+  assignedGroups: number[];
+  setAssignedGroups: Dispatch<SetStateAction<any>>;
 }
 
-export const SelectClientsGroup = ({ assignedGroups, setAssignedGroups, disabled }: Props) => {
-  const { ID } = useAppStore((state) => state.selectProject);
+export const SelectClientsGroup = ({
+  projectID,
+  disabled,
+  assignedGroups,
+  setAssignedGroups
+}: Props) => {
   const { data, loading: isLoading } = useClientsGroups({
-    idProject: `${ID}`
+    idProject: `${projectID}`
   });
 
   return (
@@ -31,14 +35,13 @@ export const SelectClientsGroup = ({ assignedGroups, setAssignedGroups, disabled
                 <Flex key={group.id} justify="space-between" className="cardGroups__group">
                   <Typography.Text>{group.group_name}</Typography.Text>
                   <Checkbox
+                    checked={assignedGroups?.includes(group.id)}
                     disabled={disabled}
                     onChange={(e) => {
                       if (e.target.checked) {
-                        if (!assignedGroups.includes(group.id)) {
-                          setAssignedGroups([...assignedGroups, group.id]);
-                        }
+                        setAssignedGroups([...assignedGroups, group.id]);
                       } else {
-                        setAssignedGroups(assignedGroups.filter((id) => id !== group.id));
+                        setAssignedGroups(assignedGroups?.filter((id) => id !== group.id));
                       }
                     }}
                     className="checboxzone"

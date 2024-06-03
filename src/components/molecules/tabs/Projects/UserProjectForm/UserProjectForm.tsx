@@ -10,6 +10,7 @@ import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
 
 import {
+  getGroupsByUser,
   getUserById,
   inviteUser,
   onChangeStatusById,
@@ -23,6 +24,7 @@ import { IUserData } from "@/types/users/IUser";
 import { SelectClientsGroup } from "@/components/molecules/selects/SelectClientsGroup/SelectClientsGroup";
 
 import "./userprojectform.scss";
+import { IGroupByUser } from "@/types/clientsGroups/IClientsGroups";
 const { Title } = Typography;
 
 export type UserType = {
@@ -95,6 +97,7 @@ export const UserProjectForm = ({
       });
       const response = await getUserById(`${isViewDetailsUser?.id}`);
       const finalData = response.data.data;
+      console.log("arrivingData: ", finalData);
       const zonesFinalData =
         finalData.USER_ZONES?.map(
           (zone: { ZONE_ID: number; ZONE_DESCRIPTION: string }) => zone.ZONE_ID
@@ -104,8 +107,14 @@ export const UserProjectForm = ({
         data: finalData
       });
       setZones(zonesFinalData);
+
+      const groupsByUserResponse = await getGroupsByUser(isViewDetailsUser?.id, ID);
+      if (groupsByUserResponse.data) {
+        console.log("Grupos asignados.data: ", groupsByUserResponse.data);
+        setAssignedGroups(groupsByUserResponse.data.map((group: IGroupByUser) => group.group_id));
+      }
     })();
-  }, [isViewDetailsUser]);
+  }, [ID, isViewDetailsUser, messageApi]);
 
   const onSubmitHandler = async (data: UserType) => {
     setCustomFieldsError({
@@ -113,6 +122,8 @@ export const UserProjectForm = ({
       channel: selectedSublines.length === 0
     });
     if (zones.length === 0 || selectedSublines.length === 0) return;
+
+    console.log("Aca van los grupos: ", assignedGroups);
     const response = isViewDetailsUser?.id
       ? await updateUser(
           data,
@@ -267,9 +278,11 @@ export const UserProjectForm = ({
                 </Flex>
                 <Flex vertical style={{ width: "30%" }}>
                   <SelectClientsGroup
+                    userID={dataUser?.data?.ID}
+                    projectID={ID}
+                    disabled={!isEditAvailable}
                     assignedGroups={assignedGroups}
                     setAssignedGroups={setAssignedGroups}
-                    disabled={!isEditAvailable}
                   />
                 </Flex>
               </Flex>
