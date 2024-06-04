@@ -1,39 +1,22 @@
 import { Dispatch, SetStateAction } from "react";
 
-import { IChanel } from "@/types/bre/IBRE";
+import { IChanel, ISelectedBussinessRules } from "@/types/bre/IBRE";
 import { SelectChips } from "../SelectChips/SelectChips";
 
 import "./selectchanel.scss";
 interface Props {
-  idActiveLine: number;
   chanels: IChanel[];
-  setSelectChannel: Dispatch<SetStateAction<number>>;
-
-  setSelectedSublines: Dispatch<
-    SetStateAction<
-      {
-        idChannel: number;
-        idLine: number;
-        subline: { id: number; description: string };
-      }[]
-    >
-  >;
-  selectedSubLines: {
-    idChannel: number;
-    idLine: number;
-    subline: {
-      id: number;
-      description: string;
-    };
-  }[];
-  disabled?: boolean;
+  disabled: boolean;
+  setSelectedBusinessRules: Dispatch<SetStateAction<ISelectedBussinessRules>>;
+  selectedBusinessRules: ISelectedBussinessRules;
 }
 export const SelectChanel = ({
   chanels,
-  selectedSubLines,
-  setSelectedSublines,
-  disabled
+  disabled,
+  selectedBusinessRules,
+  setSelectedBusinessRules
 }: Props) => {
+  console.log("chanels: ", chanels);
   return (
     <div className="chanelSelect">
       {chanels.map(({ CHANNEL_ID, CHANNEL_NAME, CHANNEL_LINES }) => {
@@ -42,8 +25,8 @@ export const SelectChanel = ({
             key={CHANNEL_ID}
             lines={CHANNEL_LINES}
             channelId={CHANNEL_ID}
-            selectedSubLines={selectedSubLines}
-            setSelectedSublines={setSelectedSublines}
+            selectedBusinessRules={selectedBusinessRules}
+            setSelectedBusinessRules={setSelectedBusinessRules}
             channelName={CHANNEL_NAME}
             disabled={disabled}
           />

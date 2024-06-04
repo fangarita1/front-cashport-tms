@@ -24,6 +24,7 @@ import { IUserData, IUserForm } from "@/types/users/IUser";
 import { SelectClientsGroup } from "@/components/molecules/selects/SelectClientsGroup/SelectClientsGroup";
 
 import "./userprojectform.scss";
+import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 import { IGroupByUser } from "@/types/clientsGroups/IClientsGroups";
 const { Title } = Typography;
 
@@ -59,14 +60,14 @@ export const UserProjectForm = ({
     formState: { errors }
   } = useForm<IUserForm>({
     defaultValues: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : initialData,
-    disabled: isEditAvailable,
+    disabled: !isEditAvailable,
     values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as IUserForm)
   });
   const { ID } = useAppStore((state) => state.selectProject);
 
-  const [selectedSublines, setSelectedSublines] = useState<
-    { idChannel: number; idLine: number; subline: { id: number; description: string } }[]
-  >([]);
+  const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
+    initDatSelectedBusinessRules
+  );
   const [zones, setZones] = useState([] as number[]);
   const [customFieldsError, setCustomFieldsError] = useState({
     zone: false,
@@ -87,7 +88,7 @@ export const UserProjectForm = ({
       });
       const response = await getUserById(`${isViewDetailsUser?.id}`);
       const finalData = response.data.data;
-      console.log("arrivingData: ", finalData);
+
       const zonesFinalData =
         finalData.USER_ZONES?.map(
           (zone: { ZONE_ID: number; ZONE_DESCRIPTION: string }) => zone.ZONE_ID
@@ -98,9 +99,14 @@ export const UserProjectForm = ({
       });
       setZones(zonesFinalData);
 
+      setSelectedBusinessRules({
+        channels: finalData.USER_CHANNELS.map((channel) => channel.ID),
+        lines: finalData.USER_LINES.map((line) => line.ID),
+        sublines: finalData.USER_SUBLINES.map((subline) => subline.ID)
+      });
+
       const groupsByUserResponse = await getGroupsByUser(isViewDetailsUser?.id, ID);
       if (groupsByUserResponse.data) {
-        console.log("Grupos asignados.data: ", groupsByUserResponse.data);
         setAssignedGroups(groupsByUserResponse.data.map((group: IGroupByUser) => group.group_id));
       }
     })();
@@ -109,21 +115,21 @@ export const UserProjectForm = ({
   const onSubmitHandler = async (data: IUserForm) => {
     setCustomFieldsError({
       zone: zones.length === 0,
-      channel: selectedSublines.length === 0
+      channel: selectedBusinessRules?.channels.length === 0
     });
-    if (zones.length === 0 || selectedSublines.length === 0) return;
+    if (zones.length === 0 || selectedBusinessRules?.channels.length === 0) return;
 
-    console.log("Aca van los grupos: ", assignedGroups);
     const response = isViewDetailsUser?.id
       ? await updateUser(
           data,
-          selectedSublines,
+          selectedBusinessRules,
+          assignedGroups,
           zones,
           isViewDetailsUser?.id,
           ID,
           dataUser.data?.ACTIVE === 1
         )
-      : await inviteUser(data, selectedSublines, zones, ID);
+      : await inviteUser(data, selectedBusinessRules, assignedGroups, zones, ID);
     if (response.status === 200 || response.status === 202) {
       const isEdit = isViewDetailsUser?.id ? "editado" : "creado";
       messageApi.open({
@@ -256,9 +262,8 @@ export const UserProjectForm = ({
                 <Flex vertical style={{ width: "37%" }}>
                   {dataUser?.data && (
                     <SelectStructure
-                      selectedSublines={selectedSublines}
-                      setSelectedSublines={setSelectedSublines}
-                      sublinesUser={dataUser?.data?.USER_SUBLINES?.map((item) => item.ID)}
+                      selectedBusinessRules={selectedBusinessRules}
+                      setSelectedBusinessRules={setSelectedBusinessRules}
                       disabled={!isEditAvailable}
                     />
                   )}
@@ -320,7 +325,7 @@ export const UserProjectForm = ({
 const initialData: IUserForm = {
   info: {
     name: "",
-    rol: { value: 0, label: "" },
+    rol: undefined,
     cargo: "",
     email: "",
     phone: ""
@@ -337,4 +342,10 @@ const dataToDataForm = (data: any) => {
       phone: data.PHONE
     }
   };
+};
+
+const initDatSelectedBusinessRules: ISelectedBussinessRules = {
+  channels: [],
+  lines: [],
+  sublines: []
 };

@@ -1,18 +1,17 @@
 @import "@/styles/variables.scss";
 
 .selectInputRoles {
-    height: 2.75rem !important;
-    height: 100% !important;
+    min-height: 2.9rem;
+    height: 100%;
     margin-bottom: 1rem;
     background-color: $background;
     border-radius: 0.25rem;
-    width: 100% !important;
 
     .ant-select-selector {
         font-size: 1rem !important;
 
         .ant-select-selection-placeholder {
-            color: $dark-gray !important;
+            color: $dark-gray;
         }
     }
 

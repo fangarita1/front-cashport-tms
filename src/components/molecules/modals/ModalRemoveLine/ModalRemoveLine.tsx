@@ -1,6 +1,6 @@
 import { Modal, Typography } from "antd";
 
-import { ChannelLine } from "@/types/bre/IBRE";
+import { Line } from "@/types/bre/IBRE";
 
 import "./modalremoveline.scss";
 
@@ -12,7 +12,7 @@ interface Props {
   name?: string;
   onClose: () => void;
   onRemove?: () => void;
-  lineData: ChannelLine;
+  lineData: Line;
 }
 export const ModalRemoveLine = ({ isOpen, isLoading, lineData, onClose, onRemove }: Props) => {
   return (
