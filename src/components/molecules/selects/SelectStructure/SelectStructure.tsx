@@ -32,11 +32,13 @@ interface Props {
       }[]
     >
   >;
+  disabled?: boolean;
 }
 export const SelectStructure = ({
   sublinesUser = [],
   selectedSublines,
-  setSelectedSublines
+  setSelectedSublines,
+  disabled
 }: Props) => {
   const { ID } = useAppStore((state) => state.selectProject);
   const { data, isLoading } = useSWR<IBRE>(`/bussines-rule/project/${ID}`, fetcher, {});
@@ -67,6 +69,7 @@ export const SelectStructure = ({
                 chanels={data.data}
                 setSelectedSublines={setSelectedSublines}
                 selectedSubLines={selectedSublines}
+                disabled={disabled ? disabled : false}
               />
             ) : (
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />

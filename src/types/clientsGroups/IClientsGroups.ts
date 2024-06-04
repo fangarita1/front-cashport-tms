@@ -28,3 +28,17 @@ export interface Pagination {
   page: number;
   total: number;
 }
+
+export interface IGroupsByUser {
+  status: number;
+  message: string;
+  data: IGroupByUser[];
+}
+
+export interface IGroupByUser {
+  id: number;
+  user_id: number;
+  group_id: number;
+  group_name: string;
+  project_id: number;
+}

@@ -26,8 +26,14 @@ interface Props {
       description: string;
     };
   }[];
+  disabled?: boolean;
 }
-export const SelectChanel = ({ chanels, selectedSubLines, setSelectedSublines }: Props) => {
+export const SelectChanel = ({
+  chanels,
+  selectedSubLines,
+  setSelectedSublines,
+  disabled
+}: Props) => {
   return (
     <div className="chanelSelect">
       {chanels.map(({ CHANNEL_ID, CHANNEL_NAME, CHANNEL_LINES }) => {
@@ -39,6 +45,7 @@ export const SelectChanel = ({ chanels, selectedSubLines, setSelectedSublines }:
             selectedSubLines={selectedSubLines}
             setSelectedSublines={setSelectedSublines}
             channelName={CHANNEL_NAME}
+            disabled={disabled}
           />
         );
       })}
