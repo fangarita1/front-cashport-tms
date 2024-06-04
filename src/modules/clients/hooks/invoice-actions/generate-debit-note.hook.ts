@@ -5,8 +5,21 @@ export const useGenerateDebitNote = () => {
   const [currentStep, setCurrentStep] = useState<GenerateDebitNoteStep>(
     GenerateDebitNoteStep.SelectNotes
   );
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleSelectNotesContinue = () => {
+    setCurrentStep(GenerateDebitNoteStep.DefineAmount);
+  };
+
+  const handleDefineAmountContinue = () => {
+    setCurrentStep(GenerateDebitNoteStep.Evidence);
+  };
 
   return {
-    currentStep
+    currentStep,
+    file,
+    setFile,
+    handleSelectNotesContinue,
+    handleDefineAmountContinue
   };
 };
