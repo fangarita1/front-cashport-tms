@@ -1,15 +1,14 @@
-import { Button, Flex } from "antd";
-import Link from "next/link";
-
 import { CaretLeft } from "phosphor-react";
 import { FC } from "react";
 import { WalletTab } from "@/components/organisms/Customers/WalletTab/WalletTab";
-import UiTab from "@/components/ui/ui-tab";
-import Dashboard from "../dashboard/dashboard";
 
 import styles from "./client-details.module.scss";
+import Dashboard from "../dashboard";
+import InvoiceActionsModal from "../invoice-actions-modal";
 
 import { useClientDetails } from "../../hooks/client-details/client-details.hook";
+import { Button, Flex } from "antd";
+import UiTab from "@/components/ui/ui-tab";
 
 interface ClientDetailsProps {}
 
@@ -59,6 +58,7 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
           <UiTab tabs={items} sticky />
         </Flex>
       </main>
+      <InvoiceActionsModal />
     </>
   );
 };
