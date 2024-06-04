@@ -1,56 +1,25 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Empty, Flex, Spin, Typography } from "antd";
+import { Dispatch, SetStateAction } from "react";
+import { Flex, Spin, Typography } from "antd";
 import useSWR from "swr";
-
-import { SelectChanel } from "@/components/molecules/selects/SelectChanel/SelectChanel";
 
 import { useAppStore } from "@/lib/store/store";
 import { fetcher } from "@/utils/api/api";
-import { IBRE } from "@/types/bre/IBRE";
-import { filterBRbyIdSubline, transformFormat } from "@/utils/utils";
+import { IBRE, ISelectedBussinessRules } from "@/types/bre/IBRE";
 
 import "./selectstructure.scss";
+import { SelectChips } from "../SelectChips/SelectChips";
 interface Props {
-  sublinesUser?: number[];
-  selectedSublines: {
-    idChannel: number;
-    idLine: number;
-    subline: {
-      id: number;
-      description: string;
-    };
-  }[];
-  setSelectedSublines: Dispatch<
-    SetStateAction<
-      {
-        idChannel: number;
-        idLine: number;
-        subline: {
-          id: number;
-          description: string;
-        };
-      }[]
-    >
-  >;
+  selectedBusinessRules: ISelectedBussinessRules;
+  disabled: boolean;
+  setSelectedBusinessRules: Dispatch<SetStateAction<ISelectedBussinessRules>>;
 }
 export const SelectStructure = ({
-  sublinesUser = [],
-  selectedSublines,
-  setSelectedSublines
+  disabled,
+  selectedBusinessRules,
+  setSelectedBusinessRules
 }: Props) => {
   const { ID } = useAppStore((state) => state.selectProject);
   const { data, isLoading } = useSWR<IBRE>(`/bussines-rule/project/${ID}`, fetcher, {});
-
-  const [selectChannel, setSelectChannel] = useState(0);
-  useEffect(() => {
-    if (!data?.data) return;
-    if (sublinesUser.length === 0) return;
-    const dataFinal = JSON.parse(JSON.stringify(data?.data));
-    const brs = filterBRbyIdSubline(dataFinal, sublinesUser);
-    setSelectedSublines(transformFormat(brs));
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
 
   return (
     <div className="selectstructure">
@@ -60,17 +29,19 @@ export const SelectStructure = ({
           <Spin />
         ) : (
           <>
-            {data?.data ? (
-              <SelectChanel
-                idActiveLine={selectChannel}
-                setSelectChannel={setSelectChannel}
-                chanels={data.data}
-                setSelectedSublines={setSelectedSublines}
-                selectedSubLines={selectedSublines}
-              />
-            ) : (
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-            )}
+            {data?.data.map(({ CHANNEL_ID, CHANNEL_NAME, CHANNEL_LINES }) => {
+              return (
+                <SelectChips
+                  key={CHANNEL_ID}
+                  lines={CHANNEL_LINES}
+                  channelId={CHANNEL_ID}
+                  selectedBusinessRules={selectedBusinessRules}
+                  setSelectedBusinessRules={setSelectedBusinessRules}
+                  channelName={CHANNEL_NAME}
+                  disabled={disabled}
+                />
+              );
+            })}
           </>
         )}
       </Flex>

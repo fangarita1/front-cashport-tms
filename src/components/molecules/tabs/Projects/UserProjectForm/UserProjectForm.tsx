@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Flex, Spin, Typography, message } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
+import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
 
 import { SelectRoles } from "@/components/molecules/selects/SelectRoles/SelectRoles";
 import { SelectZone } from "@/components/molecules/selects/SelectZone/SelectZone";
@@ -10,6 +10,7 @@ import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
 
 import {
+  getGroupsByUser,
   getUserById,
   inviteUser,
   onChangeStatusById,
@@ -18,24 +19,17 @@ import {
 } from "@/services/users/users";
 import { useAppStore } from "@/lib/store/store";
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
-import { IUserData } from "@/types/users/IUser";
+import { IUserData, IUserForm } from "@/types/users/IUser";
+
+import { SelectClientsGroup } from "@/components/molecules/selects/SelectClientsGroup/SelectClientsGroup";
 
 import "./userprojectform.scss";
-
+import { ISelectedBussinessRules } from "@/types/bre/IBRE";
+import { IGroupByUser } from "@/types/clientsGroups/IClientsGroups";
 const { Title } = Typography;
 
-export type UserType = {
-  info: {
-    name: string;
-    cargo: string;
-    email: string;
-    phone: string;
-    rol: string;
-  };
-};
-
 interface Props {
-  isViewDetailsUser?: {
+  isViewDetailsUser: {
     active: boolean;
     id: number;
   };
@@ -55,7 +49,7 @@ export const UserProjectForm = ({
   setIsViewDetailsUser
 }: Props) => {
   const [messageApi, contextHolder] = message.useMessage();
-  const [isEditAvailable, setIsEditAvailable] = useState(isViewDetailsUser?.active);
+  const [isEditAvailable, setIsEditAvailable] = useState(false);
   const [dataUser, setDataUser] = useState({
     data: {},
     isLoading: false
@@ -64,32 +58,37 @@ export const UserProjectForm = ({
     control,
     handleSubmit,
     formState: { errors }
-  } = useForm<UserType>({
+  } = useForm<IUserForm>({
     defaultValues: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : initialData,
-    disabled: isEditAvailable,
-    values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as UserType)
+    disabled: !isEditAvailable,
+    values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as IUserForm)
   });
   const { ID } = useAppStore((state) => state.selectProject);
 
-  const [selectedSublines, setSelectedSublines] = useState<
-    { idChannel: number; idLine: number; subline: { id: number; description: string } }[]
-  >([]);
+  const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
+    initDatSelectedBusinessRules
+  );
   const [zones, setZones] = useState([] as number[]);
   const [customFieldsError, setCustomFieldsError] = useState({
     zone: false,
     channel: false
   });
   const [isOpenModalStatus, setIsOpenModalStatus] = useState(initDataOpenModalStatus);
+  const [assignedGroups, setAssignedGroups] = useState([] as any[]);
 
   useEffect(() => {
     (async () => {
-      if (isViewDetailsUser?.id === 0) return;
+      if (isViewDetailsUser?.id === 0) {
+        setIsEditAvailable(true);
+        return;
+      }
       setDataUser({
         isLoading: true,
         data: {} as IUserData
       });
       const response = await getUserById(`${isViewDetailsUser?.id}`);
       const finalData = response.data.data;
+
       const zonesFinalData =
         finalData.USER_ZONES?.map(
           (zone: { ZONE_ID: number; ZONE_DESCRIPTION: string }) => zone.ZONE_ID
@@ -99,25 +98,38 @@ export const UserProjectForm = ({
         data: finalData
       });
       setZones(zonesFinalData);
-    })();
-  }, [isViewDetailsUser]);
 
-  const onSubmitHandler = async (data: UserType) => {
+      setSelectedBusinessRules({
+        channels: finalData.USER_CHANNELS.map((channel) => channel.ID),
+        lines: finalData.USER_LINES.map((line) => line.ID),
+        sublines: finalData.USER_SUBLINES.map((subline) => subline.ID)
+      });
+
+      const groupsByUserResponse = await getGroupsByUser(isViewDetailsUser?.id, ID);
+      if (groupsByUserResponse.data) {
+        setAssignedGroups(groupsByUserResponse.data.map((group: IGroupByUser) => group.group_id));
+      }
+    })();
+  }, [ID, isViewDetailsUser, messageApi]);
+
+  const onSubmitHandler = async (data: IUserForm) => {
     setCustomFieldsError({
       zone: zones.length === 0,
-      channel: selectedSublines.length === 0
+      channel: selectedBusinessRules?.channels.length === 0
     });
-    if (zones.length === 0 || selectedSublines.length === 0) return;
+    if (zones.length === 0 || selectedBusinessRules?.channels.length === 0) return;
+
     const response = isViewDetailsUser?.id
       ? await updateUser(
           data,
-          selectedSublines,
+          selectedBusinessRules,
+          assignedGroups,
           zones,
           isViewDetailsUser?.id,
           ID,
           dataUser.data?.ACTIVE === 1
         )
-      : await inviteUser(data, selectedSublines, zones, ID);
+      : await inviteUser(data, selectedBusinessRules, assignedGroups, zones, ID);
     if (response.status === 200 || response.status === 202) {
       const isEdit = isViewDetailsUser?.id ? "editado" : "creado";
       messageApi.open({
@@ -167,8 +179,8 @@ export const UserProjectForm = ({
               Ver Usuarios
             </Button>
             {/* -----------right buttons--------------- */}
-            {isViewDetailsUser?.active && (
-              <Flex gap={"1rem"}>
+            {isViewDetailsUser?.id > 0 && (
+              <Flex gap={"1.5rem"}>
                 <Button
                   size="large"
                   htmlType="button"
@@ -183,37 +195,15 @@ export const UserProjectForm = ({
                 </Button>
                 <Button
                   size="large"
-                  onClick={(e) => {
-                    isEditAvailable && e.preventDefault();
-                    setIsEditAvailable(false);
+                  onClick={() => {
+                    setIsEditAvailable(!isEditAvailable);
                   }}
                   className="buttonOutlined"
-                  htmlType={!isEditAvailable ? "submit" : "button"}
+                  htmlType="button"
                   icon={<Pencil size={"1.45rem"} />}
                 >
-                  Editar Usuario
+                  {isEditAvailable ? "Cancelar" : "Editar Usuario"}
                 </Button>
-              </Flex>
-            )}
-            {!isViewDetailsUser?.active && (
-              <Flex gap={"1rem"}>
-                <Button
-                  size="large"
-                  className="buttonOutlined"
-                  htmlType={!isEditAvailable ? "submit" : "button"}
-                  icon={<Pencil size={"1.45rem"} />}
-                >
-                  Crear Usuario
-                </Button>
-              </Flex>
-            )}
-            {!isViewDetailsUser && (
-              <Flex component={"footer"} className="footerNewUser" justify="flex-end">
-                <Flex gap={"1rem"}>
-                  <Button size="large" type="primary" className="buttonAction" htmlType="submit">
-                    Registrar Usuario
-                  </Button>
-                </Flex>
               </Flex>
             )}
           </Flex>
@@ -221,7 +211,7 @@ export const UserProjectForm = ({
             <Flex vertical component={"main"} className="mainUserForm">
               <Title level={4}>Información del usuario</Title>
               {/* -----------------------------------Informacion del Usuario--------------------------------------- */}
-              <Flex component={"section"} className="generalProject">
+              <div className="generalProject">
                 <InputForm
                   titleInput="Nombre del Contacto"
                   control={control}
@@ -249,7 +239,9 @@ export const UserProjectForm = ({
                   error={errors.info?.phone}
                 />
                 <Flex vertical className="containerInput">
-                  <Title level={5}>Rol</Title>
+                  <Title className="containerInput__title" level={5}>
+                    Rol
+                  </Title>
                   <Controller
                     name="info.rol"
                     control={control}
@@ -257,12 +249,12 @@ export const UserProjectForm = ({
                     render={({ field }) => <SelectRoles errors={errors.info?.rol} field={field} />}
                   />
                 </Flex>
-              </Flex>
+              </div>
               {/* -----------------------------------Experiencia----------------------------------- */}
               <Title level={4}>Reglas de Proyecto</Title>
               <Flex component={"section"} gap={"1rem"} className="breRules">
                 <Flex vertical style={{ width: "30%" }}>
-                  <SelectZone zones={zones} setZones={setZones} />
+                  <SelectZone zones={zones} setZones={setZones} disabled={!isEditAvailable} />
                   <Typography.Text className="textError">
                     {customFieldsError.zone && `La Zona es obligatorio *`}
                   </Typography.Text>
@@ -270,9 +262,9 @@ export const UserProjectForm = ({
                 <Flex vertical style={{ width: "37%" }}>
                   {dataUser?.data && (
                     <SelectStructure
-                      selectedSublines={selectedSublines}
-                      setSelectedSublines={setSelectedSublines}
-                      sublinesUser={dataUser?.data?.USER_SUBLINES?.map((item) => item.ID)}
+                      selectedBusinessRules={selectedBusinessRules}
+                      setSelectedBusinessRules={setSelectedBusinessRules}
+                      disabled={!isEditAvailable}
                     />
                   )}
                   <Typography.Text className="textError">
@@ -280,7 +272,13 @@ export const UserProjectForm = ({
                   </Typography.Text>
                 </Flex>
                 <Flex vertical style={{ width: "30%" }}>
-                  -
+                  <SelectClientsGroup
+                    userID={dataUser?.data?.ID}
+                    projectID={ID}
+                    disabled={!isEditAvailable}
+                    assignedGroups={assignedGroups}
+                    setAssignedGroups={setAssignedGroups}
+                  />
                 </Flex>
               </Flex>
             </Flex>
@@ -288,6 +286,19 @@ export const UserProjectForm = ({
             <Spin />
           )}
         </Flex>
+        {isEditAvailable && (
+          <Flex gap={"1rem"} justify="flex-end">
+            <Button
+              type="primary"
+              className="buttonNewProject"
+              htmlType="submit"
+              size="large"
+              icon={<Plus weight="bold" size={15} />}
+            >
+              {isViewDetailsUser?.id ? "Actualizar usuario" : "Registrar usuario"}
+            </Button>
+          </Flex>
+        )}
       </form>
       {dataUser.data?.ID >= 0 && (
         <>
@@ -311,10 +322,10 @@ export const UserProjectForm = ({
   );
 };
 
-const initialData: UserType = {
+const initialData: IUserForm = {
   info: {
     name: "",
-    rol: "",
+    rol: undefined,
     cargo: "",
     email: "",
     phone: ""
@@ -325,10 +336,16 @@ const dataToDataForm = (data: any) => {
   return {
     info: {
       name: data.USER_NAME,
-      rol: `${data.ROL_ID}-${data.ROL_NAME}`,
+      rol: { value: data.ROL_ID, label: data.ROL_NAME },
       cargo: data.POSITION,
       email: data.EMAIL,
       phone: data.PHONE
     }
   };
+};
+
+const initDatSelectedBusinessRules: ISelectedBussinessRules = {
+  channels: [],
+  lines: [],
+  sublines: []
 };

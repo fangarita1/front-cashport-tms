@@ -1,43 +1,42 @@
-@import '../../../../styles/variables.scss';
+@import "@styles/variables.scss";
 
 .selectchips {
-    border: 1px solid $dark-gray;
     background-color: $white;
-    border-radius: 0.7rem;
+    border-radius: 0.25rem;
     width: 100%;
-    margin: .5rem 0;
-    padding: .65rem;
+    padding: 0.75rem;
     height: max-content;
 
     .headerselectchips {
-        margin-bottom: .2rem;
+        margin-bottom: 0.2rem;
     }
 
     .titleChannel {
-        font-weight: 500;
+        font-weight: 300;
         font-size: 1rem;
     }
 
     .titleLine {
-        font-weight: 400;
-        font-size: .8rem;
+        font-weight: 300;
+        font-size: 1rem;
     }
 
     .line {
         border: 1px solid $dark-gray;
         width: 100%;
-        border-radius: 0.7rem;
-        gap: .74rem;
+        border-radius: 0.75rem;
+        gap: 0.75rem;
         padding: 1rem;
+        overflow: hidden;
     }
 
     .sublines {
         flex-wrap: wrap;
-        gap: .5rem;
+        gap: 0.5rem;
     }
 
     .mainTags {
-        padding: .45rem;
+        padding: 0.45rem;
         display: flex;
         flex-wrap: wrap;
         gap: 5px;
@@ -48,9 +47,11 @@
         border: none;
         display: flex;
         align-items: center;
-        padding: .45rem;
-        gap: 1.7rem;
-        border-radius: .5rem;
+        padding: 0.45rem;
+        gap: 0.375rem;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
 
         .ant-tag-close-icon {
             display: flex;

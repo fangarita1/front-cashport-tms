@@ -2,10 +2,11 @@ import axios, { AxiosResponse } from "axios";
 import { MessageInstance } from "antd/es/message/interface";
 
 import config from "@/config";
-import { IUserAxios } from "@/types/users/IUser";
+import { IUserAxios, IUserForm } from "@/types/users/IUser";
 import { getIdToken } from "@/utils/api/api";
 import { SUCCESS } from "@/utils/constants/globalConstants";
-import { removeDuplicatesFromArrayNumbers } from "@/utils/utils";
+import { ISelectedBussinessRules } from "@/types/bre/IBRE";
+import { IGroupsByUser } from "@/types/clientsGroups/IClientsGroups";
 
 export const getUserById = async (idUser: string): Promise<IUserAxios> => {
   const token = await getIdToken();
@@ -26,35 +27,28 @@ export const getUserById = async (idUser: string): Promise<IUserAxios> => {
 
 // create
 export const inviteUser = async (
-  data: any,
-  selectedSublines: any,
+  data: IUserForm,
+  selectedBusinessRules: ISelectedBussinessRules,
+  selectedGroups: number[],
   zones: any,
   ID: any
 ): Promise<any> => {
-  const selectedChannel = removeDuplicatesFromArrayNumbers(
-    selectedSublines.map((bre: any) => bre.idChannel)
-  );
-  const selectedLines = removeDuplicatesFromArrayNumbers(
-    selectedSublines.map((bre: any) => bre.idLine)
-  );
-  const _selectedSublines = selectedSublines.map((bre: any) => bre.subline.id);
-  const rol = data.info.rol.split("-")[0];
-
   const modelData = {
     email: data.info.email,
     user_name: data.info.name,
-    channel: selectedChannel,
-    line: selectedLines,
-    subline: _selectedSublines,
+    channel: selectedBusinessRules.channels,
+    line: selectedBusinessRules.lines,
+    subline: selectedBusinessRules.sublines,
     zone: zones,
-    password: "Pruebas12345.",
+    password: "123456",
     phone: data.info.phone,
     position: data.info.cargo,
     project_id: ID,
-    rol_id: rol
+    rol_id: data.info.rol?.value,
+    groups_id: selectedGroups
   };
   const token = await getIdToken();
-  const endpointRole = data.rol_id === "2" ? "admin" : "user";
+  const endpointRole = data.info.rol?.value === 2 ? "admin" : "user";
   try {
     const response: AxiosResponse = await axios.post(
       `${config.API_HOST}/user/invitation/${endpointRole}/email`,
@@ -69,42 +63,36 @@ export const inviteUser = async (
     );
     return response;
   } catch (error) {
+    console.log("Error inviting user: ", error);
     return error as any;
   }
 };
 //update
 export const updateUser = async (
-  data: any,
-  selectedSublines: any,
+  data: IUserForm,
+  selectedBusinessRules: ISelectedBussinessRules,
+  selectedGroups: number[],
   zones: any,
   ID: any,
   project_id: number,
   isActive: boolean
 ): Promise<any> => {
-  const selectedChannel = removeDuplicatesFromArrayNumbers(
-    selectedSublines.map((bre: any) => bre.idChannel)
-  );
-  const selectedLines = removeDuplicatesFromArrayNumbers(
-    selectedSublines.map((bre: any) => bre.idLine)
-  );
-  const _selectedSublines = selectedSublines.map((bre: any) => bre.subline.id);
-
-  const rol = Number(data.info.rol.split("-")[0]);
-
   const modelData = {
+    active: isActive ? 1 : 0,
+    channel: selectedBusinessRules.channels,
     email: data.info.email,
-    user_name: data.info.name,
-    channel: selectedChannel,
-    line: selectedLines,
-    subline: _selectedSublines,
-    zones: zones.map((zone: number) => ({ ZONE_ID: zone })),
+    id: ID,
+    line: selectedBusinessRules.lines,
     phone: data.info.phone,
     position: data.info.cargo,
-    id: ID,
-    rol_id: rol,
     project_id: `${project_id}`,
-    active: isActive ? 1 : 0
+    rol_id: data.info.rol?.value,
+    subline: selectedBusinessRules.sublines,
+    user_name: data.info.name,
+    zones: zones.map((zone: number) => ({ ZONE_ID: zone })),
+    groups_id: selectedGroups
   };
+
   const token = await getIdToken();
   try {
     const response: AxiosResponse = await axios.put(`${config.API_HOST}/user`, modelData, {
@@ -116,6 +104,7 @@ export const updateUser = async (
     });
     return response;
   } catch (error) {
+    console.log("Error updating user: ", error);
     return error as any;
   }
 };
@@ -129,9 +118,6 @@ export const onChangeStatusById = async (
   const modelData = {
     email: data.EMAIL,
     user_name: data.USER_NAME,
-    // channel: selectedChannel,
-    // line: selectedLines,
-    // subline: _selectedSublines,
     zones:
       data.USER_ZONES?.map((zone: { ZONE_ID: number; ZONE_DESCRIPTION: string }) => ({
         ZONE_ID: zone.ZONE_ID
@@ -284,6 +270,27 @@ export const resendInvitationUsers = async (users_id: number[]): Promise<AxiosRe
     return response;
   } catch (error) {
     console.log("Error re-sending invite to users: ", error);
+    return error as any;
+  }
+};
+
+export const getGroupsByUser = async (userID: number, projectID: number) => {
+  const token = await getIdToken();
+  try {
+    const response: AxiosResponse<IGroupsByUser> = await axios.get(
+      `${config.API_HOST}/group-client/user/${userID}/project/${projectID}`,
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json; charset=utf-8",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.log("Error getting groups by user: ", error);
     return error as any;
   }
 };

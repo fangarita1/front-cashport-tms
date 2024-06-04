@@ -1,28 +1,31 @@
-@import "../../../../styles/variables.scss";
+@import "@/styles/variables.scss";
 
 .selectzone {
     width: 100%;
-    .zones {
-        background-color: $background;
-        padding: .75rem;
-        border-radius: 0.5rem;
-        margin-top: .5rem;
-    }
-    .title{
+
+    .title {
         font-size: 1rem;
-    }
-    .zone{
-        background-color: $white;
-        width: 100%;
-        border-radius: .25rem;
-        padding: .3rem .5rem;
-        margin: .5rem 0;
-    }
-    .checboxzone{
-        .ant-checkbox-inner {
-            background-color: $secondary !important;
-            border: none;
-        }
+        font-weight: 300;
     }
 
+    .zones {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        background-color: $background;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .zone {
+        background-color: $white;
+        width: 100%;
+        border-radius: 0.25rem;
+        padding: 0.75rem 1rem;
+        span {
+            font-weight: 300;
+            font-size: 1rem;
+        }
+    }
 }

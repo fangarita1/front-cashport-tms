@@ -3,6 +3,7 @@ import { CaretDoubleRight, CaretDown } from "phosphor-react";
 import styles from "./accounting-adjustments-modal.module.scss";
 import AccountingAdjustmentsModalItem from "../../components/accounting-adjustments-item";
 import UiSearchInput from "@/components/ui/search-input";
+import UiTabs from "@/components/ui/ui-tabs";
 
 interface AccountingAdjustmentsModalProps {
   show: boolean;
@@ -21,10 +22,11 @@ const AccountingAdjustmentsModal: FC<AccountingAdjustmentsModalProps> = ({ show,
         <div className={styles.title}>Ajustes contables</div>
       </div>
       <div className={styles.modalContent}>
-        <div className={styles.tabs}>
-          <div className={`${styles.tab} ${styles.active}`}>Disponibles</div>
-          <div className={styles.tab}>Gestionados</div>
-        </div>
+        <UiTabs
+          className={styles.tabs}
+          tabs={["Disponibles", "Gestionados"]}
+          onTabClick={(index) => console.log(index)}
+        />
         <div className={styles.searcher}>
           <UiSearchInput
             id="accounting-adjustments-search"

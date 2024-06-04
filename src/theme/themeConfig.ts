@@ -23,14 +23,21 @@ const theme: ThemeConfig = {
     },
     Radio: {
       colorPrimary: "#CBE71E",
-      colorBorder: "black",
+      colorBorder: "#b3b2b2",
       colorPrimaryBorder: "black"
     },
     Popover: {
       colorBgElevated: "#F7F7F7"
     },
     Checkbox: {
-      colorPrimary: "#CBE71E"
+      colorPrimary: "#CBE71E",
+      colorWhite: "#141414",
+      colorPrimaryHover: "#CBE71E"
+    },
+    Table: {
+      headerBg: "#FFF",
+      headerColor: "#141414",
+      headerSplitColor: "transparent"
     }
   }
 };

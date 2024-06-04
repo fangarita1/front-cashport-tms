@@ -1,0 +1,59 @@
+@import "@styles/variables.scss";
+
+.mainClientsTable {
+    width: 100%;
+    background-color: $white;
+    padding-bottom: 0;
+    margin-top: 1.5rem;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+
+    .ant-table-cell {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .text {
+        color: #0085ff;
+    }
+    .mainClientsTable_header {
+        margin: 1rem 0;
+    }
+
+    .statusContainerInactive {
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        width: auto;
+        border: 1px solid $pending;
+    }
+
+    .statusContainerActive {
+        padding: 0.25rem 0.4rem;
+        border-radius: 1rem;
+        width: auto;
+        border: 1px solid $active;
+    }
+
+    .statusActive {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 1rem;
+        margin-right: 0.5rem;
+        background-color: $active;
+    }
+
+    .statusInactive {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 1rem;
+        margin-right: 0.5rem;
+        background-color: $pending;
+    }
+
+    .inputSearch {
+        &::placeholder {
+            color: black !important;
+        }
+    }
+}

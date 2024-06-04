@@ -95,7 +95,7 @@ export interface IUpdateClient {
   condition_payment?: number;
   document_type?: number;
   email?: string;
-  holding_id?: string;
+  holding_id?: number;
   locations: string;
   day_flag?: boolean;
   day?: number;
@@ -108,19 +108,24 @@ export interface IUpdateClient {
 export type ClientFormType = {
   infoClient: {
     address: string;
-    document_type: string;
+    document_type: ISelectType;
     nit: string;
     client_name: string;
     business_name: string;
-    client_type: string;
-    holding_name: string;
+    client_type: string | number;
+    holding_id: ISelectType;
     phone: string;
     email: string;
     locations: any[];
     city: string;
     risk: string;
-    radication_type: string;
-    condition_payment: string;
+    radication_type: ISelectType;
+    condition_payment: ISelectType;
     billing_period: string;
   };
 };
+
+export interface ISelectType {
+  value: number;
+  label: string;
+}

@@ -5,7 +5,7 @@ import type { MenuProps, TableProps } from "antd";
 import { Eye, Plus, Triangle } from "phosphor-react";
 
 import { useUsers } from "@/hooks/useUsers";
-import { FilterUsers } from "@/components/atoms/FilterUsers/FilterUsers";
+import { FilterUsers } from "@/components/atoms/Filters/FilterUsers/FilterUsers";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 import {
   deleteUsersById,
@@ -14,12 +14,13 @@ import {
 } from "@/services/users/users";
 import { SUCCESS } from "@/utils/constants/globalConstants";
 
-import "./usersprojecttable.scss";
 import { IUserSingle } from "@/types/users/IUsers";
 import { UserZone, IBusinessRules } from "@/types/users/IUser";
 import { ModalRemove } from "../../modals/ModalRemove/ModalRemove";
 
-const { Text, Link } = Typography;
+import "./usersprojecttable.scss";
+
+const { Text } = Typography;
 
 interface Props {
   idProject: string;
@@ -49,10 +50,18 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
   };
   const columns: TableProps<IUserSingle>["columns"] = [
     {
-      title: "Name",
+      title: "Nombre",
       dataIndex: "USER_NAME",
       key: "USER_NAME",
-      render: (text) => <Link underline>{text}</Link>
+      render: (text, { ID }) => (
+        <button
+          type="button"
+          className="name"
+          onClick={() => setIsViewDetails({ active: true, id: ID })}
+        >
+          {text}
+        </button>
+      )
     },
     {
       title: "Correo",
@@ -257,7 +266,7 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
       {contextHolder}
       <main className="mainUsersProjectTable">
         <Flex justify="space-between" className="mainUsersProjectTable_header">
-          <Flex gap={"1.75rem"}>
+          <Flex gap={"0.625rem"} align="center">
             <FilterUsers setSelectedUsers={setSelectedUsers} idProject={idProject} />
             <DotsDropdown items={items} />
           </Flex>

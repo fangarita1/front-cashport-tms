@@ -32,3 +32,14 @@
         }
     }
 }
+
+.dotsButton {
+    background-color: $background !important;
+    border: none !important;
+    height: 48px !important;
+    width: 48px !important;
+
+    &:hover {
+        border: 1px solid #141414 !important;
+    }
+}

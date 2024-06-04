@@ -1,6 +1,11 @@
 import { Select, Typography } from "antd";
 import useSWR from "swr";
-import { ControllerRenderProps, FieldError } from "react-hook-form";
+import {
+  ControllerRenderProps,
+  FieldErrorsImpl,
+  Merge,
+  FieldError as OriginalFieldError
+} from "react-hook-form";
 
 import { fetcher } from "@/utils/api/api";
 
@@ -9,14 +14,25 @@ import { ClientFormType } from "@/types/clients/IClients";
 
 import "../commonInputStyles.scss";
 
+// Extend the existing FieldError type
+type ExtendedFieldError =
+  | OriginalFieldError
+  | Merge<OriginalFieldError, FieldErrorsImpl<{ value: number; label: string }>>;
+
 interface Props {
-  errors: FieldError | undefined;
+  errors: ExtendedFieldError | undefined;
   field: ControllerRenderProps<ClientFormType, "infoClient.document_type">;
 }
-const { Option } = Select;
+
 export const SelectDocumentTypes = ({ errors, field }: Props) => {
   const { data, isLoading } = useSWR<IDocumentsTypes>("/document-type", fetcher, {});
-  const options = data?.data;
+  const options = data?.data.map((option) => {
+    return {
+      value: option.id,
+      label: option.document_name,
+      className: "selectOptions"
+    };
+  });
 
   return (
     <>
@@ -28,19 +44,9 @@ export const SelectDocumentTypes = ({ errors, field }: Props) => {
         optionLabelProp="label"
         {...field}
         popupClassName="selectDrop"
-      >
-        {options?.map((value) => {
-          return (
-            <Option
-              className="selectOptions"
-              value={`${value.id}-${value.document_name}`}
-              key={value.id}
-            >
-              {`${value.id}-${value.document_name}`}
-            </Option>
-          );
-        })}
-      </Select>
+        options={options}
+        labelInValue
+      />
       {errors && (
         <Typography.Text className="textError">
           El tipo de documento es obligatorio *

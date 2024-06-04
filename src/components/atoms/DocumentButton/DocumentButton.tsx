@@ -1,5 +1,5 @@
 import { Button, Flex, Typography } from "antd";
-import { FileArrowUp, X } from "phosphor-react";
+import { FileArrowUp, Trash } from "phosphor-react";
 import type { UploadProps } from "antd";
 import { Upload } from "antd";
 const { Dragger } = Upload;
@@ -12,7 +12,7 @@ interface Props {
   title?: string;
   fileName?: string;
   fileSize?: any;
-  customStyle?: any;
+  className?: any;
   handleOnChange?: () => void;
   handleOnDrop?: () => void;
   // eslint-disable-next-line no-unused-vars
@@ -27,7 +27,8 @@ export const DocumentButton = ({
   handleOnChange,
   handleOnDrop,
   handleOnDelete,
-  disabled
+  disabled,
+  className
 }: Props) => {
   const props: UploadProps = {
     name: title,
@@ -38,7 +39,8 @@ export const DocumentButton = ({
     customRequest: () => {
       return;
     },
-    disabled
+    disabled,
+    onRemove: () => false
   };
 
   if (typeof fileSize !== "string") {
@@ -46,7 +48,11 @@ export const DocumentButton = ({
   }
 
   return (
-    <Dragger className="test" {...props}>
+    <Dragger
+      className={className ? `documentDragger ${className}` : "documentDragger"}
+      {...props}
+      openFileDialogOnClick={fileName === "Seleccionar archivo"}
+    >
       <Flex justify="space-between" align="center">
         <Flex align="left" vertical>
           <Flex>
@@ -55,14 +61,14 @@ export const DocumentButton = ({
           </Flex>
           <Text className="sizeFile">{fileSize}</Text>
         </Flex>
-        {!disabled && (
+        {!disabled && fileName !== "Seleccionar archivo" ? (
           <Button
             onClick={handleOnDelete}
             className="deleteDocButton"
             type="text"
-            icon={<X size={"20px"} />}
+            icon={<Trash size={"20px"} />}
           />
-        )}
+        ) : null}
       </Flex>
     </Dragger>
   );
