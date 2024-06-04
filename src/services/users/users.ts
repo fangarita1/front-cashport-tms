@@ -2,10 +2,11 @@ import axios, { AxiosResponse } from "axios";
 import { MessageInstance } from "antd/es/message/interface";
 
 import config from "@/config";
-import { IUserAxios } from "@/types/users/IUser";
+import { IUserAxios, IUserForm } from "@/types/users/IUser";
 import { getIdToken } from "@/utils/api/api";
 import { SUCCESS } from "@/utils/constants/globalConstants";
 import { removeDuplicatesFromArrayNumbers } from "@/utils/utils";
+import { IGroupsByUser } from "@/types/clientsGroups/IClientsGroups";
 
 export const getUserById = async (idUser: string): Promise<IUserAxios> => {
   const token = await getIdToken();
@@ -26,7 +27,7 @@ export const getUserById = async (idUser: string): Promise<IUserAxios> => {
 
 // create
 export const inviteUser = async (
-  data: any,
+  data: IUserForm,
   selectedSublines: any,
   zones: any,
   ID: any
@@ -38,7 +39,6 @@ export const inviteUser = async (
     selectedSublines.map((bre: any) => bre.idLine)
   );
   const _selectedSublines = selectedSublines.map((bre: any) => bre.subline.id);
-  const rol = data.info.rol.split("-")[0];
 
   const modelData = {
     email: data.info.email,
@@ -51,10 +51,10 @@ export const inviteUser = async (
     phone: data.info.phone,
     position: data.info.cargo,
     project_id: ID,
-    rol_id: rol
+    rol_id: data.info.rol.value
   };
   const token = await getIdToken();
-  const endpointRole = data.rol_id === "2" ? "admin" : "user";
+  const endpointRole = data.info.rol.value === 2 ? "admin" : "user";
   try {
     const response: AxiosResponse = await axios.post(
       `${config.API_HOST}/user/invitation/${endpointRole}/email`,
@@ -69,12 +69,13 @@ export const inviteUser = async (
     );
     return response;
   } catch (error) {
+    console.log("Error inviting user: ", error);
     return error as any;
   }
 };
 //update
 export const updateUser = async (
-  data: any,
+  data: IUserForm,
   selectedSublines: any,
   zones: any,
   ID: any,
@@ -89,8 +90,7 @@ export const updateUser = async (
   );
   const _selectedSublines = selectedSublines.map((bre: any) => bre.subline.id);
 
-  const rol = Number(data.info.rol.split("-")[0]);
-
+  console.log("data in UPDATE: ", data);
   const modelData = {
     email: data.info.email,
     user_name: data.info.name,
@@ -101,7 +101,7 @@ export const updateUser = async (
     phone: data.info.phone,
     position: data.info.cargo,
     id: ID,
-    rol_id: rol,
+    rol_id: data.info.rol.value,
     project_id: `${project_id}`,
     active: isActive ? 1 : 0
   };
@@ -116,6 +116,7 @@ export const updateUser = async (
     });
     return response;
   } catch (error) {
+    console.log("Error updating user: ", error);
     return error as any;
   }
 };
@@ -284,6 +285,27 @@ export const resendInvitationUsers = async (users_id: number[]): Promise<AxiosRe
     return response;
   } catch (error) {
     console.log("Error re-sending invite to users: ", error);
+    return error as any;
+  }
+};
+
+export const getGroupsByUser = async (userID: number, projectID: number) => {
+  const token = await getIdToken();
+  try {
+    const response: AxiosResponse<IGroupsByUser> = await axios.get(
+      `${config.API_HOST}/group-client/user/${userID}/project/${projectID}`,
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json; charset=utf-8",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.log("Error getting groups by user: ", error);
     return error as any;
   }
 };

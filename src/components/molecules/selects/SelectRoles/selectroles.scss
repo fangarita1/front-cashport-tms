@@ -1,19 +1,45 @@
-@import "../../../../styles/variables.scss";
+@import "@/styles/variables.scss";
 
 .selectInputRoles {
-    width: 100%;
-    margin-bottom: 0.2rem;
+    height: 2.75rem !important;
+    height: 100% !important;
+    margin-bottom: 1rem;
     background-color: $background;
-    padding: 0.45rem !important;
     border-radius: 0.25rem;
-    border-bottom: none;
+    width: 100% !important;
+
+    .ant-select-selector {
+        font-size: 1rem !important;
+
+        .ant-select-selection-placeholder {
+            color: $dark-gray !important;
+        }
+    }
+
+    .ant-select-selection-item {
+        font-size: 1rem;
+        font-weight: 300 !important;
+    }
 }
 
 .selectInputRolesError {
     border: 1px dashed red;
-    width: 100%;
+    height: 2.9rem !important;
     margin-bottom: 0.2rem;
     background-color: $background;
     padding: 0.45rem;
     border-radius: 0.25rem;
+}
+
+.selectDrop {
+    background-color: $background !important;
+    font-size: 1rem;
+
+    .selectOptions {
+        background-color: $background !important;
+        border-top: 1px solid $white;
+        padding: 0.7rem !important;
+        font-size: 1rem !important;
+        font-size: 1rem;
+    }
 }

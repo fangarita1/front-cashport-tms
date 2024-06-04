@@ -5,52 +5,31 @@ export interface IProjectById {
 }
 
 export interface IProject {
-  ID: number;
-  UUID: string;
-  PROJECT_DESCRIPTION: string;
-  RGB_CONFIG: string;
-  LOGO: string;
-  NIT: string;
-  CONTACT: string;
-  PHONE: string;
+  ACCEPT_DATE: number;
   ADDRESS: string;
-  COUNTRY_ID: number;
-  CURRENCY: Currency[];
-  EMAIL: string;
-  IS_ACTIVE: boolean;
-  COUNTRY_NAME: string;
   ADDRESS_FORMAT: string;
-  is_deleted: number;
-  NUMBER_USERS: number;
-}
-export interface IProject {
-  ID: number;
-  UUID: string;
-  PROJECT_DESCRIPTION: string;
-  RGB_CONFIG: string;
-  LOGO: string;
-  NIT: string;
-  CONTACT: string;
-  PHONE: string;
-  ADDRESS: string;
   BILLING_PERIOD: string;
+  CONTACT: string;
   COUNTRY_ID: number;
-  CURRENCY: Currency[];
-  EMAIL: string;
-  IS_ACTIVE: boolean;
   COUNTRY_NAME: string;
-  ADDRESS_FORMAT: string;
-  is_deleted: number;
+  CURRENCY: Currency[];
+  DSO_CURRENLY_YEAR: number;
+  DSO_DAYS: number;
+  EMAIL: string;
+  ID: number;
+  IS_ACTIVE: boolean;
+  LOGO: string;
+  NAME: string;
+  NIT: string;
   NUMBER_USERS: number;
+  PHONE: string;
+  PROJECT_DESCRIPTION: string;
+  POSITION_CONTACT: string;
+  RGB_CONFIG: string;
+  UUID: string;
+  is_deleted: number;
 }
-
 export interface Currency {
-  id: string;
-  currency_name: string;
-}
-
-export interface Currency {
-  id: string;
+  id: number;
   CURRENCY_NAME: string;
-  currency_name: string;
 }

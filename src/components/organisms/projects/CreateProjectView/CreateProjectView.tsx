@@ -6,21 +6,19 @@ import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSect
 import { ProjectFormTab } from "@/components/molecules/tabs/Projects/ProjectForm/ProjectFormTab";
 import { addProject } from "@/services/projects/projects";
 
-//interfaces
-import { ICreatePayload } from "@/types/projects/IProjects";
-
 //vars
 import { CREATED } from "@/utils/constants/globalConstants";
 import { useRouter } from "next/navigation";
 
 import "./createproject.scss";
+import { IFormProject } from "@/types/projects/IFormProject";
 
 const { Title } = Typography;
 
 export const CreateProjectView = () => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
-  const onCreateProject = async (data: ICreatePayload) => {
+  const onCreateProject = async (data: IFormProject) => {
     if (!data.logo) return;
     try {
       const response = await addProject(data);

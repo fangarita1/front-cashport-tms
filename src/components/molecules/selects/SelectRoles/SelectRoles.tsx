@@ -5,33 +5,43 @@ import { fetcher } from "@/utils/api/api";
 import { IRoles } from "@/types/roles/IRoles";
 
 import "./selectroles.scss";
+import { FieldErrorsImpl, Merge, FieldError as OriginalFieldError } from "react-hook-form";
+
+type ExtendedFieldError =
+  | OriginalFieldError
+  | Merge<OriginalFieldError, FieldErrorsImpl<{ value: number; label: string }>>;
 
 interface Props {
-  errors: any;
+  errors: ExtendedFieldError | undefined;
   field: any;
 }
-const { Option } = Select;
+
 export const SelectRoles = ({ errors, field }: Props) => {
   const { data, isLoading } = useSWR<IRoles>("/role", fetcher, {});
   // doesn't show super admin role
-  const options = data?.data.filter((rol) => rol.ID !== 1);
+  console.log("DATA ROLES: ", data);
+  const filteredOptions = data?.data.filter((rol) => rol.ID !== 1);
+  const options = filteredOptions?.map((option) => {
+    return {
+      value: option.ID,
+      label: option.ROL_NAME,
+      className: "selectOptions"
+    };
+  });
+
   return (
-    <Select
-      placeholder="Selecciona los roles"
-      className={errors ? "selectInputRolesError" : "selectInputRoles"}
-      loading={isLoading}
-      variant="borderless"
-      optionLabelProp="label"
-      {...field}
-    >
-      {options?.map((value) => {
-        return (
-          <Option value={`${value.ID}-${value.ROL_NAME}`} key={value.ID}>
-            {`${value.ID}-${value.ROL_NAME}`}
-          </Option>
-        );
-      })}
+    <>
+      <Select
+        placeholder="Selecciona los roles"
+        className={errors ? "selectInputRolesError" : "selectInputRoles"}
+        loading={isLoading}
+        variant="borderless"
+        optionLabelProp="label"
+        {...field}
+        options={options}
+        labelInValue
+      />
       {errors && <Typography.Text className="textError">Rol es obligatorio *</Typography.Text>}
-    </Select>
+    </>
   );
 };
