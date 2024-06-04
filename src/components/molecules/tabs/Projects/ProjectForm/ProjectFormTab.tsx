@@ -131,7 +131,7 @@ export const ProjectFormTab = ({
             )}
             {statusForm === "review" ? (
               <Button
-                className="buttons"
+                className="buttons -edit"
                 htmlType="button"
                 onClick={(e) => {
                   e.preventDefault();

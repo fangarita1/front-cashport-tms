@@ -72,15 +72,10 @@
         }
     }
 
-    .ant-checkbox-inner {
-        background-color: $secondary !important;
-        border-color: $secondary !important;
-    }
-
     .option {
         background-color: $background;
         font-size: 1rem;
         border-radius: 0.4rem;
-        padding: 0.4rem.5rem;
+        padding: 0.875rem 1rem;
     }
 }
