@@ -1,5 +1,5 @@
 import { CaretLeft } from "phosphor-react";
-import { FC } from "react";
+import { FC, createContext, useState } from "react";
 import { WalletTab } from "@/components/organisms/Customers/WalletTab/WalletTab";
 
 import styles from "./client-details.module.scss";
@@ -9,35 +9,38 @@ import InvoiceActionsModal from "../invoice-actions-modal";
 import { useClientDetails } from "../../hooks/client-details/client-details.hook";
 import { Button, Flex } from "antd";
 import UiTab from "@/components/ui/ui-tab";
+import { InvoiceAction } from "../../constants/invoice-actions.constants";
 
 interface ClientDetailsProps {}
+export const ClientDetailsContext = createContext<any>({});
 
 export const ClientDetails: FC<ClientDetailsProps> = () => {
   const { portfolioData } = useClientDetails();
+  const [showInvoiceActionsModal, setShowInvoiceActionsModal] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<InvoiceAction>(InvoiceAction.GenerateAction);
 
   const items = [
     {
       key: "1",
       label: "Dashboard",
-      children: (
-        <>
-          <Dashboard />
-        </>
-      )
+      children: <Dashboard />
     },
     {
       key: "2",
       label: "Cartera",
-      children: (
-        <>
-          <WalletTab />
-        </>
-      )
+      children: <WalletTab />
     }
   ];
 
   return (
-    <>
+    <ClientDetailsContext.Provider
+      value={{
+        selectedOption,
+        setSelectedOption,
+        showInvoiceActionsModal,
+        setShowInvoiceActionsModal
+      }}
+    >
       <main className={styles.mainDetail}>
         <Flex vertical className={styles.containerDetailClient}>
           <Flex className={styles.stickyHeader} align="center" justify="space-between">
@@ -58,8 +61,8 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
           <UiTab tabs={items} sticky />
         </Flex>
       </main>
-      <InvoiceActionsModal />
-    </>
+      {showInvoiceActionsModal && <InvoiceActionsModal />}
+    </ClientDetailsContext.Provider>
   );
 };
 

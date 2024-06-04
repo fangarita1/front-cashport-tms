@@ -11,9 +11,9 @@ const InvoiceActionsModal: FC<InvoiceActionsModalProps> = () => {
   const { selectedOption } = useInvoiceActionsModal();
 
   return (
-    <Modal open={true} centered footer={null}>
+    <Modal open={true} centered footer={null} width={"fit-content"}>
       {selectedOption === InvoiceAction.GenerateAction && <GenerateAction />}
-      {selectedOption === InvoiceAction.AccountingAdjustmentsGenerateCreditNote && (
+      {selectedOption === InvoiceAction.AccountingAdjustmentsGenerateDebitNote && (
         <GenerateDebitNote />
       )}
     </Modal>

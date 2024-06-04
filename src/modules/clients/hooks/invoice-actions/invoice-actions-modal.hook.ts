@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Calculator, Handshake } from "phosphor-react";
 import { InvoiceAction } from "../../constants/invoice-actions.constants";
+import { ClientDetailsContext } from "../../containers/client-details/client-details";
 
 export const useInvoiceActionsModal = () => {
-  const [selectedOption, setSelectedOption] = useState<InvoiceAction>(InvoiceAction.GenerateAction);
+  const { selectedOption, setSelectedOption } = useContext(ClientDetailsContext);
 
   const options = [
     {
