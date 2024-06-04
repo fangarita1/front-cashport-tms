@@ -89,7 +89,7 @@ export const UserProjectForm = ({
       const response = await getUserById(`${isViewDetailsUser?.id}`);
       console.log("dataBACK-USER: ", response.data.data);
       const finalData = response.data.data;
-      console.log("arrivingData: ", finalData);
+
       const zonesFinalData =
         finalData.USER_ZONES?.map(
           (zone: { ZONE_ID: number; ZONE_DESCRIPTION: string }) => zone.ZONE_ID
@@ -121,11 +121,9 @@ export const UserProjectForm = ({
     });
     if (zones.length === 0 || selectedBusinessRules?.channels.length === 0) return;
 
-    // console.log("data: ", data);
     console.log("selectedBusinessRulesINSUBMIT: ", selectedBusinessRules);
-    // console.log("zones: ", zones);
 
-    console.log("Aca van los grupos: ", assignedGroups);
+    console.log("SelectedGroups: ", assignedGroups);
     const response = isViewDetailsUser?.id
       ? await updateUser(
           data,

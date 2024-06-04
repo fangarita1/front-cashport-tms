@@ -45,50 +45,121 @@ export const SelectChips = ({
   const handleChannelChange = useCallback(() => {
     setSelectedBusinessRules((prev) => {
       const isChannelSelected = prev.channels.includes(channelId);
+
       const updatedChannels = isChannelSelected
         ? prev.channels.filter((id) => id !== channelId)
         : [...prev.channels, channelId];
-      return { ...prev, channels: updatedChannels };
+
+      let updatedLines = [...prev.lines];
+      let updatedSublines = [...prev.sublines];
+
+      lines.forEach((line) => {
+        if (isChannelSelected) {
+          updatedLines = updatedLines.filter((id) => id !== line.id);
+          updatedSublines = updatedSublines.filter(
+            (id) => !line.sublines.some((subline) => subline.id === id)
+          );
+        } else {
+          if (!updatedLines.includes(line.id)) {
+            updatedLines.push(line.id);
+          }
+          line.sublines.forEach((subline) => {
+            if (!updatedSublines.includes(subline.id)) {
+              updatedSublines.push(subline.id);
+            }
+          });
+        }
+      });
+
+      return { ...prev, channels: updatedChannels, lines: updatedLines, sublines: updatedSublines };
     });
-  }, [channelId, setSelectedBusinessRules]);
+  }, [channelId, lines, setSelectedBusinessRules]);
 
   const handleLineChange = useCallback(
     (lineId: number) => {
       setSelectedBusinessRules((prev) => {
         const isLineSelected = prev.lines.includes(lineId);
+
+        // Find the line and its sublines
+        const line = lines.find((line) => line.id === lineId);
+        const sublines = line ? line.sublines.map((subline) => subline.id) : [];
+
         const updatedLines = isLineSelected
           ? prev.lines.filter((id) => id !== lineId)
           : [...prev.lines, lineId];
-        return { ...prev, lines: updatedLines };
+
+        const updatedChannels = isLineSelected
+          ? prev.channels
+          : prev.channels.includes(channelId)
+            ? prev.channels
+            : [...prev.channels, channelId];
+
+        const updatedSublines = isLineSelected
+          ? prev.sublines.filter((id) => !sublines.includes(id))
+          : [...prev.sublines, ...sublines];
+
+        return {
+          ...prev,
+          channels: updatedChannels,
+          lines: updatedLines,
+          sublines: updatedSublines
+        };
       });
     },
-    [setSelectedBusinessRules]
+    [setSelectedBusinessRules, lines, channelId]
   );
 
   const handleSublineChange = useCallback(
     (sublineId: number) => {
       setSelectedBusinessRules((prev) => {
         const isSublineSelected = prev.sublines.includes(sublineId);
+
+        // Find the line and channel that this subline belongs to
+        let parentLineId = null;
+        for (const line of lines) {
+          if (line.sublines.some((subline) => subline.id === sublineId)) {
+            parentLineId = line.id;
+            break;
+          }
+        }
+
         const updatedSublines = isSublineSelected
           ? prev.sublines.filter((id) => id !== sublineId)
           : [...prev.sublines, sublineId];
-        return { ...prev, sublines: updatedSublines };
+
+        const updatedLines = isSublineSelected
+          ? prev.lines
+          : prev.lines.includes(parentLineId || 0)
+            ? prev.lines
+            : [...prev.lines, parentLineId || 0];
+
+        const updatedChannels = isSublineSelected
+          ? prev.channels
+          : prev.channels.includes(channelId)
+            ? prev.channels
+            : [...prev.channels, channelId];
+
+        return {
+          ...prev,
+          channels: updatedChannels,
+          lines: updatedLines,
+          sublines: updatedSublines
+        };
       });
     },
-    [setSelectedBusinessRules]
+    [setSelectedBusinessRules, lines, channelId]
   );
 
   return (
     <Flex className="selectchips" vertical>
       <Flex component="header" justify="space-between" className="headerselectchips">
         <Text className="titleChannel">{channelName}</Text>
-        {lines && (
-          <Checkbox
-            checked={onChannelSelected(channelId)}
-            onChange={handleChannelChange}
-            disabled={disabled}
-          />
-        )}
+
+        <Checkbox
+          checked={onChannelSelected(channelId)}
+          onChange={handleChannelChange}
+          disabled={disabled}
+        />
       </Flex>
       <Flex component="main" className="mainTags">
         {lines?.length > 0 ? (

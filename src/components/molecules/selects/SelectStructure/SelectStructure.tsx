@@ -1,14 +1,13 @@
 import { Dispatch, SetStateAction } from "react";
-import { Empty, Flex, Spin, Typography } from "antd";
+import { Flex, Spin, Typography } from "antd";
 import useSWR from "swr";
-
-import { SelectChanel } from "@/components/molecules/selects/SelectChanel/SelectChanel";
 
 import { useAppStore } from "@/lib/store/store";
 import { fetcher } from "@/utils/api/api";
 import { IBRE, ISelectedBussinessRules } from "@/types/bre/IBRE";
 
 import "./selectstructure.scss";
+import { SelectChips } from "../SelectChips/SelectChips";
 interface Props {
   selectedBusinessRules: ISelectedBussinessRules;
   disabled: boolean;
@@ -30,16 +29,19 @@ export const SelectStructure = ({
           <Spin />
         ) : (
           <>
-            {data?.data ? (
-              <SelectChanel
-                chanels={data.data}
-                setSelectedBusinessRules={setSelectedBusinessRules}
-                selectedBusinessRules={selectedBusinessRules}
-                disabled={disabled}
-              />
-            ) : (
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-            )}
+            {data?.data.map(({ CHANNEL_ID, CHANNEL_NAME, CHANNEL_LINES }) => {
+              return (
+                <SelectChips
+                  key={CHANNEL_ID}
+                  lines={CHANNEL_LINES}
+                  channelId={CHANNEL_ID}
+                  selectedBusinessRules={selectedBusinessRules}
+                  setSelectedBusinessRules={setSelectedBusinessRules}
+                  channelName={CHANNEL_NAME}
+                  disabled={disabled}
+                />
+              );
+            })}
           </>
         )}
       </Flex>
