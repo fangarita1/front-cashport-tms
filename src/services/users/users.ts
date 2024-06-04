@@ -44,11 +44,11 @@ export const inviteUser = async (
     phone: data.info.phone,
     position: data.info.cargo,
     project_id: ID,
-    rol_id: data.info.rol.value,
+    rol_id: data.info.rol?.value,
     groups_id: selectedGroups
   };
   const token = await getIdToken();
-  const endpointRole = data.info.rol.value === 2 ? "admin" : "user";
+  const endpointRole = data.info.rol?.value === 2 ? "admin" : "user";
   try {
     const response: AxiosResponse = await axios.post(
       `${config.API_HOST}/user/invitation/${endpointRole}/email`,
@@ -86,14 +86,13 @@ export const updateUser = async (
     phone: data.info.phone,
     position: data.info.cargo,
     project_id: `${project_id}`,
-    rol_id: data.info.rol.value,
+    rol_id: data.info.rol?.value,
     subline: selectedBusinessRules.sublines,
     user_name: data.info.name,
     zones: zones.map((zone: number) => ({ ZONE_ID: zone })),
     groups_id: selectedGroups
   };
 
-  console.log("modelData for PUT:", modelData);
   const token = await getIdToken();
   try {
     const response: AxiosResponse = await axios.put(`${config.API_HOST}/user`, modelData, {
@@ -119,9 +118,6 @@ export const onChangeStatusById = async (
   const modelData = {
     email: data.EMAIL,
     user_name: data.USER_NAME,
-    // channel: selectedChannel,
-    // line: selectedLines,
-    // subline: _selectedSublines,
     zones:
       data.USER_ZONES?.map((zone: { ZONE_ID: number; ZONE_DESCRIPTION: string }) => ({
         ZONE_ID: zone.ZONE_ID
