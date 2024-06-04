@@ -53,17 +53,17 @@ export const SelectChips = ({
       let updatedLines = [...prev.lines];
       let updatedSublines = [...prev.sublines];
 
-      lines.forEach((line) => {
+      lines?.forEach((line) => {
         if (isChannelSelected) {
           updatedLines = updatedLines.filter((id) => id !== line.id);
-          updatedSublines = updatedSublines.filter(
-            (id) => !line.sublines.some((subline) => subline.id === id)
-          );
+          updatedSublines = line.sublines
+            ? updatedSublines.filter((id) => !line.sublines.some((subline) => subline.id === id))
+            : [];
         } else {
           if (!updatedLines.includes(line.id)) {
             updatedLines.push(line.id);
           }
-          line.sublines.forEach((subline) => {
+          line.sublines?.forEach((subline) => {
             if (!updatedSublines.includes(subline.id)) {
               updatedSublines.push(subline.id);
             }
@@ -82,7 +82,7 @@ export const SelectChips = ({
 
         // Find the line and its sublines
         const line = lines.find((line) => line.id === lineId);
-        const sublines = line ? line.sublines.map((subline) => subline.id) : [];
+        const sublines = line && line.sublines ? line.sublines.map((subline) => subline.id) : [];
 
         const updatedLines = isLineSelected
           ? prev.lines.filter((id) => id !== lineId)
@@ -95,7 +95,7 @@ export const SelectChips = ({
             : [...prev.channels, channelId];
 
         const updatedSublines = isLineSelected
-          ? prev.sublines.filter((id) => !sublines.includes(id))
+          ? prev.sublines?.filter((id) => !sublines.includes(id))
           : [...prev.sublines, ...sublines];
 
         return {

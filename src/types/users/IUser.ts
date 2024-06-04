@@ -117,7 +117,7 @@ interface IUserInfo {
   cargo: string;
   email: string;
   phone: string;
-  rol: ISelectType;
+  rol: ISelectType | undefined;
 }
 
 interface ISelectType {

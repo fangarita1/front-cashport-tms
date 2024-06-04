@@ -60,7 +60,7 @@ export const UserProjectForm = ({
     formState: { errors }
   } = useForm<IUserForm>({
     defaultValues: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : initialData,
-    disabled: isEditAvailable,
+    disabled: !isEditAvailable,
     values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as IUserForm)
   });
   const { ID } = useAppStore((state) => state.selectProject);
@@ -87,7 +87,6 @@ export const UserProjectForm = ({
         data: {} as IUserData
       });
       const response = await getUserById(`${isViewDetailsUser?.id}`);
-      console.log("dataBACK-USER: ", response.data.data);
       const finalData = response.data.data;
 
       const zonesFinalData =
@@ -108,7 +107,6 @@ export const UserProjectForm = ({
 
       const groupsByUserResponse = await getGroupsByUser(isViewDetailsUser?.id, ID);
       if (groupsByUserResponse.data) {
-        console.log("Grupos asignados.data: ", groupsByUserResponse.data);
         setAssignedGroups(groupsByUserResponse.data.map((group: IGroupByUser) => group.group_id));
       }
     })();
@@ -121,19 +119,17 @@ export const UserProjectForm = ({
     });
     if (zones.length === 0 || selectedBusinessRules?.channels.length === 0) return;
 
-    console.log("selectedBusinessRulesINSUBMIT: ", selectedBusinessRules);
-
-    console.log("SelectedGroups: ", assignedGroups);
     const response = isViewDetailsUser?.id
       ? await updateUser(
           data,
           selectedBusinessRules,
+          assignedGroups,
           zones,
           isViewDetailsUser?.id,
           ID,
           dataUser.data?.ACTIVE === 1
         )
-      : await inviteUser(data, selectedBusinessRules, zones, ID);
+      : await inviteUser(data, selectedBusinessRules, assignedGroups, zones, ID);
     if (response.status === 200 || response.status === 202) {
       const isEdit = isViewDetailsUser?.id ? "editado" : "creado";
       messageApi.open({
@@ -329,7 +325,7 @@ export const UserProjectForm = ({
 const initialData: IUserForm = {
   info: {
     name: "",
-    rol: { value: 0, label: "" },
+    rol: undefined,
     cargo: "",
     email: "",
     phone: ""

@@ -23,8 +23,7 @@ export const SelectRoles = ({ errors, field }: Props) => {
   const options = filteredOptions?.map((option) => {
     return {
       value: option.ID,
-      label: option.ROL_NAME,
-      className: "selectOptions"
+      label: option.ROL_NAME
     };
   });
 
