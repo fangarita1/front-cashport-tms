@@ -209,6 +209,7 @@ export const desactiveProject = async (id: string): Promise<ICreateProject> => {
     });
     return response;
   } catch (error) {
+    console.log("Error desactivating project: ", error);
     return error as any;
   }
 };

@@ -29,6 +29,12 @@ export const SelectHoldings = ({ errors, field }: Props) => {
     };
   });
 
+  options?.unshift({
+    value: 0,
+    label: "- Sin Asignar -",
+    className: "selectOptions  -noHolding"
+  });
+
   return (
     <>
       <Select

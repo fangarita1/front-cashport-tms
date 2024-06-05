@@ -10,6 +10,10 @@
     .ant-select-selector {
         font-size: 1rem !important;
 
+        .ant-select-selection-item {
+            font-weight: 300;
+        }
+
         .ant-select-selection-placeholder {
             color: $dark-gray;
         }
@@ -34,5 +38,9 @@
         padding: 0.7rem !important;
         font-size: 1rem !important;
         font-size: 1rem;
+
+        &.-noHolding {
+            color: $gray;
+        }
     }
 }
