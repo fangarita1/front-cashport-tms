@@ -63,3 +63,24 @@ export const addDocumentsClientType = async (formData: FormData, messageApi: Mes
     return error as AxiosError;
   }
 };
+
+export const removeDocumentsClientType = async (id: number, messageApi?: MessageInstance) => {
+  try {
+    const response: AxiosResponse = await API.delete(`/client/documents/${id}`);
+    if (response.status === SUCCESS) {
+      messageApi?.open({
+        type: "success",
+        content: "Tipo de Documento eliminado exitosamente."
+      });
+    } else {
+      messageApi?.open({
+        type: "error",
+        content: "Oops ocurrio un error eliminando tipo de documento."
+      });
+    }
+    return response;
+  } catch (error) {
+    console.log("Error eliminando tipo de documento: ", error);
+    return error as AxiosError;
+  }
+};
