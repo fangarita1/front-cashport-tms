@@ -1,10 +1,15 @@
-import { Flex, Tabs, TabsProps, Typography, message } from "antd";
+import { Flex, Tabs, TabsProps, Typography, message, Collapse } from "antd";
 
 // components
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
+
 import { ProjectFormTab } from "@/components/molecules/tabs/Projects/ProjectForm/ProjectFormTab";
 import { addProject } from "@/services/projects/projects";
+
+//seleciontype
+import TripTypeSelection from "@/components/molecules/logistics/TripTypeSelection/TripTypeSelection";
+
 
 //interfaces
 import { ICreatePayload } from "@/types/projects/IProjects";
@@ -12,10 +17,19 @@ import { ICreatePayload } from "@/types/projects/IProjects";
 //vars
 import { CREATED } from "@/utils/constants/globalConstants";
 import { useRouter } from "next/navigation";
+import {
+  CodesandboxLogo,
+  Calendar,
+  Package,
+  UserList,
+  NewspaperClipping
+} from "@phosphor-icons/react";
+
+import "../../../../../styles/_variables_logistics.css";
 
 import "./createorder.scss";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 export const CreateOrderView = () => {
   const { push } = useRouter();
@@ -39,21 +53,97 @@ export const CreateOrderView = () => {
       });
     }
   };
-  const items: TabsProps["items"] = [
+
+  const actionsOptions = [
     {
-      key: "1",
-      label: "Crear Viaje",
-      children: <ProjectFormTab statusForm="create" onSubmitForm={onCreateProject} />
-    }
+      key: 1,
+      label: (
+        <div className="collapseByAction__label">
+          <CodesandboxLogo size={16} />
+          <Title className="collapseByAction__label__text" level={4}>
+            Tipo de viaje
+          </Title>
+        </div>
+      ),
+      children: (
+        <div className="collapseByAction__children">
+          <TripTypeSelection/>
+        </div>
+      )
+    },
+    {
+      key: 2,
+      label: (
+        <div className="collapseByAction__label">
+          <Calendar size={16} />
+          <Title className="collapseByAction__label__text" level={4}>
+            Agendamiento
+          </Title>
+        </div>
+      ),
+      children: (
+        <>
+          <Text>Hacer acuerdo de pago</Text>
+        </>
+      )
+    },
+    {
+      key: 3,
+      label: (
+        <div className="collapseByAction__label">
+          <Package size={16} />
+          <Title className="collapseByAction__label__text" level={4}>
+            Carga
+          </Title>
+        </div>
+      ),
+      children: (
+        <>
+          <Text>...</Text>
+        </>
+      )
+    },
+    {
+      key: 4,
+      label: (
+        <div className="collapseByAction__label">
+          <UserList size={16} />
+          <Title className="collapseByAction__label__text" level={4}>
+            Responsables
+          </Title>
+        </div>
+      ),
+      children: (
+        <>
+          <Text>...</Text>
+        </>
+      )
+    },
+    {
+      key: 5,
+      label: (
+        <div className="collapseByAction__label">
+          <NewspaperClipping size={16} />
+          <Title className="collapseByAction__label__text" level={4}>
+            Información adicional
+          </Title>
+        </div>
+      ),
+      children: (
+        <>
+          <ProjectFormTab statusForm="create" onSubmitForm={onCreateProject} />
+        </>
+      )
+    },
   ];
 
   return (
     <>
       {contextHolder}
-      <main className="mainCreateProject">
+      <main className="mainCreateOrder">
         <SideBar />
-        <Flex vertical className="containerCreateProject">
-          <Flex className="infoHeaderProject">
+        <Flex vertical className="containerCreateOrder">
+          <Flex className="infoHeaderOrder">
             <Flex gap={"2rem"}>
               <Title level={2} className="titleName">
                 Crear Nuevo Viaje
@@ -63,14 +153,15 @@ export const CreateOrderView = () => {
               <NavRightSection />
             </Flex>
           </Flex>
-          {/* ------------Main Info Project-------------- */}
-          <Flex className="tabsContainer">
-            <Tabs
-              style={{ width: "100%", height: "100%" }}
-              defaultActiveKey="1"
-              items={items}
-              size="large"
-            />
+          {/* ------------Main Info Order-------------- */}
+          <Flex className="orderContainer">
+            <Collapse
+              className="collapseByAction"
+              expandIconPosition="end"
+              accordion={false}
+              ghost              
+              items={actionsOptions}
+            />            
           </Flex>
         </Flex>
       </main>

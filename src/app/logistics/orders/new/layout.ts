@@ -1,8 +1,8 @@
 import { Metadata } from "next";
-import LoginPage from "./page";
+import CreateOrderPage from "./page";
 
 export const metadata: Metadata = {
-  title: "Crear Proyecto",
-  description: "Crear Proyecto"
+  title: "Crear Nuevo Viaje ",
+  description: "Crear Viaje"
 };
-export default LoginPage;
+export default CreateOrderPage;
