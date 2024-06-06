@@ -1,13 +1,23 @@
-@import '../../../../styles/variables.scss';
+@import "@/styles/variables.scss";
 
-.modalbusinessrules {
+.modalBusinessRules {
     width: 100%;
-    height: 70%;
 
+    .modalTitle {
+        display: flex;
+        align-items: center;
+        border: none;
+        box-shadow: none;
+        padding: 0;
 
-    .ant-modal-content{
+        &:hover {
+            // opacity: 0.6;
+            background-color: $background !important;
+        }
+    }
+
+    .ant-modal-content {
         height: 100%;
-
     }
     .ant-modal-body {
         height: 85% !important;

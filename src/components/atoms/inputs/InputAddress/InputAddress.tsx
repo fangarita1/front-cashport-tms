@@ -17,10 +17,10 @@ export const InputAddress = ({ control, errors }: Props) => {
           control={control}
           nameInput="info.name"
           error={errors.info?.name}
-          customStyle={{ width: "75%" }}
+          customStyle={{ width: "75%", paddingRight: "1rem" }}
           placeholder="Carrera"
         />
-        <Flex align="center">
+        <Flex align="center" gap={"0.5rem"}>
           <InputForm
             titleInput=""
             control={control}
@@ -58,7 +58,7 @@ export const InputAddress = ({ control, errors }: Props) => {
         control={control}
         nameInput="info.name"
         error={errors.info?.name}
-        customStyle={{ width: "98%" }}
+        customStyle={{ marginTop: "1rem" }}
       />
     </Flex>
   );

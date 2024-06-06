@@ -1,51 +1,34 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Modal, Typography } from "antd";
+import { Button } from "antd";
 
 import "./modalbusinessrules.scss";
 import { SelectStructure } from "../../selects/SelectStructure/SelectStructure";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
-const { Title } = Typography;
+import { CaretLeft } from "phosphor-react";
 interface Props {
-  isOpen: boolean;
-  setIsBR: Dispatch<SetStateAction<boolean>>;
+  setCurrentView: Dispatch<SetStateAction<"address" | "main" | "businessRules">>;
 }
-export type ShipToType = {
-  info: {
-    name: string;
-    cargo: string;
-    email: string;
-    phone: string;
-    rol: string;
-  };
-};
 
-export const ModalBusinessRules = ({ isOpen, setIsBR }: Props) => {
+export const ModalBusinessRules = ({ setCurrentView }: Props) => {
   const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
     initDatSelectedBusinessRules
   );
 
   return (
-    <Modal
-      width={"40%"}
-      open={isOpen}
-      title={<Title level={4}>Reglas de negocio</Title>}
-      className="modalbusinessrules"
-      okButtonProps={{
-        className: "buttonOk"
-      }}
-      cancelButtonProps={{
-        className: "buttonCancel"
-      }}
-      okText="Siguiente"
-      cancelText="Cancelar"
-      onCancel={() => setIsBR(false)}
-    >
+    <div className="modalBusinessRules">
+      <Button
+        className="modalTitle"
+        icon={<CaretLeft size={"1.45rem"} />}
+        onClick={() => setCurrentView("main")}
+      >
+        Reglas de negocio
+      </Button>
       <SelectStructure
         selectedBusinessRules={selectedBusinessRules}
         setSelectedBusinessRules={setSelectedBusinessRules}
         disabled={false}
       />
-    </Modal>
+    </div>
   );
 };
 

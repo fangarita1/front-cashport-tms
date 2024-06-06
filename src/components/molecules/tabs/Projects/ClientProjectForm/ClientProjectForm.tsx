@@ -447,7 +447,10 @@ export const ClientProjectForm = ({
                     control={control}
                     rules={{ required: true, minLength: 1 }}
                     render={({ field }) => (
-                      <SelectRadicationTypes errors={errors.infoClient?.risk} field={field} />
+                      <SelectRadicationTypes<ClientFormType>
+                        errors={errors.infoClient?.radication_type}
+                        field={field}
+                      />
                     )}
                   />
                 </Flex>
@@ -461,7 +464,10 @@ export const ClientProjectForm = ({
                     rules={{ required: true, minLength: 1 }}
                     render={({ field }) => {
                       return (
-                        <SelectPaymentConditions errors={errors.infoClient?.risk} field={field} />
+                        <SelectPaymentConditions<ClientFormType>
+                          errors={errors.infoClient?.condition_payment}
+                          field={field}
+                        />
                       );
                     }}
                   />

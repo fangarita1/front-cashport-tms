@@ -23,7 +23,7 @@ export const SelectCountries = ({ errors, field }: Props) => {
   return (
     <Select
       placeholder="select one country"
-      className={errors?.general?.countries ? "selectInputCountryError" : "selectInputCountry"}
+      className={!errors?.general?.countries ? "selectInputCountryError" : "selectInputCountry"}
       loading={isLoading}
       variant="borderless"
       optionLabelProp="label"
