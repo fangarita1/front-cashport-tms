@@ -12,10 +12,14 @@ import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { SelectRadicationTypes } from "../../selects/clients/SelectRadicationTypes/SelectRadicationTypes";
 import { SelectPaymentConditions } from "../../selects/clients/SelectPaymentConditions/SelectPaymentCondition";
 import { ModalBusinessRules } from "../ModalBusinessRules/ModalBusinessRules";
+import { ISelectedBussinessRules } from "@/types/bre/IBRE";
+
 const { Text, Title } = Typography;
 interface Props {
   isOpen: boolean;
   setIsCreateShipTo: Dispatch<SetStateAction<boolean>>;
+  clientId: number;
+  projectId: number;
 }
 
 export type ShipToFormType = {
@@ -27,14 +31,18 @@ export type ShipToFormType = {
   };
 };
 
-export const ModalCreateShipTo = ({ isOpen, setIsCreateShipTo }: Props) => {
+export const ModalCreateShipTo = ({ isOpen, setIsCreateShipTo, clientId, projectId }: Props) => {
   const [isEditAvailable] = useState(true);
   const [currentView, setCurrentView] = useState<"main" | "businessRules" | "address">("main");
-
+  const [selectedShipToData, setSelectedShipToData] = useState<ShipToFormType | undefined>();
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
-
+  const [zones, setZones] = useState([] as number[]);
+  const [selectedStructure, setSelectedStructure] = useState<ISelectedBussinessRules>(
+    initDatSelectedBusinessRules
+  );
   const [inheritParameters, setInheritParameters] = useState(true);
+
   const {
     control,
     handleSubmit,
@@ -66,9 +74,21 @@ export const ModalCreateShipTo = ({ isOpen, setIsCreateShipTo }: Props) => {
   };
 
   const onSubmitHandler = async (data: ShipToFormType) => {
-    console.log("SUBMITING...");
-    console.log("ShipToData: ", data);
+    setSelectedShipToData(data);
     setCurrentView("businessRules");
+  };
+
+  const handleCreateShipTo = () => {
+    console.log("CREATING SHIP TO...");
+    console.log("clientID: ", clientId);
+    console.log("projectID: ", projectId);
+    console.log("SelectedShipToData: ", selectedShipToData);
+    console.log("dependency_client: ", inheritParameters);
+    console.log("BillingPeriod: ", billingPeriod);
+    console.log("SelectedStructure: ", selectedStructure);
+    console.log("Zones: ", zones);
+    // Aca iria la creacion del ShipTo POST
+    setIsCreateShipTo(false);
   };
 
   const mainViewModal = {
@@ -81,16 +101,6 @@ export const ModalCreateShipTo = ({ isOpen, setIsCreateShipTo }: Props) => {
             control={control}
             nameInput="shipTo.code"
             error={errors.shipTo?.code}
-            validationRules={{
-              min: {
-                value: 1,
-                message: "El valor debe ser mayor que 1 *"
-              },
-              pattern: {
-                value: /^\d+$/,
-                message: "Solo se permiten números *"
-              }
-            }}
           />
           <Flex className="inputContainer" vertical>
             <Title className="inputContainer__title" level={5}>
@@ -194,13 +204,25 @@ export const ModalCreateShipTo = ({ isOpen, setIsCreateShipTo }: Props) => {
   };
 
   const businessRulesViewModal = {
-    content: <ModalBusinessRules setCurrentView={setCurrentView} />,
+    content: (
+      <ModalBusinessRules
+        setCurrentView={setCurrentView}
+        zones={zones}
+        setZones={setZones}
+        selectedStructure={selectedStructure}
+        setSelectedStructure={setSelectedStructure}
+      />
+    ),
     footer: (
       <div className="footer">
         <Button className="cancelButton" onClick={() => setCurrentView("main")}>
           Cancelar
         </Button>
-        <Button onClick={() => console.log("Crear Ship to clicked!")} className="acceptButton">
+        <Button
+          onClick={handleCreateShipTo}
+          disabled={selectedStructure.channels.length === 0 || zones.length === 0}
+          className="acceptButton"
+        >
           Crear Ship To
         </Button>
       </div>
@@ -248,4 +270,10 @@ export const ModalCreateShipTo = ({ isOpen, setIsCreateShipTo }: Props) => {
       />
     </>
   );
+};
+
+const initDatSelectedBusinessRules: ISelectedBussinessRules = {
+  channels: [],
+  lines: [],
+  sublines: []
 };

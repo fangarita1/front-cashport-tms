@@ -515,7 +515,12 @@ export const ClientProjectForm = ({
           )}
         </Flex>
       </form>
-      <ModalCreateShipTo isOpen={isCreateShipTo} setIsCreateShipTo={setIsCreateShipTo} />
+      <ModalCreateShipTo
+        isOpen={isCreateShipTo}
+        setIsCreateShipTo={setIsCreateShipTo}
+        clientId={isViewDetailsClient.id ? isViewDetailsClient.id : 0}
+        projectId={parseInt(idProject)}
+      />
       <ModalUploadDocument
         isOpen={isUploadDocument}
         setIsOpenUpload={setIsUploadDocument}

@@ -1,19 +1,26 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { Button } from "antd";
 
 import "./modalbusinessrules.scss";
 import { SelectStructure } from "../../selects/SelectStructure/SelectStructure";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 import { CaretLeft } from "phosphor-react";
+import { SelectZone } from "../../selects/SelectZone/SelectZone";
 interface Props {
   setCurrentView: Dispatch<SetStateAction<"address" | "main" | "businessRules">>;
+  zones: number[];
+  setZones: Dispatch<SetStateAction<number[]>>;
+  selectedStructure: ISelectedBussinessRules;
+  setSelectedStructure: Dispatch<SetStateAction<ISelectedBussinessRules>>;
 }
 
-export const ModalBusinessRules = ({ setCurrentView }: Props) => {
-  const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
-    initDatSelectedBusinessRules
-  );
-
+export const ModalBusinessRules = ({
+  setCurrentView,
+  zones,
+  setZones,
+  selectedStructure,
+  setSelectedStructure
+}: Props) => {
   return (
     <div className="modalBusinessRules">
       <Button
@@ -23,17 +30,12 @@ export const ModalBusinessRules = ({ setCurrentView }: Props) => {
       >
         Reglas de negocio
       </Button>
+      <SelectZone zones={zones} setZones={setZones} />
       <SelectStructure
-        selectedBusinessRules={selectedBusinessRules}
-        setSelectedBusinessRules={setSelectedBusinessRules}
+        selectedBusinessRules={selectedStructure}
+        setSelectedBusinessRules={setSelectedStructure}
         disabled={false}
       />
     </div>
   );
-};
-
-const initDatSelectedBusinessRules: ISelectedBussinessRules = {
-  channels: [],
-  lines: [],
-  sublines: []
 };
