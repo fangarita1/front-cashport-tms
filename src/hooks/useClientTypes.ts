@@ -1,5 +1,5 @@
 import { useAppStore } from "@/lib/store/store";
-import { addClientType } from "@/services/clientTypes/clientTypes";
+import { addClientType, removeClientType } from "@/services/clientTypes/clientTypes";
 import { IClientTypes } from "@/types/clientTypes/clientTypes";
 import { API } from "@/utils/api/api";
 import { MessageInstance } from "antd/es/message/interface";
@@ -17,9 +17,15 @@ export const useClientTypes = () => {
     mutate();
   };
 
+  const removeClient = async (id: number, messageApi: MessageInstance) => {
+    await removeClientType(id, messageApi);
+    mutate();
+  };
+
   return {
     data: data?.data,
     loading: isLoading,
-    addClient
+    addClient,
+    removeClient
   };
 };
