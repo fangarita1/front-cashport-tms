@@ -210,18 +210,22 @@
 
         .input {
             background-color: $background;
-            border-radius: 0;
-            padding: 0.7rem;
+            padding: 0.4rem;
             border-radius: 0.25rem;
-            font-size: 1rem;
-            font-weight: 300;
 
-            &::placeholder {
-                color: $dark-gray !important;
-            }
+            .ant-input-wrapper {
+                input {
+                    font-size: 1rem;
+                    font-weight: 300;
 
-            &:disabled {
-                color: $dark-gray;
+                    &::placeholder {
+                        color: $dark-gray !important;
+                    }
+
+                    &:disabled {
+                        color: $dark-gray;
+                    }
+                }
             }
         }
 
@@ -230,12 +234,19 @@
             background-color: $background;
             margin-bottom: 0.2rem;
             border-radius: 0;
-            padding: 0.7rem;
+            padding: 0.4rem;
             border-radius: 0.25rem;
             font-size: 1rem;
 
-            &::placeholder {
-                color: $secondary-gray;
+            .ant-input-wrapper {
+                input {
+                    font-size: 1rem;
+                    font-weight: 300;
+
+                    &::placeholder {
+                        color: $secondary-gray;
+                    }
+                }
             }
         }
     }

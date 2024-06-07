@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, ColorPicker, Flex, Input, Select, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
+import { ArrowsClockwise, CaretLeft, CaretRight, Pencil } from "phosphor-react";
 
 // components
 import { SelectCountries } from "@/components/molecules/selects/SelectCountries/SelectCountries";
@@ -216,6 +216,8 @@ export const ProjectFormTab = ({
                 render={({ field, fieldState: { error } }) => (
                   <>
                     <Input
+                      readOnly
+                      addonAfter={<CaretRight size={"16px"} />}
                       disabled={statusForm === "review"}
                       variant="borderless"
                       className={error ? "inputError" : "input"}
@@ -356,6 +358,12 @@ export const ProjectFormTab = ({
               nameInput="contact.phone"
               control={control}
               error={errors.contact?.phone}
+              validationRules={{
+                pattern: {
+                  value: /^\+?\d+$/,
+                  message: "Solo se permiten números y un signo '+' al comienzo"
+                }
+              }}
             />
           </Flex>
           {/* -----------------------------------Project Config----------------------------------- */}
