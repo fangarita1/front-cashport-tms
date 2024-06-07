@@ -1,7 +1,24 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { getIdToken } from "@/utils/api/api";
-import { ICreateLocation } from "@/types/locations/ILocations";
+import { ICreateLocation, ILocations, ILocation } from "@/types/locations/ILocations";
+
+export const fetchAllLocations = async (): Promise<ILocation[]> => {
+  try {
+    const { data, status }: AxiosResponse = await axios.get<ILocations>(
+      `${config.API_HOST}/location`,
+      {
+        headers: {
+          Authorization: `Bearer ${await getIdToken()}`
+        }
+      }
+    );
+    if (status === 200) return data.data;
+    return [];
+  } catch (error) {
+    return [];
+  }
+};
 
 export const createLocation = async (data: any, clientId: number): Promise<any> => {
   const modelData: ICreateLocation = {

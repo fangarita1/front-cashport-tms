@@ -52,17 +52,29 @@
             color: $secondary-gray;
         }
         .buttons {
-            gap: 10px;
-            width: 210px;
             display: flex;
-            font-size: 16px;
+            gap: 0.625rem;
+            padding: 0.75rem;
+            width: fit-content;
+            height: fit-content;
+            font-size: 1rem;
             font-weight: 600;
             border-radius: 8px;
             line-height: normal;
             align-items: center;
             justify-content: center;
-            color: var(--Black, #141414);
+            color: $black;
             border: 1px solid #ddd;
+
+            &.-edit {
+                background-color: $background;
+                border: 1px solid transparent;
+
+                &:hover {
+                    background-color: $background;
+                    border: 1px solid $black;
+                }
+            }
         }
         .buttonGoBack {
             justify-content: flex-start;
@@ -198,18 +210,22 @@
 
         .input {
             background-color: $background;
-            border-radius: 0;
-            padding: 0.7rem;
+            padding: 0.4rem;
             border-radius: 0.25rem;
-            font-size: 1rem;
-            font-weight: 300;
 
-            &::placeholder {
-                color: $dark-gray !important;
-            }
+            .ant-input-wrapper {
+                input {
+                    font-size: 1rem;
+                    font-weight: 300;
 
-            &:disabled {
-                color: $dark-gray;
+                    &::placeholder {
+                        color: $dark-gray !important;
+                    }
+
+                    &:disabled {
+                        color: $dark-gray;
+                    }
+                }
             }
         }
 
@@ -218,12 +234,19 @@
             background-color: $background;
             margin-bottom: 0.2rem;
             border-radius: 0;
-            padding: 0.7rem;
+            padding: 0.4rem;
             border-radius: 0.25rem;
             font-size: 1rem;
 
-            &::placeholder {
-                color: $secondary-gray;
+            .ant-input-wrapper {
+                input {
+                    font-size: 1rem;
+                    font-weight: 300;
+
+                    &::placeholder {
+                        color: $secondary-gray;
+                    }
+                }
             }
         }
     }

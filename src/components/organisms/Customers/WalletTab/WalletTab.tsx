@@ -93,6 +93,7 @@ export const WalletTab = () => {
                     className="collapseByStatus"
                     defaultActiveKey={[invoice.status_id]}
                     ghost
+                    accordion
                     items={[
                       {
                         key: invoice.status_id,

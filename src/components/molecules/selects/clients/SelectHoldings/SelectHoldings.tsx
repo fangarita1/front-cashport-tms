@@ -21,12 +21,18 @@ interface Props {
 
 export const SelectHoldings = ({ errors, field }: Props) => {
   const { data, isLoading } = useHolding();
-  const options = data?.data.map((option) => {
+  const options = data?.data?.map((option) => {
     return {
       value: option.id,
       label: option.name,
       className: "selectOptions"
     };
+  });
+
+  options?.unshift({
+    value: 0,
+    label: "- Sin Asignar -",
+    className: "selectOptions  -noHolding"
   });
 
   return (

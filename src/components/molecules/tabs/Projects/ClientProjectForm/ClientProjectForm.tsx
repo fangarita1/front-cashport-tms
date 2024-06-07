@@ -102,8 +102,8 @@ export const ClientProjectForm = ({
         business_name: data.business_name,
         client_type: `${data.cliet_type}`,
         holding_id: {
-          value: data.holding_id,
-          label: data.holding_name
+          value: data.holding_id === null ? 0 : data.holding_id,
+          label: data.holding_name === null ? "- Sin Asignar -" : data.holding_name
         },
         phone: data.phone,
         email: data.email,

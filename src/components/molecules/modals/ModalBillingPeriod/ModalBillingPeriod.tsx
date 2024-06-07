@@ -11,7 +11,7 @@ const { Text } = Typography;
 interface Props {
   isOpen: boolean;
   setIsBillingPeriodOpen: Dispatch<SetStateAction<boolean>>;
-  setBillingPeriod?: Dispatch<SetStateAction<any>>;
+  setBillingPeriod?: Dispatch<SetStateAction<IBillingPeriodForm | undefined>>;
 }
 
 export const ModalBillingPeriod = ({ isOpen, setIsBillingPeriodOpen, setBillingPeriod }: Props) => {

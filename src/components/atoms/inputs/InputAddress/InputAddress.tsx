@@ -15,8 +15,8 @@ export const InputAddress = ({ control, errors }: Props) => {
         <InputForm
           titleInput="Ingresar dirección"
           control={control}
-          nameInput="info.name"
-          error={errors.info?.name}
+          nameInput="address.principal"
+          error={undefined}
           customStyle={{ width: "75%" }}
           placeholder="Carrera"
         />
@@ -24,8 +24,8 @@ export const InputAddress = ({ control, errors }: Props) => {
           <InputForm
             titleInput=""
             control={control}
-            nameInput="info.name"
-            error={errors.info?.name}
+            nameInput="address.principalNumber"
+            error={undefined}
             customStyle={{ width: "30%" }}
             placeholder="148A"
             hiddenTitle
@@ -34,8 +34,8 @@ export const InputAddress = ({ control, errors }: Props) => {
           <InputForm
             titleInput=""
             control={control}
-            nameInput="info.name"
-            error={errors.info?.name}
+            nameInput="address.secondary"
+            error={undefined}
             placeholder="45Bis"
             customStyle={{ width: "30%" }}
             hiddenTitle
@@ -45,8 +45,8 @@ export const InputAddress = ({ control, errors }: Props) => {
             titleInput=""
             placeholder="39"
             control={control}
-            nameInput="info.name"
-            error={errors.info?.name}
+            nameInput="address.secondaryNumber"
+            error={undefined}
             customStyle={{ width: "30%" }}
             hiddenTitle
           />
@@ -56,8 +56,8 @@ export const InputAddress = ({ control, errors }: Props) => {
         titleInput="Complemento"
         placeholder="Local 1A"
         control={control}
-        nameInput="info.name"
-        error={errors.info?.name}
+        nameInput="address.complement"
+        error={undefined}
         customStyle={{ width: "98%" }}
       />
     </Flex>
