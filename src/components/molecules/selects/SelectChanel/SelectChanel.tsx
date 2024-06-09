@@ -16,7 +16,6 @@ export const SelectChanel = ({
   selectedBusinessRules,
   setSelectedBusinessRules
 }: Props) => {
-  console.log("chanels: ", chanels);
   return (
     <div className="chanelSelect">
       {chanels.map(({ CHANNEL_ID, CHANNEL_NAME, CHANNEL_LINES }) => {

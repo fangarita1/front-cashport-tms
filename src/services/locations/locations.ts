@@ -39,7 +39,7 @@ export const createLocation = async (data: any, clientId: number): Promise<any> 
     });
     return response;
   } catch (error) {
-    console.log("Error creating new location: ", error);
+    console.warn("error creating new location: ", error);
     return error as any;
   }
 };

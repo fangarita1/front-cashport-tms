@@ -2,7 +2,7 @@ import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { IFormProject } from "@/types/projects/IFormProject";
 import { IProject } from "@/types/projects/IProject";
 import Title from "antd/es/typography/Title";
-import { Dispatch, SetStateAction } from "react";
+import { SetStateAction } from "react";
 import { UseFormReset, UseFormSetValue } from "react-hook-form";
 
 export interface ProjectFormTabProps {

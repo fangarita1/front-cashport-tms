@@ -19,7 +19,6 @@ export const DocumentClientBR = ({ isDisabledEdit }: Props) => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleDeleteClientType = (clientTypeId: number) => {
-    console.log("delete this client type: ", clientTypeId);
     removeClient(clientTypeId, messageApi);
   };
 

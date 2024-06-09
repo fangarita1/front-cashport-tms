@@ -83,7 +83,7 @@ export const addProject = async (data: IFormProject): Promise<ICreateProject> =>
     });
     return response;
   } catch (error) {
-    console.log("Error creating project: ", error);
+    console.warn("error creating project: ", error);
     return error as any;
   }
 };
@@ -104,7 +104,6 @@ export const updateProject = async (
     : data.personalization.color;
 
   const billingPeriod = JSON.parse(data.general.billing_period);
-  console.log("billingPeriod en UPDATE: ", billingPeriod);
   const finalData: IUpdateProjectData = {
     id: id,
     is_active: true,
@@ -123,10 +122,10 @@ export const updateProject = async (
     dso_currenly_year: data.general.DSO_currenly_year === "Sí" ? true : undefined,
     name: data.general.name,
     position_contact: data.contact.position_contact,
-    day_flag: billingPeriod.day_flag,
-    day: billingPeriod.day_flag ? billingPeriod.day : undefined,
-    order: billingPeriod.day_flag ? undefined : billingPeriod.order,
-    day_of_week: billingPeriod.day_flag ? undefined : billingPeriod.day_of_week
+    day_flag: billingPeriod.day_flag === 'true',
+    day: billingPeriod.day_flag === 'true' ? billingPeriod.day : undefined,
+    order: billingPeriod.day_flag === 'true' ? undefined : billingPeriod.order.toLowerCase(),
+    day_of_week: billingPeriod.day_flag === 'true' ? undefined : billingPeriod.day_of_week.toLowerCase()
   };
 
   const formData = new FormData();
@@ -172,7 +171,7 @@ export const updateProject = async (
     });
     return response;
   } catch (error) {
-    console.log("ERROR updating project: ", error);
+    console.warn("eRROR updating project: ", error);
     return error as any;
   }
 };
@@ -209,7 +208,7 @@ export const desactiveProject = async (id: string): Promise<ICreateProject> => {
     });
     return response;
   } catch (error) {
-    console.log("Error desactivating project: ", error);
+    console.warn("error desactivating project: ", error);
     return error as any;
   }
 };

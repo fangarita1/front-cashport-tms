@@ -80,7 +80,7 @@ export const addDocumentsClientType = async (formData: FormData, messageApi: Mes
     }
     return response;
   } catch (error) {
-    console.log("Error creando tipo de documento: ", error);
+    console.warn("error creando tipo de documento: ", error);
     return error as AxiosError;
   }
 };
@@ -101,7 +101,7 @@ export const removeDocumentsClientType = async (id: number, messageApi?: Message
     }
     return response;
   } catch (error) {
-    console.log("Error eliminando tipo de documento: ", error);
+    console.warn("error eliminando tipo de documento: ", error);
     return error as AxiosError;
   }
 };

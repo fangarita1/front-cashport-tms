@@ -21,7 +21,7 @@ export const getPortfolioFromClient = async (
     );
     return response.data.data as IDataSection;
   } catch (error) {
-    console.log("Error creating new location: ", error);
+    console.warn("error creating new location: ", error);
     return error as any;
   }
 };
