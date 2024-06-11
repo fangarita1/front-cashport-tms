@@ -63,7 +63,7 @@ export const inviteUser = async (
     );
     return response;
   } catch (error) {
-    console.log("Error inviting user: ", error);
+    console.warn("error inviting user: ", error);
     return error as any;
   }
 };
@@ -104,7 +104,7 @@ export const updateUser = async (
     });
     return response;
   } catch (error) {
-    console.log("Error updating user: ", error);
+    console.warn("error updating user: ", error);
     return error as any;
   }
 };
@@ -242,7 +242,7 @@ export const deleteUsersById = async (
 
     return response;
   } catch (error) {
-    console.log("Error deleting users: ", error);
+    console.warn("error deleting users: ", error);
     return error as any;
   }
 };
@@ -269,7 +269,7 @@ export const resendInvitationUsers = async (users_id: number[]): Promise<AxiosRe
 
     return response;
   } catch (error) {
-    console.log("Error re-sending invite to users: ", error);
+    console.warn("error re-sending invite to users: ", error);
     return error as any;
   }
 };
@@ -290,7 +290,7 @@ export const getGroupsByUser = async (userID: number, projectID: number) => {
 
     return response.data;
   } catch (error) {
-    console.log("Error getting groups by user: ", error);
+    console.warn("error getting groups by user: ", error);
     return error as any;
   }
 };

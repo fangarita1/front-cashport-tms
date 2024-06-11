@@ -17,39 +17,17 @@ import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import "./projectformtab.scss";
 import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
+import {
+  _onSubmit,
+  dataToProjectFormData,
+  ProjectFormTabProps,
+  useEffectFunction,
+  validationButtonText
+} from "./projectFormTab.mapper";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-interface Props {
-  idProjectForm?: string;
-  data?: IProject;
-  disabled?: boolean;
-  // eslint-disable-next-line no-unused-vars
-  onEditProject?: () => void;
-  // eslint-disable-next-line no-unused-vars
-  onSubmitForm?: (data: any) => void;
-  onActiveProject?: () => void;
-  onDesactivateProject?: () => void;
-  statusForm: "create" | "edit" | "review";
-}
-export type ProyectType = {
-  general: {
-    name: string;
-    nit: string;
-    currencies: string[];
-    country: string[];
-    address: string;
-  };
-  contact: {
-    name: string;
-    email: string;
-    phone: string;
-  };
-  personalization: {
-    color: any;
-  };
-};
 export const ProjectFormTab = ({
   onEditProject = () => {},
   onSubmitForm = () => {},
@@ -57,10 +35,11 @@ export const ProjectFormTab = ({
   data = {} as IProject,
   onActiveProject = () => {},
   onDesactivateProject = () => {}
-}: Props) => {
+}: ProjectFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
   const [imageFile, setImageFile] = useState(data.LOGO);
+  const [loading, setloading] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
   const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data);
@@ -77,30 +56,19 @@ export const ProjectFormTab = ({
   });
 
   const generalDSOCurrentlyYear = watch("general.DSO_currenly_year");
-
   useEffect(() => {
-    if (generalDSOCurrentlyYear === "Sí") {
-      setValue("general.DSO_days", undefined);
+    if (data.BILLING_PERIOD_CONFIG) {
+      setBillingPeriod(data.BILLING_PERIOD_CONFIG);
     }
+  }, []);
 
-    if (billingPeriod) {
-      setValue("general.billing_period", JSON.stringify(billingPeriod));
-    }
-  }, [billingPeriod, generalDSOCurrentlyYear, setValue]);
+  useEffect(
+    () => useEffectFunction(generalDSOCurrentlyYear, setValue, billingPeriod),
+    [billingPeriod, generalDSOCurrentlyYear, setValue]
+  );
 
-  const validationButtonText =
-    statusForm === "create"
-      ? "Crear nuevo proyecto"
-      : statusForm === "edit"
-        ? "Guardar Cambios"
-        : "Editar Proyecto";
-
-  const onSubmit = (data: any) => {
-    if (!imageFile) return setImageError(true);
-    setImageError(false);
-    onSubmitForm({ ...data, logo: imageFile });
-    reset(data);
-  };
+  const onSubmit = (data: any) =>
+    _onSubmit(data, setloading, setImageError, imageFile, onSubmitForm, reset);
 
   return (
     <>
@@ -138,7 +106,7 @@ export const ProjectFormTab = ({
                   onEditProject();
                 }}
               >
-                {validationButtonText}
+                {validationButtonText(statusForm)}
                 <Pencil size={"1.2rem"} />
               </Button>
             ) : (
@@ -226,7 +194,7 @@ export const ProjectFormTab = ({
                       {...field}
                       value={
                         billingPeriod
-                          ? billingPeriod.day_flag
+                          ? billingPeriod.day_flag === "true"
                             ? `El dia ${billingPeriod.day} del mes`
                             : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`
                           : data.BILLING_PERIOD
@@ -395,26 +363,14 @@ export const ProjectFormTab = ({
             />
           </Flex>
           <Flex className="buttonNewProject">
-            {statusForm === "edit" && (
+            {["edit", "create"].includes(statusForm) && (
               <Button
                 disabled={!isDirty}
                 className={`button ${isDirty ? "active" : ""}`}
                 style={{ display: "flex" }}
                 htmlType={"submit"}
               >
-                {validationButtonText}
-              </Button>
-            )}
-          </Flex>
-          <Flex className="buttonNewProject">
-            {statusForm === "create" && (
-              <Button
-                disabled={!isDirty}
-                className={`button ${isDirty ? "active" : ""}`}
-                style={{ display: "flex" }}
-                htmlType={"submit"}
-              >
-                {validationButtonText}
+                {validationButtonText(statusForm)}
               </Button>
             )}
           </Flex>
@@ -424,6 +380,7 @@ export const ProjectFormTab = ({
         isOpen={isBillingPeriodOpen}
         setIsBillingPeriodOpen={setIsBillingPeriodOpen}
         setBillingPeriod={setBillingPeriod}
+        billingPeriod={data.BILLING_PERIOD_CONFIG}
       />
       <ModalChangeStatus
         isActiveStatus={data?.IS_ACTIVE!}
@@ -434,36 +391,4 @@ export const ProjectFormTab = ({
       />
     </>
   );
-};
-const dataToProjectFormData = (data: IProject): IFormProject => {
-  const currenciesFormated = data?.CURRENCY?.map((currency) => ({
-    value: currency.id,
-    label: currency.CURRENCY_NAME
-  }));
-
-  return {
-    logo: data.LOGO,
-    general: {
-      name: data.NAME,
-      nit: data.NIT,
-      currencies: currenciesFormated,
-      country: { value: data.COUNTRY_ID, label: data.COUNTRY_NAME },
-      address: data.ADDRESS,
-      billing_period: data.BILLING_PERIOD,
-      // billing_period: Date.now(),
-      DSO_currenly_year: data.DSO_CURRENLY_YEAR === 0 ? "No" : "Sí",
-      DSO_days: data.DSO_DAYS,
-      accept_date: data?.ACCEPT_DATE === 0 ? "Fecha de emisión" : "Fecha de aceptación"
-    },
-    contact: {
-      name: data.CONTACT,
-      position_contact: data.POSITION_CONTACT,
-      email: data.EMAIL,
-      phone: data.PHONE
-    },
-    personalization: {
-      color: data.RGB_CONFIG,
-      description: data.PROJECT_DESCRIPTION
-    }
-  };
 };

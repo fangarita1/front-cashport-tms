@@ -77,7 +77,7 @@ export const createClient = async (
 
     return response;
   } catch (error) {
-    console.log("Error creating new client: ", error);
+    console.warn("error creating new client: ", error);
     return error as AxiosError;
   }
 };
@@ -98,7 +98,7 @@ export const getClientById = async (idUser: string, projectId: string): Promise<
 
     return response;
   } catch (error) {
-    console.log("Error getting client by Id: ", error);
+    console.warn("error getting client by Id: ", error);
     return error as any;
   }
 };
@@ -149,7 +149,7 @@ export const updateClient = async (
     );
     return response;
   } catch (error) {
-    console.log("Error updating client: ", error);
+    console.warn("error updating client: ", error);
     return error as AxiosError;
   }
 };
@@ -189,7 +189,7 @@ export const deleteClientById = async (
 
     return response;
   } catch (error) {
-    console.log("Error deleting client by Id: ", error);
+    console.warn("error deleting client by Id: ", error);
     return error as any;
   }
 };
