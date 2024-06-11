@@ -8,7 +8,7 @@ interface Props {
   errors: FieldErrors<AddressType>;
 }
 
-export const InputAddress = ({ control, errors }: Props) => {
+export const InputAddress = ({ control }: Props) => {
   return (
     <Flex vertical>
       <Flex align="flex-end">
