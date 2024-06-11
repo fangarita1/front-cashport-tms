@@ -42,7 +42,7 @@ export const createClient = async (
     client_type_id:
       typeof data.client_type === "number" ? data.client_type : parseInt(data.client_type),
     holding_id: data.holding_id.value,
-    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod.day_flag,
+    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod.day_flag === 'true',
     day: typeof billingPeriod === "string" ? undefined : billingPeriod.day,
     order: typeof billingPeriod === "string" ? undefined : billingPeriod.order?.toLowerCase(),
     day_of_week:
@@ -123,7 +123,7 @@ export const updateClient = async (
     document_type: data.document_type.value,
     locations: formatLocations,
     holding_id: data.holding_id.value,
-    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag,
+    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag === 'true',
     day: typeof billingPeriod === "string" ? undefined : billingPeriod?.day
   };
 

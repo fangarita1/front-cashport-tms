@@ -519,6 +519,7 @@ export const ClientProjectForm = ({
         isOpen={isBillingPeriodOpen}
         setIsBillingPeriodOpen={setIsBillingPeriodOpen}
         setBillingPeriod={setBillingPeriod}
+        billingPeriod={billingPeriod}
       />
       <ModalStatusClient isOpen={isModalStatus.status} setIsStatusClient={setIsModalStatus} />
       <ModalRemove
