@@ -41,7 +41,7 @@ export const createClient = async (
     documents: formatDocuments,
     client_type_id:
       typeof data.client_type === "number" ? data.client_type : parseInt(data.client_type),
-    holding_id: data.holding_id.value,
+    holding_id: data.holding_id?.value,
     day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod.day_flag,
     day: typeof billingPeriod === "string" ? undefined : billingPeriod.day,
     order: typeof billingPeriod === "string" ? undefined : billingPeriod.order?.toLowerCase(),
@@ -114,6 +114,8 @@ export const updateClient = async (
 
   const formatLocations = JSON.stringify(new Array(locationResponse?.data?.data));
 
+  console.log("billingPeriod in UPDATE: ", billingPeriod);
+
   const modelData: IUpdateClient = {
     business_name: data.business_name,
     phone: data.phone,
@@ -124,7 +126,10 @@ export const updateClient = async (
     locations: formatLocations,
     holding_id: data.holding_id.value,
     day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag,
-    day: typeof billingPeriod === "string" ? undefined : billingPeriod?.day
+    day: typeof billingPeriod === "string" ? undefined : billingPeriod?.day,
+    order: typeof billingPeriod === "string" ? undefined : billingPeriod?.order?.toLowerCase(),
+    day_of_week:
+      typeof billingPeriod === "string" ? undefined : billingPeriod?.day_of_week?.toLowerCase()
   };
 
   const formData = new FormData();

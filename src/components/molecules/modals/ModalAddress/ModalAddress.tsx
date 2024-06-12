@@ -1,23 +1,27 @@
 import { AddressContainer } from "@/components/atoms/AddressContainer/AddressContainer";
-import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-import { Button, Flex, Typography } from "antd";
+import { Button, Typography } from "antd";
 import { Dispatch, SetStateAction, useState } from "react";
-import { useForm } from "react-hook-form";
-import "./modaladdress.scss";
+import { Controller, useForm } from "react-hook-form";
 import { InputAddress } from "@/components/atoms/inputs/InputAddress/InputAddress";
 import { CaretLeft } from "phosphor-react";
+import { SelectLocations } from "../../selects/clients/SelectLocations/SelectLocations";
+import { ISelectType } from "@/types/clients/IClients";
 
+import "./modaladdress.scss";
 const { Title } = Typography;
 interface Props {
   setCurrentView: Dispatch<SetStateAction<"address" | "main" | "businessRules">>;
 }
 export type AddressType = {
-  info: {
-    name: string;
-    cargo: string;
-    email: string;
-    phone: string;
-    rol: string;
+  location: {
+    city: ISelectType;
+    address: {
+      street_type: string;
+      number: string;
+      complement: string;
+      building_number: number;
+    };
+    complement: string;
   };
 };
 export const ModalAddress = ({ setCurrentView }: Props) => {
@@ -25,16 +29,20 @@ export const ModalAddress = ({ setCurrentView }: Props) => {
 
   const {
     control,
-    // handleSubmit,
-    formState: { errors }
+    handleSubmit,
+    formState: { errors, isValid }
   } = useForm<AddressType>({
     defaultValues: {},
     disabled: isEditAvailable
-    // values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as ShipToType)
   });
 
+  const onSubmitLocation = (data: AddressType) => {
+    console.log("data ADDRESS: ", data);
+    setCurrentView("main");
+  };
+
   return (
-    <div className="modalAddress">
+    <form className="modalAddress" onSubmit={handleSubmit(onSubmitLocation)}>
       <Button
         className="modalTitle"
         icon={<CaretLeft size={"1.45rem"} />}
@@ -43,15 +51,14 @@ export const ModalAddress = ({ setCurrentView }: Props) => {
         Ingresar ubicación
       </Button>
 
-      <Flex wrap="wrap" justify="flex-start">
-        <InputForm
-          titleInput="Ciudad"
+      <div className="modalAddress__city">
+        <Controller
+          name="location.city"
           control={control}
-          nameInput="info.name"
-          error={errors.info?.name}
-          customStyle={{ width: "45.5%" }}
+          rules={{ required: true, minLength: 1 }}
+          render={({ field }) => <SelectLocations errors={errors.location?.city} field={field} />}
         />
-      </Flex>
+      </div>
       <Title level={5} className="titleSection">
         Ubicaciones disponibles ya creadas
       </Title>
@@ -66,6 +73,12 @@ export const ModalAddress = ({ setCurrentView }: Props) => {
         Crear ubicación del Ship To
       </Title>
       <InputAddress control={control} errors={errors} />
-    </div>
+
+      <div className="footer">
+        <Button disabled={!isValid} htmlType="submit" className="acceptButton -address">
+          Guardar ubicación
+        </Button>
+      </div>
+    </form>
   );
 };

@@ -1,8 +1,6 @@
 @import "@styles/variables.scss";
 
-.modalcreateshipto {
-    min-width: 600px;
-
+.createShipToModal {
     .nonHereditaryInputs {
         display: grid;
         grid-template-columns: 1fr 1fr;

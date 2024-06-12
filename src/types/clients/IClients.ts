@@ -100,7 +100,7 @@ export interface IUpdateClient {
   day_flag?: boolean;
   day?: number;
   order?: string;
-  day_of_week?: number;
+  day_of_week?: string;
   phone?: string;
   radication_type: number;
 }

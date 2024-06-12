@@ -19,7 +19,7 @@ import { ShipToProjectTable } from "@/components/molecules/tables/ShipToProjectT
 
 import { ModalUploadDocument } from "@/components/molecules/modals/ModalUploadDocument/ModalUploadDocument";
 import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
-import { ModalCreateShipTo } from "@/components/molecules/modals/ModalCreateShipTo/ModalCreateShipTo";
+import { ModalShipTo } from "@/components/molecules/modals/ModalShipTo/ModalShipTo";
 import { ModalStatusClient } from "@/components/molecules/modals/ModalStatusClient/ModalStatusClient";
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
 
@@ -68,7 +68,7 @@ export const ClientProjectForm = ({
   messageApi,
   messageContext
 }: Props) => {
-  const [isCreateShipTo, setIsCreateShipTo] = useState(false);
+  const [isShipToModalOpen, setIsShipToModalOpen] = useState(false);
   const [isUploadDocument, setIsUploadDocument] = useState(false);
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
   const [isModalStatus, setIsModalStatus] = useState({ status: false, remove: false });
@@ -135,6 +135,7 @@ export const ClientProjectForm = ({
   });
 
   useEffect(() => {
+    // console.log("dataClient: ", dataClient.data);
     // UseEffect para actualizar el valor de billingPeriod
     if (!billingPeriod) {
       setValue("infoClient.billing_period", dataClient.data.billing_period);
@@ -496,7 +497,7 @@ export const ClientProjectForm = ({
                 ) : null}
               </Flex>
               <DividerCustom />
-              <ShipToProjectTable setIsCreateShipTo={setIsCreateShipTo} />
+              <ShipToProjectTable setIsShipToModalOpen={setIsShipToModalOpen} />
               <DividerCustom />
               {isEditAvailable && (
                 <Flex gap={"1rem"} justify="flex-end">
@@ -515,9 +516,9 @@ export const ClientProjectForm = ({
           )}
         </Flex>
       </form>
-      <ModalCreateShipTo
-        isOpen={isCreateShipTo}
-        setIsCreateShipTo={setIsCreateShipTo}
+      <ModalShipTo
+        isOpen={isShipToModalOpen}
+        setIsShipToModalOpen={setIsShipToModalOpen}
         clientId={isViewDetailsClient.id ? isViewDetailsClient.id : 0}
         projectId={parseInt(idProject)}
       />

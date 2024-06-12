@@ -7,10 +7,10 @@ import "./shiptoprojecttable.scss";
 const { Text, Link, Title } = Typography;
 
 interface Props {
-  setIsCreateShipTo: Dispatch<SetStateAction<boolean>>;
+  setIsShipToModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export const ShipToProjectTable = ({ setIsCreateShipTo }: Props) => {
+export const ShipToProjectTable = ({ setIsShipToModalOpen }: Props) => {
   const columns: TableProps<any>["columns"] = [
     {
       title: "",
@@ -68,7 +68,7 @@ export const ShipToProjectTable = ({ setIsCreateShipTo }: Props) => {
       width: "40px",
       dataIndex: "",
       render: () => (
-        <Button onClick={() => setIsCreateShipTo(true)} icon={<Eye size={"1.3rem"} />} />
+        <Button onClick={() => setIsShipToModalOpen(true)} icon={<Eye size={"1.3rem"} />} />
       )
     }
   ];
@@ -106,7 +106,7 @@ export const ShipToProjectTable = ({ setIsCreateShipTo }: Props) => {
           size="large"
           type="text"
           className="buttonCreateShipTo"
-          onClick={() => setIsCreateShipTo(true)}
+          onClick={() => setIsShipToModalOpen(true)}
           icon={<Plus weight="bold" size={15} />}
         >
           Crear Ship To

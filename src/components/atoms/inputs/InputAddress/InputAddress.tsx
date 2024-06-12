@@ -15,8 +15,8 @@ export const InputAddress = ({ control, errors }: Props) => {
         <InputForm
           titleInput="Ingresar dirección"
           control={control}
-          nameInput="info.name"
-          error={errors.info?.name}
+          nameInput="location.address.street_type"
+          error={errors.location?.address?.street_type}
           customStyle={{ width: "75%", paddingRight: "1rem" }}
           placeholder="Carrera"
         />
@@ -24,8 +24,8 @@ export const InputAddress = ({ control, errors }: Props) => {
           <InputForm
             titleInput=""
             control={control}
-            nameInput="info.name"
-            error={errors.info?.name}
+            nameInput="location.address.number"
+            error={errors.location?.address?.number}
             customStyle={{ width: "30%" }}
             placeholder="148A"
             hiddenTitle
@@ -34,8 +34,8 @@ export const InputAddress = ({ control, errors }: Props) => {
           <InputForm
             titleInput=""
             control={control}
-            nameInput="info.name"
-            error={errors.info?.name}
+            nameInput="location.address.complement"
+            error={errors.location?.address?.complement}
             placeholder="45Bis"
             customStyle={{ width: "30%" }}
             hiddenTitle
@@ -45,10 +45,11 @@ export const InputAddress = ({ control, errors }: Props) => {
             titleInput=""
             placeholder="39"
             control={control}
-            nameInput="info.name"
-            error={errors.info?.name}
+            nameInput="location.address.building_number"
+            error={errors.location?.address?.building_number}
             customStyle={{ width: "30%" }}
             hiddenTitle
+            typeInput="number"
           />
         </Flex>
       </Flex>
@@ -56,8 +57,8 @@ export const InputAddress = ({ control, errors }: Props) => {
         titleInput="Complemento"
         placeholder="Local 1A"
         control={control}
-        nameInput="info.name"
-        error={errors.info?.name}
+        nameInput="location.complement"
+        error={errors.location?.complement}
         customStyle={{ marginTop: "1rem" }}
       />
     </Flex>

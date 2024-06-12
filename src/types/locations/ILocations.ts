@@ -6,20 +6,21 @@ export interface ILocations {
 
 export interface ILocation {
   id: number;
-  address: string;
   city: string;
-  nit: string;
-  position: IPosition[];
+  address: locationAddress[];
 }
 
-interface IPosition {
-  lat: string;
-  lon: string;
+interface locationAddress {
+  id: number;
+  address: string;
+  complement: string;
+  location_id: number;
+  project_id: number;
 }
 
 export interface ICreateLocation {
   address: string;
-  city: string;
-  nit: string;
-  position: IPosition | {};
+  city: number;
+  complement: string;
+  project_id: number;
 }
