@@ -68,3 +68,23 @@ export const addAddressToLocation = async (
     return error as any;
   }
 };
+
+export const getOneLocation = async (locationId: number, projectId: number): Promise<any> => {
+  const token = await getIdToken();
+
+  try {
+    const response: AxiosResponse = await axios.get(
+      `${config.API_HOST}/location/${locationId}/project/${projectId}`,
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.log("Error getting location: ", error);
+    return error as any;
+  }
+};

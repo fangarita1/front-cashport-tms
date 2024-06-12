@@ -1,6 +1,6 @@
 import { AddressContainer } from "@/components/atoms/AddressContainer/AddressContainer";
 import { Button, Typography } from "antd";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { InputAddress } from "@/components/atoms/inputs/InputAddress/InputAddress";
 import { CaretLeft } from "phosphor-react";
@@ -8,6 +8,9 @@ import { SelectLocations } from "../../selects/clients/SelectLocations/SelectLoc
 import { ISelectType } from "@/types/clients/IClients";
 
 import "./modaladdress.scss";
+import { useLocations } from "@/hooks/useLocations";
+import { locationAddress } from "@/types/locations/ILocations";
+
 const { Title } = Typography;
 interface Props {
   setCurrentView: Dispatch<SetStateAction<"address" | "main" | "businessRules">>;
@@ -26,15 +29,33 @@ export type AddressType = {
 };
 export const ModalAddress = ({ setCurrentView }: Props) => {
   const [isEditAvailable] = useState(false);
+  const [alreadyExistingAddresses, setAlreadyExistingAddresses] = useState<locationAddress[] | []>(
+    []
+  );
 
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid }
+    formState: { errors, isValid },
+    watch
   } = useForm<AddressType>({
     defaultValues: {},
     disabled: isEditAvailable
   });
+
+  const watchCity = watch("location.city");
+
+  const { getLocation } = useLocations();
+
+  useEffect(() => {
+    if (watchCity) {
+      const fetchLocation = async () => {
+        const response = await getLocation(watchCity.value);
+        setAlreadyExistingAddresses(response.data.address);
+      };
+      fetchLocation(); //
+    }
+  }, [getLocation, watchCity]);
 
   const onSubmitLocation = (data: AddressType) => {
     console.log("data ADDRESS: ", data);
@@ -63,11 +84,21 @@ export const ModalAddress = ({ setCurrentView }: Props) => {
         Ubicaciones disponibles ya creadas
       </Title>
       <div className="existingLocations">
-        <AddressContainer />
-        <AddressContainer />
-        <AddressContainer />
-        <AddressContainer />
-        <AddressContainer />
+        {alreadyExistingAddresses.length > 0 ? (
+          alreadyExistingAddresses.map((address) => (
+            <AddressContainer
+              key={address.id}
+              address={address.address}
+              city={watchCity.label}
+              addressId={address.id}
+              complement={address.complement}
+            />
+          ))
+        ) : (
+          <p className="existingLocations__emptyText">
+            Aún no hay ubicaciones creadas para esta ciudad
+          </p>
+        )}
       </div>
       <Title level={5} className="titleSection">
         Crear ubicación del Ship To

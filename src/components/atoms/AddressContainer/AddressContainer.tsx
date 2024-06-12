@@ -7,19 +7,23 @@ const { Text } = Typography;
 interface Props {
   address?: string;
   city?: string;
-  locationId?: number;
+  addressId?: number;
+  complement?: string;
 }
 
 export const AddressContainer = ({
   address = "Calle 69 # 15 - 34 Local 102",
   city = "Barranquilla",
-  locationId = 0
+  addressId = 0,
+  complement = "Local 102"
 }: Props) => {
   return (
     <Flex className="addresscontainer">
-      <Checkbox onChange={() => console.log("Selected location with id: ", locationId)} />
+      <Checkbox onChange={() => console.log("Selected address with id: ", addressId)} />
       <Flex vertical>
-        <Text className="address">{address}</Text>
+        <Text className="address">
+          {address} - {complement}
+        </Text>
         <Text className="city">{city}</Text>
       </Flex>
     </Flex>

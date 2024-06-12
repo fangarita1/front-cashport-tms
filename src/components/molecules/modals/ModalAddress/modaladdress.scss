@@ -43,6 +43,11 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 1rem;
+
+        &__emptyText {
+            font-weight: 200;
+            grid-column: 1 / 3;
+        }
     }
 
     .footer {

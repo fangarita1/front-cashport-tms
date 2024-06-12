@@ -10,7 +10,7 @@ export interface ILocation {
   address: locationAddress[];
 }
 
-interface locationAddress {
+export interface locationAddress {
   id: number;
   address: string;
   complement: string;

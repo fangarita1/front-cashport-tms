@@ -5,7 +5,8 @@ import { MessageInstance } from "antd/es/message/interface";
 import { ILocation } from "@/types/locations/ILocations";
 
 import { useAppStore } from "@/lib/store/store";
-import { addAddressToLocation } from "@/services/locations/locations";
+import { addAddressToLocation, getOneLocation } from "@/services/locations/locations";
+import { useCallback } from "react";
 
 export const useLocations = () => {
   const { ID: projectId } = useAppStore((state) => state.selectProject);
@@ -20,9 +21,17 @@ export const useLocations = () => {
     mutate();
   };
 
+  const getLocation = useCallback(
+    async (locationId: number) => {
+      return await getOneLocation(locationId, projectId);
+    },
+    [projectId]
+  );
+
   return {
     data,
     isLoading,
-    createLocation
+    createLocation,
+    getLocation
   };
 };
