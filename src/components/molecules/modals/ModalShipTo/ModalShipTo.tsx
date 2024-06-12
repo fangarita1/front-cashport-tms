@@ -1,8 +1,6 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { Button, Modal } from "antd";
 
-import { ModalAddress } from "../ModalAddress/ModalAddress";
-
 import { ModalBillingPeriod } from "../ModalBillingPeriod/ModalBillingPeriod";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 
@@ -22,7 +20,7 @@ interface Props {
 }
 
 export const ModalShipTo = ({ isOpen, setIsShipToModalOpen, clientId, projectId }: Props) => {
-  const [currentView, setCurrentView] = useState<"main" | "businessRules" | "address">("main");
+  const [currentView, setCurrentView] = useState<"main" | "businessRules">("main");
   const [selectedShipToData, setSelectedShipToData] = useState<ShipToFormType | undefined>();
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
@@ -32,7 +30,6 @@ export const ModalShipTo = ({ isOpen, setIsShipToModalOpen, clientId, projectId 
   );
 
   const handleCreateShipTo = () => {
-    // console.log("BillingPeriod: ", billingPeriod);
     // Aca iria la creacion del ShipTo POST
     // Falta saber como se envia el billingPeriod para crear un ShipTo
     if (selectedShipToData) {
@@ -92,7 +89,6 @@ export const ModalShipTo = ({ isOpen, setIsShipToModalOpen, clientId, projectId 
           />
         )}
         {currentView === "businessRules" && businessRulesViewModal.content}
-        {currentView === "address" && <ModalAddress setCurrentView={setCurrentView} />}
       </Modal>
       <ModalBillingPeriod
         isOpen={isBillingPeriodOpen}

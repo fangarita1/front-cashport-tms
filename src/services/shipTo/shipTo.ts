@@ -17,13 +17,15 @@ export const createShipTo = async (
     client_id: clientID.toString(),
     accounting_code: shipToData.code,
     project_id: projectID,
-    id_location: 1,
     depency_client: Number(shipToData.dependency_client),
-    description: "",
+    description: "Burned description",
     zone: zones,
     channel: selectedStructure.channels,
     line: selectedStructure.lines,
-    subline: selectedStructure.sublines
+    subline: selectedStructure.sublines,
+    id_address: shipToData.address_id,
+    condition_payment: shipToData.condition_payment.value,
+    radication_type: shipToData.radication_type.value
   };
 
   const token = await getIdToken();

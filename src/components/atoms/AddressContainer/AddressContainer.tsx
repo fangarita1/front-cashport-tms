@@ -9,17 +9,22 @@ interface Props {
   city?: string;
   addressId?: number;
   complement?: string;
+  isSelected: boolean;
+  // eslint-disable-next-line no-unused-vars
+  onSelectAddress: (addressId: number) => void;
 }
 
 export const AddressContainer = ({
   address = "Calle 69 # 15 - 34 Local 102",
   city = "Barranquilla",
   addressId = 0,
-  complement = "Local 102"
+  complement = "Local 102",
+  isSelected,
+  onSelectAddress
 }: Props) => {
   return (
     <Flex className="addresscontainer">
-      <Checkbox onChange={() => console.log("Selected address with id: ", addressId)} />
+      <Checkbox checked={isSelected} onChange={() => onSelectAddress(addressId)} />
       <Flex vertical>
         <Text className="address">
           {address} - {complement}

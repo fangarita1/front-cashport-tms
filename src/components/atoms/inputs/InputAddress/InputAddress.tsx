@@ -6,9 +6,10 @@ import { AddressType } from "@/components/molecules/modals/ModalAddress/ModalAdd
 interface Props {
   control: Control<AddressType, any>;
   errors: FieldErrors<AddressType>;
+  disabled: boolean;
 }
 
-export const InputAddress = ({ control, errors }: Props) => {
+export const InputAddress = ({ control, errors, disabled }: Props) => {
   return (
     <Flex vertical>
       <Flex align="flex-end">
@@ -19,6 +20,7 @@ export const InputAddress = ({ control, errors }: Props) => {
           error={errors.location?.address?.street_type}
           customStyle={{ width: "75%", paddingRight: "1rem" }}
           placeholder="Carrera"
+          disabled={disabled}
         />
         <Flex align="center" gap={"0.5rem"}>
           <InputForm
@@ -29,6 +31,7 @@ export const InputAddress = ({ control, errors }: Props) => {
             customStyle={{ width: "30%" }}
             placeholder="148A"
             hiddenTitle
+            disabled={disabled}
           />
           <Typography.Text>#</Typography.Text>
           <InputForm
@@ -39,6 +42,7 @@ export const InputAddress = ({ control, errors }: Props) => {
             placeholder="45Bis"
             customStyle={{ width: "30%" }}
             hiddenTitle
+            disabled={disabled}
           />
           <Typography.Text>-</Typography.Text>
           <InputForm
@@ -50,6 +54,7 @@ export const InputAddress = ({ control, errors }: Props) => {
             customStyle={{ width: "30%" }}
             hiddenTitle
             typeInput="number"
+            disabled={disabled}
           />
         </Flex>
       </Flex>
@@ -60,6 +65,7 @@ export const InputAddress = ({ control, errors }: Props) => {
         nameInput="location.complement"
         error={errors.location?.complement}
         customStyle={{ marginTop: "1rem" }}
+        disabled={disabled}
       />
     </Flex>
   );

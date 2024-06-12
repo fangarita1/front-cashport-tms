@@ -30,7 +30,11 @@ export const createLocation = async (data: any, clientId: number): Promise<any> 
 };
 
 export const addAddressToLocation = async (
-  data: any,
+  data: {
+    address: string;
+    id: number;
+    complement: string;
+  },
   projectId: number,
   messageApi: MessageInstance
 ): Promise<any> => {

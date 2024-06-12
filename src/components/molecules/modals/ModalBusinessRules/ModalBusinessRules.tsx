@@ -7,7 +7,7 @@ import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 import { CaretLeft } from "phosphor-react";
 import { SelectZone } from "../../selects/SelectZone/SelectZone";
 interface Props {
-  setCurrentView: Dispatch<SetStateAction<"address" | "main" | "businessRules">>;
+  setCurrentView: Dispatch<SetStateAction<"main" | "businessRules">>;
   zones: number[];
   setZones: Dispatch<SetStateAction<number[]>>;
   selectedStructure: ISelectedBussinessRules;

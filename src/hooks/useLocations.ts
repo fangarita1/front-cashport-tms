@@ -10,15 +10,17 @@ import { useCallback } from "react";
 
 export const useLocations = () => {
   const { ID: projectId } = useAppStore((state) => state.selectProject);
-  const { data, isLoading, mutate } = useSWR<ILocation[]>(
-    `/location/project/${projectId}`,
-    API,
-    {}
-  );
+  const { data, isLoading } = useSWR<ILocation[]>(`/location/project/${projectId}`, API, {});
 
-  const createLocation = async (name: string, messageApi: MessageInstance) => {
-    await addAddressToLocation(data, projectId, messageApi);
-    mutate();
+  const createLocation = async (
+    newAddressData: {
+      address: string;
+      id: number;
+      complement: string;
+    },
+    messageApi: MessageInstance
+  ) => {
+    return await addAddressToLocation(newAddressData, projectId, messageApi);
   };
 
   const getLocation = useCallback(
