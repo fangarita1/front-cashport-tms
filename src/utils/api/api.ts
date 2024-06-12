@@ -19,6 +19,7 @@ export async function getIdToken(forceRefresh?: boolean) {
 const instance = (token: string) =>
   axios.create({
     baseURL: config.API_HOST,
+    timeout: 10000,
     headers: {
       Accept: "application/json, text/plain, */*",
       "Content-Type": "application/json; charset=utf-8",
@@ -37,6 +38,13 @@ export const fetcher = async (url: string) => {
       }
 
       return res.data;
+    })
+    .catch((error) => {
+      if (error.code === "ECONNABORTED") {
+        console.error("La solicitud ha sido cancelada debido a un timeout");
+      } else {
+        console.error("Error en la solicitud:", error.message);
+      }
     });
 };
 

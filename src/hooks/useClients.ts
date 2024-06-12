@@ -35,7 +35,6 @@ export const useClients = ({
   const pathKey = `/client/project/${idProject}?page=${page}${holdingQuery}${cityQuery}${riskQuery}${paymentConditionQuery}${radicationTypeQuery}${statusQuery}`;
 
   const { data, error } = useSWR<IClients>(pathKey, fetcher, {});
-
   return {
     data: (data?.data as IClient[]) || ([] as IClient[]),
     loading: !error && !data

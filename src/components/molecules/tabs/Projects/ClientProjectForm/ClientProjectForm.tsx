@@ -426,7 +426,7 @@ export const ClientProjectForm = ({
                                 : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`
                               : dataClient.data.billing_period
                                 ? dataClient.data.billing_period
-                                : undefined
+                                : ''
                           }
                         />
                         {error && (
