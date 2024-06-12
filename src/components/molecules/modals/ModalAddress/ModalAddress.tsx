@@ -48,7 +48,7 @@ export const ModalAddress = ({ isOpen, setIsOpenAddress }: Props) => {
   const city = watch("city");
 
   const filteredLocations = useMemo(() => {
-    return locations.filter((location) => location.city.toLowerCase().includes(city.toLowerCase()));
+    return locations?.filter((location) => location.city.toLowerCase().includes(city.toLowerCase()));
   }, [locations, city]);
 
   const initData = async () => {
@@ -82,7 +82,7 @@ export const ModalAddress = ({ isOpen, setIsOpenAddress }: Props) => {
             customStyle={{ width: "45.5%" }}
           />
         </Flex>
-        {!!filteredLocations.length && (
+        {!!filteredLocations?.length && (
           <>
             <Title level={5} className="titleSection">
               Ubicaciones disponibles ya creadas
