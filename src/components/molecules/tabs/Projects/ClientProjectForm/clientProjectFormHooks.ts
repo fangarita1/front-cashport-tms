@@ -1,5 +1,6 @@
-import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
+import { UseFormGetValues, UseFormWatch } from "react-hook-form";
 import { ClientFormType, ISelectType } from "@/types/clients/IClients";
+import { useEffect, useRef, useState } from "react";
 
 // Hook for getting specific client values
 export const useGetClientValues = (getValues: UseFormGetValues<ClientFormType>) => {
@@ -18,15 +19,43 @@ export const useGetClientValues = (getValues: UseFormGetValues<ClientFormType>) 
   return getClientValues;
 };
 
-// Another hook that might set default values or handle form submission logic
-export const useHandleClientSubmission = (setValue: UseFormSetValue<ClientFormType>) => {
-  const setDefaultValues = () => {
-    setValue("infoClient.billing_period", "Monthly");
-    setValue("infoClient.radication_type", { value: 1, label: "Email" } as ISelectType);
-    setValue("infoClient.condition_payment", { value: 2, label: "30 Days" } as ISelectType);
-  };
+//Hook for checking if any location Field changed
+export const useCheckLocationFields = (
+  getValues: UseFormGetValues<ClientFormType>,
+  watch: UseFormWatch<ClientFormType>,
+  isDataLoaded: boolean
+) => {
+  const [hasLocationChanged, setHasLocationChanged] = useState(false);
 
-  return {
-    setDefaultValues
-  };
+  const initialCityRef = useRef<ISelectType | null>();
+  const initialAddressRef = useRef<string | null>();
+
+  const watchCity = watch("infoClient.city");
+  const watchAddress = watch("infoClient.address");
+
+  // Set initial values only once after data is loaded
+  useEffect(() => {
+    if (isDataLoaded) {
+      initialCityRef.current = getValues("infoClient.city");
+      initialAddressRef.current = getValues("infoClient.address");
+    }
+  }, [getValues, isDataLoaded]);
+
+  useEffect(() => {
+    if (!isDataLoaded) return;
+
+    console.log("watchCity", watchCity);
+    console.log("initialCityRef", initialCityRef.current);
+
+    if (
+      (watchCity && watchCity.value !== initialCityRef?.current?.value) ||
+      watchAddress !== initialAddressRef.current
+    ) {
+      setHasLocationChanged(true);
+    } else {
+      setHasLocationChanged(false);
+    }
+  }, [watchAddress, watchCity, isDataLoaded]);
+
+  return hasLocationChanged;
 };

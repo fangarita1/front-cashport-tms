@@ -4,6 +4,11 @@ export interface ILocations {
   data: ILocation[];
 }
 
+export interface ICities {
+  id: number;
+  city: string;
+}
+
 export interface ILocation {
   id: number;
   city: string;
@@ -31,7 +36,7 @@ export interface IAddAddressToLocation {
   status: number;
 }
 
-interface IAddAddressData {
+export interface IAddAddressData {
   address: string;
   city: number;
   complement: string;

@@ -11,6 +11,7 @@ import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 
 import { SUCCESS } from "@/utils/constants/globalConstants";
 import { MessageInstance } from "antd/es/message/interface";
+import { IAddAddressData, IAddAddressToLocation } from "@/types/locations/ILocations";
 
 // create
 
@@ -19,11 +20,11 @@ export const createClient = async (
   rawData: ClientFormType,
   billingPeriod: IBillingPeriodForm,
   documents: any[],
-  locationResponse: any
+  locationResponse: IAddAddressToLocation
 ): Promise<any> => {
   const { infoClient: data } = rawData;
 
-  const formatLocations = JSON.stringify(new Array(locationResponse.data.data));
+  const formatLocations = JSON.stringify(new Array(locationResponse.data));
 
   const formatDocuments = documents.map((doc) => doc.originFileObj);
 
@@ -41,7 +42,7 @@ export const createClient = async (
     documents: formatDocuments,
     client_type_id:
       typeof data.client_type === "number" ? data.client_type : parseInt(data.client_type),
-    holding_id: data.holding_id?.value,
+    holding_id: data.holding_id?.value === 0 ? undefined : data.holding_id?.value,
     day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod.day_flag === "true",
     day: typeof billingPeriod === "string" ? undefined : billingPeriod.day,
     order: typeof billingPeriod === "string" ? undefined : billingPeriod.order?.toLowerCase(),
@@ -107,14 +108,13 @@ export const updateClient = async (
   idProject: string,
   clientId: number,
   rawData: ClientFormType,
-  locationResponse?: any,
+  locationResponse: IAddAddressToLocation | IAddAddressData | any,
+  hasLocationChanged: boolean,
   billingPeriod?: IBillingPeriodForm
 ): Promise<any> => {
   const { infoClient: data } = rawData;
 
-  const formatLocations = JSON.stringify(new Array(locationResponse?.data?.data));
-
-  console.log("billingPeriod in UPDATE: ", billingPeriod);
+  const formatLocations = JSON.stringify(new Array(locationResponse?.data));
 
   const modelData: IUpdateClient = {
     business_name: data.business_name,
@@ -123,7 +123,7 @@ export const updateClient = async (
     email: data.email,
     radication_type: data.radication_type.value,
     document_type: data.document_type.value,
-    locations: formatLocations,
+    locations: hasLocationChanged ? formatLocations : JSON.stringify(locationResponse),
     holding_id: data.holding_id.value,
     day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag === "true",
     day: typeof billingPeriod === "string" ? undefined : billingPeriod?.day,

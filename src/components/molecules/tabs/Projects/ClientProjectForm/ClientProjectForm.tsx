@@ -29,7 +29,7 @@ import {
   getClientById,
   updateClient
 } from "@/services/clients/clients";
-import { ClientFormType, IClient } from "@/types/clients/IClients";
+import { ClientFormType, IClient, IClientLocation } from "@/types/clients/IClients";
 import { SelectRisks } from "@/components/molecules/selects/clients/SelectRisks/SelectRisks";
 import { SelectDocumentTypes } from "@/components/molecules/selects/clients/SelectDocumentTypes/SelectDocumentTypes";
 import { SelectClientTypes } from "@/components/molecules/selects/clients/SelectClientTypes/SelectClientTypes";
@@ -37,10 +37,11 @@ import { SelectRadicationTypes } from "@/components/molecules/selects/clients/Se
 import { SelectPaymentConditions } from "@/components/molecules/selects/clients/SelectPaymentConditions/SelectPaymentCondition";
 import { SelectHoldings } from "@/components/molecules/selects/clients/SelectHoldings/SelectHoldings";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
-import { createLocation } from "@/services/locations/locations";
-import { docTypeIdBasedOnDocType } from "@/utils/utils";
+import { addAddressToLocation } from "@/services/locations/locations";
+import { docTypeIdBasedOnDocType, getCityName, isNonEmptyObject } from "@/utils/utils";
 import { MessageInstance } from "antd/es/message/interface";
-import { useGetClientValues } from "./clientProjectFormHooks";
+import { useCheckLocationFields, useGetClientValues } from "./clientProjectFormHooks";
+import { SelectLocations } from "@/components/molecules/selects/clients/SelectLocations/SelectLocations";
 
 const { Title } = Typography;
 
@@ -88,10 +89,12 @@ export const ClientProjectForm = ({
           Array.isArray(data?.locations) && data.locations.length > 0
             ? data?.locations[0]?.address
             : undefined,
-        city:
-          Array.isArray(data?.locations) && data.locations.length > 0
-            ? data.locations[0]?.city
-            : undefined,
+        city: {
+          value: data.locations?.find((loc: IClientLocation) => loc != null)?.city,
+          label: data.locations?.find((loc: IClientLocation) => loc != null)?.city
+            ? getCityName(data.locations?.find((loc: IClientLocation) => loc != null)?.city)
+            : undefined
+        },
         document_type: {
           value: docTypeIdBasedOnDocType(data.document_type),
           label: data.document_type
@@ -136,6 +139,12 @@ export const ClientProjectForm = ({
 
   const getClientValues = useGetClientValues(getValues);
 
+  const hasLocationChanged = useCheckLocationFields(
+    getValues,
+    watch,
+    isNonEmptyObject(dataClient.data)
+  );
+
   useEffect(() => {
     // UseEffect para actualizar el valor de billingPeriod
     if (!billingPeriod) {
@@ -174,36 +183,86 @@ export const ClientProjectForm = ({
   }, [isViewDetailsClient, idProject]);
 
   const onSubmitHandler = async (data: any) => {
-    // Si hay un client id estamos editando un cliente de lo contrario estamos creando un cliente
     if (isViewDetailsClient?.id) {
-      const locationResponse = await createLocation(data.infoClient, isViewDetailsClient?.id);
-      const response = await updateClient(
-        idProject,
-        isViewDetailsClient?.id,
-        data,
-        locationResponse,
-        billingPeriod
-      );
+      // Update Client
 
-      if (response.status === 200 || response.status === 202) {
-        setIsEditAvailable(false);
-        messageApi.open({
-          type: "success",
-          content: `El cliente fue editado exitosamente.`
-        });
-      } else if (response.response.status === 400) {
-        messageApi.open({
-          type: "error",
-          content: "Algo salio mal con los datos subidos."
-        });
+      if (hasLocationChanged) {
+        const locationResponse = await addAddressToLocation(
+          {
+            address: data.infoClient.address,
+            id: data.infoClient.city.value,
+            complement: "."
+          },
+          parseInt(idProject),
+          messageApi
+        );
+
+        const response = await updateClient(
+          idProject,
+          isViewDetailsClient?.id,
+          data,
+          locationResponse,
+          hasLocationChanged,
+          billingPeriod
+        );
+
+        if (response.status === 200 || response.status === 202) {
+          setIsEditAvailable(false);
+          messageApi.open({
+            type: "success",
+            content: `El cliente fue editado exitosamente.`
+          });
+        } else if (response.response.status === 400) {
+          messageApi.open({
+            type: "error",
+            content: "Algo salio mal con los datos subidos."
+          });
+        } else {
+          messageApi.open({
+            type: "error",
+            content: "Oops ocurrio un error."
+          });
+        }
       } else {
-        messageApi.open({
-          type: "error",
-          content: "Oops ocurrio un error."
-        });
+        //Location did not change
+        const response = await updateClient(
+          idProject,
+          isViewDetailsClient?.id,
+          data,
+          dataClient.data.locations,
+          hasLocationChanged,
+          billingPeriod
+        );
+
+        if (response.status === 200 || response.status === 202) {
+          setIsEditAvailable(false);
+          messageApi.open({
+            type: "success",
+            content: `El cliente fue editado exitosamente.`
+          });
+        } else if (response.response.status === 400) {
+          messageApi.open({
+            type: "error",
+            content: "Algo salio mal con los datos subidos."
+          });
+        } else {
+          messageApi.open({
+            type: "error",
+            content: "Oops ocurrio un error."
+          });
+        }
       }
     } else {
-      const locationResponse = await createLocation(data.infoClient, isViewDetailsClient?.id);
+      // Create New Client
+      const locationResponse = await addAddressToLocation(
+        {
+          address: data.infoClient.address,
+          id: data.infoClient.city.value,
+          complement: "Burned complement"
+        },
+        parseInt(idProject),
+        messageApi
+      );
 
       if (billingPeriod) {
         const response = await createClient(
@@ -373,11 +432,13 @@ export const ClientProjectForm = ({
                   nameInput="infoClient.email"
                   error={errors.infoClient?.email}
                 />
-                <InputForm
-                  titleInput="Ciudad"
+                <Controller
+                  name="infoClient.city"
                   control={control}
-                  nameInput="infoClient.city"
-                  error={errors.infoClient?.city}
+                  rules={{ required: true, minLength: 1 }}
+                  render={({ field }) => (
+                    <SelectLocations errors={errors.infoClient?.city} field={field} />
+                  )}
                 />
                 <InputForm
                   titleInput="Dirección"
@@ -428,7 +489,7 @@ export const ClientProjectForm = ({
                                 : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`
                               : dataClient.data.billing_period
                                 ? dataClient.data.billing_period
-                                : ''
+                                : ""
                           }
                         />
                         {error && (
