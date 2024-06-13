@@ -18,9 +18,9 @@ export type ShipToFormType = {
     code: string;
     address: string;
     address_id: number;
-    billing_period: string;
-    radication_type: ISelectType;
-    condition_payment: ISelectType;
+    billing_period: string | undefined;
+    radication_type: ISelectType | undefined;
+    condition_payment: ISelectType | undefined;
     dependency_client: boolean;
   };
 };

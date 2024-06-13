@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { getIdToken } from "@/utils/api/api";
-import { ICreateLocation } from "@/types/locations/ILocations";
-import { CREATED } from "@/utils/constants/globalConstants";
+import { IAddAddressToLocation, ICreateLocation } from "@/types/locations/ILocations";
+import { CREATED, SUCCESS } from "@/utils/constants/globalConstants";
 import { MessageInstance } from "antd/es/message/interface";
 
 export const createLocation = async (data: any, clientId: number): Promise<any> => {
@@ -37,7 +37,7 @@ export const addAddressToLocation = async (
   },
   projectId: number,
   messageApi: MessageInstance
-): Promise<any> => {
+): Promise<IAddAddressToLocation> => {
   const modelData: ICreateLocation = {
     address: data.address,
     city: data.id,
@@ -55,10 +55,10 @@ export const addAddressToLocation = async (
       }
     });
 
-    if (response.status === CREATED) {
+    if (response.status === CREATED || SUCCESS) {
       messageApi.open({
         type: "success",
-        content: `Direccion añadida exitosamente.`
+        content: `Direccion creada exitosamente.`
       });
     } else {
       messageApi.open({
@@ -66,7 +66,7 @@ export const addAddressToLocation = async (
         content: "Oops ocurrio un error."
       });
     }
-    return response;
+    return response.data as IAddAddressToLocation;
   } catch (error) {
     console.log("Error creating new location: ", error);
     return error as any;

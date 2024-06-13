@@ -11,15 +11,27 @@ import { ShipToFormType } from "@/types/shipTo/IShipTo";
 
 import "./modalShipTo.scss";
 import { ModalCreateShipTo } from "./ModalCreateShipTo/ModalCreateShipTo";
+import { ISelectType } from "@/types/clients/IClients";
 
 interface Props {
   isOpen: boolean;
   setIsShipToModalOpen: Dispatch<SetStateAction<boolean>>;
   clientId: number;
   projectId: number;
+  getClientValues: () => {
+    billingPeriod: string;
+    radicationType: ISelectType;
+    conditionPayment: ISelectType;
+  };
 }
 
-export const ModalShipTo = ({ isOpen, setIsShipToModalOpen, clientId, projectId }: Props) => {
+export const ModalShipTo = ({
+  isOpen,
+  setIsShipToModalOpen,
+  clientId,
+  projectId,
+  getClientValues
+}: Props) => {
   const [currentView, setCurrentView] = useState<"main" | "businessRules">("main");
   const [selectedShipToData, setSelectedShipToData] = useState<ShipToFormType | undefined>();
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
@@ -30,8 +42,6 @@ export const ModalShipTo = ({ isOpen, setIsShipToModalOpen, clientId, projectId 
   );
 
   const handleCreateShipTo = () => {
-    // Aca iria la creacion del ShipTo POST
-    // Falta saber como se envia el billingPeriod para crear un ShipTo
     if (selectedShipToData) {
       createShipTo(clientId, projectId, selectedShipToData, zones, selectedStructure);
     }
@@ -86,6 +96,7 @@ export const ModalShipTo = ({ isOpen, setIsShipToModalOpen, clientId, projectId 
             setSelectedShipToData={setSelectedShipToData}
             setIsBillingPeriodOpen={setIsBillingPeriodOpen}
             billingPeriod={billingPeriod}
+            getClientValues={getClientValues}
           />
         )}
         {currentView === "businessRules" && businessRulesViewModal.content}

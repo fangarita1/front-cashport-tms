@@ -1,6 +1,6 @@
 import { AddressContainer } from "@/components/atoms/AddressContainer/AddressContainer";
 import { Button, Typography, message } from "antd";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { BaseSyntheticEvent, Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Controller, UseFormSetValue, useForm } from "react-hook-form";
 import { InputAddress } from "@/components/atoms/inputs/InputAddress/InputAddress";
 import { CaretLeft } from "phosphor-react";
@@ -64,7 +64,11 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
     }
   }, [getLocation, watchCity]);
 
-  const onSubmitLocation = async (data: AddressType) => {
+  const onSubmitLocation = async (
+    data: AddressType,
+    event: BaseSyntheticEvent<object, any, any> | undefined
+  ) => {
+    event?.stopPropagation();
     if (selectedAddress) {
       setParentFormValue("shipTo.address_id", selectedAddress.id);
       setParentFormValue("shipTo.address", selectedAddress.address);
@@ -80,8 +84,7 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
 
     try {
       const response = await createLocation(newAddressData, messageApi);
-      console.log("RESPONSE addAddress: ", response);
-      // setParentFormValue("shipTo.address_id", response.data.id);
+      setParentFormValue("shipTo.address_id", response.data.id);
       setParentFormValue("shipTo.address", newAddressData.address);
       setIsModalAddressOpen(false);
     } catch (error) {
@@ -93,7 +96,10 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
   return (
     <>
       {contextHolder}
-      <form className="modalAddress" onSubmit={handleSubmit(onSubmitLocation)}>
+      <form
+        className="modalAddress"
+        onSubmit={handleSubmit((data, event) => onSubmitLocation(data, event))}
+      >
         <Button
           className="modalTitle"
           icon={<CaretLeft size={"1.45rem"} />}

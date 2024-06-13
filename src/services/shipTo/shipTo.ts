@@ -24,8 +24,8 @@ export const createShipTo = async (
     line: selectedStructure.lines,
     subline: selectedStructure.sublines,
     id_address: shipToData.address_id,
-    condition_payment: shipToData.condition_payment.value,
-    radication_type: shipToData.radication_type.value
+    condition_payment: shipToData.condition_payment ? shipToData.condition_payment.value : 0,
+    radication_type: shipToData.radication_type ? shipToData.radication_type?.value : 0
   };
 
   const token = await getIdToken();

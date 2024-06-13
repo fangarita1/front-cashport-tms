@@ -24,3 +24,17 @@ export interface ICreateLocation {
   complement: string;
   project_id: number;
 }
+
+export interface IAddAddressToLocation {
+  data: IAddAddressData;
+  message: string;
+  status: number;
+}
+
+interface IAddAddressData {
+  address: string;
+  city: number;
+  complement: string;
+  id: number;
+  project_id: number;
+}

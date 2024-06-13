@@ -19,7 +19,6 @@ import { ShipToProjectTable } from "@/components/molecules/tables/ShipToProjectT
 
 import { ModalUploadDocument } from "@/components/molecules/modals/ModalUploadDocument/ModalUploadDocument";
 import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
-import { ModalShipTo } from "@/components/molecules/modals/ModalShipTo/ModalShipTo";
 import { ModalStatusClient } from "@/components/molecules/modals/ModalStatusClient/ModalStatusClient";
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
 
@@ -41,6 +40,7 @@ import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { createLocation } from "@/services/locations/locations";
 import { docTypeIdBasedOnDocType } from "@/utils/utils";
 import { MessageInstance } from "antd/es/message/interface";
+import { useGetClientValues } from "./clientProjectFormHooks";
 
 const { Title } = Typography;
 
@@ -68,7 +68,6 @@ export const ClientProjectForm = ({
   messageApi,
   messageContext
 }: Props) => {
-  const [isShipToModalOpen, setIsShipToModalOpen] = useState(false);
   const [isUploadDocument, setIsUploadDocument] = useState(false);
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
   const [isModalStatus, setIsModalStatus] = useState({ status: false, remove: false });
@@ -128,14 +127,16 @@ export const ClientProjectForm = ({
     handleSubmit,
     formState: { errors },
     setValue,
+    getValues,
     watch
   } = useForm<ClientFormType>({
     disabled: !isEditAvailable,
     values: isViewDetailsClient?.active ? dataToDataForm(dataClient.data) : ({} as any)
   });
 
+  const getClientValues = useGetClientValues(getValues);
+
   useEffect(() => {
-    // console.log("dataClient: ", dataClient.data);
     // UseEffect para actualizar el valor de billingPeriod
     if (!billingPeriod) {
       setValue("infoClient.billing_period", dataClient.data.billing_period);
@@ -497,8 +498,17 @@ export const ClientProjectForm = ({
                 ) : null}
               </Flex>
               <DividerCustom />
-              <ShipToProjectTable setIsShipToModalOpen={setIsShipToModalOpen} />
-              <DividerCustom />
+              {isViewDetailsClient?.id === 0 ? null : (
+                <>
+                  <ShipToProjectTable
+                    clientId={isViewDetailsClient.id}
+                    projectId={parseInt(idProject)}
+                    getClientValues={getClientValues}
+                  />
+                  <DividerCustom />
+                </>
+              )}
+
               {isEditAvailable && (
                 <Flex gap={"1rem"} justify="flex-end">
                   <Button
@@ -516,12 +526,6 @@ export const ClientProjectForm = ({
           )}
         </Flex>
       </form>
-      <ModalShipTo
-        isOpen={isShipToModalOpen}
-        setIsShipToModalOpen={setIsShipToModalOpen}
-        clientId={isViewDetailsClient.id ? isViewDetailsClient.id : 0}
-        projectId={parseInt(idProject)}
-      />
       <ModalUploadDocument
         isOpen={isUploadDocument}
         setIsOpenUpload={setIsUploadDocument}

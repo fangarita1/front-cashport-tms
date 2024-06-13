@@ -1,16 +1,26 @@
-import { Dispatch, SetStateAction } from "react";
+import { useState } from "react";
 import { Button, Checkbox, Flex, Table, TableProps, Typography } from "antd";
 import { Eye, Plus } from "phosphor-react";
 
 import "./shiptoprojecttable.scss";
+import { ModalShipTo } from "../../modals/ModalShipTo/ModalShipTo";
+import { ISelectType } from "@/types/clients/IClients";
 
 const { Text, Link, Title } = Typography;
 
 interface Props {
-  setIsShipToModalOpen: Dispatch<SetStateAction<boolean>>;
+  clientId: number;
+  projectId: number;
+  getClientValues: () => {
+    billingPeriod: string;
+    radicationType: ISelectType;
+    conditionPayment: ISelectType;
+  };
 }
 
-export const ShipToProjectTable = ({ setIsShipToModalOpen }: Props) => {
+export const ShipToProjectTable = ({ clientId, projectId, getClientValues }: Props) => {
+  const [isShipToModalOpen, setIsShipToModalOpen] = useState(false);
+
   const columns: TableProps<any>["columns"] = [
     {
       title: "",
@@ -112,6 +122,13 @@ export const ShipToProjectTable = ({ setIsShipToModalOpen }: Props) => {
           Crear Ship To
         </Button>
       </div>
+      <ModalShipTo
+        isOpen={isShipToModalOpen}
+        setIsShipToModalOpen={setIsShipToModalOpen}
+        clientId={clientId}
+        projectId={projectId}
+        getClientValues={getClientValues}
+      />
     </>
   );
 };

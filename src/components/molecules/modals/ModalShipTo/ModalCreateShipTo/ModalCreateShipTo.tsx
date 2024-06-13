@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { BaseSyntheticEvent, Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Flex, Input, Switch, Typography } from "antd";
 
@@ -11,6 +11,8 @@ import { ShipToFormType } from "@/types/shipTo/IShipTo";
 
 import "./modalcreateshipto.scss";
 import { ModalAddress } from "../../ModalAddress/ModalAddress";
+import { ISelectType } from "@/types/clients/IClients";
+import { CaretRight } from "phosphor-react";
 const { Text, Title } = Typography;
 interface Props {
   setIsShipToModalOpen: Dispatch<SetStateAction<boolean>>;
@@ -18,6 +20,11 @@ interface Props {
   setSelectedShipToData: Dispatch<SetStateAction<ShipToFormType | undefined>>;
   setIsBillingPeriodOpen: Dispatch<SetStateAction<boolean>>;
   billingPeriod: IBillingPeriodForm | undefined;
+  getClientValues: () => {
+    billingPeriod: string;
+    radicationType: ISelectType;
+    conditionPayment: ISelectType;
+  };
 }
 
 export const ModalCreateShipTo = ({
@@ -25,7 +32,8 @@ export const ModalCreateShipTo = ({
   setCurrentView,
   setSelectedShipToData,
   setIsBillingPeriodOpen,
-  billingPeriod
+  billingPeriod,
+  getClientValues
 }: Props) => {
   const [isModalAddressOpen, setIsModalAddressOpen] = useState(false);
   const {
@@ -36,7 +44,6 @@ export const ModalCreateShipTo = ({
     formState: { errors, isValid }
   } = useForm<ShipToFormType>({
     mode: "onChange",
-    // values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as ShipToType)
     defaultValues: {
       shipTo: {
         dependency_client: false
@@ -44,6 +51,11 @@ export const ModalCreateShipTo = ({
     }
   });
 
+  const {
+    billingPeriod: defaultBillingPeriod,
+    radicationType,
+    conditionPayment
+  } = getClientValues();
   const watchDependencyClient = watch("shipTo.dependency_client");
 
   useEffect(() => {
@@ -60,7 +72,31 @@ export const ModalCreateShipTo = ({
     setValue("shipTo.billing_period", formattedBillingPeriod, { shouldValidate: true });
   }, [billingPeriod, setValue]);
 
-  const onSubmitHandler = async (data: ShipToFormType) => {
+  useEffect(() => {
+    if (watchDependencyClient) {
+      // Set values when dependency_client is true
+      setValue("shipTo.billing_period", defaultBillingPeriod, {
+        shouldValidate: true
+      });
+      setValue("shipTo.radication_type", radicationType, {
+        shouldValidate: true
+      });
+      setValue("shipTo.condition_payment", conditionPayment, {
+        shouldValidate: true
+      });
+    } else {
+      // Optionally reset values when dependency_client is false
+      setValue("shipTo.billing_period", undefined);
+      setValue("shipTo.radication_type", undefined);
+      setValue("shipTo.condition_payment", undefined);
+    }
+  }, [watchDependencyClient, setValue, defaultBillingPeriod, radicationType, conditionPayment]);
+
+  const onSubmitHandler = async (
+    data: ShipToFormType,
+    event: BaseSyntheticEvent<object, any, any> | undefined
+  ) => {
+    event?.stopPropagation();
     setSelectedShipToData(data);
     setCurrentView("businessRules");
   };
@@ -70,7 +106,10 @@ export const ModalCreateShipTo = ({
       {isModalAddressOpen ? (
         <ModalAddress setIsModalAddressOpen={setIsModalAddressOpen} setParentFormValue={setValue} />
       ) : (
-        <form className="createShipToModal" onSubmit={handleSubmit(onSubmitHandler)}>
+        <form
+          className="createShipToModal"
+          onSubmit={handleSubmit((data, event) => onSubmitHandler(data, event))}
+        >
           <h5 className="modalTitle">Crear nuevo Ship To</h5>
           <div className="nonHereditaryInputs">
             <InputForm
@@ -86,15 +125,24 @@ export const ModalCreateShipTo = ({
               <Controller
                 control={control}
                 name="shipTo.address"
-                render={({ field }) => (
-                  <Input
-                    readOnly
-                    variant="borderless"
-                    className="input"
-                    placeholder="Ingresar ubicacion"
-                    onClick={() => setIsModalAddressOpen(true)}
-                    {...field}
-                  />
+                rules={{ required: true }}
+                render={({ field, fieldState: { error } }) => (
+                  <>
+                    <Input
+                      readOnly
+                      addonAfter={<CaretRight size={"16px"} />}
+                      variant="borderless"
+                      className="input -address"
+                      placeholder="Ingresar ubicacion"
+                      onClick={() => setIsModalAddressOpen(true)}
+                      {...field}
+                    />
+                    {error && (
+                      <Typography.Text className="textError">
+                        El Periodo de facturacion es obligatorio *
+                      </Typography.Text>
+                    )}
+                  </>
                 )}
               />
             </Flex>
@@ -134,7 +182,9 @@ export const ModalCreateShipTo = ({
                           ? billingPeriod.day_flag
                             ? `El dia ${billingPeriod.day} del mes`
                             : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`
-                          : undefined
+                          : watchDependencyClient
+                            ? defaultBillingPeriod
+                            : undefined
                       }
                     />
                     {error && (
@@ -155,6 +205,7 @@ export const ModalCreateShipTo = ({
                 name="shipTo.radication_type"
                 control={control}
                 rules={{ required: true, minLength: 1 }}
+                disabled={watchDependencyClient}
                 render={({ field }) => (
                   <SelectRadicationTypes<ShipToFormType>
                     errors={errors.shipTo?.radication_type}
@@ -171,6 +222,7 @@ export const ModalCreateShipTo = ({
                 name="shipTo.condition_payment"
                 control={control}
                 rules={{ required: true, minLength: 1 }}
+                disabled={watchDependencyClient}
                 render={({ field }) => {
                   return (
                     <SelectPaymentConditions<ShipToFormType>
@@ -191,7 +243,6 @@ export const ModalCreateShipTo = ({
               Siguiente
             </Button>
           </div>
-          {watchDependencyClient ? <p>INHERITING</p> : null}
         </form>
       )}
     </>
