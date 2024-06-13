@@ -44,9 +44,6 @@ export const useCheckLocationFields = (
   useEffect(() => {
     if (!isDataLoaded) return;
 
-    console.log("watchCity", watchCity);
-    console.log("initialCityRef", initialCityRef.current);
-
     if (
       (watchCity && watchCity.value !== initialCityRef?.current?.value) ||
       watchAddress !== initialAddressRef.current

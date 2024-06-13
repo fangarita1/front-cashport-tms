@@ -108,13 +108,15 @@ export const updateClient = async (
   idProject: string,
   clientId: number,
   rawData: ClientFormType,
-  locationResponse: IAddAddressToLocation | IAddAddressData | any,
+  locationResponse: IAddAddressData | any,
   hasLocationChanged: boolean,
   billingPeriod?: IBillingPeriodForm
 ): Promise<any> => {
   const { infoClient: data } = rawData;
 
-  const formatLocations = JSON.stringify(new Array(locationResponse?.data));
+  const formatLocations = hasLocationChanged
+    ? JSON.stringify([locationResponse])
+    : JSON.stringify(locationResponse);
 
   const modelData: IUpdateClient = {
     business_name: data.business_name,
@@ -123,7 +125,7 @@ export const updateClient = async (
     email: data.email,
     radication_type: data.radication_type.value,
     document_type: data.document_type.value,
-    locations: hasLocationChanged ? formatLocations : JSON.stringify(locationResponse),
+    locations: formatLocations,
     holding_id: data.holding_id.value,
     day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag === "true",
     day: typeof billingPeriod === "string" ? undefined : billingPeriod?.day,

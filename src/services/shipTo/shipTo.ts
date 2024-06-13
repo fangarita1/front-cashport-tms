@@ -1,6 +1,6 @@
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import config from "@/config";
-import { getIdToken } from "@/utils/api/api";
+import { API } from "@/utils/api/api";
 import { ICreateShipTo, ShipToFormType } from "@/types/shipTo/IShipTo";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 
@@ -12,6 +12,7 @@ export const createShipTo = async (
   selectedStructure: ISelectedBussinessRules
 ): Promise<any> => {
   const shipToData = selectedData.shipTo;
+  console.log("shipToData:", shipToData);
 
   const modelData: ICreateShipTo = {
     client_id: clientID.toString(),
@@ -28,18 +29,12 @@ export const createShipTo = async (
     radication_type: shipToData.radication_type ? shipToData.radication_type?.value : 0
   };
 
-  const token = await getIdToken();
-
   try {
-    const response: AxiosResponse = await axios.post(`${config.API_HOST}/ship-to`, modelData, {
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const response: AxiosResponse = await API.post(`${config.API_HOST}/ship-to`, modelData);
+
     return response;
   } catch (error) {
-    console.log("Error creating Ship To: ", error);
+    console.warn("Error creating Ship To: ", error);
     return error as any;
   }
 };

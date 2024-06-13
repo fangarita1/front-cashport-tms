@@ -173,6 +173,7 @@ export const ClientProjectForm = ({
       });
       const response = await getClientById(isViewDetailsClient.id.toString(), idProject);
       const finalData = response.data.data;
+      console.log("finalData", finalData);
 
       setDataClient({
         isLoading: false,

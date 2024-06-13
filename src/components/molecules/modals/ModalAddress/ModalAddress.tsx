@@ -68,6 +68,7 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
     data: AddressType,
     event: BaseSyntheticEvent<object, any, any> | undefined
   ) => {
+    event?.preventDefault();
     event?.stopPropagation();
     if (selectedAddress) {
       setParentFormValue("shipTo.address_id", selectedAddress.id);
@@ -96,10 +97,7 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
   return (
     <>
       {contextHolder}
-      <form
-        className="modalAddress"
-        onSubmit={handleSubmit((data, event) => onSubmitLocation(data, event))}
-      >
+      <form className="modalAddress">
         <Button
           className="modalTitle"
           icon={<CaretLeft size={"1.45rem"} />}
@@ -158,7 +156,7 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
         <div className="footer">
           <Button
             disabled={selectedAddress === null && !isValid}
-            htmlType="submit"
+            onClick={handleSubmit(onSubmitLocation)}
             className="acceptButton -address"
           >
             Guardar ubicación

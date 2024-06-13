@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
-import { getIdToken } from "@/utils/api/api";
+import { API, getIdToken } from "@/utils/api/api";
 import { IAddAddressToLocation, ICreateLocation, ICities } from "@/types/locations/ILocations";
 import { CREATED, SUCCESS } from "@/utils/constants/globalConstants";
 import { MessageInstance } from "antd/es/message/interface";
@@ -38,15 +38,8 @@ export const addAddressToLocation = async (
     project_id: projectId
   };
 
-  const token = await getIdToken();
-
   try {
-    const response: AxiosResponse = await axios.post(`${config.API_HOST}/location`, modelData, {
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const response: AxiosResponse = await API.post(`${config.API_HOST}/location`, modelData);
 
     if (response.status === CREATED || SUCCESS) {
       messageApi.open({

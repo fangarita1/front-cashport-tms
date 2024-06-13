@@ -45,6 +45,7 @@ export const ModalShipTo = ({
     if (selectedShipToData) {
       createShipTo(clientId, projectId, selectedShipToData, zones, selectedStructure);
     }
+    setCurrentView("main");
     setIsShipToModalOpen(false);
   };
 
@@ -87,7 +88,10 @@ export const ModalShipTo = ({
           className: "buttonCancel"
         }}
         footer={currentView === "businessRules" ? businessRulesViewModal.footer : null}
-        onCancel={() => setIsShipToModalOpen(false)}
+        onCancel={() => {
+          setCurrentView("main");
+          setIsShipToModalOpen(false);
+        }}
       >
         {currentView === "main" && (
           <ModalCreateShipTo

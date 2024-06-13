@@ -36,6 +36,7 @@ export const ModalCreateShipTo = ({
   getClientValues
 }: Props) => {
   const [isModalAddressOpen, setIsModalAddressOpen] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -43,19 +44,9 @@ export const ModalCreateShipTo = ({
     watch,
     formState: { errors, isValid }
   } = useForm<ShipToFormType>({
-    mode: "onChange",
-    defaultValues: {
-      shipTo: {
-        dependency_client: false
-      }
-    }
+    mode: "onChange"
   });
 
-  const {
-    billingPeriod: defaultBillingPeriod,
-    radicationType,
-    conditionPayment
-  } = getClientValues();
   const watchDependencyClient = watch("shipTo.dependency_client");
 
   useEffect(() => {
@@ -73,30 +64,36 @@ export const ModalCreateShipTo = ({
   }, [billingPeriod, setValue]);
 
   useEffect(() => {
+    const {
+      billingPeriod: defaultBillingPeriod,
+      radicationType,
+      conditionPayment
+    } = getClientValues();
+
     if (watchDependencyClient) {
       // Set values when dependency_client is true
       setValue("shipTo.billing_period", defaultBillingPeriod, {
         shouldValidate: true
       });
+      console.log("radicationType: ", radicationType);
       setValue("shipTo.radication_type", radicationType, {
         shouldValidate: true
       });
+      console.log("conditionPayment: ", conditionPayment);
       setValue("shipTo.condition_payment", conditionPayment, {
         shouldValidate: true
       });
-    } else {
-      // Optionally reset values when dependency_client is false
-      setValue("shipTo.billing_period", undefined);
-      setValue("shipTo.radication_type", undefined);
-      setValue("shipTo.condition_payment", undefined);
     }
-  }, [watchDependencyClient, setValue, defaultBillingPeriod, radicationType, conditionPayment]);
+  }, [watchDependencyClient, setValue]);
 
   const onSubmitHandler = async (
     data: ShipToFormType,
     event: BaseSyntheticEvent<object, any, any> | undefined
   ) => {
+    event?.preventDefault();
     event?.stopPropagation();
+
+    console.log("data en SUBMIT: ", data);
     setSelectedShipToData(data);
     setCurrentView("businessRules");
   };
@@ -106,10 +103,7 @@ export const ModalCreateShipTo = ({
       {isModalAddressOpen ? (
         <ModalAddress setIsModalAddressOpen={setIsModalAddressOpen} setParentFormValue={setValue} />
       ) : (
-        <form
-          className="createShipToModal"
-          onSubmit={handleSubmit((data, event) => onSubmitHandler(data, event))}
-        >
+        <form className="createShipToModal">
           <h5 className="modalTitle">Crear nuevo Ship To</h5>
           <div className="nonHereditaryInputs">
             <InputForm
@@ -183,7 +177,7 @@ export const ModalCreateShipTo = ({
                             ? `El dia ${billingPeriod.day} del mes`
                             : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`
                           : watchDependencyClient
-                            ? defaultBillingPeriod
+                            ? billingPeriod
                             : undefined
                       }
                     />
@@ -239,7 +233,11 @@ export const ModalCreateShipTo = ({
             <Button className="cancelButton" onClick={() => setIsShipToModalOpen(false)}>
               Cancelar
             </Button>
-            <Button disabled={!isValid} htmlType="submit" className="acceptButton">
+            <Button
+              disabled={!isValid}
+              onClick={handleSubmit(onSubmitHandler)}
+              className="acceptButton"
+            >
               Siguiente
             </Button>
           </div>
