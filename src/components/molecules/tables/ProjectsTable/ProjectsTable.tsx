@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Avatar, Button, Flex, Table, Typography } from "antd";
+import { Avatar, Button, Flex, Table, Typography, Image } from "antd";
 import type { TableProps } from "antd";
 import { Clipboard, Eye, Plus, Triangle } from "phosphor-react";
 
@@ -25,7 +25,8 @@ export const ProjectTable = () => {
   const { loading, data } = useProjects({
     page: selectFilters.country.length !== 0 || selectFilters.currency.length !== 0 ? 1 : page,
     currencyId: selectFilters.currency,
-    countryId: selectFilters.country
+    countryId: selectFilters.country,
+    searchQuery: search
   });
 
   const projects = useAppStore((state) => state.projects);
@@ -46,11 +47,7 @@ export const ProjectTable = () => {
     );
   }, [data, setProjects]);
 
-  const invFiltered =
-    projects &&
-    projects.filter((f) => {
-      return f.PROJECT_DESCRIPTION.toLowerCase().includes(search.trim().toLowerCase());
-    });
+
 
   return (
     <main className="mainProjectsTable">
@@ -93,7 +90,7 @@ export const ProjectTable = () => {
             return originalElement;
           }
         }}
-        dataSource={invFiltered}
+        dataSource={projects}
       />
     </main>
   );
@@ -111,7 +108,7 @@ const columns: TableProps<IProject>["columns"] = [
           <Avatar
             shape="square"
             size={70}
-            src={<img src={LOGO ?? ""} style={{ objectFit: "contain" }} alt="avatar" />}
+            src={LOGO}
           />
         ) : (
           <Avatar shape="square" className="imageWithoutImage" size={65} icon={<Clipboard />} />

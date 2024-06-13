@@ -1,0 +1,107 @@
+
+.collectionsdriver {
+    margin: 0;
+    width: 648.1px;
+    position: relative;
+    font-size: inherit;
+    letter-spacing: -1px;
+    line-height: 32px;
+    font-weight: 600;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    max-width: calc(100% - 44px);
+  }
+  .lightCaretupIcon {
+    height: 24px;
+    width: 23.9px;
+    position: relative;
+  }
+  .driverInput {
+    width: 1284px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-xl);
+    max-width: 100%;
+  }
+  .driverSelection,
+  .tripCreation,
+  .vehicleSelection {
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  .vehicleSelection {
+    margin: 0;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--padding-66xl);
+    gap: var(--gap-13xl);
+    min-width: 1220px;
+    white-space: nowrap;
+    text-align: left;
+    font-size: var(--font-size-base);
+    color: var(--black);
+    font-family: var(--font-poppins);
+  }
+  .driverSelection,
+  .tripCreation {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  .driverSelection {
+    width: 1332px;
+    border-radius: var(--br-9xs);
+    background-color: var(--white);
+    border: 1px solid var(--dark-grey);
+    flex-wrap: wrap;
+    padding: var(--padding-5xl);
+    gap: 32px 612px;
+    min-height: 187px;
+  }
+  .tripCreation {
+    align-self: stretch;
+    padding: 0 0 var(--padding-10xs);
+    flex-shrink: 0;
+    text-align: left;
+    font-size: var(--font-size-5xl);
+    color: var(--black);
+    font-family: var(--font-poppins);
+  }
+  @media screen and (max-width: 1275px) {
+    .vehicleSelection {
+      flex-wrap: wrap;
+      padding-left: var(--padding-23xl);
+      padding-right: var(--padding-23xl);
+      box-sizing: border-box;
+      min-width: 100%;
+    }
+    .driverSelection {
+      gap: var(--gap-287xl);
+    }
+  }
+  @media screen and (max-width: 750px) {
+    .vehicleSelection {
+      gap: var(--gap-base);
+      padding-left: var(--padding-2xl);
+      padding-right: var(--padding-2xl);
+      box-sizing: border-box;
+    }
+    .driverSelection {
+      gap: var(--gap-134xl);
+    }
+  }
+  @media screen and (max-width: 450px) {
+    .collectionsdriver {
+      font-size: var(--font-size-lgi);
+      line-height: 26px;
+    }
+    .driverSelection {
+      gap: var(--gap-57xl);
+    }
+  }
+  

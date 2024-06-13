@@ -1,9 +1,31 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { getIdToken } from "@/utils/api/api";
-import { IAddAddressToLocation, ICreateLocation } from "@/types/locations/ILocations";
+import {
+  IAddAddressToLocation,
+  ICreateLocation,
+  ILocations,
+  ILocation
+} from "@/types/locations/ILocations";
 import { CREATED, SUCCESS } from "@/utils/constants/globalConstants";
 import { MessageInstance } from "antd/es/message/interface";
+
+export const fetchAllLocations = async (): Promise<ILocation[]> => {
+  try {
+    const { data, status }: AxiosResponse = await axios.get<ILocations>(
+      `${config.API_HOST}/location`,
+      {
+        headers: {
+          Authorization: `Bearer ${await getIdToken()}`
+        }
+      }
+    );
+    if (status === 200) return data.data;
+    return [];
+  } catch (error) {
+    return [];
+  }
+};
 
 export const createLocation = async (data: any, clientId: number): Promise<any> => {
   const modelData: any = {
@@ -24,7 +46,7 @@ export const createLocation = async (data: any, clientId: number): Promise<any> 
     });
     return response;
   } catch (error) {
-    console.log("Error creating new location: ", error);
+    console.warn("error creating new location: ", error);
     return error as any;
   }
 };
@@ -68,7 +90,7 @@ export const addAddressToLocation = async (
     }
     return response.data as IAddAddressToLocation;
   } catch (error) {
-    console.log("Error creating new location: ", error);
+    console.warn("error creating new location: ", error);
     return error as any;
   }
 };

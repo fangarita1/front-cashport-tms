@@ -21,7 +21,7 @@ export const SelectHoldingBR = ({ isDisabledEdit }: Props) => {
           <Spin />
         ) : (
           <Flex vertical className="holdingsItems">
-            {data?.data.map((holding) => {
+            {data?.data?.map((holding) => {
               return (
                 <Flex key={holding.id} justify="space-between" className="holding">
                   <Typography.Text>{holding.name}</Typography.Text>

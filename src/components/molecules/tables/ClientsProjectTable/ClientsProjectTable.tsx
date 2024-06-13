@@ -40,7 +40,7 @@ export const ClientsProjectTable = ({
   messageContext
 }: Props) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-
+  const [page, setPage] = useState(1);
   const [filterClients, setFilterClients] = useState({
     city: [] as number[],
     holding: [] as number[],
@@ -51,6 +51,10 @@ export const ClientsProjectTable = ({
   });
 
   const { id: idProject } = useParams<{ id: string }>();
+
+  const onChangePage = (pagePagination: number) => {
+    setPage(pagePagination);
+  };
 
   useEffect(() => {
     // Este useEffect es para seleccionar las filas
@@ -254,7 +258,6 @@ export const ClientsProjectTable = ({
         )
       }
     ];
-
     return (
       <>
         {messageContext}
@@ -289,6 +292,22 @@ export const ClientsProjectTable = ({
               }))}
               rowSelection={rowSelection}
               rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
+              /*  pagination={{
+                pageSize: 25,
+                showSizeChanger: false,
+                total: data.pagination.totalRows,
+                onChange: onChangePage,
+                itemRender: (page, type, originalElement) => {
+                  if (type === "prev") {
+                    return <Triangle size={".75rem"} weight="fill" className="prev" />;
+                  } else if (type === "next") {
+                    return <Triangle size={".75rem"} weight="fill" className="next" />;
+                  } else if (type === "page") {
+                    return <Flex className="pagination">{page}</Flex>;
+                  }
+                  return originalElement;
+                }
+              }} */
             />
           )}
         </main>

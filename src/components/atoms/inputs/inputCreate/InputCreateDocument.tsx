@@ -5,15 +5,15 @@ import { Controller, useForm } from "react-hook-form";
 import { InputForm } from "../InputForm/InputForm";
 import "./inputcreatedocument.scss";
 import { FileArrowUp } from "phosphor-react";
-import { useClientTypes } from "@/hooks/useClientTypes";
 import { ICreateDocumentForm } from "@/types/clientTypes/clientTypes";
+import { useDocumentByClient } from "@/hooks/useDocumentByClient";
 
 export const InputCreateDocument = ({ clientTypeId }: { clientTypeId: number }) => {
   const [isLoading, setIsLoading] = useState(false);
   const initialValueLabel = "Cargar plantilla";
   const [uploadLabel, setUploadLabel] = useState(initialValueLabel);
 
-  const { addDocument } = useClientTypes();
+  const { addDocument } = useDocumentByClient(clientTypeId);
   const [messageApi, contextHolder] = message.useMessage();
   const {
     control,

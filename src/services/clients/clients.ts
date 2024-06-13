@@ -42,7 +42,7 @@ export const createClient = async (
     client_type_id:
       typeof data.client_type === "number" ? data.client_type : parseInt(data.client_type),
     holding_id: data.holding_id?.value,
-    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod.day_flag,
+    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod.day_flag === "true",
     day: typeof billingPeriod === "string" ? undefined : billingPeriod.day,
     order: typeof billingPeriod === "string" ? undefined : billingPeriod.order?.toLowerCase(),
     day_of_week:
@@ -77,7 +77,7 @@ export const createClient = async (
 
     return response;
   } catch (error) {
-    console.log("Error creating new client: ", error);
+    console.warn("error creating new client: ", error);
     return error as AxiosError;
   }
 };
@@ -98,7 +98,7 @@ export const getClientById = async (idUser: string, projectId: string): Promise<
 
     return response;
   } catch (error) {
-    console.log("Error getting client by Id: ", error);
+    console.warn("error getting client by Id: ", error);
     return error as any;
   }
 };
@@ -125,7 +125,7 @@ export const updateClient = async (
     document_type: data.document_type.value,
     locations: formatLocations,
     holding_id: data.holding_id.value,
-    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag,
+    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag === "true",
     day: typeof billingPeriod === "string" ? undefined : billingPeriod?.day,
     order: typeof billingPeriod === "string" ? undefined : billingPeriod?.order?.toLowerCase(),
     day_of_week:
@@ -154,7 +154,7 @@ export const updateClient = async (
     );
     return response;
   } catch (error) {
-    console.log("Error updating client: ", error);
+    console.warn("error updating client: ", error);
     return error as AxiosError;
   }
 };
@@ -194,7 +194,7 @@ export const deleteClientById = async (
 
     return response;
   } catch (error) {
-    console.log("Error deleting client by Id: ", error);
+    console.warn("error deleting client by Id: ", error);
     return error as any;
   }
 };

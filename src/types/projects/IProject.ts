@@ -1,3 +1,5 @@
+import { IBillingPeriodForm } from "../billingPeriod/IBillingPeriod";
+
 export interface IProjectById {
   status: number;
   message: string;
@@ -7,6 +9,7 @@ export interface IProjectById {
 export interface IProject {
   ACCEPT_DATE: number;
   ADDRESS: string;
+  BILLING_PERIOD_CONFIG: IBillingPeriodForm;
   ADDRESS_FORMAT: string;
   BILLING_PERIOD: string;
   CONTACT: string;

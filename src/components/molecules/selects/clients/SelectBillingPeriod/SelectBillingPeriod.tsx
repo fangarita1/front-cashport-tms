@@ -1,27 +1,25 @@
 import { Flex, Select, Typography } from "antd";
-import { Dispatch, SetStateAction } from "react";
-
 import "../commonInputStyles.scss";
-import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 
 interface Props {
   titleSelect?: string;
   placeHolder?: string;
   options: any[];
-  orderRadioValue: IBillingPeriodForm;
-  setValueSelected: Dispatch<SetStateAction<IBillingPeriodForm>>;
+  orderRadioValue: string | undefined;
+  setValueSelected: (event: string) => void
+  disabled: boolean
 }
 const { Option } = Select;
-export const SelectBillingPeriodOrder = ({
+export const SelectBillingPeriod = ({
   titleSelect = "",
   placeHolder = "",
   options = [],
   orderRadioValue,
-  setValueSelected
+  setValueSelected,
+  disabled
 }: Props) => {
-  const onChangeSelect = (value: string) => {
-    setValueSelected({ ...orderRadioValue, day_flag: false, order: value });
-  };
+  const onChangeSelect = (value: string) => setValueSelected(value);
+
   return (
     <Flex vertical style={{ width: "100%" }}>
       {titleSelect.length > 0 && <Typography.Title level={5}>{titleSelect}</Typography.Title>}
@@ -31,7 +29,7 @@ export const SelectBillingPeriodOrder = ({
         variant="borderless"
         optionLabelProp="label"
         onChange={onChangeSelect}
-        value={!orderRadioValue.order ? undefined : orderRadioValue.order}
+        value={orderRadioValue}
       >
         {options?.map((value) => {
           return (

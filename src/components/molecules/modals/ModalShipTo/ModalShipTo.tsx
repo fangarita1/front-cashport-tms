@@ -103,6 +103,7 @@ export const ModalShipTo = ({
       </Modal>
       <ModalBillingPeriod
         isOpen={isBillingPeriodOpen}
+        billingPeriod={billingPeriod}
         setIsBillingPeriodOpen={setIsBillingPeriodOpen}
         setBillingPeriod={setBillingPeriod}
       />

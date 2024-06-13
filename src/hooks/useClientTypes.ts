@@ -1,5 +1,5 @@
 import { useAppStore } from "@/lib/store/store";
-import { addClientType, addDocumentsClientType } from "@/services/clientTypes/clientTypes";
+import { addClientType, removeClientType } from "@/services/clientTypes/clientTypes";
 import { IClientTypes } from "@/types/clientTypes/clientTypes";
 import { API } from "@/utils/api/api";
 import { MessageInstance } from "antd/es/message/interface";
@@ -17,8 +17,8 @@ export const useClientTypes = () => {
     mutate();
   };
 
-  const addDocument = async (formData: FormData, messageApi: MessageInstance) => {
-    await addDocumentsClientType(formData, messageApi);
+  const removeClient = async (id: number, messageApi: MessageInstance) => {
+    await removeClientType(id, messageApi);
     mutate();
   };
 
@@ -26,6 +26,6 @@ export const useClientTypes = () => {
     data: data?.data,
     loading: isLoading,
     addClient,
-    addDocument
+    removeClient
   };
 };

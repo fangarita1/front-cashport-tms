@@ -428,7 +428,7 @@ export const ClientProjectForm = ({
                                 : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`
                               : dataClient.data.billing_period
                                 ? dataClient.data.billing_period
-                                : undefined
+                                : ''
                           }
                         />
                         {error && (
@@ -535,6 +535,7 @@ export const ClientProjectForm = ({
         isOpen={isBillingPeriodOpen}
         setIsBillingPeriodOpen={setIsBillingPeriodOpen}
         setBillingPeriod={setBillingPeriod}
+        billingPeriod={billingPeriod}
       />
       <ModalStatusClient isOpen={isModalStatus.status} setIsStatusClient={setIsModalStatus} />
       <ModalRemove

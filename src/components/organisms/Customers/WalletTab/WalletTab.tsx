@@ -61,7 +61,6 @@ export const WalletTab = () => {
                 onChange={(event) => {
                   setTimeout(() => {
                     setSearch(event.target.value);
-                    console.log("search", search);
                   }, 1000);
                 }}
               />

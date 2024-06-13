@@ -54,7 +54,7 @@ export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: Creat
         };
         createGroup(group);
       } catch (error) {
-        console.log(error);
+        console.warn(error);
       }
     }
 
@@ -72,7 +72,7 @@ export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: Creat
         };
         updateGroup(group);
       } catch (error) {
-        console.log(error);
+        console.warn(error);
       }
     }
 

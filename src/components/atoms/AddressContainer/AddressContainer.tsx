@@ -1,6 +1,7 @@
 import { Checkbox, Flex, Typography } from "antd";
 
 import "./addresscontainer.scss";
+import { ILocation } from "@/types/locations/ILocations";
 
 const { Text } = Typography;
 
