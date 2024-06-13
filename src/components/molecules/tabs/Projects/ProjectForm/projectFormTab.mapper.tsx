@@ -80,6 +80,7 @@ export const _onSubmit = (
   onSubmitForm({ ...data, logo: imageFile });
   reset(data);
   setloading(false);
+
 };
 
 export const validationButtonText = (statusForm: "create" | "edit" | "review") => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Avatar, Button, Flex, Table, Typography } from "antd";
+import { Avatar, Button, Flex, Table, Typography, Image } from "antd";
 import type { TableProps } from "antd";
 import { Clipboard, Eye, Plus, Triangle } from "phosphor-react";
 
@@ -108,7 +108,7 @@ const columns: TableProps<IProject>["columns"] = [
           <Avatar
             shape="square"
             size={70}
-            src={<img src={LOGO ?? ""} style={{ objectFit: "contain" }} alt="avatar" />}
+            src={LOGO}
           />
         ) : (
           <Avatar shape="square" className="imageWithoutImage" size={65} icon={<Clipboard />} />
