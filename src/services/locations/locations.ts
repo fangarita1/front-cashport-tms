@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { API, getIdToken } from "@/utils/api/api";
-import { IAddAddressToLocation, ICreateLocation, ICities } from "@/types/locations/ILocations";
+import { ICreateLocation, ICities, IAddAddressData } from "@/types/locations/ILocations";
 import { CREATED, SUCCESS } from "@/utils/constants/globalConstants";
 import { MessageInstance } from "antd/es/message/interface";
 
@@ -30,7 +30,7 @@ export const addAddressToLocation = async (
   },
   projectId: number,
   messageApi: MessageInstance
-): Promise<IAddAddressToLocation> => {
+): Promise<IAddAddressData> => {
   const modelData: ICreateLocation = {
     address: data.address,
     city: data.id,
@@ -52,7 +52,7 @@ export const addAddressToLocation = async (
         content: "Oops ocurrio un error."
       });
     }
-    return response.data as IAddAddressToLocation;
+    return response.data as IAddAddressData;
   } catch (error) {
     console.warn("error creating new location: ", error);
     return error as any;

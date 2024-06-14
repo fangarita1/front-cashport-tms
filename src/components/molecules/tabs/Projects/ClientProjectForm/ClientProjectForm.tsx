@@ -79,6 +79,7 @@ export const ClientProjectForm = ({
   } as { data: IClient; isLoading: boolean });
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
   const [clientDocuments, setClientDocuments] = useState<File[] | any[]>([]);
+  const [isCreateLoading, setIsCreateLoading] = useState(false);
 
   const { id: idProject } = useParams<{ id: string }>();
 
@@ -173,7 +174,6 @@ export const ClientProjectForm = ({
       });
       const response = await getClientById(isViewDetailsClient.id.toString(), idProject);
       const finalData = response.data.data;
-      console.log("finalData", finalData);
 
       setDataClient({
         isLoading: false,
@@ -255,6 +255,7 @@ export const ClientProjectForm = ({
       }
     } else {
       // Create New Client
+      setIsCreateLoading(true);
       const locationResponse = await addAddressToLocation(
         {
           address: data.infoClient.address,
@@ -288,6 +289,7 @@ export const ClientProjectForm = ({
           });
         }
       }
+      setIsCreateLoading(false);
     }
   };
 
@@ -574,6 +576,7 @@ export const ClientProjectForm = ({
               {isEditAvailable && (
                 <Flex gap={"1rem"} justify="flex-end">
                   <Button
+                    disabled={isCreateLoading}
                     type="primary"
                     className="buttonNewProject"
                     htmlType={isEditAvailable ? "submit" : "button"}

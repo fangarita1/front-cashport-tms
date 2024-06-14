@@ -11,7 +11,7 @@ import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 
 import { SUCCESS } from "@/utils/constants/globalConstants";
 import { MessageInstance } from "antd/es/message/interface";
-import { IAddAddressData, IAddAddressToLocation } from "@/types/locations/ILocations";
+import { IAddAddressData } from "@/types/locations/ILocations";
 
 // create
 
@@ -20,11 +20,11 @@ export const createClient = async (
   rawData: ClientFormType,
   billingPeriod: IBillingPeriodForm,
   documents: any[],
-  locationResponse: IAddAddressToLocation
+  locationResponse: IAddAddressData
 ): Promise<any> => {
   const { infoClient: data } = rawData;
 
-  const formatLocations = JSON.stringify(new Array(locationResponse.data));
+  const formatLocations = JSON.stringify([locationResponse]);
 
   const formatDocuments = documents.map((doc) => doc.originFileObj);
 

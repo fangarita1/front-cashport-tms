@@ -75,11 +75,9 @@ export const ModalCreateShipTo = ({
       setValue("shipTo.billing_period", defaultBillingPeriod, {
         shouldValidate: true
       });
-      console.log("radicationType: ", radicationType);
       setValue("shipTo.radication_type", radicationType, {
         shouldValidate: true
       });
-      console.log("conditionPayment: ", conditionPayment);
       setValue("shipTo.condition_payment", conditionPayment, {
         shouldValidate: true
       });
@@ -93,7 +91,6 @@ export const ModalCreateShipTo = ({
     event?.preventDefault();
     event?.stopPropagation();
 
-    console.log("data en SUBMIT: ", data);
     setSelectedShipToData(data);
     setCurrentView("businessRules");
   };
@@ -199,7 +196,6 @@ export const ModalCreateShipTo = ({
                 name="shipTo.radication_type"
                 control={control}
                 rules={{ required: true, minLength: 1 }}
-                disabled={watchDependencyClient}
                 render={({ field }) => (
                   <SelectRadicationTypes<ShipToFormType>
                     errors={errors.shipTo?.radication_type}
@@ -216,7 +212,6 @@ export const ModalCreateShipTo = ({
                 name="shipTo.condition_payment"
                 control={control}
                 rules={{ required: true, minLength: 1 }}
-                disabled={watchDependencyClient}
                 render={({ field }) => {
                   return (
                     <SelectPaymentConditions<ShipToFormType>

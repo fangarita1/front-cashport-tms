@@ -85,7 +85,7 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
 
     try {
       const response = await createLocation(newAddressData, messageApi);
-      setParentFormValue("shipTo.address_id", response.data.id);
+      setParentFormValue("shipTo.address_id", response.id);
       setParentFormValue("shipTo.address", newAddressData.address);
       setIsModalAddressOpen(false);
     } catch (error) {
