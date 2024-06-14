@@ -6,31 +6,40 @@ import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 
 import { ModalBusinessRules } from "../ModalBusinessRules/ModalBusinessRules";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
-import { createShipTo } from "@/services/shipTo/shipTo";
 import { ShipToFormType } from "@/types/shipTo/IShipTo";
 
 import "./modalShipTo.scss";
 import { ModalCreateShipTo } from "./ModalCreateShipTo/ModalCreateShipTo";
 import { ISelectType } from "@/types/clients/IClients";
+import { MessageInstance } from "antd/es/message/interface";
 
 interface Props {
   isOpen: boolean;
   setIsShipToModalOpen: Dispatch<SetStateAction<boolean>>;
-  clientId: number;
-  projectId: number;
   getClientValues: () => {
     billingPeriod: string;
     radicationType: ISelectType;
     conditionPayment: ISelectType;
   };
+  messageApi: MessageInstance;
+  createShipTo: (
+    // eslint-disable-next-line no-unused-vars
+    selectedData: ShipToFormType,
+    // eslint-disable-next-line no-unused-vars
+    zones: number[],
+    // eslint-disable-next-line no-unused-vars
+    selectedStructure: ISelectedBussinessRules,
+    // eslint-disable-next-line no-unused-vars
+    messageApi: MessageInstance
+  ) => void;
 }
 
 export const ModalShipTo = ({
   isOpen,
   setIsShipToModalOpen,
-  clientId,
-  projectId,
-  getClientValues
+  getClientValues,
+  messageApi,
+  createShipTo
 }: Props) => {
   const [currentView, setCurrentView] = useState<"main" | "businessRules">("main");
   const [selectedShipToData, setSelectedShipToData] = useState<ShipToFormType | undefined>();
@@ -43,7 +52,7 @@ export const ModalShipTo = ({
 
   const handleCreateShipTo = () => {
     if (selectedShipToData) {
-      createShipTo(clientId, projectId, selectedShipToData, zones, selectedStructure);
+      createShipTo(selectedShipToData, zones, selectedStructure, messageApi);
     }
     setCurrentView("main");
     setIsShipToModalOpen(false);
@@ -91,6 +100,9 @@ export const ModalShipTo = ({
         onCancel={() => {
           setCurrentView("main");
           setIsShipToModalOpen(false);
+          setBillingPeriod(undefined);
+          setZones([]);
+          setSelectedStructure(initDatSelectedBusinessRules);
         }}
       >
         {currentView === "main" && (

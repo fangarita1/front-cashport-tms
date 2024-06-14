@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { API } from "@/utils/api/api";
 import { MessageInstance } from "antd/es/message/interface";
-import { ILocation } from "@/types/locations/ILocations";
+import { IAddAddressData, ILocation } from "@/types/locations/ILocations";
 
 import { useAppStore } from "@/lib/store/store";
 import { addAddressToLocation, getOneLocation } from "@/services/locations/locations";
@@ -20,7 +20,8 @@ export const useLocations = () => {
     },
     messageApi: MessageInstance
   ) => {
-    return await addAddressToLocation(newAddressData, projectId, messageApi);
+    const response = await addAddressToLocation(newAddressData, projectId, messageApi);
+    return response.data as IAddAddressData[];
   };
 
   const getLocation = useCallback(

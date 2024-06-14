@@ -44,7 +44,13 @@ export const ModalCreateShipTo = ({
     watch,
     formState: { errors, isValid }
   } = useForm<ShipToFormType>({
-    mode: "onChange"
+    mode: "onChange",
+    defaultValues: {
+      shipTo: {
+        dependency_client: false,
+        billing_period: undefined
+      }
+    }
   });
 
   const watchDependencyClient = watch("shipTo.dependency_client");
@@ -163,6 +169,8 @@ export const ModalCreateShipTo = ({
                 render={({ field, fieldState: { error } }) => (
                   <>
                     <Input
+                      readOnly
+                      addonAfter={<CaretRight size={"16px"} />}
                       variant="borderless"
                       className={error ? "inputError" : "input"}
                       placeholder="Segundo miércoles del mes"
@@ -170,12 +178,10 @@ export const ModalCreateShipTo = ({
                       {...field}
                       value={
                         billingPeriod
-                          ? billingPeriod.day_flag
+                          ? billingPeriod?.day_flag === "true"
                             ? `El dia ${billingPeriod.day} del mes`
-                            : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`
-                          : watchDependencyClient
-                            ? billingPeriod
-                            : undefined
+                            : `El ${billingPeriod?.order} ${billingPeriod?.day_of_week} del mes`
+                          : undefined
                       }
                     />
                     {error && (

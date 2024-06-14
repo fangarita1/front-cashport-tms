@@ -272,7 +272,7 @@ export const ClientProjectForm = ({
           data,
           billingPeriod,
           clientDocuments,
-          locationResponse
+          locationResponse.data[0]
         );
 
         if (response.status === 200) {
@@ -285,7 +285,7 @@ export const ClientProjectForm = ({
         } else {
           messageApi.open({
             type: "error",
-            content: "Oops ocurrió un error."
+            content: response.response.data.message
           });
         }
       }
@@ -487,7 +487,7 @@ export const ClientProjectForm = ({
                           {...field}
                           value={
                             billingPeriod
-                              ? billingPeriod.day_flag
+                              ? billingPeriod.day_flag === "True"
                                 ? `El dia ${billingPeriod.day} del mes`
                                 : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`
                               : dataClient.data.billing_period
@@ -581,7 +581,7 @@ export const ClientProjectForm = ({
                     className="buttonNewProject"
                     htmlType={isEditAvailable ? "submit" : "button"}
                     size="large"
-                    icon={<Plus weight="bold" size={15} />}
+                    icon={isCreateLoading ? <Spin /> : <Plus weight="bold" size={15} />}
                   >
                     {isViewDetailsClient?.id ? "Actualizar cliente" : "Registrar cliente"}
                   </Button>

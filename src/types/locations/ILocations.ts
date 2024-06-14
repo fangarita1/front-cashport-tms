@@ -31,9 +31,9 @@ export interface ICreateLocation {
 }
 
 export interface IAddAddressToLocation {
-  data: IAddAddressData;
+  data: IAddAddressData[];
   message: string;
-  status: number;
+  error: boolean;
 }
 
 export interface IAddAddressData {
