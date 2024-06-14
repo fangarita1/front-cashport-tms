@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Button, Checkbox, Flex, Table, TableProps, Typography } from "antd";
+import { Button, Flex, Spin, Table, TableProps, Typography, message } from "antd";
 import { Eye, Plus } from "phosphor-react";
 
-import "./shiptoprojecttable.scss";
 import { ModalShipTo } from "../../modals/ModalShipTo/ModalShipTo";
 import { ISelectType } from "@/types/clients/IClients";
+import { useShipTos } from "@/hooks/useShipTo";
 
+import "./shiptoprojecttable.scss";
 const { Text, Link, Title } = Typography;
 
 interface Props {
@@ -18,21 +19,27 @@ interface Props {
   };
 }
 
-export const ShipToProjectTable = ({ clientId, projectId, getClientValues }: Props) => {
+export const ShipToProjectTable = ({ clientId, getClientValues }: Props) => {
   const [isShipToModalOpen, setIsShipToModalOpen] = useState(false);
+  const { data, isLoading, createShipTo } = useShipTos(clientId);
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange
+  };
 
   const columns: TableProps<any>["columns"] = [
     {
-      title: "",
-      dataIndex: "active",
-      key: "active",
-      render: () => <Checkbox />,
-      width: "30px"
-    },
-    {
       title: "ID Ship To",
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "accounting_code",
+      key: "accounting_code",
       render: (text) => <Link underline>{text}</Link>
     },
     {
@@ -43,14 +50,14 @@ export const ShipToProjectTable = ({ clientId, projectId, getClientValues }: Pro
     },
     {
       title: "Canal",
-      key: "channel",
-      dataIndex: "channel",
+      key: "channel_name",
+      dataIndex: "channel_name",
       render: (text) => <Text>{text}</Text>
     },
     {
       title: "Linea",
-      key: "line",
-      dataIndex: "line",
+      key: "line_name",
+      dataIndex: "line_name",
       render: (text) => <Text>{text}</Text>
     },
     {
@@ -61,16 +68,16 @@ export const ShipToProjectTable = ({ clientId, projectId, getClientValues }: Pro
     },
     {
       title: "Zona",
-      key: "zone",
-      dataIndex: "zone",
+      key: "zone_name",
+      dataIndex: "zone_name",
       render: (text) => <Text>{text}</Text>
     },
     {
       title: "Hereda parámetros",
-      key: "heritage",
-      dataIndex: "heritage",
+      key: "dependecy_client",
+      dataIndex: "dependecy_client",
       width: "200px",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{Boolean(text) ? "Sí" : "No"}</Text>
     },
     {
       title: "",
@@ -84,6 +91,7 @@ export const ShipToProjectTable = ({ clientId, projectId, getClientValues }: Pro
   ];
   return (
     <>
+      {contextHolder}
       <div className="ShipToProjectTable">
         <Flex justify="space-between" className="ShipToProjectTable__header">
           <Title level={4}>Ship To</Title>
@@ -106,43 +114,45 @@ export const ShipToProjectTable = ({ clientId, projectId, getClientValues }: Pro
             </Button>
           </Flex>
         </Flex>
-        <Table
-          className="ShipToProjectTable__table"
-          pagination={false}
-          columns={columns}
-          dataSource={data}
-        />
-        <Button
-          size="large"
-          type="text"
-          className="buttonCreateShipTo"
-          onClick={() => setIsShipToModalOpen(true)}
-          icon={<Plus weight="bold" size={15} />}
-        >
-          Crear Ship To
-        </Button>
+        {isLoading ? (
+          <Flex style={{ height: "30%" }} align="center" justify="center">
+            <Spin size="default" />
+          </Flex>
+        ) : (
+          <>
+            <Table
+              className="ShipToProjectTable__table"
+              pagination={{ pageSize: 20 }}
+              columns={columns}
+              dataSource={data?.map((shipTo) => ({
+                ...shipTo,
+                key: shipTo.accounting_code
+              }))}
+              rowSelection={rowSelection}
+              rowClassName={(record) =>
+                selectedRowKeys.includes(record.accounting_code) ? "selectedRow" : "regularRow"
+              }
+            />
+            <Button
+              size="large"
+              type="text"
+              className="buttonCreateShipTo"
+              onClick={() => setIsShipToModalOpen(true)}
+              icon={<Plus weight="bold" size={15} />}
+            >
+              Crear Ship To
+            </Button>
+          </>
+        )}
       </div>
+
       <ModalShipTo
         isOpen={isShipToModalOpen}
         setIsShipToModalOpen={setIsShipToModalOpen}
-        clientId={clientId}
-        projectId={projectId}
         getClientValues={getClientValues}
+        messageApi={messageApi}
+        createShipTo={createShipTo}
       />
     </>
   );
 };
-
-const data = [
-  {
-    key: "1",
-    active: "",
-    id: "31223",
-    city: "metrallo",
-    channel: "Institucional",
-    line: "Medicamentos",
-    subline: "Analgesicos",
-    zone: "Norte",
-    heritage: "Si"
-  }
-];

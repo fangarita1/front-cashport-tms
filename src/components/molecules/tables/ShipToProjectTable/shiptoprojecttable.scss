@@ -19,4 +19,10 @@
     &__table {
         margin-right: 1rem;
     }
+
+    .selectedRow {
+        td {
+            background-color: inherit !important;
+        }
+    }
 }
