@@ -34,8 +34,8 @@ export const InputCreateClientType = ({ isEditAvailable = false }: Props) => {
   };
   return (
     <>
-      {contextHolder}
       <form className="inputCreateClientType" onSubmit={handleSubmit(onSubmit)}>
+      {contextHolder}
         <InputForm
           titleInput=""
           control={control}

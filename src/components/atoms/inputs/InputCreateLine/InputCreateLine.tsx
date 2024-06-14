@@ -35,8 +35,8 @@ export const InputCreateLine = ({ isEditAvailable = false, idChannel }: Props) =
   };
   return (
     <>
-      {contextHolder}
       <form className="inputcreateline" onSubmit={handleSubmit(onSubmit)}>
+      {contextHolder}
         <InputForm
           titleInput=""
           control={control}

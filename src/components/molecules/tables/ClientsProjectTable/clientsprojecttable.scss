@@ -2,7 +2,6 @@
 
 .mainClientsProjectTable {
     width: 100%;
-    overflow-y: scroll;
     height: 100%;
 
     .name {
@@ -89,4 +88,19 @@
             background-color: inherit !important;
         }
     }
+}
+.next {
+    transform: rotate(90deg);
+}
+
+.prev {
+    transform: rotate(-90deg);
+}
+
+.pagination {
+    justify-content: center;
+}
+
+.container-table-of-ant {
+    max-height: 50vh;
 }

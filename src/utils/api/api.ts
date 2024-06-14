@@ -29,7 +29,6 @@ const instance = (token: string) =>
 
 export const fetcher = async (url: string) => {
   const token = (await getIdToken(false)) as string;
-
   return instance(token)
     .get(url)
     .then((res) => {
@@ -41,9 +40,12 @@ export const fetcher = async (url: string) => {
     })
     .catch((error) => {
       if (error.code === "ECONNABORTED") {
-        console.error("La solicitud ha sido cancelada debido a un timeout");
+        throw new Error("La solicitud ha sido cancelada debido a un timeout");
       } else {
-        console.error("Error en la solicitud:", error.message);
+        if (error?.message) {
+          throw new Error(error.message);
+        }
+        throw new Error("error");
       }
     });
 };
