@@ -1,11 +1,13 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
-import { getIdToken } from "@/utils/api/api";
-import { ICreateLocation, ILocations, ILocation } from "@/types/locations/ILocations";
+import { API, getIdToken } from "@/utils/api/api";
+import { ICreateLocation, ICities, IAddAddressData } from "@/types/locations/ILocations";
+import { CREATED, SUCCESS } from "@/utils/constants/globalConstants";
+import { MessageInstance } from "antd/es/message/interface";
 
-export const fetchAllLocations = async (): Promise<ILocation[]> => {
+export const fetchAllLocations = async (): Promise<ICities[]> => {
   try {
-    const { data, status }: AxiosResponse = await axios.get<ILocations>(
+    const { data, status }: AxiosResponse = await axios.get<ICities>(
       `${config.API_HOST}/location`,
       {
         headers: {
@@ -20,26 +22,59 @@ export const fetchAllLocations = async (): Promise<ILocation[]> => {
   }
 };
 
-export const createLocation = async (data: any, clientId: number): Promise<any> => {
+export const addAddressToLocation = async (
+  data: {
+    address: string;
+    id: number;
+    complement: string;
+  },
+  projectId: number,
+  messageApi: MessageInstance
+): Promise<IAddAddressData> => {
   const modelData: ICreateLocation = {
     address: data.address,
-    city: data.city,
-    nit: data.nit ? data.nit : `${clientId}`,
-    position: {}
+    city: data.id,
+    complement: data.complement,
+    project_id: projectId
   };
 
+  try {
+    const response: AxiosResponse = await API.post(`${config.API_HOST}/location`, modelData);
+
+    if (response.status === CREATED || SUCCESS) {
+      messageApi.open({
+        type: "success",
+        content: `Direccion creada exitosamente.`
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Oops ocurrio un error."
+      });
+    }
+    return response.data as IAddAddressData;
+  } catch (error) {
+    console.warn("error creating new location: ", error);
+    return error as any;
+  }
+};
+
+export const getOneLocation = async (locationId: number, projectId: number): Promise<any> => {
   const token = await getIdToken();
 
   try {
-    const response: AxiosResponse = await axios.post(`${config.API_HOST}/location`, modelData, {
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${token}`
+    const response: AxiosResponse = await axios.get(
+      `${config.API_HOST}/location/${locationId}/project/${projectId}`,
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          Authorization: `Bearer ${token}`
+        }
       }
-    });
-    return response;
+    );
+    return response.data;
   } catch (error) {
-    console.warn("error creating new location: ", error);
+    console.log("Error getting location: ", error);
     return error as any;
   }
 };

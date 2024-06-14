@@ -157,7 +157,11 @@ export const ModalBillingPeriod = ({
                     setValueSelected: handleSetDayOfWeek
                   }
                 ].map((item) => (
-                  <SelectBillingPeriod key={item.placeHolder} {...item} disabled={radioState === true} />
+                  <SelectBillingPeriod
+                    key={item.placeHolder}
+                    {...item}
+                    disabled={radioState === true}
+                  />
                 ))}
               </Flex>
             </Flex>

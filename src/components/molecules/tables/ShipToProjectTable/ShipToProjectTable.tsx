@@ -1,16 +1,26 @@
-import { Dispatch, SetStateAction } from "react";
+import { useState } from "react";
 import { Button, Checkbox, Flex, Table, TableProps, Typography } from "antd";
 import { Eye, Plus } from "phosphor-react";
 
 import "./shiptoprojecttable.scss";
+import { ModalShipTo } from "../../modals/ModalShipTo/ModalShipTo";
+import { ISelectType } from "@/types/clients/IClients";
 
 const { Text, Link, Title } = Typography;
 
 interface Props {
-  setIsCreateShipTo: Dispatch<SetStateAction<boolean>>;
+  clientId: number;
+  projectId: number;
+  getClientValues: () => {
+    billingPeriod: string;
+    radicationType: ISelectType;
+    conditionPayment: ISelectType;
+  };
 }
 
-export const ShipToProjectTable = ({ setIsCreateShipTo }: Props) => {
+export const ShipToProjectTable = ({ clientId, projectId, getClientValues }: Props) => {
+  const [isShipToModalOpen, setIsShipToModalOpen] = useState(false);
+
   const columns: TableProps<any>["columns"] = [
     {
       title: "",
@@ -68,7 +78,7 @@ export const ShipToProjectTable = ({ setIsCreateShipTo }: Props) => {
       width: "40px",
       dataIndex: "",
       render: () => (
-        <Button onClick={() => setIsCreateShipTo(true)} icon={<Eye size={"1.3rem"} />} />
+        <Button onClick={() => setIsShipToModalOpen(true)} icon={<Eye size={"1.3rem"} />} />
       )
     }
   ];
@@ -106,12 +116,19 @@ export const ShipToProjectTable = ({ setIsCreateShipTo }: Props) => {
           size="large"
           type="text"
           className="buttonCreateShipTo"
-          onClick={() => setIsCreateShipTo(true)}
+          onClick={() => setIsShipToModalOpen(true)}
           icon={<Plus weight="bold" size={15} />}
         >
           Crear Ship To
         </Button>
       </div>
+      <ModalShipTo
+        isOpen={isShipToModalOpen}
+        setIsShipToModalOpen={setIsShipToModalOpen}
+        clientId={clientId}
+        projectId={projectId}
+        getClientValues={getClientValues}
+      />
     </>
   );
 };

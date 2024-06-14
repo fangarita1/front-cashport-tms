@@ -6,10 +6,10 @@ import { IPaymentConditions } from "@/types/paymentConditions/IPaymentConditions
 import {
   ControllerRenderProps,
   FieldErrorsImpl,
+  FieldValues,
   Merge,
   FieldError as OriginalFieldError
 } from "react-hook-form";
-import { ClientFormType } from "@/types/clients/IClients";
 
 import "../commonInputStyles.scss";
 
@@ -17,12 +17,12 @@ type ExtendedFieldError =
   | OriginalFieldError
   | Merge<OriginalFieldError, FieldErrorsImpl<{ value: number; label: string }>>;
 
-interface Props {
+interface Props<T extends FieldValues> {
   errors: ExtendedFieldError | undefined;
-  field: ControllerRenderProps<ClientFormType, "infoClient.condition_payment">;
+  field: ControllerRenderProps<T, any>;
 }
 
-export const SelectPaymentConditions = ({ errors, field }: Props) => {
+export const SelectPaymentConditions = <T extends FieldValues>({ errors, field }: Props<T>) => {
   const { data, isLoading } = useSWR<IPaymentConditions>("/client/condition-payments", fetcher, {});
   const options = data?.data.map((option) => {
     return {

@@ -6,49 +6,55 @@ import { AddressType } from "@/components/molecules/modals/ModalAddress/ModalAdd
 interface Props {
   control: Control<AddressType, any>;
   errors: FieldErrors<AddressType>;
+  disabled: boolean;
 }
 
-export const InputAddress = ({ control }: Props) => {
+export const InputAddress = ({ control, errors, disabled }: Props) => {
   return (
     <Flex vertical>
       <Flex align="flex-end">
         <InputForm
           titleInput="Ingresar dirección"
           control={control}
-          nameInput="address.principal"
-          error={undefined}
-          customStyle={{ width: "75%" }}
+          nameInput="location.address.street_type"
+          error={errors.location?.address?.street_type}
+          customStyle={{ width: "75%", paddingRight: "1rem" }}
           placeholder="Carrera"
+          disabled={disabled}
         />
-        <Flex align="center">
+        <Flex align="center" gap={"0.5rem"}>
           <InputForm
             titleInput=""
             control={control}
-            nameInput="address.principalNumber"
-            error={undefined}
+            nameInput="location.address.number"
+            error={errors.location?.address?.number}
             customStyle={{ width: "30%" }}
             placeholder="148A"
             hiddenTitle
+            disabled={disabled}
           />
           <Typography.Text>#</Typography.Text>
           <InputForm
             titleInput=""
             control={control}
-            nameInput="address.secondary"
-            error={undefined}
+            nameInput="location.address.complement"
+            error={errors.location?.address?.complement}
             placeholder="45Bis"
             customStyle={{ width: "30%" }}
             hiddenTitle
+            disabled={disabled}
           />
           <Typography.Text>-</Typography.Text>
           <InputForm
             titleInput=""
             placeholder="39"
             control={control}
-            nameInput="address.secondaryNumber"
-            error={undefined}
+            nameInput="location.address.building_number"
+            error={errors.location?.address?.building_number}
             customStyle={{ width: "30%" }}
             hiddenTitle
+            typeInput="number"
+            disabled={disabled}
           />
         </Flex>
       </Flex>
@@ -56,9 +62,10 @@ export const InputAddress = ({ control }: Props) => {
         titleInput="Complemento"
         placeholder="Local 1A"
         control={control}
-        nameInput="address.complement"
-        error={undefined}
-        customStyle={{ width: "98%" }}
+        nameInput="location.complement"
+        error={errors.location?.complement}
+        customStyle={{ marginTop: "1rem" }}
+        disabled={disabled}
       />
     </Flex>
   );
