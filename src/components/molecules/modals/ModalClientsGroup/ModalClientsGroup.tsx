@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Flex, Modal, Typography } from "antd";
+import { Flex, message, Modal, Typography } from "antd";
 import { useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { ClientsProjectTable } from "@/components/molecules/tables/ClientsProjectTable/ClientsProjectTable";
@@ -23,7 +23,7 @@ export type NameType = {
 export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: CreateGroupProps) => {
   const [groupName, setGroupName] = useState("");
   const [selectedRows, setSelectedRows] = useState<any>([]);
-
+  const [_, contextHolder] = message.useMessage()
   const {
     control,
     handleSubmit,
@@ -149,6 +149,7 @@ export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: Creat
               placedIn="modal"
               setSelectedRows={setSelectedRows}
               selectedClientsKeys={["0347623472-5643", "4347623472-5643"]}
+              messageContext={contextHolder}
             />
           </Flex>
         </Modal>

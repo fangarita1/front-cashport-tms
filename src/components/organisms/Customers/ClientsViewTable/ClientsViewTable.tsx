@@ -36,7 +36,7 @@ export const ClientsViewTable = () => {
     page: selectFilters.country.length !== 0 || selectFilters.currency.length !== 0 ? 1 : page,
     currencyId: selectFilters.currency,
     countryId: selectFilters.country,
-    searchQuery: ''
+    searchQuery: ""
   });
 
   const onChangePage = (pagePagination: number) => {

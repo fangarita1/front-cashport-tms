@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Avatar, Button, Flex, Table, Typography, Image } from "antd";
+import { Avatar, Button, Flex, Table, Typography, Image, message } from "antd";
 import type { TableProps } from "antd";
 import { Clipboard, Eye, Plus, Triangle } from "phosphor-react";
 
@@ -22,7 +22,8 @@ export const ProjectTable = () => {
   });
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const { loading, data } = useProjects({
+  const [messageApi, contextHolder] = message.useMessage();
+  const { loading, data, error } = useProjects({
     page: selectFilters.country.length !== 0 || selectFilters.currency.length !== 0 ? 1 : page,
     currencyId: selectFilters.currency,
     countryId: selectFilters.country,
@@ -47,10 +48,16 @@ export const ProjectTable = () => {
     );
   }, [data, setProjects]);
 
-
-
+  useEffect(() => {
+    if (typeof error === "string") {
+      messageApi.open({ type: "error", content: error });
+    } else if (error?.message) {
+      messageApi.open({ type: "error", content: error.message });
+    }
+  }, [error]);
   return (
     <main className="mainProjectsTable">
+      {contextHolder}
       <Flex justify="space-between" className="mainProjectsTable_header">
         <Flex gap={"10px"}>
           <UiSearchInput
@@ -75,7 +82,7 @@ export const ProjectTable = () => {
         scroll={{ y: "61dvh", x: undefined }}
         columns={columns as TableProps<any>["columns"]}
         pagination={{
-          pageSize: 25,
+          pageSize: 50,
           showSizeChanger: false,
           total: data.pagination.totalRows,
           onChange: onChangePage,
