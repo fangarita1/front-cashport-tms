@@ -12,7 +12,6 @@ export const createShipTo = async (
   selectedStructure: ISelectedBussinessRules
 ): Promise<any> => {
   const shipToData = selectedData.shipTo;
-  console.log("shipToData:", shipToData);
 
   const modelData: ICreateShipTo = {
     client_id: clientID.toString(),
