@@ -19,7 +19,6 @@ import { ShipToProjectTable } from "@/components/molecules/tables/ShipToProjectT
 
 import { ModalUploadDocument } from "@/components/molecules/modals/ModalUploadDocument/ModalUploadDocument";
 import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
-import { ModalCreateShipTo } from "@/components/molecules/modals/ModalCreateShipTo/ModalCreateShipTo";
 import { ModalStatusClient } from "@/components/molecules/modals/ModalStatusClient/ModalStatusClient";
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
 
@@ -30,7 +29,7 @@ import {
   getClientById,
   updateClient
 } from "@/services/clients/clients";
-import { ClientFormType, IClient } from "@/types/clients/IClients";
+import { ClientFormType, IClient, IClientLocation } from "@/types/clients/IClients";
 import { SelectRisks } from "@/components/molecules/selects/clients/SelectRisks/SelectRisks";
 import { SelectDocumentTypes } from "@/components/molecules/selects/clients/SelectDocumentTypes/SelectDocumentTypes";
 import { SelectClientTypes } from "@/components/molecules/selects/clients/SelectClientTypes/SelectClientTypes";
@@ -38,9 +37,11 @@ import { SelectRadicationTypes } from "@/components/molecules/selects/clients/Se
 import { SelectPaymentConditions } from "@/components/molecules/selects/clients/SelectPaymentConditions/SelectPaymentCondition";
 import { SelectHoldings } from "@/components/molecules/selects/clients/SelectHoldings/SelectHoldings";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
-import { createLocation } from "@/services/locations/locations";
-import { docTypeIdBasedOnDocType } from "@/utils/utils";
+import { addAddressToLocation } from "@/services/locations/locations";
+import { docTypeIdBasedOnDocType, getCityName, isNonEmptyObject } from "@/utils/utils";
 import { MessageInstance } from "antd/es/message/interface";
+import { useCheckLocationFields, useGetClientValues } from "./clientProjectFormHooks";
+import { SelectLocations } from "@/components/molecules/selects/clients/SelectLocations/SelectLocations";
 
 const { Title } = Typography;
 
@@ -68,7 +69,6 @@ export const ClientProjectForm = ({
   messageApi,
   messageContext
 }: Props) => {
-  const [isCreateShipTo, setIsCreateShipTo] = useState(false);
   const [isUploadDocument, setIsUploadDocument] = useState(false);
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
   const [isModalStatus, setIsModalStatus] = useState({ status: false, remove: false });
@@ -79,6 +79,7 @@ export const ClientProjectForm = ({
   } as { data: IClient; isLoading: boolean });
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
   const [clientDocuments, setClientDocuments] = useState<File[] | any[]>([]);
+  const [isCreateLoading, setIsCreateLoading] = useState(false);
 
   const { id: idProject } = useParams<{ id: string }>();
 
@@ -89,10 +90,12 @@ export const ClientProjectForm = ({
           Array.isArray(data?.locations) && data.locations.length > 0
             ? data?.locations[0]?.address
             : undefined,
-        city:
-          Array.isArray(data?.locations) && data.locations.length > 0
-            ? data.locations[0]?.city
-            : undefined,
+        city: {
+          value: data.locations?.find((loc: IClientLocation) => loc != null)?.city,
+          label: data.locations?.find((loc: IClientLocation) => loc != null)?.city
+            ? getCityName(data.locations?.find((loc: IClientLocation) => loc != null)?.city)
+            : undefined
+        },
         document_type: {
           value: docTypeIdBasedOnDocType(data.document_type),
           label: data.document_type
@@ -128,11 +131,20 @@ export const ClientProjectForm = ({
     handleSubmit,
     formState: { errors },
     setValue,
+    getValues,
     watch
   } = useForm<ClientFormType>({
     disabled: !isEditAvailable,
     values: isViewDetailsClient?.active ? dataToDataForm(dataClient.data) : ({} as any)
   });
+
+  const getClientValues = useGetClientValues(getValues);
+
+  const hasLocationChanged = useCheckLocationFields(
+    getValues,
+    watch,
+    isNonEmptyObject(dataClient.data)
+  );
 
   useEffect(() => {
     // UseEffect para actualizar el valor de billingPeriod
@@ -172,36 +184,87 @@ export const ClientProjectForm = ({
   }, [isViewDetailsClient, idProject]);
 
   const onSubmitHandler = async (data: any) => {
-    // Si hay un client id estamos editando un cliente de lo contrario estamos creando un cliente
     if (isViewDetailsClient?.id) {
-      const locationResponse = await createLocation(data.infoClient, isViewDetailsClient?.id);
-      const response = await updateClient(
-        idProject,
-        isViewDetailsClient?.id,
-        data,
-        locationResponse,
-        billingPeriod
-      );
+      // Update Client
 
-      if (response.status === 200 || response.status === 202) {
-        setIsEditAvailable(false);
-        messageApi.open({
-          type: "success",
-          content: `El cliente fue editado exitosamente.`
-        });
-      } else if (response.response.status === 400) {
-        messageApi.open({
-          type: "error",
-          content: "Algo salio mal con los datos subidos."
-        });
+      if (hasLocationChanged) {
+        const locationResponse = await addAddressToLocation(
+          {
+            address: data.infoClient.address,
+            id: data.infoClient.city.value,
+            complement: "."
+          },
+          parseInt(idProject),
+          messageApi
+        );
+
+        const response = await updateClient(
+          idProject,
+          isViewDetailsClient?.id,
+          data,
+          locationResponse,
+          hasLocationChanged,
+          billingPeriod
+        );
+
+        if (response.status === 200 || response.status === 202) {
+          setIsEditAvailable(false);
+          messageApi.open({
+            type: "success",
+            content: `El cliente fue editado exitosamente.`
+          });
+        } else if (response.response.status === 400) {
+          messageApi.open({
+            type: "error",
+            content: "Algo salio mal con los datos subidos."
+          });
+        } else {
+          messageApi.open({
+            type: "error",
+            content: "Oops ocurrio un error."
+          });
+        }
       } else {
-        messageApi.open({
-          type: "error",
-          content: "Oops ocurrio un error."
-        });
+        //Location did not change
+        const response = await updateClient(
+          idProject,
+          isViewDetailsClient?.id,
+          data,
+          dataClient.data.locations,
+          hasLocationChanged,
+          billingPeriod
+        );
+
+        if (response.status === 200 || response.status === 202) {
+          setIsEditAvailable(false);
+          messageApi.open({
+            type: "success",
+            content: `El cliente fue editado exitosamente.`
+          });
+        } else if (response.response.status === 400) {
+          messageApi.open({
+            type: "error",
+            content: "Algo salio mal con los datos subidos."
+          });
+        } else {
+          messageApi.open({
+            type: "error",
+            content: "Oops ocurrio un error."
+          });
+        }
       }
     } else {
-      const locationResponse = await createLocation(data.infoClient, isViewDetailsClient?.id);
+      // Create New Client
+      setIsCreateLoading(true);
+      const locationResponse = await addAddressToLocation(
+        {
+          address: data.infoClient.address,
+          id: data.infoClient.city.value,
+          complement: "Burned complement"
+        },
+        parseInt(idProject),
+        messageApi
+      );
 
       if (billingPeriod) {
         const response = await createClient(
@@ -209,7 +272,7 @@ export const ClientProjectForm = ({
           data,
           billingPeriod,
           clientDocuments,
-          locationResponse
+          locationResponse.data[0]
         );
 
         if (response.status === 200) {
@@ -222,10 +285,11 @@ export const ClientProjectForm = ({
         } else {
           messageApi.open({
             type: "error",
-            content: "Oops ocurrió un error."
+            content: response.response.data.message
           });
         }
       }
+      setIsCreateLoading(false);
     }
   };
 
@@ -371,11 +435,13 @@ export const ClientProjectForm = ({
                   nameInput="infoClient.email"
                   error={errors.infoClient?.email}
                 />
-                <InputForm
-                  titleInput="Ciudad"
+                <Controller
+                  name="infoClient.city"
                   control={control}
-                  nameInput="infoClient.city"
-                  error={errors.infoClient?.city}
+                  rules={{ required: true, minLength: 1 }}
+                  render={({ field }) => (
+                    <SelectLocations errors={errors.infoClient?.city} field={field} />
+                  )}
                 />
                 <InputForm
                   titleInput="Dirección"
@@ -421,12 +487,12 @@ export const ClientProjectForm = ({
                           {...field}
                           value={
                             billingPeriod
-                              ? billingPeriod.day_flag
+                              ? billingPeriod.day_flag === "True"
                                 ? `El dia ${billingPeriod.day} del mes`
                                 : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`
                               : dataClient.data.billing_period
                                 ? dataClient.data.billing_period
-                                : undefined
+                                : ""
                           }
                         />
                         {error && (
@@ -447,7 +513,10 @@ export const ClientProjectForm = ({
                     control={control}
                     rules={{ required: true, minLength: 1 }}
                     render={({ field }) => (
-                      <SelectRadicationTypes errors={errors.infoClient?.risk} field={field} />
+                      <SelectRadicationTypes<ClientFormType>
+                        errors={errors.infoClient?.radication_type}
+                        field={field}
+                      />
                     )}
                   />
                 </Flex>
@@ -461,7 +530,10 @@ export const ClientProjectForm = ({
                     rules={{ required: true, minLength: 1 }}
                     render={({ field }) => {
                       return (
-                        <SelectPaymentConditions errors={errors.infoClient?.risk} field={field} />
+                        <SelectPaymentConditions<ClientFormType>
+                          errors={errors.infoClient?.condition_payment}
+                          field={field}
+                        />
                       );
                     }}
                   />
@@ -490,16 +562,26 @@ export const ClientProjectForm = ({
                 ) : null}
               </Flex>
               <DividerCustom />
-              <ShipToProjectTable setIsCreateShipTo={setIsCreateShipTo} />
-              <DividerCustom />
+              {isViewDetailsClient?.id === 0 ? null : (
+                <>
+                  <ShipToProjectTable
+                    clientId={isViewDetailsClient.id}
+                    projectId={parseInt(idProject)}
+                    getClientValues={getClientValues}
+                  />
+                  <DividerCustom />
+                </>
+              )}
+
               {isEditAvailable && (
                 <Flex gap={"1rem"} justify="flex-end">
                   <Button
+                    disabled={isCreateLoading}
                     type="primary"
                     className="buttonNewProject"
                     htmlType={isEditAvailable ? "submit" : "button"}
                     size="large"
-                    icon={<Plus weight="bold" size={15} />}
+                    icon={isCreateLoading ? <Spin /> : <Plus weight="bold" size={15} />}
                   >
                     {isViewDetailsClient?.id ? "Actualizar cliente" : "Registrar cliente"}
                   </Button>
@@ -509,7 +591,6 @@ export const ClientProjectForm = ({
           )}
         </Flex>
       </form>
-      <ModalCreateShipTo isOpen={isCreateShipTo} setIsCreateShipTo={setIsCreateShipTo} />
       <ModalUploadDocument
         isOpen={isUploadDocument}
         setIsOpenUpload={setIsUploadDocument}

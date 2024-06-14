@@ -2,7 +2,6 @@
 
 .selectstructure {
     width: 100%;
-    height: 95%;
     justify-content: center;
 
     .title {
@@ -16,10 +15,10 @@
         border-radius: 0.5rem;
         margin: 0.5rem 0;
         display: flex;
-        height: fit-content;
+        // height: fit-content;
         flex-direction: column;
-        max-height: 36rem;
-        overflow-y: auto;
+        // max-height: 36rem;
+        // overflow-y: auto;
         scrollbar-width: thin;
     }
 }

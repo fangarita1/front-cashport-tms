@@ -263,8 +263,8 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
   ];
   return (
     <>
-      {contextHolder}
       <main className="mainUsersProjectTable">
+      {contextHolder}
         <Flex justify="space-between" className="mainUsersProjectTable_header">
           <Flex gap={"0.625rem"} align="center">
             <FilterUsers setSelectedUsers={setSelectedUsers} idProject={idProject} />

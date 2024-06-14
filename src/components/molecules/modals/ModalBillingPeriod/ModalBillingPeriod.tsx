@@ -26,7 +26,6 @@ const initialState: State = {
   day: undefined
 };
 
-// Definición de acciones y sus tipos
 type Action =
   | { type: "SET_PERIOD"; payload: string | undefined }
   | { type: "SET_DAY_OF_WEEK"; payload: string | undefined }
@@ -158,7 +157,11 @@ export const ModalBillingPeriod = ({
                     setValueSelected: handleSetDayOfWeek
                   }
                 ].map((item) => (
-                  <SelectBillingPeriod key={item.placeHolder} {...item} disabled={radioState === true} />
+                  <SelectBillingPeriod
+                    key={item.placeHolder}
+                    {...item}
+                    disabled={radioState === true}
+                  />
                 ))}
               </Flex>
             </Flex>

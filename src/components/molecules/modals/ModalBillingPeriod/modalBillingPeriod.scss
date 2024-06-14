@@ -22,9 +22,22 @@
         border-radius: 0.25rem;
         height: 3rem;
         font-size: 1rem;
-
-        &::placeholder {
-            color: $dark-gray;
+        input {
+            &::placeholder {
+                color: $dark-gray !important;
+            }
+            &::-webkit-input-placeholder {
+                color: $dark-gray !important;
+            }
+            &:-moz-placeholder {
+                color: $dark-gray !important;
+            }
+            &::-moz-placeholder {
+                color: $dark-gray !important;
+            }
+            &:-ms-input-placeholder {
+                color: $dark-gray !important;
+            }
         }
     }
     .buttonCancel {

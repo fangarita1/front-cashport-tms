@@ -25,7 +25,7 @@ export const SelectCurrencies = ({ errors, field }: Props) => {
       mode="multiple"
       placeholder="Selecciona las divisas"
       className={
-        errors?.general?.countries ? "selectInputCurrenciesError" : "selectInputCurrencies"
+        errors?.general?.currencies ? "selectInputCurrenciesError" : "selectInputCurrencies"
       }
       loading={isLoading}
       variant="borderless"

@@ -1,57 +1,28 @@
-@import '../../../../styles/variables.scss';
+@import "@/styles/variables.scss";
 
-.modalbusinessrules {
+.modalBusinessRules {
     width: 100%;
-    height: 70%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 600px !important;
+    overflow-y: scroll;
+    scrollbar-width: none;
 
-
-    .ant-modal-content{
-        height: 100%;
-
-    }
-    .ant-modal-body {
-        height: 85% !important;
-        overflow-y: auto;
-    }
-
-    .input {
-        background-color: $background;
-        margin-bottom: 0.2rem;
-        border-radius: 0;
-        border-radius: 0.25rem;
-        height: 3rem;
-
-        &::placeholder {
-            color: $secondary-gray;
-        }
-    }
-
-    .buttonOk {
-        width: 49%;
-        height: 3rem;
-        box-shadow: none;
-        background-color: $secondary;
-        color: black;
+    .modalTitle {
+        display: flex;
+        align-items: center;
+        font-size: 1.25rem;
         font-weight: 600;
+        margin-bottom: 1.5rem;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+        width: fit-content;
 
         &:hover {
-            background-color: $secondary !important;
-            opacity: 0.8;
-        }
-    }
-
-    .buttonCancel {
-        width: 49%;
-        height: 3rem;
-        box-shadow: none;
-        background-color: $white;
-        color: black;
-        font-weight: 600;
-        border: 1px solid black;
-
-        &:hover {
-            background-color: $white !important;
-            opacity: 0.8;
+            background-color: $background !important;
         }
     }
 }

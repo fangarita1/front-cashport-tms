@@ -32,6 +32,7 @@ export const FilterClients = ({ setFilterClients }: FilterClientsProps) => {
 
   const { data: filterOptions } = useClients({
     idProject,
+    page: 1,
     city: [] as number[],
     holding: [] as number[],
     risk: [] as number[],

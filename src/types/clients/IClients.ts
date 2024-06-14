@@ -20,12 +20,14 @@ interface IPosition {
   lon: string;
 }
 
-interface ILocation {
+export interface IClientLocation {
   id: number;
   nit: string;
-  city: string;
   address: string;
   position: IPosition;
+  city: number;
+  complement: string;
+  project_id: number;
 }
 
 interface IDocument {
@@ -49,7 +51,7 @@ export interface IClient {
   holding_id: number;
   holding_name: string;
   document_type: string;
-  locations: ILocation[];
+  locations: IClientLocation[];
   is_deleted: number;
   documents: IDocument[];
   ACTIVE: boolean;
@@ -100,7 +102,7 @@ export interface IUpdateClient {
   day_flag?: boolean;
   day?: number;
   order?: string;
-  day_of_week?: number;
+  day_of_week?: string;
   phone?: string;
   radication_type: number;
 }
@@ -117,7 +119,7 @@ export type ClientFormType = {
     phone: string;
     email: string;
     locations: any[];
-    city: string;
+    city: ISelectType;
     risk: string;
     radication_type: ISelectType;
     condition_payment: ISelectType;

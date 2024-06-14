@@ -6,12 +6,13 @@ import { ArrowLineRight, Gear, User } from "phosphor-react";
 import Image from "next/image";
 
 import "./sidebar.scss";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { logOut } from "../../../../firebase-utils";
 
 export const SideBar = () => {
   const [isSideBarLarge, setIsSideBarLarge] = useState(false);
+  const router = useRouter();
   const path = usePathname();
-
   return (
     <div className={isSideBarLarge ? "mainLarge" : "main"}>
       <Flex vertical className="containerButtons">
@@ -46,7 +47,7 @@ export const SideBar = () => {
         <Button
           type="text"
           size="large"
-          onClick={() => setIsSideBarLarge(!isSideBarLarge)}
+          onClick={() => logOut(router)}
           icon={<ArrowLineRight size={26} />}
           className="buttonExit"
         >
