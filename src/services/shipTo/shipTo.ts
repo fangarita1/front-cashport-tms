@@ -1,7 +1,12 @@
 import { AxiosResponse } from "axios";
 import config from "@/config";
 import { API } from "@/utils/api/api";
-import { ICreateShipTo, IUpdateShipTo, ShipToFormType } from "@/types/shipTo/IShipTo";
+import {
+  ICreateShipTo,
+  IGetOneShipTo,
+  IUpdateShipTo,
+  ShipToFormType
+} from "@/types/shipTo/IShipTo";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 import { MessageInstance } from "antd/es/message/interface";
 import { SUCCESS } from "@/utils/constants/globalConstants";
@@ -59,11 +64,11 @@ export const addShipTo = async (
 
 export const getShipToByCode = async (code: string, projectId: number): Promise<any> => {
   try {
-    const response: AxiosResponse = await API.get(
+    const response: IGetOneShipTo = await API.get(
       `${config.API_HOST}/ship-to/${code}/project/${projectId}`
     );
 
-    return response;
+    return response.data;
   } catch (error) {
     console.warn("Error getting Ship To: ", error);
     return error as any;
@@ -76,7 +81,8 @@ export const updateShipTo = async (
   projectID: number,
   selectedData: ShipToFormType,
   zones: number[],
-  selectedStructure: ISelectedBussinessRules
+  selectedStructure: ISelectedBussinessRules,
+  messageApi: MessageInstance
 ): Promise<any> => {
   const shipToData = selectedData.shipTo;
 
@@ -99,9 +105,53 @@ export const updateShipTo = async (
       modelData
     );
 
+    if (response.status === SUCCESS) {
+      messageApi.open({
+        type: "success",
+        content: `El Ship To fue eliminado exitosamente.`
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Oops ocurrio un error eliminando Ship To."
+      });
+    }
+
     return response;
   } catch (error) {
     console.warn("Error updating Ship To: ", error);
+    return error as any;
+  }
+};
+
+export const deleteShipToByCode = async (
+  code: string,
+  projectId: number,
+  messageApi: MessageInstance
+): Promise<any> => {
+  try {
+    const response: AxiosResponse = await API.delete(
+      `${config.API_HOST}/ship-to/${code}/project/${projectId}`
+    );
+
+    if (response.status === SUCCESS) {
+      messageApi.open({
+        type: "success",
+        content: `El Ship To fue eliminado exitosamente.`
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Oops ocurrio un error eliminando Ship To."
+      });
+    }
+    return response;
+  } catch (error) {
+    console.warn("Error deleting Ship To: ", error);
+    messageApi.open({
+      type: "error",
+      content: "Oops ocurrio un error eliminando Ship To."
+    });
     return error as any;
   }
 };

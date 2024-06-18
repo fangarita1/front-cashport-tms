@@ -30,7 +30,6 @@ export type AddressType = {
   };
 };
 export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Props) => {
-  const [isEditAvailable] = useState(false);
   const [alreadyExistingAddresses, setAlreadyExistingAddresses] = useState<locationAddress[] | []>(
     []
   );
@@ -46,8 +45,7 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
     formState: { errors, isValid },
     watch
   } = useForm<AddressType>({
-    defaultValues: {},
-    disabled: isEditAvailable
+    // values: { location: { city: { value: 0, label: "" } } }
   });
 
   const watchCity = watch("location.city");
@@ -58,7 +56,7 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
     if (watchCity) {
       const fetchLocation = async () => {
         const response = await getLocation(watchCity.value);
-        setAlreadyExistingAddresses(response.data.address);
+        setAlreadyExistingAddresses(response?.data?.address);
       };
       fetchLocation(); //
     }

@@ -15,9 +15,19 @@ import { ISelectType } from "@/types/clients/IClients";
 import { CaretRight } from "phosphor-react";
 const { Text, Title } = Typography;
 interface Props {
-  setIsShipToModalOpen: Dispatch<SetStateAction<boolean>>;
+  setIsShipToModalOpen: Dispatch<
+    SetStateAction<{
+      open: boolean;
+      accounting_code: string | undefined;
+    }>
+  >;
+  isShipToModalOpen: {
+    open: boolean;
+    accounting_code: string | undefined;
+  };
   setCurrentView: Dispatch<SetStateAction<"main" | "businessRules">>;
   setSelectedShipToData: Dispatch<SetStateAction<ShipToFormType | undefined>>;
+  selectedShipToData: ShipToFormType | undefined;
   setIsBillingPeriodOpen: Dispatch<SetStateAction<boolean>>;
   billingPeriod: IBillingPeriodForm | undefined;
   getClientValues: () => {
@@ -29,8 +39,10 @@ interface Props {
 
 export const ModalCreateShipTo = ({
   setIsShipToModalOpen,
+  isShipToModalOpen,
   setCurrentView,
   setSelectedShipToData,
+  selectedShipToData,
   setIsBillingPeriodOpen,
   billingPeriod,
   getClientValues
@@ -47,10 +59,12 @@ export const ModalCreateShipTo = ({
     mode: "onChange",
     defaultValues: {
       shipTo: {
+        code: undefined,
         dependency_client: false,
         billing_period: undefined
       }
-    }
+    },
+    values: isShipToModalOpen.accounting_code ? selectedShipToData : undefined
   });
 
   const watchDependencyClient = watch("shipTo.dependency_client");
@@ -110,6 +124,7 @@ export const ModalCreateShipTo = ({
           <h5 className="modalTitle">Crear nuevo Ship To</h5>
           <div className="nonHereditaryInputs">
             <InputForm
+              disabled={isShipToModalOpen.accounting_code ? true : false}
               titleInput="Código Ship To"
               control={control}
               nameInput="shipTo.code"
@@ -231,7 +246,10 @@ export const ModalCreateShipTo = ({
           </div>
 
           <div className="footer">
-            <Button className="cancelButton" onClick={() => setIsShipToModalOpen(false)}>
+            <Button
+              className="cancelButton"
+              onClick={() => setIsShipToModalOpen({ open: false, accounting_code: undefined })}
+            >
               Cancelar
             </Button>
             <Button

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Modal } from "antd";
 
 import { ModalBillingPeriod } from "../ModalBillingPeriod/ModalBillingPeriod";
@@ -6,7 +6,7 @@ import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 
 import { ModalBusinessRules } from "../ModalBusinessRules/ModalBusinessRules";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
-import { ShipToFormType } from "@/types/shipTo/IShipTo";
+import { IShipTo, ShipToFormType } from "@/types/shipTo/IShipTo";
 
 import "./modalShipTo.scss";
 import { ModalCreateShipTo } from "./ModalCreateShipTo/ModalCreateShipTo";
@@ -14,8 +14,16 @@ import { ISelectType } from "@/types/clients/IClients";
 import { MessageInstance } from "antd/es/message/interface";
 
 interface Props {
-  isOpen: boolean;
-  setIsShipToModalOpen: Dispatch<SetStateAction<boolean>>;
+  setIsShipToModalOpen: Dispatch<
+    SetStateAction<{
+      open: boolean;
+      accounting_code: string | undefined;
+    }>
+  >;
+  isShipToModalOpen: {
+    open: boolean;
+    accounting_code: string | undefined;
+  };
   getClientValues: () => {
     billingPeriod: string;
     radicationType: ISelectType;
@@ -32,14 +40,28 @@ interface Props {
     // eslint-disable-next-line no-unused-vars
     messageApi: MessageInstance
   ) => void;
+  // eslint-disable-next-line no-unused-vars
+  getShipTo: (shipToCode: string) => Promise<IShipTo>;
+  editShipTo: (
+    // eslint-disable-next-line no-unused-vars
+    selectedData: ShipToFormType,
+    // eslint-disable-next-line no-unused-vars
+    zones: number[],
+    // eslint-disable-next-line no-unused-vars
+    selectedStructure: ISelectedBussinessRules,
+    // eslint-disable-next-line no-unused-vars
+    messageApi: MessageInstance
+  ) => void;
 }
 
 export const ModalShipTo = ({
-  isOpen,
   setIsShipToModalOpen,
+  isShipToModalOpen,
   getClientValues,
   messageApi,
-  createShipTo
+  createShipTo,
+  getShipTo,
+  editShipTo
 }: Props) => {
   const [currentView, setCurrentView] = useState<"main" | "businessRules">("main");
   const [selectedShipToData, setSelectedShipToData] = useState<ShipToFormType | undefined>();
@@ -50,13 +72,52 @@ export const ModalShipTo = ({
     initDatSelectedBusinessRules
   );
 
-  const handleCreateShipTo = () => {
+  const handleSubmitShipTo = () => {
+    // If we are editing
+    if (isShipToModalOpen.accounting_code) {
+      if (selectedShipToData) {
+        editShipTo(selectedShipToData, zones, selectedStructure, messageApi);
+      }
+      return;
+    }
     if (selectedShipToData) {
       createShipTo(selectedShipToData, zones, selectedStructure, messageApi);
     }
     setCurrentView("main");
-    setIsShipToModalOpen(false);
+    setIsShipToModalOpen({ open: false, accounting_code: undefined });
   };
+
+  useEffect(() => {
+    const fetchShipTo = async () => {
+      if (!isShipToModalOpen.accounting_code) {
+        setBillingPeriod(undefined);
+        setZones([]);
+        setSelectedShipToData(undefined);
+        setSelectedStructure(initDatSelectedBusinessRules);
+        return;
+      }
+      const response = await getShipTo(isShipToModalOpen.accounting_code);
+      setSelectedShipToData({
+        shipTo: {
+          code: response.accounting_code,
+          dependency_client: Boolean(response.dependecy_client),
+          address: response.full_address,
+          address_id: response.address_id,
+          billing_period: response.billing_period,
+          condition_payment: {
+            value: response.condition_payment,
+            label: response.condition_day.toString()
+          },
+          radication_type: { value: response.radication_type, label: response.radication_name }
+        }
+      });
+      // Waiting 4 back with this info
+      // setZones()
+      // setSelectedStructure({channels: [], lines: [], sublines: []})
+    };
+
+    fetchShipTo();
+  }, [isShipToModalOpen]);
 
   const businessRulesViewModal = {
     content: (
@@ -74,11 +135,11 @@ export const ModalShipTo = ({
           Cancelar
         </Button>
         <Button
-          onClick={handleCreateShipTo}
+          onClick={handleSubmitShipTo}
           disabled={selectedStructure.channels.length === 0 || zones.length === 0}
           className="acceptButton"
         >
-          Crear Ship To
+          {isShipToModalOpen.accounting_code ? "Actualizar Ship To" : "Crear Ship To"}
         </Button>
       </div>
     )
@@ -87,8 +148,10 @@ export const ModalShipTo = ({
   return (
     <>
       <Modal
+        zIndex={2}
         width={"40%"}
-        open={isOpen}
+        destroyOnClose
+        open={isShipToModalOpen.open}
         className="modalcreateshipto"
         okButtonProps={{
           className: "buttonOk"
@@ -98,18 +161,16 @@ export const ModalShipTo = ({
         }}
         footer={currentView === "businessRules" ? businessRulesViewModal.footer : null}
         onCancel={() => {
-          setCurrentView("main");
-          setIsShipToModalOpen(false);
-          setBillingPeriod(undefined);
-          setZones([]);
-          setSelectedStructure(initDatSelectedBusinessRules);
+          setIsShipToModalOpen({ open: false, accounting_code: undefined });
         }}
       >
         {currentView === "main" && (
           <ModalCreateShipTo
             setIsShipToModalOpen={setIsShipToModalOpen}
+            isShipToModalOpen={isShipToModalOpen}
             setCurrentView={setCurrentView}
             setSelectedShipToData={setSelectedShipToData}
+            selectedShipToData={selectedShipToData}
             setIsBillingPeriodOpen={setIsBillingPeriodOpen}
             billingPeriod={billingPeriod}
             getClientValues={getClientValues}

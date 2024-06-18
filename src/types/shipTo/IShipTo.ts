@@ -36,21 +36,25 @@ export interface IShipTos {
   data: IShipTo[];
 }
 
+export interface IGetOneShipTo {
+  status: number;
+  message: string;
+  data: IShipTo;
+}
 export interface IShipTo {
   accounting_code: string;
-  address_id: number | null;
+  address_id: number;
   billing_period: string;
   client_id: number;
   condition_day: number;
   condition_payment: number;
   contacts: string;
   dependecy_client: number;
-  full_address: string | null;
+  full_address: string;
   is_deleted: number;
   project_id: number;
   radication_name: string;
   radication_type: number;
-  shipto_description: string;
 }
 
 export interface IUpdateShipTo {
