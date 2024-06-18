@@ -200,3 +200,35 @@ const intFormat = {
   kr: { currency: "KRW", id: "ko-KR" },
   es: { currency: "EUR", id: "es-ES" }
 };
+
+export const getCityName = (id: number) => {
+  const city = locations.find((location) => location.id === id);
+  return city?.city;
+};
+
+const locations = [
+  {
+    id: 1,
+    city: "Bogotá"
+  },
+  {
+    id: 246,
+    city: "Medellin"
+  },
+  {
+    id: 247,
+    city: "Cali"
+  },
+  {
+    id: 248,
+    city: "Pereira"
+  },
+  {
+    id: 249,
+    city: "Barranquilla"
+  }
+];
+
+export const isNonEmptyObject = (obj: {}) => {
+  return !(Object.keys(obj).length === 0 && obj.constructor === Object);
+};

@@ -21,7 +21,7 @@ import {
   _onSubmit,
   dataToProjectFormData,
   ProjectFormTabProps,
-  useEffectFunction,
+  effectFunction,
   validationButtonText
 } from "./projectFormTab.mapper";
 
@@ -63,7 +63,7 @@ export const ProjectFormTab = ({
   }, []);
 
   useEffect(
-    () => useEffectFunction(generalDSOCurrentlyYear, setValue, billingPeriod),
+    () => effectFunction(generalDSOCurrentlyYear, setValue, billingPeriod),
     [billingPeriod, generalDSOCurrentlyYear, setValue]
   );
 

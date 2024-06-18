@@ -1,8 +1,23 @@
-@import '../../../../styles/variables.scss';
+@import "@/styles/variables.scss";
 
-.modaladdress {
+.modalAddress {
     width: 100%;
 
+    .modalTitle {
+        display: flex;
+        align-items: center;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+
+        &:hover {
+            // opacity: 0.6;
+            background-color: $background !important;
+        }
+    }
 
     .buttonOk {
         width: 40%;
@@ -19,7 +34,64 @@
     }
 
     .titleSection {
-        margin-left: .5rem;
-        margin-top: .75rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: 300;
+    }
+
+    .existingLocations {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+
+        &__emptyText {
+            font-weight: 200;
+            grid-column: 1 / 3;
+        }
+    }
+
+    .footer {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin: 0.75rem 0rem;
+        margin-top: 1.5rem;
+
+        .acceptButton {
+            width: 100%;
+            height: fit-content;
+            box-shadow: none;
+            background-color: $secondary;
+            color: black;
+            font-weight: 600;
+            padding: 12px 24px;
+
+            &:hover {
+                background-color: $secondary !important;
+                color: $white !important;
+                border: 1px solid transparent !important;
+            }
+
+            &:disabled {
+                background-color: $dark-gray;
+
+                cursor: not-allowed;
+
+                &:hover {
+                    background-color: $dark-gray !important;
+                    color: black !important;
+                }
+            }
+
+            &.-address {
+                grid-column-start: 2;
+            }
+        }
+    }
+
+    &__city {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
     }
 }

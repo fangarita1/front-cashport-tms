@@ -58,8 +58,8 @@ export const InputCreateDocument = ({ clientTypeId }: { clientTypeId: number }) 
 
   return (
     <>
-      {contextHolder}
       <form className="inputCreateDocument" onSubmit={handleSubmit(onSubmit)}>
+      {contextHolder}
         <InputForm
           titleInput=""
           control={control}

@@ -4,22 +4,42 @@ export interface ILocations {
   data: ILocation[];
 }
 
-export interface ILocation {
+export interface ICities {
   id: number;
-  address: string;
   city: string;
-  nit: string;
-  position: IPosition[];
 }
 
-interface IPosition {
-  lat: string;
-  lon: string;
+export interface ILocation {
+  id: number;
+  city: string;
+  address: locationAddress[];
+}
+
+export interface locationAddress {
+  id: number;
+  address: string;
+  complement: string;
+  location_id: number;
+  project_id: number;
 }
 
 export interface ICreateLocation {
   address: string;
-  city: string;
-  nit: string;
-  position: IPosition | {};
+  city: number;
+  complement: string;
+  project_id: number;
+}
+
+export interface IAddAddressToLocation {
+  data: IAddAddressData[];
+  message: string;
+  error: boolean;
+}
+
+export interface IAddAddressData {
+  address: string;
+  city: number;
+  complement: string;
+  id: number;
+  project_id: number;
 }

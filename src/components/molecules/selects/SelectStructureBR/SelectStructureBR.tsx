@@ -35,8 +35,8 @@ export const SelectStructureBR = ({ isDisabledEdit }: Props) => {
   };
   return (
     <>
-      {contextHolder}
       <div className="selectzonebr">
+      {contextHolder}
         <Typography.Text className="title">Estructura</Typography.Text>
         <Flex vertical className="bres">
           {isLoading ? (

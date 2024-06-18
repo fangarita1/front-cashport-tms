@@ -35,8 +35,8 @@ export const InputCreateSubline = ({ isEditAvailable = false, idLine }: Props) =
   };
   return (
     <>
-      {contextHolder}
       <form className="inputcreateline" onSubmit={handleSubmit(onSubmit)}>
+      {contextHolder}
         <InputForm
           titleInput=""
           control={control}

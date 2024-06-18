@@ -1,109 +1,168 @@
 import { AddressContainer } from "@/components/atoms/AddressContainer/AddressContainer";
-import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-import { Flex, Modal, Typography } from "antd";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import "./modaladdress.scss";
+import { Button, Typography, message } from "antd";
+import { BaseSyntheticEvent, Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Controller, UseFormSetValue, useForm } from "react-hook-form";
 import { InputAddress } from "@/components/atoms/inputs/InputAddress/InputAddress";
-import { ModalBusinessRules } from "../ModalBusinessRules/ModalBusinessRules";
-import { fetchAllLocations } from "@/services/locations/locations";
-import { ILocation } from "@/types/locations/ILocations";
+import { CaretLeft } from "phosphor-react";
+import { SelectLocations } from "../../selects/clients/SelectLocations/SelectLocations";
+import { ISelectType } from "@/types/clients/IClients";
+
+import "./modaladdress.scss";
+import { useLocations } from "@/hooks/useLocations";
+import { locationAddress } from "@/types/locations/ILocations";
+import { ShipToFormType } from "@/types/shipTo/IShipTo";
 
 const { Title } = Typography;
 interface Props {
-  isOpen: boolean;
-  setIsOpenAddress: Dispatch<SetStateAction<boolean>>;
+  setIsModalAddressOpen: Dispatch<SetStateAction<boolean>>;
+  setParentFormValue: UseFormSetValue<ShipToFormType>;
 }
 export type AddressType = {
-  city: string;
-  address: {
-    principal: string;
-    principalNumber: string;
-    secondary: string;
-    secondaryNumber: string;
+  location: {
+    city: ISelectType;
+    address: {
+      street_type: string;
+      number: string;
+      complement: string;
+      building_number: number;
+    };
     complement: string;
   };
 };
-export const ModalAddress = ({ isOpen, setIsOpenAddress }: Props) => {
-  const [isOpenBR, setIsOpenBR] = useState(false);
-  const [_, setSelectedLocationId] = useState<number>();
-  const [locations, setLocations] = useState<ILocation[]>([]);
+export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Props) => {
+  const [isEditAvailable] = useState(false);
+  const [alreadyExistingAddresses, setAlreadyExistingAddresses] = useState<locationAddress[] | []>(
+    []
+  );
+  const [selectedAddress, setSelectedAddress] = useState<{
+    address: string;
+    id: number;
+  } | null>(null);
+  const [messageApi, contextHolder] = message.useMessage();
+
   const {
     control,
-    watch,
-    formState: { errors }
-  } = useForm({
-    defaultValues: {
-      city: "",
-      address: {
-        principal: "",
-        principalNumber: "",
-        secondary: "",
-        secondaryNumber: "",
-        complement: ""
-      }
-    }
+    handleSubmit,
+    formState: { errors, isValid },
+    watch
+  } = useForm<AddressType>({
+    defaultValues: {},
+    disabled: isEditAvailable
   });
 
-  const city = watch("city");
+  const watchCity = watch("location.city");
 
-  const filteredLocations = useMemo(() => {
-    return locations.filter((location) => location.city.toLowerCase().includes(city.toLowerCase()));
-  }, [locations, city]);
-
-  const initData = async () => {
-    const locationsData = await fetchAllLocations();
-    setLocations(locationsData);
-  };
+  const { getLocation, createLocation } = useLocations();
 
   useEffect(() => {
-    initData();
-  }, []);
+    if (watchCity) {
+      const fetchLocation = async () => {
+        const response = await getLocation(watchCity.value);
+        setAlreadyExistingAddresses(response.data.address);
+      };
+      fetchLocation(); //
+    }
+  }, [getLocation, watchCity]);
+
+  const onSubmitLocation = async (
+    data: AddressType,
+    event: BaseSyntheticEvent<object, any, any> | undefined
+  ) => {
+    event?.preventDefault();
+    event?.stopPropagation();
+    if (selectedAddress) {
+      setParentFormValue("shipTo.address_id", selectedAddress.id);
+      setParentFormValue("shipTo.address", selectedAddress.address);
+      setIsModalAddressOpen(false);
+      return;
+    }
+
+    const newAddressData = {
+      address: `${data.location.address.street_type} ${data.location.address.number} #${data.location.address.complement} - ${data.location.address.building_number}`,
+      id: data.location.city.value,
+      complement: data.location.complement
+    };
+
+    try {
+      const response = await createLocation(newAddressData, messageApi);
+      setParentFormValue("shipTo.address_id", response[0].id);
+      setParentFormValue("shipTo.address", newAddressData.address);
+      setIsModalAddressOpen(false);
+    } catch (error) {
+      console.error("Failed to add address: ", error);
+      message.error("An error occurred while adding the address.");
+    }
+  };
 
   return (
     <>
-      <Modal
-        width={"40%"}
-        open={isOpen}
-        okButtonProps={{ className: "buttonOk" }}
-        cancelButtonProps={{ style: { display: "none" } }}
-        okText="Guardar ubicación"
-        title={<Title level={4}>Ingresar ubicación</Title>}
-        className="modaladdress"
-        onCancel={() => setIsOpenAddress(false)}
-        onOk={() => setIsOpenBR(true)}
-      >
-        <Flex wrap="wrap" justify="flex-start" style={{ paddingTop: "1rem" }}>
-          <InputForm
-            titleInput="Ciudad"
+      {contextHolder}
+      <form className="modalAddress">
+        <Button
+          className="modalTitle"
+          icon={<CaretLeft size={"1.45rem"} />}
+          onClick={() => setIsModalAddressOpen(false)}
+        >
+          Ingresar ubicación
+        </Button>
+
+        <div className="modalAddress__city">
+          <Controller
+            name="location.city"
             control={control}
-            nameInput="city"
-            error={undefined}
-            customStyle={{ width: "45.5%" }}
+            rules={{ required: true, minLength: 1 }}
+            render={({ field }) => <SelectLocations errors={errors.location?.city} field={field} />}
           />
-        </Flex>
-        {!!filteredLocations.length && (
-          <>
-            <Title level={5} className="titleSection">
-              Ubicaciones disponibles ya creadas
-            </Title>
-            <Flex wrap="wrap" justify="flex-start" style={{ padding: ".3rem" }} gap={".5rem"}>
-              {filteredLocations.map((l) => (
-                <AddressContainer
-                  key={l.id}
-                  location={l}
-                  onSelect={(s) => setSelectedLocationId(s ? l.id : undefined)}
-                />
-              ))}
-            </Flex>
-          </>
-        )}
+        </div>
+        <Title level={5} className="titleSection">
+          Ubicaciones disponibles ya creadas
+        </Title>
+        <div className="existingLocations">
+          {alreadyExistingAddresses.length > 0 ? (
+            alreadyExistingAddresses.map((address) => (
+              <AddressContainer
+                key={address.id}
+                address={address.address}
+                city={watchCity.label}
+                addressId={address.id}
+                complement={address.complement}
+                isSelected={address.id === selectedAddress?.id}
+                onSelectAddress={(id) => {
+                  setSelectedAddress((prevAddress) => {
+                    if (prevAddress && prevAddress.id === id) {
+                      return null;
+                    } else {
+                      const newAddress = alreadyExistingAddresses.find((a) => a.id === id);
+                      if (newAddress) {
+                        return { id: newAddress.id, address: newAddress.address };
+                      }
+                      return prevAddress;
+                    }
+                  });
+                }}
+              />
+            ))
+          ) : (
+            <p className="existingLocations__emptyText">
+              Aún no hay ubicaciones creadas para esta ciudad
+            </p>
+          )}
+        </div>
         <Title level={5} className="titleSection">
           Crear ubicación del Ship To
         </Title>
-        <InputAddress control={control} errors={errors} />
-      </Modal>
-      <ModalBusinessRules isOpen={isOpenBR} setIsBR={setIsOpenBR} />
+        <InputAddress control={control} errors={errors} disabled={selectedAddress !== null} />
+
+        <div className="footer">
+          <Button
+            disabled={selectedAddress === null && !isValid}
+            onClick={handleSubmit(onSubmitLocation)}
+            className="acceptButton -address"
+          >
+            Guardar ubicación
+          </Button>
+        </div>
+      </form>
     </>
   );
 };

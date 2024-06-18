@@ -16,7 +16,7 @@ export interface ProjectFormTabProps {
   statusForm: "create" | "edit" | "review";
 }
 
-export const useEffectFunction = (
+export const effectFunction = (
   generalDSOCurrentlyYear: string,
   setValue: UseFormSetValue<IFormProject>,
   billingPeriod: IBillingPeriodForm | undefined
@@ -80,6 +80,7 @@ export const _onSubmit = (
   onSubmitForm({ ...data, logo: imageFile });
   reset(data);
   setloading(false);
+
 };
 
 export const validationButtonText = (statusForm: "create" | "edit" | "review") => {

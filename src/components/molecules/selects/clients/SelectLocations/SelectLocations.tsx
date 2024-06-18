@@ -1,49 +1,56 @@
-import { Select, Typography } from "antd";
-import useSWR from "swr";
-import { ControllerRenderProps, FieldError } from "react-hook-form";
-
-import { fetcher } from "@/utils/api/api";
-import { ILocation, ILocations } from "@/types/locations/ILocations";
-import { ClientFormType } from "@/types/clients/IClients";
+import { Flex, Select, Typography } from "antd";
+import {
+  ControllerRenderProps,
+  FieldErrorsImpl,
+  FieldValues,
+  Merge,
+  FieldError as OriginalFieldError
+} from "react-hook-form";
 
 import "../commonInputStyles.scss";
+import { useLocations } from "@/hooks/useLocations";
+import axios from "axios";
 
-interface Props {
-  errors: FieldError | undefined;
-  field: ControllerRenderProps<ClientFormType, "infoClient.locations">;
+type ExtendedFieldError =
+  | OriginalFieldError
+  | Merge<OriginalFieldError, FieldErrorsImpl<{ value: number; label: string }>>;
+
+interface Props<T extends FieldValues> {
+  errors: ExtendedFieldError | undefined;
+  field: ControllerRenderProps<T, any>;
 }
-const { Option } = Select;
-export const SelectLocations = ({ errors, field }: Props) => {
-  const { data, isLoading } = useSWR<ILocations>("/location", fetcher, {});
-  const options = data?.data;
-  let cities: string[] | string = [];
-  if (Array.isArray(field?.value)) {
-    cities = field.value.map((location: ILocation) => location.city);
+
+export const SelectLocations = <T extends FieldValues>({ errors, field }: Props<T>) => {
+  const { data, isLoading, error } = useLocations();
+  console.log({ data, error });
+  if (axios.isAxiosError(data)) {
+    return null
   }
-  if (typeof field?.value === "string") {
-    cities = field.value;
-  }
-  const locationField = { ...field, value: cities };
+    const options = data?.map((location) => {
+      return {
+        value: location.id,
+        label: location.city,
+        className: "selectOptions"
+      };
+    });
 
   return (
-    <Select
-      placeholder="Seleccione la ciudad"
-      className={errors ? "selectInputError" : "selectInputCustom"}
-      loading={isLoading}
-      variant="borderless"
-      optionLabelProp="label"
-      {...locationField}
-    >
-      {options?.map((value) => {
-        return (
-          <Option value={`${value.id}-${value.city}`} key={value.id}>
-            {`${value.id}-${value.city}`}
-          </Option>
-        );
-      })}
+    <Flex vertical>
+      <h4 className="inputTitle">Ciudad</h4>
+      <Select
+        placeholder="Seleccione la ciudad"
+        className={errors ? "selectInputError" : "selectInputCustom"}
+        loading={isLoading}
+        variant="borderless"
+        optionLabelProp="label"
+        {...field}
+        popupClassName="selectDrop"
+        options={options}
+        labelInValue
+      />
       {errors && (
         <Typography.Text className="textError">La ciudad es obligatoria *</Typography.Text>
       )}
-    </Select>
+    </Flex>
   );
 };

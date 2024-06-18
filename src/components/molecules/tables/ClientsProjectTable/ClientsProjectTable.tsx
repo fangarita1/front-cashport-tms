@@ -7,12 +7,22 @@ import {
   JSXElementConstructor
 } from "react";
 import { useParams } from "next/navigation";
-import { Button, Flex, MenuProps, Popconfirm, Spin, Table, TableProps, Typography } from "antd";
-import { Eye, Plus } from "phosphor-react";
+import {
+  Button,
+  Flex,
+  MenuProps,
+  message,
+  Popconfirm,
+  Spin,
+  Table,
+  TableProps,
+  Typography
+} from "antd";
+import { Eye, Plus, Triangle } from "phosphor-react";
 import { FilterClients } from "@/components/atoms/Filters/FilterClients/FilterClients";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 import { IClient } from "@/types/clients/IClients";
-import { useClients } from "@/hooks/useClients";
+import { useClientsTable } from "@/hooks/useClients";
 import "./clientsprojecttable.scss";
 
 const { Text, Link } = Typography;
@@ -40,7 +50,9 @@ export const ClientsProjectTable = ({
   messageContext
 }: Props) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-
+  const [page, setPage] = useState(1);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [height, setHeight] = useState<number>(window.innerHeight);
   const [filterClients, setFilterClients] = useState({
     city: [] as number[],
     holding: [] as number[],
@@ -51,6 +63,10 @@ export const ClientsProjectTable = ({
   });
 
   const { id: idProject } = useParams<{ id: string }>();
+
+  const onChangePage = (pagePagination: number) => {
+    setPage(pagePagination);
+  };
 
   useEffect(() => {
     // Este useEffect es para seleccionar las filas
@@ -85,16 +101,35 @@ export const ClientsProjectTable = ({
     }
   };
 
-  const { data, loading } = useClients({
+  useEffect(() => {
+    const handleResize = () => {
+      setHeight(window.innerHeight);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const { data, isLoading, error } = useClientsTable({
     idProject,
-    page: 1,
+    page: page,
     city: filterClients.city,
     holding: filterClients.holding,
     risk: filterClients.risk,
     payment_condition: filterClients.payment_condition,
     radication_type: filterClients.radication_type,
-    status: filterClients.status
+    status: filterClients.status,
+    messageApi
   });
+
+  useEffect(() => {
+    if (typeof error === "string") {
+      messageApi.open({ type: "error", content: error });
+    } else if (error?.message) {
+      messageApi.open({ type: "error", content: error.message });
+    }
+  }, [error]);
 
   let columns: TableProps<IClient>["columns"] = [];
   if (placedIn === "tab") {
@@ -211,7 +246,6 @@ export const ClientsProjectTable = ({
         )
       }
     ];
-
     const deleteClients = () => {};
 
     const bulkLoadShipTo = () => {};
@@ -254,11 +288,10 @@ export const ClientsProjectTable = ({
         )
       }
     ];
-
     return (
       <>
-        {messageContext}
         <main className="mainClientsProjectTable">
+          {contextHolder}
           <Flex justify="space-between" className="mainClientsProjectTable_header">
             <Flex gap={"0.625rem"}>
               <FilterClients setFilterClients={setFilterClients} />
@@ -276,20 +309,43 @@ export const ClientsProjectTable = ({
             </Button>
           </Flex>
 
-          {loading ? (
+          {isLoading ? (
             <Flex style={{ height: "30%" }} align="center" justify="center">
               <Spin size="large" />
             </Flex>
           ) : (
-            <Table
-              columns={columns}
-              dataSource={data.map((client) => ({
-                key: client.nit,
-                ...client
-              }))}
-              rowSelection={rowSelection}
-              rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
-            />
+            <div className="container-table-of-ant">
+              <Table
+                columns={columns}
+                dataSource={data?.data?.map((client) => ({
+                  key: client.nit,
+                  ...client
+                }))}
+                virtual
+                scroll={{ y: height - 400, x: 100 }}
+                rowSelection={rowSelection}
+                rowClassName={(record) =>
+                  selectedRowKeys.includes(record.nit) ? "selectedRow" : ""
+                }
+                pagination={{
+                  pageSize: 50,
+                  showSizeChanger: false,
+                  position: ["none", "bottomRight"],
+                  total: data?.pagination?.totalRows,
+                  onChange: onChangePage,
+                  itemRender: (page, type, originalElement) => {
+                    if (type === "prev") {
+                      return <Triangle size={".75rem"} weight="fill" className="prev" />;
+                    } else if (type === "next") {
+                      return <Triangle size={".75rem"} weight="fill" className="next" />;
+                    } else if (type === "page") {
+                      return <Flex className="pagination">{page}</Flex>;
+                    }
+                    return originalElement;
+                  }
+                }}
+              />
+            </div>
           )}
         </main>
       </>
@@ -335,32 +391,30 @@ export const ClientsProjectTable = ({
     ];
 
     return (
-      <>
-        <main className="mainClientsProjectTable">
-          <Flex justify="space-between" className="mainClientsProjectTable_header">
-            <Flex>
-              <FilterClients setFilterClients={setFilterClients} />
-            </Flex>
+      <main className="mainClientsProjectTable">
+        <Flex justify="space-between" className="mainClientsProjectTable_header">
+          <Flex>
+            <FilterClients setFilterClients={setFilterClients} />
           </Flex>
+        </Flex>
 
-          {loading ? (
-            <Flex style={{ height: "30%" }} align="center" justify="center">
-              <Spin size="large" />
-            </Flex>
-          ) : (
-            <Table
-              columns={columns}
-              dataSource={data.map((client) => ({
-                key: client.nit,
-                ...client
-              }))}
-              pagination={{ pageSize: 8 }}
-              rowSelection={rowSelection}
-              rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
-            />
-          )}
-        </main>
-      </>
+        {isLoading ? (
+          <Flex style={{ height: "30%" }} align="center" justify="center">
+            <Spin size="large" />
+          </Flex>
+        ) : (
+          <Table
+            columns={columns}
+            dataSource={data.data.map((client) => ({
+              key: client.nit,
+              ...client
+            }))}
+            pagination={{ pageSize: 8 }}
+            rowSelection={rowSelection}
+            rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
+          />
+        )}
+      </main>
     );
   } else if (placedIn === "groupTable") {
     columns = [
@@ -444,30 +498,28 @@ export const ClientsProjectTable = ({
     ];
 
     return (
-      <>
-        <main className="mainClientsProjectTable">
-          <Flex justify="space-between" className="mainClientsProjectTable_header">
-            <Flex>
-              <FilterClients setFilterClients={setFilterClients} />
-            </Flex>
+      <main className="mainClientsProjectTable">
+        <Flex justify="space-between" className="mainClientsProjectTable_header">
+          <Flex>
+            <FilterClients setFilterClients={setFilterClients} />
           </Flex>
+        </Flex>
 
-          {loading ? (
-            <Flex style={{ height: "30%" }} align="center" justify="center">
-              <Spin size="large" />
-            </Flex>
-          ) : (
-            <Table
-              columns={columns}
-              dataSource={data.map((client) => ({
-                key: client.nit,
-                ...client
-              }))}
-              pagination={{ pageSize: 8 }}
-            />
-          )}
-        </main>
-      </>
+        {isLoading ? (
+          <Flex style={{ height: "30%" }} align="center" justify="center">
+            <Spin size="large" />
+          </Flex>
+        ) : (
+          <Table
+            columns={columns}
+            dataSource={data.data.map((client) => ({
+              key: client.nit,
+              ...client
+            }))}
+            pagination={{ pageSize: 8 }}
+          />
+        )}
+      </main>
     );
   }
 };

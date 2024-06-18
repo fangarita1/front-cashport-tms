@@ -50,6 +50,7 @@ export const UserProjectForm = ({
 }: Props) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [isEditAvailable, setIsEditAvailable] = useState(false);
+  const [loading, setLoading] = useState(false)
   const [dataUser, setDataUser] = useState({
     data: {},
     isLoading: false
@@ -113,6 +114,7 @@ export const UserProjectForm = ({
   }, [ID, isViewDetailsUser, messageApi]);
 
   const onSubmitHandler = async (data: IUserForm) => {
+    setLoading(true)
     setCustomFieldsError({
       zone: zones.length === 0,
       channel: selectedBusinessRules?.channels.length === 0
@@ -148,6 +150,7 @@ export const UserProjectForm = ({
         content: "Oops ocurrio un error."
       });
     }
+    setLoading(false)
   };
   const onRemoveUser = async () =>
     await onRemoveUserById(dataUser.data.ID, ID, messageApi, () =>
@@ -164,8 +167,8 @@ export const UserProjectForm = ({
 
   return (
     <>
-      {contextHolder}
       <form className="newUserProjectForm" onSubmit={handleSubmit(onSubmitHandler)}>
+      {contextHolder}
         <Flex vertical style={{ height: "100%" }}>
           <Flex component={"header"} className="headerNewUserProyectsForm">
             {/* -------------------left buttons------------------------ */}
@@ -292,10 +295,11 @@ export const UserProjectForm = ({
               type="primary"
               className="buttonNewProject"
               htmlType="submit"
+              disabled={loading}
               size="large"
-              icon={<Plus weight="bold" size={15} />}
+              icon={loading ? null :<Plus weight="bold" size={15} />}
             >
-              {isViewDetailsUser?.id ? "Actualizar usuario" : "Registrar usuario"}
+              {loading ? <Spin /> : isViewDetailsUser?.id ? "Actualizar usuario" : "Registrar usuario"}
             </Button>
           </Flex>
         )}
