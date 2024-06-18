@@ -19,6 +19,7 @@ import "./ClientsViewTable.scss";
 import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
+import Link from "next/link";
 
 const { Text } = Typography;
 
@@ -47,9 +48,9 @@ export const ClientsViewTable = () => {
       dataIndex: "client_name",
       key: "client_name",
       render: (_, row: IClientsPortfolio) => (
-        <a href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
+        <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
           <Text className="text">{row.client_name}</Text>
-        </a>
+        </Link>
       )
     },
     {
@@ -111,11 +112,9 @@ export const ClientsViewTable = () => {
       width: "80px",
       dataIndex: "",
       render: (_, row: IClientsPortfolio) => (
-        <Button
-          href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}
-          className="buttonSeeProject"
-          icon={<Eye size={"1.3rem"} />}
-        />
+        <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
+          <Button className="buttonSeeProject" icon={<Eye size={"1.3rem"} />} />
+        </Link>
       )
     }
   ];
