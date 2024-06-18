@@ -38,6 +38,10 @@ const theme: ThemeConfig = {
       headerBg: "#FFF",
       headerColor: "#141414",
       headerSplitColor: "transparent"
+    },
+    DatePicker: {
+      colorBgElevated: "#FFFFFF",
+      controlHeight: 47,
     }
   }
 };

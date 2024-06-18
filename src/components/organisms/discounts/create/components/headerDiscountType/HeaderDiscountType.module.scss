@@ -1,0 +1,39 @@
+@import "@styles/variables";
+
+.HeaderContainer {
+    height: auto;
+    width: 100%;
+    margin: 0 0 32px 0;
+    background-color: $white;
+    padding: 2rem;
+    padding-left: 2.5rem;
+    overflow-y: auto;
+    border-radius: 1rem;
+    border: 1px solid $dark-gray;
+
+    .buttonContainer {
+        .buttonIcon {
+            background-color: transparent;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+            border: 1px solid $dark-gray;
+            padding: 3rem 5rem;
+            flex-direction: column;
+            > span {
+                font-size: 1rem;
+                font-weight: 500;
+            }
+
+            &:hover {
+                background-color: $secondary !important;
+                color: $white !important;
+                border: 1px solid $gray !important;
+            }
+
+            &.active {
+                background-color: $secondary;
+            }
+        }
+    }
+}

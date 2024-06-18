@@ -1,0 +1,16 @@
+@import "@/styles/variables";
+
+.ant-select-selector {
+    height: fit-content !important;
+    transform: translateY(-50%);
+}
+
+.ant-select-selection-placeholder {
+    color: $dark-gray !important;
+}
+
+.ant-select-disabled {
+    span {
+        color: $dark-gray !important;
+    }
+}

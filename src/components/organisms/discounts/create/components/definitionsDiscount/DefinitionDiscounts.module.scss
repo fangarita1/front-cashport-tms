@@ -1,0 +1,53 @@
+@import "@/styles/variables";
+
+.HeaderContainer {
+    height: auto;
+    width: 100%;
+    margin: 0 0 32px 0;
+    background-color: $white;
+    padding: 2rem;
+    padding-left: 2.5rem;
+    overflow-y: auto;
+    border-radius: 1rem;
+    border: 1px solid $dark-gray;
+    span {
+        font-weight: bold;
+        color: $dark-gray;
+    }
+}
+
+.input {
+    width: 250px;
+}
+
+.inputDesc {
+    width: 450px;
+}
+
+.selectInput {
+    margin-bottom: 0.2rem;
+    background-color: $background;
+    padding: 1.4rem 0.45rem !important;
+    border-radius: 0.25rem;
+    border-bottom: none;
+    height: auto;
+    width: 250px;
+
+    span {
+        font-size: 1rem;
+        font-weight: 300;
+    }
+}
+
+.inputDatePicker {
+    background-color: $background !important;
+    border-radius: 0;
+    padding: 0.7rem;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    font-weight: 300;
+    border-width: 0 !important;
+    ::placeholder{
+        color: $dark-gray !important;
+    }
+}

@@ -2,11 +2,12 @@
 import { useState } from "react";
 import { Button, Flex } from "antd";
 
-import { ArrowLineRight, Gear, User } from "phosphor-react";
+import { ArrowLineRight, Gear, Megaphone, User } from "phosphor-react";
 import Image from "next/image";
 
 import "./sidebar.scss";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export const SideBar = () => {
   const [isSideBarLarge, setIsSideBarLarge] = useState(false);
@@ -23,24 +24,36 @@ export const SideBar = () => {
             src="/images/cruz-verde.png"
           />
         </Flex>
-        <Button
-          type="primary"
-          size="large"
-          icon={<User size={26} />}
-          className={path.startsWith("/clientes") ? "buttonIcon" : "buttonIconActive"}
-          href="/clientes/all"
-        >
-          {isSideBarLarge && "Clientes"}
-        </Button>
-        <Button
-          type="primary"
-          size="large"
-          icon={<Gear size={26} />}
-          className={path === "/" ? "buttonIcon" : "buttonIconActive"}
-          href="/"
-        >
-          {isSideBarLarge && "Ajustes"}
-        </Button>
+        <Link href="/clientes/all" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<User size={26} />}
+            className={path.startsWith("/clientes") ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Clientes"}
+          </Button>
+        </Link>
+        <Link href="/descuentos" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<Megaphone size={32} />}
+            className={path.startsWith("/descuentos") ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Descuentos"}
+          </Button>
+        </Link>
+        <Link href="/" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<Gear size={26} />}
+            className={path === "/" ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Ajustes"}
+          </Button>
+        </Link>
       </Flex>
       <Flex className="exit">
         <Button
