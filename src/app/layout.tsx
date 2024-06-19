@@ -13,6 +13,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <ConfigProvider theme={theme}>
       <html lang="es" className={poppins.className}>
+        <head>
+          <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.css" rel="stylesheet" />
+        </head>
         <body>
           <AntdRegistry>{children}</AntdRegistry>
         </body>

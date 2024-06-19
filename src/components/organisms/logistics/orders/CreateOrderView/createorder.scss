@@ -32,6 +32,7 @@
     .containerCreateOrder {
         width: 100%;
         padding: 2rem;
+        height: auto;
         .titleName {
 					margin: auto;
 					font-weight: 600;
@@ -62,10 +63,11 @@
 
     .orderContainer {
         width: 100%;
-        height: 88%;
+        height: auto;
         padding-left: 1.5rem;
         padding-right: 1.5rem;
         padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
         border-radius: 0.5rem;
         background-color: $white;
         .ant-tabs-content,.ant-tabs-tabpane {
@@ -118,6 +120,8 @@
     }
 
     &__children {
+        padding-top:2rem;
+        padding-bottom:2rem;
         &__item {
             margin: 1rem 0;
         }
@@ -127,4 +131,72 @@
             background-color: $dark-gray;
         }
     }
+}
+
+/* TRIP SELECTION TYPE*/
+
+.icon {
+    width: 27px;
+    height: 27px;
+    position: relative;
+  }
+  .text {
+    text-decoration: none;
+    position: relative;
+    color: inherit;
+    display: inline-block;
+    min-width: 51px;
+  }
+  .tripTypeIcons,
+  .tripTypes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .tripTypeIcons {
+    gap: var(--gap-9xs);
+  }
+  .tripTypes {
+    flex: 1;
+    border-radius: var(--br-5xs);
+    background-color: var(--white);
+    border: 1px solid var(--dark-grey);
+    box-sizing: border-box;
+    overflow-y: auto;
+    padding: var(--padding-5xs) var(--padding-xl);
+    min-width: 262px;
+    max-width: 100%;
+    text-align: left;
+    font-size: var(--font-size-base);
+    color: var(--black);
+    font-family: var(--font-poppins);
+    cursor: pointer;
+  }
+
+  .active {
+    background-color: var(--green);
+  }
+  
+ /*Agendamiento*/
+ .locationLabels {
+    align-self: stretch;
+    flex-direction: column;
+    max-width: 100%;
+    text-align: left;
+    font-size: var(--font-size-base) !important;
+    color: var(--black) !important;
+    font-family: var(--font-poppins) !important;
+    margin-bottom: 0.5rem;
+ }
+ .puntoOrigen{
+    align-self: stretch;
+    position: relative;
+    letter-spacing: -1px;
+    line-height: 32px !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.ant-picker-dropdown .ant-picker-panel-container {
+    background: #f7f7f7 !important;
 }
