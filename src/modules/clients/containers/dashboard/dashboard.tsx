@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import styles from "./dashboard.module.scss";
 import DashboardTotalPortfolio from "../../components/dashboard-total-portfolio";
 import DashboardExpiredPortfolio from "../../components/dashboard-expired-portfolio";
@@ -9,10 +9,18 @@ import DashboardAlerts from "../../components/dashboard-alerts";
 import DashboardGenericItem from "../../components/dashboard-generic-item";
 import DashboardSellsVsPayments from "../../components/dashboard-sells-vs-payments";
 import DashboardHistoricDso from "../../components/dashboard-historic-dso";
+import { ClientDetailsContext } from "../client-details/client-details";
+import { formatMoney } from "@/utils/utils";
 
 interface DashboardProps {}
 
 const Dashboard: FC<DashboardProps> = () => {
+  const { portfolioData } = useContext(ClientDetailsContext);
+
+  const appliedPayments = formatMoney(portfolioData?.data_wallet.applied_payments_ammount);
+  const unappliedPayments = formatMoney(portfolioData?.data_wallet.unapplied_payments_ammount);
+  const dsoValue = portfolioData?.dso;
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.a}>
@@ -26,8 +34,18 @@ const Dashboard: FC<DashboardProps> = () => {
       <div className={styles.b}>
         <div className={styles.item}>
           <div className={styles.list}>
-            <DashboardGenericItem name="R. aplicado" value="$54.950" unit="M" badgeText="12%" />
-            <DashboardGenericItem name="R. aplicado" value="$54.950" unit="M" badgeText="12%" />
+            <DashboardGenericItem
+              name="R. aplicado"
+              value={appliedPayments}
+              unit="M"
+              badgeText="12%"
+            />
+            <DashboardGenericItem
+              name="Pagos no ap."
+              value={unappliedPayments}
+              unit="M"
+              badgeText="12%"
+            />
           </div>
         </div>
         <div className={styles.item}>
@@ -37,7 +55,7 @@ const Dashboard: FC<DashboardProps> = () => {
         </div>
         <div className={styles.dso}>
           <div className={styles.label}>DSO</div>
-          <div className={styles.value}>75</div>
+          <div className={styles.value}>{dsoValue}</div>
         </div>
       </div>
       <div className={styles.c}>
