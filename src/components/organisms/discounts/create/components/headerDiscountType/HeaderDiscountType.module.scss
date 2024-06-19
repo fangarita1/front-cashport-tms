@@ -1,8 +1,8 @@
 @import "@styles/variables";
 
 .HeaderContainer {
-    height: auto;
     width: 100%;
+    height: fit-content;
     margin: 0 0 32px 0;
     background-color: $white;
     padding: 2rem;

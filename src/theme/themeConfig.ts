@@ -8,7 +8,8 @@ const theme: ThemeConfig = {
     colorTextPlaceholder: "#000000",
     colorSplit: "#FFFFFF",
     colorBgElevated: "#575a6b",
-    fontFamily: "inherit"
+    fontFamily: "inherit",
+    green: "#CBE71E",
   },
   components: {
     Message: {

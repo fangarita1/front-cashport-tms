@@ -6,12 +6,12 @@ import { useState } from "react";
 
 const { Title } = Typography;
 
-export default function HeaderDiscountType() {
-  const [selectedType, setSelectedType] = useState<number>(1);
-  const handleClick = (type: number) => {
-    setSelectedType(type);
-  };
+type Props = {
+  selectedType: number;
+  handleClick: (type: number) => void;
+};
 
+export default function HeaderDiscountType({selectedType,handleClick}: Props) {
   return (
     <Flex className={styles.HeaderContainer} justify="space-between" vertical gap={20}>
       <Title level={4}>Selecciona el tipo de descuento</Title>
