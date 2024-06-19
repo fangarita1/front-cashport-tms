@@ -166,67 +166,69 @@ export const CreateOrderView = () => {
     // return () => {
     //   map.remove();
     // };
+
+     // calculate direction
+    const calcRouteDirection = async () => {
+      if (origin.length > 2) {
+        try {
+          const origin = 'Bogotá';
+          if (origin.length > 2) {
+            try {
+              const response = await geocodingClient
+                .forwardGeocode({
+                  query: origin,
+                  types: ["place"],
+                  limit: 1,
+                })
+                .send();
+
+              const destinationCoordinates = response.body.features[0].center;
+              originCoordinates = destinationCoordinates;
+              setOriginCord(destinationCoordinates);
+            } catch (error) {
+              console.error("Error calculating directions:", error);
+              throw error;
+            }
+          }
+          const response = await axios.get(
+            `https://api.mapbox.com/directions/v5/mapbox/${localStorage.getItem(
+              "mode"
+            )}/${originCoordinates[0]},${originCoordinates[1]};${
+              destination[0]
+            },${destination[1]}?steps=true&geometries=geojson&access_token=${
+              mapsAccessToken
+            }`
+          );
+
+          const routes = response.data.routes;
+          console.log("routes=>", routes);
+          setRouteInfo(routes);
+          // Check if any routes are returned
+          if (routes.length > 0) {
+            const { distance, duration, geometry } = routes[0];
+
+            // Valid directions, use the distance and duration for further processing
+            const directions = {
+              distance,
+              duration,
+            };
+            localStorage.setItem("fromLocation", origin);
+            setRouteGeometry(geometry); // Set the route geometry
+            return directions;
+          } else {
+            // No routes found
+            throw new Error("Unable to calculate directions");
+          }
+        } catch (error) {
+          // Handle error
+          console.error("Error calculating directions:", error);
+          throw error;
+        }
+      }
+    };
   }, [mapStyle, routeGeometry]);
 
-  // calculate direction
-  const calcRouteDirection = async () => {
-    if (origin.length > 2) {
-      try {
-        const origin = 'Bogotá';
-        if (origin.length > 2) {
-          try {
-            const response = await geocodingClient
-              .forwardGeocode({
-                query: origin,
-                types: ["place"],
-                limit: 1,
-              })
-              .send();
-
-            const destinationCoordinates = response.body.features[0].center;
-            originCoordinates = destinationCoordinates;
-            setOriginCord(destinationCoordinates);
-          } catch (error) {
-            console.error("Error calculating directions:", error);
-            throw error;
-          }
-        }
-        const response = await axios.get(
-          `https://api.mapbox.com/directions/v5/mapbox/${localStorage.getItem(
-            "mode"
-          )}/${originCoordinates[0]},${originCoordinates[1]};${
-            destination[0]
-          },${destination[1]}?steps=true&geometries=geojson&access_token=${
-            mapsAccessToken
-          }`
-        );
-
-        const routes = response.data.routes;
-        console.log("routes=>", routes);
-        setRouteInfo(routes);
-        // Check if any routes are returned
-        if (routes.length > 0) {
-          const { distance, duration, geometry } = routes[0];
-
-          // Valid directions, use the distance and duration for further processing
-          const directions = {
-            distance,
-            duration,
-          };
-          localStorage.setItem("fromLocation", origin);
-          setRouteGeometry(geometry); // Set the route geometry
-          return directions;
-        } else {
-          // No routes found
-          throw new Error("Unable to calculate directions");
-        }
-      } catch (error) {
-        // Handle error
-        console.error("Error calculating directions:", error);
-        throw error;
-      }
-    }
-  };
+ 
 
 
 
