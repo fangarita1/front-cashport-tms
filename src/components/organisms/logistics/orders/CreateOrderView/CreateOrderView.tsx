@@ -50,8 +50,7 @@ export const CreateOrderView = () => {
   const [origin, setOrigin] = useState("");
   const destination = [-74.07231699675322, 4.66336863727521];
   const [routeGeometry, setRouteGeometry] = useState<any>(null);
-  const [originCord, setOriginCord] = useState<any>([]);
-  var originCoordinates = [];
+  const [originCord, setOriginCord] = useState<any>([]);  
   const [routeInfo, setRouteInfo] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
 
@@ -103,6 +102,7 @@ export const CreateOrderView = () => {
 
   /* MAPBOX */
   useEffect(() => {
+    let originCoordinates = [];
     if(!mapContainerRef.current) return;
     mapboxgl.accessToken = mapsAccessToken;
     console.log(mapContainerRef);
