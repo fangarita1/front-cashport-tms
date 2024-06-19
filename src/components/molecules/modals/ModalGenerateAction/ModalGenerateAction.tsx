@@ -13,20 +13,20 @@ import {
 
 import "./modalgenerateaction.scss";
 import { ButtonGenerateAction } from "@/components/atoms/ButtonGenerateAction/ButtonGenerateAction";
+import { Dispatch, SetStateAction } from "react";
 
 const { Title, Text } = Typography;
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  setIsPaymentAgreementOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const handlePaymentAgreement = () => {
-  // handle payment agreement
-  console.log("Payment agreement open");
-};
-
-export const ModalGenerateAction = ({ isOpen, onClose }: Props) => {
+export const ModalGenerateAction = ({ isOpen, onClose, setIsPaymentAgreementOpen }: Props) => {
+  const handlePaymentAgreement = () => {
+    setIsPaymentAgreementOpen(true);
+  };
   return (
     <Modal
       className="modalGenerateAction"
