@@ -46,11 +46,12 @@ export const CreateOrderView = () => {
   const mapContainerRef = useRef(null);
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/streets-v11");
   const [isFocused, setIsFocused] = useState(false);
-  const center = [-74.07231699675322, 4.66336863727521];
+  const center: LngLatLike = [-74.07231699675322, 4.66336863727521];
   const [origin, setOrigin] = useState("");
+  
   const destination = [-74.07231699675322, 4.66336863727521];
   const [routeGeometry, setRouteGeometry] = useState<any>(null);
-  const [originCord, setOriginCord] = useState<any>([]);  
+  const [originCord, setOriginCord] = useState<any>([]);
   const [routeInfo, setRouteInfo] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
 
@@ -77,6 +78,7 @@ export const CreateOrderView = () => {
   const handleTypeClick = (event:any) => {
     setActive(event.target.id);
     console.log(event);
+    calcRouteDirection;
   }
 
   /* Event Handlers */
@@ -101,8 +103,9 @@ export const CreateOrderView = () => {
   };
 
   /* MAPBOX */
+  
+
   useEffect(() => {
-    let originCoordinates = [];
     if(!mapContainerRef.current) return;
     mapboxgl.accessToken = mapsAccessToken;
     console.log(mapContainerRef);
@@ -113,7 +116,7 @@ export const CreateOrderView = () => {
       zoom: 12,
       attributionControl: false,
     });
-
+    
     map.on("style.load", () => {
       // Add the compass control
       const compassControl = new mapboxgl.NavigationControl({
@@ -160,78 +163,74 @@ export const CreateOrderView = () => {
         padding: 50,
       });
 
-      calcRouteDirection;
+      
     });
 
     // return () => {
     //   map.remove();
     // };
+  }, [mapStyle, center, routeGeometry, origin.length, destination, geocodingClient]);
 
-     // calculate direction
-    const calcRouteDirection = async () => {
-      if (origin.length > 2) {
-        try {
-          const origin = 'Bogotá';
-          if (origin.length > 2) {
-            try {
-              const response = await geocodingClient
-                .forwardGeocode({
-                  query: origin,
-                  types: ["place"],
-                  limit: 1,
-                })
-                .send();
 
-              const destinationCoordinates = response.body.features[0].center;
-              originCoordinates = destinationCoordinates;
-              setOriginCord(destinationCoordinates);
-            } catch (error) {
-              console.error("Error calculating directions:", error);
-              throw error;
-            }
+  // calculate direction
+  const calcRouteDirection = async () => {
+    //if (origin.length > 2) {
+      try {
+        const origin = 'Bogotá';
+        if (origin.length > 2) {
+          try {
+            const response = await geocodingClient
+              .forwardGeocode({
+                query: origin,
+                types: ["place"],
+                limit: 1,
+              })
+              .send();
+
+            const destinationCoordinates = response.body.features[0].center;
+            originCoordinates = destinationCoordinates;
+            setOriginCord(destinationCoordinates);
+          } catch (error) {
+            console.error("Error calculating directions:", error);
+            throw error;
           }
-          const response = await axios.get(
-            `https://api.mapbox.com/directions/v5/mapbox/${localStorage.getItem(
-              "mode"
-            )}/${originCoordinates[0]},${originCoordinates[1]};${
-              destination[0]
-            },${destination[1]}?steps=true&geometries=geojson&access_token=${
-              mapsAccessToken
-            }`
-          );
-
-          const routes = response.data.routes;
-          console.log("routes=>", routes);
-          setRouteInfo(routes);
-          // Check if any routes are returned
-          if (routes.length > 0) {
-            const { distance, duration, geometry } = routes[0];
-
-            // Valid directions, use the distance and duration for further processing
-            const directions = {
-              distance,
-              duration,
-            };
-            localStorage.setItem("fromLocation", origin);
-            setRouteGeometry(geometry); // Set the route geometry
-            return directions;
-          } else {
-            // No routes found
-            throw new Error("Unable to calculate directions");
-          }
-        } catch (error) {
-          // Handle error
-          console.error("Error calculating directions:", error);
-          throw error;
         }
+        const response = await axios.get(
+          `https://api.mapbox.com/directions/v5/mapbox/${localStorage.getItem(
+            "mode"
+          )}/${originCoordinates[0]},${originCoordinates[1]};${
+            destination[0]
+          },${destination[1]}?steps=true&geometries=geojson&access_token=${
+            mapsAccessToken
+          }`
+        );
+
+        const routes = response.data.routes;
+        console.log("routes=>", routes);
+        setRouteInfo(routes);
+        // Check if any routes are returned
+        if (routes.length > 0) {
+          const { distance, duration, geometry } = routes[0];
+
+          // Valid directions, use the distance and duration for further processing
+          const directions = {
+            distance,
+            duration,
+          };
+          localStorage.setItem("fromLocation", origin);
+          setRouteGeometry(geometry); // Set the route geometry
+          return directions;
+        } else {
+          // No routes found
+          throw new Error("Unable to calculate directions");
+        }
+      } catch (error) {
+        // Handle error
+        console.error("Error calculating directions:", error);
+        throw error;
       }
-    };
-  }, [mapStyle, routeGeometry]);
-
- 
-
-
-
+    //}
+  };
 
 
   /* Carga */
@@ -286,41 +285,6 @@ export const CreateOrderView = () => {
 
   const actionsOptions = [
     {
-      key: 1,
-      label: (
-        <div className="collapseByAction__label">
-          <CodesandboxLogo size={16} />
-          <Title className="collapseByAction__label__text" level={4}>
-            Tipo de viaje
-          </Title>
-        </div>
-      ),
-      children: (
-        <div className="collapseByAction__children">
-          <Flex gap="middle">
-            <button id={"1"} className={["tripTypes", (active === "1" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
-              <div className="tripTypeIcons">
-                <img className="icon" loading="lazy" alt="" src="/images/logistics/truck.svg"/>
-                <div className="text">Carga</div>
-              </div>
-            </button>
-            <button id={"2"} className={["tripTypes", (active === "2" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
-              <div className="tripTypeIcons">
-                <img className="icon" loading="lazy" alt="" src="/images/logistics/izaje.svg"/>
-                <div className="text">Izaje</div>
-              </div>
-            </button>
-            <button id={"3"} className={["tripTypes", (active === "3" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
-              <div className="tripTypeIcons">
-                <img className="icon" loading="lazy" alt="" src="/images/logistics/users.svg"/>
-                <div className="text">Personal</div>
-              </div>
-            </button>
-          </Flex>
-        </div>
-      )
-    },
-    {
       key: 2,
       label: (
         <div className="collapseByAction__label">
@@ -346,7 +310,7 @@ export const CreateOrderView = () => {
                     { value: '1', label: 'Bogotá' }
                   ]}
                 />
-                <Switch checkedChildren="1" unCheckedChildren="0" /><label>&nbsp;&nbsp; Requiere Izaje</label>
+                <Switch/><label>&nbsp;&nbsp; Requiere Izaje</label>
               </Row>
               <Row style={{marginTop:'1rem'}}>
                 <label className="locationLabels">
@@ -360,7 +324,7 @@ export const CreateOrderView = () => {
                     { value: '2', label: 'Cajicá' },
                   ]}
                 />
-                <Switch checkedChildren="1" unCheckedChildren="0" /><label>&nbsp;&nbsp; Requiere Izaje</label>
+                <Switch/><label>&nbsp;&nbsp; Requiere Izaje</label>
               </Row>
               <Row style={{marginTop:'1.5rem'}}>
                 <Col span={24}>
@@ -436,7 +400,7 @@ export const CreateOrderView = () => {
                 ref={mapContainerRef}
                 style={{
                   width: "100%",
-                  height: "45vh",
+                  height: "48vh",
                   border: "1px solid",
                 }}
               />
@@ -526,13 +490,41 @@ export const CreateOrderView = () => {
           </Flex>
           {/* ------------Main Info Order-------------- */}
           <Flex className="orderContainer">
-            <Collapse
-              className="collapseByAction"
-              expandIconPosition="end"
-              accordion={false}
-              ghost              
-              items={actionsOptions}
-            />            
+            <Row style={{width:'100%'}}>
+              <Col span={24} style={{marginBottom:'1.5rem'}}>
+                <Flex gap="middle">
+                  <button id={"1"} className={["tripTypes", (active === "1" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
+                    <div className="tripTypeIcons">
+                      <img className="icon" loading="lazy" alt="" src="/images/logistics/truck.svg"/>
+                      <div className="text">Carga</div>
+                    </div>
+                  </button>
+                  <button id={"2"} className={["tripTypes", (active === "2" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
+                    <div className="tripTypeIcons">
+                      <img className="icon" loading="lazy" alt="" src="/images/logistics/izaje.svg"/>
+                      <div className="text">Izaje</div>
+                    </div>
+                  </button>
+                  <button id={"3"} className={["tripTypes", (active === "3" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
+                    <div className="tripTypeIcons">
+                      <img className="icon" loading="lazy" alt="" src="/images/logistics/users.svg"/>
+                      <div className="text">Personal</div>
+                    </div>
+                  </button>
+                </Flex>
+              </Col>
+
+              <Col span={24}>
+                <Collapse
+                className="collapseByAction"
+                expandIconPosition="end"
+                accordion={false}
+                ghost              
+                items={actionsOptions}
+                defaultActiveKey={['2']}
+                />            
+              </Col>
+            </Row>
           </Flex>
         </Flex>
       </main>
