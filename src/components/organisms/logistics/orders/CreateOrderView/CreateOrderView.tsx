@@ -2,7 +2,7 @@ import { Flex, Tabs, TabsProps, Typography, message, Collapse, Row, Col, Select,
 import React, { useRef, useEffect, useState, useContext } from "react";
 
 // mapbox
-import mapboxgl, { LngLatLike } from "mapbox-gl";
+import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
 import MapboxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
@@ -13,6 +13,12 @@ import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSect
 
 import { ProjectFormTab } from "@/components/molecules/tabs/Projects/ProjectForm/ProjectFormTab";
 import { addProject } from "@/services/projects/projects";
+
+//schemas
+import { ILocation } from "@/types/logistics/schema";
+
+//locations
+import { getAllLocations } from "@/services/logistics/locations";
 
 //interfaces
 import { ICreatePayload } from "@/types/projects/IProjects";
@@ -45,8 +51,7 @@ export const CreateOrderView = () => {
 
   const mapContainerRef = useRef(null);
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/streets-v12");
-  const [isFocused, setIsFocused] = useState(false);
-
+  
   const [origin, setOrigin] = useState<any>([]);
   const [destination, setDestination] = useState<any>([]);
   
@@ -61,6 +66,8 @@ export const CreateOrderView = () => {
     ? directions
     : directions.slice(0, initialItemCount);
 
+  const [locations, setLocations] = useState([]);
+
   const handleToggleExpand = () => {
     setExpand(!expand);
   };
@@ -71,6 +78,16 @@ export const CreateOrderView = () => {
 
   console.log("routeInfo==>", routeInfo);
 
+  // useEffect(() => {
+  //   loadLocations();
+  // }, []);
+
+  const loadLocations = async () => {
+    const result = await getAllLocations();
+    //setLocations(result);
+    console.log(locations);
+  };
+  
 
   /* Event Handlers */
   const onCreateProject = async (data: ICreatePayload) => {
@@ -95,7 +112,6 @@ export const CreateOrderView = () => {
 
   /* MAPBOX */
   
-
   useEffect(() => {
     if(!mapContainerRef.current) return;
     
@@ -131,12 +147,16 @@ export const CreateOrderView = () => {
 
       if (routeGeometry) {
         console.log('entro route')
+        
+        const datajson: GeoJSON.Feature = {
+            type: 'Feature',
+            geometry: routeGeometry,
+            properties: {},
+        };
+
         map.addSource("route", {
           type: "geojson",
-          data: {
-            type: "Feature",
-            geometry: routeGeometry,
-          },
+          data: datajson
         });
 
         map.addLayer({
@@ -148,7 +168,7 @@ export const CreateOrderView = () => {
             "line-cap": "round",
           },
           paint: {
-            "line-color": "#cbe71e",
+            "line-color": "#3FB1CE",
             "line-width": 6,
           },
         });
@@ -171,7 +191,6 @@ export const CreateOrderView = () => {
     //   map.remove();
     // };
   }, [mapStyle, routeGeometry, origin.length, destination, geocodingClient, origin]);
-
 
   // calculate direction
   const calcRouteDirection = async () => {
@@ -224,7 +243,6 @@ export const CreateOrderView = () => {
             distance,
             duration,
           };
-          localStorage.setItem("fromLocation", origin);
           setRouteGeometry(geometry); // Set the route geometry
           return directions;
         } else {
@@ -240,10 +258,10 @@ export const CreateOrderView = () => {
   };
 
   /* Tipo de viaje */
-  const [active, setActive] = useState("");
+  const [typeactive, setTypeActive] = useState("1");
 
   const handleTypeClick = (event:any) => {
-    setActive(event.target.id);
+    setTypeActive(event.target.id);
     calcRouteDirection();
   }
 
@@ -507,19 +525,19 @@ export const CreateOrderView = () => {
             <Row style={{width:'100%'}}>
               <Col span={24} style={{marginBottom:'1.5rem'}}>
                 <Flex gap="middle">
-                  <button type="button" id={"1"} className={["tripTypes", (active === "1" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
+                  <button type="button" id={"1"} className={["tripTypes", (typeactive === "1" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
                     <div className="tripTypeIcons">
                       <img className="icon" loading="lazy" alt="" src="/images/logistics/truck.svg"/>
                       <div className="text">Carga</div>
                     </div>
                   </button>
-                  <button type="button" id={"2"} className={["tripTypes", (active === "2" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
+                  <button type="button" id={"2"} className={["tripTypes", (typeactive === "2" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
                     <div className="tripTypeIcons">
                       <img className="icon" loading="lazy" alt="" src="/images/logistics/izaje.svg"/>
                       <div className="text">Izaje</div>
                     </div>
                   </button>
-                  <button type="button" id={"3"} className={["tripTypes", (active === "3" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
+                  <button type="button" id={"3"} className={["tripTypes", (typeactive === "3" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
                     <div className="tripTypeIcons">
                       <img className="icon" loading="lazy" alt="" src="/images/logistics/users.svg"/>
                       <div className="text">Personal</div>

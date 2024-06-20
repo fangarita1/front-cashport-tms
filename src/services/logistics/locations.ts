@@ -3,12 +3,10 @@ import config from "@/config";
 import { getIdToken } from "@/utils/api/api";
 import { ILocation } from "@/types/logistics/schema";
 
-export const getLocations = async (): Promise<any> => {
-
+export const getAllLocations = async (): Promise<ILocation> => {
   const token = await getIdToken();
-
   try {
-    const response: AxiosResponse = await axios.post(`${config.API_HOST}/logistic-location/all/locations`, null, {
+    const response: ILocation = await axios.get(`${config.API_HOST}/logistic-location/all/locations`, {
       headers: {
         Accept: "application/json, text/plain, */*",
         Authorization: `Bearer ${token}`
