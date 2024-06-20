@@ -10,7 +10,7 @@ import { useCallback } from "react";
 
 export const useLocations = () => {
   const { ID: projectId } = useAppStore((state) => state.selectProject);
-  const { data, isLoading } = useSWR<ILocation[]>(`/location/project/${projectId}`, API, {});
+  const { data, isLoading, error } = useSWR<ILocation[]>(`/location/project/${projectId}`, API, {});
 
   const createLocation = async (
     newAddressData: {
@@ -33,6 +33,7 @@ export const useLocations = () => {
 
   return {
     data,
+    error,
     isLoading,
     createLocation,
     getLocation

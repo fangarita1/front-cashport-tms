@@ -9,6 +9,7 @@ import {
 
 import "../commonInputStyles.scss";
 import { useLocations } from "@/hooks/useLocations";
+import axios from "axios";
 
 type ExtendedFieldError =
   | OriginalFieldError
@@ -20,14 +21,18 @@ interface Props<T extends FieldValues> {
 }
 
 export const SelectLocations = <T extends FieldValues>({ errors, field }: Props<T>) => {
-  const { data, isLoading } = useLocations();
-  const options = data?.map((location) => {
-    return {
-      value: location.id,
-      label: location.city,
-      className: "selectOptions"
-    };
-  });
+  const { data, isLoading, error } = useLocations();
+  console.log({ data, error });
+  if (axios.isAxiosError(data)) {
+    return null
+  }
+    const options = data?.map((location) => {
+      return {
+        value: location.id,
+        label: location.city,
+        className: "selectOptions"
+      };
+    });
 
   return (
     <Flex vertical>
