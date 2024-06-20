@@ -89,8 +89,8 @@ export const ClientsViewTable = () => {
     },
     {
       title: "Saldos",
-      key: "executed_percentage",
-      dataIndex: "executed_percentage",
+      key: "total_balances",
+      dataIndex: "total_balances",
       render: (text) => <Text>{text}</Text>
     },
     {
@@ -187,7 +187,7 @@ export const ClientsViewTable = () => {
           total: data.pagination.totalRows,
           onChange: onChangePage
         }}
-        dataSource={clients?.clientsPortfolio}
+        dataSource={clients?.clientsPortfolio.map((data) => ({ ...data, key: data.client_id }))}
       />
     </main>
   );
