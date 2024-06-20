@@ -381,10 +381,10 @@ export const CreateOrderView = () => {
                   onChange={onChangeOrigin}
                   optionFilterProp="children"
                   filterOption={(input, option) =>
-                    option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    option!.children!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  { locationOptions.map(((option: { value: React.Key | null | undefined; label: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
+                  { locationOptions.map(((option: { value: React.Key | null | undefined; label: string  | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
                 </Select>
                 <Switch/><label>&nbsp;&nbsp; Requiere Izaje</label>
               </Row>
@@ -400,10 +400,10 @@ export const CreateOrderView = () => {
                   onChange={onChangeDestino}
                   optionFilterProp="children"
                   filterOption={(input, option) =>
-                    option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    option!.children!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  { locationOptions.map(((option: { value: React.Key | null | undefined; label: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
+                  { locationOptions.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
                 </Select>
                 <Switch/><label>&nbsp;&nbsp; Requiere Izaje</label>
               </Row>
