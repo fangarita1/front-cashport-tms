@@ -1,12 +1,11 @@
 .wrapper {
-    padding: 24px;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
     .name {
         font-size: 16px;
         font-weight: 300;
         line-height: 24px;
-        margin: 0 0 16px 0;
     }
     .img {
         flex: 5;
@@ -14,19 +13,30 @@
         background-color: #cbe71e4d;
     }
 
+    .chart {
+        margin-left: -1.5rem;
+        margin-top: -0.8rem;
+
+        .yAxis {
+            font-size: 0.5rem;
+            font-weight: 300;
+        }
+    }
+
     .legends {
         flex: 1;
         height: 100%;
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
-        gap: 0.1rem;
+        row-gap: 0.3rem;
         align-items: center;
-        margin-top: 1rem;
+        justify-items: center;
+        margin-top: -0.7rem;
 
         .legend {
             display: flex;
             column-gap: 4px;
-            font-size: 12px;
+            font-size: 0.625rem;
             font-weight: 300;
             line-height: 0.8;
 

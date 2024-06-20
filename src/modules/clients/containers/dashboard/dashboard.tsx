@@ -1,9 +1,8 @@
 import { FC, useContext } from "react";
-import styles from "./dashboard.module.scss";
+import dynamic from "next/dynamic";
 import DashboardTotalPortfolio from "../../components/dashboard-total-portfolio";
 import DashboardExpiredPortfolio from "../../components/dashboard-expired-portfolio";
 import DashboardBudget from "../../components/dashboard-budget";
-import DashboardPortfolioAges from "../../components/dashboard-porfolio-ages";
 import DashboardInvoiceStatus from "../../components/dashboard-invoice-status";
 import DashboardAlerts from "../../components/dashboard-alerts";
 import DashboardGenericItem from "../../components/dashboard-generic-item";
@@ -11,6 +10,11 @@ import DashboardSellsVsPayments from "../../components/dashboard-sells-vs-paymen
 import DashboardHistoricDso from "../../components/dashboard-historic-dso";
 import { ClientDetailsContext } from "../client-details/client-details";
 import { formatMoney } from "@/utils/utils";
+import styles from "./dashboard.module.scss";
+
+const DynamicPortfoliAges = dynamic(() => import("../../components/dashboard-porfolio-ages"), {
+  ssr: false
+});
 
 interface DashboardProps {}
 
@@ -27,7 +31,7 @@ const Dashboard: FC<DashboardProps> = () => {
         <DashboardTotalPortfolio className={styles.item} />
         <DashboardExpiredPortfolio className={styles.item} />
         <DashboardBudget className={styles.item} />
-        <DashboardPortfolioAges className={styles.item} />
+        <DynamicPortfoliAges className={styles.item} />
         <DashboardInvoiceStatus className={styles.item} />
         <DashboardAlerts className={styles.item} />
       </div>
