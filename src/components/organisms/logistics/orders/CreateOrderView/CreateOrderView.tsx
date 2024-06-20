@@ -44,14 +44,13 @@ export const CreateOrderView = () => {
   const mapsAccessToken = 'pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA';//import.meta.env.VITE_MAP_BOX_ACCESS_TOKEN,
 
   const mapContainerRef = useRef(null);
-  const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/streets-v11");
+  const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/streets-v12");
   const [isFocused, setIsFocused] = useState(false);
-  const center: LngLatLike = [-74.07231699675322, 4.66336863727521];
-  const [origin, setOrigin] = useState("");
+
+  const [origin, setOrigin] = useState<any>([]);
+  const [destination, setDestination] = useState<any>([]);
   
-  const destination = [-74.07231699675322, 4.66336863727521];
   const [routeGeometry, setRouteGeometry] = useState<any>(null);
-  const [originCord, setOriginCord] = useState<any>([]);
   const [routeInfo, setRouteInfo] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
 
@@ -72,14 +71,6 @@ export const CreateOrderView = () => {
 
   console.log("routeInfo==>", routeInfo);
 
-  /* States */
-  const [active, setActive] = useState("");
- 
-  const handleTypeClick = (event:any) => {
-    setActive(event.target.id);
-    console.log(event);
-    calcRouteDirection;
-  }
 
   /* Event Handlers */
   const onCreateProject = async (data: ICreatePayload) => {
@@ -107,12 +98,12 @@ export const CreateOrderView = () => {
 
   useEffect(() => {
     if(!mapContainerRef.current) return;
+    
     mapboxgl.accessToken = mapsAccessToken;
-    console.log(mapContainerRef);
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: mapStyle,
-      center: center, // longitude and latitude
+      center: {lon:-74.07231699675322, lat:4.66336863727521}, // longitude and latitude
       zoom: 12,
       attributionControl: false,
     });
@@ -125,17 +116,27 @@ export const CreateOrderView = () => {
       map.addControl(compassControl, "top-right");
 
       // Create a marker at the starting position
-      const startMarker = new mapboxgl.Marker()
-        .setLngLat(center)
-        .addTo(map);
+      if(origin){
+        const startMarker = new mapboxgl.Marker()
+          .setLngLat(origin)
+          .addTo(map);
+      }
+
+      // Create a marker at the finish position
+      if(destination){
+        const finalMarker = new mapboxgl.Marker()      
+          .setLngLat(destination)
+          .addTo(map);
+      }
 
       if (routeGeometry) {
+        console.log('entro route')
         map.addSource("route", {
           type: "geojson",
-          data: JSON.stringify({
+          data: {
             type: "Feature",
             geometry: routeGeometry,
-          }),
+          },
         });
 
         map.addLayer({
@@ -147,7 +148,7 @@ export const CreateOrderView = () => {
             "line-cap": "round",
           },
           paint: {
-            "line-color": "#3b9ddd",
+            "line-color": "#cbe71e",
             "line-width": 6,
           },
         });
@@ -169,36 +170,42 @@ export const CreateOrderView = () => {
     // return () => {
     //   map.remove();
     // };
-  }, [mapStyle, center, routeGeometry, origin.length, destination, geocodingClient]);
+  }, [mapStyle, routeGeometry, origin.length, destination, geocodingClient, origin]);
 
 
   // calculate direction
   const calcRouteDirection = async () => {
     //if (origin.length > 2) {
+      console.log('entro0');
       try {
-        const origin = 'Bogotá';
-        if (origin.length > 2) {
-          try {
-            const response = await geocodingClient
-              .forwardGeocode({
-                query: origin,
-                types: ["place"],
-                limit: 1,
-              })
-              .send();
+        // const originp = 'Bogotá';
+        // try {
+        //   console.log('entro1');
+        //   const response = await geocodingClient
+        //     .forwardGeocode({
+        //       query: originp,
+        //       types: ["place"],
+        //       limit: 1,
+        //     })
+        //     .send();
 
-            const destinationCoordinates = response.body.features[0].center;
-            originCoordinates = destinationCoordinates;
-            setOriginCord(destinationCoordinates);
-          } catch (error) {
-            console.error("Error calculating directions:", error);
-            throw error;
-          }
-        }
+        //   const destinationCoordinates = response.body.features[0].center;
+        //   console.log(destinationCoordinates);
+        //   //originCoordinates = destinationCoordinates;
+        //   setOrigin(destinationCoordinates);
+        // } catch (error) {
+        //   console.error("Error calculating directions:", error);
+        //   throw error;
+        // }
+
+        setOrigin([-74.07231699675322, 4.66336863727521]);
+        setDestination([-74.027990000000000, 4.918570000000000]);
+
+        console.log(origin);        
+        console.log(destination);
+
         const response = await axios.get(
-          `https://api.mapbox.com/directions/v5/mapbox/${localStorage.getItem(
-            "mode"
-          )}/${originCoordinates[0]},${originCoordinates[1]};${
+          `https://api.mapbox.com/directions/v5/mapbox/driving/${origin[0]},${origin[1]};${
             destination[0]
           },${destination[1]}?steps=true&geometries=geojson&access_token=${
             mapsAccessToken
@@ -232,6 +239,13 @@ export const CreateOrderView = () => {
     //}
   };
 
+  /* Tipo de viaje */
+  const [active, setActive] = useState("");
+
+  const handleTypeClick = (event:any) => {
+    setActive(event.target.id);
+    calcRouteDirection();
+  }
 
   /* Carga */
   
@@ -401,7 +415,7 @@ export const CreateOrderView = () => {
                 style={{
                   width: "100%",
                   height: "48vh",
-                  border: "1px solid",
+                  border: "1px #F7F7F7 solid",
                 }}
               />
             </Col>
@@ -493,19 +507,19 @@ export const CreateOrderView = () => {
             <Row style={{width:'100%'}}>
               <Col span={24} style={{marginBottom:'1.5rem'}}>
                 <Flex gap="middle">
-                  <button id={"1"} className={["tripTypes", (active === "1" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
+                  <button type="button" id={"1"} className={["tripTypes", (active === "1" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
                     <div className="tripTypeIcons">
                       <img className="icon" loading="lazy" alt="" src="/images/logistics/truck.svg"/>
                       <div className="text">Carga</div>
                     </div>
                   </button>
-                  <button id={"2"} className={["tripTypes", (active === "2" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
+                  <button type="button" id={"2"} className={["tripTypes", (active === "2" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
                     <div className="tripTypeIcons">
                       <img className="icon" loading="lazy" alt="" src="/images/logistics/izaje.svg"/>
                       <div className="text">Izaje</div>
                     </div>
                   </button>
-                  <button id={"3"} className={["tripTypes", (active === "3" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
+                  <button type="button" id={"3"} className={["tripTypes", (active === "3" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
                     <div className="tripTypeIcons">
                       <img className="icon" loading="lazy" alt="" src="/images/logistics/users.svg"/>
                       <div className="text">Personal</div>
