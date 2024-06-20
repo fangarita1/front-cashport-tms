@@ -1,12 +1,12 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { getIdToken } from "@/utils/api/api";
-import { ILocation } from "@/types/logistics/schema";
+import { IListData } from "@/types/logistics/schema";
 
-export const getAllLocations = async (): Promise<ILocation> => {
+export const getAllLocations = async (): Promise<IListData> => {
   const token = await getIdToken();
   try {
-    const response: ILocation = await axios.get(`${config.API_HOST}/logistic-location/all/locations`, {
+    const response: IListData = await axios.get(`${config.API_HOST}/logistic-location/all/locations`, {
       headers: {
         Accept: "application/json, text/plain, */*",
         Authorization: `Bearer ${token}`

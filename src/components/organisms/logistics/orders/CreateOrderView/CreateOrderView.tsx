@@ -15,7 +15,7 @@ import { ProjectFormTab } from "@/components/molecules/tabs/Projects/ProjectForm
 import { addProject } from "@/services/projects/projects";
 
 //schemas
-import { ILocation } from "@/types/logistics/schema";
+import { IListData, ILocation } from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
@@ -37,8 +37,7 @@ import {
 import "../../../../../styles/_variables_logistics.css";
 
 import "./createorder.scss";
-import { Controller } from "react-hook-form";
-import { Label } from "recharts";
+
 
 const { Title, Text } = Typography;
 
@@ -66,7 +65,8 @@ export const CreateOrderView = () => {
     ? directions
     : directions.slice(0, initialItemCount);
 
-  const [locations, setLocations] = useState([]);
+  const [locations, setLocations] = useState<ILocation[]>([]);
+  const [locationOptions, setLocationOptions] = useState<any>([]);
 
   const handleToggleExpand = () => {
     setExpand(!expand);
@@ -78,14 +78,30 @@ export const CreateOrderView = () => {
 
   console.log("routeInfo==>", routeInfo);
 
-  // useEffect(() => {
-  //   loadLocations();
-  // }, []);
+  useEffect(() => {
+    loadLocations();
+  });
 
   const loadLocations = async () => {
+    if(locations.length >0 ) return;
     const result = await getAllLocations();
-    //setLocations(result);
-    console.log(locations);
+    if(result.data.data.length > 0){
+      console.log(result.data.data);
+      
+      const listlocations: any[] | ((prevState: ILocation[]) => ILocation[]) = [];
+      const listlocationoptions: { label: any; value: any; }[] = [];
+
+      result.data.data.forEach((item, index) => {
+        listlocations.push(item);
+        listlocationoptions.push({label: item.description, value: item.id})
+      });
+
+      setLocations(listlocations);
+      setLocationOptions(listlocationoptions);
+
+      console.log(locations);  
+      console.log(locationOptions);  
+    }
   };
   
 
@@ -109,6 +125,30 @@ export const CreateOrderView = () => {
       });
     }
   };
+
+  // Cambia origen 
+  const onChangeOrigin = (value:any) =>{
+    console.log('origen:'+value);
+    locations.forEach((item, index) => {
+      if(item.id == value){
+        console.log(item);
+        setOrigin([item.latitude, item.longitude]);
+        calcRouteDirection();
+      }
+    });
+  }
+
+  // Cambia destino 
+  const onChangeDestino = (value:any) =>{
+    console.log('destino:'+value);
+    locations.forEach((item, index) => {
+      if(item.id == value){
+        console.log(item);
+        setDestination([item.latitude, item.longitude]);
+        calcRouteDirection();
+      }
+    });
+  }
 
   /* MAPBOX */
   
@@ -146,7 +186,6 @@ export const CreateOrderView = () => {
       }
 
       if (routeGeometry) {
-        console.log('entro route')
         
         const datajson: GeoJSON.Feature = {
             type: 'Feature',
@@ -217,7 +256,7 @@ export const CreateOrderView = () => {
         //   throw error;
         // }
 
-        setOrigin([-74.07231699675322, 4.66336863727521]);
+        //setOrigin([-74.07231699675322, 4.66336863727521]);
         setDestination([-74.027990000000000, 4.918570000000000]);
 
         console.log(origin);        
@@ -262,7 +301,6 @@ export const CreateOrderView = () => {
 
   const handleTypeClick = (event:any) => {
     setTypeActive(event.target.id);
-    calcRouteDirection();
   }
 
   /* Carga */
@@ -333,15 +371,21 @@ export const CreateOrderView = () => {
               <Row>
                 <label className="locationLabels">
                   Punto Origen
-                </label>
+                </label><br></br>
+
                 <Select
+                  showSearch
                   placeholder="Buscar dirección inicial"                  
                   className="puntoOrigen"
                   style={{ width:'100%' }}
-                  options={[
-                    { value: '1', label: 'Bogotá' }
-                  ]}
-                />
+                  onChange={onChangeOrigin}
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  { locationOptions.map(((option: { value: React.Key | null | undefined; label: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
+                </Select>
                 <Switch/><label>&nbsp;&nbsp; Requiere Izaje</label>
               </Row>
               <Row style={{marginTop:'1rem'}}>
@@ -349,13 +393,18 @@ export const CreateOrderView = () => {
                   Punto Destino
                 </label>
                 <Select
+                  showSearch
                   placeholder="Buscar dirección final"                  
                   className="puntoOrigen"
                   style={{ width:'100%' }}
-                  options={[
-                    { value: '2', label: 'Cajicá' },
-                  ]}
-                />
+                  onChange={onChangeDestino}
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  { locationOptions.map(((option: { value: React.Key | null | undefined; label: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
+                </Select>
                 <Switch/><label>&nbsp;&nbsp; Requiere Izaje</label>
               </Row>
               <Row style={{marginTop:'1.5rem'}}>
