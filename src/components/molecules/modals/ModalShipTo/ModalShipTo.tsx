@@ -97,6 +97,7 @@ export const ModalShipTo = ({
         return;
       }
       const response = await getShipTo(isShipToModalOpen.accounting_code);
+      console.log("detailShipTo: ", response);
       setSelectedShipToData({
         shipTo: {
           code: response.accounting_code,
@@ -111,9 +112,12 @@ export const ModalShipTo = ({
           radication_type: { value: response.radication_type, label: response.radication_name }
         }
       });
-      // Waiting 4 back with this info
-      // setZones()
-      // setSelectedStructure({channels: [], lines: [], sublines: []})
+      setZones(response.zones.map((zone) => zone.id));
+      setSelectedStructure({
+        channels: response.channels.map((channel) => channel.id),
+        lines: response.lines_info.map((line) => line.id),
+        sublines: response.sublines.map((subline) => subline.id)
+      });
     };
 
     fetchShipTo();

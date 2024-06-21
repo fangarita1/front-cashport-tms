@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Flex, Spin, Table, TableProps, Typography, message } from "antd";
+import { Button, Flex, Popconfirm, Spin, Table, TableProps, Typography, message } from "antd";
 import { Eye, Plus, Trash } from "phosphor-react";
 
 import { ModalShipTo } from "../../modals/ModalShipTo/ModalShipTo";
@@ -93,10 +93,15 @@ export const ShipToProjectTable = ({ clientId, getClientValues }: Props) => {
       dataIndex: "",
       render: (_, { accounting_code }) => (
         <Flex gap={"0.5rem"}>
-          <Button
-            onClick={() => deleteShipTo(accounting_code, messageApi)}
-            icon={<Trash size={"1.25rem"} />}
-          />
+          <Popconfirm
+            placement="topRight"
+            title="¿Eliminar Ship To?"
+            description="Esta acción no se puede deshacer."
+            onConfirm={() => deleteShipTo(accounting_code, messageApi)}
+          >
+            <Button icon={<Trash size={"1.25rem"} />} />
+          </Popconfirm>
+
           <Button
             onClick={() => setIsShipToModalOpen({ open: true, accounting_code })}
             icon={<Eye size={"1.3rem"} />}

@@ -45,16 +45,23 @@ export interface IShipTo {
   accounting_code: string;
   address_id: number;
   billing_period: string;
+  channels: IChannels[];
+  city: string;
   client_id: number;
-  condition_day: number;
+  // condition_day: number;
   condition_payment: number;
   contacts: string;
   dependecy_client: number;
-  full_address: string;
+  // full_address: string;
   is_deleted: number;
+  lines_info: ILines[];
+  //location_id: number;
   project_id: number;
-  radication_name: string;
+  // radication_name: string;
   radication_type: number;
+  shipto_description: string;
+  sublines: ISubLines[];
+  zones: IZones[];
 }
 
 export interface IUpdateShipTo {
@@ -68,4 +75,24 @@ export interface IUpdateShipTo {
   line: number[];
   subline: number[];
   project_id: number;
+}
+
+interface IChannels {
+  id: number;
+  description: string;
+}
+
+interface ILines {
+  id: number;
+  description: string;
+}
+
+interface ISubLines {
+  id: number;
+  description: string;
+}
+
+interface IZones {
+  id: number;
+  description: string;
 }
