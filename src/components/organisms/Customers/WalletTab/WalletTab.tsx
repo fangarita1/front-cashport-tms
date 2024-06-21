@@ -15,6 +15,7 @@ import { IInvoice } from "@/types/invoices/IInvoices";
 import "./wallettab.scss";
 import WalletTabChangeStatusModal from "@/modules/clients/components/wallet-tab-change-status-modal";
 import PaymentAgreementModal from "@/modules/clients/components/wallet-tab-payment-agreement-modal";
+import { ModalActionDiscountCredit } from "@/components/molecules/modals/ModalActionDiscountCredit/ModalActionDiscountCredit";
 
 export const WalletTab = () => {
   const [selectedRows, setSelectedRows] = useState<IInvoice[] | undefined>(undefined);
@@ -24,6 +25,13 @@ export const WalletTab = () => {
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
   const [showInvoiceDetailModal, setShowInvoiceDetailModal] = useState<{
+    isOpen: boolean;
+    invoiceId: number;
+  }>({
+    isOpen: false,
+    invoiceId: 0
+  });
+  const [showActionDetailModal, setShowActionDetailModal] = useState<{
     isOpen: boolean;
     invoiceId: number;
   }>({
@@ -127,6 +135,7 @@ export const WalletTab = () => {
         isOpen={isGenerateActionOpen}
         onClose={handleisGenerateActionOpen}
         setIsPaymentAgreementOpen={setIsPaymentAgreementOpen}
+        setShowActionDetailModal={setShowActionDetailModal}
       />
       {isPaymentAgreementOpen && (
         <PaymentAgreementModal
@@ -143,6 +152,12 @@ export const WalletTab = () => {
           handleisGenerateActionOpen={handleisGenerateActionOpen}
         />
       )}
+  
+      <ModalActionDiscountCredit
+        isOpen={showActionDetailModal?.isOpen}
+        onClose={() => setShowActionDetailModal({ isOpen: false, invoiceId: 0 })}
+        showActionDetailModal={showActionDetailModal}
+      />
       <WalletTabChangeStatusModal isOpen={false} />
     </>
   );

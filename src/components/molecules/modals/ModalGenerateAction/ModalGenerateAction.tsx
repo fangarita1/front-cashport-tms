@@ -21,11 +21,25 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   setIsPaymentAgreementOpen: Dispatch<SetStateAction<boolean>>;
+  setShowActionDetailModal: Dispatch<
+    SetStateAction<{
+      isOpen: boolean;
+      invoiceId: number;
+    }>
+  >;
 }
 
-export const ModalGenerateAction = ({ isOpen, onClose, setIsPaymentAgreementOpen }: Props) => {
+export const ModalGenerateAction = ({
+  isOpen,
+  onClose,
+  setIsPaymentAgreementOpen,
+  setShowActionDetailModal
+}: Props) => {
   const handlePaymentAgreement = () => {
     setIsPaymentAgreementOpen(true);
+  };
+  const handleActionDetail = (invoiceId: number) => {
+    setShowActionDetailModal({ isOpen: true, invoiceId });
   };
   return (
     <Modal
@@ -47,7 +61,7 @@ export const ModalGenerateAction = ({ isOpen, onClose, setIsPaymentAgreementOpen
         expandIconPosition="end"
         ghost
         accordion
-        items={actionsOptions}
+        items={actionsOptions(handleActionDetail)}
       />
       <ButtonGenerateAction
         onClick={handlePaymentAgreement}
@@ -63,7 +77,8 @@ export const ModalGenerateAction = ({ isOpen, onClose, setIsPaymentAgreementOpen
   );
 };
 
-const actionsOptions = [
+
+const actionsOptions = (handleActionDetail: (_number: number) => void) => [
   {
     key: 1,
     label: (
@@ -76,17 +91,29 @@ const actionsOptions = [
     ),
     children: (
       <div className="collapseByAction__children">
-        <Flex className="collapseByAction__children__item" justify="space-between">
+        <Flex
+          className="collapseByAction__children__item"
+          justify="space-between"
+          onClick={() => handleActionDetail(1)}
+        >
           <Text>Generar nota crédito</Text>
           <CaretRight size={16} />
         </Flex>
         <hr />
-        <Flex className="collapseByAction__children__item" justify="space-between">
+        <Flex
+          className="collapseByAction__children__item"
+          justify="space-between"
+          onClick={() => handleActionDetail(2)}
+        >
           <Text>Generar descuento</Text>
           <CaretRight size={16} />
         </Flex>
         <hr />
-        <Flex className="collapseByAction__children__item" justify="space-between">
+        <Flex
+          className="collapseByAction__children__item"
+          justify="space-between"
+          onClick={() => handleActionDetail(3)}
+        >
           <Text>Generar nota débito</Text>
           <CaretRight size={16} />
         </Flex>
