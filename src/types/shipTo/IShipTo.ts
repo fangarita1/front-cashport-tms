@@ -81,6 +81,8 @@ export interface IUpdateShipTo {
   project_id: number;
   day_flag?: boolean;
   day?: number;
+  order?: string;
+  day_of_week?: string;
 }
 
 interface IChannels {

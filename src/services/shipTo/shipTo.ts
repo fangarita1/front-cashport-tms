@@ -10,6 +10,7 @@ import {
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 import { MessageInstance } from "antd/es/message/interface";
 import { SUCCESS } from "@/utils/constants/globalConstants";
+import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 
 export const addShipTo = async (
   clientID: number,
@@ -82,9 +83,12 @@ export const updateShipTo = async (
   selectedData: ShipToFormType,
   zones: number[],
   selectedStructure: ISelectedBussinessRules,
+  billingPeriod: IBillingPeriodForm,
   messageApi: MessageInstance
 ): Promise<any> => {
   const shipToData = selectedData.shipTo;
+
+  console.log("entrando a hacer edit");
 
   const modelData: IUpdateShipTo = {
     client_id: clientID.toString(),
@@ -98,7 +102,12 @@ export const updateShipTo = async (
     contacts: "null",
     address_id: shipToData.address_id,
     condition_payment: shipToData.condition_payment ? shipToData.condition_payment.value : 0,
-    radication_type: shipToData.radication_type ? shipToData.radication_type.value : 0
+    radication_type: shipToData.radication_type ? shipToData.radication_type.value : 0,
+    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag === "true",
+    day: typeof billingPeriod === "string" ? undefined : billingPeriod?.day,
+    order: typeof billingPeriod === "string" ? undefined : billingPeriod?.order?.toLowerCase(),
+    day_of_week:
+      typeof billingPeriod === "string" ? undefined : billingPeriod?.day_of_week?.toLowerCase()
   };
 
   try {

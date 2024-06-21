@@ -126,7 +126,6 @@ export const ModalCreateShipTo = ({
           </h5>
           <div className="nonHereditaryInputs">
             <InputForm
-              disabled={isShipToModalOpen.accounting_code ? true : false}
               titleInput="Código Ship To"
               control={control}
               nameInput="shipTo.code"

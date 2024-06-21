@@ -50,6 +50,8 @@ interface Props {
     // eslint-disable-next-line no-unused-vars
     selectedStructure: ISelectedBussinessRules,
     // eslint-disable-next-line no-unused-vars
+    billingPeriod: IBillingPeriodForm,
+    // eslint-disable-next-line no-unused-vars
     messageApi: MessageInstance
   ) => void;
 }
@@ -80,13 +82,15 @@ export const ModalShipTo = ({
 
   const handleSubmitShipTo = () => {
     // If we are editing
-    if (isShipToModalOpen.accounting_code) {
+    if (isShipToModalOpen.accounting_code && billingPeriod) {
       if (selectedShipToData) {
-        editShipTo(selectedShipToData, zones, selectedStructure, messageApi);
+        editShipTo(selectedShipToData, zones, selectedStructure, billingPeriod, messageApi);
       }
+      setCurrentView("main");
+      setIsShipToModalOpen({ open: false, accounting_code: undefined });
       return;
     }
-    if (selectedShipToData) {
+    if (selectedShipToData && !isShipToModalOpen.accounting_code) {
       createShipTo(selectedShipToData, zones, selectedStructure, messageApi);
     }
     setCurrentView("main");

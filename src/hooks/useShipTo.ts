@@ -11,6 +11,7 @@ import {
   updateShipTo
 } from "@/services/shipTo/shipTo";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
+import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 
 export const useShipTos = (clientId: number) => {
   const { ID } = useAppStore((state) => state.selectProject);
@@ -48,9 +49,18 @@ export const useShipTos = (clientId: number) => {
     selectedData: ShipToFormType,
     zones: number[],
     selectedStructure: ISelectedBussinessRules,
+    billingPeriod: IBillingPeriodForm,
     messageApi: MessageInstance
   ) => {
-    await updateShipTo(clientId, ID, selectedData, zones, selectedStructure, messageApi);
+    await updateShipTo(
+      clientId,
+      ID,
+      selectedData,
+      zones,
+      selectedStructure,
+      billingPeriod,
+      messageApi
+    );
     mutate();
   };
 
