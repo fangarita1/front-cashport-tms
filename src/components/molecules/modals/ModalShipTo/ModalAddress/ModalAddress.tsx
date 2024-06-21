@@ -1,16 +1,24 @@
 import { AddressContainer } from "@/components/atoms/AddressContainer/AddressContainer";
 import { Button, Typography, message } from "antd";
-import { BaseSyntheticEvent, Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  BaseSyntheticEvent,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState
+} from "react";
 import { Controller, UseFormSetValue, useForm } from "react-hook-form";
 import { InputAddress } from "@/components/atoms/inputs/InputAddress/InputAddress";
 import { CaretLeft } from "phosphor-react";
-import { SelectLocations } from "../../selects/clients/SelectLocations/SelectLocations";
+import { SelectLocations } from "../../../selects/clients/SelectLocations/SelectLocations";
 import { ISelectType } from "@/types/clients/IClients";
+import { ShipToContext } from "../ModalShipTo";
 
-import "./modaladdress.scss";
 import { useLocations } from "@/hooks/useLocations";
 import { locationAddress } from "@/types/locations/ILocations";
 import { ShipToFormType } from "@/types/shipTo/IShipTo";
+import "./modaladdress.scss";
 
 const { Title } = Typography;
 interface Props {
@@ -39,13 +47,32 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
   } | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
 
+  const { selectedShipToData } = useContext(ShipToContext);
+  console.log("selectedShipTodata: ", selectedShipToData);
+
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
     watch
   } = useForm<AddressType>({
-    // values: { location: { city: { value: 0, label: "" } } }
+    values: selectedShipToData
+      ? {
+          location: {
+            city: {
+              value: selectedShipToData.shipTo.location_id,
+              label: selectedShipToData.shipTo.city_name
+            },
+            address: {
+              street_type: "",
+              number: "",
+              complement: "",
+              building_number: 0
+            },
+            complement: ""
+          }
+        }
+      : ({} as AddressType)
   });
 
   const watchCity = watch("location.city");
@@ -58,9 +85,18 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
         const response = await getLocation(watchCity.value);
         setAlreadyExistingAddresses(response?.data?.address);
       };
-      fetchLocation(); //
+      fetchLocation();
     }
   }, [getLocation, watchCity]);
+
+  useEffect(() => {
+    if (selectedShipToData) {
+      setSelectedAddress({
+        id: selectedShipToData.shipTo.address_id,
+        address: selectedShipToData.shipTo.address
+      });
+    }
+  }, [selectedShipToData]);
 
   const onSubmitLocation = async (
     data: AddressType,
@@ -116,7 +152,7 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
           Ubicaciones disponibles ya creadas
         </Title>
         <div className="existingLocations">
-          {alreadyExistingAddresses.length > 0 ? (
+          {alreadyExistingAddresses?.length > 0 ? (
             alreadyExistingAddresses.map((address) => (
               <AddressContainer
                 key={address.id}

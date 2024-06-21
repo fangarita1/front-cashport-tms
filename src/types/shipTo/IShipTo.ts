@@ -13,7 +13,7 @@ export interface ICreateShipTo {
   radication_type: number;
 }
 
-export type ShipToFormType = {
+export interface ShipToFormType {
   shipTo: {
     code: string;
     address: string;
@@ -22,8 +22,10 @@ export type ShipToFormType = {
     radication_type: ISelectType | undefined;
     condition_payment: ISelectType | undefined;
     dependency_client: boolean;
+    location_id: number;
+    city_name: string;
   };
-};
+}
 
 interface ISelectType {
   value: number;
@@ -48,16 +50,16 @@ export interface IShipTo {
   channels: IChannels[];
   city: string;
   client_id: number;
-  // condition_day: number;
+  condition_day: number;
   condition_payment: number;
   contacts: string;
   dependecy_client: number;
-  // full_address: string;
+  full_address: string;
   is_deleted: number;
   lines_info: ILines[];
-  //location_id: number;
+  location_id: number;
   project_id: number;
-  // radication_name: string;
+  radication_name: string;
   radication_type: number;
   shipto_description: string;
   sublines: ISubLines[];
@@ -67,14 +69,18 @@ export interface IShipTo {
 export interface IUpdateShipTo {
   client_id: string;
   depency_client: number;
-  id_location: number;
-  contacts: any;
+  radication_type: number;
+  condition_payment: number;
+  address_id: number;
+  contacts: string;
   description: string;
   zone: number[];
-  channel: number[];
   line: number[];
+  channel: number[];
   subline: number[];
   project_id: number;
+  day_flag?: boolean;
+  day?: number;
 }
 
 interface IChannels {

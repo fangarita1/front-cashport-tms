@@ -10,7 +10,7 @@ import { SelectPaymentConditions } from "@/components/molecules/selects/clients/
 import { ShipToFormType } from "@/types/shipTo/IShipTo";
 
 import "./modalcreateshipto.scss";
-import { ModalAddress } from "../../ModalAddress/ModalAddress";
+import { ModalAddress } from "../ModalAddress/ModalAddress";
 import { ISelectType } from "@/types/clients/IClients";
 import { CaretRight } from "phosphor-react";
 const { Text, Title } = Typography;
@@ -121,7 +121,9 @@ export const ModalCreateShipTo = ({
         <ModalAddress setIsModalAddressOpen={setIsModalAddressOpen} setParentFormValue={setValue} />
       ) : (
         <form className="createShipToModal">
-          <h5 className="modalTitle">Crear nuevo Ship To</h5>
+          <h5 className="modalTitle">
+            {isShipToModalOpen.accounting_code ? "Editar ShipTo" : "Crear nuevo Ship To"}
+          </h5>
           <div className="nonHereditaryInputs">
             <InputForm
               disabled={isShipToModalOpen.accounting_code ? true : false}

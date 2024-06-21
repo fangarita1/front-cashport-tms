@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, createContext, useEffect, useState } from "react";
 import { Button, Modal } from "antd";
 
 import { ModalBillingPeriod } from "../ModalBillingPeriod/ModalBillingPeriod";
@@ -53,6 +53,12 @@ interface Props {
     messageApi: MessageInstance
   ) => void;
 }
+type ShipToContext = {
+  selectedShipToData: ShipToFormType | undefined;
+};
+export const ShipToContext = createContext<ShipToContext>({
+  selectedShipToData: undefined
+});
 
 export const ModalShipTo = ({
   setIsShipToModalOpen,
@@ -109,14 +115,16 @@ export const ModalShipTo = ({
             value: response.condition_payment,
             label: response.condition_day.toString()
           },
-          radication_type: { value: response.radication_type, label: response.radication_name }
+          radication_type: { value: response.radication_type, label: response.radication_name },
+          location_id: response.location_id,
+          city_name: response.city
         }
       });
-      setZones(response.zones.map((zone) => zone.id));
+      setZones(response.zones?.map((zone) => zone.id) || []);
       setSelectedStructure({
-        channels: response.channels.map((channel) => channel.id),
-        lines: response.lines_info.map((line) => line.id),
-        sublines: response.sublines.map((subline) => subline.id)
+        channels: response.channels?.map((channel) => channel.id) || [],
+        lines: response.lines_info?.map((line) => line.id) || [],
+        sublines: response.sublines?.map((subline) => subline.id) || []
       });
     };
 
@@ -140,7 +148,7 @@ export const ModalShipTo = ({
         </Button>
         <Button
           onClick={handleSubmitShipTo}
-          disabled={selectedStructure.channels.length === 0 || zones.length === 0}
+          disabled={selectedStructure.channels?.length === 0 || zones?.length === 0}
           className="acceptButton"
         >
           {isShipToModalOpen.accounting_code ? "Actualizar Ship To" : "Crear Ship To"}
@@ -151,43 +159,45 @@ export const ModalShipTo = ({
 
   return (
     <>
-      <Modal
-        zIndex={2}
-        width={"40%"}
-        destroyOnClose
-        open={isShipToModalOpen.open}
-        className="modalcreateshipto"
-        okButtonProps={{
-          className: "buttonOk"
-        }}
-        cancelButtonProps={{
-          className: "buttonCancel"
-        }}
-        footer={currentView === "businessRules" ? businessRulesViewModal.footer : null}
-        onCancel={() => {
-          setIsShipToModalOpen({ open: false, accounting_code: undefined });
-        }}
-      >
-        {currentView === "main" && (
-          <ModalCreateShipTo
-            setIsShipToModalOpen={setIsShipToModalOpen}
-            isShipToModalOpen={isShipToModalOpen}
-            setCurrentView={setCurrentView}
-            setSelectedShipToData={setSelectedShipToData}
-            selectedShipToData={selectedShipToData}
-            setIsBillingPeriodOpen={setIsBillingPeriodOpen}
-            billingPeriod={billingPeriod}
-            getClientValues={getClientValues}
-          />
-        )}
-        {currentView === "businessRules" && businessRulesViewModal.content}
-      </Modal>
-      <ModalBillingPeriod
-        isOpen={isBillingPeriodOpen}
-        billingPeriod={billingPeriod}
-        setIsBillingPeriodOpen={setIsBillingPeriodOpen}
-        setBillingPeriod={setBillingPeriod}
-      />
+      <ShipToContext.Provider value={{ selectedShipToData }}>
+        <Modal
+          zIndex={2}
+          width={"40%"}
+          destroyOnClose
+          open={isShipToModalOpen.open}
+          className="modalcreateshipto"
+          okButtonProps={{
+            className: "buttonOk"
+          }}
+          cancelButtonProps={{
+            className: "buttonCancel"
+          }}
+          footer={currentView === "businessRules" ? businessRulesViewModal.footer : null}
+          onCancel={() => {
+            setIsShipToModalOpen({ open: false, accounting_code: undefined });
+          }}
+        >
+          {currentView === "main" && (
+            <ModalCreateShipTo
+              setIsShipToModalOpen={setIsShipToModalOpen}
+              isShipToModalOpen={isShipToModalOpen}
+              setCurrentView={setCurrentView}
+              setSelectedShipToData={setSelectedShipToData}
+              selectedShipToData={selectedShipToData}
+              setIsBillingPeriodOpen={setIsBillingPeriodOpen}
+              billingPeriod={billingPeriod}
+              getClientValues={getClientValues}
+            />
+          )}
+          {currentView === "businessRules" && businessRulesViewModal.content}
+        </Modal>
+        <ModalBillingPeriod
+          isOpen={isBillingPeriodOpen}
+          billingPeriod={billingPeriod}
+          setIsBillingPeriodOpen={setIsBillingPeriodOpen}
+          setBillingPeriod={setBillingPeriod}
+        />
+      </ShipToContext.Provider>
     </>
   );
 };

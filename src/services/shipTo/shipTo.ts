@@ -95,8 +95,10 @@ export const updateShipTo = async (
     channel: selectedStructure.channels,
     line: selectedStructure.lines,
     subline: selectedStructure.sublines,
-    contacts: [],
-    id_location: shipToData.address_id
+    contacts: "null",
+    address_id: shipToData.address_id,
+    condition_payment: shipToData.condition_payment ? shipToData.condition_payment.value : 0,
+    radication_type: shipToData.radication_type ? shipToData.radication_type.value : 0
   };
 
   try {
@@ -108,12 +110,12 @@ export const updateShipTo = async (
     if (response.status === SUCCESS) {
       messageApi.open({
         type: "success",
-        content: `El Ship To fue eliminado exitosamente.`
+        content: `El Ship To fue actualizado exitosamente.`
       });
     } else {
       messageApi.open({
         type: "error",
-        content: "Oops ocurrio un error eliminando Ship To."
+        content: "Oops ocurrio un error actualizando Ship To."
       });
     }
 
