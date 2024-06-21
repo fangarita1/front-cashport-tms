@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import { DatePicker } from "antd";
 import { Calendar } from "phosphor-react";
 import "./inputDate.scss";
 
-export const InputDate: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+interface InputDateProps {
+  selectedDate: Date | null;
+  onDateChange: (date: Date | null) => void;
+}
 
+export const InputDate: React.FC<InputDateProps> = ({ selectedDate, onDateChange }) => {
   const handleDateChange = (date: Date | null) => {
-    setSelectedDate(date);
-    if (date) {
-    } else {
-    }
+    onDateChange(date);
   };
 
   return (
