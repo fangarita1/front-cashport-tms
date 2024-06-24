@@ -4,7 +4,9 @@
     width: 100%;
     overflow-y: scroll;
     height: 100%;
-
+    .container-table-of-ant-client-group {
+        max-height: calc(100vh - 200px);
+    }
     .mainClientsGroupsTable_header {
         margin: 2rem 0;
         padding-right: 1rem;

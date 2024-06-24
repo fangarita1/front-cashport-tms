@@ -289,7 +289,6 @@ export const ClientsProjectTable = ({
       }
     ];
     return (
-      <>
         <main className="mainClientsProjectTable">
           {contextHolder}
           <Flex justify="space-between" className="mainClientsProjectTable_header">
@@ -348,7 +347,6 @@ export const ClientsProjectTable = ({
             </div>
           )}
         </main>
-      </>
     );
   } else if (placedIn === "modal") {
     columns = [
@@ -405,7 +403,7 @@ export const ClientsProjectTable = ({
         ) : (
           <Table
             columns={columns}
-            dataSource={data.data.map((client) => ({
+            dataSource={data?.data?.map((client) => ({
               key: client.nit,
               ...client
             }))}
