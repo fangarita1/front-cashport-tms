@@ -11,7 +11,7 @@ type Props = {
   handleClick: (type: number) => void;
 };
 
-export default function HeaderDiscountType({selectedType,handleClick}: Props) {
+export default function HeaderDiscountType({ selectedType, handleClick }: Props) {
   return (
     <Flex className={styles.HeaderContainer} justify="space-between" vertical gap={20}>
       <Title level={4}>Selecciona el tipo de descuento</Title>

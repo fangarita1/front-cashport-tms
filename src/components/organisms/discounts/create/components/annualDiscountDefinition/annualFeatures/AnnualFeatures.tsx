@@ -98,7 +98,9 @@ export default function AnnualFeatures() {
       </Row>
       <hr />
       <Flex justify="end">
-        <PrincipalButton className={style.button} icon={<Plus/>} iconPosition="end">Agregar descuento</PrincipalButton>
+        <PrincipalButton className={style.button} icon={<Plus />} iconPosition="end">
+          Agregar descuento
+        </PrincipalButton>
       </Flex>
     </Flex>
   );

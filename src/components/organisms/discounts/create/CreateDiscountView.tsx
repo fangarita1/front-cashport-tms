@@ -22,10 +22,8 @@ export function CreateDiscountView() {
       {contextHolder}
       <Flex className={styles.mainCreateDiscount}>
         <HeaderDiscountType selectedType={selectedType} handleClick={handleClick} />
-        {commonDiscount.includes(selectedType) &&
-        <DefinitionDiscounts />}
-        {annualDiscount.includes(selectedType) &&
-        <AnnualDiscountDefinition />}
+        {commonDiscount.includes(selectedType) && <DefinitionDiscounts />}
+        {annualDiscount.includes(selectedType) && <AnnualDiscountDefinition />}
         <Flex gap={20} justify="end">
           <PrincipalButton className={styles.button}>Crear</PrincipalButton>
         </Flex>

@@ -32,82 +32,80 @@ export default function DefinitionDiscounts() {
   } = useForm();
 
   return (
-      <Flex className={style.HeaderContainer} vertical gap={20}>
-        <Title level={4}>Definiciones</Title>
-        <Flex vertical>
-          <Text type="secondary">Tipo de descuento</Text>
-          <Controller
-            name="general.discount_type"
-            rules={{ required: true }}
-            control={control}
-            render={({ field }) => {
-              return (
-                <Select
-                  placeholder="Tipo de descuento"
-                  placement="bottomLeft"
-                  labelRender={(e) => e.label}
-                  className={`${style.selectInput} translate `}
-                  loading={false}
-                  variant="borderless"
-                  optionLabelProp="label"
-                  options={options}
-                  {...field}
-                ></Select>
-              );
-            }}
-          />
-        </Flex>
-        <Title level={4}>Descripción</Title>
-        <Flex gap={20}>
-          <InputForm
-            control={control}
-            error={undefined}
-            nameInput="general.name"
-            titleInput="Nombre"
-            className={style.input}
-          ></InputForm>
-          <InputForm
-            control={control}
-            error={undefined}
-            nameInput="general.description"
-            titleInput="Descripción"
-            className={style.inputDesc}
-          ></InputForm>
-        </Flex>
-        <Title level={4}>Fechas</Title>
-        <Flex gap={40} align="center">
-          <Switch
-            style={{ width: "fit-content", transform: "scale(2) translateX(25%)" }}
-            size="small"
-          />
-          <Text type="secondary">No tiene fin</Text>
-        </Flex>
-        <Flex gap={20}>
-          <Flex vertical>
-            <Text type="secondary">Inicio</Text>
-            <DatePicker
-              className={style.inputDatePicker}
-              placeholder="Inicio"
-              type="secondary"
-            ></DatePicker>
-          </Flex>
-          <Flex vertical>
-            <Text type="secondary">Fin</Text>
-            <DatePicker
-              className={style.inputDatePicker}
-              placeholder="Fin"
-              type="secondary"
-            ></DatePicker>
-          </Flex>
-        </Flex>
-        <hr></hr>
-        <Title level={4}>Características del descuento</Title>
-        {byOrderTypes.includes(watch("general.discount_type")) && (
-          <FeatByOrder discountType={watch("general.discount_type")}></FeatByOrder>
-        )}
-        {byClientTypes.includes(watch("general.discount_type")) && (
-          <FeatByCient></FeatByCient>
-        )}
+    <Flex className={style.HeaderContainer} vertical gap={20}>
+      <Title level={4}>Definiciones</Title>
+      <Flex vertical>
+        <Text type="secondary">Tipo de descuento</Text>
+        <Controller
+          name="general.discount_type"
+          rules={{ required: true }}
+          control={control}
+          render={({ field }) => {
+            return (
+              <Select
+                placeholder="Tipo de descuento"
+                placement="bottomLeft"
+                labelRender={(e) => e.label}
+                className={`${style.selectInput} translate `}
+                loading={false}
+                variant="borderless"
+                optionLabelProp="label"
+                options={options}
+                {...field}
+              ></Select>
+            );
+          }}
+        />
       </Flex>
+      <Title level={4}>Descripción</Title>
+      <Flex gap={20}>
+        <InputForm
+          control={control}
+          error={undefined}
+          nameInput="general.name"
+          titleInput="Nombre"
+          className={style.input}
+        ></InputForm>
+        <InputForm
+          control={control}
+          error={undefined}
+          nameInput="general.description"
+          titleInput="Descripción"
+          className={style.inputDesc}
+        ></InputForm>
+      </Flex>
+      <Title level={4}>Fechas</Title>
+      <Flex gap={40} align="center">
+        <Switch
+          style={{ width: "fit-content", transform: "scale(2) translateX(25%)" }}
+          size="small"
+        />
+        <Text type="secondary">No tiene fin</Text>
+      </Flex>
+      <Flex gap={20}>
+        <Flex vertical>
+          <Text type="secondary">Inicio</Text>
+          <DatePicker
+            className={style.inputDatePicker}
+            placeholder="Inicio"
+            type="secondary"
+          ></DatePicker>
+        </Flex>
+        <Flex vertical>
+          <Text type="secondary">Fin</Text>
+          <DatePicker
+            className={style.inputDatePicker}
+            placeholder="Fin"
+            type="secondary"
+          ></DatePicker>
+        </Flex>
+      </Flex>
+      <hr></hr>
+      <Title level={4}>Características del descuento</Title>
+      {byOrderTypes.includes(watch("general.discount_type")) && (
+        <FeatByOrder discountType={watch("general.discount_type")}></FeatByOrder>
+      )}
+      {byClientTypes.includes(watch("general.discount_type")) && <FeatByCient></FeatByCient>}
+    </Flex>
   );
 }

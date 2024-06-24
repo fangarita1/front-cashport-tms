@@ -12,7 +12,7 @@ export default function DiscountWrapper({ children }: { children: React.ReactNod
   const pathname = usePathname();
   return (
     <Wrapper>
-      <Flex vertical gap={"1.5rem"}  className="WrapperChild">
+      <Flex vertical gap={"1.5rem"} className="WrapperChild">
         <Flex gap={"2rem"} justify="space-between" wrap="wrap">
           <Title level={2} className="titleName">
             Configuración de descuentos

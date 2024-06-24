@@ -18,7 +18,7 @@ export default function PrincipalButton({ children, ...rest }: BaseButtonProps) 
             colorPrimaryActive: color,
             primaryShadow: "none",
             paddingContentHorizontal: 24,
-            paddingContentVertical: 12,
+            paddingContentVertical: 12
           }
         }
       }}
