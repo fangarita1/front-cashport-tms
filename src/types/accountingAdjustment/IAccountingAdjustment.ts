@@ -1,7 +1,7 @@
 export interface DiscountRequestBody {
   type: number; //1 nota debito, 2 nota credito, 3 descuento
   motive: number;
-  amount: number;
+  ammount: number; //amount
   percentage: number;
   date_of_issue: string;
   expiration_date: string;
@@ -9,17 +9,7 @@ export interface DiscountRequestBody {
     start: string;
     end: string;
   };
-  users_approved: number[];
+  users_aproved: number[]; // users_approved
   project_id: number;
   client_id: number;
-}
-export interface Motive {
-  id: number;
-  name: string;
-}
-
-export interface GetMotivesResponse {
-  status: number;
-  message: string;
-  data: Motive[];
 }

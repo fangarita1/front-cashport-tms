@@ -4,7 +4,10 @@ import ItemsActionsModal from "@/components/atoms/ItemsModal/ItemsActionsModal";
 
 import "./modalActionDiscountCredit.scss";
 import { Plus } from "phosphor-react";
-import { CreateDiscount } from "../CreateDiscount/CreateDiscount";
+
+import { CreateCreditNote } from "../CreateAccountingAdjustment/CreateCreditNote/CreateCreditNote";
+import { CreateDiscount } from "../CreateAccountingAdjustment/CreateDiscount/CreateDiscount";
+import { CreateDebitNote } from "../CreateAccountingAdjustment/CreateDebitNote/CreateDebitNote";
 const { Title } = Typography;
 
 interface Props {
@@ -51,7 +54,12 @@ export const ModalActionDiscountCredit = ({ isOpen, onClose, showActionDetailMod
         width={"40%"}
         open={isOpen}
         style={{ top: "10%", height: "auto" }}
-        title={<Title level={4}>{titleMap[showActionDetailModal?.actionType || 1]}</Title>}
+        title={
+          <Title level={4}>
+            {(currentView === "create" && titleCreateMap[showActionDetailModal?.actionType || 1]) ||
+              (currentView === "select" && titleMap[showActionDetailModal?.actionType || 1])}
+          </Title>
+        }
         footer={null}
         onCancel={
           currentView === "select"
@@ -105,8 +113,20 @@ export const ModalActionDiscountCredit = ({ isOpen, onClose, showActionDetailMod
         )}
         {currentView === "create" && (
           <>
-            {/* {showActionDetailModal.actionType === 1 && <CreateDebitNote />}
-            {showActionDetailModal.actionType === 2 && <CreateCreditNote />} */}
+            {showActionDetailModal.actionType === 1 && (
+              <CreateDebitNote
+                onClose={() => {
+                  setCurrentView("select");
+                }}
+              />
+            )}
+            {showActionDetailModal.actionType === 2 && (
+              <CreateCreditNote
+                onClose={() => {
+                  setCurrentView("select");
+                }}
+              />
+            )}
             {showActionDetailModal.actionType === 3 && (
               <CreateDiscount
                 onClose={() => {
@@ -129,6 +149,11 @@ const titleMap: Record<number, string> = {
   1: "Aplicar nota débito",
   2: "Aplicar nota crédito",
   3: "Aplicar descuento"
+};
+const titleCreateMap: Record<number, string> = {
+  1: "Crear nota débito",
+  2: "Crear nota crédito",
+  3: "Crear descuento"
 };
 const typeMap: Record<number, string> = {
   1: "débito",

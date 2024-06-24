@@ -1,4 +1,4 @@
-.createDicountCustom {
+.createCreditCustom {
     .ant-modal-content {
         max-height: 80vh;
         display: flex;
@@ -19,7 +19,7 @@
             display: grid;
             gap: 1rem;
             grid-template-columns: 1fr 1fr;
-            padding: 1rem 0 1rem 0;
+            padding: 1rem 0 0 0;
         }
 
         .subTitleModalAction {
@@ -63,31 +63,5 @@
                 border: solid 2px;
             }
         }
-
-
-        .selectInput {
-            background-color: #f7f7f7;
-            border-radius: 0;
-            padding: 0.7rem;
-            padding-left: 0;
-            border-radius: 0.25rem;
-            font-size: 1rem;
-            font-weight: 300;
-
-            &::placeholder {
-                color: #dddddd !important;
-            }
-
-            &:disabled {
-                // background-color: #909090;
-                color: #dddddd !important;
-            }
-        }
-
-        .ant-select {
-            padding: 1.5rem;
-        }
     }
-
-
 }
