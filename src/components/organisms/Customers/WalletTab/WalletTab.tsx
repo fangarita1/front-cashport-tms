@@ -33,10 +33,10 @@ export const WalletTab = () => {
   });
   const [showActionDetailModal, setShowActionDetailModal] = useState<{
     isOpen: boolean;
-    invoiceId: number;
+    actionType: number;
   }>({
     isOpen: false,
-    invoiceId: 0
+    actionType: 0
   });
   const [isPaymentAgreementOpen, setIsPaymentAgreementOpen] = useState(false);
 
@@ -152,11 +152,12 @@ export const WalletTab = () => {
           handleisGenerateActionOpen={handleisGenerateActionOpen}
         />
       )}
-  
+
       <ModalActionDiscountCredit
         isOpen={showActionDetailModal?.isOpen}
-        onClose={() => setShowActionDetailModal({ isOpen: false, invoiceId: 0 })}
+        onClose={() => setShowActionDetailModal({ isOpen: false, actionType: 0 })}
         showActionDetailModal={showActionDetailModal}
+        setShowActionDetailModal={setShowActionDetailModal}
       />
       <WalletTabChangeStatusModal isOpen={false} />
     </>

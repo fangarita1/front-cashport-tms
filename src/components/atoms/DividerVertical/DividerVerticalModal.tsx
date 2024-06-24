@@ -11,13 +11,14 @@ export const DividerVerticalModal: React.FC<DividerProps> = ({ type, Color }) =>
 
   switch (type) {
     case 1:
-      backgroundColor = "#9747FF";
+      backgroundColor = "#00A3FF";
+
       break;
     case 2:
-      backgroundColor = "#FF7A00";
+      backgroundColor = "#9747FF";
       break;
     case 3:
-      backgroundColor = "#00A3FF";
+      backgroundColor = "#FF7A00";
       break;
     default:
       backgroundColor = "#00A3FF";

@@ -24,7 +24,7 @@ interface Props {
   setShowActionDetailModal: Dispatch<
     SetStateAction<{
       isOpen: boolean;
-      invoiceId: number;
+      actionType: number;
     }>
   >;
 }
@@ -38,8 +38,8 @@ export const ModalGenerateAction = ({
   const handlePaymentAgreement = () => {
     setIsPaymentAgreementOpen(true);
   };
-  const handleActionDetail = (invoiceId: number) => {
-    setShowActionDetailModal({ isOpen: true, invoiceId });
+  const handleActionDetail = (type: number) => {
+    setShowActionDetailModal({ isOpen: true, actionType: type });
   };
   return (
     <Modal
@@ -77,7 +77,6 @@ export const ModalGenerateAction = ({
   );
 };
 
-
 const actionsOptions = (handleActionDetail: (_number: number) => void) => [
   {
     key: 1,
@@ -94,7 +93,7 @@ const actionsOptions = (handleActionDetail: (_number: number) => void) => [
         <Flex
           className="collapseByAction__children__item"
           justify="space-between"
-          onClick={() => handleActionDetail(1)}
+          onClick={() => handleActionDetail(2)}
         >
           <Text>Generar nota crédito</Text>
           <CaretRight size={16} />
@@ -103,7 +102,7 @@ const actionsOptions = (handleActionDetail: (_number: number) => void) => [
         <Flex
           className="collapseByAction__children__item"
           justify="space-between"
-          onClick={() => handleActionDetail(2)}
+          onClick={() => handleActionDetail(3)}
         >
           <Text>Generar descuento</Text>
           <CaretRight size={16} />
@@ -112,7 +111,7 @@ const actionsOptions = (handleActionDetail: (_number: number) => void) => [
         <Flex
           className="collapseByAction__children__item"
           justify="space-between"
-          onClick={() => handleActionDetail(3)}
+          onClick={() => handleActionDetail(1)}
         >
           <Text>Generar nota débito</Text>
           <CaretRight size={16} />

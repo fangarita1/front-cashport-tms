@@ -19,8 +19,8 @@ const ItemsActionsModal: FC<ItemsActionsModalProps> = ({ onHeaderClick, item, ty
         <div className={"texts"}>
           <div className={"mainText"}>
             <strong className={"name"}>
-              {titleMap[type]}
-              <span>{}</span>
+              {titleMap[type]} 
+              <span>{item.id}</span>
             </strong>
           </div>
           <div className={"label"}>Volumen</div>
@@ -35,9 +35,9 @@ const ItemsActionsModal: FC<ItemsActionsModalProps> = ({ onHeaderClick, item, ty
 };
 
 const titleMap: Record<number, string> = {
-  1: "Nota crédito",
-  2: "Descuento",
-  3: "Nota débito"
+  1: "Nota débito",
+  2: "Nota crédito",
+  3: "Descuento"
 };
 
 export default ItemsActionsModal;

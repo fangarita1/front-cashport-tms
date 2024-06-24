@@ -53,7 +53,7 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
                   className={styles.buttonGoBack}
                   icon={<CaretLeft size={"1.6rem"} />}
                 >
-                  {portfolioData ? portfolioData.data_wallet.client_name : "Loading..."}
+                  {portfolioData ? portfolioData?.data_wallet?.client_name : "Loading..."}
                 </Button>
               </Link>
             </Flex>
