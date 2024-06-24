@@ -54,44 +54,52 @@ export const ClientsViewTable = () => {
       )
     },
     {
+      align: "right",
       title: "Cartera",
       dataIndex: "total_portfolio",
       key: "total_portfolio",
       render: (text) => <Text>{text}</Text>
     },
     {
+      align: "right",
       title: "Vencida",
       dataIndex: "past_due_ammount",
       key: "past_due_ammount"
     },
     {
+      align: "right",
       title: "Presupuesto",
       key: "budget_ammount",
       dataIndex: "budget_ammount",
       render: (text) => <Text>{text}</Text>
     },
     {
+      align: "right",
       title: "R. Aplicado",
       key: "applied_payments_ammount",
       dataIndex: "applied_payments_ammount",
       render: (text) => <Text>{text}</Text>
     },
     {
+      align: "center",
+      width: 103,
       title: "Ejecutado",
       key: "executed_percentage",
       dataIndex: "executed_percentage",
       render: (text) => <Text>{text} %</Text>
     },
     {
+      align: "right",
       title: "PNA",
       key: "unapplied_payments_ammount",
       dataIndex: "unapplied_payments_ammount",
       render: (text) => <Text>{text}</Text>
     },
     {
+      align: "right",
       title: "Saldos",
-      key: "executed_percentage",
-      dataIndex: "executed_percentage",
+      key: "total_balances",
+      dataIndex: "total_balances",
       render: (text) => <Text>{text}</Text>
     },
     {
@@ -101,15 +109,9 @@ export const ClientsViewTable = () => {
       render: (text) => <Text className="text">{text}</Text>
     },
     {
-      title: "client_id",
-      key: "client_id",
-      dataIndex: "client_id",
-      render: (text) => <Text className="text">{text}</Text>
-    },
-    {
       title: "",
       key: "buttonSee",
-      width: "80px",
+      width: 64,
       dataIndex: "",
       render: (_, row: IClientsPortfolio) => (
         <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
@@ -186,7 +188,7 @@ export const ClientsViewTable = () => {
           total: data.pagination.totalRows,
           onChange: onChangePage
         }}
-        dataSource={clients?.clientsPortfolio}
+        dataSource={clients?.clientsPortfolio.map((data) => ({ ...data, key: data.client_id }))}
       />
     </main>
   );
