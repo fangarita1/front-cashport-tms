@@ -50,16 +50,18 @@ interface Props {
     // eslint-disable-next-line no-unused-vars
     selectedStructure: ISelectedBussinessRules,
     // eslint-disable-next-line no-unused-vars
-    billingPeriod: IBillingPeriodForm,
+    billingPeriod: IBillingPeriodForm | undefined,
     // eslint-disable-next-line no-unused-vars
     messageApi: MessageInstance
   ) => void;
 }
 type ShipToContext = {
   selectedShipToData: ShipToFormType | undefined;
+  setSelectedShipToData: Dispatch<SetStateAction<ShipToFormType | undefined>>;
 };
 export const ShipToContext = createContext<ShipToContext>({
-  selectedShipToData: undefined
+  selectedShipToData: undefined,
+  setSelectedShipToData: () => {}
 });
 
 export const ModalShipTo = ({
@@ -82,10 +84,9 @@ export const ModalShipTo = ({
 
   const handleSubmitShipTo = () => {
     // If we are editing
-    if (isShipToModalOpen.accounting_code && billingPeriod) {
-      if (selectedShipToData) {
-        editShipTo(selectedShipToData, zones, selectedStructure, billingPeriod, messageApi);
-      }
+    if (isShipToModalOpen.accounting_code && selectedShipToData) {
+      editShipTo(selectedShipToData, zones, selectedStructure, billingPeriod, messageApi);
+
       setCurrentView("main");
       setIsShipToModalOpen({ open: false, accounting_code: undefined });
       return;
@@ -114,7 +115,7 @@ export const ModalShipTo = ({
           dependency_client: Boolean(response.dependecy_client),
           address: response.full_address,
           address_id: response.address_id,
-          billing_period: response.billing_period,
+          billing_period: undefined,
           condition_payment: {
             value: response.condition_payment,
             label: response.condition_day.toString()
@@ -124,6 +125,12 @@ export const ModalShipTo = ({
           city_name: response.city
         }
       });
+      // setBillingPeriod({
+      //   day_flag: response.day_flag,
+      //   day: response.day,
+      //   order: response.order,
+      //   day_of_week: response.day_of_week
+      // })
       setZones(response.zones?.map((zone) => zone.id) || []);
       setSelectedStructure({
         channels: response.channels?.map((channel) => channel.id) || [],
@@ -163,7 +170,7 @@ export const ModalShipTo = ({
 
   return (
     <>
-      <ShipToContext.Provider value={{ selectedShipToData }}>
+      <ShipToContext.Provider value={{ selectedShipToData, setSelectedShipToData }}>
         <Modal
           zIndex={2}
           width={"40%"}
@@ -186,8 +193,6 @@ export const ModalShipTo = ({
               setIsShipToModalOpen={setIsShipToModalOpen}
               isShipToModalOpen={isShipToModalOpen}
               setCurrentView={setCurrentView}
-              setSelectedShipToData={setSelectedShipToData}
-              selectedShipToData={selectedShipToData}
               setIsBillingPeriodOpen={setIsBillingPeriodOpen}
               billingPeriod={billingPeriod}
               getClientValues={getClientValues}

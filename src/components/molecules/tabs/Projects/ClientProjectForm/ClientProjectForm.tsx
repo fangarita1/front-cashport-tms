@@ -174,6 +174,7 @@ export const ClientProjectForm = ({
       });
       const response = await getClientById(isViewDetailsClient.id.toString(), idProject);
       const finalData = response.data.data;
+      console.log("finalDataCLIENT: ", finalData);
 
       setDataClient({
         isLoading: false,
@@ -487,12 +488,10 @@ export const ClientProjectForm = ({
                           {...field}
                           value={
                             billingPeriod
-                              ? billingPeriod.day_flag === "True"
+                              ? billingPeriod?.day_flag === "true"
                                 ? `El dia ${billingPeriod.day} del mes`
-                                : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`
-                              : dataClient.data.billing_period
-                                ? dataClient.data.billing_period
-                                : ""
+                                : `El ${billingPeriod?.order} ${billingPeriod?.day_of_week} del mes`
+                              : undefined
                           }
                         />
                         {error && (

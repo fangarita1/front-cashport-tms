@@ -48,7 +48,6 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
   const [messageApi, contextHolder] = message.useMessage();
 
   const { selectedShipToData } = useContext(ShipToContext);
-  console.log("selectedShipTodata: ", selectedShipToData);
 
   const {
     control,

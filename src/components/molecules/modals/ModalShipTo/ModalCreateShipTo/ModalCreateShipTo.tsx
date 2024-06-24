@@ -1,4 +1,11 @@
-import { BaseSyntheticEvent, Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  BaseSyntheticEvent,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState
+} from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Flex, Input, Switch, Typography } from "antd";
 
@@ -13,6 +20,7 @@ import "./modalcreateshipto.scss";
 import { ModalAddress } from "../ModalAddress/ModalAddress";
 import { ISelectType } from "@/types/clients/IClients";
 import { CaretRight } from "phosphor-react";
+import { ShipToContext } from "../ModalShipTo";
 const { Text, Title } = Typography;
 interface Props {
   setIsShipToModalOpen: Dispatch<
@@ -26,8 +34,6 @@ interface Props {
     accounting_code: string | undefined;
   };
   setCurrentView: Dispatch<SetStateAction<"main" | "businessRules">>;
-  setSelectedShipToData: Dispatch<SetStateAction<ShipToFormType | undefined>>;
-  selectedShipToData: ShipToFormType | undefined;
   setIsBillingPeriodOpen: Dispatch<SetStateAction<boolean>>;
   billingPeriod: IBillingPeriodForm | undefined;
   getClientValues: () => {
@@ -41,13 +47,12 @@ export const ModalCreateShipTo = ({
   setIsShipToModalOpen,
   isShipToModalOpen,
   setCurrentView,
-  setSelectedShipToData,
-  selectedShipToData,
   setIsBillingPeriodOpen,
   billingPeriod,
   getClientValues
 }: Props) => {
   const [isModalAddressOpen, setIsModalAddressOpen] = useState(false);
+  const { selectedShipToData, setSelectedShipToData } = useContext(ShipToContext);
 
   const {
     control,
@@ -126,10 +131,17 @@ export const ModalCreateShipTo = ({
           </h5>
           <div className="nonHereditaryInputs">
             <InputForm
+              readOnly={!!isShipToModalOpen.accounting_code}
               titleInput="Código Ship To"
               control={control}
               nameInput="shipTo.code"
               error={errors.shipTo?.code}
+              validationRules={{
+                pattern: {
+                  value: /^[^\s]*$/,
+                  message: "El código no puede contener espacios en blanco"
+                }
+              }}
             />
             <Flex className="inputContainer" vertical>
               <Title className="inputContainer__title" level={5}>
@@ -179,6 +191,7 @@ export const ModalCreateShipTo = ({
                 Período de facturación
               </Title>
               <Controller
+                disabled={watchDependencyClient}
                 name="shipTo.billing_period"
                 control={control}
                 rules={{ required: true, minLength: 1 }}
@@ -215,6 +228,7 @@ export const ModalCreateShipTo = ({
                 Tipo de radicación
               </Title>
               <Controller
+                disabled={watchDependencyClient}
                 name="shipTo.radication_type"
                 control={control}
                 rules={{ required: true, minLength: 1 }}
@@ -231,6 +245,7 @@ export const ModalCreateShipTo = ({
                 Condición de pago
               </Title>
               <Controller
+                disabled={watchDependencyClient}
                 name="shipTo.condition_payment"
                 control={control}
                 rules={{ required: true, minLength: 1 }}

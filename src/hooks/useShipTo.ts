@@ -49,7 +49,7 @@ export const useShipTos = (clientId: number) => {
     selectedData: ShipToFormType,
     zones: number[],
     selectedStructure: ISelectedBussinessRules,
-    billingPeriod: IBillingPeriodForm,
+    billingPeriod: IBillingPeriodForm | undefined,
     messageApi: MessageInstance
   ) => {
     await updateShipTo(

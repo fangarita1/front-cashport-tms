@@ -9,8 +9,8 @@ export interface ICreateShipTo {
   line: number[];
   subline: number[];
   id_address: number;
-  condition_payment: number;
-  radication_type: number;
+  condition_payment: number | undefined;
+  radication_type: number | undefined;
 }
 
 export interface ShipToFormType {
@@ -69,8 +69,8 @@ export interface IShipTo {
 export interface IUpdateShipTo {
   client_id: string;
   depency_client: number;
-  radication_type: number;
-  condition_payment: number;
+  radication_type?: number;
+  condition_payment?: number;
   address_id: number;
   contacts: string;
   description: string;

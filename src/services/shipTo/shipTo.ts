@@ -83,7 +83,7 @@ export const updateShipTo = async (
   selectedData: ShipToFormType,
   zones: number[],
   selectedStructure: ISelectedBussinessRules,
-  billingPeriod: IBillingPeriodForm,
+  billingPeriod: IBillingPeriodForm | undefined,
   messageApi: MessageInstance
 ): Promise<any> => {
   const shipToData = selectedData.shipTo;
