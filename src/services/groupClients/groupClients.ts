@@ -4,10 +4,11 @@ import { getIdToken } from "@/utils/api/api";
 
 // create
 
-export const createGroup = async (data: any): Promise<any> => {
+export const createGroup = async (data: any, id: number): Promise<any> => {
   const modelData = {
-    name: data.groupName,
-    clients: data.clientsId
+    name: data.name,
+    clients: data.clients,
+    project_id: id
   };
 
   const token = await getIdToken();

@@ -7,7 +7,7 @@ import Dashboard from "../dashboard";
 import InvoiceActionsModal from "../invoice-actions-modal";
 
 import { useClientDetails } from "../../hooks/client-details/client-details.hook";
-import { Button, Flex } from "antd";
+import { Button, Flex, Spin } from "antd";
 import UiTab from "@/components/ui/ui-tab";
 import { InvoiceAction } from "../../constants/invoice-actions.constants";
 
@@ -23,12 +23,20 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
     {
       key: "1",
       label: "Dashboard",
-      children: <Dashboard />
+      children: portfolioData ? (
+        <Dashboard />
+      ) : (
+        <Spin style={{ margin: "1rem auto", display: "block" }} />
+      )
     },
     {
       key: "2",
       label: "Cartera",
-      children: <WalletTab />
+      children: portfolioData ? (
+        <WalletTab />
+      ) : (
+        <Spin style={{ margin: "1rem auto", display: "block" }} />
+      )
     }
   ];
 
@@ -38,7 +46,8 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
         selectedOption,
         setSelectedOption,
         showInvoiceActionsModal,
-        setShowInvoiceActionsModal
+        setShowInvoiceActionsModal,
+        portfolioData
       }}
     >
       <main className={styles.mainDetail}>

@@ -7,6 +7,7 @@ import { createGroup, updateGroup } from "@/services/groupClients/groupClients";
 
 import "./modalClientsGroup.scss";
 import { IClient } from "@/types/clients/IClients";
+import { useAppStore } from "@/lib/store/store";
 
 const { Text } = Typography;
 
@@ -22,8 +23,9 @@ export type NameType = {
 
 export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: CreateGroupProps) => {
   const [groupName, setGroupName] = useState("");
+  const { ID } = useAppStore((state) => state.selectProject);
   const [selectedRows, setSelectedRows] = useState<any>([]);
-  const [_, contextHolder] = message.useMessage()
+  const [messageApi, contextHolder] = message.useMessage();
   const {
     control,
     handleSubmit,
@@ -43,7 +45,7 @@ export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: Creat
 
   const onCreateGroup = () => {
     if (selectedRows.length <= 0) {
-      alert("Selecciona clientes para añadir al grupo");
+      messageApi.open({ type: "warning", content: "Selecciona clientes para añadir al grupo" });
       return;
     }
     if (selectedRows.length > 0) {
@@ -52,7 +54,7 @@ export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: Creat
           name: groupName,
           clients: selectedRows.map((client: IClient) => client.nit)
         };
-        createGroup(group);
+        createGroup(group, ID);
       } catch (error) {
         console.warn(error);
       }
@@ -101,6 +103,7 @@ export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: Creat
             handleSubmit(onSubmitName)();
           }}
         >
+          {contextHolder}
           <Flex vertical>
             <Text>Ingresa el nombre del grupo de clientes</Text>
             <form className="inputcreatezone">

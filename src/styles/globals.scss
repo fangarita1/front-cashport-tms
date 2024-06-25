@@ -66,14 +66,14 @@ a {
     }
 }
 .ant-collapse-header {
-  display: flex !important;
-  align-items: center !important;
-  .ant-collapse-expand-icon {
-    padding: 0 16px 0 0 !important;
-  }
+    display: flex !important;
+    align-items: center !important;
+    .ant-collapse-expand-icon {
+        padding: 0 16px 0 0 !important;
+    }
 }
 .ant-collapse-content-box {
-  background-color: white !important;
+    background-color: white !important;
 }
 
 .page {
@@ -86,7 +86,8 @@ a {
     width: 100%;
     height: 100%;
     display: flex;
-    padding: 32px;
+    padding: 2rem;
+    padding-bottom: 0.625rem;
     overflow-y: auto;
     flex-direction: column;
     background-color: #f7f7f7;
