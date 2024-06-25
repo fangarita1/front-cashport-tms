@@ -1,11 +1,14 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Flex, Modal, Typography } from "antd";
 
 import "./modaluploaddocument.scss";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+import { useParams } from "next/navigation";
+import useModalUploadDocument from "@/hooks/useModalUploadDocument";
 
 interface Props {
   isOpen: boolean;
+  clientTypeId?: string | number;
   setIsOpenUpload: Dispatch<SetStateAction<boolean>>;
   setClientDocuments: Dispatch<SetStateAction<File[]>>;
 }
@@ -26,10 +29,16 @@ const mockFiles = [
   { id: 6, title: "Archivos adicionales", isMandatory: false }
 ];
 
-export const ModalUploadDocument = ({ isOpen, setIsOpenUpload, setClientDocuments }: Props) => {
+export const ModalUploadDocument = ({
+  isOpen,
+  clientTypeId,
+  setIsOpenUpload,
+  setClientDocuments
+}: Props) => {
   // Hay un estado de files en el modal para poder dejar la posibilidad de verificacion
   // El estado de clientDocuments ya deberia contener todos los documentos necesarios
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
+  const { data } = useModalUploadDocument(clientTypeId);
   const handleOnSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
 
@@ -43,6 +52,13 @@ export const ModalUploadDocument = ({ isOpen, setIsOpenUpload, setClientDocument
     setFiles([]);
   };
 
+  useEffect(() => {
+    console.log({ data, p: "modal" });
+  }, [data]);
+
+  const _data = data?.data.map(({ id, document_name, required }) => {
+    return { id, title: document_name, isMandatory: required };
+  });
   return (
     <Modal
       width={"40%"}
@@ -62,14 +78,15 @@ export const ModalUploadDocument = ({ isOpen, setIsOpenUpload, setClientDocument
         Haz clic en cada casilla para adjuntar los documentos requeridos
       </Text>
       <Flex vertical className="mainUploadDocuments">
-        {mockFiles.map((file) => (
-          <UploadDocumentButton
-            key={file.id}
-            title={file.title}
-            isMandatory={file.isMandatory}
-            setFiles={setFiles}
-          />
-        ))}
+        {_data &&
+          _data?.map((file) => (
+            <UploadDocumentButton
+              key={file.id}
+              title={file.title}
+              isMandatory={file.isMandatory === 1}
+              setFiles={setFiles}
+            />
+          ))}
       </Flex>
     </Modal>
   );
