@@ -1,3 +1,5 @@
+import { IBillingPeriodForm } from "../billingPeriod/IBillingPeriod";
+
 export interface ICreateShipTo {
   client_id: string;
   accounting_code: string;
@@ -47,6 +49,7 @@ export interface IShipTo {
   accounting_code: string;
   address_id: number;
   billing_period: string;
+  billing_period_config: IBillingPeriodForm;
   channels: IChannels[];
   city: string;
   client_id: number;

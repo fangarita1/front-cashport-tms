@@ -7,6 +7,7 @@ import { ISelectType } from "@/types/clients/IClients";
 import { useShipTos } from "@/hooks/useShipTo";
 
 import "./shiptoprojecttable.scss";
+import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 const { Text, Link, Title } = Typography;
 
 interface Props {
@@ -17,9 +18,10 @@ interface Props {
     radicationType: ISelectType;
     conditionPayment: ISelectType;
   };
+  clientBillingPeriod: IBillingPeriodForm | undefined;
 }
 
-export const ShipToProjectTable = ({ clientId, getClientValues }: Props) => {
+export const ShipToProjectTable = ({ clientId, getClientValues, clientBillingPeriod }: Props) => {
   const [isShipToModalOpen, setIsShipToModalOpen] = useState<{
     open: boolean;
     accounting_code: string | undefined;
@@ -173,6 +175,7 @@ export const ShipToProjectTable = ({ clientId, getClientValues }: Props) => {
         setIsShipToModalOpen={setIsShipToModalOpen}
         isShipToModalOpen={isShipToModalOpen}
         getClientValues={getClientValues}
+        clientBillingPeriod={clientBillingPeriod}
         messageApi={messageApi}
         createShipTo={createShipTo}
         getShipTo={getShipTo}

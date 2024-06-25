@@ -11,7 +11,6 @@ import { Button, Flex, Input, Switch, Typography } from "antd";
 
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
-import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { SelectRadicationTypes } from "@/components/molecules/selects/clients/SelectRadicationTypes/SelectRadicationTypes";
 import { SelectPaymentConditions } from "@/components/molecules/selects/clients/SelectPaymentConditions/SelectPaymentCondition";
 import { ShipToFormType } from "@/types/shipTo/IShipTo";
@@ -21,6 +20,7 @@ import { ModalAddress } from "../ModalAddress/ModalAddress";
 import { ISelectType } from "@/types/clients/IClients";
 import { CaretRight } from "phosphor-react";
 import { ShipToContext } from "../ModalShipTo";
+import { stringToBoolean } from "@/utils/utils";
 const { Text, Title } = Typography;
 interface Props {
   setIsShipToModalOpen: Dispatch<
@@ -35,7 +35,6 @@ interface Props {
   };
   setCurrentView: Dispatch<SetStateAction<"main" | "businessRules">>;
   setIsBillingPeriodOpen: Dispatch<SetStateAction<boolean>>;
-  billingPeriod: IBillingPeriodForm | undefined;
   getClientValues: () => {
     billingPeriod: string;
     radicationType: ISelectType;
@@ -48,11 +47,16 @@ export const ModalCreateShipTo = ({
   isShipToModalOpen,
   setCurrentView,
   setIsBillingPeriodOpen,
-  billingPeriod,
   getClientValues
 }: Props) => {
   const [isModalAddressOpen, setIsModalAddressOpen] = useState(false);
-  const { selectedShipToData, setSelectedShipToData } = useContext(ShipToContext);
+  const {
+    selectedShipToData,
+    setSelectedShipToData,
+    clientBillingPeriod,
+    billingPeriod,
+    setBillingPeriod
+  } = useContext(ShipToContext);
 
   const {
     control,
@@ -75,31 +79,12 @@ export const ModalCreateShipTo = ({
   const watchDependencyClient = watch("shipTo.dependency_client");
 
   useEffect(() => {
-    // UseEffect para actualizar el valor de billingPeriod
-    if (!billingPeriod) {
-      return;
-    }
-
-    const formattedBillingPeriod = billingPeriod.day_flag
-      ? `El dia ${billingPeriod.day} del mes`
-      : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`;
-
-    // Establecer el valor formateado al string de billing period
-    setValue("shipTo.billing_period", formattedBillingPeriod, { shouldValidate: true });
-  }, [billingPeriod, setValue]);
-
-  useEffect(() => {
-    const {
-      billingPeriod: defaultBillingPeriod,
-      radicationType,
-      conditionPayment
-    } = getClientValues();
+    const { radicationType, conditionPayment } = getClientValues();
 
     if (watchDependencyClient) {
       // Set values when dependency_client is true
-      setValue("shipTo.billing_period", defaultBillingPeriod, {
-        shouldValidate: true
-      });
+      setBillingPeriod(clientBillingPeriod);
+
       setValue("shipTo.radication_type", radicationType, {
         shouldValidate: true
       });
@@ -207,7 +192,7 @@ export const ModalCreateShipTo = ({
                       {...field}
                       value={
                         billingPeriod
-                          ? billingPeriod?.day_flag === "true"
+                          ? stringToBoolean(billingPeriod.day_flag)
                             ? `El dia ${billingPeriod.day} del mes`
                             : `El ${billingPeriod?.order} ${billingPeriod?.day_of_week} del mes`
                           : undefined

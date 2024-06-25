@@ -232,3 +232,7 @@ const locations = [
 export const isNonEmptyObject = (obj: {}) => {
   return !(Object.keys(obj).length === 0 && obj.constructor === Object);
 };
+
+export const stringToBoolean = (value: string | boolean): boolean => {
+  return value === "true" || value === true;
+};

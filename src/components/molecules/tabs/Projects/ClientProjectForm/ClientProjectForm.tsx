@@ -38,7 +38,12 @@ import { SelectPaymentConditions } from "@/components/molecules/selects/clients/
 import { SelectHoldings } from "@/components/molecules/selects/clients/SelectHoldings/SelectHoldings";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { addAddressToLocation } from "@/services/locations/locations";
-import { docTypeIdBasedOnDocType, getCityName, isNonEmptyObject } from "@/utils/utils";
+import {
+  docTypeIdBasedOnDocType,
+  getCityName,
+  isNonEmptyObject,
+  stringToBoolean
+} from "@/utils/utils";
 import { MessageInstance } from "antd/es/message/interface";
 import { useCheckLocationFields, useGetClientValues } from "./clientProjectFormHooks";
 import { SelectLocations } from "@/components/molecules/selects/clients/SelectLocations/SelectLocations";
@@ -148,14 +153,14 @@ export const ClientProjectForm = ({
 
   useEffect(() => {
     // UseEffect para actualizar el valor de billingPeriod
-    if (!billingPeriod) {
-      setValue("infoClient.billing_period", dataClient.data.billing_period);
+    if (dataClient.data.billing_period) {
+      setBillingPeriod(dataClient.data.billing_period_config);
       return;
     }
 
-    const formattedBillingPeriod = billingPeriod.day_flag
-      ? `El dia ${billingPeriod.day} del mes`
-      : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`;
+    const formattedBillingPeriod = billingPeriod?.day_flag
+      ? `El dia ${billingPeriod?.day} del mes`
+      : `El ${billingPeriod?.order} ${billingPeriod?.day_of_week} del mes`;
 
     // Establecer el valor formateado al string de billing period
     setValue("infoClient.billing_period", formattedBillingPeriod, { shouldValidate: true });
@@ -174,13 +179,13 @@ export const ClientProjectForm = ({
       });
       const response = await getClientById(isViewDetailsClient.id.toString(), idProject);
       const finalData = response.data.data;
-      console.log("finalDataCLIENT: ", finalData);
 
       setDataClient({
         isLoading: false,
         data: finalData
       });
       setClientDocuments(finalData.documents);
+      setBillingPeriod(finalData.billing_period_config);
     })();
   }, [isViewDetailsClient, idProject]);
 
@@ -487,8 +492,8 @@ export const ClientProjectForm = ({
                           onClick={() => setIsBillingPeriodOpen(true)}
                           {...field}
                           value={
-                            billingPeriod
-                              ? billingPeriod?.day_flag === "true"
+                            billingPeriod?.day_flag
+                              ? stringToBoolean(billingPeriod.day_flag)
                                 ? `El dia ${billingPeriod.day} del mes`
                                 : `El ${billingPeriod?.order} ${billingPeriod?.day_of_week} del mes`
                               : undefined
@@ -567,6 +572,7 @@ export const ClientProjectForm = ({
                     clientId={isViewDetailsClient.id}
                     projectId={parseInt(idProject)}
                     getClientValues={getClientValues}
+                    clientBillingPeriod={billingPeriod}
                   />
                   <DividerCustom />
                 </>

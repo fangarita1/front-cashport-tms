@@ -29,6 +29,7 @@ interface Props {
     radicationType: ISelectType;
     conditionPayment: ISelectType;
   };
+  clientBillingPeriod: IBillingPeriodForm | undefined;
   messageApi: MessageInstance;
   createShipTo: (
     // eslint-disable-next-line no-unused-vars
@@ -58,16 +59,24 @@ interface Props {
 type ShipToContext = {
   selectedShipToData: ShipToFormType | undefined;
   setSelectedShipToData: Dispatch<SetStateAction<ShipToFormType | undefined>>;
+  clientBillingPeriod: IBillingPeriodForm | undefined;
+  billingPeriod: IBillingPeriodForm | undefined;
+  setBillingPeriod: Dispatch<SetStateAction<IBillingPeriodForm | undefined>>;
 };
+
 export const ShipToContext = createContext<ShipToContext>({
   selectedShipToData: undefined,
-  setSelectedShipToData: () => {}
+  setSelectedShipToData: () => {},
+  clientBillingPeriod: undefined,
+  billingPeriod: undefined,
+  setBillingPeriod: () => {}
 });
 
 export const ModalShipTo = ({
   setIsShipToModalOpen,
   isShipToModalOpen,
   getClientValues,
+  clientBillingPeriod,
   messageApi,
   createShipTo,
   getShipTo,
@@ -108,7 +117,6 @@ export const ModalShipTo = ({
         return;
       }
       const response = await getShipTo(isShipToModalOpen.accounting_code);
-      console.log("detailShipTo: ", response);
       setSelectedShipToData({
         shipTo: {
           code: response.accounting_code,
@@ -125,12 +133,7 @@ export const ModalShipTo = ({
           city_name: response.city
         }
       });
-      // setBillingPeriod({
-      //   day_flag: response.day_flag,
-      //   day: response.day,
-      //   order: response.order,
-      //   day_of_week: response.day_of_week
-      // })
+      setBillingPeriod(response.billing_period_config);
       setZones(response.zones?.map((zone) => zone.id) || []);
       setSelectedStructure({
         channels: response.channels?.map((channel) => channel.id) || [],
@@ -170,7 +173,15 @@ export const ModalShipTo = ({
 
   return (
     <>
-      <ShipToContext.Provider value={{ selectedShipToData, setSelectedShipToData }}>
+      <ShipToContext.Provider
+        value={{
+          selectedShipToData,
+          setSelectedShipToData,
+          clientBillingPeriod,
+          billingPeriod,
+          setBillingPeriod
+        }}
+      >
         <Modal
           zIndex={2}
           width={"40%"}
@@ -194,7 +205,6 @@ export const ModalShipTo = ({
               isShipToModalOpen={isShipToModalOpen}
               setCurrentView={setCurrentView}
               setIsBillingPeriodOpen={setIsBillingPeriodOpen}
-              billingPeriod={billingPeriod}
               getClientValues={getClientValues}
             />
           )}

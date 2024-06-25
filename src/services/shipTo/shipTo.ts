@@ -33,8 +33,8 @@ export const addShipTo = async (
     line: selectedStructure.lines,
     subline: selectedStructure.sublines,
     id_address: shipToData.address_id,
-    condition_payment: shipToData.condition_payment ? shipToData.condition_payment.value : 0,
-    radication_type: shipToData.radication_type ? shipToData.radication_type?.value : 0
+    condition_payment: shipToData.condition_payment?.value,
+    radication_type: shipToData.radication_type?.value
   };
 
   try {
@@ -88,8 +88,6 @@ export const updateShipTo = async (
 ): Promise<any> => {
   const shipToData = selectedData.shipTo;
 
-  console.log("entrando a hacer edit");
-
   const modelData: IUpdateShipTo = {
     client_id: clientID.toString(),
     project_id: projectID,
@@ -101,8 +99,8 @@ export const updateShipTo = async (
     subline: selectedStructure.sublines,
     contacts: "null",
     address_id: shipToData.address_id,
-    condition_payment: shipToData.condition_payment ? shipToData.condition_payment.value : 0,
-    radication_type: shipToData.radication_type ? shipToData.radication_type.value : 0,
+    condition_payment: shipToData.condition_payment?.value,
+    radication_type: shipToData.radication_type?.value,
     day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag === "true",
     day: typeof billingPeriod === "string" ? undefined : billingPeriod?.day,
     order: typeof billingPeriod === "string" ? undefined : billingPeriod?.order?.toLowerCase(),
