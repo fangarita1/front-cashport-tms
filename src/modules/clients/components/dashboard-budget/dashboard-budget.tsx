@@ -1,16 +1,21 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
+import Image from "next/image";
 import styles from "./dashboard-budget.module.scss";
 import DashboardGenericItem from "../dashboard-generic-item";
+import { ClientDetailsContext } from "../../containers/client-details/client-details";
+import { formatMoney } from "@/utils/utils";
 
 interface DashboardBudgetProps {
   className?: string;
 }
 
 const DashboardBudget: FC<DashboardBudgetProps> = ({ className }) => {
+  const { portfolioData } = useContext(ClientDetailsContext);
+  const budget = formatMoney(portfolioData?.data_wallet.budget_ammount);
   return (
     <div className={`${styles.wrapper} ${className}`}>
-      <DashboardGenericItem name="Presupuesto" value="$54.540" unit="M" />
-      <img src="/images/graph-3.svg" alt="Graph" className={styles.img} />
+      <DashboardGenericItem name="Presupuesto" value={budget} unit="M" />
+      <Image src="/images/graph-3.svg" alt="Graph" className={styles.img} width={86} height={56} />
     </div>
   );
 };

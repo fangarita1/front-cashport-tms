@@ -1,7 +1,7 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Flex, Popconfirm, Table, TableProps, Typography, Spin, MenuProps } from "antd";
 
-import { Eye, Plus } from "phosphor-react";
+import { Eye, Plus, Triangle } from "phosphor-react";
 import { ModalClientsGroup } from "@/components/molecules/modals/ModalClientsGroup/ModalClientsGroup";
 import { useClientsGroups } from "@/hooks/useClientsGroups";
 import { IClientsGroups } from "@/types/clientsGroups/IClientsGroups";
@@ -21,8 +21,21 @@ interface PropsClientsGroupsTable {
 export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTable) => {
   const { id: idProject } = useParams<{ id: string }>();
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [height, setHeight] = useState<number>(window.innerHeight);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<any>([]);
+  const [page, setPage] = useState(1);
+
+
+  useEffect(() => {
+    const handleResize = () => {
+      setHeight(window.innerHeight);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const onCreateClientsGroup = () => {
     setIsOpenModal(true);
@@ -35,7 +48,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
   };
 
   const { data, loading } = useClientsGroups({
-    page: 1,
+    page,
     idProject,
     clients: selectedFilters.clients,
     subscribers: selectedFilters.subscribers,
@@ -58,6 +71,10 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
 
   const changeGroupsState = () => {
     console.log("change groups state for ", selectedRows);
+  };
+
+  const onChangePage = (pagePagination: number) => {
+    setPage(pagePagination);
   };
 
   const deleteGroups = () => {
@@ -150,37 +167,56 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
   ];
 
   return (
-    <>
-      <main className="mainClientsGroupsTable">
-        <Flex justify="space-between" className="mainClientsGroupsTable_header">
-          <Flex gap={"1.75rem"}>
-            <DotsDropdown items={items} />
-          </Flex>
-          <Button
-            type="primary"
-            className="buttonNewProject"
-            size="large"
-            onClick={onCreateClientsGroup}
-            icon={<Plus weight="bold" size={15} />}
-          >
-            Crear Grupo de Clientes
-          </Button>
+    <main className="mainClientsGroupsTable">
+      <Flex justify="space-between" className="mainClientsGroupsTable_header">
+        <Flex gap={"1.75rem"}>
+          <DotsDropdown items={items} />
         </Flex>
+        <Button
+          type="primary"
+          className="buttonNewProject"
+          size="large"
+          onClick={onCreateClientsGroup}
+          icon={<Plus weight="bold" size={15} />}
+        >
+          Crear Grupo de Clientes
+        </Button>
+      </Flex>
 
-        {loading ? (
-          <Flex style={{ height: "30%" }} align="center" justify="center">
-            <Spin size="large" />
-          </Flex>
-        ) : (
+      {loading ? (
+        <Flex style={{ height: "30%" }} align="center" justify="center">
+          <Spin size="large" />
+        </Flex>
+      ) : (
+        <div className="container-table-of-ant-client-group">
           <Table
             columns={columns}
-            dataSource={data.map((data) => ({ ...data, key: data.id }))}
+            dataSource={data?.data.map((data) => ({ ...data, key: data.id }))}
             rowSelection={rowSelection}
             rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
+            virtual
+            scroll={{ y: height - 400, x: 100 }}
+            pagination={{
+              pageSize: 25,
+              showSizeChanger: false,
+              position: ["none", "bottomRight"],
+              total: data?.pagination?.totalRows,
+              onChange: onChangePage,
+              itemRender: (page, type, originalElement) => {
+                if (type === "prev") {
+                  return <Triangle size={".75rem"} weight="fill" className="prev" />;
+                } else if (type === "next") {
+                  return <Triangle size={".75rem"} weight="fill" className="next" />;
+                } else if (type === "page") {
+                  return <Flex className="pagination">{page}</Flex>;
+                }
+                return originalElement;
+              }
+            }}
           />
-        )}
-        <ModalClientsGroup isOpen={isOpenModal} setIsOpenModal={setIsOpenModal} />
-      </main>
-    </>
+        </div>
+      )}
+      <ModalClientsGroup isOpen={isOpenModal} setIsOpenModal={setIsOpenModal} />
+    </main>
   );
 };

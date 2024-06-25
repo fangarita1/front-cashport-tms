@@ -289,7 +289,6 @@ export const ClientsProjectTable = ({
       }
     ];
     return (
-      <>
         <main className="mainClientsProjectTable">
           {contextHolder}
           <Flex justify="space-between" className="mainClientsProjectTable_header">
@@ -317,7 +316,7 @@ export const ClientsProjectTable = ({
             <div className="container-table-of-ant">
               <Table
                 columns={columns}
-                dataSource={data.data.map((client) => ({
+                dataSource={data?.data?.map((client) => ({
                   key: client.nit,
                   ...client
                 }))}
@@ -331,7 +330,7 @@ export const ClientsProjectTable = ({
                   pageSize: 50,
                   showSizeChanger: false,
                   position: ["none", "bottomRight"],
-                  total: data.pagination.totalRows,
+                  total: data?.pagination?.totalRows,
                   onChange: onChangePage,
                   itemRender: (page, type, originalElement) => {
                     if (type === "prev") {
@@ -348,7 +347,6 @@ export const ClientsProjectTable = ({
             </div>
           )}
         </main>
-      </>
     );
   } else if (placedIn === "modal") {
     columns = [
@@ -405,7 +403,7 @@ export const ClientsProjectTable = ({
         ) : (
           <Table
             columns={columns}
-            dataSource={data.data.map((client) => ({
+            dataSource={data?.data?.map((client) => ({
               key: client.nit,
               ...client
             }))}
