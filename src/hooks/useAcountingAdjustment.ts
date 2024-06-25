@@ -1,5 +1,6 @@
 import useSWR from "swr";
 import { fetcher } from "@/utils/api/api";
+import { useAppStore } from "@/lib/store/store";
 
 interface UserApproved {
   id: number;
@@ -50,12 +51,12 @@ interface GetFinancialDiscountsResponse {
   data: FinancialDiscountStatusGroup[];
 }
 
+export const useAcountingAdjustment = (clientId: number) => {
+  const { ID } = useAppStore((state) => state.selectProject);
+  console.log(ID, clientId)
 
-// TODO  poner el tipo  de ajuste contable en el get 
-
-export const useAcountingAdjustment = (projectId: number, clientId: number) => {
   const { data, error } = useSWR<GetFinancialDiscountsResponse>(
-    `/financial-discount/project/${projectId}/client/${clientId}?type=1`,
+    `/financial-discount/project/${ID || 19}/client/${clientId}`,
     fetcher
   );
 

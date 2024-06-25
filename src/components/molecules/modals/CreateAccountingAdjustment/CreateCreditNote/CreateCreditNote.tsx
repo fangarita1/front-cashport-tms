@@ -1,7 +1,7 @@
 import React from "react";
 import { notification } from "antd";
 import "./createCreditNote.scss";
-import { useForm } from "react-hook-form";
+import { FieldError, useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import * as yup from "yup";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
@@ -11,28 +11,38 @@ import { createAccountingAdjustment } from "@/services/accountingAdjustment/acco
 import { InputSelect } from "@/components/atoms/inputs/InputSelect/InputSelect";
 import { useAppStore } from "@/lib/store/store";
 import { formatDateBars } from "@/utils/utils";
+import { InputDateRange } from "@/components/atoms/inputs/InputDateRange/InputDateRange";
 interface IformDiscount {
   motive: string;
+  percentage: number;
   amount: number;
-  validity_range: {
-    start: Date;
-    end: Date;
-  };
+  validity_range: Date[];
+  expiration_date: Date;
 }
+
 interface Props {
   onClose: () => void;
 }
 
 const schema = yup.object().shape({
   motive: yup.string().required("Campo obligatorio"),
+  percentage: yup
+    .number()
+    .max(100, "El porcentaje no puede ser mayor al 100%")
+    .required("Campo obligatorio"),
   amount: yup.number().min(0, "El valor no puede ser negativo").required("Campo obligatorio"),
-  validity_range: yup.object().shape({
-    start: yup.date().required("Campo obligatorio"),
-    end: yup
-      .date()
-      .required("Campo obligatorio")
-      .min(yup.ref("start"), "La fecha de vigencia debe ser mayor o igual a la fecha de emisión")
-  })
+  validity_range: yup
+    .array()
+    .of(yup.date().required("Campo obligatorio"))
+    .min(2, "Debe seleccionar un rango de fechas")
+    .required("Campo obligatorio"),
+  expiration_date: yup
+    .date()
+    .required("Campo obligatorio")
+    .min(
+      yup.ref("validity_range[1]"),
+      "La fecha de expiración debe ser posterior al rango de vigencia"
+    )
 });
 
 export const CreateCreditNote = ({ onClose }: Props) => {
@@ -55,11 +65,11 @@ export const CreateCreditNote = ({ onClose }: Props) => {
         motive: motives?.find((motive) => motive.name === data.motive)?.id || 1,
         ammount: data.amount,
         percentage: 0,
-        date_of_issue: formatDateBars(data.validity_range.start.toISOString()),
-        expiration_date: formatDateBars(data.validity_range.end.toISOString()),
+        date_of_issue: formatDateBars(data.validity_range[0].toISOString()),
+        expiration_date: formatDateBars(data.expiration_date.toISOString()),
         validity_range: {
-          start: formatDateBars(data.validity_range.start.toISOString()),
-          end: formatDateBars(data.validity_range.end.toISOString())
+          start: formatDateBars(data.validity_range[0].toISOString()),
+          end: formatDateBars(data.validity_range[1].toISOString())
         },
         users_aproved: [142, 146], // TODO: users_aproved esta mal escrito ya que el back lo pide asi
         project_id: ID || 19,
@@ -94,7 +104,6 @@ export const CreateCreditNote = ({ onClose }: Props) => {
             isError={isError}
             placeholder="Seleccionar motivo"
           />
-          <div />
           <InputForm
             titleInput="Cupo total"
             nameInput="amount"
@@ -105,18 +114,17 @@ export const CreateCreditNote = ({ onClose }: Props) => {
             customStyle={{ width: "100%" }}
           />
           <InputDateForm
-            titleInput="Fecha de emisión"
-            nameInput="validity_range.start"
-            placeholder="Seleccionar fecha de emisión"
+            titleInput="Fecha de expiración"
+            nameInput="expiration_date"
+            placeholder="Seleccionar fecha de expiración"
             control={control}
-            error={errors.validity_range?.start}
+            error={errors.expiration_date}
           />
-          <InputDateForm
-            titleInput="Rango de vigencia *opcional"
-            nameInput="validity_range.end"
+          <InputDateRange
+            titleInput="Rango de vigencia"
+            nameInput="validity_range"
             control={control}
-            placeholder="Seleccionar fecha de vigencia"
-            error={errors.validity_range?.end}
+            error={errors.validity_range as FieldError}
           />
           <button
             type="button"

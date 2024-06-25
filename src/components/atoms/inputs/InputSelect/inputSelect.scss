@@ -11,7 +11,7 @@
     .selectInput {
         background-color: #f7f7f7;
         border-radius: 0.25rem;
-        padding: 0.7rem;
+        padding: 1.5rem;
         padding-left: 0;
         font-size: 1rem;
         border: none;
@@ -35,16 +35,16 @@
         margin-top: 0.5rem;
     }
 
-    .ant-select-selector {
-        border: none !important;
-        box-shadow: none !important;
-    }
-
     .ant-select {
-        padding: 1.5rem;
         &-dropdown {
             border: none !important;
             box-shadow: none !important;
         }
+    }
+
+    .ant-select-selector {
+        border: none !important;
+        box-shadow: none !important;
+        background-color: #f7f7f7 !important;
     }
 }

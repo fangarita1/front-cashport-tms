@@ -1,28 +1,24 @@
 import { FC } from "react";
-import "./itemsActionsModal.scss";
-import { Checkbox } from "antd";
+import "./itemsApplyModal.scss";
 import { formatMoney } from "@/utils/utils";
 import { DividerVerticalModal } from "../DividerVertical/DividerVerticalModal";
 
-interface ItemsActionsModalProps {
-  onHeaderClick: () => void;
+interface ItemsApplyModalProps {
   type: number;
   item: {
     id: number;
     current_value: number;
-    selected: boolean;
     motive_name?: string | undefined;
     percentage?: number;
     intialAmount?: number;
   };
 }
 
-const ItemsActionsModal: FC<ItemsActionsModalProps> = ({ onHeaderClick, item, type }) => {
+const ItemApplyModal: FC<ItemsApplyModalProps> = ({ item, type }) => {
   return (
-    <div className="item">
+    <div className="item__apply__modal">
       <div className="head">
-        <Checkbox onChange={() => onHeaderClick()} checked={item.selected} />
-        <DividerVerticalModal type={type} />
+        <DividerVerticalModal type={type} className="divider__item" />
         <div className={"texts"}>
           <div className={"mainText"}>
             <strong className={"name"}>
@@ -51,4 +47,4 @@ const titleMap: Record<number, string> = {
   3: "Descuento"
 };
 
-export default ItemsActionsModal;
+export default ItemApplyModal;

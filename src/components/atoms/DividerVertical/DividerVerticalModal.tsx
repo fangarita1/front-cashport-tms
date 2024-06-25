@@ -3,16 +3,16 @@ import "./dividerModal.scss";
 
 interface DividerProps {
   type?: number;
-  Color?: string;
+  color?: string;
+  className?: string;
 }
 
-export const DividerVerticalModal: React.FC<DividerProps> = ({ type, Color }) => {
+export const DividerVerticalModal: React.FC<DividerProps> = ({ type, color, className }) => {
   let backgroundColor;
 
   switch (type) {
     case 1:
       backgroundColor = "#00A3FF";
-
       break;
     case 2:
       backgroundColor = "#9747FF";
@@ -25,8 +25,7 @@ export const DividerVerticalModal: React.FC<DividerProps> = ({ type, Color }) =>
       break;
   }
 
-  if (Color) {
-    return <div className="divides" style={{ backgroundColor: Color }} />;
-  }
-  return <div className="divides" style={{ backgroundColor }} />;
+  const finalClassName = `divides ${className || ""}`; 
+
+  return <div className={finalClassName} style={{ backgroundColor: color || backgroundColor }} />;
 };
