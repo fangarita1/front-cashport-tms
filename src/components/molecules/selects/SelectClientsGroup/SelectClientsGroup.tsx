@@ -31,7 +31,6 @@ export const SelectClientsGroup = ({
         ) : (
           <>
             {data?.data?.map((group) => {
-              console.log(group);
               return (
                 <Flex key={group.id} justify="space-between" className="cardGroups__group">
                   <Typography.Text>{group.group_name}</Typography.Text>
