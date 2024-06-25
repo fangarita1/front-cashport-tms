@@ -79,7 +79,25 @@ export const ModalCreateShipTo = ({
   const watchDependencyClient = watch("shipTo.dependency_client");
 
   useEffect(() => {
-    const { radicationType, conditionPayment } = getClientValues();
+    // UseEffect para actualizar el valor de billingPeriod
+    if (!billingPeriod) {
+      return;
+    }
+
+    const formattedBillingPeriod = billingPeriod.day_flag
+      ? `El dia ${billingPeriod.day} del mes`
+      : `El ${billingPeriod.order} ${billingPeriod.day_of_week} del mes`;
+
+    // Establecer el valor formateado al string de billing period
+    setValue("shipTo.billing_period", formattedBillingPeriod, { shouldValidate: true });
+  }, [billingPeriod, setValue]);
+
+  useEffect(() => {
+    const {
+      // billingPeriod: defaultBillingPeriod,
+      radicationType,
+      conditionPayment
+    } = getClientValues();
 
     if (watchDependencyClient) {
       // Set values when dependency_client is true

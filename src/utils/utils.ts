@@ -233,6 +233,9 @@ export const isNonEmptyObject = (obj: {}) => {
   return !(Object.keys(obj).length === 0 && obj.constructor === Object);
 };
 
-export const stringToBoolean = (value: string | boolean): boolean => {
+export const stringToBoolean = (value: string | boolean | undefined): boolean => {
+  if (value === undefined) {
+    return false;
+  }
   return value === "true" || value === true;
 };

@@ -11,6 +11,7 @@ import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 import { MessageInstance } from "antd/es/message/interface";
 import { SUCCESS } from "@/utils/constants/globalConstants";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
+import { stringToBoolean } from "@/utils/utils";
 
 export const addShipTo = async (
   clientID: number,
@@ -18,6 +19,7 @@ export const addShipTo = async (
   selectedData: ShipToFormType,
   zones: number[],
   selectedStructure: ISelectedBussinessRules,
+  billingPeriod: IBillingPeriodForm | undefined,
   messageApi: MessageInstance
 ): Promise<any> => {
   const shipToData = selectedData.shipTo;
@@ -34,11 +36,15 @@ export const addShipTo = async (
     subline: selectedStructure.sublines,
     id_address: shipToData.address_id,
     condition_payment: shipToData.condition_payment?.value,
-    radication_type: shipToData.radication_type?.value
+    radication_type: shipToData.radication_type?.value,
+    day_flag: stringToBoolean(billingPeriod?.day_flag),
+    day: billingPeriod?.day,
+    order: billingPeriod?.order?.toLowerCase(),
+    day_of_week: billingPeriod?.day_of_week?.toLowerCase()
   };
 
   try {
-    const response: AxiosResponse = await API.post(`${config.API_HOST}/ship-to`, modelData);
+    const response: any = await API.post(`${config.API_HOST}/ship-to`, modelData);
 
     if (response.status === SUCCESS) {
       messageApi.open({
@@ -46,19 +52,16 @@ export const addShipTo = async (
         content: `El Ship To fue creado exitosamente.`
       });
     } else {
+      console.warn("Error creating Ship To: ", response);
       messageApi.open({
         type: "error",
-        content: "Oops ocurrio un error creando Ship To."
+        content: response.response.data.message
       });
     }
 
     return response;
   } catch (error) {
     console.warn("Error creating Ship To: ", error);
-    messageApi.open({
-      type: "error",
-      content: "Oops ocurrio un error creando Ship To."
-    });
     return error as any;
   }
 };
@@ -101,11 +104,10 @@ export const updateShipTo = async (
     address_id: shipToData.address_id,
     condition_payment: shipToData.condition_payment?.value,
     radication_type: shipToData.radication_type?.value,
-    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag === "true",
-    day: typeof billingPeriod === "string" ? undefined : billingPeriod?.day,
-    order: typeof billingPeriod === "string" ? undefined : billingPeriod?.order?.toLowerCase(),
-    day_of_week:
-      typeof billingPeriod === "string" ? undefined : billingPeriod?.day_of_week?.toLowerCase()
+    day_flag: stringToBoolean(billingPeriod?.day_flag),
+    day: billingPeriod?.day,
+    order: billingPeriod?.order?.toLowerCase(),
+    day_of_week: billingPeriod?.day_of_week?.toLowerCase()
   };
 
   try {
@@ -139,8 +141,11 @@ export const deleteShipToByCode = async (
   messageApi: MessageInstance
 ): Promise<any> => {
   try {
-    const response: AxiosResponse = await API.delete(
-      `${config.API_HOST}/ship-to/${code}/project/${projectId}`
+    const response: AxiosResponse = await API.put(
+      `${config.API_HOST}/ship-to/project/${projectId}`,
+      {
+        id: code
+      }
     );
 
     if (response.status === SUCCESS) {

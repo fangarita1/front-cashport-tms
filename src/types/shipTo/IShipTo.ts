@@ -13,6 +13,10 @@ export interface ICreateShipTo {
   id_address: number;
   condition_payment: number | undefined;
   radication_type: number | undefined;
+  day_flag?: boolean;
+  day?: number;
+  order?: string;
+  day_of_week?: string;
 }
 
 export interface ShipToFormType {
@@ -65,7 +69,7 @@ export interface IShipTo {
   radication_name: string;
   radication_type: number;
   shipto_description: string;
-  sublines: ISubLines[];
+  sub_lines: ISubLines[];
   zones: IZones[];
 }
 

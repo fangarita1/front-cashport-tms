@@ -39,6 +39,8 @@ interface Props {
     // eslint-disable-next-line no-unused-vars
     selectedStructure: ISelectedBussinessRules,
     // eslint-disable-next-line no-unused-vars
+    billingPeriod: IBillingPeriodForm | undefined,
+    // eslint-disable-next-line no-unused-vars
     messageApi: MessageInstance
   ) => void;
   // eslint-disable-next-line no-unused-vars
@@ -101,7 +103,7 @@ export const ModalShipTo = ({
       return;
     }
     if (selectedShipToData && !isShipToModalOpen.accounting_code) {
-      createShipTo(selectedShipToData, zones, selectedStructure, messageApi);
+      createShipTo(selectedShipToData, zones, selectedStructure, billingPeriod, messageApi);
     }
     setCurrentView("main");
     setIsShipToModalOpen({ open: false, accounting_code: undefined });
@@ -138,7 +140,7 @@ export const ModalShipTo = ({
       setSelectedStructure({
         channels: response.channels?.map((channel) => channel.id) || [],
         lines: response.lines_info?.map((line) => line.id) || [],
-        sublines: response.sublines?.map((subline) => subline.id) || []
+        sublines: response.sub_lines?.map((subline) => subline.id) || []
       });
     };
 

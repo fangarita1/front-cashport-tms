@@ -104,8 +104,8 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
     event?.preventDefault();
     event?.stopPropagation();
     if (selectedAddress) {
-      setParentFormValue("shipTo.address_id", selectedAddress.id);
-      setParentFormValue("shipTo.address", selectedAddress.address);
+      setParentFormValue("shipTo.address_id", selectedAddress.id, { shouldValidate: true });
+      setParentFormValue("shipTo.address", selectedAddress.address, { shouldValidate: true });
       setIsModalAddressOpen(false);
       return;
     }
@@ -118,8 +118,8 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
 
     try {
       const response = await createLocation(newAddressData, messageApi);
-      setParentFormValue("shipTo.address_id", response[0].id);
-      setParentFormValue("shipTo.address", newAddressData.address);
+      setParentFormValue("shipTo.address_id", response[0].id, { shouldValidate: true });
+      setParentFormValue("shipTo.address", newAddressData.address, { shouldValidate: true });
       setIsModalAddressOpen(false);
     } catch (error) {
       console.error("Failed to add address: ", error);

@@ -27,9 +27,18 @@ export const useShipTos = (clientId: number) => {
     selectedData: ShipToFormType,
     zones: number[],
     selectedStructure: ISelectedBussinessRules,
+    billingPeriod: IBillingPeriodForm | undefined,
     messageApi: MessageInstance
   ) => {
-    await addShipTo(clientId, ID, selectedData, zones, selectedStructure, messageApi);
+    await addShipTo(
+      clientId,
+      ID,
+      selectedData,
+      zones,
+      selectedStructure,
+      billingPeriod,
+      messageApi
+    );
     mutate();
   };
 
