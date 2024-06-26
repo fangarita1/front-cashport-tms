@@ -102,6 +102,7 @@ export const WalletTab = () => {
                   status={invoiceState.status}
                   total={invoiceState.total}
                   quantity={invoiceState.count}
+                  color={invoiceState.color}
                 />
               ),
               children: (

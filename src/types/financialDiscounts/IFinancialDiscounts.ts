@@ -36,6 +36,8 @@ export interface IFinancialDiscount {
 
 export interface IStatusFinancialDiscounts {
   status_id: number;
+  status_name: string;
+  color: string;
   financial_discounts: IFinancialDiscount[];
   temp_discount_total: number;
   count: number;

@@ -69,7 +69,7 @@ const AccountingAdjustmentsTab = () => {
             items={data?.map((financialState) => ({
               key: financialState.status_id,
               label: (
-                <LabelCollapse status={financialState.financial_discounts[0].document_type_name} />
+                <LabelCollapse status={financialState.status_name} color={financialState.color} />
               ),
               children: (
                 <AccountingAdjustmentsTable
