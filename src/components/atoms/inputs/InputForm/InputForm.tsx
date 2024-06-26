@@ -5,7 +5,7 @@ import { Control, Controller, FieldError, RegisterOptions } from "react-hook-for
 import "./inputform.scss";
 
 interface Props {
-  titleInput: string;
+  titleInput?: string;
   nameInput: string;
   control: Control<any> | undefined;
   error: FieldError | undefined;
