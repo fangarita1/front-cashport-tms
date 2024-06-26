@@ -16,7 +16,6 @@ export default function FilterDiscounts() {
       options={[]}
       changeOnSelect
       loadData={() => []}
-      value={["asdasd"]}
       onChange={() => []}
       onBlur={() => []}
     />
