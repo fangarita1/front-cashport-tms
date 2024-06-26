@@ -1,61 +1,71 @@
 @import "@styles/variables.scss";
 
-.walletTab_header {
-    .button {
-        &__actions {
-            padding: 0.75rem 1rem;
-            background-color: $background;
-            border: solid 1px transparent;
-            font-weight: 600;
+.walletTab {
+    &__header {
+        .button {
+            &__actions {
+                padding: 0.75rem 1rem;
+                background-color: $background;
+                border: solid 1px transparent;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                height: 3rem;
+
+                &:hover {
+                    border: solid 1px $dark-gray;
+                }
+            }
+            &__adjustments {
+                background-color: $secondary;
+                box-shadow: none;
+                color: $black;
+                display: flex;
+                align-items: center;
+                font-size: 1rem;
+                font-weight: 600;
+                height: 3rem;
+
+                &:hover {
+                    color: $white;
+                    background-color: $secondary !important;
+                }
+            }
+        }
+    }
+
+    &__collapseByStatus {
+        .ant-collapse-item {
+            margin-left: 1rem !important;
+            padding-bottom: 1.5rem !important;
+            margin-right: 0.5rem !important;
+            border-bottom: 1px solid $dark-gray !important;
+            border-radius: none !important;
+
+            &:last-child {
+                border-bottom: none !important;
+                padding-bottom: 0 !important;
+            }
+        }
+
+        .ant-collapse-header {
             display: flex;
-            align-items: center;
-            height: 3rem;
+            align-items: center !important;
+            padding: 0 !important;
+            margin-top: 1.5rem;
+            margin-left: -1.5rem;
 
-            &:hover {
-                border: solid 1px $dark-gray;
+            &-text {
+                h4 {
+                    margin: 0;
+                }
             }
         }
-        &__adjustments {
-            background-color: $secondary;
-            color: black;
-            font-weight: 600;
-            box-shadow: none;
-            display: flex;
-            align-items: center;
 
-            &:hover {
-                background-color: $secondary !important;
-                opacity: 0.8;
-                color: black;
+        .ant-collapse-content {
+            &-box {
+                padding: 0.75rem 0.5rem !important;
             }
         }
     }
-}
-
-.collapseByStatus {
-    .ant-collapse-header {
-        display: flex;
-        align-items: center !important;
-        padding: 0 !important;
-        margin-top: 1.5rem;
-        margin-left: -0.5rem;
-
-        &-text {
-            h4 {
-                margin: 0;
-            }
-        }
-    }
-
-    .ant-collapse-content {
-        &-box {
-            padding: 0.75rem 0.5rem !important;
-        }
-    }
-}
-
-.collapse-separator {
-    border: none;
-    border-top: 1px solid $dark-gray;
-    margin: 1rem;
 }

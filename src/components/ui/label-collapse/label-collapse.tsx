@@ -41,9 +41,9 @@ const LabelCollapse = ({ status, total, quantity, color }: PropsLabelCollapseInv
         </Flex>
       )}
       {quantity && (
-        <Flex className={styles.labelCollapse__total}>
-          <Files size={16} className={styles.labelCollapse__total__icon} />
-          <h5 className={styles.labelCollapse__total__title}>{quantity}</h5>
+        <Flex className={styles.labelCollapse__quantity}>
+          <Files size={16} className={styles.labelCollapse__quantity__icon} />
+          <h5 className={styles.labelCollapse__quantity__title}>{quantity}</h5>
         </Flex>
       )}
     </Flex>

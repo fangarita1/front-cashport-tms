@@ -55,7 +55,7 @@ const AccountingAdjustmentsTab = () => {
             <Button
               type="primary"
               className="availableAdjustments"
-              onClick={() => console.log("click ajustes contables")}
+              onClick={() => console.log("click ajustes disponibles")}
             >
               Ajustes disponibles
               <CaretDoubleRight size={16} style={{ marginLeft: "0.5rem" }} />
