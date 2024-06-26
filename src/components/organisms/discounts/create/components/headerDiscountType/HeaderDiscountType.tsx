@@ -1,8 +1,7 @@
 "use client";
 import styles from "./HeaderDiscountType.module.scss";
 import { Button, Flex, Typography } from "antd";
-import { Bag, CalendarBlank, UsersThree } from "phosphor-react";
-import { useState } from "react";
+import discountCategories from "../../../constants/discountTypes";
 
 const { Title } = Typography;
 
@@ -16,27 +15,16 @@ export default function HeaderDiscountType({ selectedType, handleClick }: Props)
     <Flex className={styles.HeaderContainer} justify="space-between" vertical gap={20}>
       <Title level={4}>Selecciona el tipo de descuento</Title>
       <Flex className={styles.buttonContainer} justify="space-around" wrap="wrap" gap={20}>
-        <Button
-          className={`${styles.buttonIcon} ${selectedType === 1 ? styles.active : ""}`}
-          icon={<Bag size={32} />}
-          onClick={() => handleClick(1)}
-        >
-          Por orden
-        </Button>
-        <Button
-          className={`${styles.buttonIcon} ${selectedType === 2 ? styles.active : ""}`}
-          icon={<UsersThree size={32} />}
-          onClick={() => handleClick(2)}
-        >
-          Por cliente
-        </Button>
-        <Button
-          className={`${styles.buttonIcon} ${selectedType === 3 ? styles.active : ""}`}
-          icon={<CalendarBlank size={32} />}
-          onClick={() => handleClick(3)}
-        >
-          Plan anual
-        </Button>
+        {Object.keys(discountCategories).map((key) => (
+          <Button
+            key={`button-for-${key}`}
+            className={`${styles.buttonIcon} ${selectedType === discountCategories[key].id ? styles.active : ""}`}
+            icon={discountCategories[key].Icon()}
+            onClick={() => handleClick(discountCategories[key].id)}
+          >
+            {discountCategories[key].name}
+          </Button>
+        ))}
       </Flex>
     </Flex>
   );

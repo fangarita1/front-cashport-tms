@@ -1,9 +1,9 @@
 import { Button, ConfigProvider, theme } from "antd";
-import { BaseButtonProps } from "antd/es/button/button";
+import { ButtonProps } from "antd/es/button/button";
 
 const { useToken } = theme;
 
-export default function PrincipalButton({ children, ...rest }: BaseButtonProps) {
+export default function PrincipalButton({ children, ...rest }: ButtonProps) {
   const { token } = useToken();
   const color = token.green;
   console.log(color);

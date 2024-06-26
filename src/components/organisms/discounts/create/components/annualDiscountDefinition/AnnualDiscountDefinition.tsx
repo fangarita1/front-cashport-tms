@@ -4,10 +4,18 @@ import { DatePicker, Flex, Select, Typography } from "antd";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import AnnualFeatures from "./annualFeatures/AnnualFeatures";
+import { getOptionsByType } from "../../../constants/discountTypes";
+import { useMemo } from "react";
 
 const { Title, Text } = Typography;
 
-export default function AnnualDiscountDefinition() {
+type Props = {
+  selectedType: number;
+};
+
+export default function AnnualDiscountDefinition({selectedType}: Props) {
+  const _ = useMemo(() => getOptionsByType(selectedType), [selectedType]);
+
   const options = [
     { label: "cliente 1", value: 1 },
     { label: "cliente 2", value: 2 },

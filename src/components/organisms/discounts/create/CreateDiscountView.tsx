@@ -4,11 +4,15 @@ import { Flex, message } from "antd";
 import HeaderDiscountType from "./components/headerDiscountType/HeaderDiscountType";
 import DefinitionDiscounts from "./components/definitionsDiscount/DefinitionDiscounts";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AnnualDiscountDefinition from "./components/annualDiscountDefinition/AnnualDiscountDefinition";
+import discountCategories from "../constants/discountTypes";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { DiscountSchema, generalResolver } from "./resolvers/generalResolver";
 
-const commonDiscount = [1, 2];
-const annualDiscount = [3];
+const commonDiscount = [discountCategories.byOrder.id, discountCategories.byClient.id];
+const annualDiscount = [discountCategories.annual.id];
 
 export function CreateDiscountView() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -16,16 +20,27 @@ export function CreateDiscountView() {
   const handleClick = (type: number) => {
     setSelectedType(type);
   };
+  const form = useForm({
+    resolver: yupResolver<DiscountSchema>(generalResolver)
+  });
+
+  const handleExecCallback = () => form.handleSubmit((e) => console.log(e))();
 
   return (
     <>
       {contextHolder}
       <Flex className={styles.mainCreateDiscount}>
         <HeaderDiscountType selectedType={selectedType} handleClick={handleClick} />
-        {commonDiscount.includes(selectedType) && <DefinitionDiscounts />}
-        {annualDiscount.includes(selectedType) && <AnnualDiscountDefinition />}
+        {commonDiscount.includes(selectedType) && (
+          <DefinitionDiscounts form={form} selectedType={selectedType} />
+        )}
+        {annualDiscount.includes(selectedType) && (
+          <AnnualDiscountDefinition selectedType={selectedType} />
+        )}
         <Flex gap={20} justify="end">
-          <PrincipalButton className={styles.button}>Crear</PrincipalButton>
+          <PrincipalButton className={styles.button} onClick={handleExecCallback}>
+            Crear
+          </PrincipalButton>
         </Flex>
       </Flex>
     </>
