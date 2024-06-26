@@ -140,6 +140,7 @@ export const ClientProjectForm = ({
 
   const getClientValues = useGetClientValues(getValues);
 
+  const watchClientType = watch("infoClient.client_type");
   const hasLocationChanged = useCheckLocationFields(
     getValues,
     watch,
@@ -549,11 +550,13 @@ export const ClientProjectForm = ({
                     </Col>
                   ))}
                 </Row>
+
                 {!isViewDetailsClient.id && isEditAvailable ? (
                   <Button
                     size="large"
                     type="text"
                     className="buttonUploadDocument"
+                    disabled={watchClientType === undefined}
                     onClick={() => setIsUploadDocument(true)}
                     icon={<Plus weight="bold" size={15} />}
                   >
@@ -595,6 +598,7 @@ export const ClientProjectForm = ({
         isOpen={isUploadDocument}
         setIsOpenUpload={setIsUploadDocument}
         setClientDocuments={setClientDocuments}
+        clientTypeId={watchClientType}
       />
       <ModalBillingPeriod
         isOpen={isBillingPeriodOpen}
