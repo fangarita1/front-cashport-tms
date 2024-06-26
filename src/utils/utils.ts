@@ -188,7 +188,7 @@ export function formatMoney(text: string, countryCode?: CountryCode): string {
   return formatter.format(number);
 }
 
-const countryFormater = (currency: CountryCode = "en") => {
+const countryFormater = (currency: CountryCode = "co") => {
   return intFormat[currency];
 };
 
@@ -198,7 +198,8 @@ const intFormat = {
   jpn: { currency: "JPY", id: "ja-JP" },
   ch: { currency: "CNY", id: "zh-CN" },
   kr: { currency: "KRW", id: "ko-KR" },
-  es: { currency: "EUR", id: "es-ES" }
+  es: { currency: "EUR", id: "es-ES" },
+  co: { currency: "COP", id: "es-CO" }
 };
 
 export const getCityName = (id: number) => {
