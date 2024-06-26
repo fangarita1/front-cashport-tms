@@ -16,6 +16,7 @@ interface Props {
   disabled?: boolean;
   validationRules?: RegisterOptions;
   className?: string;
+  readOnly?: boolean;
 }
 
 export const InputForm = ({
@@ -29,7 +30,8 @@ export const InputForm = ({
   placeholder = "",
   disabled,
   validationRules,
-  className
+  className,
+  readOnly
 }: Props) => {
   return (
     <Flex vertical className={`containerInput ${className}`} style={customStyle}>
@@ -45,6 +47,7 @@ export const InputForm = ({
         disabled={disabled}
         render={({ field }) => (
           <Input
+            readOnly={readOnly}
             type={typeInput}
             className={!error ? "inputForm" : "inputFormError"}
             variant="borderless"
