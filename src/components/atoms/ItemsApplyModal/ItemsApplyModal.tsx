@@ -12,9 +12,10 @@ interface ItemsApplyModalProps {
     percentage?: number;
     intialAmount?: number;
   };
+  availableValue?: number;
 }
 
-const ItemApplyModal: FC<ItemsApplyModalProps> = ({ item, type }) => {
+const ItemApplyModal: FC<ItemsApplyModalProps> = ({ item, type, availableValue }) => {
   return (
     <div className="item__apply__modal">
       <div className="head">
@@ -29,7 +30,7 @@ const ItemApplyModal: FC<ItemsApplyModalProps> = ({ item, type }) => {
           <div className={"label"}>{item.motive_name ?? "Volumen"}</div>
         </div>
         <div className={"mainValues"}>
-          <div className={"value"}>{formatMoney(item.current_value.toString())}</div>
+          <div className={"value"}>{availableValue}</div>
           <div className={"subValue"}>
             {item.percentage
               ? `${item.percentage}%`

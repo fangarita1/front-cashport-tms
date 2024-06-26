@@ -14,27 +14,90 @@ interface Props {
   setCurrentView: Dispatch<SetStateAction<string>>;
   invoiceSelected?: IInvoice[];
 }
+interface IcurrentInvoices {
+  id: number;
+  current_value: number;
+  newBalance: number;
+}
 
 export const ApplyAccountingAdjustment = ({
   type,
   selectedRows,
   setCurrentView,
-  setSelectedRows,
-  invoiceSelected
+  invoiceSelected = []
 }: Props) => {
   const [selectTab, setSelectTab] = useState(0);
-  const [applyValues, setApplyValues] = useState<{ [key: number]: number }>({});
+  const [currentInvoices, setCurrentInvoices] = useState<IcurrentInvoices[]>([]);
+  const [currentAdjustment, setCurrentAdjustment] = useState(
+    selectedRows.map((row) => row.current_value)
+  );
+  const [applyValues, setApplyValues] = useState<{
+    [key: string]: {
+      balanceToApply: number;
+      idAdjustment: number;
+    }[];
+  }>({});
 
-  const handleApplyValueChange = (value: number | string | null, record: IInvoice) => {
-    const numericValue = typeof value === "string" ? parseFloat(value) : value;
-    setApplyValues((prev) => ({ ...prev, [record.id]: numericValue || 0 }));
+  useEffect(() => {
+    setCurrentInvoices(
+      invoiceSelected.map((invoice) => ({
+        id: invoice.id,
+        current_value: invoice.current_value,
+        newBalance: invoice.current_value
+      }))
+    );
+  }, [invoiceSelected]);
+
+  const handleValueChange = (valueApplied: number, index: number, recordId: number) => {
+    setCurrentAdjustment((prev) => {
+      const previousValue =
+        applyValues[recordId]?.find((apply) => apply.idAdjustment === selectedRows[index].id)
+          ?.balanceToApply ?? 0;
+
+      const newValue = prev[index] + previousValue - valueApplied;
+      return prev.map((value, i) => (i === index ? Math.max(0, newValue) : value));
+    });
+  };
+
+  const handleApplyValueChange = (value: number | null, record: IcurrentInvoices) => {
+    const previousValue =
+      applyValues[record.id]?.find((apply) => apply.idAdjustment === selectedRows[selectTab].id)
+        ?.balanceToApply ?? 0;
+    // Validación para asegurarse de que el valor a aplicar no exceda el newBalance actual
+    const maxApplicableValue = Math.min(value ?? 0, record.newBalance + previousValue);
+
+    setApplyValues((prev) => ({
+      ...prev, // Toma el estado anterior
+      [record.id]: [
+        // Mantiene todas las aplicaciones anteriores para el mismo registro, excepto la actualmente seleccionada
+        ...(prev[record.id] ?? []).filter(
+          (apply) => apply.idAdjustment !== selectedRows[selectTab].id
+        ),
+        // Agrega o actualiza la nueva aplicación con el valor ajustado que no excede el balance disponible
+        { balanceToApply: maxApplicableValue, idAdjustment: selectedRows[selectTab].id }
+      ]
+    }));
+
+    setCurrentInvoices((prev) => {
+      return prev.map((invoice) => {
+        if (invoice.id === record.id) {
+          const difference = maxApplicableValue - previousValue; // Calcula la diferencia entre el valor nuevo y el anterior
+          return {
+            ...invoice,
+            newBalance: invoice.newBalance - difference
+          };
+        }
+        return invoice; // Devuelve las facturas no modificadas
+      });
+    });
+    handleValueChange(value ?? 0, selectTab, record.id);
   };
 
   useEffect(() => {
-    console.log(applyValues);
+    console.log(applyValues, "current", currentInvoices, currentAdjustment);
   }, [applyValues]);
 
-  const columns: ColumnsType<IInvoice> = [
+  const columns: ColumnsType<IcurrentInvoices> = [
     {
       title: "ID Factura",
       dataIndex: "id",
@@ -51,11 +114,7 @@ export const ApplyAccountingAdjustment = ({
       title: "Saldo nuevo",
       dataIndex: "newBalance",
       key: "newBalance",
-      render: (_, record) => {
-        const applyValue = applyValues[record.id] || 0;
-        const newBalance = record.current_value - applyValue;
-        return `$${newBalance.toLocaleString()}`;
-      }
+      render: (text) => `$${text}`
     },
     {
       title: "Valor a aplicar",
@@ -63,11 +122,25 @@ export const ApplyAccountingAdjustment = ({
       render: (_, record) => (
         <InputNumber
           min={0}
-          max={record.current_value}
           defaultValue={0}
-          formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-          parser={(value) => parseFloat(value!.replace(/\$\s?|(,*)/g, ""))}
-          onChange={(value) => handleApplyValueChange(value, record)}
+          value={
+            applyValues[record.id]?.find(
+              (apply) => apply.idAdjustment === selectedRows[selectTab].id
+            )?.balanceToApply
+          }
+          
+          onBlur={(event) => {
+            const parsedValue = parseFloat(event.target.value);
+            if (
+              (currentAdjustment[selectTab] > 0 &&
+                parsedValue <= selectedRows[selectTab].current_value) ||
+              applyValues[record.id]?.find(
+                (apply) => apply.idAdjustment === selectedRows[selectTab].id
+              )?.balanceToApply
+            ) {
+              handleApplyValueChange(isNaN(parsedValue) ? 0 : parsedValue, record);
+            }
+          }}
           style={{ width: "100%" }}
         />
       )
@@ -87,8 +160,9 @@ export const ApplyAccountingAdjustment = ({
       <ItemApplyModal
         type={type}
         item={selectedRows.length > 1 ? selectedRows[selectTab] : selectedRows[0]}
+        availableValue={currentAdjustment[selectTab]}
       />
-      <Table dataSource={invoiceSelected} columns={columns} pagination={false} />
+      <Table dataSource={currentInvoices} columns={columns} pagination={false} />
       <Flex gap="8px">
         <button
           type="button"
