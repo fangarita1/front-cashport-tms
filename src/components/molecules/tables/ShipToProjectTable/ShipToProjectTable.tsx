@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Button, Flex, Spin, Table, TableProps, Typography, message } from "antd";
-import { Eye, Plus } from "phosphor-react";
+import { Button, Flex, Popconfirm, Spin, Table, TableProps, Typography, message } from "antd";
+import { Eye, Plus, Trash } from "phosphor-react";
 
 import { ModalShipTo } from "../../modals/ModalShipTo/ModalShipTo";
 import { ISelectType } from "@/types/clients/IClients";
 import { useShipTos } from "@/hooks/useShipTo";
 
 import "./shiptoprojecttable.scss";
+import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 const { Text, Link, Title } = Typography;
 
 interface Props {
@@ -17,11 +18,19 @@ interface Props {
     radicationType: ISelectType;
     conditionPayment: ISelectType;
   };
+  clientBillingPeriod: IBillingPeriodForm | undefined;
 }
 
-export const ShipToProjectTable = ({ clientId, getClientValues }: Props) => {
-  const [isShipToModalOpen, setIsShipToModalOpen] = useState(false);
-  const { data, isLoading, createShipTo } = useShipTos(clientId);
+export const ShipToProjectTable = ({ clientId, getClientValues, clientBillingPeriod }: Props) => {
+  const [isShipToModalOpen, setIsShipToModalOpen] = useState<{
+    open: boolean;
+    accounting_code: string | undefined;
+  }>({
+    open: false,
+    accounting_code: undefined
+  });
+  const { data, isLoading, createShipTo, getShipTo, deleteShipTo, editShipTo } =
+    useShipTos(clientId);
   const [messageApi, contextHolder] = message.useMessage();
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -84,8 +93,22 @@ export const ShipToProjectTable = ({ clientId, getClientValues }: Props) => {
       key: "seeProject",
       width: "40px",
       dataIndex: "",
-      render: () => (
-        <Button onClick={() => setIsShipToModalOpen(true)} icon={<Eye size={"1.3rem"} />} />
+      render: (_, { accounting_code }) => (
+        <Flex gap={"0.5rem"}>
+          <Popconfirm
+            placement="topRight"
+            title="¿Eliminar Ship To?"
+            description="Esta acción no se puede deshacer."
+            onConfirm={() => deleteShipTo(accounting_code, messageApi)}
+          >
+            <Button icon={<Trash size={"1.25rem"} />} />
+          </Popconfirm>
+
+          <Button
+            onClick={() => setIsShipToModalOpen({ open: true, accounting_code })}
+            icon={<Eye size={"1.3rem"} />}
+          />
+        </Flex>
       )
     }
   ];
@@ -137,7 +160,9 @@ export const ShipToProjectTable = ({ clientId, getClientValues }: Props) => {
               size="large"
               type="text"
               className="buttonCreateShipTo"
-              onClick={() => setIsShipToModalOpen(true)}
+              onClick={() => {
+                setIsShipToModalOpen({ open: true, accounting_code: undefined });
+              }}
               icon={<Plus weight="bold" size={15} />}
             >
               Crear Ship To
@@ -147,11 +172,14 @@ export const ShipToProjectTable = ({ clientId, getClientValues }: Props) => {
       </div>
 
       <ModalShipTo
-        isOpen={isShipToModalOpen}
         setIsShipToModalOpen={setIsShipToModalOpen}
+        isShipToModalOpen={isShipToModalOpen}
         getClientValues={getClientValues}
+        clientBillingPeriod={clientBillingPeriod}
         messageApi={messageApi}
         createShipTo={createShipTo}
+        getShipTo={getShipTo}
+        editShipTo={editShipTo}
       />
     </>
   );

@@ -46,8 +46,7 @@ export const ClientsProjectTable = ({
   setIsViewDetailsClients,
   placedIn = "tab",
   setSelectedRows,
-  selectedClientsKeys,
-  messageContext
+  selectedClientsKeys
 }: Props) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [page, setPage] = useState(1);
@@ -130,7 +129,6 @@ export const ClientsProjectTable = ({
       messageApi.open({ type: "error", content: error.message });
     }
   }, [error]);
-
   let columns: TableProps<IClient>["columns"] = [];
   if (placedIn === "tab") {
     columns = [
@@ -289,64 +287,62 @@ export const ClientsProjectTable = ({
       }
     ];
     return (
-        <main className="mainClientsProjectTable">
-          {contextHolder}
-          <Flex justify="space-between" className="mainClientsProjectTable_header">
-            <Flex gap={"0.625rem"}>
-              <FilterClients setFilterClients={setFilterClients} />
-              <DotsDropdown items={items} />{" "}
-            </Flex>
-
-            <Button
-              type="primary"
-              className="buttonNewProject"
-              size="large"
-              onClick={onCreateClient}
-              icon={<Plus weight="bold" size={15} />}
-            >
-              Nuevo Cliente
-            </Button>
+      <main className="mainClientsProjectTable">
+        {contextHolder}
+        <Flex justify="space-between" className="mainClientsProjectTable_header">
+          <Flex gap={"0.625rem"}>
+            <FilterClients setFilterClients={setFilterClients} />
+            <DotsDropdown items={items} />{" "}
           </Flex>
 
-          {isLoading ? (
-            <Flex style={{ height: "30%" }} align="center" justify="center">
-              <Spin size="large" />
-            </Flex>
-          ) : (
-            <div className="container-table-of-ant">
-              <Table
-                columns={columns}
-                dataSource={data?.data?.map((client) => ({
-                  key: client.nit,
-                  ...client
-                }))}
-                virtual
-                scroll={{ y: height - 400, x: 100 }}
-                rowSelection={rowSelection}
-                rowClassName={(record) =>
-                  selectedRowKeys.includes(record.nit) ? "selectedRow" : ""
-                }
-                pagination={{
-                  pageSize: 50,
-                  showSizeChanger: false,
-                  position: ["none", "bottomRight"],
-                  total: data?.pagination?.totalRows,
-                  onChange: onChangePage,
-                  itemRender: (page, type, originalElement) => {
-                    if (type === "prev") {
-                      return <Triangle size={".75rem"} weight="fill" className="prev" />;
-                    } else if (type === "next") {
-                      return <Triangle size={".75rem"} weight="fill" className="next" />;
-                    } else if (type === "page") {
-                      return <Flex className="pagination">{page}</Flex>;
-                    }
-                    return originalElement;
+          <Button
+            type="primary"
+            className="buttonNewProject"
+            size="large"
+            onClick={onCreateClient}
+            icon={<Plus weight="bold" size={15} />}
+          >
+            Nuevo Cliente
+          </Button>
+        </Flex>
+
+        {isLoading ? (
+          <Flex style={{ height: "30%" }} align="center" justify="center">
+            <Spin size="large" />
+          </Flex>
+        ) : (
+          <div className="container-table-of-ant">
+            <Table
+              columns={columns}
+              dataSource={data?.data?.map((client) => ({
+                key: client.nit,
+                ...client
+              }))}
+              virtual
+              scroll={{ y: height - 400, x: 100 }}
+              rowSelection={rowSelection}
+              rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
+              pagination={{
+                pageSize: 50,
+                showSizeChanger: false,
+                position: ["none", "bottomRight"],
+                total: data?.pagination?.totalRows,
+                onChange: onChangePage,
+                itemRender: (page, type, originalElement) => {
+                  if (type === "prev") {
+                    return <Triangle size={".75rem"} weight="fill" className="prev" />;
+                  } else if (type === "next") {
+                    return <Triangle size={".75rem"} weight="fill" className="next" />;
+                  } else if (type === "page") {
+                    return <Flex className="pagination">{page}</Flex>;
                   }
-                }}
-              />
-            </div>
-          )}
-        </main>
+                  return originalElement;
+                }
+              }}
+            />
+          </div>
+        )}
+      </main>
     );
   } else if (placedIn === "modal") {
     columns = [

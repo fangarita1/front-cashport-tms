@@ -1,16 +1,24 @@
 import { AddressContainer } from "@/components/atoms/AddressContainer/AddressContainer";
 import { Button, Typography, message } from "antd";
-import { BaseSyntheticEvent, Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  BaseSyntheticEvent,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState
+} from "react";
 import { Controller, UseFormSetValue, useForm } from "react-hook-form";
 import { InputAddress } from "@/components/atoms/inputs/InputAddress/InputAddress";
 import { CaretLeft } from "phosphor-react";
-import { SelectLocations } from "../../selects/clients/SelectLocations/SelectLocations";
+import { SelectLocations } from "../../../selects/clients/SelectLocations/SelectLocations";
 import { ISelectType } from "@/types/clients/IClients";
+import { ShipToContext } from "../ModalShipTo";
 
-import "./modaladdress.scss";
 import { useLocations } from "@/hooks/useLocations";
 import { locationAddress } from "@/types/locations/ILocations";
 import { ShipToFormType } from "@/types/shipTo/IShipTo";
+import "./modaladdress.scss";
 
 const { Title } = Typography;
 interface Props {
@@ -30,7 +38,6 @@ export type AddressType = {
   };
 };
 export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Props) => {
-  const [isEditAvailable] = useState(false);
   const [alreadyExistingAddresses, setAlreadyExistingAddresses] = useState<locationAddress[] | []>(
     []
   );
@@ -40,14 +47,31 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
   } | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
 
+  const { selectedShipToData } = useContext(ShipToContext);
+
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
     watch
   } = useForm<AddressType>({
-    defaultValues: {},
-    disabled: isEditAvailable
+    values: selectedShipToData
+      ? {
+          location: {
+            city: {
+              value: selectedShipToData.shipTo.location_id,
+              label: selectedShipToData.shipTo.city_name
+            },
+            address: {
+              street_type: "",
+              number: "",
+              complement: "",
+              building_number: 0
+            },
+            complement: ""
+          }
+        }
+      : ({} as AddressType)
   });
 
   const watchCity = watch("location.city");
@@ -58,11 +82,20 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
     if (watchCity) {
       const fetchLocation = async () => {
         const response = await getLocation(watchCity.value);
-        setAlreadyExistingAddresses(response.data.address);
+        setAlreadyExistingAddresses(response?.data?.address);
       };
-      fetchLocation(); //
+      fetchLocation();
     }
   }, [getLocation, watchCity]);
+
+  useEffect(() => {
+    if (selectedShipToData) {
+      setSelectedAddress({
+        id: selectedShipToData.shipTo.address_id,
+        address: selectedShipToData.shipTo.address
+      });
+    }
+  }, [selectedShipToData]);
 
   const onSubmitLocation = async (
     data: AddressType,
@@ -71,8 +104,8 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
     event?.preventDefault();
     event?.stopPropagation();
     if (selectedAddress) {
-      setParentFormValue("shipTo.address_id", selectedAddress.id);
-      setParentFormValue("shipTo.address", selectedAddress.address);
+      setParentFormValue("shipTo.address_id", selectedAddress.id, { shouldValidate: true });
+      setParentFormValue("shipTo.address", selectedAddress.address, { shouldValidate: true });
       setIsModalAddressOpen(false);
       return;
     }
@@ -85,8 +118,8 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
 
     try {
       const response = await createLocation(newAddressData, messageApi);
-      setParentFormValue("shipTo.address_id", response[0].id);
-      setParentFormValue("shipTo.address", newAddressData.address);
+      setParentFormValue("shipTo.address_id", response[0].id, { shouldValidate: true });
+      setParentFormValue("shipTo.address", newAddressData.address, { shouldValidate: true });
       setIsModalAddressOpen(false);
     } catch (error) {
       console.error("Failed to add address: ", error);
@@ -118,7 +151,7 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
           Ubicaciones disponibles ya creadas
         </Title>
         <div className="existingLocations">
-          {alreadyExistingAddresses.length > 0 ? (
+          {alreadyExistingAddresses?.length > 0 ? (
             alreadyExistingAddresses.map((address) => (
               <AddressContainer
                 key={address.id}
