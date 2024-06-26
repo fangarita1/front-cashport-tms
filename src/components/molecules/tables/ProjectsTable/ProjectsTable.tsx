@@ -82,7 +82,7 @@ export const ProjectTable = () => {
         scroll={{ y: "61dvh", x: undefined }}
         columns={columns as TableProps<any>["columns"]}
         pagination={{
-          pageSize: 50,
+          pageSize: 25,
           showSizeChanger: false,
           total: data.pagination.totalRows,
           onChange: onChangePage,

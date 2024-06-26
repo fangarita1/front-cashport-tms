@@ -31,15 +31,15 @@ export const SelectChips = ({
   } = selectedBusinessRules;
 
   const onChannelSelected = (channelId: number) => {
-    return selectedChannelsId.some((id) => id === channelId);
+    return selectedChannelsId?.some((id) => id === channelId);
   };
 
   const onLineSelected = (lineId: number) => {
-    return selectedLinesId.some((id) => id === lineId);
+    return selectedLinesId?.some((id) => id === lineId);
   };
 
   const onSublineSelected = (sublineId: number) => {
-    return selectedSublinesId.some((id) => id === sublineId);
+    return selectedSublinesId?.some((id) => id === sublineId);
   };
 
   const handleChannelChange = useCallback(() => {
@@ -112,7 +112,7 @@ export const SelectChips = ({
   const handleSublineChange = useCallback(
     (sublineId: number) => {
       setSelectedBusinessRules((prev) => {
-        const isSublineSelected = prev.sublines.includes(sublineId);
+        const isSublineSelected = prev.sublines?.includes(sublineId);
 
         // Find the line and channel that this subline belongs to
         let parentLineId = null;
