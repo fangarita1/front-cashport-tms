@@ -30,7 +30,7 @@ export const SelectClientsGroup = ({
           <Spin />
         ) : (
           <>
-            {data.map((group) => {
+            {data?.data.map((group) => {
               return (
                 <Flex key={group.id} justify="space-between" className="cardGroups__group">
                   <Typography.Text>{group.group_name}</Typography.Text>
