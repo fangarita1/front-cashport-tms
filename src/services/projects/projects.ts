@@ -20,7 +20,6 @@ export const addProject = async (data: IFormProject): Promise<ICreateProject> =>
   const finalColorRgb = `rgb(${Math.trunc(colorRgb.r)},${Math.trunc(colorRgb.g)},${Math.trunc(colorRgb.b)})`;
 
   const billingPeriod = JSON.parse(data.general.billing_period);
-
   const finalData: IProjectForFormData = {
     logo: data.logo,
     project_description: data.general.name,
@@ -38,9 +37,9 @@ export const addProject = async (data: IFormProject): Promise<ICreateProject> =>
     name: data.general.name,
     position_contact: data.contact.position_contact,
     day_flag: billingPeriod.day_flag,
-    day: billingPeriod.day_flag ? billingPeriod.day : undefined,
-    order: billingPeriod.day_flag ? undefined : billingPeriod.order,
-    day_of_week: billingPeriod.day_flag ? undefined : billingPeriod.day_of_week
+    day: billingPeriod.day_flag === 'true' ? billingPeriod.day : undefined,
+    order: billingPeriod.day_flag === 'true' ? undefined : billingPeriod.order.toLowerCase(),
+    day_of_week: billingPeriod.day_flag === 'true' ? undefined : billingPeriod.day_of_week.toLowerCase()
   };
   const formData = new FormData();
   formData.append("logo", finalData.logo);
@@ -122,10 +121,11 @@ export const updateProject = async (
     dso_currenly_year: data.general.DSO_currenly_year === "Sí" ? true : undefined,
     name: data.general.name,
     position_contact: data.contact.position_contact,
-    day_flag: billingPeriod.day_flag === 'true',
-    day: billingPeriod.day_flag === 'true' ? billingPeriod.day : undefined,
-    order: billingPeriod.day_flag === 'true' ? undefined : billingPeriod.order.toLowerCase(),
-    day_of_week: billingPeriod.day_flag === 'true' ? undefined : billingPeriod.day_of_week.toLowerCase()
+    day_flag: billingPeriod.day_flag === "true",
+    day: billingPeriod.day_flag === "true" ? billingPeriod.day : undefined,
+    order: billingPeriod.day_flag === "true" ? undefined : billingPeriod.order.toLowerCase(),
+    day_of_week:
+      billingPeriod.day_flag === "true" ? undefined : billingPeriod.day_of_week.toLowerCase()
   };
 
   const formData = new FormData();
