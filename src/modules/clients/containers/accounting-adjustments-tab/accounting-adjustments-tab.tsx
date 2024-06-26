@@ -9,6 +9,9 @@ import { useFinancialDiscounts } from "@/hooks/useFinancialDiscounts";
 import { extractSingleParam } from "@/utils/utils";
 import { IFinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
+import UiFilterDropdown from "@/components/ui/ui-filter-dropdown";
+
+import "./accounting-adjustments-tab.scss";
 
 const AccountingAdjustmentsTab = () => {
   const [selectedRows, setSelectedRows] = useState<IFinancialDiscount[] | undefined>(undefined);
@@ -33,8 +36,8 @@ const AccountingAdjustmentsTab = () => {
           <Spin />
         </Flex>
       ) : (
-        <>
-          <Flex justify="space-between" className="walletTab_header">
+        <div className="accountingAdjustmentsTab">
+          <Flex justify="space-between" className="accountingAdjustmentsTab__header">
             <Flex gap={"0.5rem"}>
               <UiSearchInput
                 className="search"
@@ -45,13 +48,13 @@ const AccountingAdjustmentsTab = () => {
                   }, 1000);
                 }}
               />
+              <UiFilterDropdown />
               <DotsDropdown />
             </Flex>
 
             <Button
               type="primary"
-              className="button__adjustments"
-              size="large"
+              className="availableAdjustments"
               onClick={() => console.log("click ajustes contables")}
             >
               Ajustes disponibles
@@ -60,7 +63,7 @@ const AccountingAdjustmentsTab = () => {
           </Flex>
 
           <Collapse
-            className="collapseByStatus"
+            className="accountingAdjustmentsTab__collapseByStatus"
             ghost
             accordion
             items={data?.map((financialState) => ({
@@ -77,7 +80,7 @@ const AccountingAdjustmentsTab = () => {
               )
             }))}
           />
-        </>
+        </div>
       )}
     </>
   );
