@@ -1,5 +1,4 @@
 import React from "react";
-import { notification } from "antd";
 import "./createDiscount.scss";
 import { FieldError, useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
@@ -12,6 +11,7 @@ import { InputSelect } from "@/components/atoms/inputs/InputSelect/InputSelect";
 import { useAppStore } from "@/lib/store/store";
 import { formatDateBars } from "@/utils/utils";
 import { InputDateRange } from "@/components/atoms/inputs/InputDateRange/InputDateRange";
+import { MessageInstance } from "antd/es/message/interface";
 
 interface IformDiscount {
   motive: string;
@@ -23,6 +23,7 @@ interface IformDiscount {
 
 interface Props {
   onClose: () => void;
+  messageApi: MessageInstance;
 }
 
 const schema = yup.object().shape({
@@ -46,7 +47,7 @@ const schema = yup.object().shape({
     )
 });
 
-export const CreateDiscount = ({ onClose }: Props) => {
+export const CreateDiscount = ({ onClose, messageApi }: Props) => {
   const { ID } = useAppStore((state) => state.selectProject);
   const {
     control,
@@ -56,8 +57,6 @@ export const CreateDiscount = ({ onClose }: Props) => {
     resolver: yupResolver(schema)
   });
   const { data: motives, isLoading, isError } = useFinancialDiscountMotives();
-
-  const [api, contextHolder] = notification.useNotification();
 
   const handleSubmitForm = async (data: IformDiscount) => {
     try {
@@ -76,22 +75,21 @@ export const CreateDiscount = ({ onClose }: Props) => {
         project_id: ID || 19,
         client_id: 98765232 // TODO: agregar cliente
       });
-
-      api.success({
-        message: "Descuento creado con éxito",
-        description: `El descuento para el motivo ${data.motive} ha sido creado correctamente.`
+      messageApi.open({
+        type: "success",
+        content: "Descuento creado con éxito"
       });
+      onClose();
     } catch (error) {
-      api.error({
-        message: "Error al crear descuento",
-        description: "Hubo un problema al crear el descuento. Por favor, intente nuevamente."
+      messageApi.open({
+        type: "error",
+        content: "Oops ocurrio un error creando Descuento. Por favor, intente nuevamente."
       });
     }
   };
 
   return (
     <div className="createDicountCustom">
-      {contextHolder}
       <p className="subTitleModalAction">Ingresa la información para crear el nuevo descuento</p>
       <form className="modalContent" onSubmit={handleSubmit(handleSubmitForm)}>
         <div className="containterForm">

@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, use, useEffect, useState } from "react";
-import { Modal, Typography } from "antd";
+import { Modal, Typography, message } from "antd";
 import "./modalActionDiscountCredit.scss";
 import { CreateCreditNote } from "../CreateAccountingAdjustment/CreateCreditNote/CreateCreditNote";
 import { CreateDiscount } from "../CreateAccountingAdjustment/CreateDiscount/CreateDiscount";
@@ -29,7 +29,7 @@ interface Props {
 export interface ISelectedAccountingAdjustment {
   id: number;
   current_value: number;
-  motive_name: string 
+  motive_name: string;
   percentage?: number | null;
   intialAmount?: number;
 }
@@ -42,6 +42,7 @@ export const ModalActionDiscountCredit = ({
 }: Props) => {
   const [selectedRows, setSelectedRows] = useState<ISelectedAccountingAdjustment[]>([]);
   const [currentView, setCurrentView] = useState("select");
+  const [messageApi, contextHolder] = message.useMessage();
 
   // const { data, isLoading } = useAcountingAdjustment(98765232);
   // console.log(data, isLoading);
@@ -51,6 +52,7 @@ export const ModalActionDiscountCredit = ({
 
   return (
     <>
+      {contextHolder}
       <Modal
         width={"40%"}
         open={isOpen}
@@ -87,6 +89,7 @@ export const ModalActionDiscountCredit = ({
                 onClose={() => {
                   setCurrentView("select");
                 }}
+                messageApi={messageApi}
               />
             )}
             {showActionDetailModal.actionType === 2 && (
@@ -94,6 +97,7 @@ export const ModalActionDiscountCredit = ({
                 onClose={() => {
                   setCurrentView("select");
                 }}
+                messageApi={messageApi}
               />
             )}
             {showActionDetailModal.actionType === 3 && (
@@ -101,6 +105,7 @@ export const ModalActionDiscountCredit = ({
                 onClose={() => {
                   setCurrentView("select");
                 }}
+                messageApi={messageApi}
               />
             )}
           </>

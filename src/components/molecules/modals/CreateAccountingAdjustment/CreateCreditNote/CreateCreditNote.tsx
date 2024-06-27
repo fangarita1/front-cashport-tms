@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { notification } from "antd";
 import "./createCreditNote.scss";
 import { FieldError, useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
@@ -12,6 +11,7 @@ import { InputSelect } from "@/components/atoms/inputs/InputSelect/InputSelect";
 import { useAppStore } from "@/lib/store/store";
 import { formatDateBars } from "@/utils/utils";
 import { InputDateRange } from "@/components/atoms/inputs/InputDateRange/InputDateRange";
+import { MessageInstance } from "antd/es/message/interface";
 interface IformDiscount {
   motive: string;
   amount: number;
@@ -21,6 +21,7 @@ interface IformDiscount {
 
 interface Props {
   onClose: () => void;
+  messageApi: MessageInstance;
 }
 
 const schema = yup.object().shape({
@@ -40,7 +41,7 @@ const schema = yup.object().shape({
     )
 });
 
-export const CreateCreditNote = ({ onClose }: Props) => {
+export const CreateCreditNote = ({ onClose, messageApi }: Props) => {
   const { ID } = useAppStore((state) => state.selectProject);
   const {
     control,
@@ -51,7 +52,6 @@ export const CreateCreditNote = ({ onClose }: Props) => {
   });
   const { data: motives, isLoading, isError } = useFinancialDiscountMotives();
 
-  const [api, contextHolder] = notification.useNotification();
 
   const handleSubmitForm = async (data: IformDiscount) => {
     try {
@@ -71,14 +71,15 @@ export const CreateCreditNote = ({ onClose }: Props) => {
         client_id: 98765232 // TODO: agregar cliente
       });
 
-      api.success({
-        message: "Descuento creado con éxito",
-        description: `La nota de credito para el motivo ${data.motive} ha sido creado correctamente.`
+      messageApi.open({
+        type: "success",
+        content: "Nota de credito creado con éxito"
       });
+      onClose();
     } catch (error) {
-      api.error({
-        message: "Error al crear la nota de credito",
-        description: "Hubo un problema al crear la nota de credito. Por favor, intente nuevamente."
+      messageApi.open({
+        type: "error",
+        content: "Oops ocurrio un error creando nota credito. Por favor, intente nuevamente."
       });
     }
   };
@@ -88,7 +89,6 @@ export const CreateCreditNote = ({ onClose }: Props) => {
 
   return (
     <div className="createCreditCustom">
-      {contextHolder}
       <p className="subTitleModalAction">Ingresa la información para crear el nuevo descuento</p>
       <form className="modalContent" onSubmit={handleSubmit(handleSubmitForm)}>
         <div className="containterForm">

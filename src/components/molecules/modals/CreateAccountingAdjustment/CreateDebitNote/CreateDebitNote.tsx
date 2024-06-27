@@ -1,5 +1,4 @@
 import React from "react";
-import { notification } from "antd";
 import "./createDebitNote.scss";
 import { FieldError, useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
@@ -12,6 +11,7 @@ import { InputSelect } from "@/components/atoms/inputs/InputSelect/InputSelect";
 import { useAppStore } from "@/lib/store/store";
 import { formatDateBars } from "@/utils/utils";
 import { InputDateRange } from "@/components/atoms/inputs/InputDateRange/InputDateRange";
+import { MessageInstance } from "antd/es/message/interface";
 interface IformDiscount {
   motive: string;
   amount: number;
@@ -20,6 +20,7 @@ interface IformDiscount {
 }
 interface Props {
   onClose: () => void;
+  messageApi: MessageInstance;
 }
 
 const schema = yup.object().shape({
@@ -38,7 +39,7 @@ const schema = yup.object().shape({
       "La fecha de expiración debe ser posterior al rango de vigencia"
     )
 });
-export const CreateDebitNote = ({ onClose }: Props) => {
+export const CreateDebitNote = ({ onClose, messageApi }: Props) => {
   const { ID } = useAppStore((state) => state.selectProject);
   const {
     control,
@@ -48,8 +49,6 @@ export const CreateDebitNote = ({ onClose }: Props) => {
     resolver: yupResolver(schema)
   });
   const { data: motives, isLoading, isError } = useFinancialDiscountMotives();
-
-  const [api, contextHolder] = notification.useNotification();
 
   const handleSubmitForm = async (data: IformDiscount) => {
     try {
@@ -69,21 +68,21 @@ export const CreateDebitNote = ({ onClose }: Props) => {
         client_id: 98765232 // TODO: agregar cliente
       });
 
-      api.success({
-        message: "Descuento creado con éxito",
-        description: `la nota débito para el motivo ${data.motive} ha sido creado correctamente.`
+      messageApi.open({
+        type: "success",
+        content: "Nota débito creado con éxito"
       });
+      onClose();
     } catch (error) {
-      api.error({
-        message: "Error al crear nota débito",
-        description: "Hubo un problema al crear la nota débito. Por favor, intente nuevamente."
+      messageApi.open({
+        type: "error",
+        content: "Oops ocurrio un error creando nota débito. Por favor, intente nuevamente."
       });
     }
   };
 
   return (
     <div className="createDebitCustom">
-      {contextHolder}
       <p className="subTitleModalAction">Ingresa la información para crear la nueva nota débito</p>
       <form className="modalContent" onSubmit={handleSubmit(handleSubmitForm)}>
         <div className="containterForm">
