@@ -6,7 +6,7 @@ import axios from "axios";
 export const getAllCountries = async (): Promise<IListCountries> => {
   const token = await getIdToken();
   try {
-    const response: IListCountries = await axios.get(`${config.API_HOST}/country`, {
+    const response: IListCountries = await axios.get(`${config.API_HOST}country`, {
       headers: {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "application/json; charset=utf-8",

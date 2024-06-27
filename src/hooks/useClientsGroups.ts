@@ -23,10 +23,11 @@ export const useClientsGroups = ({ page, idProject, clients, subscribers, active
 
   const pathKey = `/group-client/?project_id=${idProject}${pageQuery}${clientsQuery}${subsQuery}${statusQuery}`;
 
-  const { data, error } = useSWR<IClientsGroupsFull>(pathKey, fetcher, {});
+  const { data, error, isLoading } = useSWR<IClientsGroupsFull>(pathKey, fetcher, {});
 
   return {
-    data: (data?.data as IClientsGroups[]) || ([] as IClientsGroups[]),
-    loading: !error && !data
+    data: data,
+    loading: isLoading,
+    error
   };
 };

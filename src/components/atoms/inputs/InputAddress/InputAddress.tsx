@@ -1,7 +1,7 @@
 import { Flex, Typography } from "antd";
 import { InputForm } from "../InputForm/InputForm";
 import { Control, FieldErrors } from "react-hook-form";
-import { AddressType } from "@/components/molecules/modals/ModalAddress/ModalAddress";
+import { AddressType } from "@/components/molecules/modals/ModalShipTo/ModalAddress/ModalAddress";
 
 interface Props {
   control: Control<AddressType, any>;

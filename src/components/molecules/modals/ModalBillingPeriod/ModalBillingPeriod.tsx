@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useReducer, useState } from "react";
-import { Flex, Input, InputNumber, Modal, Radio, RadioChangeEvent, Typography } from "antd";
+import { Flex, InputNumber, Modal, Radio, RadioChangeEvent, Typography } from "antd";
 
 import { SelectBillingPeriod } from "@/components/molecules/selects/clients/SelectBillingPeriod/SelectBillingPeriod";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
@@ -102,6 +102,7 @@ export const ModalBillingPeriod = ({
   };
   return (
     <Modal
+      zIndex={3}
       open={isOpen}
       onCancel={() => setIsBillingPeriodOpen(false)}
       title="Periodo de facturación"

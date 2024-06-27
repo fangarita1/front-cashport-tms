@@ -27,15 +27,13 @@ export const effectFunction = (
   if (billingPeriod) setValue("general.billing_period", JSON.stringify(billingPeriod));
 };
 export const newBillingPeriod = (config: IBillingPeriodForm): string => {
-  if(config) {
-    if (config.day_flag !== 'false' && config.day) return `${config.day}`;
+  if (config) {
+    if (config.day_flag !== "false" && config.day) return `${config.day}`;
     return `El ${config.order} ${config.day_of_week}`;
   }
-  return ''
+  return "";
 };
-export const dataToProjectFormData = (
-  data: IProject
-): IFormProject => {
+export const dataToProjectFormData = (data: IProject): IFormProject => {
   const currenciesFormated = data?.CURRENCY?.map((currency) => ({
     value: currency.id,
     label: currency.CURRENCY_NAME
@@ -75,12 +73,16 @@ export const _onSubmit = (
   reset: UseFormReset<IFormProject>
 ) => {
   setloading(true);
-  if (!imageFile) return setImageError(true);
-  setImageError(false);
-  onSubmitForm({ ...data, logo: imageFile });
-  reset(data);
-  setloading(false);
-
+  try {
+    if (!imageFile) return setImageError(true);
+    setImageError(false);
+    onSubmitForm({ ...data, logo: imageFile });
+    reset(data);
+    setloading(false);
+  } catch (error) {
+    console.warn({ error });
+    setloading(false);
+  }
 };
 
 export const validationButtonText = (statusForm: "create" | "edit" | "review") => {
