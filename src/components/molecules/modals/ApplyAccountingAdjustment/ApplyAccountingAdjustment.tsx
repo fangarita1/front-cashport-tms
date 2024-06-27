@@ -56,7 +56,7 @@ export const ApplyAccountingAdjustment = ({
   const [openEvidenceModal, setOpenEvidenceModal] = useState(false);
   const [selectedEvidence, setSelectedEvidence] = useState<File[]>([]);
   const [commentary, setCommentary] = useState<string | undefined>();
-  const [isSecondView, setIsSecondView] = useState(false);
+  const [ _ ,setIsSecondView] = useState(false);
 
   useEffect(() => {
     setCurrentInvoices(
@@ -74,8 +74,7 @@ export const ApplyAccountingAdjustment = ({
         applyValues[record.id]?.find((apply) => apply.idAdjustment === selectedRows[index].id)
           ?.balanceToApply ?? 0;
 
-      let newValue;
-
+      let newValue: number;
       if (record.newBalance < valueApplied) {
         newValue = prev[index] - record.newBalance;
       } else {
