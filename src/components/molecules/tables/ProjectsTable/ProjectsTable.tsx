@@ -115,7 +115,7 @@ const columns: TableProps<IProject>["columns"] = [
           <Avatar
             shape="square"
             size={70}
-            src={LOGO}
+            src={LOGO.trim()}
           />
         ) : (
           <Avatar shape="square" className="imageWithoutImage" size={65} icon={<Clipboard />} />

@@ -118,7 +118,7 @@ export const ProjectFormTab = ({
           {/* ------------Image Project-------------- */}
           <UploadImg
             disabled={statusForm === "review"}
-            imgDefault={data.LOGO}
+            imgDefault={data.LOGO?.trim()}
             setImgFile={setImageFile}
           />
           {imageError && <Text className="textError">{"Logo del proyecto es obligatorio *"}</Text>}

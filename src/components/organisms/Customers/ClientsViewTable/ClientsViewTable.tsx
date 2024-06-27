@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Button, Col, Flex, Row, Table, Typography } from "antd";
-import type { TableProps } from "antd";
+import { Spin, TableProps,Button, Col, Flex, Row, Table, Typography } from "antd";
 import {
   CalendarBlank,
   CalendarX,
@@ -30,6 +29,7 @@ export const ClientsViewTable = () => {
     currency: [] as string[]
   });
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const { loading, data } = useProjects({
     page: selectFilters.country.length !== 0 || selectFilters.currency.length !== 0 ? 1 : page,
     currencyId: selectFilters.currency,
@@ -115,8 +115,9 @@ export const ClientsViewTable = () => {
       render: (_, row: IClientsPortfolio) => (
         <Button
           href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}
+          onClick={() => setIsLoading(true)}
           className="buttonSeeProject"
-          icon={<Eye size={"1.3rem"} />}
+          icon={isLoading ? <Spin /> : <Eye size={"1.3rem"} />}
         />
       )
     }
