@@ -66,4 +66,37 @@
         font-size: 0.875em; // 14px
         margin-top: 4px;
     }
+
+
+}
+
+
+.ant-picker-cell-in-view.ant-picker-cell-range-start .ant-picker-cell-inner {
+    background-color: #CBE71E !important;
+}
+
+
+.ant-picker-cell-in-view.ant-picker-cell-range-end .ant-picker-cell-inner {
+    background-color: #CBE71E !important;
+}
+
+
+.ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+    border-color: #F7F7F7 !important;
+}
+
+
+.ant-picker-cell-in-view.ant-picker-cell-range-start:not(.ant-picker-cell-range-start-single)::before,
+
+.ant-picker-cell-in-view.ant-picker-cell-in-range::before,
+
+.ant-picker-cell-in-view.ant-picker-cell-range-end:not(.ant-picker-cell-range-end-single)::before,
+
+.ant-picker-time-panel-column>li.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
+    background: #dddddd !important;
+}
+
+.ant-btn-primary {
+    background-color: #F7F7F7 !important;
+    border-color: #F7F7F7 !important;
 }

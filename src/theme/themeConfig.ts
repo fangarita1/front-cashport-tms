@@ -38,6 +38,9 @@ const theme: ThemeConfig = {
       headerBg: "#FFF",
       headerColor: "#141414",
       headerSplitColor: "transparent"
+    },
+    DatePicker: {
+      colorBgElevated: "#F7F7F7"
     }
   }
 };
