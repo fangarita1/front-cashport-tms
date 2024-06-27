@@ -10,6 +10,7 @@ import { useClientDetails } from "../../hooks/client-details/client-details.hook
 import { Button, Flex, Spin } from "antd";
 import UiTab from "@/components/ui/ui-tab";
 import { InvoiceAction } from "../../constants/invoice-actions.constants";
+import AccountingAdjustmentsTab from "../accounting-adjustments-tab";
 import Link from "next/link";
 
 interface ClientDetailsProps {}
@@ -35,6 +36,15 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
       label: "Cartera",
       children: portfolioData ? (
         <WalletTab />
+      ) : (
+        <Spin style={{ margin: "1rem auto", display: "block" }} />
+      )
+    },
+    {
+      key: "3",
+      label: "Ajustes contables",
+      children: portfolioData ? (
+        <AccountingAdjustmentsTab />
       ) : (
         <Spin style={{ margin: "1rem auto", display: "block" }} />
       )

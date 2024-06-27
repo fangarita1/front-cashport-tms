@@ -1,25 +1,40 @@
-import { BaseSyntheticEvent, Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  BaseSyntheticEvent,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState
+} from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Flex, Input, Switch, Typography } from "antd";
 
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
-import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { SelectRadicationTypes } from "@/components/molecules/selects/clients/SelectRadicationTypes/SelectRadicationTypes";
 import { SelectPaymentConditions } from "@/components/molecules/selects/clients/SelectPaymentConditions/SelectPaymentCondition";
 import { ShipToFormType } from "@/types/shipTo/IShipTo";
 
 import "./modalcreateshipto.scss";
-import { ModalAddress } from "../../ModalAddress/ModalAddress";
+import { ModalAddress } from "../ModalAddress/ModalAddress";
 import { ISelectType } from "@/types/clients/IClients";
 import { CaretRight } from "phosphor-react";
+import { ShipToContext } from "../ModalShipTo";
+import { stringToBoolean } from "@/utils/utils";
 const { Text, Title } = Typography;
 interface Props {
-  setIsShipToModalOpen: Dispatch<SetStateAction<boolean>>;
+  setIsShipToModalOpen: Dispatch<
+    SetStateAction<{
+      open: boolean;
+      accounting_code: string | undefined;
+    }>
+  >;
+  isShipToModalOpen: {
+    open: boolean;
+    accounting_code: string | undefined;
+  };
   setCurrentView: Dispatch<SetStateAction<"main" | "businessRules">>;
-  setSelectedShipToData: Dispatch<SetStateAction<ShipToFormType | undefined>>;
   setIsBillingPeriodOpen: Dispatch<SetStateAction<boolean>>;
-  billingPeriod: IBillingPeriodForm | undefined;
   getClientValues: () => {
     billingPeriod: string;
     radicationType: ISelectType;
@@ -29,13 +44,19 @@ interface Props {
 
 export const ModalCreateShipTo = ({
   setIsShipToModalOpen,
+  isShipToModalOpen,
   setCurrentView,
-  setSelectedShipToData,
   setIsBillingPeriodOpen,
-  billingPeriod,
   getClientValues
 }: Props) => {
   const [isModalAddressOpen, setIsModalAddressOpen] = useState(false);
+  const {
+    selectedShipToData,
+    setSelectedShipToData,
+    clientBillingPeriod,
+    billingPeriod,
+    setBillingPeriod
+  } = useContext(ShipToContext);
 
   const {
     control,
@@ -47,10 +68,12 @@ export const ModalCreateShipTo = ({
     mode: "onChange",
     defaultValues: {
       shipTo: {
+        code: undefined,
         dependency_client: false,
         billing_period: undefined
       }
-    }
+    },
+    values: isShipToModalOpen.accounting_code ? selectedShipToData : undefined
   });
 
   const watchDependencyClient = watch("shipTo.dependency_client");
@@ -71,16 +94,15 @@ export const ModalCreateShipTo = ({
 
   useEffect(() => {
     const {
-      billingPeriod: defaultBillingPeriod,
+      // billingPeriod: defaultBillingPeriod,
       radicationType,
       conditionPayment
     } = getClientValues();
 
     if (watchDependencyClient) {
       // Set values when dependency_client is true
-      setValue("shipTo.billing_period", defaultBillingPeriod, {
-        shouldValidate: true
-      });
+      setBillingPeriod(clientBillingPeriod);
+
       setValue("shipTo.radication_type", radicationType, {
         shouldValidate: true
       });
@@ -107,13 +129,22 @@ export const ModalCreateShipTo = ({
         <ModalAddress setIsModalAddressOpen={setIsModalAddressOpen} setParentFormValue={setValue} />
       ) : (
         <form className="createShipToModal">
-          <h5 className="modalTitle">Crear nuevo Ship To</h5>
+          <h5 className="modalTitle">
+            {isShipToModalOpen.accounting_code ? "Editar ShipTo" : "Crear nuevo Ship To"}
+          </h5>
           <div className="nonHereditaryInputs">
             <InputForm
+              readOnly={!!isShipToModalOpen.accounting_code}
               titleInput="Código Ship To"
               control={control}
               nameInput="shipTo.code"
               error={errors.shipTo?.code}
+              validationRules={{
+                pattern: {
+                  value: /^[^\s]*$/,
+                  message: "El código no puede contener espacios en blanco"
+                }
+              }}
             />
             <Flex className="inputContainer" vertical>
               <Title className="inputContainer__title" level={5}>
@@ -163,6 +194,7 @@ export const ModalCreateShipTo = ({
                 Período de facturación
               </Title>
               <Controller
+                disabled={watchDependencyClient}
                 name="shipTo.billing_period"
                 control={control}
                 rules={{ required: true, minLength: 1 }}
@@ -178,7 +210,7 @@ export const ModalCreateShipTo = ({
                       {...field}
                       value={
                         billingPeriod
-                          ? billingPeriod?.day_flag === "true"
+                          ? stringToBoolean(billingPeriod.day_flag)
                             ? `El dia ${billingPeriod.day} del mes`
                             : `El ${billingPeriod?.order} ${billingPeriod?.day_of_week} del mes`
                           : undefined
@@ -199,6 +231,7 @@ export const ModalCreateShipTo = ({
                 Tipo de radicación
               </Title>
               <Controller
+                disabled={watchDependencyClient}
                 name="shipTo.radication_type"
                 control={control}
                 rules={{ required: true, minLength: 1 }}
@@ -215,6 +248,7 @@ export const ModalCreateShipTo = ({
                 Condición de pago
               </Title>
               <Controller
+                disabled={watchDependencyClient}
                 name="shipTo.condition_payment"
                 control={control}
                 rules={{ required: true, minLength: 1 }}
@@ -231,7 +265,10 @@ export const ModalCreateShipTo = ({
           </div>
 
           <div className="footer">
-            <Button className="cancelButton" onClick={() => setIsShipToModalOpen(false)}>
+            <Button
+              className="cancelButton"
+              onClick={() => setIsShipToModalOpen({ open: false, accounting_code: undefined })}
+            >
               Cancelar
             </Button>
             <Button

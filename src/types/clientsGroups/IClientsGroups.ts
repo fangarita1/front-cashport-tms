@@ -1,3 +1,5 @@
+import { Pagination } from "../global/IGlobal";
+
 export interface IClientsGroupsFull {
   status: number;
   message: string;
@@ -22,11 +24,6 @@ export interface IClientsGroups {
   is_deleted: number;
   shipto_count: number;
   subscribers: number;
-}
-
-export interface Pagination {
-  page: number;
-  total: number;
 }
 
 export interface IGroupsByUser {

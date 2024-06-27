@@ -6,6 +6,7 @@ import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSect
 import { ProjectTable } from "@/components/molecules/tables/ProjectsTable/ProjectsTable";
 
 import "./projects.scss";
+import Header from "../../header";
 
 const { Title } = Typography;
 
@@ -14,14 +15,7 @@ export const ProjectsView = () => {
     <main className="mainProject">
       <SideBar />
       <Flex vertical className="contentProject">
-        <Flex justify="space-between" align="center">
-          <Flex gap={"1rem"} align="center">
-            <Title level={2} className="titleName">
-              Proyectos
-            </Title>
-          </Flex>
-          <NavRightSection />
-        </Flex>
+        <Header title="Proyectos" />
         <ProjectTable />
       </Flex>
     </main>

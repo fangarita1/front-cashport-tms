@@ -82,7 +82,7 @@ export const ProjectTable = () => {
         scroll={{ y: "61dvh", x: undefined }}
         columns={columns as TableProps<any>["columns"]}
         pagination={{
-          pageSize: 50,
+          pageSize: 25,
           showSizeChanger: false,
           total: data.pagination.totalRows,
           onChange: onChangePage,
@@ -115,7 +115,7 @@ const columns: TableProps<IProject>["columns"] = [
           <Avatar
             shape="square"
             size={70}
-            src={LOGO}
+            src={LOGO.trim()}
           />
         ) : (
           <Avatar shape="square" className="imageWithoutImage" size={65} icon={<Clipboard />} />

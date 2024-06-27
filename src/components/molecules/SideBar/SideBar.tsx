@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button, Flex } from "antd";
 
-import { ArrowLineRight, Gear, User } from "phosphor-react";
+import { ArrowLineRight, Gear, Megaphone, User } from "phosphor-react";
 import Image from "next/image";
 
 import "./sidebar.scss";
@@ -26,39 +26,40 @@ export const SideBar = () => {
               width={isSideBarLarge ? 75 : 50}
               height={isSideBarLarge ? 75 : 50}
               alt="logo company"
-              src={LOGO}
+              src={LOGO.trim()}
             />
           </Flex>
         )}
 
-        <Link href="/clientes/all">
-          {isSideBarLarge ? (
-            "Clientes"
-          ) : (
-            <Button
-              type="primary"
-              size="large"
-              icon={<User size={26} />}
-              className={path.startsWith("/clientes") ? "buttonIcon" : "buttonIconActive"}
-            ></Button>
-          )}
+        <Link href="/clientes/all" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<User size={26} />}
+            className={path.startsWith("/clientes") ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Clientes"}
+          </Button>
         </Link>
-
-        <Link href="/">
-          {isSideBarLarge ? (
-            "Home"
-          ) : (
-            <Button
-              type="primary"
-              size="large"
-              icon={<Gear size={26} />}
-              className={
-                path.startsWith("/") && !path.startsWith("/clientes")
-                  ? "buttonIcon"
-                  : "buttonIconActive"
-              }
-            ></Button>
-          )}
+        <Link href="/descuentos" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<Megaphone size={32} />}
+            className={path.startsWith("/descuentos") ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Descuentos"}
+          </Button>
+        </Link>
+        <Link href="/" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<Gear size={26} />}
+            className={path === "/" ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Ajustes"}
+          </Button>
         </Link>
       </Flex>
       <Flex className="exit">

@@ -1,0 +1,20 @@
+@import "@/styles/variables.scss";
+
+.ButtonContainer {
+    .ButtonHeader {
+        gap: 10px;
+        display: flex;
+        color: black;
+        box-shadow: none;
+        font-weight: 600;
+        padding: 12px 24px;
+        align-items: center;
+        background-color: $secondary;
+
+        &:hover {
+            background-color: $secondary !important;
+            opacity: 0.8;
+            color: black;
+        }
+    }
+}
