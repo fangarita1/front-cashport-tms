@@ -30,7 +30,7 @@ const ItemApplyModal: FC<ItemsApplyModalProps> = ({ item, type, availableValue }
           <div className={"label"}>{item.motive_name ?? "Volumen"}</div>
         </div>
         <div className={"mainValues"}>
-          <div className={"value"}>{availableValue}</div>
+          <div className={"value"}>{formatMoney(availableValue?.toString() ?? "")}</div>
           <div className={"subValue"}>
             {item.percentage
               ? `${item.percentage}%`

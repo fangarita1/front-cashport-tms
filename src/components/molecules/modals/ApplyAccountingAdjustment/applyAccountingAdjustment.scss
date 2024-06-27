@@ -1,3 +1,5 @@
+@import "@styles/variables.scss";
+
 .modalContentApply {
   display: flex;
   flex-direction: column;
@@ -26,7 +28,7 @@
   white-space: nowrap; // Evita el salto de línea
 
   &::-webkit-scrollbar {
-    height: 4px; 
+    height: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
@@ -39,10 +41,46 @@
     padding: 10px 20px; // Ajusta el padding según la necesidad
     cursor: pointer; // Hace que el ratón cambie a mano cuando se pasa sobre las pestañas
     box-sizing: border-box; // Incluye el padding en el cálculo del ancho del elemento
-    border: 1px solid transparent; 
+    border: 1px solid transparent;
 
     &:hover {
-      border-color: rgba(0, 0, 0, 0.1); 
+      border-color: rgba(0, 0, 0, 0.1);
     }
   }
+}
+
+.button__number__adjustment {
+  background-color: $background !important;
+  border-radius: 0;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+
+  input {
+    &::placeholder {
+      color: $dark-gray !important;
+    }
+
+    &::-webkit-input-placeholder {
+      color: $dark-gray !important;
+    }
+
+    &:-moz-placeholder {
+      color: $dark-gray !important;
+    }
+
+    &::-moz-placeholder {
+      color: $dark-gray !important;
+    }
+
+    &:-ms-input-placeholder {
+      color: $dark-gray !important;
+    }
+
+  }
+}
+
+.column__apply__value {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

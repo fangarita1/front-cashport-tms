@@ -5,14 +5,12 @@ import { IInvoice } from "@/types/invoices/IInvoices";
 import UiTabs from "@/components/ui/ui-tabs";
 import ItemApplyModal from "@/components/atoms/ItemsApplyModal/ItemsApplyModal";
 import Table, { ColumnsType } from "antd/es/table";
-import { Button, Flex, InputNumber, Modal } from "antd";
+import { Flex, InputNumber, Modal } from "antd";
 import EvidenceModal from "@/modules/clients/components/wallet-tab-evidence-modal/wallet-tab-evidence-modal";
-import { useAppStore } from "@/lib/store/store";
 import { applyAccountingAdjustment } from "@/services/accountingAdjustment/accountingAdjustment";
 import { useParams } from "next/navigation";
 import { extractSingleParam } from "@/utils/utils";
 import { UploadChangeParam, UploadFile } from "antd/es/upload";
-import { Plus } from "phosphor-react";
 
 interface Props {
   type: number;
@@ -25,21 +23,6 @@ interface IcurrentInvoices {
   id: number;
   current_value: number;
   newBalance: number;
-}
-interface FileFromDragger {
-  lastModified: number;
-  lastModifiedDate: Date;
-  name: string;
-  originFileObj: File;
-  percent: number;
-  size: number;
-  status: string;
-  type: string;
-  uid: string;
-}
-interface FileObjectFromButton {
-  file: FileFromDragger;
-  fileList: FileFromDragger[];
 }
 interface NormalizedValue {
   invoice_id: number;
@@ -231,6 +214,7 @@ export const ApplyAccountingAdjustment = ({
     {
       title: "Valor a aplicar",
       key: "applyValue",
+      className: "column__apply__value",
       render: (_, record) => (
         <InputNumber
           min={0}
@@ -252,11 +236,15 @@ export const ApplyAccountingAdjustment = ({
               handleApplyValueChange(isNaN(parsedValue) ? 0 : parsedValue, record);
             }
           }}
-          style={{ width: "100%" }}
+          className="button__number__adjustment"
         />
       )
     }
   ];
+  useEffect(() => {
+    console.log(applyValues);
+  }, [applyValues]);
+
   return (
     <div className="modalContentApply">
       <p className="subTitleModalApply">Define el monto a aplicar a cada factura</p>
