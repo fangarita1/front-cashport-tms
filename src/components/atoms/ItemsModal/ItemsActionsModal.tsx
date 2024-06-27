@@ -12,7 +12,7 @@ interface ItemsActionsModalProps {
     current_value: number;
     selected: boolean;
     motive_name?: string | undefined;
-    percentage?: number;
+    percentage?: number | null;
     intialAmount?: number;
   };
 }

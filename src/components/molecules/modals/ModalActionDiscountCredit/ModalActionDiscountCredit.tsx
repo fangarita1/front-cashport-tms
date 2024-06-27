@@ -30,7 +30,7 @@ export interface ISelectedAccountingAdjustment {
   id: number;
   current_value: number;
   motive_name: string 
-  percentage?: number;
+  percentage?: number | null;
   intialAmount?: number;
 }
 

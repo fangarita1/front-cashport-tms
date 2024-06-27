@@ -9,22 +9,6 @@ import { UploadChangeParam } from "antd/es/upload";
 
 const { Text } = Typography;
 
-// interface FileFromDragger {
-//   lastModified: number;
-//   lastModifiedDate: Date;
-//   name: string;
-//   originFileObj: File;
-//   percent: number;
-//   size: number;
-//   status: string;
-//   type: string;
-//   uid: string;
-// }
-
-// interface FileObjectFromButton {
-//   file: FileFromDragger;
-//   fileList: FileFromDragger[];
-// }
 interface Props {
   title?: string;
   fileName?: string;

@@ -9,7 +9,7 @@ interface ItemsApplyModalProps {
     id: number;
     current_value: number;
     motive_name?: string | undefined;
-    percentage?: number;
+    percentage?: number | null;
     intialAmount?: number;
   };
   availableValue?: number;

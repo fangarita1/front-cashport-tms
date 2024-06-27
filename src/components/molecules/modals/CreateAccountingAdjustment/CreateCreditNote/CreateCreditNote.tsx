@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { notification } from "antd";
 import "./createCreditNote.scss";
 import { FieldError, useForm } from "react-hook-form";
@@ -14,7 +14,6 @@ import { formatDateBars } from "@/utils/utils";
 import { InputDateRange } from "@/components/atoms/inputs/InputDateRange/InputDateRange";
 interface IformDiscount {
   motive: string;
-  percentage: number;
   amount: number;
   validity_range: Date[];
   expiration_date: Date;
@@ -26,10 +25,6 @@ interface Props {
 
 const schema = yup.object().shape({
   motive: yup.string().required("Campo obligatorio"),
-  percentage: yup
-    .number()
-    .max(100, "El porcentaje no puede ser mayor al 100%")
-    .required("Campo obligatorio"),
   amount: yup.number().min(0, "El valor no puede ser negativo").required("Campo obligatorio"),
   validity_range: yup
     .array()
@@ -87,6 +82,9 @@ export const CreateCreditNote = ({ onClose }: Props) => {
       });
     }
   };
+  useEffect(() => {
+    console.log(errors);
+  }, [errors]);
 
   return (
     <div className="createCreditCustom">

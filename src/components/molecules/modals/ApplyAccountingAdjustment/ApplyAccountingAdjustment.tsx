@@ -5,7 +5,14 @@ import { IInvoice } from "@/types/invoices/IInvoices";
 import UiTabs from "@/components/ui/ui-tabs";
 import ItemApplyModal from "@/components/atoms/ItemsApplyModal/ItemsApplyModal";
 import Table, { ColumnsType } from "antd/es/table";
-import { Flex, InputNumber } from "antd";
+import { Button, Flex, InputNumber, Modal } from "antd";
+import EvidenceModal from "@/modules/clients/components/wallet-tab-evidence-modal/wallet-tab-evidence-modal";
+import { useAppStore } from "@/lib/store/store";
+import { applyAccountingAdjustment } from "@/services/accountingAdjustment/accountingAdjustment";
+import { useParams } from "next/navigation";
+import { extractSingleParam } from "@/utils/utils";
+import { UploadChangeParam, UploadFile } from "antd/es/upload";
+import { Plus } from "phosphor-react";
 
 interface Props {
   type: number;
@@ -19,6 +26,28 @@ interface IcurrentInvoices {
   current_value: number;
   newBalance: number;
 }
+interface FileFromDragger {
+  lastModified: number;
+  lastModifiedDate: Date;
+  name: string;
+  originFileObj: File;
+  percent: number;
+  size: number;
+  status: string;
+  type: string;
+  uid: string;
+}
+interface FileObjectFromButton {
+  file: FileFromDragger;
+  fileList: FileFromDragger[];
+}
+interface NormalizedValue {
+  invoice_id: number;
+  discounts: {
+    id: number;
+    balanceToApply: number;
+  }[];
+}
 
 export const ApplyAccountingAdjustment = ({
   type,
@@ -26,6 +55,10 @@ export const ApplyAccountingAdjustment = ({
   setCurrentView,
   invoiceSelected = []
 }: Props) => {
+  const params = useParams();
+  const clientIdParam = extractSingleParam(params.clientId);
+  const projectIdParam = extractSingleParam(params.projectId);
+
   const [selectTab, setSelectTab] = useState(0);
   const [currentInvoices, setCurrentInvoices] = useState<IcurrentInvoices[]>([]);
   const [currentAdjustment, setCurrentAdjustment] = useState(
@@ -37,6 +70,10 @@ export const ApplyAccountingAdjustment = ({
       idAdjustment: number;
     }[];
   }>({});
+  const [openEvidenceModal, setOpenEvidenceModal] = useState(false);
+  const [selectedEvidence, setSelectedEvidence] = useState<File[]>([]);
+  const [commentary, setCommentary] = useState<string | undefined>();
+  const [isSecondView, setIsSecondView] = useState(false);
 
   useEffect(() => {
     setCurrentInvoices(
@@ -48,13 +85,19 @@ export const ApplyAccountingAdjustment = ({
     );
   }, [invoiceSelected]);
 
-  const handleValueChange = (valueApplied: number, index: number, recordId: number) => {
+  const handleValueChange = (valueApplied: number, index: number, record: IcurrentInvoices) => {
     setCurrentAdjustment((prev) => {
       const previousValue =
-        applyValues[recordId]?.find((apply) => apply.idAdjustment === selectedRows[index].id)
+        applyValues[record.id]?.find((apply) => apply.idAdjustment === selectedRows[index].id)
           ?.balanceToApply ?? 0;
 
-      const newValue = prev[index] + previousValue - valueApplied;
+      let newValue;
+
+      if (record.newBalance < valueApplied) {
+        newValue = prev[index] - record.newBalance;
+      } else {
+        newValue = prev[index] + previousValue - valueApplied;
+      }
       return prev.map((value, i) => (i === index ? Math.max(0, newValue) : value));
     });
   };
@@ -90,12 +133,81 @@ export const ApplyAccountingAdjustment = ({
         return invoice; // Devuelve las facturas no modificadas
       });
     });
-    handleValueChange(value ?? 0, selectTab, record.id);
+    handleValueChange(value ?? 0, selectTab, record);
   };
 
+  const handleOnChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCommentary(e.target.value);
+  };
+
+  const handleOnChangeDocument = (info: UploadChangeParam<UploadFile<any>>) => {
+    const file = info.file.originFileObj;
+    console.log("file", file, "info", info);
+
+    if (file) {
+      const fileSizeInMB = file.size / (1024 * 1024);
+      if (fileSizeInMB > 30) {
+        alert("El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB.");
+        return;
+      }
+      setSelectedEvidence(selectedEvidence ? [...selectedEvidence, file] : [file]);
+    }
+  };
+
+  const handleOnDeleteDocument = (fileName: string) => {
+    const updatedFiles = selectedEvidence?.filter((file) => file.name !== fileName);
+    setSelectedEvidence(updatedFiles);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const fileSizeInMB = file.size / (1024 * 1024);
+      if (fileSizeInMB > 30) {
+        alert("El archivo es demasiado grande. Por favor, sube un archivo dse menos de 30 MB.");
+        return;
+      }
+      setSelectedEvidence(selectedEvidence ? [...selectedEvidence, file] : [file]);
+    }
+  };
   useEffect(() => {
     console.log(applyValues, "current", currentInvoices, currentAdjustment);
   }, [applyValues]);
+
+  const normalizarApplyValues = (applyValues: {
+    [key: string]: { balanceToApply: number; idAdjustment: number }[];
+  }): NormalizedValue[] => {
+    return Object.keys(applyValues).map((key) => ({
+      invoice_id: parseInt(key),
+      discounts: applyValues[key].map((value) => ({
+        id: value.idAdjustment,
+        balanceToApply: value.balanceToApply
+      }))
+    }));
+  };
+
+  const handleAttachEvidence = async () => {
+    try {
+      const normalizedData = normalizarApplyValues(applyValues);
+      const adjustmentData = JSON.stringify(normalizedData);
+      // Debugging: log selectedEvidence
+      console.log("normalizedData:", normalizedData);
+      console.log("selectedEvidence:", selectedEvidence);
+      if (!selectedEvidence) return;
+      const response = await applyAccountingAdjustment(
+        adjustmentData,
+        selectedEvidence,
+        projectIdParam as string,
+        clientIdParam as string
+      );
+      if (response.status === 200) {
+        setCurrentView("select");
+      }
+    } catch (error) {
+      console.error("Error applying accounting adjustment:", error);
+    }
+  };
 
   const columns: ColumnsType<IcurrentInvoices> = [
     {
@@ -128,7 +240,6 @@ export const ApplyAccountingAdjustment = ({
               (apply) => apply.idAdjustment === selectedRows[selectTab].id
             )?.balanceToApply
           }
-          
           onBlur={(event) => {
             const parsedValue = parseFloat(event.target.value);
             if (
@@ -174,13 +285,28 @@ export const ApplyAccountingAdjustment = ({
         <button
           type="button"
           className={`button__action__text ${selectedRows.length > 0 ? "button__action__text__green" : ""}`}
-          onClick={() => {
-            selectedRows.length > 0 && setCurrentView("apply");
-          }}
+          onClick={() => setOpenEvidenceModal(true)}
         >
           Continuar
         </button>
       </Flex>
+      <Modal
+        width={"50%"}
+        open={openEvidenceModal}
+        onCancel={() => setOpenEvidenceModal(false)}
+        footer
+      >
+        <EvidenceModal
+          selectedEvidence={selectedEvidence}
+          handleOnChangeDocument={handleOnChangeDocument}
+          handleOnDeleteDocument={handleOnDeleteDocument}
+          handleFileChange={handleFileChange}
+          handleAttachEvidence={handleAttachEvidence}
+          handleOnChangeTextArea={handleOnChangeTextArea}
+          commentary={commentary}
+          setIsSecondView={setIsSecondView}
+        />
+      </Modal>
     </div>
   );
 };

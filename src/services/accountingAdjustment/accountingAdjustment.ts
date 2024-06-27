@@ -1,7 +1,7 @@
 import config from "@/config";
 import { DiscountRequestBody } from "@/types/accountingAdjustment/IAccountingAdjustment";
 import { API, getIdToken } from "@/utils/api/api";
-import { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 
 export const createAccountingAdjustment = async (
   requestBody: DiscountRequestBody
@@ -25,4 +25,40 @@ export const createAccountingAdjustment = async (
   } catch (error) {
     return error as any;
   }
+};
+export const applyAccountingAdjustment = async (
+  adjustmentData: string,
+  docFiles: File[] | null,
+  projectId: string,
+  clientId: string
+): Promise<AxiosResponse<any>> => {
+  const token = await getIdToken();
+
+  const modelData = {
+    adjustment_data: adjustmentData,
+    doc: docFiles
+  };
+  console.log("modelData", modelData);
+
+  const formData = new FormData();
+  formData.append("adjustment_data", adjustmentData);
+  console.log("docFiles", docFiles);
+  if (docFiles) {
+    docFiles.forEach((file) => {
+      formData.append("doc", file);
+    });
+  }
+
+  const response: AxiosResponse<any> = await axios.post(
+    `${config.API_HOST}/invoice/adjusment/project/${projectId}/client/${clientId}`,
+    formData,
+    {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data;
 };

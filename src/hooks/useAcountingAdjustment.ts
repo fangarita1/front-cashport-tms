@@ -38,25 +38,18 @@ interface FinancialDiscount {
   users_approved: UserApproved[];
 }
 
-interface FinancialDiscountStatusGroup {
-  status_id: number;
-  financial_discounts: FinancialDiscount[];
-  temp_discount_total: number;
-  count: number;
-}
-
 interface GetFinancialDiscountsResponse {
   status: number;
   message: string;
-  data: FinancialDiscountStatusGroup[];
+  data: FinancialDiscount[];
 }
 
-export const useAcountingAdjustment = (clientId: number) => {
+export const useAcountingAdjustment = (clientId: number, type: number) => {
   const { ID } = useAppStore((state) => state.selectProject);
-  console.log(ID, clientId)
+  console.log(ID, clientId);
 
   const { data, error } = useSWR<GetFinancialDiscountsResponse>(
-    `/financial-discount/project/${ID || 19}/client/${clientId}`,
+    `/financial-discount/project/${ID || 19}/client/${clientId}?type=${type}`,
     fetcher
   );
 

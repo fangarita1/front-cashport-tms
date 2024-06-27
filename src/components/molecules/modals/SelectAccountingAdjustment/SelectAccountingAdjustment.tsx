@@ -1,9 +1,10 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import "./selectAccountingAdjustment.scss";
-import { Flex } from "antd";
+import { Flex, Spin } from "antd";
 import { ISelectedAccountingAdjustment } from "../ModalActionDiscountCredit/ModalActionDiscountCredit";
 import ItemsActionsModal from "@/components/atoms/ItemsModal/ItemsActionsModal";
 import { Plus } from "phosphor-react";
+import { useAcountingAdjustment } from "@/hooks/useAcountingAdjustment";
 
 interface Props {
   type: number;
@@ -11,6 +12,14 @@ interface Props {
   setSelectedRows: Dispatch<SetStateAction<ISelectedAccountingAdjustment[]>>;
   onClose: () => void;
   setCurrentView: Dispatch<SetStateAction<string>>;
+}
+interface ItemsSelected {
+  id: number;
+  current_value: number;
+  selected: boolean;
+  motive_name: string;
+  percentage?: number | null;
+  intialAmount?: number;
 }
 
 export const SelectAccountingAdjustment = ({
@@ -20,91 +29,51 @@ export const SelectAccountingAdjustment = ({
   setCurrentView,
   setSelectedRows
 }: Props) => {
-  const mockData: ISelectedAccountingAdjustment[] = [
-    { id: 1232, current_value: 1000, motive_name: "motive 1", percentage: 11, intialAmount: 10000 },
-    {
-      id: 211232,
-      current_value: 100000,
-      motive_name: "motive 2",
-      percentage: 50,
-      intialAmount: 100000
-    },
-    {
-      id: 31132,
-      current_value: 1000,
-      motive_name: "motive 3",
-      percentage: 81,
-      intialAmount: 10000
-    },
-    {
-      id: 41232,
-      current_value: 100000,
-      motive_name: "motive 4",
-      percentage: 17,
-      intialAmount: 100000
-    },
-    {
-      id: 511232,
-      current_value: 1000,
-      motive_name: "motive 5",
-      percentage: 10,
-      intialAmount: 10000
-    },
-    {
-      id: 61132,
-      current_value: 100000,
-      motive_name: "motive 6",
-      percentage: 15,
-      intialAmount: 100000
-    },
-    { id: 71132, current_value: 1000, motive_name: "motive 7", percentage: 5, intialAmount: 10000 },
-    {
-      id: 81232,
-      current_value: 100000,
-      motive_name: "motive 8",
-      percentage: 25,
-      intialAmount: 100000
-    },
-    {
-      id: 911232,
-      current_value: 1000,
-      motive_name: "motive 9",
-      percentage: 30,
-      intialAmount: 10000
-    },
-    {
-      id: 101132,
-      current_value: 100000,
-      motive_name: "motive 10",
-      percentage: 20,
-      intialAmount: 100000
-    }
-  ];
+  const { data, isLoading } = useAcountingAdjustment(98765232, type);
+  const [dateSelect, setDateSelect] = useState<ItemsSelected[]>([]);
   const handleCheckClick = (item: ISelectedAccountingAdjustment) => {
+    console.log("entra por aqui", item);
+
     const isExist = selectedRows.some((row) => row.id === item.id);
+    console.log(isExist);
+
     if (isExist) setSelectedRows((prevRows) => prevRows.filter((row) => row.id !== item.id));
     else setSelectedRows((prevRows) => [...prevRows, item]);
   };
 
-  const dateSelect = mockData.map((item) => {
-    return {
-      ...item,
-      selected: selectedRows.some((row) => row.id === item.id)
-    };
-  });
+  useEffect(() => {
+    if (data) {
+      setDateSelect(
+        data
+          .map((item) => ({
+            id: item.id,
+            current_value: item.current_value,
+            selected: selectedRows.some((row) => row.id === item.id),
+            motive_name: item.motive_name,
+            percentage: item.percentage,
+            intialAmount: item.initial_value
+          }))
+          .flat()
+      );
+    }
+  }, [data, selectedRows]);
 
   return (
     <div className="modalContent">
       <p className="subTitleModalAction">{subtitleMap[type || 1]}</p>
       <div className="modalContentScroll">
-        {dateSelect.map((item, index) => (
-          <ItemsActionsModal
-            key={index}
-            item={item}
-            type={type || 1}
-            onHeaderClick={() => handleCheckClick(item)}
-          />
-        ))}
+        {isLoading ? (
+          <Spin />
+        ) : (
+          dateSelect.map((item, index) => (
+            <ItemsActionsModal
+              key={index}
+              item={item}
+              type={type || 1}
+              onHeaderClick={() => handleCheckClick(item)}
+            />
+          ))
+        )}
       </div>
       <button
         type="button"
