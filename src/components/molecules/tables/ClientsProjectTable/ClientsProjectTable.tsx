@@ -46,8 +46,7 @@ export const ClientsProjectTable = ({
   setIsViewDetailsClients,
   placedIn = "tab",
   setSelectedRows,
-  selectedClientsKeys,
-  messageContext
+  selectedClientsKeys
 }: Props) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [page, setPage] = useState(1);

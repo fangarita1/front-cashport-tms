@@ -1,5 +1,6 @@
 import { AxiosHeaders } from "axios";
 import { Config } from "../users/IUser";
+import { IBillingPeriodForm } from "../billingPeriod/IBillingPeriod";
 
 export interface IClientAxios {
   data: IClientFullResponse;
@@ -56,6 +57,7 @@ export interface IClient {
   documents: IDocument[];
   ACTIVE: boolean;
   payment_condition: number;
+  billing_period_config: IBillingPeriodForm;
 }
 
 export interface Pagination {

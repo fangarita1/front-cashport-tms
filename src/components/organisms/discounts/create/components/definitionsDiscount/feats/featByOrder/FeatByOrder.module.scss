@@ -1,0 +1,47 @@
+@import "@/styles/variables.scss";
+
+.principalContainer {
+    padding: 0.8rem;
+    border-radius: 0.5rem;
+    border: 1px solid $dark-gray;
+
+}
+
+.radioGroup {
+    > label {
+        > span {
+            color: black !important;
+            font-weight: 400 !important;
+        }
+    }
+}
+
+.rangesContainer {
+    background-color: $background;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    .rangesSubContainer {
+        padding: 10px;
+        border-radius: 5px;
+        background-color: $white;
+    }
+    .button {
+        span {
+            color: $black;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        &:hover {
+            span {
+                color: white;
+                transition-duration: 250ms;
+            }
+        }
+    }
+}
+
+.input {
+    width: 250px;
+}

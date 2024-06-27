@@ -5,7 +5,7 @@ import { Control, Controller, FieldError, RegisterOptions } from "react-hook-for
 import "./inputform.scss";
 
 interface Props {
-  titleInput: string;
+  titleInput?: string;
   nameInput: string;
   control: Control<any> | undefined;
   error: FieldError | undefined;
@@ -16,6 +16,7 @@ interface Props {
   disabled?: boolean;
   validationRules?: RegisterOptions;
   className?: string;
+  readOnly?: boolean;
 }
 
 export const InputForm = ({
@@ -29,7 +30,8 @@ export const InputForm = ({
   placeholder = "",
   disabled,
   validationRules,
-  className
+  className,
+  readOnly
 }: Props) => {
   return (
     <Flex vertical className={`containerInput ${className}`} style={customStyle}>
@@ -39,12 +41,13 @@ export const InputForm = ({
         </Typography.Title>
       )}
       <Controller
-        name={nameInput as string}
+        name={nameInput}
         rules={{ required: true, maxLength: 123, ...validationRules }}
         control={control}
         disabled={disabled}
         render={({ field }) => (
           <Input
+            readOnly={readOnly}
             type={typeInput}
             className={!error ? "inputForm" : "inputFormError"}
             variant="borderless"

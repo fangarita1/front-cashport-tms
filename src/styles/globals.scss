@@ -92,3 +92,21 @@ a {
     flex-direction: column;
     background-color: #f7f7f7;
 }
+
+.translate .ant-select-selector {
+    height: fit-content !important;
+    transform: translateY(-50%);
+    span {
+        color: $dark-gray !important;
+    }
+}
+
+.translate .ant-select-selection-placeholder {
+    color: $dark-gray !important;
+}
+
+.translate .ant-select-disabled {
+    span {
+        color: $dark-gray !important;
+    }
+}
