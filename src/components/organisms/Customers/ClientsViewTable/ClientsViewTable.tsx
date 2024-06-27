@@ -18,6 +18,7 @@ import "./ClientsViewTable.scss";
 import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
+import { formatMoney } from "@/utils/utils";
 
 const { Text } = Typography;
 
@@ -57,27 +58,28 @@ export const ClientsViewTable = () => {
       title: "Cartera",
       dataIndex: "total_portfolio",
       key: "total_portfolio",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
       align: "right",
       title: "Vencida",
       dataIndex: "past_due_ammount",
-      key: "past_due_ammount"
+      key: "past_due_ammount",
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
       align: "right",
       title: "Presupuesto",
       key: "budget_ammount",
       dataIndex: "budget_ammount",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
       align: "right",
       title: "R. Aplicado",
       key: "applied_payments_ammount",
       dataIndex: "applied_payments_ammount",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
       align: "center",
@@ -92,7 +94,7 @@ export const ClientsViewTable = () => {
       title: "PNA",
       key: "unapplied_payments_ammount",
       dataIndex: "unapplied_payments_ammount",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
       align: "right",
