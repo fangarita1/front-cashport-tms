@@ -1,0 +1,22 @@
+@import "@/styles/variables.scss";
+
+.button,
+.button__fullWidth {
+    background-color: $secondary;
+    box-shadow: none;
+    color: $black !important;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 600 !important;
+    height: 100% !important;
+
+    &:hover {
+        color: $white !important;
+        background-color: $secondary !important;
+    }
+}
+
+.button__fullWidth {
+    width: 100% !important;
+}

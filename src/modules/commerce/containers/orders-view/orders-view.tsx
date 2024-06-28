@@ -1,11 +1,13 @@
 import { FC, createContext } from "react";
-import styles from "./orders-view.module.scss";
-import { Button, Flex } from "antd";
+import Link from "next/link";
+import { Flex } from "antd";
 import UiSearchInput from "@/components/ui/search-input";
 import FilterDiscounts from "@/components/atoms/Filters/FilterDiscounts/FilterDiscounts";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
-
-import Link from "next/link";
+import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
+import LabelCollapse from "@/components/ui/label-collapse";
+import styles from "./orders-view.module.scss";
+import Collapse from "@/components/ui/collapse";
 
 interface ClientDetailsProps {}
 export const OrdersViewContext = createContext<any>({});
@@ -27,10 +29,23 @@ export const OrdersView: FC<ClientDetailsProps> = () => {
             />
             <FilterDiscounts />
             <DotsDropdown />
-            <Link href="/comercio/pedido">
-              <Button type="primary"> Crear orden</Button>
+            <Link href="/comercio/pedido" className={styles.ctaButton}>
+              <PrincipalButton>Crear orden</PrincipalButton>
             </Link>
           </Flex>
+          <Collapse
+            items={mockLabels?.map((mock) => ({
+              key: mock.label,
+              label: (
+                <LabelCollapse
+                  status={mock.label}
+                  quantity={mock.total}
+                  color={mock.color}
+                  removeIcons
+                />
+              )
+            }))}
+          />
         </Flex>
       </div>
     </OrdersViewContext.Provider>

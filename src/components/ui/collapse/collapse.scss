@@ -1,34 +1,6 @@
 @import "@/styles/variables.scss";
 
-.ordersView {
-    display: flex;
-    flex-direction: column;
-    gap: 1.3rem;
-
-    .title {
-        font-size: 2rem;
-        font-weight: 700;
-    }
-    .FlexContainer {
-        height: fit-content;
-        width: 100%;
-        background-color: $white;
-        padding: 1.625rem 1.5rem;
-        overflow-y: auto;
-        border-radius: 1rem;
-        border: 1px solid $dark-gray;
-
-        .header {
-            height: 48px;
-
-            .ctaButton {
-                margin-left: auto;
-            }
-        }
-    }
-}
-
-.collapseByStatus {
+.genericCollapse {
     .ant-collapse-item {
         margin-left: 1rem !important;
         padding-bottom: 1.5rem !important;
@@ -48,7 +20,6 @@
         padding: 0 !important;
         margin-top: 1.5rem;
         margin-left: -1.5rem;
-        background-color: blue !important;
 
         &-text {
             h4 {

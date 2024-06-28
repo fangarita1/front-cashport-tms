@@ -8,6 +8,7 @@ interface PropsLabelCollapseInvoice {
   total?: number;
   quantity?: number;
   color?: string;
+  removeIcons?: boolean;
 }
 
 const randomColors = [
@@ -21,7 +22,13 @@ const randomColors = [
   "#A9BA43"
 ];
 
-const LabelCollapse = ({ status, total, quantity, color }: PropsLabelCollapseInvoice) => {
+const LabelCollapse = ({
+  status,
+  total,
+  quantity,
+  color,
+  removeIcons
+}: PropsLabelCollapseInvoice) => {
   const randomColor = randomColors[Math.floor(Math.random() * randomColors.length)];
 
   return (
@@ -34,7 +41,7 @@ const LabelCollapse = ({ status, total, quantity, color }: PropsLabelCollapseInv
       </h5>
       {total && (
         <Flex className={styles.labelCollapse__total}>
-          <Money size={16} className={styles.labelCollapse__total__icon} />
+          {removeIcons ? null : <Money size={16} className={styles.labelCollapse__total__icon} />}
           <h5 className={styles.labelCollapse__total__title}>
             ${insertPeriodEveryThreeDigits(total)}
           </h5>
@@ -42,7 +49,9 @@ const LabelCollapse = ({ status, total, quantity, color }: PropsLabelCollapseInv
       )}
       {quantity && (
         <Flex className={styles.labelCollapse__quantity}>
-          <Files size={16} className={styles.labelCollapse__quantity__icon} />
+          {removeIcons ? null : (
+            <Files size={16} className={styles.labelCollapse__quantity__icon} />
+          )}
           <h5 className={styles.labelCollapse__quantity__title}>{quantity}</h5>
         </Flex>
       )}
