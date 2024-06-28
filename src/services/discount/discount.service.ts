@@ -1,4 +1,5 @@
 import { DiscountBasics } from "@/types/discount/DiscountBasics";
+import { DiscountContractRange } from "@/types/discount/DiscountContractRange";
 import { GenericResponse, GenericResponsePage } from "@/types/global/IGlobal";
 import { API } from "@/utils/api/api";
 
@@ -38,4 +39,11 @@ export const deactivateDiscount = async (id: number, status: boolean) => {
     status: status ? 1 : 0
   })) as GenericResponse;
   return res;
+};
+
+export const getContractsRanges = async (projectId: number) => {
+  const response: GenericResponse<DiscountContractRange[]> = await API.get(
+    `/discount/contract-ranges/project/${projectId}`
+  );
+  return response;
 };

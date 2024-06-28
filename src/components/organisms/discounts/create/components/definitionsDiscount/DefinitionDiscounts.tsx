@@ -25,14 +25,23 @@ export default function DefinitionDiscounts({ selectedType, form }: Props) {
     getValues,
     trigger,
     control,
+    resetField,
     formState: { errors }
   } = form;
 
   const options = useMemo(() => getOptionsByType(selectedType), [selectedType]);
 
   useEffect(() => {
-    return setValue("discount_type", null, { shouldValidate: false });
+    resetField("discount_type");
   }, [selectedType]);
+
+  useEffect(() => {
+    console.log(errors.ranges);
+  }, [errors]);
+
+  useEffect(() => {
+    console.log(getValues("ranges"));
+  }, [watch("ranges")]);
 
   const [oldValue, setOldValue] = useState<Date | undefined>(undefined);
   useEffect(() => {
@@ -163,9 +172,9 @@ export default function DefinitionDiscounts({ selectedType, form }: Props) {
       <hr></hr>
       <Title level={4}>Características del descuento</Title>
       {byOrderTypes.includes(watch("discount_type") || 0) && (
-        <FeatByOrder discountType={watch("discount_type") || 0}></FeatByOrder>
+        <FeatByOrder discountType={watch("discount_type") || 0} form={form} ></FeatByOrder>
       )}
-      {byClientTypes.includes(watch("discount_type") || 0) && <FeatByCient></FeatByCient>}
+      {byClientTypes.includes(watch("discount_type") || 0) && <FeatByCient discountType={watch("discount_type") || 0} form={form}></FeatByCient>}
     </Flex>
   );
 }

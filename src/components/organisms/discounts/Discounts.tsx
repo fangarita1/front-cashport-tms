@@ -44,7 +44,7 @@ export default function Discounts() {
           dataSource={data}
           loading={loading}
           pagination={{
-            pageSize: 2,
+            pageSize: 25,
             showSizeChanger: false,
             total: res?.pagination.totalPages || 0,
             onChange: handleChangePage,

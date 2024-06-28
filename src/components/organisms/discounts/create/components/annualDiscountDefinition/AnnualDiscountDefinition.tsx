@@ -1,66 +1,98 @@
-import { Controller, useForm } from "react-hook-form";
+import { Controller, UseFormReturn, useFieldArray } from "react-hook-form";
 import style from "./AnnualDiscountDefinition.module.scss";
 import { DatePicker, Flex, Select, Typography } from "antd";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import AnnualFeatures from "./annualFeatures/AnnualFeatures";
 import { getOptionsByType } from "../../../constants/discountTypes";
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
+import { DiscountSchema } from "../../resolvers/generalResolver";
+import { getAllByProject } from "@/services/clients/clients";
+import { useAppStore } from "@/lib/store/store";
 
 const { Title, Text } = Typography;
 
 type Props = {
   selectedType: number;
+  form: UseFormReturn<DiscountSchema, any, undefined>;
 };
 
-export default function AnnualDiscountDefinition({selectedType}: Props) {
-  const _ = useMemo(() => getOptionsByType(selectedType), [selectedType]);
+export default function AnnualDiscountDefinition({ selectedType, form }: Props) {
+  const { ID: projectId } = useAppStore((project) => project.selectProject);
+  const [loading, setLoading] = useState(false);
+  const fetchClients = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllByProject({ idProject: projectId.toString() });
+      console.log(res);
+      setOptions(res?.map((client) => ({ label: client.client_name, value: client.nit })));
+    } catch (error) {
+      console.warn("error fetching clients: ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const options = [
-    { label: "cliente 1", value: 1 },
-    { label: "cliente 2", value: 2 },
-    { label: "cliente 3", value: 3 },
-    { label: "cliente 4", value: 4 },
-    { label: "cliente 5", value: 5 },
-    { label: "cliente 6", value: 6 },
-    { label: "cliente 7", value: 7 }
-  ];
+  const [options, setOptions] = useState<
+    {
+      label: string;
+      value: number;
+    }[]
+  >([]);
+
+  useEffect(() => {
+    console.log(options);
+  }, [options]);
+  useEffect(() => {
+    fetchClients();
+  }, []);
+
+  useEffect(() => {
+    const options = getOptionsByType(selectedType);
+    setValue("discount_type", options[0].value);
+  }, [selectedType]);
 
   const {
-    watch,
     setValue,
-    getValues,
     control,
-    handleSubmit,
-    reset,
-    formState: { errors, isDirty }
-  } = useForm();
+    formState: { errors }
+  } = form;
+
+  const { fields, append } = useFieldArray({
+    control,
+    name: "annual_ranges"
+  });
 
   return (
     <Flex className={style.HeaderContainer} vertical gap={20}>
       <Title level={4}>Selecciona cliente</Title>
       <Flex vertical>
         <Controller
-          name="general.client"
+          name="client"
           control={control}
           render={({ field }) => {
             return (
-              <Select
-                placeholder="Selecciona cliente"
-                placement="bottomLeft"
-                labelRender={(e) => e.label}
-                className={`${style.selectInput} translate`}
-                loading={false}
-                variant="borderless"
-                optionLabelProp="label"
-                options={options}
-                {...field}
-              ></Select>
+              <>
+                <Select
+                  placeholder="Selecciona cliente"
+                  placement="bottomLeft"
+                  labelRender={(e) => e.label}
+                  className={`${style.selectInput} translate`}
+                  loading={loading}
+                  variant="borderless"
+                  optionLabelProp="label"
+                  options={options}
+                  {...field}
+                ></Select>
+                <Text type="danger" hidden={!errors.client}>
+                  {errors?.client?.message}
+                </Text>
+              </>
             );
           }}
         />
       </Flex>
-        <Title level={4}>Adjuntar contrato</Title>
+      <Title level={4}>Adjuntar contrato</Title>
       <Flex gap={20}>
         <UploadDocumentButton title="Contrato" isMandatory={true} setFiles={() => {}} />
       </Flex>
@@ -68,15 +100,15 @@ export default function AnnualDiscountDefinition({selectedType}: Props) {
       <Flex gap={20}>
         <InputForm
           control={control}
-          error={undefined}
-          nameInput="general.name"
+          error={errors.name}
+          nameInput="name"
           titleInput="Nombre"
           className={style.input}
         ></InputForm>
         <InputForm
           control={control}
-          error={undefined}
-          nameInput="general.description"
+          error={errors.description}
+          nameInput="description"
           titleInput="Descripción"
           className={style.inputDesc}
         ></InputForm>
@@ -84,26 +116,54 @@ export default function AnnualDiscountDefinition({selectedType}: Props) {
       <Title level={4}>Fechas</Title>
       <Flex gap={20}>
         <Flex vertical>
-          <Text type="secondary">Inicio</Text>
-          <DatePicker
-            className={style.inputDatePicker}
-            placeholder="Inicio"
-            type="secondary"
-          ></DatePicker>
+          <Controller
+            name="start_date"
+            control={control}
+            render={({ field }) => {
+              return (
+                <>
+                  <Text type="secondary">Inicio</Text>
+                  <DatePicker
+                    className={style.inputDatePicker}
+                    placeholder="Inicio"
+                    type="secondary"
+                    {...field}
+                  ></DatePicker>
+                  <Text type="danger" style={{ textWrap: "wrap" }} hidden={!errors.start_date}>
+                    {errors?.start_date?.message}
+                  </Text>
+                </>
+              );
+            }}
+          />
         </Flex>
         <Flex vertical>
-          <Text type="secondary">Fin</Text>
-          <DatePicker
-            className={style.inputDatePicker}
-            placeholder="Fin"
-            type="secondary"
-          ></DatePicker>
+          <Controller
+            name="end_date"
+            control={control}
+            render={({ field }) => {
+              return (
+                <>
+                  <Text type="secondary">Fin</Text>
+                  <DatePicker
+                    className={style.inputDatePicker}
+                    placeholder="Fin"
+                    type="secondary"
+                    {...field}
+                  ></DatePicker>
+                  <Text type="danger" style={{ textWrap: "wrap" }} hidden={!errors.end_date}>
+                    {errors?.end_date?.message}
+                  </Text>
+                </>
+              );
+            }}
+          />
         </Flex>
       </Flex>
       <hr></hr>
       <Title level={4}>Características del descuento</Title>
       <Title level={5}>Productos a aplicar</Title>
-      <AnnualFeatures></AnnualFeatures>
+      <AnnualFeatures form={form} fields={fields} append={append}></AnnualFeatures>
     </Flex>
   );
 }

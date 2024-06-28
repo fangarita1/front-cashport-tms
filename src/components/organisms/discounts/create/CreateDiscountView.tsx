@@ -7,7 +7,7 @@ import PrincipalButton from "@/components/atoms/buttons/principalButton/Principa
 import { useEffect, useState } from "react";
 import AnnualDiscountDefinition from "./components/annualDiscountDefinition/AnnualDiscountDefinition";
 import discountCategories from "../constants/discountTypes";
-import { useForm } from "react-hook-form";
+import { UseFormReturn, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { DiscountSchema, generalResolver } from "./resolvers/generalResolver";
 
@@ -21,7 +21,7 @@ export function CreateDiscountView() {
     setSelectedType(type);
   };
   const form = useForm({
-    resolver: yupResolver<DiscountSchema>(generalResolver)
+    resolver: yupResolver(generalResolver)
   });
 
   const handleExecCallback = () => form.handleSubmit((e) => console.log(e))();
@@ -35,7 +35,7 @@ export function CreateDiscountView() {
           <DefinitionDiscounts form={form} selectedType={selectedType} />
         )}
         {annualDiscount.includes(selectedType) && (
-          <AnnualDiscountDefinition selectedType={selectedType} />
+          <AnnualDiscountDefinition form={form} selectedType={selectedType} />
         )}
         <Flex gap={20} justify="end">
           <PrincipalButton className={styles.button} onClick={handleExecCallback}>

@@ -10,6 +10,9 @@
     overflow-y: auto;
     border-radius: 1rem;
     border: 1px solid $dark-gray;
+    span {
+        font-weight: bold;
+    }
     hr {
         margin: 0;
         border: none;

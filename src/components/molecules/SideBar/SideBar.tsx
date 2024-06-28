@@ -31,7 +31,7 @@ export const SideBar = () => {
           </Flex>
         )}
 
-        <Link href="/clientes/all" passHref legacyBehavior>
+        <Link href="/clientes/all">
           <Button
             type="primary"
             size="large"
