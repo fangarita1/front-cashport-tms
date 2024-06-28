@@ -2,6 +2,8 @@
 import styles from "./HeaderDiscountType.module.scss";
 import { Button, Flex, Typography } from "antd";
 import discountCategories from "../../../constants/discountTypes";
+import Link from "next/link";
+import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 
 const { Title } = Typography;
 
@@ -13,7 +15,14 @@ type Props = {
 export default function HeaderDiscountType({ selectedType, handleClick }: Props) {
   return (
     <Flex className={styles.HeaderContainer} justify="space-between" vertical gap={20}>
-      <Title level={4}>Selecciona el tipo de descuento</Title>
+      <Flex gap={20} justify="space-between" wrap="wrap">
+        <Title style={{ width: "fit-content" }} level={4}>
+          Selecciona el tipo de descuento
+        </Title>
+        <Link href="/descuentos" passHref legacyBehavior>
+          <PrincipalButton className="PrincipalButton">Volver a la lista</PrincipalButton>
+        </Link>
+      </Flex>
       <Flex className={styles.buttonContainer} justify="space-around" wrap="wrap" gap={20}>
         {Object.keys(discountCategories).map((key) => (
           <Button

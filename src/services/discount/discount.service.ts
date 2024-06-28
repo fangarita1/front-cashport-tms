@@ -1,8 +1,6 @@
 import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
-import {
-  DiscountSchema
-} from "@/components/organisms/discounts/create/resolvers/generalResolver";
-import { DiscountBasics } from "@/types/discount/DiscountBasics";
+import { DiscountSchema } from "@/components/organisms/discounts/create/resolvers/generalResolver";
+import { DiscountBasics, DiscountGetOne } from "@/types/discount/DiscountBasics";
 import { DiscountContractRange } from "@/types/discount/DiscountContractRange";
 import { GenericResponse, GenericResponsePage } from "@/types/global/IGlobal";
 import { API } from "@/utils/api/api";
@@ -52,7 +50,10 @@ export const getContractsRanges = async (projectId: number) => {
   return response;
 };
 
-export const createDiscount = async (discount: DiscountSchema & { project_id: number }, invoice?: FileObject[]) => {
+export const createDiscount = async (
+  discount: DiscountSchema & { project_id: number },
+  invoice?: FileObject[]
+) => {
   const body: any = { ...discount };
   const invoiceFile: any = invoice?.[0]?.file;
   invoiceFile.mimetype = "application/pdf";
@@ -67,6 +68,12 @@ export const createDiscount = async (discount: DiscountSchema & { project_id: nu
   body.file = invoiceFile;
 
   const response: GenericResponse<DiscountBasics> = await API.post("/discount", body);
+  if (!response.success) throw new Error(response.message);
+  return response;
+};
+
+export const getDiscount = async (id: number) => {
+  const response: GenericResponse<DiscountGetOne> = await API.get(`/discount/${id}`);
   if (!response.success) throw new Error(response.message);
   return response;
 };

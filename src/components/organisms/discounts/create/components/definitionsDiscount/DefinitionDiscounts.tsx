@@ -119,7 +119,8 @@ export default function DefinitionDiscounts({ selectedType, form }: Props) {
           <Controller
             name="start_date"
             control={control}
-            render={({ field }) => {
+            render={({ field: { value, ...field } }) => {
+              console.log(value);
               return (
                 <>
                   <Text type="secondary">Inicio</Text>
@@ -127,6 +128,8 @@ export default function DefinitionDiscounts({ selectedType, form }: Props) {
                     className={style.inputDatePicker}
                     placeholder="Inicio"
                     type="secondary"
+                    format="YYYY-MM-DD"
+                    value={value}
                     {...field}
                   ></DatePicker>
                   <Text type="danger" style={{ textWrap: "wrap" }} hidden={!errors.start_date}>

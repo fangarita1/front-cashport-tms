@@ -38,7 +38,7 @@ const discountsColumns: (_: Props) => ColumnsType<DiscountBasics & { checked: bo
     dataIndex: "discount_name",
     key: "NameDiscount",
     render: (text, r) => (
-      <Link passHref href={`/discounts/${r.id}`}>
+      <Link passHref href={`/descuentos/${r.id}`}>
         {text}
       </Link>
     ),
@@ -93,7 +93,7 @@ const discountsColumns: (_: Props) => ColumnsType<DiscountBasics & { checked: bo
     width: 100,
     render: (text, r) => (
       <div>
-        <Link href={`/discounts/${r.id}`}>
+        <Link href={`/descuentos/${r.id}`}>
           <Button type="text" icon={<Eye size={32} style={{ padding: "0.2rem" }} />} />
         </Link>
       </div>
