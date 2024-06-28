@@ -1,3 +1,7 @@
+import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+import {
+  DiscountSchema
+} from "@/components/organisms/discounts/create/resolvers/generalResolver";
 import { DiscountBasics } from "@/types/discount/DiscountBasics";
 import { DiscountContractRange } from "@/types/discount/DiscountContractRange";
 import { GenericResponse, GenericResponsePage } from "@/types/global/IGlobal";
@@ -45,5 +49,24 @@ export const getContractsRanges = async (projectId: number) => {
   const response: GenericResponse<DiscountContractRange[]> = await API.get(
     `/discount/contract-ranges/project/${projectId}`
   );
+  return response;
+};
+
+export const createDiscount = async (discount: DiscountSchema & { project_id: number }, invoice?: FileObject[]) => {
+  const body: any = { ...discount };
+  const invoiceFile: any = invoice?.[0]?.file;
+  invoiceFile.mimetype = "application/pdf";
+  invoiceFile.originalname = invoiceFile?.name;
+  console.log(invoiceFile, invoice);
+
+  body.discount_type_id = discount.discount_type;
+  delete body.discount_type;
+  body.end_date = body.end_date ? body.end_date : undefined;
+  body.products_category = body.products_category?.map((x: number) => ({ idProduct: x }));
+  body.client_nit = discount.client;
+  body.file = invoiceFile;
+
+  const response: GenericResponse<DiscountBasics> = await API.post("/discount", body);
+  if (!response.success) throw new Error(response.message);
   return response;
 };

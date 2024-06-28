@@ -65,13 +65,13 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
   min_order: yup.number().when("discount_type", {
     is: (discount_type: number) => typesWithMinByOrder.includes(discount_type),
     then: () => yup.number().required("El valor mínimo es requerido"),
-    otherwise: () => yup.mixed().optional().default(null)
+    otherwise: () => yup.mixed().optional()
   }),
   computation_type: yup
     .number()
     .when("discount_type", {
       is: (discount_type: number) => discountTypeByAnnual.includes(discount_type),
-      then: () => yup.mixed().optional().default(null),
+      then: () => yup.mixed().optional(),
       otherwise: () => yup.number().required("El tipo de cálculo es requerido")
     })
     .default(1),
@@ -178,9 +178,9 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
             });
           return true;
         }),
-    otherwise: () => yup.mixed().optional().default(null)
+    otherwise: () => yup.mixed().optional()
   }),
-  client: yup.number().when("discount_type", {
+  client: yup.number().optional().when("discount_type", {
     is: (discount_type: number) => discountTypeByAnnual.includes(discount_type),
     then: () =>
       yup
@@ -196,7 +196,7 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
             });
           return true;
         }),
-    otherwise: () => yup.mixed().optional().default(null)
+    otherwise: () => yup.number().optional()
   }),
   annual_ranges: yup.array().when("discount_type", {
     is: (discount_type: number) => discountTypeByAnnual.includes(discount_type),
@@ -204,7 +204,7 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
       yup.array().of(
         yup.object({
           idLine: yup.number().required("La linea es requerida"),
-          idProduct: yup.number().required("El producto es requerido"),
+          idProduct: yup.number().optional(),
           units: yup
             .number()
             .typeError("Tipo de dato invalido")
@@ -229,7 +229,7 @@ const findDiscountError = (arr: number[]) => {
 export interface DiscountSchema {
   name: string;
   description: string;
-  discount_type: number;
+  discount_type?: number;
   start_date: Date;
   end_date?: Date | undefined;
   is_active?: boolean | undefined;

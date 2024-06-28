@@ -25,11 +25,10 @@ export default function FeatByOrder({ discountType, form }: FeatByOrderProps) {
     control,
     setValue,
     watch,
-    getValues,
     register
   } = form;
   const { lines, onChange, isLoading } = useDiscountFeats({ setValue });
-  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "ranges"
   });
@@ -91,7 +90,7 @@ export default function FeatByOrder({ discountType, form }: FeatByOrderProps) {
         </Flex>
         <Flex className={styles.rangesContainer} justify="flex-end">
           <PrincipalButton
-            onClick={() => append({ id: 55, unitsMin: 2, unitsMax: 3, discount: 4 })}
+            onClick={() => append({ id: 0, unitsMin: 0, unitsMax: 0, discount: 0 })}
             className={styles.button}
             icon={<Plus />}
             iconPosition="end"

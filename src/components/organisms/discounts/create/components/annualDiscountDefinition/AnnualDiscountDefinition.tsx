@@ -2,10 +2,13 @@ import { Controller, UseFormReturn, useFieldArray } from "react-hook-form";
 import style from "./AnnualDiscountDefinition.module.scss";
 import { DatePicker, Flex, Select, Typography } from "antd";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+import {
+  FileObject,
+  UploadDocumentButton
+} from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import AnnualFeatures from "./annualFeatures/AnnualFeatures";
 import { getOptionsByType } from "../../../constants/discountTypes";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { DiscountSchema } from "../../resolvers/generalResolver";
 import { getAllByProject } from "@/services/clients/clients";
 import { useAppStore } from "@/lib/store/store";
@@ -15,11 +18,13 @@ const { Title, Text } = Typography;
 type Props = {
   selectedType: number;
   form: UseFormReturn<DiscountSchema, any, undefined>;
+  setFiles: Dispatch<SetStateAction<FileObject[]>>;
 };
 
-export default function AnnualDiscountDefinition({ selectedType, form }: Props) {
+export default function AnnualDiscountDefinition({ selectedType, form, setFiles }: Props) {
   const { ID: projectId } = useAppStore((project) => project.selectProject);
   const [loading, setLoading] = useState(false);
+
   const fetchClients = async () => {
     setLoading(true);
     try {
@@ -41,15 +46,15 @@ export default function AnnualDiscountDefinition({ selectedType, form }: Props) 
   >([]);
 
   useEffect(() => {
-    console.log(options);
-  }, [options]);
-  useEffect(() => {
     fetchClients();
   }, []);
 
   useEffect(() => {
     const options = getOptionsByType(selectedType);
     setValue("discount_type", options[0].value);
+    return () => {
+      setValue("discount_type", undefined);
+    };
   }, [selectedType]);
 
   const {
@@ -94,7 +99,7 @@ export default function AnnualDiscountDefinition({ selectedType, form }: Props) 
       </Flex>
       <Title level={4}>Adjuntar contrato</Title>
       <Flex gap={20}>
-        <UploadDocumentButton title="Contrato" isMandatory={true} setFiles={() => {}} />
+        <UploadDocumentButton title="Contrato" isMandatory={true} setFiles={setFiles} />
       </Flex>
       <Title level={4}>Descripción</Title>
       <Flex gap={20}>

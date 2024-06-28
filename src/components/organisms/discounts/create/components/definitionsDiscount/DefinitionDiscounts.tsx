@@ -36,10 +36,6 @@ export default function DefinitionDiscounts({ selectedType, form }: Props) {
   }, [selectedType]);
 
   useEffect(() => {
-    console.log(errors.ranges);
-  }, [errors]);
-
-  useEffect(() => {
     console.log(getValues("ranges"));
   }, [watch("ranges")]);
 
@@ -172,9 +168,11 @@ export default function DefinitionDiscounts({ selectedType, form }: Props) {
       <hr></hr>
       <Title level={4}>Características del descuento</Title>
       {byOrderTypes.includes(watch("discount_type") || 0) && (
-        <FeatByOrder discountType={watch("discount_type") || 0} form={form} ></FeatByOrder>
+        <FeatByOrder discountType={watch("discount_type") || 0} form={form}></FeatByOrder>
       )}
-      {byClientTypes.includes(watch("discount_type") || 0) && <FeatByCient discountType={watch("discount_type") || 0} form={form}></FeatByCient>}
+      {byClientTypes.includes(watch("discount_type") || 0) && (
+        <FeatByCient discountType={watch("discount_type") || 0} form={form}></FeatByCient>
+      )}
     </Flex>
   );
 }
