@@ -5,6 +5,7 @@ export interface IInvoices {
 
 export interface InvoicesData {
   status: string;
+  color: string;
   status_id: number;
   invoices: IInvoice[];
   total: number;

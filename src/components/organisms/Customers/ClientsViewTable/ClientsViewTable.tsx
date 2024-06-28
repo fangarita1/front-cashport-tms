@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Button, Col, Flex, Row, Table, Typography } from "antd";
-import type { TableProps } from "antd";
+import { Spin, TableProps,Button, Col, Flex, Row, Table, Typography } from "antd";
 import {
   CalendarBlank,
   CalendarX,
@@ -19,6 +18,7 @@ import "./ClientsViewTable.scss";
 import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
+import { formatMoney } from "@/utils/utils";
 
 const { Text } = Typography;
 
@@ -30,6 +30,7 @@ export const ClientsViewTable = () => {
     currency: [] as string[]
   });
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const { loading, data } = useProjects({
     page: selectFilters.country.length !== 0 || selectFilters.currency.length !== 0 ? 1 : page,
     currencyId: selectFilters.currency,
@@ -57,27 +58,28 @@ export const ClientsViewTable = () => {
       title: "Cartera",
       dataIndex: "total_portfolio",
       key: "total_portfolio",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
       align: "right",
       title: "Vencida",
       dataIndex: "past_due_ammount",
-      key: "past_due_ammount"
+      key: "past_due_ammount",
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
       align: "right",
       title: "Presupuesto",
       key: "budget_ammount",
       dataIndex: "budget_ammount",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
       align: "right",
       title: "R. Aplicado",
       key: "applied_payments_ammount",
       dataIndex: "applied_payments_ammount",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
       align: "center",
@@ -92,7 +94,7 @@ export const ClientsViewTable = () => {
       title: "PNA",
       key: "unapplied_payments_ammount",
       dataIndex: "unapplied_payments_ammount",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
       align: "right",
@@ -115,8 +117,9 @@ export const ClientsViewTable = () => {
       render: (_, row: IClientsPortfolio) => (
         <Button
           href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}
+          onClick={() => setIsLoading(true)}
           className="buttonSeeProject"
-          icon={<Eye size={"1.3rem"} />}
+          icon={isLoading ? <Spin /> : <Eye size={"1.3rem"} />}
         />
       )
     }

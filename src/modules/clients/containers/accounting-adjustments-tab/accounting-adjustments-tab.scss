@@ -1,36 +1,40 @@
 @import "@styles/variables.scss";
 
-.walletTab {
+.accountingAdjustmentsTab {
     &__header {
-        .button {
-            &__actions {
-                padding: 0.75rem 1rem;
-                background-color: $background;
-                border: solid 1px transparent;
-                font-weight: 600;
-                display: flex;
-                align-items: center;
-                height: 3rem;
+        .availableAdjustments {
+            background-color: $secondary;
+            box-shadow: none;
+            color: $black;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+            font-weight: 600;
+            height: 3rem;
 
-                &:hover {
-                    border: solid 1px $dark-gray;
-                }
+            &:hover {
+                color: $white;
+                background-color: $secondary !important;
             }
-            &__adjustments {
-                background-color: $secondary;
-                box-shadow: none;
-                color: $black;
-                display: flex;
-                align-items: center;
-                font-size: 1rem;
-                font-weight: 600;
-                height: 3rem;
+        }
+    }
+    .ant-collapse-header {
+        display: flex;
+        align-items: center !important;
+        padding: 0 !important;
+        margin-top: 1.5rem;
+        margin-left: -0.5rem;
 
-                &:hover {
-                    color: $white;
-                    background-color: $secondary !important;
-                }
+        &-text {
+            h4 {
+                margin: 0;
             }
+        }
+    }
+
+    .ant-collapse-content {
+        &-box {
+            padding: 0.75rem 0.5rem !important;
         }
     }
 
