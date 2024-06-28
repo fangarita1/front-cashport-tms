@@ -1,32 +1,24 @@
-import { FC, createContext } from "react";
+import { Dispatch, FC, createContext, useState } from "react";
 import styles from "./create-order.module.scss";
-import { Button, Flex } from "antd";
 
-import Link from "next/link";
+import SearchClient from "../../components/create-order-search-client/create-order-search-client";
 
-interface ClientDetailsProps {}
-export const CreateOrderViewContext = createContext<any>({});
+interface IOrderViewContext {
+  client: any;
+  setClient: Dispatch<any>;
+}
+export const OrderViewContext = createContext<IOrderViewContext>({} as IOrderViewContext);
 
-export const CreateOrderView: FC<ClientDetailsProps> = () => {
-  const handleCreateOrder = () => {
-    console.log("Crear orden");
-  };
+export const CreateOrderView: FC = () => {
+  const [client, setClient] = useState<any>();
+
   return (
-    <CreateOrderViewContext.Provider value={""}>
+    <OrderViewContext.Provider value={{ client, setClient }}>
       <div className={styles.ordersView}>
         <h2 className={styles.title}>Crear orden</h2>
-        <Flex className={styles.FlexContainer} vertical>
-          <h3>Buscar cliente</h3>
-          <input type="text" />
-        </Flex>
-        <Flex>
-          <Link href="/comercio">
-            <Button>Cancelar</Button>
-          </Link>
-          <Button onClick={handleCreateOrder}>Crear Orden</Button>
-        </Flex>
+        {client ? <h4>Cliente seleccionado MarketPlace</h4> : <SearchClient />}
       </div>
-    </CreateOrderViewContext.Provider>
+    </OrderViewContext.Provider>
   );
 };
 

@@ -12,13 +12,8 @@
     height: 100% !important;
 
     &:hover {
-        color: $white !important;
-        background-color: $secondary !important;
-    }
-
-    &:disabled {
-        background-color: $dark-gray !important;
-        color: $black !important;
+        background-color: $white !important;
+        border: 1px solid $black !important;
     }
 }
 
