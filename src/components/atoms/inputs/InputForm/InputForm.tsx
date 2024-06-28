@@ -44,7 +44,7 @@ export const InputForm = ({
         </Typography.Title>
       )}
       <Controller
-        name={nameInput as string}
+        name={nameInput}
         rules={{ required: true, maxLength: 123, ...validationRules }}
         control={control}
         disabled={disabled}

@@ -1,0 +1,39 @@
+@import "@styles/variables.scss";
+
+.adjustmentsTable {
+    &__id {
+        color: $link;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .selectedRow {
+        td {
+            background-color: inherit !important;
+        }
+    }
+
+    .ant-table-column-title {
+        font-size: 1rem;
+        margin: 0.5rem 0;
+    }
+
+    .ant-table-content {
+        table {
+            .ant-table-cell {
+                padding-top: 0.4rem;
+                padding-bottom: 0.4rem;
+            }
+        }
+    }
+
+    .cell {
+        display: inline-block;
+
+        &.-alignRight {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 5px;
+        }
+    }
+}

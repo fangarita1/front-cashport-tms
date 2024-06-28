@@ -26,7 +26,7 @@ export const SideBar = () => {
               width={isSideBarLarge ? 75 : 50}
               height={isSideBarLarge ? 75 : 50}
               alt="logo company"
-              src={LOGO}
+              src={LOGO.trim()}
             />
           </Flex>
         )}
