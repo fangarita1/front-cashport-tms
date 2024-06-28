@@ -27,19 +27,27 @@ interface Props {
       actionType: number;
     }>
   >;
+  setSelectOpen: Dispatch<SetStateAction<{ selected: number }>>;
 }
 
 export const ModalGenerateAction = ({
   isOpen,
   onClose,
   setIsPaymentAgreementOpen,
-  setShowActionDetailModal
+  setShowActionDetailModal,
+  setSelectOpen
 }: Props) => {
   const handlePaymentAgreement = () => {
     setIsPaymentAgreementOpen(true);
   };
   const handleActionDetail = (type: number) => {
     setShowActionDetailModal({ isOpen: true, actionType: type });
+  };
+
+  const handleOpenModal = (type: number) => {
+    setSelectOpen({
+      selected: type
+    });
   };
   return (
     <Modal
@@ -68,11 +76,41 @@ export const ModalGenerateAction = ({
         icon={<Handshake size={16} />}
         title="Acuerdo de pago"
       />
-      <ButtonGenerateAction icon={<WarningDiamond size={16} />} title="Registrar novedad" />
-      <ButtonGenerateAction icon={<ArrowsClockwise size={16} />} title="Cambio de estado" />
-      <ButtonGenerateAction icon={<NewspaperClipping size={16} />} title="Radicar factura" />
-      <ButtonGenerateAction icon={<HandTap size={16} />} title="Aplicar pagos" />
-      <ButtonGenerateAction icon={<LinkBreak size={16} />} title="Vincular orden de compra" />
+      <ButtonGenerateAction
+        icon={<WarningDiamond size={16} />}
+        title="Registrar novedad"
+        onClick={() => {
+          handleOpenModal(1);
+        }}
+      />
+      <ButtonGenerateAction
+        icon={<ArrowsClockwise size={16} />}
+        title="Cambio de estado"
+        onClick={() => {
+          handleOpenModal(2);
+        }}
+      />
+      <ButtonGenerateAction
+        icon={<NewspaperClipping size={16} />}
+        title="Radicar factura"
+        onClick={() => {
+          handleOpenModal(3);
+        }}
+      />
+      <ButtonGenerateAction
+        icon={<HandTap size={16} />}
+        title="Aplicar pagos"
+        onClick={() => {
+          handleOpenModal(4);
+        }}
+      />
+      <ButtonGenerateAction
+        icon={<LinkBreak size={16} />}
+        title="Vincular orden de compra"
+        onClick={() => {
+          handleOpenModal(5);
+        }}
+      />
     </Modal>
   );
 };

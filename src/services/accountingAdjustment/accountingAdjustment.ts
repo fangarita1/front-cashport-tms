@@ -62,3 +62,36 @@ export const applyAccountingAdjustment = async (
   );
   return response.data;
 };
+
+export const changeStatusInvoice = async (
+  statusName: string,
+  invoiceIds: number[],
+  comments: string,
+  docFiles: File[] | null,
+  projectId: number,
+  clientId: number
+): Promise<AxiosResponse<any>> => {
+  const token = await getIdToken();
+  const formData = new FormData();
+  formData.append("status_name", statusName);
+  formData.append("invoice_ids", JSON.stringify(invoiceIds));
+  formData.append("comments", comments);
+  if (docFiles) {
+    docFiles.forEach((file) => {
+      formData.append("files", file);
+    });
+  }
+
+  const response: AxiosResponse<any> = await axios.post(
+    `${config.API_HOST}/invoice/project/${projectId}/client/${clientId}/update_status`,
+    formData,
+    {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data;
+};

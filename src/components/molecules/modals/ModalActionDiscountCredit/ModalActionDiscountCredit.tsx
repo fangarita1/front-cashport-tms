@@ -44,8 +44,6 @@ export const ModalActionDiscountCredit = ({
   const [currentView, setCurrentView] = useState("select");
   const [messageApi, contextHolder] = message.useMessage();
 
-  // const { data, isLoading } = useAcountingAdjustment(98765232);
-  // console.log(data, isLoading);
   useEffect(() => {
     showActionDetailModal && setSelectedRows([]);
   }, [showActionDetailModal]);

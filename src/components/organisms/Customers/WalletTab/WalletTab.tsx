@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Collapse, Flex, Spin } from "antd";
+import { Button, Collapse, Flex, Spin, message } from "antd";
 import { useParams } from "next/navigation";
 import { CaretDoubleRight, DotsThree } from "phosphor-react";
 import { extractSingleParam } from "@/utils/utils";
@@ -40,7 +40,10 @@ export const WalletTab = () => {
     actionType: 0
   });
   const [isPaymentAgreementOpen, setIsPaymentAgreementOpen] = useState(false);
-
+  const [isSelectOpen, setIsSelectOpen] = useState({
+    selected: 0
+  });
+  const [messageShow, contextHolder] = message.useMessage();
   const clientId = clientIdParam ? parseInt(clientIdParam) : 0;
   const projectId = projectIdParam ? parseInt(projectIdParam) : 0;
 
@@ -58,9 +61,13 @@ export const WalletTab = () => {
   const handleisGenerateActionOpen = () => {
     setisGenerateActionOpen(!isGenerateActionOpen);
   };
+  const onCloseModal = () => {
+    setIsSelectOpen({ selected: 0 });
+  };
 
   return (
     <>
+      {contextHolder}
       {selectedRows && selectedRows?.length > 0 && (
         <ModalEstimateTotalInvoices selectedInvoices={selectedRows} />
       )}
@@ -132,6 +139,7 @@ export const WalletTab = () => {
         onClose={handleisGenerateActionOpen}
         setIsPaymentAgreementOpen={setIsPaymentAgreementOpen}
         setShowActionDetailModal={setShowActionDetailModal}
+        setSelectOpen={setIsSelectOpen}
       />
       {isPaymentAgreementOpen && (
         <PaymentAgreementModal
@@ -156,7 +164,14 @@ export const WalletTab = () => {
         setShowActionDetailModal={setShowActionDetailModal}
         invoiceSelected={selectedRows}
       />
-      <WalletTabChangeStatusModal isOpen={false} />
+      <WalletTabChangeStatusModal
+        isOpen={isSelectOpen.selected === 2}
+        onClose={onCloseModal}
+        invoiceSelected={selectedRows}
+        clientId={clientId}
+        projectId={projectId}
+        messageShow={messageShow}
+      />
     </>
   );
 };
