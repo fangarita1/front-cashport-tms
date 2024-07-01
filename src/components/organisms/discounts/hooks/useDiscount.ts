@@ -1,5 +1,6 @@
 "use client";
 import useSearch from "@/hooks/useSearch";
+import { useAppStore } from "@/lib/store/store";
 import {
   deactivateDiscount,
   deleteDiscount,
@@ -24,6 +25,7 @@ export default function useDiscount({ messageApi }: Props) {
   const [active, setActive] = useState<number | undefined>(undefined);
   const [data, setData] = useState<DiscountBasicsState[]>([]);
   const { searchQuery, handleChangeSearch } = useSearch();
+  const { ID } = useAppStore((projects) => projects.selectProject);
 
   const {
     data: res,
@@ -31,7 +33,7 @@ export default function useDiscount({ messageApi }: Props) {
     mutate
   } = useSWR<GenericResponsePage<DiscountBasics[]>>(
     {
-      projectId: 19,
+      projectId: ID,
       params: {
         page,
         searchQuery,
@@ -91,7 +93,6 @@ export default function useDiscount({ messageApi }: Props) {
       setIsLoadingDelete(true);
       await deleteDiscount(data.filter((item) => item.checked).map((item) => item.id));
     } catch (error) {
-      console.log(error);
     } finally {
       handleClose();
       setIsLoadingDelete(false);

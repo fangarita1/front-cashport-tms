@@ -1,6 +1,6 @@
 "use client";
 import styles from "./CreateDiscountView.module.scss";
-import { Flex, message } from "antd";
+import { Flex, Form, message } from "antd";
 import HeaderDiscountType from "./components/headerDiscountType/HeaderDiscountType";
 import DefinitionDiscounts from "./components/definitionsDiscount/DefinitionDiscounts";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
@@ -10,10 +10,12 @@ import discountCategories from "../constants/discountTypes";
 import { set, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { DiscountSchema, generalResolver } from "./resolvers/generalResolver";
-import { createDiscount, getDiscount } from "@/services/discount/discount.service";
+import { createDiscount, getDiscount, updateDiscount } from "@/services/discount/discount.service";
 import { useAppStore } from "@/lib/store/store";
 import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
+import { mapDiscountGetOneToDiscountSchema } from "./logic/createDiscountLogic";
 
 const commonDiscount = [discountCategories.byOrder.id, discountCategories.byClient.id];
 const annualDiscount = [discountCategories.annual.id];
@@ -23,17 +25,22 @@ type Props = {
 };
 
 export function CreateDiscountView({ params }: Props) {
+  const discountId = !!Number(params?.id) ? Number(params?.id) : undefined;
   const [messageApi, contextHolder] = message.useMessage();
   const [selectedType, setSelectedType] = useState<number>(1);
   const { ID } = useAppStore((project) => project.selectProject);
-  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<FileObject[]>([]);
+  const [statusForm, setStatusForm] = useState<"create" | "edit" | "review">(
+    discountId ? "review" : "create"
+  );
   const [defaultDiscount, setDefaultDiscount] = useState<DiscountSchema>({
     name: "",
     description: "",
     discount_type: undefined,
-    start_date: new Date(),
-    is_active: true,
+    start_date: null,
+    is_active: false,
     products_category: [],
     min_order: 0,
     computation_type: 1,
@@ -41,58 +48,57 @@ export function CreateDiscountView({ params }: Props) {
     discount: 0,
     ranges: [],
     annual_ranges: [],
-    end_date: new Date(),
+    end_date: undefined,
     client: undefined
   });
 
-  const fetchDiscount = async () => {
+
+  const handleChangeStatusForm = (status: "create" | "edit" | "review") => {
+    setStatusForm(status);
+  };
+
+  const fetchDiscount: () => Promise<DiscountSchema> = async () => {
     setLoading(true);
     try {
       const { data } = await getDiscount(Number(params?.id));
       setLoading(false);
-      return {
-        description: data.description,
-        discount_type: data.discount_type_id,
-        start_date: dayjs(data.start_date) as any,
-        is_active: !!data.status,
-        name: data.discount_name,
-        products_category: data.productsCategory?.map((e) => e.id_product) || [],
-        min_order: data.min_units_by_order,
-        computation_type: data.discount_computation,
-        client_groups: data.clientGroups?.map((e) => e.id_clientgroup) || [],
-        discount: data.discount_computation,
-        ranges:
-          data.ranges?.map((e) => ({
-            id: e.id,
-            unitsMin: e.units_from || e.min_units_by_order_by_sku || e.min_channel,
-            unitsMax: e.units_to || e.min_units_by_channel,
-            discount: e.discount
-          })) || [],
-        annual_ranges:
-          data.contracts?.map((e) => ({
-            idLine: e.id_line,
-            units: e.units,
-            idContract: e.id_discount_contracts_ranges
-          })) || []
-      };
-    } catch (e) {
-      console.error(e);
+      const selectedType =
+        Object.values(discountCategories).find((t) =>
+          t.discountType.includes(data.discount_type_id)
+        )?.id || 1;
+      setSelectedType(selectedType);
+      const result = mapDiscountGetOneToDiscountSchema(data);
+      setDefaultDiscount(result);
+      return result;
+    } catch (e: any) {
+      messageApi.error(e.message);
+      console.error(e.message);
+      router.push("/descuentos");
     }
     return defaultDiscount;
   };
 
   useEffect(() => {
-    if (params?.id) {
-      fetchDiscount();
+    if (!Number(params?.id) && typeof params?.id === "string") {
+      // if id is not a number and it is a string then the path is incorrect
+      router.push("/descuentos");
     }
   }, [params?.id]);
+
+  useEffect(() => {
+    if (statusForm === "review") {
+      form.reset();
+    }
+  }, [statusForm]);
 
   const handleClick = (type: number) => {
     setSelectedType(type);
   };
+
   const form = useForm({
     resolver: yupResolver(generalResolver),
-    defaultValues: Number(params?.id) ? fetchDiscount : undefined
+    defaultValues: Number(params?.id) ? fetchDiscount : defaultDiscount,
+    disabled: statusForm === "review"
   });
 
   const { errors } = form.formState;
@@ -104,10 +110,24 @@ export function CreateDiscountView({ params }: Props) {
   const handlePostDiscount = async (e: DiscountSchema) => {
     setLoading(true);
     try {
-      console.log(e);
       const res = await createDiscount({ ...e, project_id: ID }, files);
-      console.log(res);
-      messageApi.success("Discount created successfully");
+      messageApi.success("Descuento creado exitosamente");
+      router.push(`/descuentos/${res.data.idDiscount}`);
+    } catch (e: any) {
+      messageApi.error(e.response.data.message);
+      console.error(e);
+    }
+    setLoading(false);
+  };
+
+  const handleUpdateDiscount = async (e: DiscountSchema) => {
+    setLoading(true);
+    try {
+      const { data } = await updateDiscount({ ...e, project_id: ID }, discountId as number);
+      messageApi.success("Descuento actualizado exitosamente");
+      setDefaultDiscount(mapDiscountGetOneToDiscountSchema(data));
+      setStatusForm("review");
+      form.reset(mapDiscountGetOneToDiscountSchema(data));
     } catch (e: any) {
       messageApi.error(e.message);
       console.error(e);
@@ -115,22 +135,45 @@ export function CreateDiscountView({ params }: Props) {
     setLoading(false);
   };
 
-  const handleExecCallback = form.handleSubmit(handlePostDiscount);
+  const handleExecCallback = form.handleSubmit(
+    statusForm === "edit" ? handleUpdateDiscount : handlePostDiscount
+  );
 
   return (
     <>
       {contextHolder}
       <Flex className={styles.mainCreateDiscount}>
-        <HeaderDiscountType selectedType={selectedType} handleClick={handleClick} />
+        <HeaderDiscountType
+          selectedType={selectedType}
+          handleClick={handleClick}
+          discountId={discountId}
+        />
         {commonDiscount.includes(selectedType) && (
-          <DefinitionDiscounts form={form} selectedType={selectedType} />
+          <DefinitionDiscounts
+            form={form}
+            selectedType={selectedType}
+            discountId={discountId}
+            statusForm={statusForm}
+            handleChangeStatusForm={handleChangeStatusForm}
+          />
         )}
         {annualDiscount.includes(selectedType) && (
-          <AnnualDiscountDefinition form={form} selectedType={selectedType} setFiles={setFiles} />
+          <AnnualDiscountDefinition
+            form={form}
+            selectedType={selectedType}
+            setFiles={setFiles}
+            statusForm={statusForm}
+            handleChangeStatusForm={handleChangeStatusForm}
+          />
         )}
         <Flex gap={20} justify="end">
-          <PrincipalButton className={styles.button} onClick={handleExecCallback}>
-            Crear
+          <PrincipalButton
+            className={styles.button}
+            onClick={handleExecCallback}
+            loading={loading}
+            disabled={statusForm === "review"}
+          >
+            {discountId ? "Editar Descuento" : "Crear Descuento"}
           </PrincipalButton>
         </Flex>
       </Flex>

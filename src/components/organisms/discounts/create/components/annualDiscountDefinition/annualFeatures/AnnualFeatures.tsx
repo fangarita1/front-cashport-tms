@@ -1,22 +1,35 @@
 import style from "./AnnualFeatures.module.scss";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-import { Col, Flex, Row, Select, Typography } from "antd";
-import { Controller, FieldArrayWithId, UseFieldArrayAppend, UseFormReturn } from "react-hook-form";
-import { Plus } from "phosphor-react";
+import { Button, Col, Flex, Row, Select, Typography } from "antd";
+import {
+  Controller,
+  FieldArrayWithId,
+  UseFieldArrayAppend,
+  UseFieldArrayRemove,
+  UseFormReturn
+} from "react-hook-form";
+import { Plus, Trash } from "phosphor-react";
 import { DiscountSchema } from "../../../resolvers/generalResolver";
 import useAnnualFeatures from "./hooks/useAnnualFeatures";
 
 const { Text } = Typography;
 
-
 type AnnualFeaturesProps = {
   form: UseFormReturn<DiscountSchema, any, undefined>;
   fields: FieldArrayWithId<DiscountSchema, "annual_ranges", "id">[];
   append: UseFieldArrayAppend<DiscountSchema, "annual_ranges">;
+  remove: UseFieldArrayRemove;
+  statusForm: "create" | "edit" | "review";
 };
 
-export default function AnnualFeatures({ form, fields, append }: AnnualFeaturesProps) {
+export default function AnnualFeatures({
+  form,
+  fields,
+  append,
+  remove,
+  statusForm
+}: AnnualFeaturesProps) {
   const {
     control,
     register,
@@ -77,8 +90,15 @@ export default function AnnualFeatures({ form, fields, append }: AnnualFeaturesP
             <Col span={7} offset={1} className={style.discountFeatures}>
               <span>{findContract(watch(`annual_ranges.${index}.idContract`)).range}</span>
             </Col>
-            <Col span={4} offset={1} className={style.discountFeatures}>
+            <Col span={3} offset={1} className={style.discountFeatures}>
               <span>{findContract(watch(`annual_ranges.${index}.idContract`)).discount}</span>
+            </Col>
+            <Col span={1} className={style.discountFeatures}>
+              {statusForm !== "review" && (
+                <Button type="text" onClick={() => remove(index)}>
+                  <Trash size={20} />
+                </Button>
+              )}
             </Col>
           </Row>
           {/* Errors Row */}
@@ -103,16 +123,18 @@ export default function AnnualFeatures({ form, fields, append }: AnnualFeaturesP
           <hr />
         </Flex>
       ))}
-      <Flex justify="end">
-        <PrincipalButton
-          onClick={() => append({ idLine: undefined, units: 0, idContract: undefined })}
-          className={style.button}
-          icon={<Plus />}
-          iconPosition="end"
-        >
-          Agregar descuento
-        </PrincipalButton>
-      </Flex>
+      {statusForm !== "review" && (
+        <Flex justify="end">
+          <PrincipalButton
+            onClick={() => append({ id: 0, idLine: undefined, units: 0, idContract: undefined })}
+            className={style.button}
+            icon={<Plus />}
+            iconPosition="end"
+          >
+            Agregar descuento
+          </PrincipalButton>
+        </Flex>
+      )}
     </Flex>
   );
 }

@@ -11,8 +11,9 @@ type Props = {
   error: any;
   loading: boolean;
   form: UseFormReturn<DiscountSchema, any, undefined>;
+  statusForm: "create" | "edit" | "review";
 };
-export default function GroupClients({ clients, error, loading, form }: Props) {
+export default function GroupClients({ clients, error, loading, form, statusForm }: Props) {
   const {
     formState: { errors },
     getValues,
@@ -22,7 +23,6 @@ export default function GroupClients({ clients, error, loading, form }: Props) {
 
   const handleCkeck = (id: number, checked: boolean) => {
     const valid = { shouldValidate: true };
-    console.log();
     if (!checked) {
       setValue(
         "client_groups",
@@ -51,6 +51,7 @@ export default function GroupClients({ clients, error, loading, form }: Props) {
                 onChange={(e) => handleCkeck(client.id, e.target.checked)}
                 style={{ marginLeft: "1rem" }}
                 id={"cliente - " + client.id}
+                disabled={statusForm === "review"}
               />
             </label>
           ))}

@@ -57,7 +57,6 @@ export const InputForm = ({
             placeholder={placeholder?.length > 0 ? placeholder : titleInput}
             onChange={(e) => {
               onChange(e);
-              console.log(e.target.value);
               changeInterceptor?.(e.target.value);
             }}
             {...field}

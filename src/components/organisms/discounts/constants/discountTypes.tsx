@@ -2,6 +2,8 @@ import { Bag, CalendarBlank, UsersThree } from "phosphor-react";
 
 export const discountTypesByOrder = [1, 2, 3, 4];
 
+export const typesWithOutMinByOrder = [1, 2];
+
 export const typesWithMinByOrder = [3, 4];
 
 export const discountTypesByClient = [5, 6];

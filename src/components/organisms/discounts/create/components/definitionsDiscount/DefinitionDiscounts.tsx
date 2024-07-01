@@ -1,12 +1,13 @@
 import { Controller, UseFormReturn } from "react-hook-form";
 import style from "./DefinitionDiscounts.module.scss";
-import { DatePicker, Flex, Select, Switch, Typography } from "antd";
+import { Button, DatePicker, Flex, Select, Switch, Typography } from "antd";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import FeatByOrder from "./feats/featByOrder/FeatByOrder";
 import FeatByCient from "./feats/featByClient/FeatByClient";
 import { getOptionsByType } from "../../../constants/discountTypes";
 import { useEffect, useMemo, useState } from "react";
 import { DiscountSchema } from "../../resolvers/generalResolver";
+import { Pencil } from "phosphor-react";
 
 const { Title, Text } = Typography;
 
@@ -16,9 +17,19 @@ const byClientTypes = [5, 6];
 type Props = {
   selectedType: number;
   form: UseFormReturn<DiscountSchema, any, undefined>;
+  discountId?: number;
+  statusForm: "create" | "edit" | "review";
+  // eslint-disable-next-line no-unused-vars
+  handleChangeStatusForm: (status: "create" | "edit" | "review") => void;
 };
 
-export default function DefinitionDiscounts({ selectedType, form }: Props) {
+export default function DefinitionDiscounts({
+  selectedType,
+  form,
+  discountId,
+  statusForm,
+  handleChangeStatusForm
+}: Props) {
   const {
     watch,
     setValue,
@@ -32,26 +43,41 @@ export default function DefinitionDiscounts({ selectedType, form }: Props) {
   const options = useMemo(() => getOptionsByType(selectedType), [selectedType]);
 
   useEffect(() => {
-    resetField("discount_type");
+    if (typeof selectedType === "undefined") {
+      resetField("discount_type");
+    }
   }, [selectedType]);
-
-  useEffect(() => {
-    console.log(getValues("ranges"));
-  }, [watch("ranges")]);
 
   const [oldValue, setOldValue] = useState<Date | undefined>(undefined);
   useEffect(() => {
-    if (watch("is_active")) {
-      setOldValue(getValues("end_date"));
-      setValue("end_date", undefined, { shouldValidate: true });
-    } else {
-      setValue("end_date", oldValue, { shouldValidate: true });
-    }
+    if (statusForm !== "review") {
+      if (watch("is_active")) {
+        setOldValue(getValues("end_date"));
+        setValue("end_date", undefined, { shouldValidate: true });
+      } else {
+        setValue("end_date", oldValue, { shouldValidate: true });
+      }
+    } else setOldValue(getValues("end_date"));
   }, [watch("start_date"), watch("is_active")]);
 
   return (
     <Flex className={style.HeaderContainer} vertical gap={20}>
-      <Title level={4}>Definiciones</Title>
+      <Flex gap={20} justify="space-between">
+        <Title level={4}>Definiciones</Title>
+        {statusForm !== "create" && (
+          <Button
+            className={style.buttonEdit}
+            htmlType="button"
+            onClick={(e) => {
+              e.preventDefault();
+              handleChangeStatusForm(statusForm === "review" ? "edit" : "review");
+            }}
+          >
+            {statusForm === "review" ? "Editar Descuento" : "Cancelar Edicion"}
+            <Pencil size={"1.2rem"} />
+          </Button>
+        )}
+      </Flex>
       <Flex vertical>
         <Text type="secondary">Tipo de descuento</Text>
         <Controller
@@ -70,6 +96,7 @@ export default function DefinitionDiscounts({ selectedType, form }: Props) {
                   variant={"borderless"}
                   optionLabelProp="label"
                   options={options}
+                  disabled={!!discountId}
                   {...field}
                 ></Select>
                 <Text type="danger" hidden={!errors.discount_type}>
@@ -120,7 +147,6 @@ export default function DefinitionDiscounts({ selectedType, form }: Props) {
             name="start_date"
             control={control}
             render={({ field: { value, ...field } }) => {
-              console.log(value);
               return (
                 <>
                   <Text type="secondary">Inicio</Text>
@@ -171,10 +197,18 @@ export default function DefinitionDiscounts({ selectedType, form }: Props) {
       <hr></hr>
       <Title level={4}>Características del descuento</Title>
       {byOrderTypes.includes(watch("discount_type") || 0) && (
-        <FeatByOrder discountType={watch("discount_type") || 0} form={form}></FeatByOrder>
+        <FeatByOrder
+          discountType={watch("discount_type") || 0}
+          form={form}
+          statusForm={statusForm}
+        ></FeatByOrder>
       )}
       {byClientTypes.includes(watch("discount_type") || 0) && (
-        <FeatByCient discountType={watch("discount_type") || 0} form={form}></FeatByCient>
+        <FeatByCient
+          discountType={watch("discount_type") || 0}
+          form={form}
+          statusForm={statusForm}
+        ></FeatByCient>
       )}
     </Flex>
   );

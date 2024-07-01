@@ -35,6 +35,7 @@ export interface DiscountGetOne {
   contract_archive: any;
   status: number;
   is_deleted: number;
+  discount?: number;
   productsCategory?: ProductsCategory[];
   clientGroups?: ClientGroup[];
   ranges?: Range[];
@@ -76,4 +77,8 @@ export interface Contract {
   units: number;
   id_discount_contracts_ranges: number;
   is_deleted: number;
+}
+
+export interface DiscountCreateResponse {
+  idDiscount: number;
 }

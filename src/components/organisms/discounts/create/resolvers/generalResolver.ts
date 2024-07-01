@@ -5,7 +5,8 @@ import {
   discountTypeByAnnual,
   discountTypesByClient,
   discountTypesByOrder,
-  typesWithMinByOrder
+  typesWithMinByOrder,
+  typesWithOutMinByOrder
 } from "../../constants/discountTypes";
 
 const yesterday: any = (date: string) =>
@@ -32,24 +33,27 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
     .date()
     .required("La fecha de inicio es requerida")
     .min(yesterday(new Date() as any), "La fecha de inicio debe ser menor a hoy"),
-  end_date: yup.date().when("is_active", {
-    is: (checkbox: boolean) => {
-      return checkbox === false || checkbox === undefined;
-    },
-    then: () =>
-      yup
-        .date()
-        .test({
-          name: "min",
-          message: "La fecha de fin debe ser mayor a la fecha de inicio",
-          test: (end_date, context) =>
-            new Date(end_date || "") >= tomorrow(context.parent.start_date)
-        })
-        .required("La fecha de fin es requerida"),
-    otherwise: (a) => {
-      return a.nullable().default(null);
-    }
-  }),
+  end_date: yup
+    .date()
+    .optional()
+    .when("is_active", {
+      is: (checkbox: boolean) => {
+        return checkbox === false || checkbox === undefined;
+      },
+      then: () =>
+        yup
+          .date()
+          .test({
+            name: "min",
+            message: "La fecha de fin debe ser mayor a la fecha de inicio",
+            test: (end_date, context) =>
+              new Date(end_date || "") >= tomorrow(context.parent.start_date)
+          })
+          .required("La fecha de fin es requerida"),
+      otherwise: (a) => {
+        return a.nullable().optional();
+      }
+    }),
   is_active: yup.boolean().optional(),
   products_category: yup.array().when("discount_type", {
     is: (discount_type: number) =>
@@ -64,7 +68,12 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
   }),
   min_order: yup.number().when("discount_type", {
     is: (discount_type: number) => typesWithMinByOrder.includes(discount_type),
-    then: () => yup.number().required("El valor mínimo es requerido"),
+    then: () =>
+      yup
+        .number()
+        .typeError("Tipo de dato invalido")
+        .required("El valor mínimo es requerido")
+        .min(1, "El valor mínimo debe ser mayor a 0"),
     otherwise: () => yup.mixed().optional()
   }),
   computation_type: yup
@@ -86,11 +95,13 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
             unitsMin: yup
               .number()
               .typeError("Tipo de dato invalido")
-              .required("El mínimo de unidades es requerido"),
+              .required("El mínimo de unidades es requerido")
+              .min(1, "El valor debe ser mayor a 0"),
             unitsMax: yup
               .number()
               .typeError("Tipo de dato invalido")
-              .required("El máximo de unidades es requerido"),
+              .required("El máximo de unidades es requerido")
+              .min(1, "El valor debe ser mayor a 0"),
             discount: yup
               .number()
               .typeError("Tipo de dato invalido")
@@ -113,7 +124,7 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
         })
         .min(1, "Debe haber al menos una regla de descuento")
         .test("test-discount", "Error test-discount", (value, context) => {
-          if (value?.length) {
+          if (value?.length && typesWithOutMinByOrder.includes(context.parent.discount_type)) {
             const err = findDiscountError(value.map((e) => e.discount));
             if (err) {
               return context.createError({
@@ -125,7 +136,7 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
           return true;
         })
         .test("test-scale", "Error test-scale", (value, context) => {
-          if (value?.length) {
+          if (value?.length && typesWithOutMinByOrder.includes(context.parent.discount_type)) {
             const err = findDiscountError(value.map((e, i) => (i % 2 ? e.unitsMin : e.unitsMax)));
             if (err) {
               return context.createError({
@@ -137,7 +148,7 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
           return true;
         })
         .test("test-scale-right", "Error test-scale-right", (value, context) => {
-          if (value?.length) {
+          if (value?.length && typesWithOutMinByOrder.includes(context.parent.discount_type)) {
             const errMap = value.map((e, i) =>
               findDiscountError([e.unitsMin, e.unitsMax]) === false ? null : i
             );
@@ -172,32 +183,42 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
         .required("El descuento es requerido")
         .test("test-discount", "", (value, context) => {
           if (context.parent.computation_type == 1 && value > 100)
-            context.createError({
+            return context.createError({
               path: "discount",
               message: "El descuento debe ser menor a 100%"
+            });
+          if (value <= 0)
+            return context.createError({
+              path: "discount",
+              message:
+                "El descuento debe ser mayor a 0" +
+                (context.parent.computation_type == 1 ? "%" : "")
             });
           return true;
         }),
     otherwise: () => yup.mixed().optional()
   }),
-  client: yup.number().optional().when("discount_type", {
-    is: (discount_type: number) => discountTypeByAnnual.includes(discount_type),
-    then: () =>
-      yup
-        .number()
-        .typeError("Tipo de dato invalido")
-        .nonNullable("El cliente es requerido")
-        .required("El cliente es requerido")
-        .test("test-client", "", (value, context) => {
-          if (context.parent.computation_type == 1 && value == null)
-            context.createError({
-              path: "client",
-              message: "El cliente es requerido"
-            });
-          return true;
-        }),
-    otherwise: () => yup.number().optional()
-  }),
+  client: yup
+    .number()
+    .optional()
+    .when("discount_type", {
+      is: (discount_type: number) => discountTypeByAnnual.includes(discount_type),
+      then: () =>
+        yup
+          .number()
+          .typeError("Tipo de dato invalido")
+          .nonNullable("El cliente es requerido")
+          .required("El cliente es requerido")
+          .test("test-client", "", (value, context) => {
+            if (context.parent.computation_type == 1 && value == null)
+              context.createError({
+                path: "client",
+                message: "El cliente es requerido"
+              });
+            return true;
+          }),
+      otherwise: () => yup.number().optional().nullable()
+    }),
   annual_ranges: yup.array().when("discount_type", {
     is: (discount_type: number) => discountTypeByAnnual.includes(discount_type),
     then: () =>
@@ -210,11 +231,15 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
             .typeError("Tipo de dato invalido")
             .required("El valor mínimo es requerido")
             .min(1, "El valor mínimo debe ser mayor a 0"),
-          idContract: yup.number().typeError("No se encontró ningun rango").required("El rango es requerido")
+          idContract: yup
+            .number()
+            .typeError("No se encontró ningun rango")
+            .required("El rango es requerido")
         })
-      ),
+      ).min(1, "Debe haber al menos una regla de descuento"),
     otherwise: () => yup.array().optional()
-  })
+  }),
+  contract_archive: yup.string().optional()
 });
 
 const findDiscountError = (arr: number[]) => {
@@ -230,7 +255,7 @@ export interface DiscountSchema {
   name: string;
   description: string;
   discount_type?: number;
-  start_date: Date;
+  start_date?: Date | null | undefined;
   end_date?: Date | undefined;
   is_active?: boolean | undefined;
   products_category?: number[] | undefined;
@@ -246,10 +271,12 @@ export interface DiscountSchema {
   }[];
   client?: number | undefined;
   annual_ranges?: {
+    id?: number | undefined;
     idLine?: number | undefined;
     units: number;
     idContract?: number | undefined;
   }[];
+  contract_archive?: string | undefined;
 }
 
 export type DiscountResolverShape = UseFormReturn<DiscountSchema, any, undefined>;

@@ -1,9 +1,16 @@
 import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+import { discountTypeByAnnual } from "@/components/organisms/discounts/constants/discountTypes";
 import { DiscountSchema } from "@/components/organisms/discounts/create/resolvers/generalResolver";
-import { DiscountBasics, DiscountGetOne } from "@/types/discount/DiscountBasics";
+import config from "@/config";
+import {
+  DiscountBasics,
+  DiscountCreateResponse,
+  DiscountGetOne
+} from "@/types/discount/DiscountBasics";
 import { DiscountContractRange } from "@/types/discount/DiscountContractRange";
 import { GenericResponse, GenericResponsePage } from "@/types/global/IGlobal";
-import { API } from "@/utils/api/api";
+import { API, getIdToken } from "@/utils/api/api";
+import axios from "axios";
 
 const defaultRes = {
   data: [],
@@ -54,20 +61,50 @@ export const createDiscount = async (
   discount: DiscountSchema & { project_id: number },
   invoice?: FileObject[]
 ) => {
-  const body: any = { ...discount };
+  let body: any = { ...discount };
   const invoiceFile: any = invoice?.[0]?.file;
-  invoiceFile.mimetype = "application/pdf";
-  invoiceFile.originalname = invoiceFile?.name;
-  console.log(invoiceFile, invoice);
-
   body.discount_type_id = discount.discount_type;
   delete body.discount_type;
+  body.min_units_order = discount.min_order;
+  delete body.min_order;
   body.end_date = body.end_date ? body.end_date : undefined;
   body.products_category = body.products_category?.map((x: number) => ({ idProduct: x }));
   body.client_nit = discount.client;
-  body.file = invoiceFile;
+  const form = new FormData();
+  form.append("request", JSON.stringify(body));
+  if (discountTypeByAnnual.includes(Number(discount.discount_type))) {
+    form.append("invoice", invoiceFile);
+  }
+  body = form;
 
-  const response: GenericResponse<DiscountBasics> = await API.post("/discount", body);
+  const token = await getIdToken();
+  const response = await axios.post<GenericResponse<DiscountCreateResponse>>(
+    `${config.API_HOST}/discount`,
+    body,
+    {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data;
+};
+
+export const updateDiscount = async (
+  discount: DiscountSchema & { project_id: number },
+  discountId: number
+) => {
+  const body: any = { ...discount };
+  body.discount_type_id = discount.discount_type;
+  delete body.discount_type;
+  body.min_units_order = discount.min_order;
+  delete body.min_order;
+  body.end_date = body.end_date ? body.end_date : undefined;
+  body.products_category = body.products_category?.map((x: number) => ({ idProduct: x }));
+  body.client_nit = discount.client;
+  const response: GenericResponse<DiscountGetOne> = await API.put(`/discount/${discountId}`, body);
   if (!response.success) throw new Error(response.message);
   return response;
 };

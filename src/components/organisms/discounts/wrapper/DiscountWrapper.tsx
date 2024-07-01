@@ -2,10 +2,17 @@
 import Wrapper from "@/components/organisms/wrapper/Wrapper";
 import { Flex, Typography } from "antd";
 import "./DiscountWrapper.scss";
+import redirectModal from "@/components/molecules/modals/redirectModal/RedirectModal";
+import { useAppStore } from "@/lib/store/store";
+import { useEffect } from "react";
 
 const { Title } = Typography;
 
 export default function DiscountWrapper({ children }: { children: React.ReactNode }) {
+  const { ID } = useAppStore((projects) => projects.selectProject);
+  useEffect(() => {
+    if (!ID) redirectModal();
+  }, []);
   return (
     <Wrapper>
       <Flex vertical gap={"1.5rem"} className="WrapperChild">

@@ -32,9 +32,10 @@ const clientDummy = [
 type FeatByOrderProps = {
   discountType: number;
   form: UseFormReturn<DiscountSchema, any, undefined>;
+  statusForm: "create" | "edit" | "review";
 };
 
-export default function FeatByCient({ form }: FeatByOrderProps) {
+export default function FeatByCient({ form, statusForm }: FeatByOrderProps) {
   const {
     setValue,
     watch,
@@ -54,6 +55,7 @@ export default function FeatByCient({ form }: FeatByOrderProps) {
         onChange={onChange}
         value={watch("computation_type")}
         className={styles.radioGroup}
+        disabled={statusForm === "review"}
       >
         <Radio value={1}>Descuento aplicable en porcentaje</Radio>
         <Radio value={2}>Descuento aplicable en valor fijo</Radio>
@@ -69,8 +71,19 @@ export default function FeatByCient({ form }: FeatByOrderProps) {
         className={styles.input}
       />
       <Title level={5}>Selecciona un grupo de clientes</Title>
-      <GroupClients clients={data?.data} error={error} loading={loading} form={form}></GroupClients>
-      <ProductList lines={lines} loading={isLoading} form={form}></ProductList>
+      <GroupClients
+        clients={data?.data}
+        error={error}
+        loading={loading}
+        form={form}
+        statusForm={statusForm}
+      ></GroupClients>
+      <ProductList
+        lines={lines}
+        loading={isLoading}
+        form={form}
+        statusForm={statusForm}
+      ></ProductList>
     </Flex>
   );
 }

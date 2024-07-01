@@ -10,8 +10,9 @@ type ProductListProps = {
   lines: ProductLine[];
   loading: boolean;
   form: UseFormReturn<DiscountSchema, any, undefined>;
+  statusForm: "create" | "edit" | "review";
 };
-export default function ProductList({ lines, loading, form }: ProductListProps) {
+export default function ProductList({ lines, loading, form, statusForm }: ProductListProps) {
   const {
     formState: { errors },
     watch,
@@ -74,6 +75,7 @@ export default function ProductList({ lines, loading, form }: ProductListProps) 
                   checked={line.products.every((product) =>
                     watch("products_category")?.includes(product.id)
                   )}
+                  disabled={statusForm === "review"}
                   onChange={() =>
                     handleCkeck(
                       { idLine: line.id },
@@ -97,6 +99,7 @@ export default function ProductList({ lines, loading, form }: ProductListProps) 
                       id={"line - " + line.id + "product - " + product.id}
                       style={{ marginLeft: "10px" }}
                       checked={watch("products_category")?.includes(product.id)}
+                      disabled={statusForm === "review"}
                       onChange={() =>
                         handleCkeck(
                           { idProduct: product.id },
