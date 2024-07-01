@@ -38,7 +38,7 @@ export default function Discounts() {
               handleDeleteDiscount={modalDelete.handleOpen}
             />
           </Flex>
-          <Flex vertical style={{ width: "fit-content" }} >
+          <Flex vertical style={{ width: "fit-content" }}>
             <Link href="/descuentos/create" passHref legacyBehavior>
               <ButtonHeader>Crear descuento</ButtonHeader>
             </Link>

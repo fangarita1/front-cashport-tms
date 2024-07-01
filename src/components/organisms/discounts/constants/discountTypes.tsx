@@ -50,7 +50,11 @@ export const options = [
 ];
 
 export const getOptionsByType = (type: number) => {
-  return options.filter(op => Object.values(discountCategories).find(t => t.id === type)?.discountType.includes(op.value));
+  return options.filter((op) =>
+    Object.values(discountCategories)
+      .find((t) => t.id === type)
+      ?.discountType.includes(op.value)
+  );
 };
 
 export default discountCategories;

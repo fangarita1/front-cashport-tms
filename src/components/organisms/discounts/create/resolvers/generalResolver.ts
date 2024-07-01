@@ -222,21 +222,24 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
   annual_ranges: yup.array().when("discount_type", {
     is: (discount_type: number) => discountTypeByAnnual.includes(discount_type),
     then: () =>
-      yup.array().of(
-        yup.object({
-          idLine: yup.number().required("La linea es requerida"),
-          idProduct: yup.number().optional(),
-          units: yup
-            .number()
-            .typeError("Tipo de dato invalido")
-            .required("El valor mínimo es requerido")
-            .min(1, "El valor mínimo debe ser mayor a 0"),
-          idContract: yup
-            .number()
-            .typeError("No se encontró ningun rango")
-            .required("El rango es requerido")
-        })
-      ).min(1, "Debe haber al menos una regla de descuento"),
+      yup
+        .array()
+        .of(
+          yup.object({
+            idLine: yup.number().required("La linea es requerida"),
+            idProduct: yup.number().optional(),
+            units: yup
+              .number()
+              .typeError("Tipo de dato invalido")
+              .required("El valor mínimo es requerido")
+              .min(1, "El valor mínimo debe ser mayor a 0"),
+            idContract: yup
+              .number()
+              .typeError("No se encontró ningun rango")
+              .required("El rango es requerido")
+          })
+        )
+        .min(1, "Debe haber al menos una regla de descuento"),
     otherwise: () => yup.array().optional()
   }),
   contract_archive: yup.string().optional()
