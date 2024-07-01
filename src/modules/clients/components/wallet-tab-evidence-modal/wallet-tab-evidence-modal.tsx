@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import { Button, Flex, UploadFile } from "antd";
 import { CaretLeft, Plus } from "@phosphor-icons/react";
@@ -7,13 +8,9 @@ import { UploadChangeParam } from "antd/es/upload";
 
 type EvidenceModalProps = {
   selectedEvidence: File[];
-  // eslint-disable-next-line no-unused-vars
   handleOnChangeDocument: (info: UploadChangeParam<UploadFile<any>>) => void;
-  // eslint-disable-next-line no-unused-vars
   handleOnDeleteDocument: (fileName: string) => void;
-  // eslint-disable-next-line no-unused-vars
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  // eslint-disable-next-line no-unused-vars
   handleOnChangeTextArea: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleAttachEvidence: () => void;
   commentary?: string;

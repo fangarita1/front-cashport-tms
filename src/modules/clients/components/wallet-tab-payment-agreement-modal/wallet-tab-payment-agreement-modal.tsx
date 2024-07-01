@@ -76,9 +76,7 @@ const PaymentAgreementModal: React.FC<Props> = ({ isOpen, setIsPaymentAgreementO
     setSelectedEvidence((prevFiles) => [...prevFiles, ...files]);
   };
 
-  const onChangeDate = (dateString: string) => {
-    console.log(dateString);
-  };
+  const onChangeDate = (dateString: string) => {};
 
   return (
     <>

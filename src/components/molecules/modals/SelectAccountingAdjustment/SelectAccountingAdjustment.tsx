@@ -32,8 +32,6 @@ export const SelectAccountingAdjustment = ({
   const { data, isLoading } = useAcountingAdjustment(98765232, type);
   const [dateSelect, setDateSelect] = useState<ItemsSelected[]>([]);
   const handleCheckClick = (item: ISelectedAccountingAdjustment) => {
-    console.log("entra por aqui", item);
-
     const isExist = selectedRows.some((row) => row.id === item.id);
     console.log(isExist);
 

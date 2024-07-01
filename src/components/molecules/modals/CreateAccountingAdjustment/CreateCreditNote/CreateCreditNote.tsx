@@ -52,7 +52,6 @@ export const CreateCreditNote = ({ onClose, messageApi }: Props) => {
   });
   const { data: motives, isLoading, isError } = useFinancialDiscountMotives();
 
-
   const handleSubmitForm = async (data: IformDiscount) => {
     try {
       await createAccountingAdjustment({
@@ -83,9 +82,6 @@ export const CreateCreditNote = ({ onClose, messageApi }: Props) => {
       });
     }
   };
-  useEffect(() => {
-    console.log(errors);
-  }, [errors]);
 
   return (
     <div className="createCreditCustom">

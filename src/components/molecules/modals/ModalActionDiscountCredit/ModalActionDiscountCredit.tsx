@@ -44,8 +44,6 @@ export const ModalActionDiscountCredit = ({
   const [currentView, setCurrentView] = useState("select");
   const [messageApi, contextHolder] = message.useMessage();
 
-  // const { data, isLoading } = useAcountingAdjustment(98765232);
-  // console.log(data, isLoading);
   useEffect(() => {
     showActionDetailModal && setSelectedRows([]);
   }, [showActionDetailModal]);
@@ -117,6 +115,7 @@ export const ModalActionDiscountCredit = ({
             setSelectedRows={setSelectedRows}
             setCurrentView={setCurrentView}
             invoiceSelected={invoiceSelected}
+            messageApi={messageApi}
           />
         )}
       </Modal>
