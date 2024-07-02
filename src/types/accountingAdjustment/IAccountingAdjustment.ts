@@ -10,6 +10,6 @@ export interface DiscountRequestBody {
     end: string;
   };
   users_aproved: number[]; // users_approved
-  project_id: number;
-  client_id: number;
+  project_id: string;
+  client_id: string;
 }

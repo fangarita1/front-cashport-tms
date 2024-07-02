@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./createCreditNote.scss";
 import { FieldError, useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
@@ -8,7 +8,6 @@ import { useFinancialDiscountMotives } from "@/hooks/useMotives";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createAccountingAdjustment } from "@/services/accountingAdjustment/accountingAdjustment";
 import { InputSelect } from "@/components/atoms/inputs/InputSelect/InputSelect";
-import { useAppStore } from "@/lib/store/store";
 import { formatDateBars } from "@/utils/utils";
 import { InputDateRange } from "@/components/atoms/inputs/InputDateRange/InputDateRange";
 import { MessageInstance } from "antd/es/message/interface";
@@ -22,6 +21,8 @@ interface IformDiscount {
 interface Props {
   onClose: () => void;
   messageApi: MessageInstance;
+  projectIdParam?: string;
+  clientIdParam?: string;
 }
 
 const schema = yup.object().shape({
@@ -41,8 +42,7 @@ const schema = yup.object().shape({
     )
 });
 
-export const CreateCreditNote = ({ onClose, messageApi }: Props) => {
-  const { ID } = useAppStore((state) => state.selectProject);
+export const CreateCreditNote = ({ onClose, messageApi, projectIdParam, clientIdParam }: Props) => {
   const {
     control,
     handleSubmit,
@@ -66,8 +66,8 @@ export const CreateCreditNote = ({ onClose, messageApi }: Props) => {
           end: formatDateBars(data.validity_range[1].toISOString())
         },
         users_aproved: [142, 146], // TODO: users_aproved esta mal escrito ya que el back lo pide asi
-        project_id: ID || 19,
-        client_id: 98765232 // TODO: agregar cliente
+        project_id: projectIdParam || "19",
+        client_id: clientIdParam ?? "98765232"
       });
 
       messageApi.open({

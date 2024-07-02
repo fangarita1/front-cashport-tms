@@ -8,6 +8,8 @@ import { CreateDebitNote } from "../CreateAccountingAdjustment/CreateDebitNote/C
 import { IInvoice } from "@/types/invoices/IInvoices";
 import { SelectAccountingAdjustment } from "../SelectAccountingAdjustment/SelectAccountingAdjustment";
 import { ApplyAccountingAdjustment } from "../ApplyAccountingAdjustment/ApplyAccountingAdjustment";
+import { useParams } from "next/navigation";
+import { extractSingleParam } from "@/utils/utils";
 
 const { Title } = Typography;
 
@@ -43,7 +45,9 @@ export const ModalActionDiscountCredit = ({
   const [selectedRows, setSelectedRows] = useState<ISelectedAccountingAdjustment[]>([]);
   const [currentView, setCurrentView] = useState("select");
   const [messageApi, contextHolder] = message.useMessage();
-
+  const params = useParams();
+  const clientIdParam = extractSingleParam(params.clientId);
+  const projectIdParam = extractSingleParam(params.projectId);
   useEffect(() => {
     showActionDetailModal && setSelectedRows([]);
   }, [showActionDetailModal]);
@@ -88,6 +92,8 @@ export const ModalActionDiscountCredit = ({
                   setCurrentView("select");
                 }}
                 messageApi={messageApi}
+                clientIdParam={clientIdParam}
+                projectIdParam={projectIdParam}
               />
             )}
             {showActionDetailModal.actionType === 2 && (
@@ -96,6 +102,8 @@ export const ModalActionDiscountCredit = ({
                   setCurrentView("select");
                 }}
                 messageApi={messageApi}
+                clientIdParam={clientIdParam}
+                projectIdParam={projectIdParam}
               />
             )}
             {showActionDetailModal.actionType === 3 && (
@@ -104,6 +112,8 @@ export const ModalActionDiscountCredit = ({
                   setCurrentView("select");
                 }}
                 messageApi={messageApi}
+                clientIdParam={clientIdParam}
+                projectIdParam={projectIdParam}
               />
             )}
           </>
