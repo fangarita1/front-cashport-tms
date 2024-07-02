@@ -50,16 +50,18 @@
         gap: 0.625rem;
         align-items: center;
 
-        p {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .quantityInput {
+            border: none;
+            text-align: center;
             font-size: 1.25rem;
             font-weight: 800;
             background-color: $background;
             border-radius: 0.5rem;
             height: 100%;
+            width: 100%;
             min-width: 30px;
+            font-family: inherit;
+            padding-left: 0.8rem;
         }
     }
 }

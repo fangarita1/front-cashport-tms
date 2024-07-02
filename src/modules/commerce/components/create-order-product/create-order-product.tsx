@@ -3,7 +3,7 @@ import Image from "next/image";
 import { OrderViewContext } from "../../containers/create-order/create-order";
 import { formatMoney } from "@/utils/utils";
 import SecondaryButton from "@/components/atoms/buttons/secondaryButton/SecondaryButton";
-import { Plus } from "phosphor-react";
+import { Minus, Plus } from "phosphor-react";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 
 import styles from "./create-order-product.module.scss";
@@ -19,10 +19,10 @@ export interface CreateOrderProductProps {
 
 const CreateOrderProduct: FC<CreateOrderProductProps> = ({ product }) => {
   const { selectedProducts, setSelectedProducts } = useContext(OrderViewContext);
+
   const alreadySelectedProduct = selectedProducts.find(
     (p) => p.id === product.id && p.quantity > 0
   );
-  console.log("selectedPro: ", selectedProducts);
 
   const handleAddToCart = (product: CreateOrderProductProps["product"]) => {
     const productToAdd = {
@@ -78,6 +78,22 @@ const CreateOrderProduct: FC<CreateOrderProductProps> = ({ product }) => {
     [selectedProducts, setSelectedProducts]
   );
 
+  const handleChangeQuantity = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>, productId: number) => {
+      const newQuantity = parseInt(event.target.value);
+
+      if (isNaN(newQuantity) || newQuantity <= 0) {
+        return;
+      }
+
+      const updatedProducts = selectedProducts.map((p) =>
+        p.id === productId ? { ...p, quantity: newQuantity } : p
+      );
+      setSelectedProducts(updatedProducts);
+    },
+    [selectedProducts, setSelectedProducts]
+  );
+
   return (
     <div className={styles.productCard}>
       <div className={styles.imageContainer}>
@@ -99,14 +115,19 @@ const CreateOrderProduct: FC<CreateOrderProductProps> = ({ product }) => {
             customStyles={{ padding: "0.5rem" }}
             onClick={() => handleDecrementQuantity(product.id)}
           >
-            -
+            <Minus size={20} />
           </PrincipalButton>
-          <p>{alreadySelectedProduct.quantity}</p>
+          <input
+            type="number"
+            className={styles.quantityInput}
+            value={alreadySelectedProduct.quantity}
+            onChange={(e) => handleChangeQuantity(e, product.id)}
+          />
           <PrincipalButton
             customStyles={{ padding: "0.5rem" }}
             onClick={() => handleIncrementQuantity(product.id)}
           >
-            +
+            <Plus size={20} />
           </PrincipalButton>
         </div>
       ) : (
