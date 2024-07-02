@@ -62,12 +62,6 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
 
   const handleAttachEvidence = async () => {
     try {
-      console.log(
-        selectedState,
-        selectedEvidence,
-        commentary,
-        invoiceSelected?.map((invoice) => invoice.id)
-      );
       await changeStatusInvoice(
         selectedState as string,
         invoiceSelected?.map((invoice) => invoice.id) as number[],
@@ -128,8 +122,12 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
     innerContent: (
       <div className={styles.content__status}>
         {invoiceStates.map((state) => (
-          <Radio.Group onChange={handleOnChangeRadioGroup} value={selectedState} key={state}>
-            <Radio className={styles.content__status__item} value={state}>
+          <Radio.Group
+            onChange={handleOnChangeRadioGroup}
+            value={selectedState?.toLocaleLowerCase()}
+            key={state}
+          >
+            <Radio className={styles.content__status__item} value={state?.toLocaleLowerCase()}>
               {state}
             </Radio>
           </Radio.Group>
@@ -228,33 +226,56 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
   };
 
   return (
-    <>
-      <Modal
-        className={styles.wrapper}
-        width={"50%"}
-        open={isOpen}
-        footer={isSecondView ? secondViewModal.footer : firstViewModal.footer}
-        closable={false}
-      >
-        <div className={styles.content}>
-          <Button
-            onClick={isSecondView ? handlegoBackToFirstView : undefined}
-            className={styles.content__header}
-          >
-            <CaretLeft size={"1.25rem"} />
-            <p>{isSecondView ? secondViewModal.title : firstViewModal.title}</p>
-          </Button>
+    <Modal
+      className={styles.wrapper}
+      width="50%"
+      open={isOpen}
+      footer={null}
+      closable={false}
+      bodyStyle={{
+        height: !isSecondView ? "calc(90vh - 20px)" : "auto",
+        maxHeight: "calc(90vh - 20px)",
+        padding: 0,
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        overflowY: "auto"
+      }}
+      style={{ top: "10px" }}
+    >
+      <div className={styles.content} style={{ height: "100%" }}>
+        <Button
+          onClick={isSecondView ? handlegoBackToFirstView : undefined}
+          className={styles.content__header}
+        >
+          <CaretLeft size="1.25rem" />
+          <span>{isSecondView ? secondViewModal.title : firstViewModal.title}</span>
+        </Button>
 
-          <p className={styles.content__description}>
-            {isSecondView ? secondViewModal.description : firstViewModal.description}
-          </p>
-          {isSecondView ? secondViewModal.innerContent : firstViewModal.innerContent}
+        <p className={styles.content__description}>
+          {isSecondView ? secondViewModal.description : firstViewModal.description}
+        </p>
+
+        <div>{isSecondView ? secondViewModal.innerContent : firstViewModal.innerContent}</div>
+
+        <div className={styles.footer}>
+          {isSecondView ? secondViewModal.footer : firstViewModal.footer}
         </div>
-      </Modal>
-    </>
+      </div>
+    </Modal>
   );
 };
 
 export default WalletTabChangeStatusModal;
 
-const invoiceStates = ["Emitida", "Conciliada", "Glosada", "Devolucion", "Anulación"];
+const invoiceStates = [
+  "Emitida",
+  "Conciliada",
+  "Glosado",
+  "Devolucion",
+  "Anulada",
+  "Vencida",
+  "Sin consiliar",
+  "Corriente",
+  "Novedad"
+];

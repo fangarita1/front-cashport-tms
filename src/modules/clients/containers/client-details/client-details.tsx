@@ -9,7 +9,6 @@ import Link from "next/link";
 import UiTab from "@/components/ui/ui-tab";
 import { InvoiceAction } from "../../constants/invoice-actions.constants";
 import AccountingAdjustmentsTab from "../accounting-adjustments-tab";
-import Link from "next/link";
 
 import styles from "./client-details.module.scss";
 

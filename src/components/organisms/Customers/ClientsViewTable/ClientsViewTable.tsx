@@ -12,13 +12,11 @@ import {
   XCircle,
   MagnifyingGlassMinus
 } from "phosphor-react";
-
 import { useProjects } from "@/hooks/useProjects";
 import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
 import { formatMoney } from "@/utils/utils";
-import Link from "next/link";
 
 import "./ClientsViewTable.scss";
 
