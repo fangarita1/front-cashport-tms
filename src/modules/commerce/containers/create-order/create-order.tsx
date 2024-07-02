@@ -2,21 +2,46 @@ import { Dispatch, FC, createContext, useState } from "react";
 import styles from "./create-order.module.scss";
 
 import SearchClient from "../../components/create-order-search-client/create-order-search-client";
+import CreateOrderMarket from "../../components/create-order-market";
 
-interface IOrderViewContext {
-  client: any;
-  setClient: Dispatch<any>;
+export interface ISelectedProduct {
+  id: number;
+  name: string;
+  price: number;
+  discount: number | undefined;
+  quantity: number;
+  image: string;
 }
+interface IOrderViewContext {
+  client: {
+    name: string;
+    id: number;
+  };
+  setClient: Dispatch<{
+    name: string;
+    id: number;
+  }>;
+  selectedProducts: ISelectedProduct[];
+  setSelectedProducts: Dispatch<ISelectedProduct[]>;
+}
+
 export const OrderViewContext = createContext<IOrderViewContext>({} as IOrderViewContext);
 
 export const CreateOrderView: FC = () => {
-  const [client, setClient] = useState<any>();
+  const [client, setClient] = useState({} as IOrderViewContext["client"]);
+  const [selectedProducts, setSelectedProducts] = useState<ISelectedProduct[]>([]);
 
   return (
-    <OrderViewContext.Provider value={{ client, setClient }}>
+    <OrderViewContext.Provider value={{ client, setClient, selectedProducts, setSelectedProducts }}>
       <div className={styles.ordersView}>
         <h2 className={styles.title}>Crear orden</h2>
-        {client ? <h4>Cliente seleccionado MarketPlace</h4> : <SearchClient />}
+        {!client?.name ? (
+          <SearchClient />
+        ) : (
+          <div className={styles.marketView}>
+            <CreateOrderMarket />
+          </div>
+        )}
       </div>
     </OrderViewContext.Provider>
   );

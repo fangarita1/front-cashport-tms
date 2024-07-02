@@ -176,9 +176,9 @@ export const insertPeriodEveryThreeDigits = (number: number) => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 
-export function formatMoney(text: string, countryCode?: CountryCode): string {
+export function formatMoney(amount: string | number, countryCode?: CountryCode): string {
   const { currency, id } = countryFormater(countryCode);
-  const number = parseFloat(text);
+  const number = typeof amount === "string" ? parseFloat(amount) : amount;
   const formatter = new Intl.NumberFormat(id, {
     style: "currency",
     currency,

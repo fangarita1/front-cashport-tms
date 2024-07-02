@@ -9,12 +9,14 @@ interface PrincipalButtonProps extends BaseButtonProps {
   // eslint-disable-next-line no-unused-vars
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   fullWidth?: boolean;
+  bordered?: boolean;
   customStyles?: React.CSSProperties;
 }
 
 export default function SecondaryButton({
   onClick,
   fullWidth,
+  bordered,
   customStyles,
   children,
   ...rest
@@ -22,6 +24,9 @@ export default function SecondaryButton({
   const { token } = useToken();
   const green = token.green;
   const white = token.colorTextSecondary;
+
+  const className =
+    bordered && !fullWidth ? styles.button__bordered : fullWidth ? styles.fullWidth : styles.button;
 
   return (
     <ConfigProvider
@@ -42,7 +47,7 @@ export default function SecondaryButton({
         type="default"
         size="large"
         {...rest}
-        className={fullWidth ? styles.button__fullWidth : styles.button}
+        className={className}
         style={{ ...customStyles }}
         onClick={onClick}
       >

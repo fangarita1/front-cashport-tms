@@ -2,19 +2,21 @@
 
 @import "@styles/variables.scss";
 
-.selectInputCustom {
+.selectInputClientCustom {
     height: 3rem !important;
     margin-bottom: 1rem;
     background-color: $background;
     border-radius: 0.25rem;
     width: 100% !important;
     max-width: 300px;
+    font-size: 1rem !important;
 
     .ant-select-selector {
         font-size: 1rem !important;
 
-        .ant-select-selection-item {
+        .ant-select-selection-search {
             font-weight: 300;
+            font-size: 1rem;
         }
 
         .ant-select-selection-placeholder {
@@ -22,7 +24,7 @@
         }
     }
 }
-.selectInputError {
+.selectInputClientError {
     width: 100%;
     border: 1px dashed red;
     height: 3rem !important;
@@ -50,9 +52,5 @@
         padding: 0.7rem !important;
         font-size: 1rem !important;
         font-size: 1rem;
-
-        &.-noHolding {
-            color: $gray;
-        }
     }
 }

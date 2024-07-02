@@ -9,4 +9,10 @@
         font-size: 2rem;
         font-weight: 700;
     }
+
+    .marketView {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+    }
 }

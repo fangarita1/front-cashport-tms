@@ -14,7 +14,7 @@ export interface selectClientForm {
   client: ISelectType;
 }
 
-const SearchClient: FC = ({}) => {
+const CreateOrderSearchClient: FC = ({}) => {
   const { setClient } = useContext(OrderViewContext);
 
   const {
@@ -50,4 +50,4 @@ const SearchClient: FC = ({}) => {
   );
 };
 
-export default SearchClient;
+export default CreateOrderSearchClient;

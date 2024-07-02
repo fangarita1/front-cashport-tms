@@ -1,7 +1,8 @@
 @import "@/styles/variables.scss";
 
 .button,
-.button__fullWidth {
+.button__fullWidth,
+.button__bordered {
     background-color: $secondary;
     box-shadow: none;
     color: $black !important;
@@ -19,4 +20,13 @@
 
 .button__fullWidth {
     width: 100% !important;
+}
+
+.button__bordered {
+    border: 1px solid $black !important;
+
+    &:hover {
+        // opacity: 0.8;
+        outline: 1px solid $black !important;
+    }
 }
