@@ -1,17 +1,17 @@
 import { CaretLeft } from "phosphor-react";
 import { FC, createContext, useState } from "react";
 import { WalletTab } from "@/components/organisms/Customers/WalletTab/WalletTab";
-
-import styles from "./client-details.module.scss";
 import Dashboard from "../dashboard";
 import InvoiceActionsModal from "../invoice-actions-modal";
-
 import { useClientDetails } from "../../hooks/client-details/client-details.hook";
 import { Button, Flex, Spin } from "antd";
+import Link from "next/link";
 import UiTab from "@/components/ui/ui-tab";
 import { InvoiceAction } from "../../constants/invoice-actions.constants";
 import AccountingAdjustmentsTab from "../accounting-adjustments-tab";
 import Link from "next/link";
+
+import styles from "./client-details.module.scss";
 
 interface ClientDetailsProps {}
 export const ClientDetailsContext = createContext<any>({});
