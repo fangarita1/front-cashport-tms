@@ -1,15 +1,17 @@
 @import "@/styles/variables.scss";
 
-.productCard {
-    display: flex;
-    flex-direction: column;
+.cartItemCard {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
     gap: 0.5rem;
     padding: 1rem;
+    border-bottom: 1px solid $dark-gray;
 
     .imageContainer {
         display: flex;
         justify-content: center;
-        max-height: 130px;
+        grid-column: 1;
+        max-width: 80px;
 
         &__img {
             width: 100%;
@@ -18,20 +20,17 @@
         }
     }
 
-    .separator {
-        border: none;
-        height: 1px;
-        background-color: $dark-gray;
-    }
-
     .name {
         font-size: 1rem;
         font-weight: 400;
+        grid-column: 2/6;
     }
 
     .price {
         font-size: 1.25rem;
         font-weight: 800;
+        grid-column: 2/4;
+        grid-row: 2;
     }
 
     .buttonAddToCart {
@@ -39,17 +38,23 @@
         background-color: yellow !important;
     }
 
-    .footer,
     .quantityFooter {
-        display: flex;
-        height: 50px;
-    }
-
-    .quantityFooter {
+        grid-column: 4/6;
+        grid-row: 2;
         display: grid;
-        grid-template-columns: 1fr 2fr 1fr;
-        gap: 0.5rem;
+        grid-template-columns: 1fr 3fr 1fr;
+        gap: 0.625rem;
         align-items: center;
+
+        .buttonChangeQuantity {
+            border: none;
+            box-shadow: none;
+            padding: 0;
+
+            &:hover {
+                outline: 1px solid $black;
+            }
+        }
 
         .quantityInput {
             border: none;
@@ -68,5 +73,12 @@
                 margin: 0;
             }
         }
+    }
+
+    .finalQuantity {
+        font-size: 1.25rem;
+        font-weight: 600;
+        grid-column: 5/6;
+        grid-row: 2;
     }
 }

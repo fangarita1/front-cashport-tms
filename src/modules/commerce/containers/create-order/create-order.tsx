@@ -1,8 +1,8 @@
 import { Dispatch, FC, createContext, useState } from "react";
-import styles from "./create-order.module.scss";
-
 import SearchClient from "../../components/create-order-search-client/create-order-search-client";
 import CreateOrderMarket from "../../components/create-order-market";
+import CreateOrderCart from "../../components/create-order-cart";
+import styles from "./create-order.module.scss";
 
 export interface ISelectedProduct {
   id: number;
@@ -40,6 +40,7 @@ export const CreateOrderView: FC = () => {
         ) : (
           <div className={styles.marketView}>
             <CreateOrderMarket />
+            <CreateOrderCart />
           </div>
         )}
       </div>

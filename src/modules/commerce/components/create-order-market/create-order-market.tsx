@@ -35,7 +35,7 @@ const CreateOrderMarket: FC = ({}) => {
   };
 
   return (
-    <Flex className={styles.FlexContainer} vertical gap={"0.5rem"}>
+    <div className={styles.marketContainer}>
       <Button
         type="text"
         size="large"
@@ -45,7 +45,7 @@ const CreateOrderMarket: FC = ({}) => {
       >
         {client.name}
       </Button>
-      <Flex>
+      <Flex gap={"0.5rem"}>
         <UiSearchInput
           placeholder="Buscar"
           onChange={(event) => {
@@ -56,8 +56,8 @@ const CreateOrderMarket: FC = ({}) => {
         />
         <FilterDiscounts />
       </Flex>
-      <UiTab tabs={categoryTabs} sticky />
-    </Flex>
+      <UiTab tabs={categoryTabs} />
+    </div>
   );
 };
 
@@ -111,6 +111,30 @@ const mockData = [
         id: 6,
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 6",
         price: 6000,
+        discount: 0,
+        quantity: 0,
+        image: "/images/cetaphilMock.png"
+      },
+      {
+        id: 17,
+        name: "Galderma Cetaphil Crema Hidratante X 453 Gr 7",
+        price: 7000,
+        discount: 0,
+        quantity: 0,
+        image: "/images/cetaphilMock.png"
+      },
+      {
+        id: 18,
+        name: "Galderma Cetaphil Crema Hidratante X 453 Gr 8",
+        price: 8000,
+        discount: 0,
+        quantity: 0,
+        image: "/images/cetaphilMock.png"
+      },
+      {
+        id: 19,
+        name: "Galderma Cetaphil Crema Hidratante X 453 Gr 9",
+        price: 9000,
         discount: 0,
         quantity: 0,
         image: "/images/cetaphilMock.png"

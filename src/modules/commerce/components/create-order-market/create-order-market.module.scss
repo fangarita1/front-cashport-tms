@@ -1,11 +1,14 @@
 @import "@/styles/variables.scss";
 
-.FlexContainer {
-    height: fit-content;
+.marketContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     width: 100%;
     background-color: $white;
     padding: 1.625rem 1.5rem;
-    overflow-y: auto;
+    overflow-x: scroll;
+    scrollbar-width: none;
     border-radius: 1rem;
     border: 1px solid $dark-gray;
 
@@ -38,11 +41,12 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 1.625rem;
+        scrollbar-width: none;
     }
 }
 
 @media screen and (max-width: 1280px) {
-    .FlexContainer {
+    .marketContainer {
         .productsGrid {
             grid-template-columns: repeat(2, 1fr);
         }
@@ -50,7 +54,7 @@
 }
 
 @media screen and (max-width: 780px) {
-    .FlexContainer {
+    .marketContainer {
         .productsGrid {
             grid-template-columns: 1fr;
         }
