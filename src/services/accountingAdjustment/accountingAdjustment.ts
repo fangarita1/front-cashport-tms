@@ -3,6 +3,13 @@ import { DiscountRequestBody } from "@/types/accountingAdjustment/IAccountingAdj
 import { API, getIdToken } from "@/utils/api/api";
 import axios, { AxiosResponse } from "axios";
 
+interface RadicationData {
+  invoices_id: number[];
+  radication_type: string;
+  accept_date: string;
+  comments: string;
+}
+
 export const createAccountingAdjustment = async (
   requestBody: DiscountRequestBody
 ): Promise<AxiosResponse<any>> => {
@@ -93,5 +100,37 @@ export const changeStatusInvoice = async (
       }
     }
   );
+  return response.data;
+};
+
+export const radicateInvoice = async (
+  radicationData: RadicationData,
+  files: File[],
+  clientId: number
+): Promise<AxiosResponse<any>> => {
+  const token = await getIdToken();
+
+  const formData = new FormData();
+  formData.append("invoices_id", JSON.stringify(radicationData.invoices_id));
+  formData.append("radication_type", radicationData.radication_type);
+  formData.append("accept_date", radicationData.accept_date);
+  formData.append("comments", radicationData.comments);
+
+  files.forEach((file) => {
+    formData.append("files", file);
+  });
+
+  const response: AxiosResponse<any> = await axios.post(
+    `${config.API_HOST}/invoice/radication/client/${clientId}`,
+    formData,
+    {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+
   return response.data;
 };

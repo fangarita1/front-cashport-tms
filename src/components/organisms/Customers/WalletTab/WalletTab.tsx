@@ -16,6 +16,7 @@ import WalletTabChangeStatusModal from "@/modules/clients/components/wallet-tab-
 import PaymentAgreementModal from "@/modules/clients/components/wallet-tab-payment-agreement-modal";
 import { ModalActionDiscountCredit } from "@/components/molecules/modals/ModalActionDiscountCredit/ModalActionDiscountCredit";
 import LabelCollapse from "@/components/ui/label-collapse";
+import RadicationInvoice from "@/components/molecules/modals/Radication/RadicationInvoice";
 
 export const WalletTab = () => {
   const [invoices, setInvoices] = useState<InvoicesData[] | undefined>([]);
@@ -166,6 +167,14 @@ export const WalletTab = () => {
       />
       <WalletTabChangeStatusModal
         isOpen={isSelectOpen.selected === 2}
+        onClose={onCloseModal}
+        invoiceSelected={selectedRows}
+        clientId={clientId}
+        projectId={projectId}
+        messageShow={messageShow}
+      />
+      <RadicationInvoice
+        isOpen={isSelectOpen.selected === 3}
         onClose={onCloseModal}
         invoiceSelected={selectedRows}
         clientId={clientId}
