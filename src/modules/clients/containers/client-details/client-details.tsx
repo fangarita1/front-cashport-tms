@@ -1,15 +1,16 @@
 import { CaretLeft } from "phosphor-react";
 import { FC, createContext, useState } from "react";
 import { WalletTab } from "@/components/organisms/Customers/WalletTab/WalletTab";
-
-import styles from "./client-details.module.scss";
 import Dashboard from "../dashboard";
 import InvoiceActionsModal from "../invoice-actions-modal";
-
 import { useClientDetails } from "../../hooks/client-details/client-details.hook";
 import { Button, Flex, Spin } from "antd";
+import Link from "next/link";
 import UiTab from "@/components/ui/ui-tab";
 import { InvoiceAction } from "../../constants/invoice-actions.constants";
+import AccountingAdjustmentsTab from "../accounting-adjustments-tab";
+
+import styles from "./client-details.module.scss";
 
 interface ClientDetailsProps {}
 export const ClientDetailsContext = createContext<any>({});
@@ -37,6 +38,15 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
       ) : (
         <Spin style={{ margin: "1rem auto", display: "block" }} />
       )
+    },
+    {
+      key: "3",
+      label: "Ajustes contables",
+      children: portfolioData ? (
+        <AccountingAdjustmentsTab />
+      ) : (
+        <Spin style={{ margin: "1rem auto", display: "block" }} />
+      )
     }
   ];
 
@@ -54,7 +64,7 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
         <Flex vertical className={styles.containerDetailClient}>
           <Flex className={styles.stickyHeader} align="center" justify="space-between">
             <Flex className={styles.infoHeader} align="center" justify="center">
-              <a href={`/clientes/all`}>
+              <Link href={`/clientes/all`}>
                 <Button
                   type="text"
                   size="large"
@@ -63,7 +73,7 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
                 >
                   {portfolioData ? portfolioData.data_wallet.client_name : "Loading..."}
                 </Button>
-              </a>
+              </Link>
             </Flex>
           </Flex>
 

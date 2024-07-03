@@ -108,7 +108,7 @@ export const updateProject = async (
     is_active: true,
     project_description: data.general.name,
     rgb_config: finalColorRgb,
-    logo: data.logo.trim(),
+    logo: data.logo,
     nit: data.general.nit.trim(),
     email: data.contact.email.trim(),
     contact: data.contact.name.trim(),
