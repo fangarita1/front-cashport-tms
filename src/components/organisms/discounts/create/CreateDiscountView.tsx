@@ -1,12 +1,13 @@
 "use client";
 import styles from "./CreateDiscountView.module.scss";
-import { Flex } from "antd";
+import { Button, Flex } from "antd";
 import HeaderDiscountType from "./components/headerDiscountType/HeaderDiscountType";
 import DefinitionDiscounts from "./components/definitionsDiscount/DefinitionDiscounts";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import useCreateDiscountView from "./hooks/useCreateDiscountView";
 import AnnualDiscountDefinition from "./components/annualDiscountDefinition/AnnualDiscountDefinition";
 import discountCategories from "../constants/discountTypes";
+import Link from "next/link";
 
 const commonDiscount = [discountCategories.byOrder.id, discountCategories.byClient.id];
 const annualDiscount = [discountCategories.annual.id];
@@ -56,7 +57,15 @@ export function CreateDiscountView({ params }: Props) {
             handleChangeStatusForm={handleChangeStatusForm}
           />
         )}
-        <Flex gap={20} justify="end">
+        <Flex gap={20} justify="space-between">
+          <Link href="/descuentos" passHref legacyBehavior>
+            <Button
+              style={{ height: "100%", backgroundColor: "#d3d3d3" }}
+              className={styles.buttonEdit}
+            >
+              Volver a la lista
+            </Button>
+          </Link>
           <PrincipalButton
             className={styles.button}
             onClick={handleExecCallback}

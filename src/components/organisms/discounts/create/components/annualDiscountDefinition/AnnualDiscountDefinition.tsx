@@ -113,6 +113,7 @@ export default function AnnualDiscountDefinition({
                   variant="borderless"
                   optionLabelProp="label"
                   options={options}
+                  disabled={statusForm !== "create"}
                   {...field}
                 ></Select>
                 <Text type="danger" hidden={!errors.client}>
@@ -126,7 +127,12 @@ export default function AnnualDiscountDefinition({
       <Title level={4}>{statusForm === "create" ? "Adjuntar contrato" : "Ver contrato"}</Title>
       <Flex gap={20}>
         {statusForm === "create" ? (
-          <UploadDocumentButton title="Contrato" isMandatory={true} setFiles={setFiles} />
+          <UploadDocumentButton
+            title="Contrato"
+            isMandatory={true}
+            setFiles={setFiles}
+            containerClassName={style.uploadDocumentButton}
+          />
         ) : (
           <Link href={getValues("contract_archive") || ""} target="_blank">
             {getValues("contract_archive")?.split("-").pop()}
@@ -207,7 +213,11 @@ export default function AnnualDiscountDefinition({
         remove={remove}
         statusForm={statusForm}
       ></AnnualFeatures>
-      {<Text type="danger" hidden={!errors.annual_ranges?.root}>{errors?.annual_ranges?.root?.message}</Text>}
+      {
+        <Text type="danger" hidden={!errors.annual_ranges?.root}>
+          {errors?.annual_ranges?.root?.message}
+        </Text>
+      }
     </Flex>
   );
 }

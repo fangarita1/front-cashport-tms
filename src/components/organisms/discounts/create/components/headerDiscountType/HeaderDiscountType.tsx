@@ -2,8 +2,6 @@
 import styles from "./HeaderDiscountType.module.scss";
 import { Button, Flex, Typography } from "antd";
 import discountCategories from "../../../constants/discountTypes";
-import Link from "next/link";
-import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 
 const { Title } = Typography;
 
@@ -24,11 +22,8 @@ export default function HeaderDiscountType({ selectedType, handleClick, discount
         <Title style={{ width: "fit-content" }} level={4}>
           Selecciona el tipo de descuento
         </Title>
-        <Link href="/descuentos" passHref legacyBehavior>
-          <PrincipalButton className="PrincipalButton">Volver a la lista</PrincipalButton>
-        </Link>
       </Flex>
-      <Flex className={styles.buttonContainer} justify="space-around" wrap="wrap" gap={20}>
+      <Flex className={styles.buttonContainer} justify="center" wrap="wrap" gap={"32px"}>
         {Object.keys(discountCategories).map((key) => (
           <Button
             key={`button-for-${key}`}
