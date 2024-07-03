@@ -21,6 +21,7 @@ type Props = {
   statusForm: "create" | "edit" | "review";
   // eslint-disable-next-line no-unused-vars
   handleChangeStatusForm: (status: "create" | "edit" | "review") => void;
+  loadingMain: boolean;
 };
 
 export default function DefinitionDiscounts({
@@ -28,7 +29,8 @@ export default function DefinitionDiscounts({
   form,
   discountId,
   statusForm,
-  handleChangeStatusForm
+  handleChangeStatusForm,
+  loadingMain
 }: Props) {
   const {
     watch,
@@ -72,6 +74,7 @@ export default function DefinitionDiscounts({
               e.preventDefault();
               handleChangeStatusForm(statusForm === "review" ? "edit" : "review");
             }}
+            loading={loadingMain}
           >
             {statusForm === "review" ? "Editar Descuento" : "Cancelar Edicion"}
             <Pencil size={"1.2rem"} />

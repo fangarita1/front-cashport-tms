@@ -24,6 +24,7 @@ type Props = {
   statusForm: "create" | "edit" | "review";
   // eslint-disable-next-line no-unused-vars
   handleChangeStatusForm: (status: "create" | "edit" | "review") => void;
+  loadingMain: boolean;
 };
 
 export default function AnnualDiscountDefinition({
@@ -31,7 +32,8 @@ export default function AnnualDiscountDefinition({
   form,
   setFiles,
   statusForm,
-  handleChangeStatusForm
+  handleChangeStatusForm,
+  loadingMain
 }: Props) {
   const { ID: projectId } = useAppStore((project) => project.selectProject);
   const [loading, setLoading] = useState(false);
@@ -87,6 +89,7 @@ export default function AnnualDiscountDefinition({
           <Button
             className={style.buttonEdit}
             htmlType="button"
+            loading={loadingMain}
             onClick={(e) => {
               e.preventDefault();
               handleChangeStatusForm(statusForm === "review" ? "edit" : "review");

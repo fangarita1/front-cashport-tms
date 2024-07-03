@@ -46,6 +46,7 @@ export function CreateDiscountView({ params }: Props) {
             discountId={discountId}
             statusForm={statusForm}
             handleChangeStatusForm={handleChangeStatusForm}
+            loadingMain={loading}
           />
         )}
         {annualDiscount.includes(selectedType) && (
@@ -55,6 +56,7 @@ export function CreateDiscountView({ params }: Props) {
             setFiles={setFiles}
             statusForm={statusForm}
             handleChangeStatusForm={handleChangeStatusForm}
+            loadingMain={loading}
           />
         )}
         <Flex gap={20} justify="space-between">
