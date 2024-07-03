@@ -95,3 +95,37 @@ export const changeStatusInvoice = async (
   );
   return response.data;
 };
+
+export const reportInvoiceIncident = async (
+  invoicesId: string[],
+  comments: string,
+  motiveId: string,
+  files: File[] | null,
+  clientId: string
+): Promise<AxiosResponse<any>> => {
+  const token = await getIdToken();
+
+  const formData = new FormData();
+  formData.append("invoices_id", JSON.stringify(invoicesId));
+  formData.append("comments", comments);
+  formData.append("motive_id", motiveId);
+
+  if (files) {
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
+  }
+
+  const response: AxiosResponse<any> = await axios.post(
+    `${config.API_HOST}/invoice/incident/client/${clientId}`,
+    formData,
+    {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data;
+};
