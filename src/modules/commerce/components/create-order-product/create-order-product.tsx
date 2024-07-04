@@ -1,12 +1,14 @@
-import { FC, useCallback, useContext } from "react";
+import { FC } from "react";
 import Image from "next/image";
-import { OrderViewContext } from "../../containers/create-order/create-order";
+
 import { formatMoney } from "@/utils/utils";
 import SecondaryButton from "@/components/atoms/buttons/secondaryButton/SecondaryButton";
 import { Minus, Plus } from "phosphor-react";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 
 import styles from "./create-order-product.module.scss";
+import { useHandleProductsItems } from "../../hooks/create-order/handle-products-items.hook";
+
 export interface CreateOrderProductProps {
   product: {
     id: number;
@@ -14,85 +16,19 @@ export interface CreateOrderProductProps {
     price: number;
     discount: number;
     image: string;
+    category_id: number;
   };
+  categoryName: string;
 }
 
-const CreateOrderProduct: FC<CreateOrderProductProps> = ({ product }) => {
-  const { selectedProducts, setSelectedProducts } = useContext(OrderViewContext);
-
-  const alreadySelectedProduct = selectedProducts.find(
-    (p) => p.id === product.id && p.quantity > 0
-  );
-
-  const handleAddToCart = (product: CreateOrderProductProps["product"]) => {
-    const productToAdd = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      discount: product.discount,
-      quantity: 1,
-      image: product.image
-    };
-    setSelectedProducts([...selectedProducts, productToAdd]);
-  };
-
-  const handleDecrementQuantity = useCallback(
-    (productId: number) => {
-      const productIndex = selectedProducts.findIndex((product) => product.id === productId);
-
-      if (productIndex !== -1) {
-        const updatedSelectedProducts = [...selectedProducts];
-        const updatedProduct = {
-          ...selectedProducts[productIndex],
-          quantity: selectedProducts[productIndex].quantity - 1
-        };
-
-        if (updatedProduct.quantity === 0) {
-          updatedSelectedProducts.splice(productIndex, 1);
-        } else {
-          updatedSelectedProducts[productIndex] = updatedProduct;
-        }
-
-        setSelectedProducts(updatedSelectedProducts);
-      }
-    },
-    [selectedProducts, setSelectedProducts]
-  );
-
-  const handleIncrementQuantity = useCallback(
-    (productId: number) => {
-      const productIndex = selectedProducts.findIndex((product) => product.id === productId);
-
-      if (productIndex !== -1) {
-        const updatedSelectedProducts = [...selectedProducts];
-        const updatedProduct = {
-          ...selectedProducts[productIndex],
-          quantity: selectedProducts[productIndex].quantity + 1
-        };
-
-        updatedSelectedProducts[productIndex] = updatedProduct;
-
-        setSelectedProducts(updatedSelectedProducts);
-      }
-    },
-    [selectedProducts, setSelectedProducts]
-  );
-
-  const handleChangeQuantity = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, productId: number) => {
-      const newQuantity = parseInt(event.target.value);
-
-      if (isNaN(newQuantity) || newQuantity <= 0) {
-        return;
-      }
-
-      const updatedProducts = selectedProducts.map((p) =>
-        p.id === productId ? { ...p, quantity: newQuantity } : p
-      );
-      setSelectedProducts(updatedProducts);
-    },
-    [selectedProducts, setSelectedProducts]
-  );
+const CreateOrderProduct: FC<CreateOrderProductProps> = ({ product, categoryName }) => {
+  const {
+    alreadySelectedProduct,
+    handleAddToCart,
+    handleDecrementQuantity,
+    handleIncrementQuantity,
+    handleChangeQuantity
+  } = useHandleProductsItems(product, categoryName);
 
   return (
     <div className={styles.productCard}>
@@ -118,10 +54,11 @@ const CreateOrderProduct: FC<CreateOrderProductProps> = ({ product }) => {
             <Minus size={20} />
           </PrincipalButton>
           <input
+            key={alreadySelectedProduct ? alreadySelectedProduct.quantity : "default"}
             type="number"
             className={styles.quantityInput}
-            value={alreadySelectedProduct.quantity}
-            onChange={(e) => handleChangeQuantity(e, product.id)}
+            defaultValue={alreadySelectedProduct ? alreadySelectedProduct.quantity : undefined}
+            onBlur={(e) => handleChangeQuantity(e, product.id, product.category_id)}
           />
           <PrincipalButton
             customStyles={{ padding: "0.5rem" }}

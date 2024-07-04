@@ -11,7 +11,15 @@ export interface ISelectedProduct {
   discount: number | undefined;
   quantity: number;
   image: string;
+  category_id: number;
 }
+
+export interface ISelectedProducts {
+  category: string;
+  category_id: number;
+  products: ISelectedProduct[];
+}
+
 interface IOrderViewContext {
   client: {
     name: string;
@@ -21,15 +29,15 @@ interface IOrderViewContext {
     name: string;
     id: number;
   }>;
-  selectedProducts: ISelectedProduct[];
-  setSelectedProducts: Dispatch<ISelectedProduct[]>;
+  selectedProducts: ISelectedProducts[];
+  setSelectedProducts: Dispatch<ISelectedProducts[]>;
 }
 
 export const OrderViewContext = createContext<IOrderViewContext>({} as IOrderViewContext);
 
 export const CreateOrderView: FC = () => {
   const [client, setClient] = useState({} as IOrderViewContext["client"]);
-  const [selectedProducts, setSelectedProducts] = useState<ISelectedProduct[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<ISelectedProducts[]>([]);
 
   return (
     <OrderViewContext.Provider value={{ client, setClient, selectedProducts, setSelectedProducts }}>

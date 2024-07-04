@@ -41,6 +41,7 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 1.625rem;
+        row-gap: 1rem;
         scrollbar-width: none;
     }
 }

@@ -24,7 +24,7 @@ const CreateOrderMarket: FC = ({}) => {
     children: (
       <div className={styles.productsGrid}>
         {category.products.map((product) => (
-          <CreateOrderProduct key={product.id} product={product} />
+          <CreateOrderProduct key={product.id} product={product} categoryName={category.name} />
         ))}
       </div>
     )
@@ -65,6 +65,7 @@ export default CreateOrderMarket;
 
 const mockData = [
   {
+    id: 1,
     name: "Categoría 1",
     products: [
       {
@@ -73,7 +74,8 @@ const mockData = [
         price: 1000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 1
       },
       {
         id: 2,
@@ -81,7 +83,8 @@ const mockData = [
         price: 2000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 1
       },
       {
         id: 3,
@@ -89,7 +92,8 @@ const mockData = [
         price: 3000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 1
       },
       {
         id: 4,
@@ -97,7 +101,8 @@ const mockData = [
         price: 4000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 1
       },
       {
         id: 5,
@@ -105,7 +110,8 @@ const mockData = [
         price: 5000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 1
       },
       {
         id: 6,
@@ -113,7 +119,8 @@ const mockData = [
         price: 6000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 1
       },
       {
         id: 17,
@@ -121,7 +128,8 @@ const mockData = [
         price: 7000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 1
       },
       {
         id: 18,
@@ -129,7 +137,8 @@ const mockData = [
         price: 8000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 1
       },
       {
         id: 19,
@@ -137,19 +146,23 @@ const mockData = [
         price: 9000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 1
       }
     ]
   },
   {
+    id: 2,
     name: "Categoría 2",
     products: []
   },
   {
+    id: 3,
     name: "Categoría 3",
     products: []
   },
   {
+    id: 4,
     name: "Categoría 4",
     products: [
       {
@@ -158,7 +171,8 @@ const mockData = [
         price: 7000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 4
       },
       {
         id: 8,
@@ -166,11 +180,13 @@ const mockData = [
         price: 8000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 4
       }
     ]
   },
   {
+    id: 5,
     name: "Categoría 5",
     products: [
       {
@@ -179,7 +195,8 @@ const mockData = [
         price: 9000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 5
       },
       {
         id: 10,
@@ -187,11 +204,13 @@ const mockData = [
         price: 10000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 5
       }
     ]
   },
   {
+    id: 6,
     name: "Categoría 6",
     products: [
       {
@@ -200,7 +219,8 @@ const mockData = [
         price: 11000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 6
       },
       {
         id: 12,
@@ -208,7 +228,8 @@ const mockData = [
         price: 12000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 6
       },
       {
         id: 13,
@@ -216,7 +237,8 @@ const mockData = [
         price: 13000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 6
       },
       {
         id: 14,
@@ -224,7 +246,8 @@ const mockData = [
         price: 14000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 6
       },
       {
         id: 15,
@@ -232,7 +255,8 @@ const mockData = [
         price: 15000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 6
       },
       {
         id: 16,
@@ -240,27 +264,33 @@ const mockData = [
         price: 16000,
         discount: 0,
         quantity: 0,
-        image: "/images/cetaphilMock.png"
+        image: "/images/cetaphilMock.png",
+        category_id: 6
       }
     ]
   },
   {
+    id: 7,
     name: "Categoría 7",
     products: []
   },
   {
+    id: 8,
     name: "Categoría 8",
     products: []
   },
   {
+    id: 9,
     name: "Categoría 9",
     products: []
   },
   {
+    id: 10,
     name: "Categoría 10",
     products: []
   },
   {
+    id: 11,
     name: "Categoría 11",
     products: []
   }
