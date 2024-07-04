@@ -1,24 +1,30 @@
-import { FC, useContext } from "react";
+import { FC, useContext, useState } from "react";
 import { Flex } from "antd";
 import { ISelectType } from "@/types/clients/IClients";
 import { OrderViewContext } from "../../containers/create-order/create-order";
-
-import styles from "./create-order-cart.module.scss";
 import CreateOrderItem from "../create-order-cart-item";
 import { BagSimple } from "phosphor-react";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
+import CreateOrderDiscountsModal from "../create-order-discounts-modal";
 
+import styles from "./create-order-cart.module.scss";
 export interface selectClientForm {
   client: ISelectType;
 }
 
 const CreateOrderCart: FC = ({}) => {
+  const [openDiscountsModal, setOpenDiscountsModal] = useState(false);
   const { selectedProducts } = useContext(OrderViewContext);
 
   const numberOfSelectedProducts = selectedProducts.reduce(
     (acc, category) => acc + category.products.length,
     0
   );
+
+  const handleOpenDiscountsModal = () => {
+    console.log("Open discounts modal");
+    setOpenDiscountsModal(true);
+  };
 
   return (
     <div className={styles.cartContainer}>
@@ -35,6 +41,7 @@ const CreateOrderCart: FC = ({}) => {
             <button
               className={styles.discountsButton}
               data-info="Ver todos los descuentos"
+              onClick={handleOpenDiscountsModal}
             ></button>
           </div>
         )}
@@ -59,7 +66,11 @@ const CreateOrderCart: FC = ({}) => {
 
       {selectedProducts.length > 0 && (
         <div className={styles.cartContainer__footer}>
-          <button className={styles.discountsButton} data-info="Ver todos los descuentos"></button>
+          <button
+            className={styles.discountsButton}
+            data-info="Ver todos los descuentos"
+            onClick={handleOpenDiscountsModal}
+          ></button>
           <hr className={styles.separator} />
           <Flex vertical gap={"0.25rem"}>
             <Flex justify="space-between">
@@ -78,6 +89,10 @@ const CreateOrderCart: FC = ({}) => {
 
           <PrincipalButton>Continuar compra</PrincipalButton>
         </div>
+      )}
+
+      {openDiscountsModal && (
+        <CreateOrderDiscountsModal setOpenDiscountsModal={setOpenDiscountsModal} />
       )}
     </div>
   );

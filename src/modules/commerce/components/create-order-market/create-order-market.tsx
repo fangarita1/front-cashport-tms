@@ -1,16 +1,14 @@
 import { FC, useContext } from "react";
 import { Button, Flex } from "antd";
-
-import styles from "./create-order-market.module.scss";
-
-import { ISelectType } from "@/types/clients/IClients";
+import { CaretLeft } from "phosphor-react";
 import UiSearchInput from "@/components/ui/search-input";
 import FilterDiscounts from "@/components/atoms/Filters/FilterDiscounts/FilterDiscounts";
 import UiTab from "@/components/ui/ui-tab";
 import { OrderViewContext } from "../../containers/create-order/create-order";
-import { CaretLeft } from "phosphor-react";
 import CreateOrderProduct from "../create-order-product";
+import { ISelectType } from "@/types/clients/IClients";
 
+import styles from "./create-order-market.module.scss";
 export interface selectClientForm {
   client: ISelectType;
 }
@@ -235,33 +233,6 @@ const mockData = [
         id: 13,
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 13",
         price: 13000,
-        discount: 0,
-        quantity: 0,
-        image: "/images/cetaphilMock.png",
-        category_id: 6
-      },
-      {
-        id: 14,
-        name: "Galderma Cetaphil Crema Hidratante X 453 Gr 14",
-        price: 14000,
-        discount: 0,
-        quantity: 0,
-        image: "/images/cetaphilMock.png",
-        category_id: 6
-      },
-      {
-        id: 15,
-        name: "Galderma Cetaphil Crema Hidratante X 453 Gr 15",
-        price: 15000,
-        discount: 0,
-        quantity: 0,
-        image: "/images/cetaphilMock.png",
-        category_id: 6
-      },
-      {
-        id: 16,
-        name: "Galderma Cetaphil Crema Hidratante X 453 Gr 16",
-        price: 16000,
         discount: 0,
         quantity: 0,
         image: "/images/cetaphilMock.png",
