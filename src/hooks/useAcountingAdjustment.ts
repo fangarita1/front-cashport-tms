@@ -46,8 +46,6 @@ interface GetFinancialDiscountsResponse {
 
 export const useAcountingAdjustment = (clientId: number, type: number) => {
   const { ID } = useAppStore((state) => state.selectProject);
-  console.log(ID, clientId);
-
   const { data, error } = useSWR<GetFinancialDiscountsResponse>(
     `/financial-discount/project/${ID || 19}/client/${clientId}?type=${type}`,
     fetcher

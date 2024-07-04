@@ -3,7 +3,7 @@ import { DatePicker, Flex, Typography } from "antd";
 import { Control, Controller, FieldError, RegisterOptions } from "react-hook-form";
 import { Calendar } from "phosphor-react";
 
-import "./inputDateForm.scss";
+import "./inputDateFormStyle.scss";
 
 interface InputDateFormProps {
   titleInput: string;

@@ -8,8 +8,6 @@ export const createAccountingAdjustment = async (
 ): Promise<AxiosResponse<any>> => {
   const token = await getIdToken();
   try {
-    console.log("requestBody", requestBody);
-
     const response: AxiosResponse<any> = await API.post(
       `${config.API_HOST}/financial-discount/project/${requestBody.project_id}/client/${requestBody.client_id}`,
       requestBody,
@@ -33,16 +31,8 @@ export const applyAccountingAdjustment = async (
   clientId: string
 ): Promise<AxiosResponse<any>> => {
   const token = await getIdToken();
-
-  const modelData = {
-    adjustment_data: adjustmentData,
-    doc: docFiles
-  };
-  console.log("modelData", modelData);
-
   const formData = new FormData();
   formData.append("adjustment_data", adjustmentData);
-  console.log("docFiles", docFiles);
   if (docFiles) {
     docFiles.forEach((file) => {
       formData.append("doc", file);
