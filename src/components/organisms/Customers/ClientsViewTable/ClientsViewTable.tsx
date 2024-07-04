@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Spin, TableProps, Button, Col, Flex, Row, Table, Typography } from "antd";
 import {
   CalendarBlank,
@@ -13,14 +14,13 @@ import {
 } from "phosphor-react";
 
 import { useProjects } from "@/hooks/useProjects";
-
-import "./ClientsViewTable.scss";
 import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
 import { formatMoney } from "@/utils/utils";
 import { useAppStore } from "@/lib/store/store";
 import redirectModal from "@/components/molecules/modals/redirectModal/RedirectModal";
+import "./ClientsViewTable.scss";
 
 const { Text } = Typography;
 
@@ -55,9 +55,9 @@ export const ClientsViewTable = () => {
       dataIndex: "client_name",
       key: "client_name",
       render: (_, row: IClientsPortfolio) => (
-        <a href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
+        <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
           <Text className="text">{row.client_name}</Text>
-        </a>
+        </Link>
       )
     },
     {
@@ -122,12 +122,13 @@ export const ClientsViewTable = () => {
       width: 64,
       dataIndex: "",
       render: (_, row: IClientsPortfolio) => (
-        <Button
-          href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}
-          onClick={() => setIsLoading(true)}
-          className="buttonSeeProject"
-          icon={isLoading ? <Spin /> : <Eye size={"1.3rem"} />}
-        />
+        <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
+          <Button
+            onClick={() => setIsLoading(true)}
+            className="buttonSeeProject"
+            icon={isLoading ? <Spin /> : <Eye size={"1.3rem"} />}
+          />
+        </Link>
       )
     }
   ];
