@@ -11,6 +11,7 @@ import { applyAccountingAdjustment } from "@/services/accountingAdjustment/accou
 import { useParams } from "next/navigation";
 import { extractSingleParam } from "@/utils/utils";
 import { UploadChangeParam, UploadFile } from "antd/es/upload";
+import { MessageInstance } from "antd/es/message/interface";
 
 interface Props {
   type: number;
@@ -18,6 +19,7 @@ interface Props {
   setSelectedRows: Dispatch<SetStateAction<ISelectedAccountingAdjustment[]>>;
   setCurrentView: Dispatch<SetStateAction<string>>;
   invoiceSelected?: IInvoice[];
+  messageApi: MessageInstance;
 }
 interface IcurrentInvoices {
   id: number;
@@ -36,6 +38,7 @@ export const ApplyAccountingAdjustment = ({
   type,
   selectedRows,
   setCurrentView,
+  messageApi,
   invoiceSelected = []
 }: Props) => {
   const params = useParams();
@@ -56,7 +59,6 @@ export const ApplyAccountingAdjustment = ({
   const [openEvidenceModal, setOpenEvidenceModal] = useState(false);
   const [selectedEvidence, setSelectedEvidence] = useState<File[]>([]);
   const [commentary, setCommentary] = useState<string | undefined>();
-  const [ _ ,setIsSecondView] = useState(false);
 
   useEffect(() => {
     setCurrentInvoices(
@@ -124,8 +126,6 @@ export const ApplyAccountingAdjustment = ({
 
   const handleOnChangeDocument = (info: UploadChangeParam<UploadFile<any>>) => {
     const file = info.file.originFileObj;
-    console.log("file", file, "info", info);
-
     if (file) {
       const fileSizeInMB = file.size / (1024 * 1024);
       if (fileSizeInMB > 30) {
@@ -153,9 +153,6 @@ export const ApplyAccountingAdjustment = ({
       setSelectedEvidence(selectedEvidence ? [...selectedEvidence, file] : [file]);
     }
   };
-  useEffect(() => {
-    console.log(applyValues, "current", currentInvoices, currentAdjustment);
-  }, [applyValues]);
 
   const normalizarApplyValues = (applyValues: {
     [key: string]: { balanceToApply: number; idAdjustment: number }[];
@@ -173,9 +170,6 @@ export const ApplyAccountingAdjustment = ({
     try {
       const normalizedData = normalizarApplyValues(applyValues);
       const adjustmentData = JSON.stringify(normalizedData);
-      // Debugging: log selectedEvidence
-      console.log("normalizedData:", normalizedData);
-      console.log("selectedEvidence:", selectedEvidence);
       if (!selectedEvidence) return;
       const response = await applyAccountingAdjustment(
         adjustmentData,
@@ -184,9 +178,17 @@ export const ApplyAccountingAdjustment = ({
         clientIdParam as string
       );
       if (response.status === 200) {
+        messageApi.open({
+          type: "success",
+          content: "Ajuste contable aplicado correctamente"
+        });
         setCurrentView("select");
       }
     } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Error al aplicar el ajuste contable"
+      });
       console.error("Error applying accounting adjustment:", error);
     }
   };
@@ -217,14 +219,15 @@ export const ApplyAccountingAdjustment = ({
       render: (_, record) => (
         <InputNumber
           min={0}
-          defaultValue={0}
           value={
             applyValues[record.id]?.find(
               (apply) => apply.idAdjustment === selectedRows[selectTab].id
             )?.balanceToApply
           }
+          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
           onBlur={(event) => {
-            const parsedValue = parseFloat(event.target.value);
+            const rawValue = event.target.value.replace(/,/g, "");
+            const parsedValue = parseFloat(rawValue);
             if (
               (currentAdjustment[selectTab] > 0 &&
                 parsedValue <= selectedRows[selectTab].current_value) ||
@@ -240,9 +243,6 @@ export const ApplyAccountingAdjustment = ({
       )
     }
   ];
-  useEffect(() => {
-    console.log(applyValues);
-  }, [applyValues]);
 
   return (
     <div className="modalContentApply">
@@ -291,7 +291,7 @@ export const ApplyAccountingAdjustment = ({
           handleAttachEvidence={handleAttachEvidence}
           handleOnChangeTextArea={handleOnChangeTextArea}
           commentary={commentary}
-          setIsSecondView={setIsSecondView}
+          setIsSecondView={setOpenEvidenceModal}
         />
       </Modal>
     </div>
