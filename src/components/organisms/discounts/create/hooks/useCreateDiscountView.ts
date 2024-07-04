@@ -90,12 +90,6 @@ export default function useCreateDiscountView({ params }: Props) {
     disabled: statusForm === "review"
   });
 
-  const { errors } = form.formState;
-
-  useEffect(() => {
-    console.log(errors);
-  }, [errors]);
-
   const handlePostDiscount = async (e: DiscountSchema) => {
     setLoading(true);
     try {
