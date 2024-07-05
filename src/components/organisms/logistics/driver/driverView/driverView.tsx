@@ -49,7 +49,6 @@ export const DriverView = () => {
     const result = await getAllDrivers();
     console.log(result)
     if (result.data.data.length > 0) {
-      console.log(result.data.data);
 
       const listDrivers: any[] | ((prevState: IDriver[]) => IDriver[]) = [];
       const listDriversOptions: { label: any; value: any }[] = [];
@@ -67,10 +66,8 @@ export const DriverView = () => {
     }
   };
 
-  useEffect(() => {
-    loadDrivers();
-  });
-  
+  loadDrivers();
+
   return (
     <>
       {contextHolder}
@@ -102,7 +99,7 @@ export const DriverView = () => {
                   <Tab className={"tab"} value={2} label="Conductor" href="/logistics/drivers/all" />
                 </Tabs2>
               </Col>
-              <DriverTable></DriverTable>
+              <DriverTable ></DriverTable>
             </Row>
           </Flex>
         </Flex>

@@ -4,12 +4,10 @@ import { getIdToken } from "@/utils/api/api";
 import { IListData } from "@/types/logistics/schema";
 
 export const getAllDrivers = async (): Promise<IListData> => {
-  const token = await getIdToken();
   try {
     const response: IListData = await axios.get(`${config.API_HOST}/driver/all`, {
       headers: {
         Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${token}`
       }
     });
     return response;
