@@ -18,7 +18,6 @@ import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
 import { formatMoney } from "@/utils/utils";
-
 import "./ClientsViewTable.scss";
 
 const { Text } = Typography;
