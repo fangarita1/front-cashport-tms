@@ -20,6 +20,7 @@ interface RegisterNewsProps {
   projectId?: number;
   invoiceSelected?: IInvoice[];
   messageShow: MessageInstance;
+  onCloseAllModals: () => void;
 }
 
 interface IFormRegisterNews {
@@ -42,7 +43,8 @@ const RegisterNews = ({
   onClose,
   clientId,
   invoiceSelected,
-  messageShow
+  messageShow,
+  onCloseAllModals
 }: RegisterNewsProps) => {
   const { data: motives, isLoading, isError } = useInvoiceIncidentMotives();
 
@@ -104,7 +106,6 @@ const RegisterNews = ({
 
   const onSubmit = async (data: IFormRegisterNews) => {
     try {
-      console.log("Datos del formulario:", data);
       await reportInvoiceIncident(
         invoiceSelected?.map((invoice) => invoice.id.toString()) || [],
         data.commentary,
@@ -114,7 +115,7 @@ const RegisterNews = ({
       );
       messageShow.success("Evidencia adjuntada con éxito");
       reset();
-      onClose();
+      onCloseAllModals();
     } catch (error) {
       console.error("Error al registrar una novedad:", error);
       messageShow.error("Error al adjuntar la evidencia");

@@ -14,6 +14,7 @@ interface Props {
   projectId?: number;
   invoiceSelected?: IInvoice[];
   messageShow: MessageInstance;
+  onCloseAllModals: () => void;
 }
 
 interface FileFromDragger {
@@ -38,7 +39,8 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
   invoiceSelected,
   clientId,
   projectId,
-  messageShow
+  messageShow,
+  onCloseAllModals
 }) => {
   const [selectedState, setSelectedState] = useState<string | undefined>();
   const [selectedEvidence, setSelectedEvidence] = useState<File[]>([]);
@@ -74,6 +76,8 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
         type: "success",
         content: "La factura ha cambiado de estado correctamente a"
       });
+      onCloseAllModals();
+      handlegoBackToFirstView();
     } catch (error) {
       console.log(error);
       messageShow.open({
@@ -253,7 +257,7 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
     >
       <div className={styles.content} style={{ height: "100%" }}>
         <Button
-          onClick={isSecondView ? handlegoBackToFirstView : undefined}
+          onClick={isSecondView ? handlegoBackToFirstView : onClose}
           className={styles.content__header}
         >
           <CaretLeft size="1.25rem" />
@@ -277,13 +281,12 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
 export default WalletTabChangeStatusModal;
 
 const invoiceStates = [
-  "Emitida",
   "Conciliada",
+  "Sin consiliar",
   "Glosado",
   "Devolucion",
   "Anulada",
   "Vencida",
-  "Sin consiliar",
-  "Corriente",
+  "Saldo",
   "Novedad"
 ];

@@ -65,6 +65,10 @@ export const WalletTab = () => {
   const onCloseModal = () => {
     setIsSelectOpen({ selected: 0 });
   };
+  const closeAllModal = () => {
+    setIsSelectOpen({ selected: 0 });
+    handleisGenerateActionOpen();
+  };
 
   return (
     <>
@@ -172,6 +176,7 @@ export const WalletTab = () => {
         clientId={clientId}
         projectId={projectId}
         messageShow={messageShow}
+        onCloseAllModals={closeAllModal}
       />
       <RegisterNews
         isOpen={isSelectOpen.selected === 1}
@@ -180,6 +185,7 @@ export const WalletTab = () => {
         clientId={clientId}
         projectId={projectId}
         messageShow={messageShow}
+        onCloseAllModals={closeAllModal}
       />
     </>
   );
