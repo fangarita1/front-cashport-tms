@@ -3,7 +3,7 @@ import { Avatar, Button, Flex, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import { Clipboard, DotsThree, Eye, Plus, Triangle } from "phosphor-react";
 
-import { FilterProjects } from "@/components/atoms/FilterProjects/FilterProjects";
+import { FilterProjects } from "@/components/atoms/Filters/FilterProjects/FilterProjects";
 import { useProjects } from "@/hooks/useProjects";
 import { useAppStore } from "@/lib/store/store";
 import { IProject } from "@/types/projects/IProjects";
@@ -25,7 +25,8 @@ export const CarrierTableConfig = () => {
   const { loading, data } = useProjects({
     page: selectFilters.country.length !== 0 || selectFilters.currency.length !== 0 ? 1 : page,
     currencyId: selectFilters.currency,
-    countryId: selectFilters.country
+    countryId: selectFilters.country,
+    searchQuery:''
   });
 
   const projects = useAppStore((state) => state.projects);
