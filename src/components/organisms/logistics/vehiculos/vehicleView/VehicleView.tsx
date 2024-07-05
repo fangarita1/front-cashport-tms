@@ -37,7 +37,7 @@ export const VehicleView = () => {
   const [routeInfo, setRouteInfo] = useState([]);
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationOptions, setLocationOptions] = useState<any>([]);
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(1);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -99,7 +99,7 @@ export const VehicleView = () => {
                 >
                   <Tab className={"tab"} value={0} label="General" href="/logistics/providers/all" />
                   <Tab className={"tab"} value={1} label="Vehiculo" href="/logistics/vehicles/all" />
-                  <Tab className={"tab"} value={2} label="Conductor" href="/spam" />
+                  <Tab className={"tab"} value={2} label="Conductor" href="/logistics/drivers/all" />
                 </Tabs2>
               </Col>
               <VehicleTable></VehicleTable>

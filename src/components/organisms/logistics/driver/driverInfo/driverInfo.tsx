@@ -23,18 +23,20 @@ import { useRouter } from "next/navigation";
 
 import "../../../../../styles/_variables_logistics.css";
 
-import "./carrierInfoConfig.scss";
-import { CarrierInfoForm } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
+import "./driverInfo.scss";
+import { DriverInfoForm } from "@/components/molecules/tabs/logisticsForms/driverForm/driverFormTab";
+import { getAllDrivers } from "@/services/logistics/drivers";
+
 
 const { Title } = Typography;
 
-export const CarrierInfoConfigView = () => {
+export const DriverInfoView = () => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const [routeInfo, setRouteInfo] = useState([]);
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationOptions, setLocationOptions] = useState<any>([]);
-  const [value, setValue] = useState(3);
+  const [value, setValue] = useState(2);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -43,12 +45,13 @@ export const CarrierInfoConfigView = () => {
   console.log("routeInfo==>", routeInfo);
 
   useEffect(() => {
-    loadLocations();
+    loadDrivers();
   });
 
-  const loadLocations = async () => {
+  const loadDrivers = async () => {
     if (locations.length > 0) return;
-    const result = await getAllLocations();
+    const result = await getAllDrivers();
+    console.log(result)
     if (result.data.data.length > 0) {
       console.log(result.data.data);
 
@@ -77,7 +80,7 @@ export const CarrierInfoConfigView = () => {
           <Flex className="infoHeaderOrder">
             <Flex gap={"2rem"}>
               <Title level={2} className="titleName">
-                Configuración
+                Proveedores
               </Title>
             </Flex>
             <Flex component={"navbar"} align="center" justify="space-between">
@@ -94,16 +97,12 @@ export const CarrierInfoConfigView = () => {
                   onChange={handleChange}
                   role="navigation"
                 >
-                  <Tab className={"tab"} value={0} label="Reglas de Negocio" href="/" />
-                  <Tab className={"tab"} value={1} label="Materiales" href="/" />
-                  <Tab className={"tab"} value={2} label="Usuarios" href="/spam" />
-                  <Tab className={"tab"} value={3} label="Proveedores" href="/logistics/configuration" />
-                  <Tab className={"tab"} value={4} label="Ubicacion" href="/"  />
-                  <Tab className={"tab"} value={5} label="Grupos de Ubicaciones" href="/spam" />
-                  <Tab className={"tab"} value={6} label="Rutas de Seguridad" href="/spam" />
+                  <Tab className={"tab"} value={0} label="General" href="/logistics/providers/all" />
+                  <Tab className={"tab"} value={1} label="Vehiculo" href="/logistics/vehicles/all" />
+                  <Tab className={"tab"} value={2} label="Conductor" href="/logistics/drivers/all" />
                 </Tabs2>
               </Col>
-              <CarrierInfoForm statusForm={"create"}></CarrierInfoForm>
+              <DriverInfoForm statusForm={"create"}></DriverInfoForm>
             </Row>
           </Flex>
         </Flex>

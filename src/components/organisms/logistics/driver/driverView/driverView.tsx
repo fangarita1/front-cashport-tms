@@ -4,6 +4,9 @@ import {
   message,
   Row,
   Col,
+  Table,
+  AutoComplete,
+  Input
 } from "antd";
 import React, { useRef, useEffect, useState, useContext } from "react";
 import Tabs2 from "@mui/material/Tabs";
@@ -13,7 +16,7 @@ import Tab from "@mui/material/Tab";
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 
-import { IListData, ILocation } from "@/types/logistics/schema";
+import { IDriver, IListData, ILocation } from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
@@ -23,51 +26,51 @@ import { useRouter } from "next/navigation";
 
 import "../../../../../styles/_variables_logistics.css";
 
-import "./carrierInfoConfig.scss";
-import { CarrierInfoForm } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
+import "./driverView.scss";
+import { VehicleTable } from "@/components/molecules/tables/logistics/vehicleTable/vehicleTable";
+import { DriverTable } from "@/components/molecules/tables/logistics/driverTable/driverTable";
+import { getAllDrivers } from "@/services/logistics/drivers";
 
 const { Title } = Typography;
 
-export const CarrierInfoConfigView = () => {
+export const DriverView = () => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
-  const [routeInfo, setRouteInfo] = useState([]);
-  const [locations, setLocations] = useState<ILocation[]>([]);
-  const [locationOptions, setLocationOptions] = useState<any>([]);
-  const [value, setValue] = useState(3);
+  const [drivers, setDrivers] = useState<IDriver[]>([]);
+  const [driversOptions, setDriversOptions] = useState<any>([]);
+  const [value, setValue] = useState(2);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
-  console.log("routeInfo==>", routeInfo);
-
-  useEffect(() => {
-    loadLocations();
-  });
-
-  const loadLocations = async () => {
-    if (locations.length > 0) return;
-    const result = await getAllLocations();
+  const loadDrivers = async () => {
+    console.log('hace cosas')
+    const result = await getAllDrivers();
+    console.log(result)
     if (result.data.data.length > 0) {
       console.log(result.data.data);
 
-      const listlocations: any[] | ((prevState: ILocation[]) => ILocation[]) = [];
-      const listlocationoptions: { label: any; value: any }[] = [];
+      const listDrivers: any[] | ((prevState: IDriver[]) => IDriver[]) = [];
+      const listDriversOptions: { label: any; value: any }[] = [];
 
       result.data.data.forEach((item, index) => {
-        listlocations.push(item);
-        listlocationoptions.push({ label: item.description, value: item.id });
+        listDrivers.push(item);
+        listDriversOptions.push({ label: item.description, value: item.id });
       });
 
-      setLocations(listlocations);
-      setLocationOptions(listlocationoptions);
+      setDrivers(listDrivers);
+      setDriversOptions(listDriversOptions);
 
-      console.log(locations);
-      console.log(locationOptions);
+      console.log(listDrivers);
+      console.log(listDriversOptions);
     }
   };
 
+  useEffect(() => {
+    loadDrivers();
+  });
+  
   return (
     <>
       {contextHolder}
@@ -77,7 +80,7 @@ export const CarrierInfoConfigView = () => {
           <Flex className="infoHeaderOrder">
             <Flex gap={"2rem"}>
               <Title level={2} className="titleName">
-                Configuración
+                Proveedores
               </Title>
             </Flex>
             <Flex component={"navbar"} align="center" justify="space-between">
@@ -94,16 +97,12 @@ export const CarrierInfoConfigView = () => {
                   onChange={handleChange}
                   role="navigation"
                 >
-                  <Tab className={"tab"} value={0} label="Reglas de Negocio" href="/" />
-                  <Tab className={"tab"} value={1} label="Materiales" href="/" />
-                  <Tab className={"tab"} value={2} label="Usuarios" href="/spam" />
-                  <Tab className={"tab"} value={3} label="Proveedores" href="/logistics/configuration" />
-                  <Tab className={"tab"} value={4} label="Ubicacion" href="/"  />
-                  <Tab className={"tab"} value={5} label="Grupos de Ubicaciones" href="/spam" />
-                  <Tab className={"tab"} value={6} label="Rutas de Seguridad" href="/spam" />
+                  <Tab className={"tab"} value={0} label="General" href="/logistics/providers/all" />
+                  <Tab className={"tab"} value={1} label="Vehiculo" href="/logistics/vehicles/all" />
+                  <Tab className={"tab"} value={2} label="Conductor" href="/logistics/drivers/all" />
                 </Tabs2>
               </Col>
-              <CarrierInfoForm statusForm={"create"}></CarrierInfoForm>
+              <DriverTable></DriverTable>
             </Row>
           </Flex>
         </Flex>
