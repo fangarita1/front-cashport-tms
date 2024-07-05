@@ -1,5 +1,5 @@
 import { CaretLeft } from "phosphor-react";
-import { FC, createContext, useState } from "react";
+import { FC, createContext, useMemo, useState } from "react";
 import { WalletTab } from "@/components/organisms/Customers/WalletTab/WalletTab";
 import Dashboard from "../dashboard";
 import InvoiceActionsModal from "../invoice-actions-modal";
@@ -50,16 +50,20 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
     }
   ];
 
+  const ClientDetailObject = useMemo(
+    () => ({
+      selectedOption,
+      setSelectedOption,
+      showInvoiceActionsModal,
+      setShowInvoiceActionsModal,
+      portfolioData
+    }),
+    [portfolioData, selectedOption, showInvoiceActionsModal]
+  );
+
+
   return (
-    <ClientDetailsContext.Provider
-      value={{
-        selectedOption,
-        setSelectedOption,
-        showInvoiceActionsModal,
-        setShowInvoiceActionsModal,
-        portfolioData
-      }}
-    >
+    <ClientDetailsContext.Provider value={ClientDetailObject}>
       <main className={styles.mainDetail}>
         <Flex vertical className={styles.containerDetailClient}>
           <Flex className={styles.stickyHeader} align="center" justify="space-between">
@@ -71,7 +75,7 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
                   className={styles.buttonGoBack}
                   icon={<CaretLeft size={"1.6rem"} />}
                 >
-                  {portfolioData ? portfolioData.data_wallet.client_name : "Loading..."}
+                  {portfolioData ? portfolioData?.data_wallet?.client_name : "Loading..."}
                 </Button>
               </Link>
             </Flex>
