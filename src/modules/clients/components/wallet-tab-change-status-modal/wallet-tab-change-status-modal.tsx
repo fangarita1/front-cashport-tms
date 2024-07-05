@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Flex, Modal, Radio, RadioChangeEvent } from "antd";
 import styles from "./wallet-tab-change-status-modal.module.scss";
 import { CaretLeft, Plus } from "phosphor-react";
@@ -224,6 +224,14 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
       </div>
     )
   };
+
+  useEffect(() => {
+    return () => {
+      setSelectedState(undefined);
+      setSelectedEvidence([]);
+      setCommentary(undefined);
+    };
+  }, [isOpen]);
 
   return (
     <Modal

@@ -120,10 +120,13 @@ const RegisterNews = ({
       messageShow.error("Error al adjuntar la evidencia");
     }
   };
-
+  const handleClose = () => {
+    reset();
+    onClose();
+  };
   return (
     <Modal className="contentRegisterNews" width="50%" footer={null} open={isOpen} closable={false}>
-      <button className="contentRegisterNews__header" onClick={onClose}>
+      <button className="contentRegisterNews__header" onClick={handleClose}>
         <CaretLeft size="1.25rem" />
         <h4>Registrar novedad</h4>
       </button>
@@ -205,13 +208,7 @@ const RegisterNews = ({
           </div>
         </div>
         <div className="footer">
-          <Button
-            className="cancelButton"
-            onClick={() => {
-              reset();
-              onClose();
-            }}
-          >
+          <Button className="cancelButton" onClick={handleClose}>
             Cancelar
           </Button>
 
