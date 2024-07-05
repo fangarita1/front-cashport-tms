@@ -12,13 +12,17 @@ import styles from "./invoice-detail-modal.module.scss";
 import { useInvoiceDetail } from "@/hooks/useInvoiceDetail";
 import InvoiceDownloadModal from "../../components/invoice-download-modal";
 import { Button } from "antd";
+import { IInvoice } from "@/types/invoices/IInvoices";
+import { formatDatePlane, formatMoney } from "@/utils/utils";
 
 interface InvoiceDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   invoiceId: number;
   clientId: number;
+  projectId: number;
   handleisGenerateActionOpen: Dispatch<SetStateAction<boolean>>;
+  selectInvoice?: IInvoice;
 }
 
 const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
@@ -26,9 +30,11 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
   onClose,
   invoiceId,
   clientId,
+  projectId,
+  selectInvoice,
   handleisGenerateActionOpen
 }) => {
-  const { data: invoiceData } = useInvoiceDetail({ invoiceId, clientId });
+  const { data: invoiceData } = useInvoiceDetail({ invoiceId, clientId, projectId });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(0);
@@ -118,7 +124,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                         <div className={styles.stepLabel}>
                           <div className={styles.cardInvoiceFiling}>
                             <h5 className={styles.title}>{item.event_type_name}</h5>
-                            <div className={styles.date}>{""}</div>
+                            <div className={styles.date}>
+                              {formatDatePlane(item.create_at.toString())}
+                            </div>
                             {item.event_type_name === "Aviso de vencimiento" ? (
                               <div className={styles.quantity}>
                                 <div
@@ -185,12 +193,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                     }}
                                   />
                                 </div>
-                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                <div className={styles.name}>{`Tipo novedad:: ${""}`}</div>
-                                <div className={styles.adjustment}>
-                                  ID de la novedad:
-                                  <div className={styles.idAdjustment}>{"233123"}</div>
-                                </div>
+                                <div
+                                  className={styles.name}
+                                >{`Responsable: ${item.user_name}`}</div>
                               </div>
                             ) : (
                               ""
@@ -233,12 +238,14 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                             ) : (
                               ""
                             )}
-                            {item.event_type_name === "Factura radicada" ? (
+                            {item.event_type_name === "Radicación" ? (
                               <div>
                                 <div className={styles.icons}>
                                   <ArrowLineDown size={14} onClick={() => {}} />
                                 </div>
-                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                <div
+                                  className={styles.name}
+                                >{`Responsable: ${item.user_name}`}</div>
                               </div>
                             ) : (
                               ""
@@ -249,8 +256,12 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   <ArrowLineDown size={14} onClick={() => {}} />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                <div className={styles.name}>{`Estado inicial: ${""}`}</div>
-                                <div className={styles.name}>{`Estado final: ${""}`}</div>
+                                <div
+                                  className={styles.name}
+                                >{`Estado inicial: ${item.previous_status_id ?? "N/A"}`}</div>
+                                <div
+                                  className={styles.name}
+                                >{`Estado final: ${item.status_name}`}</div>
                               </div>
                             ) : (
                               ""
@@ -271,7 +282,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
         <div className={styles.bodyContent}>
           <div className={styles.initialValue}>
             <p className={styles.value}>Valor inicial</p>
-            <p className={styles.result}>$XX.XXX.XXX</p>
+            <p className={styles.result}>
+              {formatMoney(selectInvoice?.initial_value.toString() ?? "0")}
+            </p>
           </div>
           <div className={styles.initialValue}>
             <p className={styles.value}>Nota debito</p>
@@ -281,7 +294,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
           <hr />
           <div className={styles.total}>
             <p className={styles.value}>Total</p>
-            <p className={styles.result}>$32.000.000</p>
+            <p className={styles.result}>
+              {formatMoney(selectInvoice?.initial_value.toString() ?? "0")}
+            </p>
           </div>
         </div>
       </div>

@@ -168,6 +168,15 @@ export const formatDateBars = (date: string): string => {
   return `${year}-${month}-${day}`;
 };
 
+export const formatDatePlane = (date: string): string => {
+  //18 octubre, 2023 en español
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = d.toLocaleString("es-ES", { month: "long" });
+  const day = d.getDate();
+
+  return `${day} ${month}, ${year}`;
+};
 export function daysLeft(dateString: string): number {
   const today = new Date();
   const expirationDate = new Date(dateString);

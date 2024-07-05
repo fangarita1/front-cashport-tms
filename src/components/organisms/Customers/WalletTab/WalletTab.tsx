@@ -145,6 +145,10 @@ export const WalletTab = () => {
           onClose={() => setShowInvoiceDetailModal({ isOpen: false, invoiceId: 0 })}
           invoiceId={showInvoiceDetailModal?.invoiceId || 0}
           clientId={clientId}
+          projectId={projectId}
+          selectInvoice={invoices
+            ?.flatMap((invoiceState) => invoiceState.invoices)
+            .find((invoice) => invoice.id === showInvoiceDetailModal?.invoiceId) || undefined}
           handleisGenerateActionOpen={handleisGenerateActionOpen}
         />
       )}
