@@ -130,18 +130,18 @@ export const extractChannelLineSublines = (brs: IChanel[]) => {
   return extractedData;
 };
 
-export const stringBasedOnDocumentType = (documentType: string) => {
+export const docTypeIdBasedOnDocType = (documentType: string) => {
   switch (documentType) {
     case "NIT":
-      return "1 - NIT";
+      return 1;
     case "Cedula":
-      return "2 - Cedula";
+      return 2;
     case "Pasaporte":
-      return "3 - Pasaporte";
+      return 3;
     case "Cedula de extranjeria":
-      return "4 - Cedula de extranjeria";
+      return 4;
     default:
-      return "0 - No seleccionado";
+      return 0;
   }
 };
 
@@ -188,7 +188,7 @@ export function formatMoney(text: string, countryCode?: CountryCode): string {
   return formatter.format(number);
 }
 
-const countryFormater = (currency: CountryCode = "en") => {
+const countryFormater = (currency: CountryCode = "co") => {
   return intFormat[currency];
 };
 
@@ -198,5 +198,45 @@ const intFormat = {
   jpn: { currency: "JPY", id: "ja-JP" },
   ch: { currency: "CNY", id: "zh-CN" },
   kr: { currency: "KRW", id: "ko-KR" },
-  es: { currency: "EUR", id: "es-ES" }
+  es: { currency: "EUR", id: "es-ES" },
+  co: { currency: "COP", id: "es-CO" }
+};
+
+export const getCityName = (id: number) => {
+  const city = locations.find((location) => location.id === id);
+  return city?.city;
+};
+
+const locations = [
+  {
+    id: 1,
+    city: "Bogotá"
+  },
+  {
+    id: 246,
+    city: "Medellin"
+  },
+  {
+    id: 247,
+    city: "Cali"
+  },
+  {
+    id: 248,
+    city: "Pereira"
+  },
+  {
+    id: 249,
+    city: "Barranquilla"
+  }
+];
+
+export const isNonEmptyObject = (obj: {}) => {
+  return !(Object.keys(obj).length === 0 && obj.constructor === Object);
+};
+
+export const stringToBoolean = (value: string | boolean | undefined): boolean => {
+  if (value === undefined) {
+    return false;
+  }
+  return value === "true" || value === true;
 };

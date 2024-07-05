@@ -11,9 +11,10 @@ import "./selectzone.scss";
 interface Props {
   zones: number[];
   setZones: Dispatch<SetStateAction<number[]>>;
+  disabled?: boolean;
 }
 
-export const SelectZone = ({ zones, setZones }: Props) => {
+export const SelectZone = ({ zones, setZones, disabled }: Props) => {
   const { ID } = useAppStore((state) => state.selectProject);
   const { data, isLoading } = useSWR<IZones>(`/zone/project/${ID}`, fetcher, {});
 
@@ -40,6 +41,7 @@ export const SelectZone = ({ zones, setZones }: Props) => {
                 <Flex key={zone.ID} justify="space-between" className="zone">
                   <Typography.Text>{zone.ZONE_DESCRIPTION}</Typography.Text>
                   <Checkbox
+                    disabled={disabled}
                     checked={!!filterZone}
                     onClick={() => (!filterZone ? activateZone(zone.ID) : desactivateZone(zone.ID))}
                     className="checboxzone"

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Button, Col, Flex, Row, Table, Typography } from "antd";
-import type { TableProps } from "antd";
+import Link from "next/link";
+import { Spin, TableProps, Button, Col, Flex, Row, Table, Typography } from "antd";
 import {
   CalendarBlank,
   CalendarX,
@@ -14,28 +14,29 @@ import {
 } from "phosphor-react";
 
 import { useProjects } from "@/hooks/useProjects";
-
-import "./ClientsViewTable.scss";
 import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
-import { useUserByToken } from "@/hooks/useUserByToken";
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
+import { formatMoney } from "@/utils/utils";
+
+import "./ClientsViewTable.scss";
 
 const { Text } = Typography;
 
 export const ClientsViewTable = () => {
-  const { data: userData } = useUserByToken();
-  const { data: clients } = usePortfolios({ projectId: userData?.projectId });
+  const { data: clients } = usePortfolios();
 
   const [selectFilters] = useState({
     country: [] as string[],
     currency: [] as string[]
   });
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const { loading, data } = useProjects({
     page: selectFilters.country.length !== 0 || selectFilters.currency.length !== 0 ? 1 : page,
     currencyId: selectFilters.currency,
-    countryId: selectFilters.country
+    countryId: selectFilters.country,
+    searchQuery: ""
   });
 
   const onChangePage = (pagePagination: number) => {
@@ -48,50 +49,59 @@ export const ClientsViewTable = () => {
       dataIndex: "client_name",
       key: "client_name",
       render: (_, row: IClientsPortfolio) => (
-        <a href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
+        <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
           <Text className="text">{row.client_name}</Text>
-        </a>
+        </Link>
       )
     },
     {
+      align: "right",
       title: "Cartera",
       dataIndex: "total_portfolio",
       key: "total_portfolio",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
+      align: "right",
       title: "Vencida",
       dataIndex: "past_due_ammount",
-      key: "past_due_ammount"
+      key: "past_due_ammount",
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
+      align: "right",
       title: "Presupuesto",
       key: "budget_ammount",
       dataIndex: "budget_ammount",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
+      align: "right",
       title: "R. Aplicado",
       key: "applied_payments_ammount",
       dataIndex: "applied_payments_ammount",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
+      align: "center",
+      width: 103,
       title: "Ejecutado",
       key: "executed_percentage",
       dataIndex: "executed_percentage",
       render: (text) => <Text>{text} %</Text>
     },
     {
+      align: "right",
       title: "PNA",
       key: "unapplied_payments_ammount",
       dataIndex: "unapplied_payments_ammount",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>
     },
     {
+      align: "right",
       title: "Saldos",
-      key: "executed_percentage",
-      dataIndex: "executed_percentage",
+      key: "total_balances",
+      dataIndex: "total_balances",
       render: (text) => <Text>{text}</Text>
     },
     {
@@ -101,22 +111,18 @@ export const ClientsViewTable = () => {
       render: (text) => <Text className="text">{text}</Text>
     },
     {
-      title: "client_id",
-      key: "client_id",
-      dataIndex: "client_id",
-      render: (text) => <Text className="text">{text}</Text>
-    },
-    {
       title: "",
       key: "buttonSee",
-      width: "80px",
+      width: 64,
       dataIndex: "",
       render: (_, row: IClientsPortfolio) => (
-        <Button
-          href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}
-          className="buttonSeeProject"
-          icon={<Eye size={"1.3rem"} />}
-        />
+        <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
+          <Button
+            onClick={() => setIsLoading(true)}
+            className="buttonSeeProject"
+            icon={isLoading ? <Spin /> : <Eye size={"1.3rem"} />}
+          />
+        </Link>
       )
     }
   ];
@@ -188,7 +194,7 @@ export const ClientsViewTable = () => {
           total: data.pagination.totalRows,
           onChange: onChangePage
         }}
-        dataSource={clients?.clientsPortfolio}
+        dataSource={clients?.clientsPortfolio.map((data) => ({ ...data, key: data.client_id }))}
       />
     </main>
   );

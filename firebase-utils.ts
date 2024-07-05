@@ -1,6 +1,7 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "./firebase";
 import { STORAGE_TOKEN } from "@/utils/constants/globalConstants";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 const getAuth = async (
   email: string,
@@ -50,5 +51,10 @@ const getAuth = async (
       });
   }
 };
-
-export { getAuth };
+const logOut = (
+   router: AppRouterInstance) => {
+  signOut(auth);
+  localStorage.removeItem(STORAGE_TOKEN);
+  router.replace('auth/login')
+};
+export { getAuth, logOut };

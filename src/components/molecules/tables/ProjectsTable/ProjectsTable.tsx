@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Avatar, Button, Flex, Table, Typography } from "antd";
+import { Avatar, Button, Flex, Table, Typography, Image, message } from "antd";
 import type { TableProps } from "antd";
-import { Clipboard, DotsThree, Eye, Plus, Triangle } from "phosphor-react";
+import { Clipboard, Eye, Plus, Triangle } from "phosphor-react";
 
-import { FilterProjects } from "@/components/atoms/FilterProjects/FilterProjects";
+import { FilterProjects } from "@/components/atoms/Filters/FilterProjects/FilterProjects";
 import { useProjects } from "@/hooks/useProjects";
 import { useAppStore } from "@/lib/store/store";
 import { IProject } from "@/types/projects/IProjects";
@@ -11,6 +11,7 @@ import { IProject } from "@/types/projects/IProjects";
 import "./projectstable.scss";
 import UiSearchInput from "@/components/ui/search-input";
 import { countries } from "@/utils/countries";
+import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 
 const { Text } = Typography;
 
@@ -21,10 +22,12 @@ export const ProjectTable = () => {
   });
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const { loading, data } = useProjects({
+  const [messageApi, contextHolder] = message.useMessage();
+  const { loading, data, error } = useProjects({
     page: selectFilters.country.length !== 0 || selectFilters.currency.length !== 0 ? 1 : page,
     currencyId: selectFilters.currency,
-    countryId: selectFilters.country
+    countryId: selectFilters.country,
+    searchQuery: search
   });
 
   const projects = useAppStore((state) => state.projects);
@@ -45,14 +48,16 @@ export const ProjectTable = () => {
     );
   }, [data, setProjects]);
 
-  const invFiltered =
-    projects &&
-    projects.filter((f) => {
-      return f.PROJECT_DESCRIPTION.toLowerCase().includes(search.trim().toLowerCase());
-    });
-
+  useEffect(() => {
+    if (typeof error === "string") {
+      messageApi.open({ type: "error", content: error });
+    } else if (error?.message) {
+      messageApi.open({ type: "error", content: error.message });
+    }
+  }, [error]);
   return (
     <main className="mainProjectsTable">
+      {contextHolder}
       <Flex justify="space-between" className="mainProjectsTable_header">
         <Flex gap={"10px"}>
           <UiSearchInput
@@ -65,7 +70,7 @@ export const ProjectTable = () => {
             }}
           />
           <FilterProjects setSelecetedProjects={setSelectFilters} />
-          <Button className="options" icon={<DotsThree size={"1.5rem"} />} />
+          <DotsDropdown />
         </Flex>
         <Button type="primary" className="buttonNewProject" size="large" href="/proyectos/new">
           Nuevo Proyecto
@@ -92,7 +97,7 @@ export const ProjectTable = () => {
             return originalElement;
           }
         }}
-        dataSource={invFiltered}
+        dataSource={projects}
       />
     </main>
   );
@@ -110,7 +115,7 @@ const columns: TableProps<IProject>["columns"] = [
           <Avatar
             shape="square"
             size={70}
-            src={<img src={LOGO ?? ""} style={{ objectFit: "contain" }} alt="avatar" />}
+            src={LOGO.trim()}
           />
         ) : (
           <Avatar shape="square" className="imageWithoutImage" size={65} icon={<Clipboard />} />

@@ -91,3 +91,32 @@ export interface Identities {
 export interface WelcomeHeaders {
   "content-type": string;
 }
+
+export interface IProjectForFormData {
+  project_description: string;
+  rgb_config: string;
+  logo: string;
+  nit: string;
+  email: string;
+  contact: string;
+  phone: string;
+  address: string;
+  country_id: number;
+  currency: string;
+
+  accept_date: boolean;
+  dso_days?: number;
+  dso_currenly_year?: boolean;
+  name: string;
+  position_contact: string;
+  day_flag: boolean;
+  day?: number;
+  order?: string;
+  day_of_week?: string;
+}
+
+export interface IUpdateProjectData extends IProjectForFormData {
+  uuid?: string;
+  id: string;
+  is_active: boolean;
+}

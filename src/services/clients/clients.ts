@@ -11,6 +11,7 @@ import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 
 import { SUCCESS } from "@/utils/constants/globalConstants";
 import { MessageInstance } from "antd/es/message/interface";
+import { IAddAddressData } from "@/types/locations/ILocations";
 
 // create
 
@@ -19,16 +20,11 @@ export const createClient = async (
   rawData: ClientFormType,
   billingPeriod: IBillingPeriodForm,
   documents: any[],
-  locationResponse: any
+  locationResponse: IAddAddressData
 ): Promise<any> => {
   const { infoClient: data } = rawData;
-  const payment_condition = data.condition_payment?.split("-")[0].trim();
-  const radication_type = data.condition_payment?.split("-")[0].trim();
-  const document_type = data.document_type?.split("-")[0].trim();
-  const client_type = data.client_type?.split("-")[0].trim();
-  const holding = data.holding_name?.split("-")[0].trim();
 
-  const formatLocations = JSON.stringify(new Array(locationResponse.data.data));
+  const formatLocations = JSON.stringify([locationResponse]);
 
   const formatDocuments = documents.map((doc) => doc.originFileObj);
 
@@ -38,15 +34,16 @@ export const createClient = async (
     client_name: data.client_name,
     business_name: data.business_name,
     phone: data.phone,
-    condition_payment: parseInt(payment_condition),
+    condition_payment: data.condition_payment.value,
     email: data.email,
-    radication_type: parseInt(radication_type),
-    document_type: parseInt(document_type),
+    radication_type: data.radication_type.value,
+    document_type: data.document_type.value,
     locations: formatLocations,
     documents: formatDocuments,
-    client_type_id: parseInt(client_type),
-    holding_id: holding ? parseInt(holding) : undefined,
-    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod.day_flag,
+    client_type_id:
+      typeof data.client_type === "number" ? data.client_type : parseInt(data.client_type),
+    holding_id: data.holding_id?.value === 0 ? undefined : data.holding_id?.value,
+    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod.day_flag === "true",
     day: typeof billingPeriod === "string" ? undefined : billingPeriod.day,
     order: typeof billingPeriod === "string" ? undefined : billingPeriod.order?.toLowerCase(),
     day_of_week:
@@ -81,7 +78,7 @@ export const createClient = async (
 
     return response;
   } catch (error) {
-    console.log("Error creating new client: ", error);
+    console.warn("error creating new client: ", error);
     return error as AxiosError;
   }
 };
@@ -102,7 +99,7 @@ export const getClientById = async (idUser: string, projectId: string): Promise<
 
     return response;
   } catch (error) {
-    console.log("Error getting client by Id: ", error);
+    console.warn("error getting client by Id: ", error);
     return error as any;
   }
 };
@@ -111,29 +108,30 @@ export const updateClient = async (
   idProject: string,
   clientId: number,
   rawData: ClientFormType,
-  locationResponse?: any,
+  locationResponse: IAddAddressData | any,
+  hasLocationChanged: boolean,
   billingPeriod?: IBillingPeriodForm
 ): Promise<any> => {
   const { infoClient: data } = rawData;
 
-  const payment_condition = data.condition_payment?.split("-")[0].trim();
-  const radication_type = data.condition_payment?.split("-")[0].trim();
-  const document_type = data.document_type?.split("-")[0].trim();
-  const holding = data.holding_name?.split("-")[0].trim();
-
-  const formatLocations = JSON.stringify(new Array(locationResponse?.data?.data));
+  const formatLocations = hasLocationChanged
+    ? JSON.stringify([locationResponse])
+    : JSON.stringify(locationResponse);
 
   const modelData: IUpdateClient = {
     business_name: data.business_name,
     phone: data.phone,
-    condition_payment: parseInt(payment_condition),
+    condition_payment: data.condition_payment.value,
     email: data.email,
-    radication_type: parseInt(radication_type),
-    document_type: parseInt(document_type),
+    radication_type: data.radication_type.value,
+    document_type: data.document_type.value,
     locations: formatLocations,
-    holding_id: holding ? holding : undefined,
-    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag,
-    day: typeof billingPeriod === "string" ? undefined : billingPeriod?.day
+    holding_id: data.holding_id.value,
+    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag === "true",
+    day: typeof billingPeriod === "string" ? undefined : billingPeriod?.day,
+    order: typeof billingPeriod === "string" ? undefined : billingPeriod?.order?.toLowerCase(),
+    day_of_week:
+      typeof billingPeriod === "string" ? undefined : billingPeriod?.day_of_week?.toLowerCase()
   };
 
   const formData = new FormData();
@@ -158,7 +156,7 @@ export const updateClient = async (
     );
     return response;
   } catch (error) {
-    console.log("Error updating client: ", error);
+    console.warn("error updating client: ", error);
     return error as AxiosError;
   }
 };
@@ -198,7 +196,7 @@ export const deleteClientById = async (
 
     return response;
   } catch (error) {
-    console.log("Error deleting client by Id: ", error);
+    console.warn("error deleting client by Id: ", error);
     return error as any;
   }
 };

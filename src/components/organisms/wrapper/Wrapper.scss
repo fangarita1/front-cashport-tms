@@ -1,0 +1,18 @@
+@import "@/styles/variables.scss";
+
+.mainWrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+
+    .RightContent {
+        height: 100%;
+        width: 100%;
+        margin: 0 0 32px 0;
+        background-color: $background;
+        padding: 2rem;
+        padding-left: 2.5rem;
+        overflow-y: auto;
+    }
+}

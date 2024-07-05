@@ -181,7 +181,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   <ArrowLineDown
                                     size={14}
                                     onClick={() => {
-                                      setIsModalOpen(true), console.log("boton prueba");
+                                      setIsModalOpen(true);
                                     }}
                                   />
                                 </div>

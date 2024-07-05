@@ -62,7 +62,6 @@ export const addZone = async ({
         content: "Oops ocurrio un error."
       });
     }
-    console.log(response);
 
     return response;
   } catch (error) {

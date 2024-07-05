@@ -1,4 +1,4 @@
-import { Button, Flex, Popover, Spin, Typography } from "antd";
+import { Button, Flex, Popover, Spin, Typography, message } from "antd";
 import { CaretRight, X, Plus } from "phosphor-react";
 
 import { useClientTypes } from "@/hooks/useClientTypes";
@@ -15,10 +15,16 @@ interface Props {
 }
 
 export const DocumentClientBR = ({ isDisabledEdit }: Props) => {
-  const { data, loading } = useClientTypes();
+  const { data, loading, removeClient } = useClientTypes();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const handleDeleteClientType = (clientTypeId: number) => {
+    removeClient(clientTypeId, messageApi);
+  };
 
   return (
     <div className="contianerdocumentclientbr">
+      {contextHolder}
       <Typography.Text className="title">Documentos por cliente</Typography.Text>
       <Flex vertical className="clientTypes">
         {loading ? (
@@ -30,7 +36,11 @@ export const DocumentClientBR = ({ isDisabledEdit }: Props) => {
                 <Flex justify="space-between">
                   <Text className="clientTypeCard__title">{document.clientType}</Text>
                   {!isDisabledEdit && (
-                    <Button icon={<X size={"16px"} />} className="removebutton" />
+                    <Button
+                      icon={<X size={"16px"} />}
+                      className="removebutton"
+                      onClick={() => handleDeleteClientType(document.id)}
+                    />
                   )}
                 </Flex>
                 <DocumentCards clientTypeId={document.id} isDisabledEdit={isDisabledEdit} />

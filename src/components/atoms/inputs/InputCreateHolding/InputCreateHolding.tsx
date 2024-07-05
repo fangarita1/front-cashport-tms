@@ -32,8 +32,8 @@ export const InputCreateHolding = ({ isEditAvailable = false }: Props) => {
   };
   return (
     <>
-      {contextHolder}
       <form className="inputcreateholding" onSubmit={handleSubmit(onSubmit)}>
+      {contextHolder}
         <InputForm
           titleInput=""
           control={control}

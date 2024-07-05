@@ -3,19 +3,35 @@ import useSWR from "swr";
 
 import { fetcher } from "@/utils/api/api";
 import { IRadicationTypes } from "@/types/radicationTypes/IRadicationTypes";
-import { ClientFormType } from "@/types/clients/IClients";
-import { FieldError, ControllerRenderProps } from "react-hook-form";
+import {
+  FieldError as OriginalFieldError,
+  ControllerRenderProps,
+  FieldErrorsImpl,
+  Merge,
+  FieldValues
+} from "react-hook-form";
 
 import "../commonInputStyles.scss";
 
-interface Props {
-  errors: FieldError | undefined;
-  field: ControllerRenderProps<ClientFormType, "infoClient.radication_type">;
+type ExtendedFieldError =
+  | OriginalFieldError
+  | Merge<OriginalFieldError, FieldErrorsImpl<{ value: number; label: string }>>;
+
+interface Props<T extends FieldValues> {
+  errors: ExtendedFieldError | undefined;
+  field: ControllerRenderProps<T, any>;
 }
-const { Option } = Select;
-export const SelectRadicationTypes = ({ errors, field }: Props) => {
+
+export const SelectRadicationTypes = <T extends FieldValues>({ errors, field }: Props<T>) => {
   const { data, isLoading } = useSWR<IRadicationTypes>("/client/radication-types", fetcher, {});
-  const options = data?.data;
+  const options = data?.data.map((option) => {
+    return {
+      value: option.id,
+      label: option.radication_name,
+      className: "selectOptions"
+    };
+  });
+
   return (
     <>
       <Select
@@ -26,19 +42,9 @@ export const SelectRadicationTypes = ({ errors, field }: Props) => {
         optionLabelProp="label"
         {...field}
         popupClassName="selectDrop"
-      >
-        {options?.map((value) => {
-          return (
-            <Option
-              className="selectOptions"
-              value={`${value.id}-${value.radication_name}`}
-              key={value.id}
-            >
-              {`${value.id}-${value.radication_name}`}
-            </Option>
-          );
-        })}
-      </Select>
+        options={options}
+        labelInValue
+      />
       {errors && (
         <Typography.Text className="textError">
           El tipo de radicado es obligatorio *

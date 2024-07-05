@@ -1,7 +1,7 @@
 @import "@styles/variables.scss";
 
 .selectInputCustom {
-    height: 2.75rem !important;
+    height: 3rem !important;
     margin-bottom: 1rem;
     background-color: $background;
     border-radius: 0.25rem;
@@ -10,18 +10,31 @@
     .ant-select-selector {
         font-size: 1rem !important;
 
+        .ant-select-selection-item {
+            font-weight: 300;
+        }
+
         .ant-select-selection-placeholder {
-            color: $dark-gray !important;
+            color: $dark-gray;
         }
     }
 }
 .selectInputError {
+    width: 100%;
     border: 1px dashed red;
-    height: 2.9rem !important;
+    height: 3rem !important;
     margin-bottom: 0.2rem;
     background-color: $background;
     padding: 0.45rem;
     border-radius: 0.25rem;
+    font-weight: 300;
+
+    .ant-select-selector {
+        .ant-select-selection-placeholder {
+            color: $dark-gray;
+            font-size: 1rem;
+        }
+    }
 }
 
 .selectDrop {
@@ -34,5 +47,16 @@
         padding: 0.7rem !important;
         font-size: 1rem !important;
         font-size: 1rem;
+
+        &.-noHolding {
+            color: $gray;
+        }
     }
+}
+
+.inputTitle {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $gray;
+    margin-bottom: 0.25rem;
 }

@@ -9,10 +9,10 @@ export interface IChanel {
   CHANNEL_NAME: string;
   PROJECT_ID: number;
   IS_DELETED: number;
-  CHANNEL_LINES: ChannelLine[];
+  CHANNEL_LINES: Line[];
 }
 
-export interface ChannelLine {
+export interface Line {
   id: number;
   sublines: Subline[];
   description: string;
@@ -21,4 +21,10 @@ export interface ChannelLine {
 export interface Subline {
   id: number;
   description: string;
+}
+
+export interface ISelectedBussinessRules {
+  channels: number[];
+  lines: number[];
+  sublines: number[];
 }

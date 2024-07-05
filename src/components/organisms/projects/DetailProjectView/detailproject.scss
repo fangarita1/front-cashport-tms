@@ -1,4 +1,4 @@
-@import "../../../../styles/variables.scss";
+@import "@styles/variables.scss";
 
 .mainDetailProject {
     width: 100%;
@@ -25,23 +25,24 @@
     .rutesText {
         color: $secondary-gray;
         font-weight: 600;
-        cursor:pointer;
+        cursor: pointer;
     }
 
     .containerDetailProject {
         width: 100%;
+        height: 100%;
         padding: 3rem;
         padding-top: 2rem;
+
         .titleName {
-					margin: auto;
-					font-weight: 600;
-					width: 398px;
-					height: 32px;
-					color: #141414;
-					line-height: 124%;
-					font-style: normal;
-					font-size: 24px;
-						
+            margin: auto;
+            font-weight: 600;
+            width: 398px;
+            height: 32px;
+            color: #141414;
+            line-height: 124%;
+            font-style: normal;
+            font-size: 24px;
         }
 
         .subtitleNit {
@@ -63,11 +64,11 @@
 
     .tabsContainer {
         width: 100%;
-        height: 90%;
         padding-left: 1.5rem;
         border-radius: 0.5rem;
         background-color: $white;
-        .ant-tabs-content,.ant-tabs-tabpane {
+        .ant-tabs-content,
+        .ant-tabs-tabpane {
             height: 100%;
         }
     }
