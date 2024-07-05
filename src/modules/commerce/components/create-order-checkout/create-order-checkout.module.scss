@@ -1,0 +1,97 @@
+@import "@/styles/variables.scss";
+
+.checkoutContainer {
+    display: flex;
+    flex-direction: column;
+    // justify-content: space-between;
+    width: 100%;
+    background-color: $white;
+    padding: 1.625rem 1.5rem;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    border-radius: 1rem;
+    border: 1px solid $dark-gray;
+
+    .buttonGoBack {
+        display: flex;
+        justify-content: center;
+        width: fit-content;
+        padding: 0;
+        color: black;
+        box-shadow: none;
+        padding: 0.5rem;
+        padding-left: 0;
+
+        &:hover {
+            opacity: 0.8;
+            color: black;
+        }
+    }
+
+    .title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+
+        .shippingInfo {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+
+            .textArea {
+                grid-column: 1 / span 2;
+
+                &__label {
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    color: $gray;
+                    margin-bottom: 0.25rem;
+                }
+
+                textarea {
+                    background-color: $background;
+                    border: none;
+                    border-radius: 0.25rem;
+                    padding: 0.875rem 1rem;
+                    width: 100%;
+                    min-height: 6rem;
+                    resize: none;
+                    font-family: inherit;
+                    font-size: 1rem;
+                }
+            }
+        }
+
+        .discounts {
+            &__title {
+                font-size: 1.5rem;
+                font-weight: 700;
+            }
+
+            .radioGroup {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+                margin-top: 1rem;
+
+                &__item {
+                    border: 2px solid $dark-gray;
+                    border-radius: 8px;
+                    padding: 16px;
+                    margin: 0;
+
+                    &__label {
+                        font-size: 0.875rem;
+                        font-weight: 700;
+                    }
+                }
+            }
+        }
+    }
+}

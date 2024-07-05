@@ -1,12 +1,11 @@
 import { Dispatch, FC, SetStateAction, useState } from "react";
+import { Radio, RadioChangeEvent } from "antd";
 import { WarningDiamond, X } from "@phosphor-icons/react";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
-import { Radio, RadioChangeEvent } from "antd";
+import InputRadioRightSide from "@/components/ui/input-radio-right-side";
 
 import styles from "./create-order-discounts-modal.module.scss";
 
-import "./test.scss";
-import InputRadioRightSide from "@/components/ui/input-radio-right-side";
 export interface CreateOrderDiscountsModalProps {
   setOpenDiscountsModal: Dispatch<SetStateAction<boolean>>;
 }

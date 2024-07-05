@@ -14,7 +14,7 @@ export interface selectClientForm {
 
 const CreateOrderCart: FC = ({}) => {
   const [openDiscountsModal, setOpenDiscountsModal] = useState(false);
-  const { selectedProducts } = useContext(OrderViewContext);
+  const { selectedProducts, checkingOut, setCheckingOut } = useContext(OrderViewContext);
 
   const numberOfSelectedProducts = selectedProducts.reduce(
     (acc, category) => acc + category.products.length,
@@ -22,8 +22,11 @@ const CreateOrderCart: FC = ({}) => {
   );
 
   const handleOpenDiscountsModal = () => {
-    console.log("Open discounts modal");
     setOpenDiscountsModal(true);
+  };
+
+  const handleContinuePurchase = () => {
+    setCheckingOut(true);
   };
 
   return (
@@ -66,12 +69,17 @@ const CreateOrderCart: FC = ({}) => {
 
       {selectedProducts.length > 0 && (
         <div className={styles.cartContainer__footer}>
-          <button
-            className={styles.discountsButton}
-            data-info="Ver todos los descuentos"
-            onClick={handleOpenDiscountsModal}
-          ></button>
-          <hr className={styles.separator} />
+          {!checkingOut && (
+            <>
+              <button
+                className={styles.discountsButton}
+                data-info="Ver todos los descuentos"
+                onClick={handleOpenDiscountsModal}
+              ></button>
+              <hr className={styles.separator} />
+            </>
+          )}
+
           <Flex vertical gap={"0.25rem"}>
             <Flex justify="space-between">
               <p>Subtotal</p>
@@ -82,12 +90,22 @@ const CreateOrderCart: FC = ({}) => {
               <p>$XXXXX</p>
             </Flex>
             <Flex justify="space-between">
+              <p>Descuentos</p>
+              <p>-$XXXXX</p>
+            </Flex>
+            <Flex justify="space-between">
               <strong>Total</strong>
               <strong>$XXXXX</strong>
             </Flex>
+            <Flex justify="space-between">
+              <p>Total con pronto pago</p>
+              <p>$XXXXX</p>
+            </Flex>
           </Flex>
 
-          <PrincipalButton>Continuar compra</PrincipalButton>
+          {!checkingOut && (
+            <PrincipalButton onClick={handleContinuePurchase}>Continuar compra</PrincipalButton>
+          )}
         </div>
       )}
 

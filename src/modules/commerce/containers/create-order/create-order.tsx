@@ -3,6 +3,7 @@ import SearchClient from "../../components/create-order-search-client/create-ord
 import CreateOrderMarket from "../../components/create-order-market";
 import CreateOrderCart from "../../components/create-order-cart";
 import styles from "./create-order.module.scss";
+import CreateOrderCheckout from "../../components/create-order-checkout";
 
 export interface ISelectedProduct {
   id: number;
@@ -31,6 +32,8 @@ interface IOrderViewContext {
   }>;
   selectedProducts: ISelectedProducts[];
   setSelectedProducts: Dispatch<ISelectedProducts[]>;
+  checkingOut: boolean;
+  setCheckingOut: Dispatch<boolean>;
 }
 
 export const OrderViewContext = createContext<IOrderViewContext>({} as IOrderViewContext);
@@ -38,16 +41,26 @@ export const OrderViewContext = createContext<IOrderViewContext>({} as IOrderVie
 export const CreateOrderView: FC = () => {
   const [client, setClient] = useState({} as IOrderViewContext["client"]);
   const [selectedProducts, setSelectedProducts] = useState<ISelectedProducts[]>([]);
+  const [checkingOut, setCheckingOut] = useState(false);
 
   return (
-    <OrderViewContext.Provider value={{ client, setClient, selectedProducts, setSelectedProducts }}>
+    <OrderViewContext.Provider
+      value={{
+        client,
+        setClient,
+        selectedProducts,
+        setSelectedProducts,
+        checkingOut,
+        setCheckingOut
+      }}
+    >
       <div className={styles.ordersView}>
         <h2 className={styles.title}>Crear orden</h2>
         {!client?.name ? (
           <SearchClient />
         ) : (
           <div className={styles.marketView}>
-            <CreateOrderMarket />
+            {checkingOut ? <CreateOrderCheckout /> : <CreateOrderMarket />}
             <CreateOrderCart />
           </div>
         )}

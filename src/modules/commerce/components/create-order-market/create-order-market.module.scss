@@ -19,22 +19,13 @@
         padding: 0;
         color: black;
         box-shadow: none;
+        padding: 0.5rem;
+        padding-left: 0;
 
         &:hover {
             opacity: 0.8;
             color: black;
         }
-    }
-
-    &__title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: $black;
-        margin-bottom: 1.5rem;
-    }
-
-    .header {
-        height: 48px;
     }
 
     .productsGrid {
