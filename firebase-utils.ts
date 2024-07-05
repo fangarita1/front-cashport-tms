@@ -20,7 +20,6 @@ const getAuth = async (
             Authorization: `Bearer ${await userCred.user.getIdToken()}`
           }
         }).then((response) => {
-          console.log({ response });
           localStorage.setItem(STORAGE_TOKEN, token);
           if (response.status === 200) {
             router.push("/");
@@ -28,7 +27,6 @@ const getAuth = async (
         });
       })
       .catch((error) => {
-        console.log({ error });
         alert(`Sign up failed: ${error.message} - ${error.code}`);
       });
   } else {
@@ -49,7 +47,7 @@ const getAuth = async (
         });
       })
       .catch((error) => {
-        console.log({ error });
+        console.error({ error });
         openNotification();
       });
   }
