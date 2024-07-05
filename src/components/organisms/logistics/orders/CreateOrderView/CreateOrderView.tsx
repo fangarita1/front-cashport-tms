@@ -123,25 +123,25 @@ export const CreateOrderView = () => {
   };
 
   /* Event Handlers */
-  const onCreateProject = async (data: ICreatePayload) => {
-    console.log("DATA PARA POST: ", data);
-    if (!data.logo) return;
-    try {
-      const response = await addProject(data);
-      if (response.status === CREATED) {
-        messageApi.open({
-          type: "success",
-          content: "El proyecto fue creado exitosamente."
-        });
-        push("/");
-      }
-    } catch (error) {
-      messageApi.open({
-        type: "error",
-        content: "Oops, hubo un error por favor intenta mas tarde."
-      });
-    }
-  };
+  // const onCreateProject = async (data: ICreatePayload) => {
+  //   console.log("DATA PARA POST: ", data);
+  //   if (!data.logo) return;
+  //   try {
+  //     const response = await addProject(data);
+  //     if (response.status === CREATED) {
+  //       messageApi.open({
+  //         type: "success",
+  //         content: "El proyecto fue creado exitosamente."
+  //       });
+  //       push("/");
+  //     }
+  //   } catch (error) {
+  //     messageApi.open({
+  //       type: "error",
+  //       content: "Oops, hubo un error por favor intenta mas tarde."
+  //     });
+  //   }
+  // };
 
   // Cambia origen 
   const onChangeOrigin = (value:any) =>{
@@ -149,7 +149,7 @@ export const CreateOrderView = () => {
     locations.forEach(async (item, index) => {
       if(item.id == value){
         console.log(item);
-        origin.current = [item.latitude, item.longitude];
+        origin.current = [item.longitude, item.latitude];
         calcRouteDirection();
       }
     });
@@ -161,7 +161,7 @@ export const CreateOrderView = () => {
     locations.forEach(async (item, index) => {
       if(item.id == value){
         console.log(item);
-        destination.current = [item.latitude, item.longitude];
+        destination.current = [item.longitude, item.latitude];
         calcRouteDirection();
       }
     });

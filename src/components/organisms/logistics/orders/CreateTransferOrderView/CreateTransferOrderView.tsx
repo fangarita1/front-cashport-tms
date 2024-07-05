@@ -127,25 +127,25 @@ export const CreateTransferOrderView = () => {
   };
 
   /* Event Handlers */
-  const onCreateProject = async (data: ICreatePayload) => {
-    console.log("DATA PARA POST: ", data);
-    if (!data.logo) return;
-    try {
-      const response = await addProject(data);
-      if (response.status === CREATED) {
-        messageApi.open({
-          type: "success",
-          content: "El proyecto fue creado exitosamente."
-        });
-        push("/");
-      }
-    } catch (error) {
-      messageApi.open({
-        type: "error",
-        content: "Oops, hubo un error por favor intenta mas tarde."
-      });
-    }
-  };
+  // const onCreateProject = async (data: ICreatePayload) => {
+  //   console.log("DATA PARA POST: ", data);
+  //   if (!data.logo) return;
+  //   try {
+  //     const response = await addProject(data);
+  //     if (response.status === CREATED) {
+  //       messageApi.open({
+  //         type: "success",
+  //         content: "El proyecto fue creado exitosamente."
+  //       });
+  //       push("/");
+  //     }
+  //   } catch (error) {
+  //     messageApi.open({
+  //       type: "error",
+  //       content: "Oops, hubo un error por favor intenta mas tarde."
+  //     });
+  //   }
+  // };
 
   // Cambia origen 
   const onChangeOrigin = (value:any) =>{
