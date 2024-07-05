@@ -25,6 +25,15 @@
         color: white;
         font-size: 1.1rem;
         margin: 1.2rem;
+        border-radius: 0;
+        &::placeholder {
+            color: #fff !important;
+        }
+    }
+    .ant-input {
+        &::placeholder {
+            color: #fff !important;
+        }
     }
 
     .buttonContainer {
