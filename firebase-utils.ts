@@ -42,7 +42,6 @@ const getAuth = async (
             tokenExm: `${JSON.stringify(userCred)}`
           }
         }).then((response) => {
-          console.log({ response });
           localStorage.setItem(STORAGE_TOKEN, token);
           if (response.status === 200) {
             router.push("/");
