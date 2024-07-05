@@ -825,6 +825,9 @@ export interface IMaterial {
   modified_by?: string | null
   icon: string
   restriction?: string | null
+  type_description: string
+  key: number
+  quantity: number
 }
 
 /**

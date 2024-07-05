@@ -3,10 +3,11 @@
 body {
   margin: 0;
   line-height: normal;
+  font-family: var(--font-poppins) !important;
 }
 :root {
   /* fonts */
-  --font-poppins: Poppins;
+  --font-poppins: Poppins, '__Poppins_Fallback_9d9b8c', '__Poppins_Fallback_Fallback_9d9b8c';
   --font-causten-round: "Causten Round";
 
   /* font sizes */

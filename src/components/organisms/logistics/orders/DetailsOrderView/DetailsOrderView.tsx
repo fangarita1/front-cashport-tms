@@ -1,4 +1,4 @@
-import { Flex, Tabs, TabsProps, Typography, message, Collapse, Row, Col, Select, Switch, DatePicker, DatePickerProps, GetProps, TimePicker, Table, TableProps,AutoComplete, Input, ConfigProvider, InputNumber, Button, SelectProps, Popconfirm } from "antd";
+import { Flex, Tabs, TabsProps, Typography, message, Collapse, Row, Col, Select, Switch, DatePicker, DatePickerProps, GetProps, TimePicker, Table, TableProps,AutoComplete, Input, ConfigProvider, InputNumber, Button, Steps } from "antd";
 import React, { useRef, useEffect, useState, useContext } from "react";
 
 // dayjs locale
@@ -20,13 +20,10 @@ import { ProjectFormTab } from "@/components/molecules/tabs/Projects/ProjectForm
 import { addProject } from "@/services/projects/projects";
 
 //schemas
-import { IListData, ILocation, IMaterial } from "@/types/logistics/schema";
+import { IListData, ILocation } from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
-
-//materials
-import { getSearchMaterials } from "@/services/logistics/materials";
 
 //interfaces
 import { ICreatePayload } from "@/types/projects/IProjects";
@@ -39,21 +36,22 @@ import {
   Calendar,
   Package,
   UserList,
-  NewspaperClipping,
-  Trash,
-  CaretLeft,
-  CaretRight
+  NewspaperClipping
 } from "@phosphor-icons/react";
 
 import "../../../../../styles/_variables_logistics.css";
 
-import "./createorder.scss";
+import "./detailsorder.scss";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import TextArea from "antd/es/input/TextArea";
+import TabPane from "antd/es/tabs/TabPane";
 
+interface Props {
+    id: string;
+  }
 const { Title, Text } = Typography;
 
-export const CreateOrderView = () => {
+export const DetailsOrderView = ({ id = "" }: Props) => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -107,7 +105,7 @@ export const CreateOrderView = () => {
     if(locations.length >0 ) return;
     const result = await getAllLocations();
     if(result.data.data.length > 0){
-      //console.log(result.data.data);
+      console.log(result.data.data);
       
       const listlocations: any[] | ((prevState: ILocation[]) => ILocation[]) = [];
       const listlocationoptions: { label: any; value: any; }[] = [];
@@ -336,68 +334,51 @@ export const CreateOrderView = () => {
 
   /* Carga */
   
-  const columnsCarga : TableProps<IMaterial>['columns'] = [
-    {
-      title: 'key',
-      dataIndex: 'key',
-      key: 'key',
-    },
+  const columnsCarga = [
     {
       title: 'Cantidad',
-      dataIndex: 'quantity',
-      key: 'quantity',
-      render: (_, record) =>
-        dataCarga.length >= 1 ? (
-          <>
-          <CaretLeft onClick={() => handleQuantityMaterial(record.key,'-')}/>&nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;<CaretRight onClick={() => handleQuantityMaterial(record.key,'+')}/>
-          </>
-        ) : null,
+      dataIndex: 'name',
+      key: 'name',
     },
     {
       title: 'SKU',
-      dataIndex: 'sku',
-      key: 'sku',
+      dataIndex: 'age',
+      key: 'age',
     },
     {
       title: 'Nombre',
-      dataIndex: 'description',
-      key: 'description',
+      dataIndex: 'address',
+      key: 'address',
     },
     {
       title: 'Volumen',
-      dataIndex: 'm3_volume',
-      key: 'm3_volume',
+      dataIndex: 'address',
+      key: 'address',
     },
     {
       title: 'Alto',
-      dataIndex: 'mt_height',
-      key: 'mt_height',
+      dataIndex: 'address',
+      key: 'address',
     },
     {
       title: 'Ancho',
-      dataIndex: 'mt_width',
-      key: 'mt_width',
+      dataIndex: 'address',
+      key: 'address',
     },
     {
       title: 'Largo',
-      dataIndex: 'mt_length',
-      key: 'mt_length',
+      dataIndex: 'address',
+      key: 'address',
     },
     {
       title: 'Peso',
-      dataIndex: 'kg_weight',
-      key: 'kg_weight',
+      dataIndex: 'address',
+      key: 'address',
     },
     {
-      title: '',
-      dataIndex: 'alerts',
-      key: 'alerts',
-      render: (_, record) =>
-        dataCarga.length >= 1 ? (
-          <Popconfirm title="Esta seguro de eliminar?" onConfirm={() => handleDeleteMaterial(record.key)}>
-            <Trash/>
-          </Popconfirm>
-        ) : null,
+      title: 'Alertas',
+      dataIndex: 'address',
+      key: 'address',
     },
   ];
 
@@ -437,87 +418,6 @@ export const CreateOrderView = () => {
     },
   ];
 
-  const [optionsMaterial, setOptionsMaterial] = useState<SelectProps<object>['options']>([]);
-  const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
-  let cargaIdx = 0;
-
-  const searchResultMaterial = async (query: string) => {
-    const res = await (getSearchMaterials(query));
-    const result:any = [];
-    //console.log (res);
-    if(res.data.data.length > 0){
-      res.data.data.forEach((item) => {
-        const strlabel = <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                          }}
-                        >
-                          <span>
-                              {item.type_description} - {item.description}
-                              <br></br>
-                              Volumen {item.kg_weight} m3 - Peso {item.m3_volume} Kg
-                          </span>
-                          <span>
-                            <button className="btnagregar active" onClick={() => addMaterial(item)}>Agregar</button>
-                          </span>
-                        </div>;
-
-        result.push({value:item.description, label: strlabel})
-      });      
-    }
-
-    return result;
-  }     
-
-  const addMaterial = async (value:any) =>{
-    cargaIdx = cargaIdx + 1;
-    
-    value.quantity = 1;
-    value.key = cargaIdx;
-
-    const newvalue : IMaterial = value;
-    console.log(newvalue);
-    await setDataCarga(dataCarga => [...dataCarga, newvalue]);
-  };
-
-  const handleSearchMaterial = async (value: string) => {
-    if(value.length > 3){
-      const result =  await searchResultMaterial(value);
-      setOptionsMaterial(result);
-    }
-  };
-
-  const onSelectMaterial = (value: string) => {
-    console.log('onSelect', value);
-  };
-
-  const handleDeleteMaterial = (key: React.Key) => {
-    console.log(key)
-    cargaIdx = cargaIdx - 1;
-    const newData = dataCarga.filter((item) => item.key !== key);
-    setDataCarga(newData);
-  };
-
-  const handleQuantityMaterial = (key: React.Key, sign: string) => {
-    console.log(key)
-    const newData = [...dataCarga];
-    newData.forEach(item => {
-      if(item.key === key){
-        if(sign=='+'){
-          item.quantity = item.quantity + 1;
-        }
-        if(sign=='-'){
-          item.quantity = item.quantity - 1;
-          if(item.quantity <0) item.quantity = 0;
-        }
-      }
-    });    
-    
-    setDataCarga(newData);
-  };
-
-
   /* Responsables */
 
   /* informacion adicional */
@@ -528,9 +428,9 @@ export const CreateOrderView = () => {
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
 
   const mockFiles = [
-    { id: 1, key:1, title: "archivo 1", isMandatory: true },
-    { id: 2, key:2, title: "archivo 2", isMandatory: true },
-    { id: 3, key:3, title: "archivo 3", isMandatory: false },
+    { id: 1, title: "archivo 1", isMandatory: true },
+    { id: 2, title: "archivo 2", isMandatory: true },
+    { id: 3, title: "archivo 3", isMandatory: false },
   ];
 
   const columnsRequerimientosAdicionales = [
@@ -733,26 +633,23 @@ export const CreateOrderView = () => {
             { (typeactive == "1" || typeactive == "2") &&
               <>
               <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                Material
+              <text>Material</text>
               </label><p>&nbsp;</p>
               <AutoComplete
                 popupClassName="certain-category-search-dropdown"
                 popupMatchSelectWidth={500}
                 style={{ width: 250 }}
                 size="large"
-                options={optionsMaterial}
-                onSelect={onSelectMaterial}
-                onSearch={handleSearchMaterial}
               >
-                <Input.Search size="large" placeholder="Buscar material" enterButton />
+                <Input.Search size="large" placeholder="Buscar material" />
               </AutoComplete>
-              <Table columns={columnsCarga} dataSource={dataCarga} />
+              <Table columns={columnsCarga} />
               </>
             }
             { typeactive == "3" &&
               <>
               <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                Personas
+              <text>Personas</text>
               </label><p>&nbsp;</p>
               <AutoComplete
                 popupClassName="certain-category-search-dropdown"
@@ -767,7 +664,7 @@ export const CreateOrderView = () => {
             }            
               <>
               <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                Vehículo Sugerido
+              <text>Vehículo Sugerido</text>
               </label><p>&nbsp;</p>
               <AutoComplete
                 popupClassName="certain-category-search-dropdown"
@@ -883,7 +780,7 @@ export const CreateOrderView = () => {
           <Row className="mainUploadDocuments">
             {mockFiles.map((file) => (
               // eslint-disable-next-line react/jsx-key
-              <Col span={12} style={{padding:'15px'}} key={file.key}>
+              <Col span={8} style={{padding:'15px'}}>
                 <UploadDocumentButton
                   key={file.id}
                   title={file.title}
@@ -976,6 +873,24 @@ export const CreateOrderView = () => {
     },
   ];
 
+  const tabitems: TabsProps['items'] = [
+    {
+      key: '1',
+      label: 'Tab 1',
+      children: 'Content of Tab Pane 1',
+    },
+    {
+      key: '2',
+      label: 'Tab 2',
+      children: 'Content of Tab Pane 2',
+    },
+    {
+      key: '3',
+      label: 'Tab 3',
+      children: 'Content of Tab Pane 3',
+    },
+  ];
+
   return (
     <>
       {contextHolder}
@@ -985,7 +900,7 @@ export const CreateOrderView = () => {
           <Flex className="infoHeaderOrder">
             <Flex gap={"2rem"}>
               <Title level={2} className="titleName">
-                Crear Nuevo Viaje
+                Asignación de ordenes
               </Title>
             </Flex>
             <Flex component={"navbar"} align="center" justify="space-between">
@@ -994,51 +909,53 @@ export const CreateOrderView = () => {
           </Flex>
           {/* ------------Main Info Order-------------- */}
           <Flex className="orderContainer">
-            <Row style={{width:'100%'}}>
-              <Col span={24} style={{marginBottom:'1.5rem'}}>
-                <Flex gap="middle">
-                  <button type="button" id={"1"} className={["tripTypes", (typeactive === "1" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
-                    <div className="tripTypeIcons">
-                      <img className="icon" loading="lazy" alt="" src="/images/logistics/truck.svg"/>
-                      <div className="text">Carga</div>
-                    </div>
-                  </button>
-                  <button type="button" id={"2"} className={["tripTypes", (typeactive === "2" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
-                    <div className="tripTypeIcons">
-                      <img className="icon" loading="lazy" alt="" src="/images/logistics/izaje.svg"/>
-                      <div className="text">Izaje</div>
-                    </div>
-                  </button>
-                  <button type="button" id={"3"} className={["tripTypes", (typeactive === "3" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
-                    <div className="tripTypeIcons">
-                      <img className="icon" loading="lazy" alt="" src="/images/logistics/users.svg"/>
-                      <div className="text">Personal</div>
-                    </div>
-                  </button>
-                </Flex>
-              </Col>
+          <Row style={{width:'100%'}}>
 
-              <Col span={24}>
-                <Collapse
-                className="collapseByAction"
-                expandIconPosition="end"
-                accordion={false}
-                ghost              
-                items={actionsOptions}
-                defaultActiveKey={['2']}
-                />            
-              </Col>
-              <Col span={6} offset={18} className="text-right" style={{marginTop:'2rem', marginBottom:'2rem'}}>
-                <Flex gap="middle" align="flex-end">
-                  <Button type="primary">
-                    Guardar como drfat
-                  </Button>
-                  <Button disabled >
-                    Siguiente
-                  </Button>
-                </Flex>
-              </Col>
-            </Row>
+<Col span={24} style={{marginBottom:'1.5rem'}}>
+    <Flex gap="middle">
+    <button type="button" id={"1"} className={["tripTypes", (typeactive === "1" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
+        <div className="tripTypeIcons">
+        <img className="icon" loading="lazy" alt="" src="/images/logistics/truck.svg"/>
+        <div className="text">Carga</div>
+        </div>
+    </button>
+    <button type="button" id={"2"} className={["tripTypes", (typeactive === "2" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
+        <div className="tripTypeIcons">
+        <img className="icon" loading="lazy" alt="" src="/images/logistics/izaje.svg"/>
+        <div className="text">Izaje</div>
+        </div>
+    </button>
+    <button type="button" id={"3"} className={["tripTypes", (typeactive === "3" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
+        <div className="tripTypeIcons">
+        <img className="icon" loading="lazy" alt="" src="/images/logistics/users.svg"/>
+        <div className="text">Personal</div>
+        </div>
+    </button>
+    </Flex>
+</Col>
+
+<Col span={24}>
+    <Collapse
+    className="collapseByAction"
+    expandIconPosition="end"
+    accordion={false}
+    ghost              
+    items={actionsOptions}
+    defaultActiveKey={['2']}
+    />            
+</Col>
+<Col span={6} offset={18} className="text-right" style={{marginTop:'2rem', marginBottom:'2rem'}}>
+    <Flex gap="middle" align="flex-end">
+    <Button type="primary">
+        Guardar como drfat
+    </Button>
+    <Button disabled >
+        Siguiente
+    </Button>
+    </Flex>
+</Col>
+</Row>
+
           </Flex>
         </Flex>
       </main>

@@ -134,6 +134,9 @@
 }
 
 /* TRIP SELECTION TYPE*/
+.active {
+    background-color: var(--green) !important;
+  }
 
 .icon {
     width: 27px;
@@ -165,7 +168,7 @@
     box-sizing: border-box;
     overflow-y: auto;
     padding: var(--padding-5xs) var(--padding-xl);
-    min-width: 262px;
+    //min-width: 262px;
     max-width: 100%;
     text-align: left;
     font-size: var(--font-size-base);
@@ -174,9 +177,7 @@
     cursor: pointer;
   }
 
-  .active {
-    background-color: var(--green);
-  }
+
   
  /*Agendamiento*/
  .locationLabels {
@@ -214,9 +215,44 @@
 .text-right{
     text-align: right;
 }
-.btnagregar{
-    padding: 8px;
-    border: none;
-    border-radius: 5px;
-    margin-top: 8px;
+
+.ant-drawer .ant-drawer-content{
+    background-color: #f7f7f7 !important;
+}
+
+.ant-card-body{
+    padding: 15px !important;
+}
+
+.carddivider{
+    margin-left: 2rem;
+    border-left: 2px #DDDDDD solid;
+    height: 40px;
+}
+
+.form-wizard-steps{
+    display: none !important;
+}
+
+.wizard-footer-right{
+    background-color: var(--green) !important;
+}
+
+.wizard-footer-left{
+    background-color: var(--black) !important;
+}
+
+.wizard-progress-bar{
+    background-color: var(--green) !important;
+}
+.react-form-wizard .wizard-tab-content{
+    text-align: left !important;
+    padding-bottom: 25px !important;
+    min-height: 250px !important;
+}
+.collapseByAction__label__text{
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    font-weight: bold !important;
+    line-height: 2rem !important;
 }
