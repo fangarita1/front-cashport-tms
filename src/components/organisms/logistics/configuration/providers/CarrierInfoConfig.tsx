@@ -34,7 +34,7 @@ export const CarrierInfoConfigView = () => {
   const [routeInfo, setRouteInfo] = useState([]);
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationOptions, setLocationOptions] = useState<any>([]);
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(3);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);

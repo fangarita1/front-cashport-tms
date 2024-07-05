@@ -99,7 +99,7 @@ export const CreateGeneralView = () => {
                 >
                   <Tab className={"tab"} value={0} label="General" href="/logistics/providers/all" />
                   <Tab className={"tab"} value={1} label="Vehiculo" href="/logistics/vehicles/all" />
-                  <Tab className={"tab"} value={2} label="Conductor" href="/spam" />
+                  <Tab className={"tab"} value={2} label="Conductor" href="/logistics/drivers/all" />
                 </Tabs2>
               </Col>
               <CarrierTable></CarrierTable>
