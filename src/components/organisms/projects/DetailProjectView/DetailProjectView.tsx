@@ -176,11 +176,9 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
                     <Skeleton.Input size="large" />
                   </>
                 ) : (
-                  <>
-                    <Title level={1} className="titleName">
-                      {data.PROJECT_DESCRIPTION ?? ""}
-                    </Title>
-                  </>
+                  <Title level={1} className="titleName">
+                    {data.PROJECT_DESCRIPTION ?? ""}
+                  </Title>
                 )}
               </Flex>
             </Flex>
