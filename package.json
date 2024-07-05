@@ -17,9 +17,12 @@
   "dependencies": {
     "@ant-design/cssinjs": "^1.18.4",
     "@ant-design/nextjs-registry": "^1.0.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@firebase/auth": "^1.6.0",
     "@hookform/resolvers": "^3.3.4",
     "@mapbox/mapbox-sdk": "^0.16.0",
+    "@mui/material": "^5.15.21",
     "@next/font": "^14.1.0",
     "@phosphor-icons/react": "^2.1.5",
     "@types/mapbox__mapbox-sdk": "^0.14.0",

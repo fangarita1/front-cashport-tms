@@ -747,6 +747,38 @@ export interface ILocation {
   modified_by?: string | null
 }
 
+export interface IDriver {
+    id: number;
+    phone: number;
+    email: string;
+    document_type: number;
+    document: string;
+    license: string;
+    license_categorie: string;
+    license_expiration: Date;
+    name: string;
+    last_name: string;
+    emergency_number: number;
+    emergency_contact: string;
+    firebaseguid?: string;
+    active: boolean;
+    created_at: Date
+    created_by: string
+    modified_at?: Date | null
+    modified_by?: string | null
+}
+
+export interface ICarrier {
+  id: number;
+  description: string;
+  nit: string;
+  icon: string;
+  active: boolean;
+  created_at: Date
+  created_by: string
+  modified_at?: Date | null
+  modified_by?: string | null
+}
 /**
  * Exposes the same fields as Location,
  * but makes every field containing a DEFAULT value optional.
