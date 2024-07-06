@@ -1,4 +1,5 @@
 import { FC, useContext, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button, Flex, Radio, RadioChangeEvent } from "antd";
 import { CaretLeft } from "phosphor-react";
 import { OrderViewContext } from "../../containers/create-order/create-order";
@@ -22,6 +23,8 @@ interface IShippingInfoForm {
 const CreateOrderCheckout: FC = ({}) => {
   const { setCheckingOut } = useContext(OrderViewContext);
   const [radioValue, setRadioValue] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const {
     control,
@@ -52,6 +55,13 @@ const CreateOrderCheckout: FC = ({}) => {
 
   const onSubmitFinishOrder = (data: IShippingInfoForm) => {
     console.log("Finalizar orden: ", data);
+
+    setLoading(true);
+    setTimeout(() => {
+      const orderId = 45666;
+      router.push(`/comercio/pedidoConfirmado/${orderId}`);
+      setLoading(false);
+    }, 1000);
   };
 
   return (
@@ -154,6 +164,7 @@ const CreateOrderCheckout: FC = ({}) => {
             onClick={handleSubmit(onSubmitSaveDraft)}
             fullWidth
             disabled={!isValid}
+            loading={loading}
           >
             Guardar borrador
           </AlternativeBlackButton>
@@ -161,6 +172,7 @@ const CreateOrderCheckout: FC = ({}) => {
             onClick={handleSubmit(onSubmitFinishOrder)}
             fullWidth
             disabled={!isValid}
+            loading={loading}
           >
             Finalizar pedido
           </PrincipalButton>

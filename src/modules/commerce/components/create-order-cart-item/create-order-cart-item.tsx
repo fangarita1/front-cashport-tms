@@ -17,10 +17,9 @@ export interface CreateOrderItemProps {
     category_id: number;
   };
   categoryName: string;
-  finishedOrder?: boolean;
 }
 
-const CreateOrderItem: FC<CreateOrderItemProps> = ({ product, categoryName, finishedOrder }) => {
+const CreateOrderItem: FC<CreateOrderItemProps> = ({ product, categoryName }) => {
   const {
     alreadySelectedProduct,
     handleDecrementQuantity,
@@ -43,31 +42,27 @@ const CreateOrderItem: FC<CreateOrderItemProps> = ({ product, categoryName, fini
 
       <h5 className={styles.price}>{formatMoney(product.price)}</h5>
 
-      {finishedOrder ? (
-        <p className={styles.finalQuantity}>{alreadySelectedProduct?.quantity} Uds</p>
-      ) : (
-        <div className={styles.quantityFooter}>
-          <Button
-            className={styles.buttonChangeQuantity}
-            onClick={() => handleDecrementQuantity(product.id)}
-          >
-            {alreadySelectedProduct?.quantity === 1 ? <Trash size={14} /> : <Minus size={14} />}
-          </Button>
-          <input
-            key={alreadySelectedProduct ? alreadySelectedProduct.quantity : "default"}
-            type="number"
-            className={styles.quantityInput}
-            defaultValue={alreadySelectedProduct ? alreadySelectedProduct.quantity : undefined}
-            onBlur={(e) => handleChangeQuantity(e, product.id, product.category_id)}
-          />
-          <Button
-            className={styles.buttonChangeQuantity}
-            onClick={() => handleIncrementQuantity(product.id)}
-          >
-            <Plus size={14} />
-          </Button>
-        </div>
-      )}
+      <div className={styles.quantityFooter}>
+        <Button
+          className={styles.buttonChangeQuantity}
+          onClick={() => handleDecrementQuantity(product.id)}
+        >
+          {alreadySelectedProduct?.quantity === 1 ? <Trash size={14} /> : <Minus size={14} />}
+        </Button>
+        <input
+          key={alreadySelectedProduct ? alreadySelectedProduct.quantity : "default"}
+          type="number"
+          className={styles.quantityInput}
+          defaultValue={alreadySelectedProduct ? alreadySelectedProduct.quantity : undefined}
+          onBlur={(e) => handleChangeQuantity(e, product.id, product.category_id)}
+        />
+        <Button
+          className={styles.buttonChangeQuantity}
+          onClick={() => handleIncrementQuantity(product.id)}
+        >
+          <Plus size={14} />
+        </Button>
+      </div>
     </div>
   );
 };
