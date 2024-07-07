@@ -111,7 +111,6 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
             <div className={styles.description}>
               <div className={styles.stepperContainer}>
                 <div className={styles.stepperContent}>
-                  {/*  */}
                   {(invoiceData ?? []).map((item) => {
                     return (
                       <div key={item.id} className={styles.mainStep}>
