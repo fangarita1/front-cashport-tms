@@ -242,11 +242,15 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
       className={styles.wrapper}
       width="50%"
       open={isOpen}
-      footer={null}
+      footer={
+        <div className={styles.footer}>
+          {isSecondView ? secondViewModal.footer : firstViewModal.footer}
+        </div>
+      }
       closable={false}
       bodyStyle={{
-        height: !isSecondView ? "calc(90vh - 20px)" : "auto",
-        maxHeight: "calc(90vh - 20px)",
+        height: !isSecondView ? "calc(80vh - 20px)" : "auto",
+        maxHeight: "calc(80vh - 20px)",
         padding: 0,
         overflow: "hidden",
         display: "flex",
@@ -269,10 +273,6 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
         </p>
 
         <div>{isSecondView ? secondViewModal.innerContent : firstViewModal.innerContent}</div>
-
-        <div className={styles.footer}>
-          {isSecondView ? secondViewModal.footer : firstViewModal.footer}
-        </div>
       </div>
     </Modal>
   );

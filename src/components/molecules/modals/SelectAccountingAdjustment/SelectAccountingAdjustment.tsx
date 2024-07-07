@@ -61,7 +61,7 @@ export const SelectAccountingAdjustment = ({
       <p className="subTitleModalAction">{subtitleMap[type || 1]}</p>
       <div className="modalContentScroll">
         {isLoading ? (
-          <Spin />
+          <Spin size="large" style={{ margin: "auto" }} />
         ) : (
           dateSelect.map((item, index) => (
             <ItemsActionsModal

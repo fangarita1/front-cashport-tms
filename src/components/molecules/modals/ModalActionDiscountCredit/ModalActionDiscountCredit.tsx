@@ -58,7 +58,10 @@ export const ModalActionDiscountCredit = ({
       <Modal
         width={"40%"}
         open={isOpen}
-        style={{ top: "10%", height: "auto" }}
+        style={{ top: "5%" }}
+        bodyStyle={{
+          height: currentView === "select" ? "calc(80vh - 20px)" : "auto"
+        }}
         title={
           <Title level={4}>
             {(currentView === "create" && titleCreateMap[showActionDetailModal?.actionType || 1]) ||
@@ -75,59 +78,61 @@ export const ModalActionDiscountCredit = ({
               }
         }
       >
-        {currentView === "select" && (
-          <SelectAccountingAdjustment
-            type={showActionDetailModal.actionType}
-            selectedRows={selectedRows}
-            setSelectedRows={setSelectedRows}
-            onClose={onClose}
-            setCurrentView={setCurrentView}
-          />
-        )}
-        {currentView === "create" && (
-          <>
-            {showActionDetailModal.actionType === 1 && (
-              <CreateDebitNote
-                onClose={() => {
-                  setCurrentView("select");
-                }}
-                messageApi={messageApi}
-                clientIdParam={clientIdParam}
-                projectIdParam={projectIdParam}
-              />
-            )}
-            {showActionDetailModal.actionType === 2 && (
-              <CreateCreditNote
-                onClose={() => {
-                  setCurrentView("select");
-                }}
-                messageApi={messageApi}
-                clientIdParam={clientIdParam}
-                projectIdParam={projectIdParam}
-              />
-            )}
-            {showActionDetailModal.actionType === 3 && (
-              <CreateDiscount
-                onClose={() => {
-                  setCurrentView("select");
-                }}
-                messageApi={messageApi}
-                clientIdParam={clientIdParam}
-                projectIdParam={projectIdParam}
-              />
-            )}
-          </>
-        )}
-        {currentView === "apply" && (
-          <ApplyAccountingAdjustment
-            type={showActionDetailModal.actionType}
-            selectedRows={selectedRows}
-            setSelectedRows={setSelectedRows}
-            setCurrentView={setCurrentView}
-            invoiceSelected={invoiceSelected}
-            messageApi={messageApi}
-          />
-        )}
+        <div className="content_with_scroll">
+          {currentView === "select" && (
+            <SelectAccountingAdjustment
+              type={showActionDetailModal.actionType}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+              onClose={onClose}
+              setCurrentView={setCurrentView}
+            />
+          )}
+          {currentView === "create" && (
+            <>
+              {showActionDetailModal.actionType === 1 && (
+                <CreateDebitNote
+                  onClose={() => {
+                    setCurrentView("select");
+                  }}
+                  messageApi={messageApi}
+                  clientIdParam={clientIdParam}
+                  projectIdParam={projectIdParam}
+                />
+              )}
+              {showActionDetailModal.actionType === 2 && (
+                <CreateCreditNote
+                  onClose={() => {
+                    setCurrentView("select");
+                  }}
+                  messageApi={messageApi}
+                  clientIdParam={clientIdParam}
+                  projectIdParam={projectIdParam}
+                />
+              )}
+              {showActionDetailModal.actionType === 3 && (
+                <CreateDiscount
+                  onClose={() => {
+                    setCurrentView("select");
+                  }}
+                  messageApi={messageApi}
+                  clientIdParam={clientIdParam}
+                  projectIdParam={projectIdParam}
+                />
+              )}
+            </>
+          )}
+          {currentView === "apply" && (
+            <ApplyAccountingAdjustment
+              type={showActionDetailModal.actionType}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+              setCurrentView={setCurrentView}
+              invoiceSelected={invoiceSelected}
+              messageApi={messageApi}
+            />
+          )}
+        </div>
       </Modal>
     </>
   );
