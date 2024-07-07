@@ -1,6 +1,6 @@
 import { Flex } from "antd";
 import { Files, Money } from "phosphor-react";
-import { insertPeriodEveryThreeDigits } from "@/utils/utils";
+import { formatMoney, insertPeriodEveryThreeDigits } from "@/utils/utils";
 import styles from "./label-collapse.module.scss";
 
 interface PropsLabelCollapseInvoice {
@@ -39,12 +39,10 @@ const LabelCollapse = ({
       >
         {capitalizeFirstLetter(status)}
       </h5>
-      {total && (
+      {!!total && (
         <Flex className={styles.labelCollapse__total}>
           {removeIcons ? null : <Money size={16} className={styles.labelCollapse__total__icon} />}
-          <h5 className={styles.labelCollapse__total__title}>
-            ${insertPeriodEveryThreeDigits(total)}
-          </h5>
+          <h5 className={styles.labelCollapse__total__title}>{formatMoney(total)}</h5>
         </Flex>
       )}
       {quantity && (
