@@ -1,5 +1,6 @@
 import { AxiosHeaders } from "axios";
 import { Config } from "../users/IUser";
+import { IBillingPeriodForm } from "../billingPeriod/IBillingPeriod";
 
 export interface IClientAxios {
   data: IClientFullResponse;
@@ -20,12 +21,14 @@ interface IPosition {
   lon: string;
 }
 
-interface ILocation {
+export interface IClientLocation {
   id: number;
   nit: string;
-  city: string;
   address: string;
   position: IPosition;
+  city: number;
+  complement: string;
+  project_id: number;
 }
 
 interface IDocument {
@@ -49,11 +52,12 @@ export interface IClient {
   holding_id: number;
   holding_name: string;
   document_type: string;
-  locations: ILocation[];
+  locations: IClientLocation[];
   is_deleted: number;
   documents: IDocument[];
   ACTIVE: boolean;
   payment_condition: number;
+  billing_period_config: IBillingPeriodForm;
 }
 
 export interface Pagination {
@@ -95,12 +99,12 @@ export interface IUpdateClient {
   condition_payment?: number;
   document_type?: number;
   email?: string;
-  holding_id?: string;
+  holding_id?: number;
   locations: string;
   day_flag?: boolean;
   day?: number;
   order?: string;
-  day_of_week?: number;
+  day_of_week?: string;
   phone?: string;
   radication_type: number;
 }
@@ -108,19 +112,24 @@ export interface IUpdateClient {
 export type ClientFormType = {
   infoClient: {
     address: string;
-    document_type: string;
+    document_type: ISelectType;
     nit: string;
     client_name: string;
     business_name: string;
-    client_type: string;
-    holding_name: string;
+    client_type: string | number;
+    holding_id: ISelectType;
     phone: string;
     email: string;
     locations: any[];
-    city: string;
+    city: ISelectType;
     risk: string;
-    radication_type: string;
-    condition_payment: string;
+    radication_type: ISelectType;
+    condition_payment: ISelectType;
     billing_period: string;
   };
 };
+
+export interface ISelectType {
+  value: number;
+  label: string;
+}

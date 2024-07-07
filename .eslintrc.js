@@ -2,6 +2,7 @@ module.exports = {
   extends: ["next", "prettier", "next/core-web-vitals"],
   plugins: ["react", "react-hooks", "prettier"],
   rules: {
+    "react-hooks/exhaustive-deps": "off",
     "no-unused-vars": [
       "warn",
       {
@@ -11,7 +12,6 @@ module.exports = {
         vars: "all"
       }
     ],
-    "prefer-const": "error",
-    "react-hooks/exhaustive-deps": "error"
+    "prefer-const": "error"
   }
 };

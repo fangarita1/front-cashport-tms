@@ -55,8 +55,8 @@ export const ChannelBR = ({ isDisabledEdit, channel, setModalRemove }: Props) =>
 
   return (
     <>
-      {contextHolder}
       <Flex className="channelbr" vertical>
+      {contextHolder}
         {/* ---------------------------------start channel------------------------------- */}
         <Flex justify="space-between">
           <Text className="titleLineBR">{channel.CHANNEL_NAME}</Text>

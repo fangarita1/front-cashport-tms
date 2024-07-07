@@ -1,6 +1,7 @@
-@import '../../../styles/variables.scss';
+@import "@/styles/variables.scss";
 
 .divider {
     background: $dark-gray;
+    border: 0.0625rem solid $dark-gray;
     margin: 2.1rem 0 !important;
 }

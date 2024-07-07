@@ -1,0 +1,18 @@
+.filterCascader {
+    height: 100%;
+
+    .ant-select-selector {
+        border: 1px solid #141414 !important;
+        color: #141414;
+        font-size: 16px;
+        font-weight: 600;
+
+        .ant-select-selection-overflow {
+            flex-wrap: nowrap !important;
+        }
+    }
+
+    .ant-select-arrow {
+        color: #141414 !important;
+    }
+}

@@ -13,7 +13,7 @@ export const DotsDropdown = ({ items }: any) => {
       placement="bottomLeft"
       trigger={["click"]}
     >
-      <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
+      <Button className="dotsButton" size="large" icon={<DotsThree size={"1.8rem"} />} />
     </Dropdown>
   );
 };

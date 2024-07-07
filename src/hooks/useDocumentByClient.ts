@@ -1,16 +1,34 @@
 import useSWR from "swr";
 import { IDocumentsByClientId } from "@/types/documentsByClientId/IDocumentsByClientId";
-import { fetcher } from "@/utils/api/api";
+import { API } from "@/utils/api/api";
+import { useAppStore } from "@/lib/store/store";
+import {
+  addDocumentsClientType,
+  removeDocumentsClientType
+} from "@/services/clientTypes/clientTypes";
+import { MessageInstance } from "antd/es/message/interface";
 
 export const useDocumentByClient = (clientTypeId: number) => {
-  const { data, isLoading } = useSWR<IDocumentsByClientId>(
-    `/client/documents/bytype/${clientTypeId}`,
-    fetcher,
-    {}
+  const { ID } = useAppStore((state) => state.selectProject);
+  const { data, isLoading, mutate } = useSWR<IDocumentsByClientId>(
+    `/client/documents/bytype/${clientTypeId}/project/${ID}`,
+    API
   );
+
+  const addDocument = async (formData: FormData, messageApi: MessageInstance) => {
+    await addDocumentsClientType(formData, messageApi);
+    mutate();
+  };
+
+  const removeDocument = async (id: number, messageApi?: MessageInstance) => {
+    await removeDocumentsClientType(id, messageApi);
+    mutate();
+  };
 
   return {
     data,
+    removeDocument,
+    addDocument,
     isLoading
   };
 };

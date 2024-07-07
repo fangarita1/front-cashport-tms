@@ -1,15 +1,17 @@
 import useSWR from "swr";
 
-import { fetcher } from "@/utils/api/api";
+import { API } from "@/utils/api/api";
 import { MessageInstance } from "antd/es/message/interface";
 import { IHolding } from "@/types/holding/IHolding";
 import { addHolding, removeHoldingById } from "@/services/holding/holding";
+import { useAppStore } from "@/lib/store/store";
 
 export const useHolding = () => {
-  const { data, isLoading, mutate } = useSWR<IHolding>(`/holding`, fetcher, {});
+  const { ID: projectId } = useAppStore((state) => state.selectProject);
+  const { data, isLoading, mutate } = useSWR<IHolding>(`/holding/project/${projectId}`, API, {});
 
   const createHolding = async (name: string, messageApi: MessageInstance) => {
-    await addHolding({ name: name, messageApi });
+    await addHolding({ name: name, projectId, messageApi });
     mutate();
   };
 

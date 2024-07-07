@@ -1,49 +1,41 @@
-import { Dispatch, SetStateAction, useState } from "react";
-import { Modal, Typography } from "antd";
+import { Dispatch, SetStateAction } from "react";
+import { Button } from "antd";
 
 import "./modalbusinessrules.scss";
 import { SelectStructure } from "../../selects/SelectStructure/SelectStructure";
-const { Title } = Typography;
+import { ISelectedBussinessRules } from "@/types/bre/IBRE";
+import { CaretLeft } from "phosphor-react";
+import { SelectZone } from "../../selects/SelectZone/SelectZone";
 interface Props {
-  isOpen: boolean;
-  setIsBR: Dispatch<SetStateAction<boolean>>;
+  setCurrentView: Dispatch<SetStateAction<"main" | "businessRules">>;
+  zones: number[];
+  setZones: Dispatch<SetStateAction<number[]>>;
+  selectedStructure: ISelectedBussinessRules;
+  setSelectedStructure: Dispatch<SetStateAction<ISelectedBussinessRules>>;
 }
-export type ShipToType = {
-  info: {
-    name: string;
-    cargo: string;
-    email: string;
-    phone: string;
-    rol: string;
-  };
-};
 
-export const ModalBusinessRules = ({ isOpen, setIsBR }: Props) => {
-  const [selectedSublines, setSelectedSublines] = useState<
-    { idChannel: number; idLine: number; subline: { id: number; description: string } }[]
-  >([]);
-
+export const ModalBusinessRules = ({
+  setCurrentView,
+  zones,
+  setZones,
+  selectedStructure,
+  setSelectedStructure
+}: Props) => {
   return (
-    <Modal
-      width={"40%"}
-      open={isOpen}
-      title={<Title level={4}>Reglas de negocio</Title>}
-      className="modalbusinessrules"
-      okButtonProps={{
-        className: "buttonOk"
-      }}
-      cancelButtonProps={{
-        className: "buttonCancel"
-      }}
-      okText="Siguiente"
-      cancelText="Cancelar"
-      onCancel={() => setIsBR(false)}
-    >
+    <div className="modalBusinessRules">
+      <Button
+        className="modalTitle"
+        icon={<CaretLeft size={"1.45rem"} />}
+        onClick={() => setCurrentView("main")}
+      >
+        Reglas de negocio
+      </Button>
+      <SelectZone zones={zones} setZones={setZones} />
       <SelectStructure
-        selectedSublines={selectedSublines}
-        setSelectedSublines={setSelectedSublines}
-        sublinesUser={[] as any}
+        selectedBusinessRules={selectedStructure}
+        setSelectedBusinessRules={setSelectedStructure}
+        disabled={false}
       />
-    </Modal>
+    </div>
   );
 };

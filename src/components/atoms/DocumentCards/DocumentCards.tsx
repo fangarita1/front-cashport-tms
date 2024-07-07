@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const DocumentCards = ({ clientTypeId, isDisabledEdit }: Props) => {
-  const { data, isLoading } = useDocumentByClient(clientTypeId);
+  const { data, isLoading, removeDocument } = useDocumentByClient(clientTypeId);
   const documents = data?.data;
   return (
     <>
@@ -22,8 +22,16 @@ export const DocumentCards = ({ clientTypeId, isDisabledEdit }: Props) => {
           {documents?.map((doc) => (
             <Flex className="documentCard" key={doc.id} vertical>
               <Flex justify="space-between">
-                <Text className="documentCard__title">{doc.format_document.split("/").pop()}</Text>
-                {!isDisabledEdit && <Button icon={<X size={"16px"} />} className="removebutton" />}
+                <Text className="documentCard__title">{doc.document_name.split("/").pop()}</Text>
+                {!isDisabledEdit && (
+                  <Button
+                    icon={<X size={"16px"} />}
+                    className="removebutton"
+                    onClick={() => {
+                      removeDocument(doc.id);
+                    }}
+                  />
+                )}
               </Flex>
               <Checkbox className="documentCard__check" checked={Boolean(doc.required)}>
                 Obligatorio

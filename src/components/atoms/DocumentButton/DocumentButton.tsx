@@ -1,10 +1,11 @@
 import { Button, Flex, Typography } from "antd";
-import { FileArrowUp, X } from "phosphor-react";
-import type { UploadProps } from "antd";
+import { FileArrowUp, Trash } from "phosphor-react";
+import type { UploadFile, UploadProps } from "antd";
 import { Upload } from "antd";
 const { Dragger } = Upload;
 
 import "./documentbutton.scss";
+import { UploadChangeParam } from "antd/es/upload";
 
 const { Text } = Typography;
 
@@ -12,8 +13,9 @@ interface Props {
   title?: string;
   fileName?: string;
   fileSize?: any;
-  customStyle?: any;
-  handleOnChange?: () => void;
+  className?: any;
+  // eslint-disable-next-line no-unused-vars
+  handleOnChange?: (info: UploadChangeParam<UploadFile<any>>) => void;
   handleOnDrop?: () => void;
   // eslint-disable-next-line no-unused-vars
   handleOnDelete?: (_: React.MouseEvent<HTMLElement>) => void;
@@ -27,7 +29,8 @@ export const DocumentButton = ({
   handleOnChange,
   handleOnDrop,
   handleOnDelete,
-  disabled
+  disabled,
+  className
 }: Props) => {
   const props: UploadProps = {
     name: title,
@@ -38,7 +41,8 @@ export const DocumentButton = ({
     customRequest: () => {
       return;
     },
-    disabled
+    disabled,
+    onRemove: () => false
   };
 
   if (typeof fileSize !== "string") {
@@ -46,7 +50,11 @@ export const DocumentButton = ({
   }
 
   return (
-    <Dragger className="test" {...props}>
+    <Dragger
+      className={className ? `documentDragger ${className}` : "documentDragger"}
+      {...props}
+      openFileDialogOnClick={fileName === "Seleccionar archivo"}
+    >
       <Flex justify="space-between" align="center">
         <Flex align="left" vertical>
           <Flex>
@@ -55,14 +63,14 @@ export const DocumentButton = ({
           </Flex>
           <Text className="sizeFile">{fileSize}</Text>
         </Flex>
-        {!disabled && (
+        {!disabled && fileName !== "Seleccionar archivo" ? (
           <Button
             onClick={handleOnDelete}
             className="deleteDocButton"
             type="text"
-            icon={<X size={"20px"} />}
+            icon={<Trash size={"20px"} />}
           />
-        )}
+        ) : null}
       </Flex>
     </Dragger>
   );

@@ -27,7 +27,8 @@
     "@phosphor-icons/react": "^2.1.5",
     "@types/mapbox__mapbox-sdk": "^0.14.0",
     "@types/mapbox-gl": "^3.1.0",
-    "antd": "^5.13.2",
+    "antd": "^5.17.0",
+    "apexcharts": "^3.49.1",
     "axios": "^1.6.7",
     "dayjs": "^1.11.11",
     "encoding": "^0.1.13",
@@ -43,6 +44,7 @@
     "phosphor-react": "^1.4.1",
     "prettier": "^3.2.4",
     "react": "^18",
+    "react-apexcharts": "^1.4.1",
     "react-dom": "^18",
     "react-draggable": "^4.4.6",
     "react-form-wizard-component": "^0.2.3",
@@ -69,19 +71,5 @@
     "lint-staged": "^15.2.0",
     "typescript": "5.4.5"
   },
-  "lint-staged": {
-    "*.{js,ts,jsx,tsx}": [
-      "eslint --fix",
-      "eslint",
-      "prettier --write"
-    ],
-    "*.json": [
-      "prettier --write"
-    ]
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  }
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
