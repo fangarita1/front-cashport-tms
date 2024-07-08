@@ -10,6 +10,7 @@ export interface ISelectedProduct {
   name: string;
   price: number;
   discount: number | undefined;
+  discount_percentage: number | undefined;
   quantity: number;
   image: string;
   category_id: number;

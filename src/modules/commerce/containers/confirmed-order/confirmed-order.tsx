@@ -44,8 +44,8 @@ export const ConfirmedOrderView: FC = () => {
               {mockOrder.map((category) => (
                 <div className={styles.category} key={category.id}>
                   <Flex justify="space-between" align="center">
-                    <p>{category.category}</p>
-                    <p>Skus: {category.products.length}</p>
+                    <p className={styles.category__header}>{category.category}</p>
+                    <p className={styles.category__header}>Skus: {category.products.length}</p>
                   </Flex>
                   <div className={styles.products}>
                     {category.products.map((product) => (
@@ -125,9 +125,9 @@ const mockOrder = [
       {
         id: 1,
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 1",
-        price: 10000,
-        discount: 0,
-        percentageDiscount: 0,
+        price: 120000,
+        discount: 60000,
+        discount_percentage: 50,
         quantity: 2,
         image: "/images/cetaphilMock.png",
         category_id: 1
@@ -137,7 +137,7 @@ const mockOrder = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 2",
         price: 20000,
         discount: 0,
-        percentageDiscount: 5,
+        discount_percentage: 5,
         quantity: 1,
         image: "/images/cetaphilMock.png",
         category_id: 1
@@ -153,7 +153,7 @@ const mockOrder = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 1",
         price: 15000,
         discount: 0,
-        percentageDiscount: 0,
+        discount_percentage: 0,
         quantity: 1,
         image: "/images/cetaphilMock.png",
         category_id: 2
@@ -163,7 +163,7 @@ const mockOrder = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 2",
         price: 25000,
         discount: 0,
-        percentageDiscount: 5,
+        discount_percentage: 5,
         quantity: 1,
         image: "/images/cetaphilMock.png",
         category_id: 2

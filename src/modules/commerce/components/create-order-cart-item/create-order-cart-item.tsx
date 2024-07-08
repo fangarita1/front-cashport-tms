@@ -5,7 +5,7 @@ import { formatMoney } from "@/utils/utils";
 import { Minus, Plus, Trash } from "phosphor-react";
 
 import styles from "./create-order-cart-item.module.scss";
-import { Button } from "antd";
+import { Button, Flex } from "antd";
 import { useHandleProductsItems } from "../../hooks/create-order/handle-products-items.hook";
 export interface CreateOrderItemProps {
   product: {
@@ -13,6 +13,7 @@ export interface CreateOrderItemProps {
     name: string;
     price: number;
     discount: number | undefined;
+    discount_percentage: number | undefined;
     image: string;
     category_id: number;
   };
@@ -40,14 +41,30 @@ const CreateOrderItem: FC<CreateOrderItemProps> = ({ product, categoryName }) =>
       </div>
       <h4 className={styles.name}>{product.name}</h4>
 
-      <h5 className={styles.price}>{formatMoney(product.price)}</h5>
+      <div className={styles.price}>
+        {product.discount ? (
+          <>
+            <h5 className={styles.oldPrice}>{formatMoney(product.price)}</h5>
+            <Flex gap={4} align="baseline">
+              <h5 className={styles.price__amount}>{formatMoney(product.discount)}</h5>
+              <p className={styles.discountPercentage}>-%{product.discount_percentage}</p>
+            </Flex>
+          </>
+        ) : (
+          <h5 className={styles.price}>{formatMoney(product.price)}</h5>
+        )}
+      </div>
 
       <div className={styles.quantityFooter}>
         <Button
           className={styles.buttonChangeQuantity}
           onClick={() => handleDecrementQuantity(product.id)}
         >
-          {alreadySelectedProduct?.quantity === 1 ? <Trash size={14} /> : <Minus size={14} />}
+          {alreadySelectedProduct?.quantity === 1 ? (
+            <Trash size={14} weight="bold" />
+          ) : (
+            <Minus size={14} weight="bold" />
+          )}
         </Button>
         <input
           key={alreadySelectedProduct ? alreadySelectedProduct.quantity : "default"}
@@ -60,7 +77,7 @@ const CreateOrderItem: FC<CreateOrderItemProps> = ({ product, categoryName }) =>
           className={styles.buttonChangeQuantity}
           onClick={() => handleIncrementQuantity(product.id)}
         >
-          <Plus size={14} />
+          <Plus size={14} weight="bold" />
         </Button>
       </div>
     </div>

@@ -70,7 +70,8 @@ const mockData = [
         id: 1,
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 1",
         price: 1000,
-        discount: 0,
+        discount: 900,
+        discount_percentage: 10,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 1
@@ -78,8 +79,9 @@ const mockData = [
       {
         id: 2,
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 2",
-        price: 2000,
-        discount: 0,
+        price: 200000,
+        discount: 100000,
+        discount_percentage: 50,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 1
@@ -89,6 +91,7 @@ const mockData = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 3",
         price: 3000,
         discount: 0,
+        discount_percentage: 0,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 1
@@ -98,6 +101,7 @@ const mockData = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 4",
         price: 4000,
         discount: 0,
+        discount_percentage: 0,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 1
@@ -106,7 +110,8 @@ const mockData = [
         id: 5,
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 5",
         price: 5000,
-        discount: 0,
+        discount: 1,
+        discount_percentage: 100,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 1
@@ -115,7 +120,8 @@ const mockData = [
         id: 6,
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 6",
         price: 6000,
-        discount: 0,
+        discount: 4800,
+        discount_percentage: 20,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 1
@@ -125,6 +131,7 @@ const mockData = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 7",
         price: 7000,
         discount: 0,
+        discount_percentage: 0,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 1
@@ -134,6 +141,7 @@ const mockData = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 8",
         price: 8000,
         discount: 0,
+        discount_percentage: 0,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 1
@@ -143,6 +151,7 @@ const mockData = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 9",
         price: 9000,
         discount: 0,
+        discount_percentage: 0,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 1
@@ -168,6 +177,7 @@ const mockData = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 7",
         price: 7000,
         discount: 0,
+        discount_percentage: 0,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 4
@@ -177,6 +187,7 @@ const mockData = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 8",
         price: 8000,
         discount: 0,
+        discount_percentage: 0,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 4
@@ -192,6 +203,7 @@ const mockData = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 9",
         price: 9000,
         discount: 0,
+        discount_percentage: 0,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 5
@@ -201,6 +213,7 @@ const mockData = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 10",
         price: 10000,
         discount: 0,
+        discount_percentage: 0,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 5
@@ -216,6 +229,7 @@ const mockData = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 11",
         price: 11000,
         discount: 0,
+        discount_percentage: 0,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 6
@@ -225,6 +239,7 @@ const mockData = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 12",
         price: 12000,
         discount: 0,
+        discount_percentage: 0,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 6
@@ -234,6 +249,7 @@ const mockData = [
         name: "Galderma Cetaphil Crema Hidratante X 453 Gr 13",
         price: 13000,
         discount: 0,
+        discount_percentage: 0,
         quantity: 0,
         image: "/images/cetaphilMock.png",
         category_id: 6

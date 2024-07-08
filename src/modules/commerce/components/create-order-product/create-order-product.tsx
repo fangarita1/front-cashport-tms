@@ -8,6 +8,7 @@ import PrincipalButton from "@/components/atoms/buttons/principalButton/Principa
 
 import styles from "./create-order-product.module.scss";
 import { useHandleProductsItems } from "../../hooks/create-order/handle-products-items.hook";
+import { Flex } from "antd";
 
 export interface CreateOrderProductProps {
   product: {
@@ -15,6 +16,7 @@ export interface CreateOrderProductProps {
     name: string;
     price: number;
     discount: number;
+    discount_percentage: number;
     image: string;
     category_id: number;
   };
@@ -44,7 +46,19 @@ const CreateOrderProduct: FC<CreateOrderProductProps> = ({ product, categoryName
 
       <hr className={styles.separator} />
       <h4 className={styles.name}>{product.name}</h4>
-      <h5 className={styles.price}>{formatMoney(product.price)}</h5>
+      <div className={styles.price}>
+        {product.discount ? (
+          <>
+            <h5 className={styles.oldPrice}>{formatMoney(product.price)}</h5>
+            <Flex gap={4}>
+              <h5 className={styles.price__amount}>{formatMoney(product.discount)}</h5>
+              <p className={styles.discountPercentage}>-%{product.discount_percentage}</p>
+            </Flex>
+          </>
+        ) : (
+          <h5 className={styles.price__amount}>{formatMoney(product.price)}</h5>
+        )}
+      </div>
       {alreadySelectedProduct ? (
         <div className={styles.quantityFooter}>
           <PrincipalButton

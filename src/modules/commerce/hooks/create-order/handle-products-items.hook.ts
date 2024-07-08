@@ -6,6 +6,7 @@ interface IProductProps {
   name: string;
   price: number;
   discount: number | undefined;
+  discount_percentage: number | undefined;
   image: string;
   category_id: number;
 }
@@ -30,6 +31,7 @@ export const useHandleProductsItems = (product: IProductProps, categoryName: str
       name: product.name,
       price: product.price,
       discount: product.discount,
+      discount_percentage: product.discount_percentage,
       quantity: 1,
       image: product.image,
       category_id: product.category_id

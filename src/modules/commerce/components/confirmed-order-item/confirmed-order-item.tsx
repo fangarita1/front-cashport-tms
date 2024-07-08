@@ -3,6 +3,7 @@ import Image from "next/image";
 import { formatMoney } from "@/utils/utils";
 
 import styles from "./confirmed-order-item.module.scss";
+import { Flex } from "antd";
 
 export interface ConfirmedOrderItemProps {
   product: {
@@ -10,7 +11,7 @@ export interface ConfirmedOrderItemProps {
     name: string;
     price: number;
     discount: number | undefined;
-    percentageDiscount: number;
+    discount_percentage: number;
     image: string;
     category_id: number;
     quantity: number;
@@ -31,7 +32,19 @@ const ConfirmedOrderItem: FC<ConfirmedOrderItemProps> = ({ product }) => {
       </div>
       <h4 className={styles.name}>{product.name}</h4>
 
-      <h5 className={styles.price}>{formatMoney(product.price)}</h5>
+      <div className={styles.price}>
+        {product.discount ? (
+          <>
+            <h5 className={styles.oldPrice}>{formatMoney(product.price)}</h5>
+            <Flex gap={4} align="baseline">
+              <h5 className={styles.price__amount}>{formatMoney(product.discount)}</h5>
+              <p className={styles.discountPercentage}>-%{product.discount_percentage}</p>
+            </Flex>
+          </>
+        ) : (
+          <h5 className={styles.price}>{formatMoney(product.price)}</h5>
+        )}
+      </div>
 
       <p className={styles.finalQuantity}>{product.quantity} Uds</p>
     </div>

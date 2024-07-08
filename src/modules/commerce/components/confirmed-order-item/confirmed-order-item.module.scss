@@ -2,7 +2,7 @@
 
 .cartItemCard {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: 1fr 1fr minmax(1fr, 2fr) 1fr 1fr;
     gap: 0.5rem;
     padding: 1rem;
     border-bottom: 1px solid $dark-gray;
@@ -12,6 +12,7 @@
         justify-content: center;
         grid-column: 1;
         max-width: 80px;
+        min-width: 50px;
 
         &__img {
             width: 100%;
@@ -31,6 +32,25 @@
         font-weight: 800;
         grid-column: 2/4;
         grid-row: 2;
+
+        &__amount {
+            font-size: 1.25rem;
+            font-weight: 800;
+        }
+
+        .oldPrice {
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: line-through;
+            line-height: 4px;
+            color: $darker-gray;
+        }
+
+        .discountPercentage {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #e53261;
+        }
     }
 
     .finalQuantity {
