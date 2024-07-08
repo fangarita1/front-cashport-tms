@@ -22,7 +22,7 @@ interface Props<T extends FieldValues> {
 
 export const SelectLocations = <T extends FieldValues>({ errors, field }: Props<T>) => {
   const { data, isLoading, error } = useLocations();
-  console.log({ data, error });
+  // console.log({ data, error });
   if (axios.isAxiosError(data)) {
     return null
   }

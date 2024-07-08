@@ -549,12 +549,11 @@ export const ClientProjectForm = ({
               <Flex vertical align="flex-start">
                 <Row className="clientDocuments" gutter={16}>
                   {clientDocuments?.map((document, index) => (
-                    <Col key={`${index}${document.name}`} span={6}>
+                    <Col key={`${index}${document.name}`} span={6} style={{ marginBottom: "1rem" }}>
                       <DocumentButton fileName={document.name} fileSize={document.size} disabled />
                     </Col>
                   ))}
                 </Row>
-
                 {!isViewDetailsClient.id && isEditAvailable ? (
                   <Button
                     size="large"
