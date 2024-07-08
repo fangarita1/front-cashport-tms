@@ -226,3 +226,44 @@ export const getAllByProject = async (props: PropsGetAllByProject): Promise<ICli
   });
   return response?.data;
 };
+
+export const changeClientStatus = async (
+  clientId: string,
+  newStatus: number,
+  messageApi: MessageInstance
+) => {
+  const token = await getIdToken();
+
+  try {
+    const response: AxiosResponse | AxiosError = await axios.put(
+      `${config.API_HOST}/client/change-status/${clientId}`,
+      { status: newStatus },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (response.status === 200) {
+      messageApi.open({
+        type: "success",
+        content: "Estado del cliente cambiado exitosamente."
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Oops, ocurrió un error cambiando el estado del cliente."
+      });
+    }
+    return response;
+  } catch (error) {
+    console.warn("Error cambiando el estado del cliente: ", error);
+    messageApi.open({
+      type: "error",
+      content: "Oops, ocurrió un error cambiando el estado del cliente."
+    });
+    return error as AxiosError;
+  }
+};
