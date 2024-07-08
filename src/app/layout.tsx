@@ -11,7 +11,7 @@ export const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
 });
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ConfigProvider theme={theme} locale={esES}>
       <html lang="es" className={poppins.className}>
