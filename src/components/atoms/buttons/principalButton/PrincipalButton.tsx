@@ -1,5 +1,5 @@
 import { Button, ConfigProvider, theme } from "antd";
-import { BaseButtonProps } from "antd/es/button/button";
+import { BaseButtonProps, ButtonProps } from "antd/es/button/button";
 import styles from "./principalButton.module.scss";
 
 const { useToken } = theme;
@@ -18,7 +18,7 @@ export default function PrincipalButton({
   customStyles,
   children,
   ...rest
-}: PrincipalButtonProps) {
+}: ButtonProps & PrincipalButtonProps) {
   const { token } = useToken();
   const color = token.green;
 

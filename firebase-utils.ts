@@ -46,15 +46,15 @@ const getAuth = async (
           }
         });
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error({ error });
         openNotification();
       });
   }
 };
-const logOut = (
-   router: AppRouterInstance) => {
+const logOut = (router: AppRouterInstance) => {
   signOut(auth);
   localStorage.removeItem(STORAGE_TOKEN);
-  router.replace('auth/login')
+  router.replace("auth/login");
 };
 export { getAuth, logOut };

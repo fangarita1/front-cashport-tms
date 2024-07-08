@@ -1,10 +1,11 @@
 import { Button, Flex, Typography } from "antd";
 import { FileArrowUp, Trash } from "phosphor-react";
-import type { UploadProps } from "antd";
+import type { UploadFile, UploadProps } from "antd";
 import { Upload } from "antd";
 const { Dragger } = Upload;
 
 import "./documentbutton.scss";
+import { UploadChangeParam } from "antd/es/upload";
 
 const { Text } = Typography;
 
@@ -13,7 +14,8 @@ interface Props {
   fileName?: string;
   fileSize?: any;
   className?: any;
-  handleOnChange?: () => void;
+  // eslint-disable-next-line no-unused-vars
+  handleOnChange?: (info: UploadChangeParam<UploadFile<any>>) => void;
   handleOnDrop?: () => void;
   // eslint-disable-next-line no-unused-vars
   handleOnDelete?: (_: React.MouseEvent<HTMLElement>) => void;
@@ -38,6 +40,16 @@ export const DocumentButton = ({
     showUploadList: false,
     customRequest: () => {
       return;
+    },
+    beforeUpload: (file) => {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+      };
+      reader.readAsText(file);
+
+      // Prevent upload
+      return false;
     },
     disabled,
     onRemove: () => false

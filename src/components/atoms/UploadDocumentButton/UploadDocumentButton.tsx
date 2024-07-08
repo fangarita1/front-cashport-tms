@@ -4,7 +4,7 @@ const { Text } = Typography;
 import "./uploaddocumentbutton.scss";
 import { Dispatch, SetStateAction, useState } from "react";
 
-interface FileObject {
+export interface FileObject {
   docReference: string;
   file: File | undefined;
 }
@@ -16,9 +16,15 @@ interface DocumentProps {
   title: string;
   isMandatory: boolean;
   setFiles: Dispatch<SetStateAction<FileObject[]>>;
+  containerClassName?: string;
 }
 
-export const UploadDocumentButton = ({ title, isMandatory, setFiles }: DocumentProps) => {
+export const UploadDocumentButton = ({
+  title,
+  isMandatory,
+  setFiles,
+  containerClassName
+}: DocumentProps) => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   const handleOnChange: any = (info: infoObject) => {
@@ -95,8 +101,8 @@ export const UploadDocumentButton = ({ title, isMandatory, setFiles }: DocumentP
   };
 
   return (
-    <div className="uploaddocumentbutton">
-      <Flex vertical>
+    <div className={`uploaddocumentbutton ${containerClassName}`}>
+      <Flex vertical justify="center">
         <Text className="titleDocument">{title}</Text>
         <Text className="descriptionDocument">*{isMandatory ? "Obligatorio" : "Opcional"}</Text>
       </Flex>

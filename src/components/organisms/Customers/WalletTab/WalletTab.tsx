@@ -12,6 +12,8 @@ import InvoiceDetailModalProps from "@/modules/clients/containers/invoice-detail
 import LabelCollapse from "@/components/ui/label-collapse";
 import Collapse from "@/components/ui/collapse";
 import WalletTabChangeStatusModal from "@/modules/clients/components/wallet-tab-change-status-modal";
+import PaymentAgreementModal from "@/modules/clients/components/wallet-tab-payment-agreement-modal";
+import { ModalActionDiscountCredit } from "@/components/molecules/modals/ModalActionDiscountCredit/ModalActionDiscountCredit";
 import { IInvoice, InvoicesData } from "@/types/invoices/IInvoices";
 
 import "./wallettab.scss";
@@ -31,6 +33,14 @@ export const WalletTab = () => {
     isOpen: false,
     invoiceId: 0
   });
+  const [showActionDetailModal, setShowActionDetailModal] = useState<{
+    isOpen: boolean;
+    actionType: number;
+  }>({
+    isOpen: false,
+    actionType: 0
+  });
+  const [isPaymentAgreementOpen, setIsPaymentAgreementOpen] = useState(false);
 
   const clientId = clientIdParam ? parseInt(clientIdParam) : 0;
   const projectId = projectIdParam ? parseInt(projectIdParam) : 0;
@@ -114,7 +124,18 @@ export const WalletTab = () => {
         </div>
       )}
 
-      <ModalGenerateAction isOpen={isGenerateActionOpen} onClose={handleisGenerateActionOpen} />
+      <ModalGenerateAction
+        isOpen={isGenerateActionOpen}
+        onClose={handleisGenerateActionOpen}
+        setIsPaymentAgreementOpen={setIsPaymentAgreementOpen}
+        setShowActionDetailModal={setShowActionDetailModal}
+      />
+      {isPaymentAgreementOpen && (
+        <PaymentAgreementModal
+          isOpen={isPaymentAgreementOpen}
+          setIsPaymentAgreementOpen={setIsPaymentAgreementOpen}
+        />
+      )}
       {showInvoiceDetailModal?.isOpen && (
         <InvoiceDetailModalProps
           isOpen={showInvoiceDetailModal?.isOpen || false}
@@ -124,6 +145,14 @@ export const WalletTab = () => {
           handleisGenerateActionOpen={handleisGenerateActionOpen}
         />
       )}
+
+      <ModalActionDiscountCredit
+        isOpen={showActionDetailModal?.isOpen}
+        onClose={() => setShowActionDetailModal({ isOpen: false, actionType: 0 })}
+        showActionDetailModal={showActionDetailModal}
+        setShowActionDetailModal={setShowActionDetailModal}
+        invoiceSelected={selectedRows}
+      />
       <WalletTabChangeStatusModal isOpen={false} />
     </>
   );
