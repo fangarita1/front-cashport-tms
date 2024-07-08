@@ -1,14 +1,20 @@
 import { useState } from "react";
-import { GroupTable } from "@/components/molecules/tables/GroupTable/GroupTable";
+import { SelectedGroupView } from "@/components/organisms/projects/SelectedGroupView/SelectedGroupView";
 import { ClientsGroupsTable } from "@/components/molecules/tables/ClientsGroupsTable/ClientsGroupsTable";
 import { ModalClientsGroup } from "@/components/molecules/modals/ModalClientsGroup/ModalClientsGroup";
 
 export const ClientsGroupsProjectView = () => {
-  const [showGroupDetails, setShowGroupDetails] = useState(false);
+  const [showGroupDetails, setShowGroupDetails] = useState<{
+    groupId: number | undefined;
+    showDetails: boolean;
+  }>({
+    groupId: undefined,
+    showDetails: false
+  });
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const goBackToClientsGroups = () => {
-    setShowGroupDetails(false);
+    setShowGroupDetails({ groupId: undefined, showDetails: false });
   };
 
   const openEditModal = () => {
@@ -17,8 +23,12 @@ export const ClientsGroupsProjectView = () => {
 
   return (
     <>
-      {showGroupDetails ? (
-        <GroupTable onClickBack={goBackToClientsGroups} onClickEdit={openEditModal} />
+      {showGroupDetails.showDetails ? (
+        <SelectedGroupView
+          onClickBack={goBackToClientsGroups}
+          onClickEdit={openEditModal}
+          showGroupDetails={showGroupDetails}
+        />
       ) : (
         <ClientsGroupsTable setShowGroupDetails={setShowGroupDetails} />
       )}

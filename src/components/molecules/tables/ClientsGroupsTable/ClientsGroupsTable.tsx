@@ -6,8 +6,6 @@ import { ModalClientsGroup } from "@/components/molecules/modals/ModalClientsGro
 import { useClientsGroups } from "@/hooks/useClientsGroups";
 import { IClientsGroups } from "@/types/clientsGroups/IClientsGroups";
 
-import { useParams } from "next/navigation";
-
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 
 import "./ClientsGroupsTable.scss";
@@ -15,17 +13,20 @@ import "./ClientsGroupsTable.scss";
 const { Text, Link } = Typography;
 
 interface PropsClientsGroupsTable {
-  setShowGroupDetails: Dispatch<SetStateAction<boolean>>;
+  setShowGroupDetails: Dispatch<
+    SetStateAction<{
+      groupId: number | undefined;
+      showDetails: boolean;
+    }>
+  >;
 }
 
 export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTable) => {
-  const { id: idProject } = useParams<{ id: string }>();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [height, setHeight] = useState<number>(window.innerHeight);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<any>([]);
   const [page, setPage] = useState(1);
-
 
   useEffect(() => {
     const handleResize = () => {
@@ -49,14 +50,13 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
 
   const { data, loading } = useClientsGroups({
     page,
-    idProject,
     clients: selectedFilters.clients,
     subscribers: selectedFilters.subscribers,
     activeUsers: selectedFilters.status
   });
 
-  function handleSeeGroupDetails() {
-    setShowGroupDetails(true);
+  function handleSeeGroupDetails(groupId: number) {
+    setShowGroupDetails({ groupId, showDetails: true });
   }
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
@@ -162,7 +162,9 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
       key: "seeProject",
       width: "40px",
       dataIndex: "",
-      render: () => <Button onClick={handleSeeGroupDetails} icon={<Eye size={"1.3rem"} />} />
+      render: (_, row) => (
+        <Button onClick={() => handleSeeGroupDetails(row.id)} icon={<Eye size={"1.3rem"} />} />
+      )
     }
   ];
 

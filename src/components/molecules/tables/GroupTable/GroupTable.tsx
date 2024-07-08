@@ -1,84 +1,75 @@
-import { useState } from "react";
-import { Button, Flex } from "antd";
-import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
-import { ClientsProjectTable } from "../ClientsProjectTable/ClientsProjectTable";
-import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
-import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
+import { Table, TableProps, Typography } from "antd";
 
+const { Text } = Typography;
 import "./groupTable.scss";
+import { IClient } from "@/types/clientsGroups/IClientsGroups";
 
 interface PropsGroupTable {
-  onClickBack: () => void;
-  onClickEdit: () => void;
+  dataClients: IClient[] | undefined;
 }
-export const GroupTable = ({ onClickBack, onClickEdit }: PropsGroupTable) => {
-  const [isOpenModalStatus, setIsOpenModalStatus] = useState({ status: false, remove: false });
-
-  const onRemoveGroup = async () => {
-    setIsOpenModalStatus({ status: false, remove: false });
-  };
-
-  const onActiveGroup = async () => {
-    setIsOpenModalStatus({ status: false, remove: false });
-  };
-
-  const onInactiveGroup = async () => {
-    setIsOpenModalStatus({ status: false, remove: false });
-  };
-  const onClickChangeState = () => {
-    setIsOpenModalStatus({ status: true, remove: false });
-  };
+export const GroupTable = ({ dataClients }: PropsGroupTable) => {
+  const columns: TableProps<IClient>["columns"] = [
+    {
+      title: "Nombre",
+      dataIndex: "client_name",
+      key: "client_name",
+      render: (text) => <p>{text}</p>
+    },
+    {
+      title: "NIT",
+      dataIndex: "id",
+      key: "id",
+      render: (text) => <Text>{text}</Text>
+    },
+    {
+      title: "Cartera",
+      key: "budget",
+      dataIndex: "budget",
+      render: (text) => <Text>{text}</Text>
+    },
+    {
+      title: "Usuarios",
+      key: "usuarios",
+      dataIndex: "usuarios",
+      render: (text) => <Text>{text}</Text>
+    },
+    {
+      title: "Ship To",
+      key: "shipTo",
+      dataIndex: "shipTo",
+      render: (text) => <Text>{text}</Text>
+    },
+    {
+      title: "Grupos",
+      key: "budget",
+      dataIndex: "budget",
+      render: (text) => <Text>{text}</Text>
+    },
+    {
+      title: "Holding",
+      key: "holding_name",
+      dataIndex: "holding_name",
+      render: (text) => <Text>{text}</Text>
+    },
+    {
+      title: "Estado",
+      key: "status",
+      width: "150px",
+      dataIndex: "status",
+      render: () => <></>
+    }
+  ];
 
   return (
-    <>
-      <Flex component={"header"} className="headerGroupTable">
-        <Button
-          type="text"
-          size="large"
-          onClick={onClickBack}
-          className="buttonGoBack"
-          icon={<CaretLeft size={"1.45rem"} />}
-        >
-          {"Nombre_grupo"}
-        </Button>
-
-        <Flex gap="1.5rem">
-          <Button
-            size="large"
-            htmlType="button"
-            className="buttonOutlined"
-            onClick={onClickChangeState}
-            icon={<ArrowsClockwise size={"1.45rem"} />}
-          >
-            Cambiar Estado
-          </Button>
-          <Button
-            size="large"
-            onClick={onClickEdit}
-            className="buttonOutlined"
-            icon={<Pencil size={"1.45rem"} />}
-          >
-            Editar Grupo
-          </Button>
-        </Flex>
-      </Flex>
-
-      <ClientsProjectTable placedIn="groupTable" />
-
-      <ModalChangeStatus
-        isActiveStatus={true}
-        isOpen={isOpenModalStatus.status}
-        onActive={onActiveGroup}
-        onDesactivate={onInactiveGroup}
-        onRemove={() => setIsOpenModalStatus({ remove: true, status: false })}
-        onClose={() => setIsOpenModalStatus({ status: false, remove: false })}
+    <main className="mainClientsProjectTable">
+      <Table
+        columns={columns}
+        dataSource={dataClients?.map((client) => ({
+          key: client.id,
+          ...client
+        }))}
+        pagination={false}
       />
-      <ModalRemove
-        name="usuario"
-        isOpen={isOpenModalStatus.remove}
-        onClose={() => setIsOpenModalStatus({ status: false, remove: false })}
-        onRemove={onRemoveGroup}
-      />
-    </>
+    </main>
   );
 };

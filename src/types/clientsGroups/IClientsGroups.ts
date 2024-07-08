@@ -7,7 +7,7 @@ export interface IClientsGroupsFull {
   pagination: Pagination;
 }
 
-interface IClient {
+export interface IClient {
   id: number;
   client_name: string;
   holding_name: string | null;
@@ -38,4 +38,10 @@ export interface IGroupByUser {
   group_id: number;
   group_name: string;
   project_id: number;
+}
+
+export interface ISingleClientGroup {
+  id: number;
+  group_name: string;
+  clients: IClient[];
 }
