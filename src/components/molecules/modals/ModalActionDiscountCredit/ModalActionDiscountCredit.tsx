@@ -78,7 +78,6 @@ export const ModalActionDiscountCredit = ({
               }
         }
       >
-        <div className="content_with_scroll">
           {currentView === "select" && (
             <SelectAccountingAdjustment
               type={showActionDetailModal.actionType}
@@ -132,7 +131,6 @@ export const ModalActionDiscountCredit = ({
               messageApi={messageApi}
             />
           )}
-        </div>
       </Modal>
     </>
   );
