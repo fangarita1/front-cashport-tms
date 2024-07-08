@@ -3,33 +3,18 @@ import {
   Typography,
   message,
   Row,
-  Col,
-  Table,
-  AutoComplete,
-  Input
+  Col
 } from "antd";
-import React, { useRef, useEffect, useState, useContext } from "react";
+import React, { useState } from "react";
 import Tabs2 from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-
-// components
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
-
-import { IDriver, IListData, ILocation } from "@/types/logistics/schema";
-
-//locations
-import { getAllLocations } from "@/services/logistics/locations";
-
+import { IDriver } from "@/types/logistics/schema";
 import { useRouter } from "next/navigation";
-
-
 import "../../../../../styles/_variables_logistics.css";
-
 import "./driverView.scss";
-import { VehicleTable } from "@/components/molecules/tables/logistics/vehicleTable/vehicleTable";
 import { DriverTable } from "@/components/molecules/tables/logistics/driverTable/driverTable";
-import { getAllDrivers } from "@/services/logistics/drivers";
 
 const { Title } = Typography;
 
@@ -44,33 +29,6 @@ export const DriverView = () => {
     setValue(newValue);
   };
 
-  const loadDrivers = async () => {
-    console.log('hace cosas')
-    const result = await getAllDrivers();
-    console.log(result)
-    if (result.data.data.length > 0) {
-      console.log(result.data.data);
-
-      const listDrivers: any[] | ((prevState: IDriver[]) => IDriver[]) = [];
-      const listDriversOptions: { label: any; value: any }[] = [];
-
-      result.data.data.forEach((item, index) => {
-        listDrivers.push(item);
-        listDriversOptions.push({ label: item.description, value: item.id });
-      });
-
-      setDrivers(listDrivers);
-      setDriversOptions(listDriversOptions);
-
-      console.log(listDrivers);
-      console.log(listDriversOptions);
-    }
-  };
-
-  useEffect(() => {
-    loadDrivers();
-  });
-  
   return (
     <>
       {contextHolder}
@@ -102,7 +60,7 @@ export const DriverView = () => {
                   <Tab className={"tab"} value={2} label="Conductor" href="/logistics/drivers/all" />
                 </Tabs2>
               </Col>
-              <DriverTable></DriverTable>
+              <DriverTable ></DriverTable>
             </Row>
           </Flex>
         </Flex>

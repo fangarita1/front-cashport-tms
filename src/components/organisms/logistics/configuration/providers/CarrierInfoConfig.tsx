@@ -25,6 +25,7 @@ import "../../../../../styles/_variables_logistics.css";
 
 import "./carrierInfoConfig.scss";
 import { CarrierInfoForm } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
+import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTable/carrierTableConfig";
 
 const { Title } = Typography;
 
@@ -103,7 +104,7 @@ export const CarrierInfoConfigView = () => {
                   <Tab className={"tab"} value={6} label="Rutas de Seguridad" href="/spam" />
                 </Tabs2>
               </Col>
-              <CarrierInfoForm statusForm={"create"}></CarrierInfoForm>
+              <CarrierTable></CarrierTable>
             </Row>
           </Flex>
         </Flex>

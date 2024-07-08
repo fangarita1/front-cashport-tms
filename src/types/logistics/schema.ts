@@ -823,7 +823,10 @@ export interface ILocation {
   modified_at?: Date | null
   modified_by?: string | null
 }
-
+/**
+ * Exposes all fields present in driver as a typescript
+ * interface.
+ */
 export interface IDriver {
     id: number;
     phone: number;
@@ -838,19 +841,56 @@ export interface IDriver {
     emergency_number: number;
     emergency_contact: string;
     firebaseguid?: string;
-    active: boolean;
+    active: any;
+    status?: any;
     created_at: Date
     created_by: string
     modified_at?: Date | null
     modified_by?: string | null
+    company: string
 }
-
+/**
+ * Exposes all fields present in vehicle as a typescript
+ * interface.
+ */
+export interface IVehicle {
+  id: string;
+  id_carrier: string;
+  id_vehicle_type: string;
+  vehicle_type: string;
+  plate_number: string;
+  brand: string;
+  line: string;
+  model: string;
+  year: Number;
+  color: string;
+  country: string;
+  aditional_info: string;
+  gps_link: string;
+  gps_user: string;
+  gps_password: string;
+  active: any;
+  status?: any;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+  company: string;
+}
+/**
+ * Exposes all fields present in carrier as a typescript
+ * interface.
+ */
 export interface ICarrier {
   id: number;
   description: string;
   nit: string;
   icon: string;
-  active: boolean;
+  active: any;
+  status?: any;
+  vehicles: any;
+  drivers: any;
+  carrier_type: string;
   created_at: Date
   created_by: string
   modified_at?: Date | null
