@@ -52,9 +52,9 @@ export const ModalUploadDocument = ({
     setFiles([]);
   };
 
-  useEffect(() => {
-    console.log({ data, p: "modal" });
-  }, [data]);
+  // useEffect(() => {
+  //   console.log({ data, p: "modal" });
+  // }, [data]);
 
   const _data = data?.data?.map(({ id, document_name, required }) => {
     return { id, title: document_name, isMandatory: required };

@@ -120,16 +120,27 @@ export const ModalBillingPeriod = ({
     >
       <Flex vertical>
         <Text>Selecciona el corte de facturación</Text>
-
         <Radio.Group
-          style={{ padding: "1.2rem .5rem", display: "flex", flexDirection: "column", gap: "1rem" }}
+          style={{
+            padding: "1.2rem .5rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+            width: "100%"
+          }}
           onChange={onChangeSelectRadio}
           value={radioState}
         >
           <Radio value={true}>
-            <Flex align="center" gap="1rem">
-              <Text className="textPre-input">El día</Text>
-              <Flex vertical style={{ width: "80.5%" }} justify="center">
+            <Flex align="center" gap="1rem" style={{ width: "100%" }}>
+              <Flex justify="center" align="center">
+                <Text className="textPre-input">El día</Text>
+              </Flex>
+              <Flex
+                vertical={false}
+                style={{ display: "flex", alignItems: "center" }}
+                justify="start"
+              >
                 <InputNumber
                   value={state.day}
                   variant="borderless"
