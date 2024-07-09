@@ -167,7 +167,7 @@ export const ModalCreateShipTo = ({
                     />
                     {error && (
                       <Typography.Text className="textError">
-                        El Periodo de facturacion es obligatorio *
+                        La dirección es obligatoria *
                       </Typography.Text>
                     )}
                   </>

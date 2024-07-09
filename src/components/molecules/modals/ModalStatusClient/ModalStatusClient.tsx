@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Flex, Modal, Radio, Space, Typography } from "antd";
 import { useClientStatus } from "@/hooks/useClientStatus";
+import { changeClientStatus } from "@/services/clients/clients";
+import { MessageType } from "@/context/MessageContext";
 
 import "./modalstatusclient.scss";
-import { changeClientStatus } from "@/services/clients/clients";
-import { useMessageApi } from "@/context/MessageContext";
 
 const { Text } = Typography;
 
@@ -12,6 +12,8 @@ interface Props {
   isOpen: boolean;
   setIsStatusClient: Dispatch<SetStateAction<{ status: boolean; remove: boolean }>>;
   clientId: string;
+  // eslint-disable-next-line no-unused-vars
+  showMessage: (type: MessageType, content: string) => void;
   initialStatus: string;
 
 }
@@ -20,10 +22,9 @@ export const ModalStatusClient = ({
   isOpen,
   setIsStatusClient,
   clientId,
+  showMessage,
   initialStatus
 }: Props) => {
-  const { showMessage } = useMessageApi();
-
   const { data: statusClient, loading } = useClientStatus();
   const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
   const [loadingChange, setLoadingChange] = useState<boolean>(false);

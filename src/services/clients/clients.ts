@@ -243,6 +243,7 @@ export const getAllByProject = async (props: PropsGetAllByProject): Promise<ICli
 export const changeClientStatus = async (
   clientId: string,
   newStatus: number,
+  // eslint-disable-next-line no-unused-vars
   showMessage: (type: MessageType, content: string) => void
 ) => {
   const token = await getIdToken();
@@ -268,7 +269,6 @@ export const changeClientStatus = async (
   } catch (error) {
     console.warn("Error cambiando el estado del cliente: ", error);
     showMessage("error", "Oops, ocurrió un error cambiando el estado del cliente.");
-
     return error as AxiosError;
   }
 };
