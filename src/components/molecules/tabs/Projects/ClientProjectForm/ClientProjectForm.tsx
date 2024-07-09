@@ -72,7 +72,7 @@ export const ClientProjectForm = ({
     isLoading: false
   } as { data: IClient; isLoading: boolean });
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
-  const [clientDocuments, setClientDocuments] = useState<{ URL: string }[] | any[]>([]);
+  const [clientDocuments, setClientDocuments] = useState<File[] | any[]>([]);
   const [isCreateLoading, setIsCreateLoading] = useState(false);
   const { showMessage } = useMessageApi();
 
