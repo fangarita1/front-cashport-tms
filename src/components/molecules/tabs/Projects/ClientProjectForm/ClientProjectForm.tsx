@@ -301,7 +301,7 @@ export const ClientProjectForm = ({
             <Spin />
           ) : (
             <Flex vertical component={"main"} className="mainClientForm">
-              <Title level={4}>Información del usuario</Title>
+              <Title level={4}>Información del Cliente</Title>
               {/* -----------------------------------Informacion del Cliente--------------------------------------- */}
               <div className="generalProject">
                 <Flex vertical className="inputContainer">
