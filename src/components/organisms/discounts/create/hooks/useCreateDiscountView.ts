@@ -77,8 +77,15 @@ export default function useCreateDiscountView({ params }: Props) {
   useEffect(() => {
     if (statusForm === "review") {
       form.reset();
+      setFiles([]);
     }
   }, [statusForm]);
+
+  useEffect(() => {
+    if (files.length > 0) {
+      handleUpdateContract();
+    }
+  }, [files]);
 
   const handleClick = (type: number) => {
     setSelectedType(type);
@@ -106,7 +113,8 @@ export default function useCreateDiscountView({ params }: Props) {
   const handleUpdateDiscount = async (e: DiscountSchema) => {
     setLoading(true);
     try {
-      const { data } = await updateDiscount({ ...e, project_id: ID }, discountId as number);
+      const { data } = await updateDiscount({ ...e, project_id: ID }, discountId as number, files);
+      console.log(data);
       messageApi.success("Descuento actualizado exitosamente");
       setDefaultDiscount(mapDiscountGetOneToDiscountSchema(data));
       setStatusForm("review");
@@ -122,6 +130,10 @@ export default function useCreateDiscountView({ params }: Props) {
     statusForm === "edit" ? handleUpdateDiscount : handlePostDiscount
   );
 
+  const handleUpdateContract = () => {
+    form.setValue("contract_archive", undefined as never);
+  };
+
   return {
     discountId,
     selectedType,
@@ -132,6 +144,7 @@ export default function useCreateDiscountView({ params }: Props) {
     statusForm,
     setFiles,
     handleChangeStatusForm,
-    contextHolder
+    contextHolder,
+    handleUpdateContract
   };
 }

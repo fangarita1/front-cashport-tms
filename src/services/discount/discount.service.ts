@@ -10,7 +10,7 @@ import {
 import { DiscountContractRange } from "@/types/discount/DiscountContractRange";
 import { GenericResponse, GenericResponsePage } from "@/types/global/IGlobal";
 import { API, getIdToken } from "@/utils/api/api";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 const defaultRes = {
   data: [],
@@ -94,9 +94,11 @@ export const createDiscount = async (
 
 export const updateDiscount = async (
   discount: DiscountSchema & { project_id: number },
-  discountId: number
+  discountId: number,
+  invoice?: FileObject[]
 ) => {
-  const body: any = { ...discount };
+  let body: any = { ...discount };
+  const invoiceFile: any = invoice?.[0]?.file;
   body.discount_type_id = discount.discount_type;
   delete body.discount_type;
   body.min_units_order = discount.min_order;
@@ -104,9 +106,28 @@ export const updateDiscount = async (
   body.end_date = body.end_date ? body.end_date : undefined;
   body.products_category = body.products_category?.map((x: number) => ({ idProduct: x }));
   body.client_nit = discount.client;
-  const response: GenericResponse<DiscountGetOne> = await API.put(`/discount/${discountId}`, body);
-  if (!response.success) throw new Error(response.message);
-  return response;
+
+  const form = new FormData();
+  form.append("request", JSON.stringify(body));
+  if (discountTypeByAnnual.includes(Number(discount.discount_type)) && !discount.contract_archive) {
+    if (!invoiceFile) throw new Error("El contrato es obligatorio");
+    form.append("invoice", invoiceFile);
+  }
+  body = form;
+
+  const token = await getIdToken();
+  const response = await axios.put<GenericResponse<DiscountGetOne>>(
+    `${config.API_HOST}/discount/${discountId}`,
+    body,
+    {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data;
 };
 
 export const getDiscount = async (id: number) => {
