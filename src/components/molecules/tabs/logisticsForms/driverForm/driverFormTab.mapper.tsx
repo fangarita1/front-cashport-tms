@@ -51,7 +51,7 @@ export const _onSubmit = (
   setImageError: (value: SetStateAction<boolean>) => void,
   imageFile: string,
   onSubmitForm: (data: any) => void,
-  reset: UseFormReset<IFormProject>
+  reset: UseFormReset<IFormDriver>
 ) => {
   setloading(true);
   try {

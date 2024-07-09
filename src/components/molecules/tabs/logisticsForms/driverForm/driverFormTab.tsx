@@ -19,7 +19,7 @@ import {
   dataToProjectFormData,
   validationButtonText,
   DriverFormTabProps
-} from "./driverformtab.mapper";
+} from "./driverFormTab.mapper";
 import { IDriver, IFormDriver } from "@/types/logistics/schema";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 import { SelectDocument } from "@/components/molecules/logistics/SelectDocument/SelectDocument";
@@ -58,7 +58,7 @@ export const DriverFormTab = ({
 
   const onSubmit = (data: any) =>
     _onSubmit(data, setloading, setImageError, imageFile, onSubmitForm, reset);
-  console.log(data[0].birth_date)
+  //console.log(data[0].birth_date)
   return (
     <>
       <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
@@ -213,133 +213,18 @@ export const DriverFormTab = ({
               control={control}
               error={errors.general?.document}
             />
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Divisas
-              </Title>
-              <Controller
-                name="general.currencies"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.currencies && "Divisa es obligatorio *"}
-              </Text>
-            </Flex>
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                País
-              </Title>
-              <Controller
-                name="general.country"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCountries errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.country && "Pais es obligatorio *"}
-              </Text>
-            </Flex>
-            <InputForm
-              titleInput="Direccion"
-              nameInput="general.address"
-              control={control}
-              error={errors.general?.address}
-            />
-
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Fecha de vigencia de factura
-              </Title>
-              <Controller
-                name="general.accept_date"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => {
-                  return (
-                    <Select
-                      placeholder="Fecha de aceptación"
-                      className={errors?.general?.birth_date ? "selectInputError" : "selectInput"}
-                      loading={false}
-                      variant="borderless"
-                      optionLabelProp="label"
-                      {...field}
-                    >
-                      <Option value={`Fecha de aceptación`} key={1}>
-                        Fecha de aceptación
-                      </Option>
-                      <Option value={`Fecha de emisión`} key={2}>
-                        Fecha de emisión
-                      </Option>
-                    </Select>
-                  );
-                }}
-              />
-              <Text className="textError">
-                {errors?.general?.accept_date && "Campo obligatorio *"}
-              </Text>
-            </Flex>
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                DSO - Calculo solo del año actual
-              </Title>
-              <Controller
-                name="general.DSO_currenly_year"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => {
-                  return (
-                    <Select
-                      placeholder="Si | No"
-                      className={
-                        errors?.general?.DSO_currenly_year ? "selectInputError" : "selectInput"
-                      }
-                      loading={false}
-                      variant="borderless"
-                      optionLabelProp="label"
-                      {...field}
-                    >
-                      <Option value={`Sí`} key={1}>
-                        {`Sí`}
-                      </Option>
-                      <Option value={`No`} key={2}>
-                        {`No`}
-                      </Option>
-                    </Select>
-                  );
-                }}
-              />
-              <Text className="textError">
-                {errors?.general?.DSO_currenly_year && "Campo obligatorio *"}
-              </Text>
-            </Flex>
           </Flex>
 
           {/* -----------------------------------Contact----------------------------------- */}
           <Title className="title" level={4}>
-            Informacion de Contacto
+            Datos de Contacto
           </Title>
-          <Flex component={"section"} className="generalProject" justify="flex-start">
+          {/* <Flex component={"section"} className="generalProject" justify="flex-start">
             <InputForm
-              titleInput="Nombre"
+              titleInput="Nombres y apellidos"
               nameInput="contact.name"
               control={control}
               error={errors.contact?.name}
-            />
-            <InputForm
-              typeInput="cargo"
-              titleInput="Cargo"
-              nameInput="contact.position_contact"
-              control={control}
-              error={errors.contact?.position_contact}
-            />
-            <InputForm
-              typeInput="email"
-              titleInput="Correo"
-              nameInput="contact.email"
-              control={control}
-              error={errors.contact?.email}
             />
             <InputForm
               typeInput="tel"
@@ -354,35 +239,9 @@ export const DriverFormTab = ({
                 }
               }}
             />
-          </Flex>
+          </Flex> */}
           {/* -----------------------------------Project Config----------------------------------- */}
-          <Title className="title" level={4}>
-            Personalizar Proyecto
-          </Title>
-          <Flex component={"section"} className="generalProject" justify="flex-start">
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Color Personalizado
-              </Title>
-              <Controller
-                name="personalization.color"
-                rules={{ required: true, maxLength: 123 }}
-                control={control}
-                render={({ field }) => <ColorPicker format="rgb" showText {...field} />}
-              />
-              <Text className="textError">
-                {errors?.personalization?.color && "Color Personalizado es obligatorio *"}
-              </Text>
-            </Flex>
-            <InputForm
-              typeInput="personalization.description"
-              titleInput="Descripción"
-              nameInput="personalization.description"
-              className="description"
-              control={control}
-              error={errors.personalization?.description}
-            />
-          </Flex>
+
           <Flex className="buttonNewProject">
             {["edit", "create"].includes(statusForm) && (
               <Button
