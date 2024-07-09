@@ -17,7 +17,6 @@ interface Props {
   validationRules?: RegisterOptions;
   className?: string;
   readOnly?: boolean;
-  value?: string;
 }
 
 export const InputForm = ({
@@ -32,7 +31,7 @@ export const InputForm = ({
   disabled,
   validationRules,
   className,
-  readOnly
+  readOnly,
 }: Props) => {
   return (
     <Flex vertical className={`containerInput ${className}`} style={customStyle}>
@@ -58,7 +57,6 @@ export const InputForm = ({
               changeInterceptor?.(e.target.value);
             }}
             {...field}
-            value={value}
           />
         )}
       />
