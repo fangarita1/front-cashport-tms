@@ -54,7 +54,7 @@ export const ModalGenerateAction = ({
       className="modalGenerateAction"
       width={"40%"}
       open={isOpen}
-      style={{ top: 15 }}
+      centered
       title={
         <Title className="modalGenerateAction__title" level={4}>
           Generar acción
@@ -64,7 +64,7 @@ export const ModalGenerateAction = ({
       onCancel={onClose}
     >
       <p className="modalGenerateAction__description">Selecciona la acción que vas a realizar</p>
-      <Flex vertical gap="0.75rem" >
+      <Flex vertical gap="0.75rem">
         <Collapse
           className="collapseByAction"
           expandIconPosition="end"
