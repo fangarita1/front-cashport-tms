@@ -142,6 +142,16 @@ export const ClientProjectForm = ({
   );
 
   useEffect(() => {
+    // UseEffect tu update billingPeriod Value in the form
+    // so react-hook-form can validate the field
+    const formattedBillingPeriod = billingPeriod?.day_flag
+      ? `El dia ${billingPeriod?.day} del mes`
+      : `El ${billingPeriod?.order} ${billingPeriod?.day_of_week} del mes`;
+
+    setValue("infoClient.billing_period", formattedBillingPeriod, { shouldValidate: true });
+  }, [billingPeriod, setValue, dataClient.data.billing_period]);
+
+  useEffect(() => {
     // UseEffect para dar un valor a dataClient, para pintar el form
     (async () => {
       if (isViewDetailsClient?.id === 0) {
