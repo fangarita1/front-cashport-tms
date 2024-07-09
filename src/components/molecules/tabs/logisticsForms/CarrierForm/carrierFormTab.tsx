@@ -4,7 +4,6 @@ import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
-import { IUpdateFormProject } from "@/types/projects/IUpdateFormProject";
 import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
 
 //interfaces
@@ -183,10 +182,6 @@ export const CarrierInfoForm = ({
           </Flex>
         </Flex>
       </form>
-      <ModalBillingPeriod
-        isOpen={isBillingPeriodOpen}
-        setIsBillingPeriodOpen={setIsBillingPeriodOpen}
-      />
       <ModalChangeStatus
         isActiveStatus={data?.IS_ACTIVE!}
         isOpen={isOpenModal}
