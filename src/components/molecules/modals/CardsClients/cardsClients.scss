@@ -1,53 +1,53 @@
-.wrapper {
-  flex: 1;
-  row-gap: 8px;
-  height: 6.5rem;
-  padding: 0 16px;
-  border-radius: 8px;
-  position: relative;
-  text-align: center;
-  margin-bottom: 10px;
-  flex-direction: column;
-  justify-content: center;
-  background-color: #f8f8f8;
+.wrapperCardsClient {
+    flex: 1;
+    row-gap: 8px;
+    height: 6.5rem;
+    padding: 0 16px;
+    border-radius: 8px;
+    position: relative;
+    text-align: center;
+    margin-bottom: 10px;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #f8f8f8;
 }
 .icon {
-  top: 16px;
-  right: 16px;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  position: absolute;
-  border-radius: 6px;
-  align-items: center;
-  justify-content: center;
-  background-color: #CBE71E;
+    top: 16px;
+    right: 16px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    position: absolute;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    background-color: #cbe71e;
 }
 .header {
-  .title {
-    margin: 0;
-    color: #333;
-    font-size: 1rem;
-    overflow: hidden;
-    line-height: 24px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
+    .title {
+        margin: 0;
+        color: #333;
+        font-size: 1rem;
+        overflow: hidden;
+        line-height: 24px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
 }
 .card-client-value {
-  gap: 4px;
-  display: flex;
-  font-weight: 500;
-  color: #141414;
-  font-size: 1.625rem;
-  align-items: center;
-  .total{
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis; 
-  }
-  span {
-    font-size: 1.3rem;
-    font-weight: 300;
-  }
+    gap: 4px;
+    display: flex;
+    font-weight: 500;
+    color: #141414;
+    font-size: 1.625rem;
+    align-items: center;
+    .total {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    span {
+        font-size: 1.3rem;
+        font-weight: 300;
+    }
 }
