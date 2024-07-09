@@ -1,9 +1,8 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Flex, Modal, Typography } from "antd";
 
 import "./modaluploaddocument.scss";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
-import { useParams } from "next/navigation";
 import useModalUploadDocument from "@/hooks/useModalUploadDocument";
 
 interface Props {
@@ -19,15 +18,6 @@ interface FileObject {
 }
 
 const { Title, Text } = Typography;
-
-const mockFiles = [
-  { id: 1, title: "RUT", isMandatory: true },
-  { id: 2, title: "Cámara de Comercio", isMandatory: true },
-  { id: 3, title: "Estados Financieros", isMandatory: true },
-  { id: 4, title: "Formato de Creación", isMandatory: false },
-  { id: 5, title: "Certificación bancaria", isMandatory: false },
-  { id: 6, title: "Archivos adicionales", isMandatory: false }
-];
 
 export const ModalUploadDocument = ({
   isOpen,
@@ -51,10 +41,6 @@ export const ModalUploadDocument = ({
     setIsOpenUpload(false);
     setFiles([]);
   };
-
-  useEffect(() => {
-    console.log({ data, p: "modal" });
-  }, [data]);
 
   const _data = data?.data?.map(({ id, document_name, required }) => {
     return { id, title: document_name, isMandatory: required };

@@ -1,12 +1,11 @@
 import axios, { AxiosResponse } from "axios";
-import { MessageInstance } from "antd/es/message/interface";
-
 import config from "@/config";
 import { IUserAxios, IUserForm } from "@/types/users/IUser";
 import { getIdToken } from "@/utils/api/api";
 import { SUCCESS } from "@/utils/constants/globalConstants";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 import { IGroupsByUser } from "@/types/clientsGroups/IClientsGroups";
+import { MessageType } from "@/context/MessageContext";
 
 export const getUserById = async (idUser: string): Promise<IUserAxios> => {
   const token = await getIdToken();
@@ -110,58 +109,54 @@ export const updateUser = async (
 };
 
 export const onChangeStatusById = async (
-  data: any,
+  userId: number,
   isActive: 1 | 0,
-  messageApi: MessageInstance,
+  // eslint-disable-next-line no-unused-vars
+  showMessage: (type: MessageType, content: string) => void,
   onClose: () => void
 ) => {
   const modelData = {
-    email: data.EMAIL,
-    user_name: data.USER_NAME,
-    zones:
-      data.USER_ZONES?.map((zone: { ZONE_ID: number; ZONE_DESCRIPTION: string }) => ({
-        ZONE_ID: zone.ZONE_ID
-      })) ?? [],
-    phone: data.PHONE,
-    position: data.POSITION,
-    id: data.ID,
-    rol_id: data.ROL_ID,
-    project_id: `${data.PROJECT_ID}`,
     active: isActive
   };
   const token = await getIdToken();
   try {
-    const response: AxiosResponse = await axios.put(`${config.API_HOST}/user`, modelData, {
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        "Content-Type": "application/json; charset=utf-8",
-        Authorization: `Bearer ${token}`
+    const response: AxiosResponse = await axios.put(
+      `${config.API_HOST}/user/${userId}/user-change-status`,
+      modelData,
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json; charset=utf-8",
+          Authorization: `Bearer ${token}`
+        }
       }
-    });
+    );
     if (response.status === SUCCESS) {
-      messageApi.open({
-        type: "success",
-        content: `El usuario fue ${isActive === 1 ? "activado" : "desactivado"} exitosamente.`
-      });
+      showMessage(
+        "success",
+        `El usuario fue ${isActive === 1 ? "activado" : "desactivado"} exitosamente.`
+      );
       onClose();
     } else {
-      messageApi.open({
-        type: "error",
-        content: "Oops ocurrio un error."
-      });
       onClose();
     }
 
     return response;
   } catch (error) {
-    return error as any;
+    // const e = error as AxiosError;
+    if (axios.isAxiosError(error)) {
+      showMessage("error", error.response?.data?.message);
+      onClose();
+      return error as any;
+    }
   }
 };
 
 export const onRemoveUserById = async (
   idUser: number,
   idProject: number,
-  messageApi: MessageInstance,
+  // eslint-disable-next-line no-unused-vars
+  showMessage: (type: MessageType, content: string) => void,
   onClose: () => void
 ): Promise<AxiosResponse<any>> => {
   const token = await getIdToken();
@@ -177,16 +172,10 @@ export const onRemoveUserById = async (
       }
     );
     if (response.status === SUCCESS) {
-      messageApi.open({
-        type: "success",
-        content: "El usuario fue eliminado exitosamente."
-      });
+      showMessage("success", "El usuario fue eliminado exitosamente.");
       onClose();
     } else {
-      messageApi.open({
-        type: "error",
-        content: "Oops ocurrio un error."
-      });
+      showMessage("error", "Oops ocurrio un error.");
       onClose();
     }
 
