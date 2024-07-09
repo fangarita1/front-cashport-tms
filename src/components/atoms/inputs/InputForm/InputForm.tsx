@@ -17,6 +17,8 @@ interface Props {
   validationRules?: RegisterOptions;
   className?: string;
   readOnly?: boolean;
+  // eslint-disable-next-line no-unused-vars
+  changeInterceptor?: (value: any) => void;
 }
 
 export const InputForm = ({
@@ -32,6 +34,7 @@ export const InputForm = ({
   validationRules,
   className,
   readOnly,
+  changeInterceptor
 }: Props) => {
   return (
     <Flex vertical className={`containerInput ${className}`} style={customStyle}>
