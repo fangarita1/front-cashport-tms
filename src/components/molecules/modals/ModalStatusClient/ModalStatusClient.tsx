@@ -1,18 +1,18 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Flex, Modal, Radio, Space, Typography } from "antd";
 import { useClientStatus } from "@/hooks/useClientStatus";
+import { changeClientStatus } from "@/services/clients/clients";
+import { MessageType } from "@/context/MessageContext";
 
 import "./modalstatusclient.scss";
-import { MessageInstance } from "antd/es/message/interface";
-import { changeClientStatus } from "@/services/clients/clients";
-
 const { Text } = Typography;
 
 interface Props {
   isOpen: boolean;
   setIsStatusClient: Dispatch<SetStateAction<{ status: boolean; remove: boolean }>>;
   clientId: string;
-  messageApi: MessageInstance;
+  // eslint-disable-next-line no-unused-vars
+  showMessage: (type: MessageType, content: string) => void;
   initialStatus: string;
 }
 
@@ -20,7 +20,7 @@ export const ModalStatusClient = ({
   isOpen,
   setIsStatusClient,
   clientId,
-  messageApi,
+  showMessage,
   initialStatus
 }: Props) => {
   const { data: statusClient, loading } = useClientStatus();
@@ -41,14 +41,11 @@ export const ModalStatusClient = ({
   const handleOk = async () => {
     if (selectedStatus !== null) {
       setLoadingChange(true);
-      await changeClientStatus(clientId, selectedStatus, messageApi);
+      await changeClientStatus(clientId, selectedStatus, showMessage);
       setLoadingChange(false);
       setIsStatusClient({ status: false, remove: false });
     } else {
-      messageApi.open({
-        type: "warning",
-        content: "Por favor selecciona un estado antes de continuar."
-      });
+      showMessage("warning", "Por favor selecciona un estado antes de continuar.");
     }
   };
 
