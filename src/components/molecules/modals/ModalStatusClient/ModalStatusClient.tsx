@@ -5,6 +5,7 @@ import { changeClientStatus } from "@/services/clients/clients";
 import { MessageType } from "@/context/MessageContext";
 
 import "./modalstatusclient.scss";
+
 const { Text } = Typography;
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
   // eslint-disable-next-line no-unused-vars
   showMessage: (type: MessageType, content: string) => void;
   initialStatus: string;
+
 }
 
 export const ModalStatusClient = ({

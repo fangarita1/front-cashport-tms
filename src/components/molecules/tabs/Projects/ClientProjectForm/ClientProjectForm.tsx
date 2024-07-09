@@ -6,7 +6,6 @@ import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
 
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
-import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
 import { DividerCustom } from "@/components/atoms/DividerCustom/DividerCustom";
 import { ShipToProjectTable } from "@/components/molecules/tables/ShipToProjectTable/ShipToProjectTable";
 
@@ -40,6 +39,7 @@ import { SelectLocations } from "@/components/molecules/selects/clients/SelectLo
 import { useMessageApi } from "@/context/MessageContext";
 
 import "./clientprojectform.scss";
+import { DocumentButtonAction } from "@/components/atoms/DocumentButtonAction/DocumentButtonAction";
 
 const { Title } = Typography;
 
@@ -120,7 +120,6 @@ export const ClientProjectForm = ({
       }
     };
   };
-
   const {
     control,
     handleSubmit,
@@ -155,11 +154,13 @@ export const ClientProjectForm = ({
       });
       const response = await getClientById(isViewDetailsClient.id.toString(), idProject);
       const finalData = response.data.data;
+      console.log(finalData);
 
       setDataClient({
         isLoading: false,
         data: finalData
       });
+
       setClientDocuments(finalData.documents);
       setBillingPeriod(finalData.billing_period_config);
     })();
@@ -480,7 +481,10 @@ export const ClientProjectForm = ({
                 <Row className="clientDocuments" gutter={16}>
                   {clientDocuments?.map((document, index) => (
                     <Col key={`${index}${document.name}`} span={6} style={{ marginBottom: "1rem" }}>
-                      <DocumentButton fileName={document.name} fileSize={document.size} disabled />
+                      <DocumentButtonAction
+                        fileName={document.name}
+                        documentUrl={document.URL?.trim()}
+                      />
                     </Col>
                   ))}
                 </Row>
