@@ -4,6 +4,7 @@ import { Control, Controller, FieldError, RegisterOptions } from "react-hook-for
 import { Calendar } from "phosphor-react";
 
 import "./inputDateFormStyle.scss";
+import dayjs from "dayjs";
 
 interface InputDateFormProps {
   titleInput: string;
@@ -15,6 +16,7 @@ interface InputDateFormProps {
   disabled?: boolean;
   validationRules?: RegisterOptions;
   className?: string;
+  value?: string;
 }
 
 export const InputDateForm = ({
@@ -26,33 +28,66 @@ export const InputDateForm = ({
   placeholder = "",
   disabled,
   validationRules,
-  className
+  className,
+  value
 }: InputDateFormProps) => {
-  return (
-    <Flex vertical className={`datePickerContainer ${className}`}>
-      {!hiddenTitle && <p className="input-date-custom-title">{titleInput}</p>}
-      <Controller
-        name={nameInput}
-        rules={{ required: true, ...validationRules }}
-        control={control}
-        render={({ field }) => (
-          <DatePicker
-            {...field}
-            onChange={(date) => field.onChange(date)}
-            value={field.value}
-            size="large"
-            disabled={disabled}
-            placeholder={placeholder || `Select ${titleInput.toLowerCase()}`}
-            suffixIcon={<Calendar className="dateInputForm__icon" />}
-            className={!error ? "dateInputForm" : "dateInputFormError"}
-          />
+  if(value){
+    const my_date = dayjs(value);
+    console.log(my_date)
+    return (
+      <Flex vertical className={`datePickerContainer ${className}`}>
+        {!hiddenTitle && <p className="input-date-custom-title">{titleInput}</p>}
+        <Controller
+          name={nameInput}
+          rules={{ required: true, ...validationRules }}
+          control={control}
+          render={({ field }) => (
+            <DatePicker
+              {...field}
+              onChange={(date) => field.onChange(date)}
+              defaultValue={my_date} format={'DD-MM-YYYY'}
+              size="large"
+              disabled={disabled}
+              placeholder={placeholder || `Select ${titleInput.toLowerCase()}`}
+              suffixIcon={<Calendar className="dateInputForm__icon" />}
+              className={!error ? "dateInputForm" : "dateInputFormError"}
+            />
+          )}
+        />
+        {error && (
+          <Typography.Text className="textError">
+            {error.message || `${titleInput} is required`}
+          </Typography.Text>
         )}
-      />
-      {error && (
-        <Typography.Text className="textError">
-          {error.message || `${titleInput} is required`}
-        </Typography.Text>
-      )}
-    </Flex>
-  );
+      </Flex>
+    );
+  } else {
+    return (
+      <Flex vertical className={`datePickerContainer ${className}`}>
+        {!hiddenTitle && <p className="input-date-custom-title">{titleInput}</p>}
+        <Controller
+          name={nameInput}
+          rules={{ required: true, ...validationRules }}
+          control={control}
+          render={({ field }) => (
+            <DatePicker
+              {...field}
+              onChange={(date) => field.onChange(date)}
+              value={field.value}
+              size="large"
+              disabled={disabled}
+              placeholder={placeholder || `Select ${titleInput.toLowerCase()}`}
+              suffixIcon={<Calendar className="dateInputForm__icon" />}
+              className={!error ? "dateInputForm" : "dateInputFormError"}
+            />
+          )}
+        />
+        {error && (
+          <Typography.Text className="textError">
+            {error.message || `${titleInput} is required`}
+          </Typography.Text>
+        )}
+      </Flex>
+    );
+  }
 };

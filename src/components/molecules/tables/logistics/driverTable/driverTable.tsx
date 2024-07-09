@@ -46,6 +46,7 @@ export const DriverTable = () => {
       element.status = false;
     }
     datasource.push({
+      id: element.id,
       company: element.company,
       name: element.name,
       docuemnt: element.document,
@@ -54,6 +55,7 @@ export const DriverTable = () => {
       status: element.status
     });
   });
+
   const columns: TableProps<IDriver>["columns"] = [
     {
       title: "Empresa",
@@ -104,7 +106,7 @@ export const DriverTable = () => {
       width: "54px",
       dataIndex: "",
       render: (_, { id }) => (
-        <Button href={`/driver/${id}`} className="icon-detail" icon={<Eye size={20} />} />
+        <Button href={`/logistics/drivers/driver/${id}`} className="icon-detail" icon={<Eye size={20} />} />
       )
     }
   ];

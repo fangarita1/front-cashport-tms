@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Button, ColorPicker, Flex, Select, Typography } from "antd";
+import { SetStateAction, useEffect, useState } from "react";
+import { Button, Col, ColorPicker, Flex, Row, Select, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 
@@ -16,13 +16,19 @@ import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import "./driverformtab.scss";
 import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
+import { IDriver } from "@/types/logistics/schema";
+import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
+import { dataToProjectFormData } from "./driverFormTab.mapper";
+import { SelectRh } from "@/components/molecules/selects/SelectRh/SelectRh";
+import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
+import { SelectDocument } from "@/components/molecules/selects/SelectDocument/SelectDocument";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
 interface Props {
   idProjectForm?: string;
-  data?: IProject;
+  data?: IDriver[];
   disabled?: boolean;
   // eslint-disable-next-line no-unused-vars
   onEditProject?: () => void;
@@ -33,21 +39,13 @@ interface Props {
   statusForm: "create" | "edit" | "review";
 }
 
-export const DriverInfoForm = ({
-  onEditProject = () => {},
-  onSubmitForm = () => {},
-  statusForm = "review",
-  data = {} as IProject,
-  onActiveProject = () => {},
-  onDesactivateProject = () => {}
-}: Props) => {
+export const DriverInfoForm = ({ statusForm = "review", data = [] as IDriver[] }: Props) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
-  const [imageFile, setImageFile] = useState(data.LOGO);
+  const [imageFile, setImageFile] = useState(data);
   const [imageError, setImageError] = useState(false);
-  const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data);
+  const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data[0]);
   const {
-    watch,
     setValue,
     control,
     handleSubmit,
@@ -57,14 +55,6 @@ export const DriverInfoForm = ({
     defaultValues,
     disabled: statusForm === "review"
   });
-
-  const generalDSOCurrentlyYear = watch("general.DSO_currenly_year");
-
-  useEffect(() => {
-    if (generalDSOCurrentlyYear === "Sí") {
-      setValue("general.DSO_days", undefined);
-    }
-  }, [generalDSOCurrentlyYear, setValue]);
 
   const validationButtonText =
     statusForm === "create"
@@ -76,148 +66,121 @@ export const DriverInfoForm = ({
   const onSubmit = (data: any) => {
     if (!imageFile) return setImageError(true);
     setImageError(false);
-    onSubmitForm({ ...data, logo: imageFile });
+    onSubmit({ ...data, logo: imageFile });
     reset(data);
   };
 
   return (
     <>
       <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
-        <Flex component={"header"} className="headerProyectsForm">
-          <Flex gap={"1rem"}>
-            {(statusForm === "review" || statusForm === "edit") && (
-              <Button
-                className="buttons"
-                htmlType="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsOpenModal(true);
-                }}
-              >
-                Cambiar Estado
-                <ArrowsClockwise size={"1.2rem"} />
-              </Button>
-            )}
-            {statusForm === "review" ? (
-              <Button
-                className="buttons"
-                htmlType="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onEditProject();
-                }}
-              >
-                {validationButtonText}
-                <Pencil size={"1.2rem"} />
-              </Button>
-            ) : (
-              ""
-            )}
-          </Flex>
-        </Flex>
         <Flex component={"main"} flex="3" vertical>
-          <Title className="title" level={4}>
-            Logo
-          </Title>
-          {/* ------------Image Project-------------- */}
-          <UploadImg
-            disabled={statusForm === "review"}
-            imgDefault={data.LOGO}
-            setImgFile={setImageFile}
-          />
-          <Title className="title" level={4}>
-            Informacion General
-          </Title>
-          <Flex component={"section"} className="generalProject" justify="flex-start">
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Tipo de Vehiculo
+          <Row style={{ width: "100%" }}>
+            <Col>
+              <Title className="title" level={4}>
+                Logo
               </Title>
-              <Controller
-                name="general.currencies"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
+              {/* ------------Image Project-------------- */}
+              <UploadImg
+                disabled={statusForm === "review"}
+                imgDefault={data.document}
+                setImgFile={setImageFile}
               />
-              <Text className="textError">
-                {errors?.general?.currencies && "Divisa es obligatorio *"}
-              </Text>
-            </Flex>
-            <InputForm
-              titleInput="Placa"
-              nameInput="general.placa"
-              control={control}
-              error={errors.general?.nit}
-            />
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Marca
+            </Col>
+            <Col>
+              <Title className="title" level={4}>
+                Informacion General
               </Title>
-              <Controller
-                name="general.currencies"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.currencies && "Divisa es obligatorio *"}
-              </Text>
-            </Flex>
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Modelo
-              </Title>
-              <Controller
-                name="general.currencies"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.currencies && "Divisa es obligatorio *"}
-              </Text>
-            </Flex>
-            <InputForm
-              titleInput="Linea"
-              nameInput="general.linea"
-              control={control}
-              error={errors.general?.address}
-            />
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Año
-              </Title>
-              <Controller
-                name="general.DSO_currenly_year"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.currencies && "Divisa es obligatorio *"}
-              </Text>
-            </Flex>
-            <InputForm
-              titleInput="Color"
-              nameInput="general.color"
-              control={control}
-              error={errors.general?.billing_period}
-            />
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Ciudad
-              </Title>
-              <Controller
-                name="general.country"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.currencies && "Divisa es obligatorio *"}
-              </Text>
-            </Flex>
-          </Flex>
+              <Flex component={"section"} className="generalProject" justify="flex-start">
+                <InputForm
+                  titleInput="Nombres"
+                  value={data[0].name}
+                  nameInput="general.name"
+                  control={control}
+                  error={undefined}
+                />
+                <InputForm
+                  titleInput="Apellidos"
+                  value={data[0].last_name}
+                  nameInput="general.lastname"
+                  control={control}
+                  error={undefined}
+                />
+                <Flex vertical className="containerInput">
+                  <Title className="title" level={5}>
+                    Tipo de Sangre
+                  </Title>
+                  <Controller
+                    name="Tipo de Sangre"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <SelectRh selected={data[0].rh} errors={errors} field={field} />
+                    )}
+                  />
+                </Flex>
+                <Flex vertical className="containerInput">
+                  <InputDateForm
+                    titleInput="Fecha de nacimiento"
+                    nameInput="birth_date"
+                    placeholder="Seleccionar fecha de nacimiento"
+                    control={control}
+                    error={undefined}
+                    value={new Date(data[0].birth_date).toISOString()}
+                  />
+                  <Text className="textError">error={undefined}</Text>
+                </Flex>
+                <Flex vertical className="containerInput">
+                  <Title className="title" level={5}>
+                    Tipo de documento
+                  </Title>
+                  <Controller
+                    name="Tipo de documento"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <SelectDocument selected={data[0].document_type} errors={errors} field={field} />
+                    )}
+                  />
+                </Flex>
+                <InputForm
+                  titleInput="Linea"
+                  nameInput="general.linea"
+                  control={control}
+                  error={undefined}
+                />
+                <Flex vertical className="containerInput">
+                  <Title className="title" level={5}>
+                    Año
+                  </Title>
+                  <Controller
+                    name="general.DSO_currenly_year"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
+                  />
+                  <Text className="textError">error={undefined}</Text>
+                </Flex>
+                <InputForm
+                  titleInput="Color"
+                  nameInput="general.color"
+                  control={control}
+                  error={undefined}
+                />
+                <Flex vertical className="containerInput">
+                  <Title className="title" level={5}>
+                    Ciudad
+                  </Title>
+                  <Controller
+                    name="general.country"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
+                  />
+                  <Text className="textError">{"Divisa es obligatorio *"}</Text>
+                </Flex>
+              </Flex>
+            </Col>
+          </Row>
           <Title className="title" level={4}>
             Informacion Adicional
           </Title>
@@ -226,7 +189,7 @@ export const DriverInfoForm = ({
             titleInput=""
             nameInput="general.color"
             control={control}
-            error={errors.general?.billing_period}
+            error={undefined}
           />
           <Title className="title" level={4}>
             Documentos
@@ -248,43 +211,22 @@ export const DriverInfoForm = ({
       <ModalBillingPeriod
         isOpen={isBillingPeriodOpen}
         setIsBillingPeriodOpen={setIsBillingPeriodOpen}
+        billingPeriod={undefined}
+        setBillingPeriod={function (value: SetStateAction<IBillingPeriodForm | undefined>): void {
+          throw new Error("Function not implemented.");
+        }}
       />
       <ModalChangeStatus
-        isActiveStatus={data?.IS_ACTIVE!}
+        isActiveStatus={data?.active!}
         isOpen={isOpenModal}
         onClose={() => setIsOpenModal(false)}
-        onActive={onActiveProject}
-        onDesactivate={onDesactivateProject}
+        onActive={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+        onDesactivate={function (): void {
+          throw new Error("Function not implemented.");
+        }}
       />
     </>
   );
-};
-const dataToProjectFormData = (data: IProject) => {
-  const currenciesFormated = data?.CURRENCY?.map(
-    (currency) => `${currency.id}-${currency.CURRENCY_NAME ?? currency.currency_name}`
-  );
-
-  return {
-    general: {
-      name: data.PROJECT_DESCRIPTION,
-      nit: data.NIT,
-      currencies: currenciesFormated,
-      country: `${data.COUNTRY_ID}-${data.COUNTRY_NAME}`,
-      address: data.ADDRESS,
-      billing_period: data.BILLING_PERIOD,
-      description: data.PROJECT_DESCRIPTION,
-      DSO_currenly_year: data.DSO_CURRENLY_YEAR === 0 ? "No" : "Sí",
-      DSO_days: data.DSO_DAYS,
-      accept_date: data?.ACCEPT_DATE === 0 ? "Fecha de emisión" : "Fecha de aceptación"
-    },
-    contact: {
-      name: data.CONTACT,
-      position: "",
-      email: data.EMAIL,
-      phone: data.PHONE
-    },
-    personalization: {
-      color: data.RGB_CONFIG
-    }
-  };
 };

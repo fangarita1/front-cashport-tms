@@ -1,112 +1,129 @@
-import {
-  Flex,
-  Typography,
-  message,
-  Row,
-  Col,
-} from "antd";
-import React, { useRef, useEffect, useState, useContext } from "react";
-import Tabs2 from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-
-// components
+import { Flex, Typography, message, Row, Col, Tabs, TabsProps, Spin } from "antd";
+import React, { useEffect, useState } from "react";
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
-
-import { IListData, ILocation } from "@/types/logistics/schema";
-
-//locations
-import { getAllLocations } from "@/services/logistics/locations";
-
 import { useRouter } from "next/navigation";
-
-
 import "../../../../../styles/_variables_logistics.css";
-
 import "./driverInfo.scss";
 import { DriverInfoForm } from "@/components/molecules/tabs/logisticsForms/driverForm/driverFormTab";
-import { getAllDrivers } from "@/services/logistics/drivers";
+import { getDriverById } from "@/services/logistics/drivers";
+import { IDriver } from "@/types/logistics/schema";
+import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTable/carrierTable";
+import { DriverTable } from "@/components/molecules/tables/logistics/driverTable/driverTable";
+import { VehicleTable } from "@/components/molecules/tables/logistics/vehicleTable/vehicleTable";
 
+interface Props {
+  idParam: string;
+  statusForm: string;
+}
 
 const { Title } = Typography;
 
-export const DriverInfoView = () => {
+export const DriverInfoView = ({ idParam = ""}: Props) => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
-  const [routeInfo, setRouteInfo] = useState([]);
-  const [locations, setLocations] = useState<ILocation[]>([]);
-  const [locationOptions, setLocationOptions] = useState<any>([]);
-  const [value, setValue] = useState(2);
+  const [drivers, setDrivers] = useState<IDriver[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [value, setValue] = useState('3');
+  const [renderAllInfo, setRenderInfo] = useState(false);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const onChange = (key: string) => {
+    setValue(key);
+    setRenderInfo(true)
   };
+  const datasource: IDriver[] = [];
 
-  console.log("routeInfo==>", routeInfo);
+  const retry = () => {
+    setLoading(true)
+    setError('')
+  }
+  const loadDriver = async () => {
+    const result = await getDriverById(idParam);
+    const listDrivers: any[] | ((prevState: IDriver[]) => IDriver[]) = [];
+    result.data.data.forEach((item, index) => {
+      listDrivers.push(item);
+    });
+    return listDrivers;
+  };
 
   useEffect(() => {
-    loadDrivers();
+    loadDriver().then(result => {
+      setLoading(false)
+      setDrivers(result);
+    } ).catch(error => setError(error));
+  }, [error])
+
+  drivers.forEach((element) => {
+    if (element.active.data[0] === 1) {
+      element.status = true;
+    } else {
+      element.status = false;
+    }
+    datasource.push(element);
   });
 
-  const loadDrivers = async () => {
-    if (locations.length > 0) return;
-    const result = await getAllDrivers();
-    console.log(result)
-    if (result.data.data.length > 0) {
-      console.log(result.data.data);
-
-      const listlocations: any[] | ((prevState: ILocation[]) => ILocation[]) = [];
-      const listlocationoptions: { label: any; value: any }[] = [];
-
-      result.data.data.forEach((item, index) => {
-        listlocations.push(item);
-        listlocationoptions.push({ label: item.description, value: item.id });
-      });
-
-      setLocations(listlocations);
-      setLocationOptions(listlocationoptions);
-
-      console.log(locations);
-      console.log(locationOptions);
+  const items: TabsProps["items"] = [
+    {
+      key: "1",
+      label: "General",
+      children: (
+        <>
+        </>
+      )
+    },
+    {
+      key: "2",
+      label: "Vehiculo",
+      children: (
+        <>
+        </>
+      )
+    },
+    {
+      key: "3",
+      label: "Conductor",
+      children: (
+        <>
+        </>
+      )
     }
-  };
+  ];
 
-  return (
-    <>
-      {contextHolder}
-      <main className="mainCreateOrder">
-        <SideBar />
-        <Flex vertical className="containerCreateOrder">
-          <Flex className="infoHeaderOrder">
-            <Flex gap={"2rem"}>
-              <Title level={2} className="titleName">
-                Proveedores
-              </Title>
+  if(loading){
+    return (<Flex style={{ height: "30%" }} align="center" justify="center">
+    <Spin size="large" />
+  </Flex>)
+  } else {
+    return (
+      <>
+        {contextHolder}
+        <main className="mainCreateOrder">
+          <SideBar />
+          <Flex vertical className="containerCreateOrder">
+            <Flex className="infoHeaderOrder">
+              <Flex gap={"2rem"}>
+                <Title level={2} className="titleName">
+                  Proveedores
+                </Title>
+              </Flex>
+              <Flex align="center" justify="space-between">
+                <NavRightSection />
+              </Flex>
             </Flex>
-            <Flex component={"navbar"} align="center" justify="space-between">
-              <NavRightSection />
+            {/* ------------Main Info Order-------------- */}
+            <Flex className="orderContainer">
+              <Row style={{ width: "100%" }}>
+                <Col span={24}>
+                <Tabs defaultActiveKey={value} items={items} onChange={onChange} >
+                </Tabs>
+                </Col>
+                <DriverInfoForm data={datasource} statusForm={"review"}></DriverInfoForm>
+              </Row>
             </Flex>
           </Flex>
-          {/* ------------Main Info Order-------------- */}
-          <Flex className="orderContainer">
-            <Row style={{ width: "100%" }}>
-              <Col span={24}>
-                <Tabs2
-                  className="tabs"
-                  value={value}
-                  onChange={handleChange}
-                  role="navigation"
-                >
-                  <Tab className={"tab"} value={0} label="General" href="/logistics/providers/all" />
-                  <Tab className={"tab"} value={1} label="Vehiculo" href="/logistics/vehicles/all" />
-                  <Tab className={"tab"} value={2} label="Conductor" href="/logistics/drivers/all" />
-                </Tabs2>
-              </Col>
-              <DriverInfoForm statusForm={"create"}></DriverInfoForm>
-            </Row>
-          </Flex>
-        </Flex>
-      </main>
-    </>
-  );
+        </main>
+      </>
+    );
+  }
 };
