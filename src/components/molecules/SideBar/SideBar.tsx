@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button, Flex } from "antd";
 
-import { ArrowLineRight, Gear, Megaphone, User } from "phosphor-react";
+import { ArrowLineRight, Gear, Megaphone, User, UsersThree } from "phosphor-react";
 import Image from "next/image";
 
 import "./sidebar.scss";
@@ -51,7 +51,17 @@ export const SideBar = () => {
             {isSideBarLarge && "Descuentos"}
           </Button>
         </Link>
-        <Link href="/" passHref legacyBehavior>
+        <Link href="/logistics/providers/all" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<UsersThree size={26} />}
+            className={path.startsWith("/clientes") ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Clientes"}
+          </Button>
+        </Link>
+        <Link href="/logistics/configuration" passHref legacyBehavior>
           <Button
             type="primary"
             size="large"

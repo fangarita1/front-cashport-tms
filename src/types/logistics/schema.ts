@@ -848,6 +848,9 @@ export interface IDriver {
     modified_at?: Date | null
     modified_by?: string | null
     company: string
+    rh: string;
+    glasses: any,
+    birth_date: Date,
 }
 /**
  * Exposes all fields present in vehicle as a typescript
@@ -2036,4 +2039,9 @@ export interface IVehiclesWithDefaults {
   gps_link?: string | null
   gps_user?: string | null
   gps_password?: string | null
+}
+
+export interface IFormDriver {
+  general: IDriver;
+  logo: any;
 }

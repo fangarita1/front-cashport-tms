@@ -65,7 +65,7 @@
             border: 1px solid #ddd;
         }
         .containerInput {
-            width: 23%;
+            width: 32%;
             margin: 0.25rem 0.5rem;
             .title {
                 font-size: 0.75rem;
@@ -90,8 +90,8 @@
         width: 50% !important;
     }
     .ant-upload-select {
-        width: 180px !important;
-        height: 120px !important;
+        width: 385px !important;
+        height: 250px !important;
         flex-shrink: 0;
         border-radius: 8px;
         background: #f7f7f7;
@@ -121,7 +121,7 @@
             color: $gray;
         }
         .containerInput {
-            width: 23%;
+            width: 32%;
             margin: 0.25rem 0.5rem;
             .title {
                 font-size: 0.75rem;
