@@ -171,6 +171,7 @@ export const WalletTab = () => {
         showActionDetailModal={showActionDetailModal}
         setShowActionDetailModal={setShowActionDetailModal}
         invoiceSelected={selectedRows}
+        onCloseAllModals={closeAllModal}
       />
       <WalletTabChangeStatusModal
         isOpen={isSelectOpen.selected === 2}

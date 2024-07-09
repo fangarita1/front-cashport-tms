@@ -22,6 +22,10 @@ interface RegisterNewsProps {
   messageShow: MessageInstance;
   onCloseAllModals: () => void;
 }
+interface infoObject {
+  file: File;
+  fileList: File[];
+}
 
 interface IFormRegisterNews {
   motive: string;
@@ -67,17 +71,17 @@ const RegisterNews = ({
 
   const evidence = watch("evidence");
 
-  const handleOnChangeDocument = (info: UploadChangeParam<UploadFile<any>>) => {
-    const file = info.file.originFileObj;
-    if (file) {
-      const fileSizeInMB = file.size / (1024 * 1024);
+  const handleOnChangeDocument: any = (info: infoObject) => {
+    const { file: rawFile } = info;
+    if (rawFile) {
+      const fileSizeInMB = rawFile.size / (1024 * 1024);
       if (fileSizeInMB > 30) {
         messageShow.error(
           "El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB."
         );
         return;
       }
-      setValue("evidence", [...evidence, file]);
+      setValue("evidence", [...evidence, rawFile]);
       trigger("evidence");
     }
   };
@@ -100,6 +104,20 @@ const RegisterNews = ({
         return;
       }
       setValue("evidence", [...evidence, file]);
+      trigger("evidence");
+    }
+  };
+  const handleOnDrop: any = (e: any) => {
+    const rawFile = e.dataTransfer.files;
+
+    if (rawFile) {
+      const fileSizeInMB = rawFile.size / (1024 * 1024);
+
+      if (fileSizeInMB > 30) {
+        alert("El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB.");
+        return;
+      }
+      setValue("evidence", [...evidence, rawFile]);
       trigger("evidence");
     }
   };
@@ -158,6 +176,7 @@ const RegisterNews = ({
               key={evidence[0]?.name}
               title={evidence[0]?.name}
               handleOnChange={handleOnChangeDocument}
+              handleOnDrop={handleOnDrop}
               handleOnDelete={() => handleOnDeleteDocument(evidence[0]?.name)}
               fileName={evidence[0]?.name}
               fileSize={evidence[0]?.size}

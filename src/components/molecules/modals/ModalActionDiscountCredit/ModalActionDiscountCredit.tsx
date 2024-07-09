@@ -27,6 +27,7 @@ interface Props {
     }>
   >;
   invoiceSelected?: IInvoice[];
+  onCloseAllModals?: () => void;
 }
 export interface ISelectedAccountingAdjustment {
   id: number;
@@ -40,7 +41,8 @@ export const ModalActionDiscountCredit = ({
   isOpen,
   onClose,
   showActionDetailModal,
-  invoiceSelected
+  invoiceSelected,
+  onCloseAllModals
 }: Props) => {
   const [selectedRows, setSelectedRows] = useState<ISelectedAccountingAdjustment[]>([]);
   const [currentView, setCurrentView] = useState("select");
@@ -78,59 +80,67 @@ export const ModalActionDiscountCredit = ({
               }
         }
       >
-          {currentView === "select" && (
-            <SelectAccountingAdjustment
-              type={showActionDetailModal.actionType}
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
-              onClose={onClose}
-              setCurrentView={setCurrentView}
-            />
-          )}
-          {currentView === "create" && (
-            <>
-              {showActionDetailModal.actionType === 1 && (
-                <CreateDebitNote
-                  onClose={() => {
-                    setCurrentView("select");
-                  }}
-                  messageApi={messageApi}
-                  clientIdParam={clientIdParam}
-                  projectIdParam={projectIdParam}
-                />
-              )}
-              {showActionDetailModal.actionType === 2 && (
-                <CreateCreditNote
-                  onClose={() => {
-                    setCurrentView("select");
-                  }}
-                  messageApi={messageApi}
-                  clientIdParam={clientIdParam}
-                  projectIdParam={projectIdParam}
-                />
-              )}
-              {showActionDetailModal.actionType === 3 && (
-                <CreateDiscount
-                  onClose={() => {
-                    setCurrentView("select");
-                  }}
-                  messageApi={messageApi}
-                  clientIdParam={clientIdParam}
-                  projectIdParam={projectIdParam}
-                />
-              )}
-            </>
-          )}
-          {currentView === "apply" && (
-            <ApplyAccountingAdjustment
-              type={showActionDetailModal.actionType}
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
-              setCurrentView={setCurrentView}
-              invoiceSelected={invoiceSelected}
-              messageApi={messageApi}
-            />
-          )}
+        {currentView === "select" && (
+          <SelectAccountingAdjustment
+            type={showActionDetailModal.actionType}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+            onClose={onClose}
+            setCurrentView={setCurrentView}
+          />
+        )}
+        {currentView === "create" && (
+          <>
+            {showActionDetailModal.actionType === 1 && (
+              <CreateDebitNote
+                onClose={() => {
+                  setCurrentView("select");
+                }}
+                messageApi={messageApi}
+                clientIdParam={clientIdParam}
+                projectIdParam={projectIdParam}
+              />
+            )}
+            {showActionDetailModal.actionType === 2 && (
+              <CreateCreditNote
+                onClose={() => {
+                  setCurrentView("select");
+                }}
+                messageApi={messageApi}
+                clientIdParam={clientIdParam}
+                projectIdParam={projectIdParam}
+              />
+            )}
+            {showActionDetailModal.actionType === 3 && (
+              <CreateDiscount
+                onClose={() => {
+                  setCurrentView("select");
+                }}
+                messageApi={messageApi}
+                clientIdParam={clientIdParam}
+                projectIdParam={projectIdParam}
+              />
+            )}
+          </>
+        )}
+        {currentView === "apply" && (
+          <ApplyAccountingAdjustment
+            type={showActionDetailModal.actionType}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+            setCurrentView={setCurrentView}
+            onClosePrincipalModal={
+              onCloseAllModals
+                ? () => {
+                    onCloseAllModals();
+                    onClose();
+                  }
+                : onClose
+            }
+            invoiceSelected={invoiceSelected}
+            messageApi={messageApi}
+          />
+        )}
       </Modal>
     </>
   );
