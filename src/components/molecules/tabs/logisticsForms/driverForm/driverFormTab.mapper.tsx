@@ -2,6 +2,7 @@ import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { IDriver, IFormDriver } from "@/types/logistics/schema";
 import { IFormProject } from "@/types/projects/IFormProject";
 import { IProject } from "@/types/projects/IProject";
+import { formatDateBars } from "@/utils/utils";
 import Title from "antd/es/typography/Title";
 import { SetStateAction } from "react";
 import { UseFormReset, UseFormSetValue } from "react-hook-form";
@@ -18,6 +19,7 @@ export interface DriverFormTabProps {
 }
 
 export const dataToProjectFormData = (data: IDriver): IFormDriver => {
+  console.log(data.birth_date)
   return {
     general: {
       id: data.id,

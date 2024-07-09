@@ -12,6 +12,7 @@ import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import "./carrierformtab.scss";
 import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
+import { IDriver, IFormCarrier } from "@/types/logistics/schema";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -41,7 +42,7 @@ export const CarrierInfoForm = ({
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
   const [imageFile, setImageFile] = useState(data.LOGO);
   const [imageError, setImageError] = useState(false);
-  const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data);
+  const defaultValues = statusForm === "create" ? {} : true;
   const {
     watch,
     setValue,
@@ -49,18 +50,10 @@ export const CarrierInfoForm = ({
     handleSubmit,
     reset,
     formState: { errors, isDirty }
-  } = useForm<IUpdateFormProject>({
+  } = useForm<IFormCarrier>({
     defaultValues,
     disabled: statusForm === "review"
   });
-
-  const generalDSOCurrentlyYear = watch("general.DSO_currenly_year");
-
-  useEffect(() => {
-    if (generalDSOCurrentlyYear === "Sí") {
-      setValue("general.DSO_days", undefined);
-    }
-  }, [generalDSOCurrentlyYear, setValue]);
 
   const validationButtonText =
     statusForm === "create"
@@ -131,36 +124,6 @@ export const CarrierInfoForm = ({
               control={control}
               error={errors.general?.nit}
             />
-            <InputForm
-              titleInput="Nombre"
-              nameInput="general.name"
-              control={control}
-              error={errors.general?.name}
-            />
-            <InputForm
-              titleInput="Tipo de Proveedor"
-              nameInput="general.type"
-              control={control}
-              error={errors.general?.name}
-            />
-            <InputForm
-              titleInput="Razon Social"
-              nameInput="general.razon"
-              control={control}
-              error={errors.general?.address}
-            />
-            <InputForm
-              titleInput="Correo de Facturación"
-              nameInput="general.email"
-              control={control}
-              error={errors.general?.billing_period}
-            />
-            <InputForm
-              titleInput="Correo de Comunicacion"
-              nameInput="general.email2"
-              control={control}
-              error={errors.general?.billing_period}
-            />
 
           </Flex>  
           <Flex component={"section"} className="generalProject" justify="flex-start">
@@ -192,7 +155,7 @@ export const CarrierInfoForm = ({
     </>
   );
 };
-const dataToProjectFormData = (data: IProject) => {
+/*const dataToProjectFormData = (data: IProject) => {
   const currenciesFormated = data?.CURRENCY?.map(
     (currency) => `${currency.id}-${currency.CURRENCY_NAME ?? currency.currency_name}`
   );
@@ -220,4 +183,4 @@ const dataToProjectFormData = (data: IProject) => {
       color: data.RGB_CONFIG
     }
   };
-};
+};*/

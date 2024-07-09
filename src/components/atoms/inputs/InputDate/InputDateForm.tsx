@@ -31,9 +31,6 @@ export const InputDateForm = ({
   className,
   value
 }: InputDateFormProps) => {
-  if(value){
-    const my_date = dayjs(value);
-    console.log(my_date)
     return (
       <Flex vertical className={`datePickerContainer ${className}`}>
         {!hiddenTitle && <p className="input-date-custom-title">{titleInput}</p>}
@@ -45,7 +42,6 @@ export const InputDateForm = ({
             <DatePicker
               {...field}
               onChange={(date) => field.onChange(date)}
-              defaultValue={my_date} format={'DD-MM-YYYY'}
               size="large"
               disabled={disabled}
               placeholder={placeholder || `Select ${titleInput.toLowerCase()}`}
@@ -61,33 +57,4 @@ export const InputDateForm = ({
         )}
       </Flex>
     );
-  } else {
-    return (
-      <Flex vertical className={`datePickerContainer ${className}`}>
-        {!hiddenTitle && <p className="input-date-custom-title">{titleInput}</p>}
-        <Controller
-          name={nameInput}
-          rules={{ required: true, ...validationRules }}
-          control={control}
-          render={({ field }) => (
-            <DatePicker
-              {...field}
-              onChange={(date) => field.onChange(date)}
-              value={field.value}
-              size="large"
-              disabled={disabled}
-              placeholder={placeholder || `Select ${titleInput.toLowerCase()}`}
-              suffixIcon={<Calendar className="dateInputForm__icon" />}
-              className={!error ? "dateInputForm" : "dateInputFormError"}
-            />
-          )}
-        />
-        {error && (
-          <Typography.Text className="textError">
-            {error.message || `${titleInput} is required`}
-          </Typography.Text>
-        )}
-      </Flex>
-    );
-  }
 };

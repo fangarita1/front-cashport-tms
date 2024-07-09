@@ -32,20 +32,6 @@ export const SelectDocument = ({ errors, field, selected }: Props) => {
     };
   });
 
-  if (selected){
-    return (
-      <Select
-      value={selected}
-      className={
-          errors?.general?.currencies ? "selectInputCurrenciesError" : "selectInputCurrencies"
-        }
-        variant="borderless"
-        optionLabelProp="label"
-        {...selected}
-        options={options}
-      />
-    );
-  } else {
     return (
       <Select
         placeholder="Selecciona Tipo de Sangre"
@@ -58,6 +44,4 @@ export const SelectDocument = ({ errors, field, selected }: Props) => {
         options={options}
       />
     );
-  }
-
 };

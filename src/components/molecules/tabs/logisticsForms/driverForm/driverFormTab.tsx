@@ -22,8 +22,9 @@ import {
 } from "./driverformtab.mapper";
 import { IDriver, IFormDriver } from "@/types/logistics/schema";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
-import { SelectRh } from "@/components/molecules/selects/SelectRh/SelectRh";
-import { SelectDocument } from "@/components/molecules/selects/SelectDocument/SelectDocument";
+import { SelectDocument } from "@/components/molecules/logistics/SelectDocument/SelectDocument";
+import { SelectRh } from "@/components/molecules/logistics/SelectRh/SelectRh";
+import { SelectGlasses } from "@/components/molecules/logistics/SelectGlasses/SelectGlasses";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -57,7 +58,7 @@ export const DriverFormTab = ({
 
   const onSubmit = (data: any) =>
     _onSubmit(data, setloading, setImageError, imageFile, onSubmitForm, reset);
-
+  console.log(data[0].birth_date)
   return (
     <>
       <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
@@ -124,7 +125,7 @@ export const DriverFormTab = ({
                 />
                 <InputForm
                   titleInput="Apellidos"
-                  nameInput="lastname"
+                  nameInput="general.last_name"
                   control={control}
                   error={undefined}
                 />
@@ -144,12 +145,11 @@ export const DriverFormTab = ({
                 <Flex vertical className="containerInput">
                   <InputDateForm
                     titleInput="Fecha de nacimiento"
-                    nameInput="birth_date"
+                    nameInput="general.birth_date"
                     placeholder="Seleccionar fecha de nacimiento"
                     control={control}
                     error={undefined}
                   />
-                  <Text className="textError">error={undefined}</Text>
                 </Flex>
                 <Flex vertical className="containerInput">
                   <Title className="title" level={5}>
@@ -161,6 +161,37 @@ export const DriverFormTab = ({
                     rules={{ required: true }}
                     render={({ field }) => (
                       <SelectDocument errors={errors} field={field} />
+                    )}
+                  />
+                </Flex>
+                <InputForm
+                  titleInput="Numero de documento"
+                  nameInput="general.document"
+                  control={control}
+                  error={undefined}
+                />
+                <InputForm
+                  titleInput="Telefono"
+                  nameInput="general.phone"
+                  control={control}
+                  error={undefined}
+                />
+                <InputForm
+                  titleInput="Correo"
+                  nameInput="general.email"
+                  control={control}
+                  error={undefined}
+                />
+                <Flex vertical className="containerInput">
+                  <Title className="title" level={5}>
+                    Usas lentes
+                  </Title>
+                  <Controller
+                    name="general.glasses"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <SelectGlasses errors={errors} field={field} />
                     )}
                   />
                 </Flex>

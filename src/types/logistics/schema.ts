@@ -2044,3 +2044,9 @@ export interface IVehiclesWithDefaults {
 export interface IFormDriver {
   general: IDriver;
 }
+export interface IFormVehicle {
+  general: IVehicle;
+}
+export interface IFormCarrier {
+  general: ICarrier;
+}

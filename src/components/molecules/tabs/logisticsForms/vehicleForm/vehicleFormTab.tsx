@@ -15,6 +15,7 @@ import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import "./vehicleformtab.scss";
 import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
+import { IFormVehicle } from "@/types/logistics/schema";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -44,7 +45,7 @@ export const VehicleInfoForm = ({
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
   const [imageFile, setImageFile] = useState(data.LOGO);
   const [imageError, setImageError] = useState(false);
-  const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data);
+  const defaultValues = statusForm === "create" ? {} : true;
   const {
     watch,
     setValue,
@@ -52,18 +53,10 @@ export const VehicleInfoForm = ({
     handleSubmit,
     reset,
     formState: { errors, isDirty }
-  } = useForm<IUpdateFormProject>({
+  } = useForm<IFormVehicle>({
     defaultValues,
     disabled: statusForm === "review"
   });
-
-  const generalDSOCurrentlyYear = watch("general.DSO_currenly_year");
-
-  useEffect(() => {
-    if (generalDSOCurrentlyYear === "Sí") {
-      setValue("general.DSO_days", undefined);
-    }
-  }, [generalDSOCurrentlyYear, setValue]);
 
   const validationButtonText =
     statusForm === "create"
@@ -244,10 +237,6 @@ export const VehicleInfoForm = ({
           </Flex>
         </Flex>
       </form>
-      <ModalBillingPeriod
-        isOpen={isBillingPeriodOpen}
-        setIsBillingPeriodOpen={setIsBillingPeriodOpen}
-      />
       <ModalChangeStatus
         isActiveStatus={data?.IS_ACTIVE!}
         isOpen={isOpenModal}
@@ -258,7 +247,7 @@ export const VehicleInfoForm = ({
     </>
   );
 };
-const dataToProjectFormData = (data: IProject) => {
+/*const dataToProjectFormData = (data: IProject) => {
   const currenciesFormated = data?.CURRENCY?.map(
     (currency) => `${currency.id}-${currency.CURRENCY_NAME ?? currency.currency_name}`
   );
@@ -286,4 +275,4 @@ const dataToProjectFormData = (data: IProject) => {
       color: data.RGB_CONFIG
     }
   };
-};
+};*/
