@@ -1039,6 +1039,68 @@ export interface IMaterialTypeWithDefaults {
   modified_at?: Date | null
   modified_by?: string | null
 }
+
+export interface IOtherRequirements {
+  id: number;
+  description: string;
+  is_incident: string;
+  active: Boolean;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
+export interface ITransferOrderOtherRequirements {
+  id: number;
+  id_transfer_order: number;
+  id_other_requeriments: number;
+  quantity: number;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
+export interface ITransferOrderVehicle {
+  id: number;
+  id_transfer_order: number;
+  id_material: number;
+  quantity: number;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
+export interface ITransferOrderMaterial {
+  id: number;
+  id_transfer_order: number;
+  id_material: number;
+  quantity: number;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
+export interface ISubsidiary {
+  id: number;
+  description: string;
+  active: Boolean;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
+export interface IPsl {
+  id: number;
+  descpsl: string;
+  idcc: number;
+  desccc: string;
+}
+
 /**
  * Exposes all fields present in transfer_order as a typescript
  * interface.
@@ -1063,13 +1125,21 @@ export interface ITransferOrder {
   modified_at?: Date | null
   modified_by?: string | null
   //material
+  transfer_order_material?:  ITransferOrderMaterial[] | null
   //vehiculo sugerido
+  transfer_order_vehicle?: ITransferOrderVehicle[] | null
   //productos
+  transfer_order_products?: ITransferOrderProducts[] | null
   //centros de costo
+  transfer_order_cost_center?: ITransferRequestCostCenter[] | null
   //documentos
+  transfer_order_documents?: ITransferOrderDocuments[] | null
   //requerimientos adicionales
+  transfer_order_other_requeriments?: ITransferOrderOtherRequirements[] | null
   //datos de contacto
-
+  transfer_order_contacts?: ITransferOrderContacts[] | null  
+  //personas -- aplica para viaje tipo persona
+  transfer_order_persons?: ITransferOrderPersons[] | null
 }
 
 /**

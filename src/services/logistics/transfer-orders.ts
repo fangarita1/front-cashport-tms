@@ -67,7 +67,7 @@ export const addTransferOrder = async (data: ITransferOrder): Promise<ICreateReg
     // }
   
     try {
-      const response: ICreateRegister = await axios.post(`${config.API_HOST}/project`, formData, {
+      const response: ICreateRegister = await axios.post(`${config.API_HOST}/transfer-order/create`, formData, {
         headers: {
           Accept: "application/json, text/plain, */*",
           "Content-Type": "multipart/form-data",
