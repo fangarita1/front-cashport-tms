@@ -32,9 +32,6 @@ export const DocumentButtonAction = ({
     }
   };
 
-  useEffect(() => {
-    console.log(isModalOpen);
-  }, [isModalOpen]);
 
   return (
     <div

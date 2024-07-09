@@ -174,7 +174,6 @@ export const ClientProjectForm = ({
         isLoading: false,
         data: finalData
       });
-      console.log(finalData.documents || []);
 
       setClientDocuments(finalData.documents);
       setBillingPeriod(finalData.billing_period_config);
