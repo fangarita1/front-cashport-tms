@@ -8,7 +8,7 @@ import {
 } from "react";
 import { useParams } from "next/navigation";
 import { Button, Col, Flex, Input, Row, Spin, Typography } from "antd";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, set, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
 
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
@@ -47,6 +47,7 @@ import {
 import { MessageInstance } from "antd/es/message/interface";
 import { useCheckLocationFields, useGetClientValues } from "./clientProjectFormHooks";
 import { SelectLocations } from "@/components/molecules/selects/clients/SelectLocations/SelectLocations";
+import { DocumentButtonAction } from "@/components/atoms/DocumentButtonAction/DocumentButtonAction";
 
 const { Title } = Typography;
 
@@ -83,7 +84,7 @@ export const ClientProjectForm = ({
     isLoading: false
   } as { data: IClient; isLoading: boolean });
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
-  const [clientDocuments, setClientDocuments] = useState<File[] | any[]>([]);
+  const [clientDocuments, setClientDocuments] = useState<{ URL: string }[] | any[]>([]);
   const [isCreateLoading, setIsCreateLoading] = useState(false);
 
   const { id: idProject } = useParams<{ id: string }>();
@@ -130,7 +131,9 @@ export const ClientProjectForm = ({
       }
     };
   };
-
+  useEffect(() => {
+    console.log(clientDocuments);
+  }, [clientDocuments]);
   const {
     control,
     handleSubmit,
@@ -165,6 +168,11 @@ export const ClientProjectForm = ({
 
     // Establecer el valor formateado al string de billing period
     setValue("infoClient.billing_period", formattedBillingPeriod, { shouldValidate: true });
+    setValue("infoClient.city", {
+      value: dataClient.data.locations?.[0]?.data?.[0].id,
+      label: dataClient.data.locations?.[0]?.data?.[0].city
+    });
+    setValue("infoClient.address", dataClient.data.locations?.[0]?.data?.[0].address);
   }, [billingPeriod, setValue, dataClient.data.billing_period]);
 
   useEffect(() => {
@@ -185,6 +193,8 @@ export const ClientProjectForm = ({
         isLoading: false,
         data: finalData
       });
+      console.log(finalData.documents || []);
+
       setClientDocuments(finalData.documents);
       setBillingPeriod(finalData.billing_period_config);
     })();
@@ -241,7 +251,6 @@ export const ClientProjectForm = ({
           hasLocationChanged,
           billingPeriod
         );
-
         if (response.status === 200 || response.status === 202) {
           setIsEditAvailable(false);
           messageApi.open({
@@ -550,7 +559,10 @@ export const ClientProjectForm = ({
                 <Row className="clientDocuments" gutter={16}>
                   {clientDocuments?.map((document, index) => (
                     <Col key={`${index}${document.name}`} span={6} style={{ marginBottom: "1rem" }}>
-                      <DocumentButton fileName={document.name} fileSize={document.size} disabled />
+                      <DocumentButtonAction
+                        fileName={document.name}
+                        documentUrl={document.URL?.trim()}
+                      />
                     </Col>
                   ))}
                 </Row>

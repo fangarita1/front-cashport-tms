@@ -26,9 +26,15 @@ export interface IClientLocation {
   nit: string;
   address: string;
   position: IPosition;
-  city: number;
+  city: string;
   complement: string;
   project_id: number;
+}
+
+export interface IClientLocationResponse {
+  data: IClientLocation[];
+  error: boolean;
+  message: string;
 }
 
 interface IDocument {
@@ -52,7 +58,7 @@ export interface IClient {
   holding_id: number;
   holding_name: string;
   document_type: string;
-  locations: IClientLocation[];
+  locations: IClientLocationResponse[];
   is_deleted: number;
   documents: IDocument[];
   ACTIVE: boolean;
