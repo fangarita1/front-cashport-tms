@@ -8,12 +8,11 @@ import {
 } from "react";
 import { useParams } from "next/navigation";
 import { Button, Col, Flex, Input, Row, Spin, Typography } from "antd";
-import { Controller, set, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
 
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
-import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
 import { DividerCustom } from "@/components/atoms/DividerCustom/DividerCustom";
 import { ShipToProjectTable } from "@/components/molecules/tables/ShipToProjectTable/ShipToProjectTable";
 
@@ -156,7 +155,6 @@ export const ClientProjectForm = ({
   );
 
   useEffect(() => {
-    // UseEffect para actualizar el valor de billingPeriod
     if (dataClient.data.billing_period) {
       setBillingPeriod(dataClient.data.billing_period_config);
       return;

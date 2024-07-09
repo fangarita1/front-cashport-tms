@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Flex, Typography } from "antd";
 import { FileArrowUp } from "phosphor-react";
 import "./documentButtonAction.scss";
+import { FileDownloadModal } from "@/components/molecules/modals/FileDownloadModal/FileDownloadModal";
 
 const { Text } = Typography;
 
@@ -18,17 +19,22 @@ export const DocumentButtonAction = ({
   className,
   documentUrl // Agregado para la URL del documento
 }: Props) => {
+  const [isModalOpen, setIsModalOpen] = useState(true);
+
   const handleDocumentClick = () => {
     const fileExtension = documentUrl?.split(".").pop()?.toLowerCase() ?? "";
-
     if (fileExtension === "pdf") {
       window.open(documentUrl, "_blank");
     } else if (["png", "jpg", "jpeg"].includes(fileExtension)) {
-      console.log("imagen");
+      if (isModalOpen === false) setIsModalOpen(true);
     } else {
       alert("Formato de archivo no soportado");
     }
   };
+
+  useEffect(() => {
+    console.log(isModalOpen);
+  }, [isModalOpen]);
 
   return (
     <div
@@ -45,6 +51,11 @@ export const DocumentButtonAction = ({
           </Flex>
         </Flex>
       </Flex>
+      <FileDownloadModal
+        isModalOpen={isModalOpen}
+        onCloseModal={setIsModalOpen}
+        url={documentUrl ?? ""}
+      />
     </div>
   );
 };
