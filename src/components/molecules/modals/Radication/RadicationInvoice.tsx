@@ -115,8 +115,7 @@ const RadicationInvoice = ({
         comments: data.commentary
       };
 
-      const response = await radicateInvoice(radicationData, data.evidence, clientId as number);
-      console.log("Respuesta del servidor:", response);
+      await radicateInvoice(radicationData, data.evidence, clientId as number);
       messageShow.success("Factura radicada con éxito");
       reset();
       onClose();
