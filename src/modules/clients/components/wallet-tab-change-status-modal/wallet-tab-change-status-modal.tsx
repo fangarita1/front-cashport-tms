@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Flex, Modal, Radio, RadioChangeEvent } from "antd";
 import styles from "./wallet-tab-change-status-modal.module.scss";
 import { CaretLeft, Plus } from "phosphor-react";
@@ -14,6 +14,7 @@ interface Props {
   projectId?: number;
   invoiceSelected?: IInvoice[];
   messageShow: MessageInstance;
+  onCloseAllModals: () => void;
 }
 
 interface FileFromDragger {
@@ -38,7 +39,8 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
   invoiceSelected,
   clientId,
   projectId,
-  messageShow
+  messageShow,
+  onCloseAllModals
 }) => {
   const [selectedState, setSelectedState] = useState<string | undefined>();
   const [selectedEvidence, setSelectedEvidence] = useState<File[]>([]);
@@ -74,6 +76,8 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
         type: "success",
         content: "La factura ha cambiado de estado correctamente a"
       });
+      onCloseAllModals();
+      handlegoBackToFirstView();
     } catch (error) {
       console.log(error);
       messageShow.open({
@@ -225,16 +229,28 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
     )
   };
 
+  useEffect(() => {
+    return () => {
+      setSelectedState(undefined);
+      setSelectedEvidence([]);
+      setCommentary(undefined);
+    };
+  }, [isOpen]);
+
   return (
     <Modal
       className={styles.wrapper}
       width="50%"
       open={isOpen}
-      footer={null}
+      footer={
+        <div className={styles.footer}>
+          {isSecondView ? secondViewModal.footer : firstViewModal.footer}
+        </div>
+      }
       closable={false}
       bodyStyle={{
-        height: !isSecondView ? "calc(90vh - 20px)" : "auto",
-        maxHeight: "calc(90vh - 20px)",
+        height: !isSecondView ? "calc(80vh - 20px)" : "auto",
+        maxHeight: "calc(80vh - 20px)",
         padding: 0,
         overflow: "hidden",
         display: "flex",
@@ -245,7 +261,7 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
     >
       <div className={styles.content} style={{ height: "100%" }}>
         <Button
-          onClick={isSecondView ? handlegoBackToFirstView : undefined}
+          onClick={isSecondView ? handlegoBackToFirstView : onClose}
           className={styles.content__header}
         >
           <CaretLeft size="1.25rem" />
@@ -257,10 +273,6 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
         </p>
 
         <div>{isSecondView ? secondViewModal.innerContent : firstViewModal.innerContent}</div>
-
-        <div className={styles.footer}>
-          {isSecondView ? secondViewModal.footer : firstViewModal.footer}
-        </div>
       </div>
     </Modal>
   );
@@ -269,13 +281,12 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
 export default WalletTabChangeStatusModal;
 
 const invoiceStates = [
-  "Emitida",
   "Conciliada",
+  "Sin consiliar",
   "Glosado",
   "Devolucion",
   "Anulada",
   "Vencida",
-  "Sin consiliar",
-  "Corriente",
+  "Saldo",
   "Novedad"
 ];

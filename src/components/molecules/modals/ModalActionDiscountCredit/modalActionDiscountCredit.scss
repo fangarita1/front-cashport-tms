@@ -1,0 +1,7 @@
+.content_with_scroll {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-radius: 0.5rem;
+    height: 100%;
+}

@@ -93,25 +93,28 @@ export const changeStatusInvoice = async (
   return response.data;
 };
 
-export const radicateInvoice = async (
-  radicationData: RadicationData,
-  files: File[],
-  clientId: number
+export const reportInvoiceIncident = async (
+  invoicesId: string[],
+  comments: string,
+  motiveId: string,
+  files: File[] | null,
+  clientId: string
 ): Promise<AxiosResponse<any>> => {
   const token = await getIdToken();
 
   const formData = new FormData();
-  formData.append("invoices_id", JSON.stringify(radicationData.invoices_id));
-  formData.append("radication_type", radicationData.radication_type);
-  formData.append("accept_date", radicationData.accept_date);
-  formData.append("comments", radicationData.comments);
+  formData.append("invoices_id", JSON.stringify(invoicesId));
+  formData.append("comments", comments);
+  formData.append("motive_id", motiveId);
 
-  files.forEach((file) => {
-    formData.append("files", file);
-  });
+  if (files) {
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
+  }
 
   const response: AxiosResponse<any> = await axios.post(
-    `${config.API_HOST}/invoice/radication/client/${clientId}`,
+    `${config.API_HOST}/invoice/incident/client/${clientId}`,
     formData,
     {
       headers: {
@@ -121,6 +124,5 @@ export const radicateInvoice = async (
       }
     }
   );
-
   return response.data;
 };

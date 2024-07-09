@@ -17,6 +17,8 @@ import PaymentAgreementModal from "@/modules/clients/components/wallet-tab-payme
 import { ModalActionDiscountCredit } from "@/components/molecules/modals/ModalActionDiscountCredit/ModalActionDiscountCredit";
 import LabelCollapse from "@/components/ui/label-collapse";
 import RadicationInvoice from "@/components/molecules/modals/Radication/RadicationInvoice";
+import RegisterNews from "@/components/molecules/modals/RegisterNews/RegisterNews";
+import { useSWRConfig } from "swr";
 
 export const WalletTab = () => {
   const [invoices, setInvoices] = useState<InvoicesData[] | undefined>([]);
@@ -26,6 +28,7 @@ export const WalletTab = () => {
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
+  const { mutate } = useSWRConfig();
   const [showInvoiceDetailModal, setShowInvoiceDetailModal] = useState<{
     isOpen: boolean;
     invoiceId: number;
@@ -61,9 +64,14 @@ export const WalletTab = () => {
 
   const handleisGenerateActionOpen = () => {
     setisGenerateActionOpen(!isGenerateActionOpen);
+    mutate(`/invoice/client/${clientId}/project/${projectId}`);
   };
   const onCloseModal = () => {
     setIsSelectOpen({ selected: 0 });
+  };
+  const closeAllModal = () => {
+    setIsSelectOpen({ selected: 0 });
+    handleisGenerateActionOpen();
   };
 
   return (
@@ -164,6 +172,7 @@ export const WalletTab = () => {
         showActionDetailModal={showActionDetailModal}
         setShowActionDetailModal={setShowActionDetailModal}
         invoiceSelected={selectedRows}
+        onCloseAllModals={closeAllModal}
       />
       <WalletTabChangeStatusModal
         isOpen={isSelectOpen.selected === 2}
@@ -171,6 +180,7 @@ export const WalletTab = () => {
         invoiceSelected={selectedRows}
         clientId={clientId}
         projectId={projectId}
+        onCloseAllModals={closeAllModal}
         messageShow={messageShow}
       />
       <RadicationInvoice
@@ -180,6 +190,15 @@ export const WalletTab = () => {
         clientId={clientId}
         projectId={projectId}
         messageShow={messageShow}
+      />
+      <RegisterNews
+        isOpen={isSelectOpen.selected === 1}
+        onClose={onCloseModal}
+        invoiceSelected={selectedRows}
+        clientId={clientId}
+        projectId={projectId}
+        messageShow={messageShow}
+        onCloseAllModals={closeAllModal}
       />
     </>
   );
