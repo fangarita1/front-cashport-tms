@@ -558,7 +558,7 @@ export const ClientProjectForm = ({
       <ModalStatusClient
         isOpen={isModalStatus.status}
         setIsStatusClient={setIsModalStatus}
-        messageApi={messageApi}
+        showMessage={showMessage}
         clientId={isViewDetailsClient?.id?.toString()}
         initialStatus={dataClient.data.status}
       />
