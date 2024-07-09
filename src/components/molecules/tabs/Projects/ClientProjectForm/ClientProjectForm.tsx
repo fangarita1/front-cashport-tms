@@ -1,11 +1,4 @@
-import {
-  Dispatch,
-  JSXElementConstructor,
-  ReactElement,
-  SetStateAction,
-  useEffect,
-  useState
-} from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Col, Flex, Input, Row, Spin, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
@@ -21,8 +14,6 @@ import { ModalUploadDocument } from "@/components/molecules/modals/ModalUploadDo
 import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
 import { ModalStatusClient } from "@/components/molecules/modals/ModalStatusClient/ModalStatusClient";
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
-
-import "./clientprojectform.scss";
 import {
   createClient,
   deleteClientById,
@@ -44,9 +35,11 @@ import {
   isNonEmptyObject,
   stringToBoolean
 } from "@/utils/utils";
-import { MessageInstance } from "antd/es/message/interface";
 import { useCheckLocationFields, useGetClientValues } from "./clientProjectFormHooks";
 import { SelectLocations } from "@/components/molecules/selects/clients/SelectLocations/SelectLocations";
+import { useMessageApi } from "@/context/MessageContext";
+
+import "./clientprojectform.scss";
 
 const { Title } = Typography;
 
@@ -63,16 +56,12 @@ interface Props {
     }>
   >;
   setIsCreateClient: Dispatch<SetStateAction<boolean>>;
-  messageApi: MessageInstance;
-  messageContext?: ReactElement<any, string | JSXElementConstructor<any>>;
 }
 export const ClientProjectForm = ({
   onGoBackTable,
   isViewDetailsClient,
   setIsViewDetailsClient,
-  setIsCreateClient,
-  messageApi,
-  messageContext
+  setIsCreateClient
 }: Props) => {
   const [isUploadDocument, setIsUploadDocument] = useState(false);
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
@@ -85,6 +74,7 @@ export const ClientProjectForm = ({
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
   const [clientDocuments, setClientDocuments] = useState<File[] | any[]>([]);
   const [isCreateLoading, setIsCreateLoading] = useState(false);
+  const { showMessage } = useMessageApi();
 
   const { id: idProject } = useParams<{ id: string }>();
 
@@ -202,63 +192,31 @@ export const ClientProjectForm = ({
             complement: "."
           },
           parseInt(idProject),
-          messageApi
+          showMessage
         );
 
-        const response = await updateClient(
+        await updateClient(
           idProject,
           isViewDetailsClient?.id,
           data,
           locationResponse,
           hasLocationChanged,
+          showMessage,
           billingPeriod
         );
-
-        if (response.status === 200 || response.status === 202) {
-          setIsEditAvailable(false);
-          messageApi.open({
-            type: "success",
-            content: `El cliente fue editado exitosamente.`
-          });
-        } else if (response.response.status === 400) {
-          messageApi.open({
-            type: "error",
-            content: "Algo salio mal con los datos subidos."
-          });
-        } else {
-          messageApi.open({
-            type: "error",
-            content: "Oops ocurrio un error."
-          });
-        }
+        setIsEditAvailable(false);
       } else {
         //Location did not change
-        const response = await updateClient(
+        await updateClient(
           idProject,
           isViewDetailsClient?.id,
           data,
           dataClient.data.locations,
           hasLocationChanged,
+          showMessage,
           billingPeriod
         );
-
-        if (response.status === 200 || response.status === 202) {
-          setIsEditAvailable(false);
-          messageApi.open({
-            type: "success",
-            content: `El cliente fue editado exitosamente.`
-          });
-        } else if (response.response.status === 400) {
-          messageApi.open({
-            type: "error",
-            content: "Algo salio mal con los datos subidos."
-          });
-        } else {
-          messageApi.open({
-            type: "error",
-            content: "Oops ocurrio un error."
-          });
-        }
+        setIsEditAvailable(false);
       }
     } else {
       // Create New Client
@@ -270,31 +228,19 @@ export const ClientProjectForm = ({
           complement: "Burned complement"
         },
         parseInt(idProject),
-        messageApi
+        showMessage
       );
 
       if (billingPeriod) {
-        const response = await createClient(
+        await createClient(
           idProject,
           data,
           billingPeriod,
           clientDocuments,
-          locationResponse.data[0]
+          locationResponse.data[0],
+          showMessage
         );
-
-        if (response.status === 200) {
-          setIsCreateClient(false);
-
-          messageApi.open({
-            type: "success",
-            content: `El cliente fue creado exitosamente.`
-          });
-        } else {
-          messageApi.open({
-            type: "error",
-            content: response.response.data.message
-          });
-        }
+        setIsCreateClient(false);
       }
       setIsCreateLoading(false);
     }
@@ -302,7 +248,7 @@ export const ClientProjectForm = ({
 
   const onDeleteClient = async () => {
     if (isViewDetailsClient?.id) {
-      await deleteClientById(isViewDetailsClient?.id, idProject, messageApi, () =>
+      await deleteClientById(isViewDetailsClient?.id, idProject, showMessage, () =>
         setIsViewDetailsClient({ active: false, id: 0 })
       );
     }
@@ -310,7 +256,6 @@ export const ClientProjectForm = ({
 
   return (
     <>
-      {messageContext}
       <form className="newClientProjectForm" onSubmit={handleSubmit(onSubmitHandler)}>
         <Flex vertical style={{ height: "100%" }}>
           <Flex component={"header"} className="headerNewUserProyectsForm">
@@ -356,7 +301,7 @@ export const ClientProjectForm = ({
             <Spin />
           ) : (
             <Flex vertical component={"main"} className="mainClientForm">
-              <Title level={4}>Información del usuario</Title>
+              <Title level={4}>Información del Cliente</Title>
               {/* -----------------------------------Informacion del Cliente--------------------------------------- */}
               <div className="generalProject">
                 <Flex vertical className="inputContainer">

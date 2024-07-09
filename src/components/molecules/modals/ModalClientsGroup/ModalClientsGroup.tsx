@@ -152,7 +152,6 @@ export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: Creat
               placedIn="modal"
               setSelectedRows={setSelectedRows}
               selectedClientsKeys={["0347623472-5643", "4347623472-5643"]}
-              messageContext={contextHolder}
             />
           </Flex>
         </Modal>

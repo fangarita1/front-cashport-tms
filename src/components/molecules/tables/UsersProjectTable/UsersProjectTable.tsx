@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Button, Flex, Popconfirm, Spin, Table, Typography, message } from "antd";
+import { Button, Flex, Popconfirm, Spin, Table, Typography } from "antd";
 import type { MenuProps, TableProps } from "antd";
 
 import { Eye, Plus, Triangle } from "phosphor-react";
@@ -19,6 +19,7 @@ import { UserZone, IBusinessRules } from "@/types/users/IUser";
 import { ModalRemove } from "../../modals/ModalRemove/ModalRemove";
 
 import "./usersprojecttable.scss";
+import { useMessageApi } from "@/context/MessageContext";
 
 const { Text } = Typography;
 
@@ -28,24 +29,22 @@ interface Props {
   setIsViewDetails: Dispatch<SetStateAction<{ active: boolean; id: number }>>;
 }
 
-export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails }: Props) => {
+export const UsersProjectTable: React.FC<Props> = ({
+  idProject,
+  setIsCreateUser,
+  setIsViewDetails
+}) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState();
   const [isOpenModalRemove, setIsOpenModalRemove] = useState<boolean>(false);
-  const [messageApi, contextHolder] = message.useMessage();
+  const { showMessage } = useMessageApi();
 
   const onResendInvitation = async (email: string) => {
     const response = await onResendInvitationUser(email);
     if (response.status === SUCCESS) {
-      messageApi.open({
-        type: "success",
-        content: "La invitacion fue enviada nuevamente."
-      });
+      showMessage("success", "La invitacion fue enviada nuevamente.");
     } else {
-      messageApi.open({
-        type: "error",
-        content: "Oops, hubo un error por favor intenta mas tarde."
-      });
+      showMessage("error", "Oops, hubo un error por favor intenta mas tarde.");
     }
   };
   const columns: TableProps<IUserSingle>["columns"] = [
@@ -211,16 +210,10 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
     const response = await deleteUsersById(selectedRowKeys as number[], idProject);
 
     if (response.status === 200) {
-      messageApi.open({
-        type: "success",
-        content: "Los clientes seleccionados fueron eliminados correctamente."
-      });
+      showMessage("success", "Los usuarios seleccionados fueron eliminados correctamente.");
       mutate(`/user/project/${idProject}?page=1`);
     } else {
-      messageApi.open({
-        type: "error",
-        content: "Oops, hubo un error por favor intenta mas tarde."
-      });
+      showMessage("error", "Oops, hubo un error por favor intenta mas tarde.");
     }
     setSelectedRowKeys([]);
     setIsOpenModalRemove(false);
@@ -231,15 +224,9 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
     const response = await resendInvitationUsers(selectedRowKeys as number[]);
 
     if (response.status === 200) {
-      messageApi.open({
-        type: "success",
-        content: "Invitación reenviada correctamente."
-      });
+      showMessage("success", "Invitación reenviada correctamente.");
     } else {
-      messageApi.open({
-        type: "error",
-        content: "Oops, hubo un error por favor intenta mas tarde."
-      });
+      showMessage("error", "Oops, hubo un error por favor intenta mas tarde.");
     }
   };
 
@@ -264,7 +251,6 @@ export const UsersProjectTable = ({ idProject, setIsCreateUser, setIsViewDetails
   return (
     <>
       <main className="mainUsersProjectTable">
-      {contextHolder}
         <Flex justify="space-between" className="mainUsersProjectTable_header">
           <Flex gap={"0.625rem"} align="center">
             <FilterUsers setSelectedUsers={setSelectedUsers} idProject={idProject} />
