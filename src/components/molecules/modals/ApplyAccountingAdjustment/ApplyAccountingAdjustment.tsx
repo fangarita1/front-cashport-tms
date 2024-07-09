@@ -148,7 +148,6 @@ export const ApplyAccountingAdjustment = ({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("e", e.target.files);
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
@@ -175,8 +174,6 @@ export const ApplyAccountingAdjustment = ({
 
   const handleAttachEvidence = async () => {
     try {
-      console.log("selectedEvidence", selectedEvidence);
-
       const normalizedData = normalizarApplyValues(applyValues);
       const adjustmentData = JSON.stringify(normalizedData);
       if (!selectedEvidence) return;
@@ -253,10 +250,6 @@ export const ApplyAccountingAdjustment = ({
       )
     }
   ];
-  useEffect(() => {
-    console.log("selectedEvidence", selectedEvidence);
-  } , [selectedEvidence]);
-    
 
   return (
     <div className="modalContentApply">

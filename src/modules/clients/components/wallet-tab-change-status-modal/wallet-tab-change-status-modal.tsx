@@ -79,7 +79,6 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
       onCloseAllModals();
       handlegoBackToFirstView();
     } catch (error) {
-      console.log(error);
       messageShow.open({
         type: "error",
         content: "Ha ocurrido un error al cambiar el estado de la factura"

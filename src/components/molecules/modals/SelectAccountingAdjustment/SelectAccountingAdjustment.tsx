@@ -33,8 +33,6 @@ export const SelectAccountingAdjustment = ({
   const [dateSelect, setDateSelect] = useState<ItemsSelected[]>([]);
   const handleCheckClick = (item: ISelectedAccountingAdjustment) => {
     const isExist = selectedRows.some((row) => row.id === item.id);
-    console.log(isExist);
-
     if (isExist) setSelectedRows((prevRows) => prevRows.filter((row) => row.id !== item.id));
     else setSelectedRows((prevRows) => [...prevRows, item]);
   };

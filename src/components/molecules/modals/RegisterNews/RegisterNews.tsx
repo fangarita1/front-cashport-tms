@@ -94,7 +94,6 @@ const RegisterNews = ({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    console.log(files);
     
     if (files && files.length > 0) {
       const file = files[0];
