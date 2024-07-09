@@ -1,11 +1,4 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useState,
-  useEffect,
-  ReactElement,
-  JSXElementConstructor
-} from "react";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import {
   Button,
@@ -38,7 +31,6 @@ interface Props {
   placedIn?: string;
   setSelectedRows?: Dispatch<SetStateAction<{}>>;
   selectedClientsKeys?: string[];
-  messageContext?: ReactElement<any, string | JSXElementConstructor<any>>;
 }
 
 export const ClientsProjectTable = ({

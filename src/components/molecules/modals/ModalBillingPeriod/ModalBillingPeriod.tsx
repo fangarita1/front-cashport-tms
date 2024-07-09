@@ -57,7 +57,12 @@ export const ModalBillingPeriod = ({
     dispatch({ type: actionTypes.SET_DAY_OF_WEEK, payload: event });
   }, []);
   const handleSetDay = useCallback((event: number | undefined) => {
-    dispatch({ type: actionTypes.SET_DAY, payload: event });
+    const intEvent = Math.floor(event ?? 0);
+    if (intEvent > 0 && intEvent < 31) {
+      dispatch({ type: actionTypes.SET_DAY, payload: intEvent });
+    } else {
+      dispatch({ type: actionTypes.SET_DAY, payload: undefined });
+    }
   }, []);
 
   const handle = (
@@ -120,21 +125,33 @@ export const ModalBillingPeriod = ({
     >
       <Flex vertical>
         <Text>Selecciona el corte de facturación</Text>
-
         <Radio.Group
-          style={{ padding: "1.2rem .5rem", display: "flex", flexDirection: "column", gap: "1rem" }}
+          style={{
+            padding: "1.2rem .5rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+            width: "100%"
+          }}
           onChange={onChangeSelectRadio}
           value={radioState}
         >
           <Radio value={true}>
-            <Flex align="center" gap="1rem">
-              <Text className="textPre-input">El día</Text>
-              <Flex vertical style={{ width: "80.5%" }} justify="center">
+            <Flex align="center" gap="1rem" style={{ width: "100%" }}>
+              <Flex justify="center" align="center">
+                <Text className="textPre-input">El día</Text>
+              </Flex>
+              <Flex
+                vertical={false}
+                style={{ display: "flex", alignItems: "center" }}
+                justify="start"
+              >
                 <InputNumber
                   value={state.day}
                   variant="borderless"
                   className="input"
                   placeholder="10"
+                  max={30}
                   onChange={(e) => handleSetDay(e ? e : undefined)}
                 />
               </Flex>
