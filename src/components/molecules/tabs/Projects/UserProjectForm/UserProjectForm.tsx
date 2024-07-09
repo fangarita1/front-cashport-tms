@@ -134,6 +134,8 @@ export const UserProjectForm = ({
           dataUser.data?.ACTIVE === 1
         )
       : await inviteUser(data, selectedBusinessRules, assignedGroups, zones, ID);
+
+    setIsEditAvailable(false);
     if (response.status === 200 || response.status === 202) {
       const isEdit = isViewDetailsUser?.id ? "editado" : "creado";
       showMessage("success", `El usuario fue ${isEdit} exitosamente.`);
