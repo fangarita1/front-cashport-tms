@@ -8,6 +8,15 @@ export interface IListData {
   request: Request;
 }
 
+export interface ICreateRegister {
+  data: WelcomeData;
+  status: number;
+  statusText: string;
+  headers: WelcomeHeaders;
+  config: Config;
+  request: Request;
+}
+
 export interface Config {
   transitional: Transitional;
   adapter: string[];
@@ -47,6 +56,72 @@ export interface WelcomeHeaders {
   "content-type": string;
 }
 
+export interface WelcomeData {
+  status: number;
+  message: string;
+  data: DataData;
+}
+
+export interface DataData {
+  project_description: string;
+  rgb_config: string;
+  logo: string;
+  nit: string;
+  email: string;
+  contact: string;
+  phone: string;
+  address: string;
+  country_id: string;
+  currency: Currency[];
+  user: User;
+  uuid: string;
+  id: number;
+}
+
+export interface Currency {
+  id: string;
+  currency_name: string;
+}
+
+export interface User {
+  iss: string;
+  aud: string;
+  auth_time: number;
+  user_id: string;
+  sub: string;
+  iat: number;
+  exp: number;
+  email: string;
+  email_verified: boolean;
+  firebase: Firebase;
+  uid: string;
+}
+
+export interface Firebase {
+  identities: Identities;
+  sign_in_provider: string;
+}
+
+export interface Identities {
+  email: string[];
+}
+
+export interface IOrderPslCostCenter {
+  key: number;
+  idpslcostcenter: number;
+  descpslcostcenter: string;
+  percent: number;
+}
+
+export interface IOrderPsl {
+  key: number;
+  idpsl: number;
+  descpsl: string;
+  percent: number;
+  costcenters: IOrderPslCostCenter[];
+}
+
+/* BD SCHEMA */
 /**
  * Exposes all fields present in aditional_by_location as a typescript
  * interface.
@@ -88,6 +163,7 @@ export interface IAditionalByLocationWithDefaults {
  * interface.
  */
 export interface IAditionalByMaterial {
+  key: number
   id: number
   id_material: number
   entity_type: number
@@ -98,6 +174,7 @@ export interface IAditionalByMaterial {
   created_by: string
   modified_at?: Date | null
   modified_by?: string | null
+  quantity: number
 }
 
 /**
@@ -881,6 +958,7 @@ export interface ILocationByGrouplocationWithDefaults {
  * interface.
  */
 export interface IMaterial {
+  key: number
   id: number
   description: string
   id_type_material: number
@@ -900,8 +978,7 @@ export interface IMaterial {
   modified_by?: string | null
   icon: string
   restriction?: string | null
-  type_description: string
-  key: number
+  type_description: string  
   quantity: number
 }
 
@@ -988,6 +1065,14 @@ export interface ITransferOrder {
   created_by: string
   modified_at?: Date | null
   modified_by?: string | null
+  //material
+  //vehiculo sugerido
+  //productos
+  //centros de costo
+  //documentos
+  //requerimientos adicionales
+  //datos de contacto
+
 }
 
 /**
@@ -1056,16 +1141,18 @@ export interface ITransferOrderByTransferRequestWithDefaults {
  * interface.
  */
 export interface ITransferOrderContacts {
+  key:number
   id: number
   id_transfer_order: number
   id_contact: number
-  contact_number: number
+  contact_type: number
+  name: string
+  contact_number: string
   active: string
   created_at: Date
   created_by: string
   modified_at?: Date | null
   modified_by?: string | null
-  contact_type: number
 }
 
 /**
@@ -1778,6 +1865,7 @@ export interface ITripVehicleWithDefaults {
  * interface.
  */
 export interface IVehicleType {
+  key: number
   id: number
   description: string
   vehicle_subtype: number
@@ -1796,7 +1884,8 @@ export interface IVehicleType {
   modified_at?: Date | null
   modified_by?: string | null
   icon: string
-  image: string
+  image: string,
+  quantity: number
 }
 
 /**

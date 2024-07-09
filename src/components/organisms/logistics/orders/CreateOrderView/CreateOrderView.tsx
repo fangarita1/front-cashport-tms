@@ -1,4 +1,4 @@
-import { Flex, Tabs, TabsProps, Typography, message, Collapse, Row, Col, Select, Switch, DatePicker, DatePickerProps, GetProps, TimePicker, Table, TableProps,AutoComplete, Input, ConfigProvider, InputNumber, Button, SelectProps, Popconfirm } from "antd";
+import { Flex, Tabs, TabsProps, Typography, message, Collapse, Row, Col, Select, Switch, DatePicker, DatePickerProps, GetProps, TimePicker, Table, TableProps,AutoComplete, Input, ConfigProvider, InputNumber, Button, SelectProps, Popconfirm, Modal } from "antd";
 import React, { useRef, useEffect, useState, useContext } from "react";
 
 // dayjs locale
@@ -16,11 +16,8 @@ import MapboxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 
-import { ProjectFormTab } from "@/components/molecules/tabs/Projects/ProjectForm/ProjectFormTab";
-import { addProject } from "@/services/projects/projects";
-
 //schemas
-import { IListData, ILocation, IMaterial } from "@/types/logistics/schema";
+import { IAditionalByMaterial, ICreateRegister, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ITransferOrder, ITransferOrderContacts, IVehicleType } from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
@@ -28,8 +25,8 @@ import { getAllLocations } from "@/services/logistics/locations";
 //materials
 import { getSearchMaterials } from "@/services/logistics/materials";
 
-//interfaces
-import { ICreatePayload } from "@/types/projects/IProjects";
+//materials
+import { getSuggestedVehicles } from "@/services/logistics/vehicles";
 
 //vars
 import { CREATED } from "@/utils/constants/globalConstants";
@@ -50,6 +47,7 @@ import "../../../../../styles/_variables_logistics.css";
 import "./createorder.scss";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import TextArea from "antd/es/input/TextArea";
+import { addTransferOrder } from "@/services/logistics/transfer-orders";
 
 const { Title, Text } = Typography;
 
@@ -122,26 +120,6 @@ export const CreateOrderView = () => {
     }
   };
 
-  /* Event Handlers */
-  // const onCreateProject = async (data: ICreatePayload) => {
-  //   console.log("DATA PARA POST: ", data);
-  //   if (!data.logo) return;
-  //   try {
-  //     const response = await addProject(data);
-  //     if (response.status === CREATED) {
-  //       messageApi.open({
-  //         type: "success",
-  //         content: "El proyecto fue creado exitosamente."
-  //       });
-  //       push("/");
-  //     }
-  //   } catch (error) {
-  //     messageApi.open({
-  //       type: "error",
-  //       content: "Oops, hubo un error por favor intenta mas tarde."
-  //     });
-  //   }
-  // };
 
   // Cambia origen 
   const onChangeOrigin = (value:any) =>{
@@ -338,11 +316,6 @@ export const CreateOrderView = () => {
   
   const columnsCarga : TableProps<IMaterial>['columns'] = [
     {
-      title: 'key',
-      dataIndex: 'key',
-      key: 'key',
-    },
-    {
       title: 'Cantidad',
       dataIndex: 'quantity',
       key: 'quantity',
@@ -423,20 +396,7 @@ export const CreateOrderView = () => {
       key: 'typeid',
     }
   ];
-
-  const columnsCargaVehiculo = [
-    {
-      title: 'Vehiculo',
-      dataIndex: 'vehicle',
-      key: 'vehicle',
-    },
-    {
-      title: 'Cantidad',
-      dataIndex: 'quantity',
-      key: 'quantity',
-    },
-  ];
-
+  
   const [optionsMaterial, setOptionsMaterial] = useState<SelectProps<object>['options']>([]);
   const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
   let cargaIdx = 0;
@@ -517,34 +477,470 @@ export const CreateOrderView = () => {
     setDataCarga(newData);
   };
 
+  /* Vehiculos sugeridos */
+  const columnsCargaVehiculo: TableProps<IVehicleType>['columns'] = [
+    {
+      title: 'Vehiculo',
+      dataIndex: 'description',
+      key: 'description',
+    },
+    {
+      title: 'Cantidad',
+      dataIndex: 'quantity',
+      key: 'quantity',
+      render: (_, record) =>
+        dataVehicles.length >= 1 ? (
+          <>
+          <CaretLeft onClick={() => handleQuantityVehicle(record.key,'-')}/>&nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;<CaretRight onClick={() => handleQuantityVehicle(record.key,'+')}/>
+          </>
+        ) : null,
+    },
+    {
+      title: '',
+      dataIndex: 'alerts',
+      key: 'alerts',
+      render: (_, record) =>
+        dataVehicles.length >= 1 ? (
+          <Popconfirm title="Esta seguro de eliminar?" onConfirm={() => handleDeleteVehicle(record.key)}>
+            <Trash/>
+          </Popconfirm>
+        ) : null,
+    },
+  ];
+
+  const [optionsVehicles, setOptionsVehicles] = useState<SelectProps<object>['options']>([]);
+  const [dataVehicles, setDataVehicles] = useState<IVehicleType[]>([]);
+  let vehiclesIdx = 0;
+
+  const loadSuggestedVehicles = async () => {
+    if(optionsVehicles !== undefined && optionsVehicles.length >0 ) return;
+
+    const res = await (getSuggestedVehicles());
+    const result:any = [];
+    //console.log (res);
+    if(res.data.data.length > 0){
+      res.data.data.forEach((item) => {
+        const strlabel = <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                          }}
+                        >
+                          <span>
+                              <b>{item.description}</b>
+                              <br></br>
+                              Largo {item.length}m - Ancho {item.width}m - Alto {item.height}m - Máximo {item.kg_capacity}Tn
+                              <br></br>
+                              Cantidad disponibles: {item.available}
+                          </span>
+                          <span>
+                            <button className="btnagregar active" onClick={() => addVehicle(item)}>Agregar</button>
+                          </span>
+                        </div>;
+
+        result.push({value:item.description, label: strlabel})
+      });      
+    }
+
+    setOptionsVehicles(result); 
+  };
+  
+  useEffect(() => {
+    loadSuggestedVehicles();
+  });
+
+  const addVehicle = async (value:any) =>{
+    vehiclesIdx = vehiclesIdx + 1;
+    
+    value.quantity = 1;
+    value.key = vehiclesIdx;
+
+    const newvalue : IVehicleType = value;
+    console.log(newvalue);
+    await setDataVehicles(dataVehicles => [...dataVehicles, newvalue]);
+  };
+
+  const handleDeleteVehicle = (key: React.Key) => {
+    console.log(key)
+    vehiclesIdx = vehiclesIdx - 1;
+    const newData = dataVehicles.filter((item) => item.key !== key);
+    setDataVehicles(newData);
+  };
+
+  const handleQuantityVehicle = (key: React.Key, sign: string) => {
+    console.log(key)
+    const newData = [...dataVehicles];
+    newData.forEach(item => {
+      if(item.key === key){
+        if(sign=='+'){
+          item.quantity = item.quantity + 1;
+        }
+        if(sign=='-'){
+          item.quantity = item.quantity - 1;
+          if(item.quantity <0) item.quantity = 0;
+        }
+      }
+    });    
+    
+    setDataVehicles(newData);
+  };
 
   /* Responsables */
 
+  // TODO: Load PSL
+  // TODO: load CostCenters
+  const [dataPsl, setDataPsl] = useState<IOrderPsl[]>([]);
+  let pslIdx = 0;
+
+  const addPsl = async () =>{
+    pslIdx = pslIdx + 1;   
+
+    //default values
+    const newvalue : IOrderPsl = {
+      key:pslIdx,
+      idpsl: 1,
+      descpsl: '',
+      percent:100,
+      costcenters: []
+    };
+    const costcenter : IOrderPslCostCenter ={
+      key:1,
+      idpslcostcenter: 1,
+      descpslcostcenter: '',
+      percent: 100
+    }
+    newvalue.costcenters.push(costcenter);
+    console.log(newvalue);
+    await setDataPsl(dataPsl => [...dataPsl, newvalue]);
+  };
+
+  const addPslCostCenter = (key: React.Key) => {
+    console.log(key)
+    const newData = [...dataPsl];
+    newData.forEach(item => {
+      if(item.key === key){
+        //last costcenter
+        const lastitem = item.costcenters.at(-1);
+
+        const costcenter : IOrderPslCostCenter ={
+          key: (lastitem!=undefined ? lastitem.key +1 : 1),
+          idpslcostcenter: 1,
+          descpslcostcenter: '',
+          percent: 100
+        }
+        item.costcenters.push(costcenter);
+      }
+    });    
+    
+    setDataPsl(newData);
+  };
+
+
   /* informacion adicional */
+  /*archivos*/
   interface FileObject {
     docReference: string;
     file: File | undefined;
   }
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
 
-  const mockFiles = [
-    { id: 1, key:1, title: "archivo 1", isMandatory: true },
-    { id: 2, key:2, title: "archivo 2", isMandatory: true },
-    { id: 3, key:3, title: "archivo 3", isMandatory: false },
-  ];
+  const [mockFiles, setMockFiles] = useState<any[]>([]);
 
-  const columnsRequerimientosAdicionales = [
+  if(mockFiles.length < 1){
+    setMockFiles([
+      { id: 1, key:1, title: "archivo 1", isMandatory: true },
+      { id: 2, key:2, title: "archivo 2", isMandatory: true },
+      { id: 3, key:3, title: "archivo 3", isMandatory: false },
+    ]);
+  }
+  const newfile = useRef<any>('');
+
+  const AddFileModal = ()=> {
+    newfile.current ='';
+    Modal.info({
+      title: 'Agregar otro documento',
+      content: (
+        <Flex style={{width:'100%'}}>          
+          <Row style={{width:'100%'}}>
+            <Col span={24}>
+              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
+                <text>Nombre del documento</text>
+              </label>
+              <Input placeholder="Escribir nombre" onChange={(e)=>{ 
+                newfile.current = (e.target.value);
+              }} />
+            </Col>   
+          </Row>
+        </Flex>
+      ),
+      onOk: ()=>{
+        if(newfile.current.length <= 0){
+          message.error('Debe digitar un nombre de archivo');
+        }else{
+          const lastitem = mockFiles.at(-1);
+          const newvalue = { id: (lastitem!=undefined ? lastitem.id +1 : 1), key:(lastitem!=undefined ? lastitem.key +1 : 1), title: newfile.current, isMandatory: false };
+          setMockFiles(mockFiles => [...mockFiles, newvalue]);
+        }
+      },
+    });
+  }
+  
+  /*requerimientos adicionales*/
+
+  // TODO: load requerimientos
+  const columnsRequerimientosAdicionales: TableProps<IAditionalByMaterial>['columns']= [
     {
       title: 'Nombre',
-      dataIndex: 'namereq',
-      key: 'namereq',
+      dataIndex: 'description',
+      key: 'description',
     },
     {
       title: 'Cantidad',
       dataIndex: 'quantity',
       key: 'quantity',
+      render: (_, record) =>
+        dataRequirements.length >= 1 ? (
+          <>
+          <CaretLeft onClick={() => handleQuantityRequirement(record.key,'-')}/>&nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;<CaretRight onClick={() => handleQuantityRequirement(record.key,'+')}/>
+          </>
+        ) : null,
+    },
+    {
+      title: '',
+      dataIndex: 'alerts',
+      key: 'alerts',
+      render: (_, record) =>
+        dataRequirements.length >= 1 ? (
+          <Popconfirm title="Esta seguro de eliminar?" onConfirm={() => handleDeleteRequirement(record.key)}>
+            <Trash/>
+          </Popconfirm>
+        ) : null,
     },
   ];
+
+  const [optionsRequirements, setOptionsRequirements] = useState<SelectProps<object>['options']>([]);
+  const [dataRequirements, setDataRequirements] = useState<IAditionalByMaterial[]>([]);
+  let requirementsIdx = 0;
+
+  const loadRequirements = async () => {
+    if(optionsRequirements !== undefined && optionsRequirements.length >0 ) return;
+
+    const res = [
+      {
+        id:1,
+        description:'Requerimiento adicional 1'
+      }
+    ] //await (getRequeriments());
+    const result:any = [];
+    //console.log (res);
+    if(res.length > 0){
+      res.forEach((item) => {
+        const strlabel = <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                          }}
+                        >
+                          <span>
+                              <b>{item.description}</b>
+                          </span>
+                          <span>
+                            <button className="btnagregar active" onClick={() => addRequeriment(item)}>Agregar</button>
+                          </span>
+                        </div>;
+
+        result.push({value:item.description, label: strlabel})
+      });      
+    }
+
+    setOptionsRequirements(result); 
+  };
+
+  useEffect(() => {
+    loadRequirements();
+  });
+
+  const addRequeriment = async (value:any) =>{
+    requirementsIdx = requirementsIdx + 1;
+    
+    value.quantity = 1;
+    value.key = requirementsIdx;
+
+    const newvalue : IAditionalByMaterial = value;
+    console.log(newvalue);
+    await setDataRequirements(dataRequirements => [...dataRequirements, newvalue]);
+  };
+
+  const handleDeleteRequirement = (key: React.Key) => {
+    console.log(key)
+    requirementsIdx = requirementsIdx - 1;
+    const newData = dataRequirements.filter((item) => item.key !== key);
+    setDataRequirements(newData);
+  };
+
+  const handleQuantityRequirement = (key: React.Key, sign: string) => {
+    console.log(key)
+    const newData = [...dataRequirements];
+    newData.forEach(item => {
+      if(item.key === key){
+        if(sign=='+'){
+          item.quantity = item.quantity + 1;
+        }
+        if(sign=='-'){
+          item.quantity = item.quantity - 1;
+          if(item.quantity <0) item.quantity = 0;
+        }
+      }
+    });    
+    
+    setDataRequirements(newData);
+  };
+
+  /* Datos de contacto */
+  const [dataContacts, setDataContacts] = useState<ITransferOrderContacts[]>([]);
+  //default data
+  const loadContacts = () =>{
+    if(dataContacts !== undefined && dataContacts.length >0 ) return;
+
+    const defaultorigin : ITransferOrderContacts ={
+      key: 1,
+      contact_type: 1,
+      id: 0,
+      id_transfer_order: 0,
+      id_contact: 0,
+      name: "",
+      contact_number: '',
+      active: "",
+      created_at: new Date(),
+      created_by: ""
+    }
+    
+    setDataContacts(dataContacts => [...dataContacts, defaultorigin]);
+
+    const defaultdestiny : ITransferOrderContacts ={
+      key: 2,
+      contact_type: 2,
+      id: 0,
+      id_transfer_order: 0,
+      id_contact: 0,
+      name: "",
+      contact_number: '',
+      active: "",
+      created_at: new Date(),
+      created_by: ""
+    }
+    
+    setDataContacts(dataContacts => [...dataContacts, defaultdestiny]);
+  } 
+
+  useEffect(() => {
+    loadContacts();
+  });
+
+  const newcontacttype = useRef<number>(0);
+  const newcontacname = useRef<string>('');
+  const newcontactphone = useRef<string>('');
+
+  const AddContactModal = ()=> {
+    newcontacttype.current = 0;
+    newcontacname.current = '';
+    newcontactphone.current = '';
+
+    Modal.info({
+      title: 'Agregar otro contacto',
+      content: (
+        <Flex style={{width:'100%'}}>          
+          <Row style={{width:'100%'}}>
+            <Col span={24}>
+              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
+                <text>Punto del contacto</text>
+              </label>
+              <Select
+                placeholder = 'Seleccione origen o destino'
+                style={{ width: '100%' }}
+                options={[{ value: 1, label: 'Origen' },{ value: 2, label: 'Destino' }]}
+                onChange={(e)=>{ 
+                  newcontacttype.current = (e);
+                }}
+              />
+              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
+                <text>Nombre</text>
+              </label>
+              <Input placeholder="Escribir nombre" onChange={(e)=>{ 
+                newcontacname.current = (e.target.value);
+              }} />
+              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
+                <text>Teléfono</text>
+              </label>
+              <Input placeholder="Escribir teléfono" onChange={(e)=>{ 
+                newcontactphone.current = (e.target.value);
+              }} />
+            </Col>   
+          </Row>
+        </Flex>
+      ),
+      onOk: ()=>{
+        if(newcontacname.current.length <= 0){
+          message.error('Debe digitar un nombre de contacto');
+        }else{
+          const lastitem = dataContacts.filter(f => f.contact_type == newcontacttype.current).at(-1);
+                    
+          const newcontact : ITransferOrderContacts ={
+            key: (lastitem!=undefined ? lastitem.key +1 : 1),
+            contact_type: newcontacttype.current,
+            id: 0,
+            id_transfer_order: 0,
+            id_contact: 0,
+            name: newcontacname.current,
+            contact_number: newcontactphone.current,
+            active: "",
+            created_at: new Date(),
+            created_by: ""
+          }
+          
+          setDataContacts(dataContacts => [...dataContacts, newcontact]);
+
+        }
+      },
+    });
+  }
+
+  const UpdateContact = (key: React.Key, field: string, ndata: string) => {
+    console.log(key)
+    const newData = [...dataContacts];
+    newData.forEach(item => {
+      if(item.key === key){
+        if(field=='name'){
+          item.name = ndata;
+        }
+        if(field=='phone'){
+          item.contact_number = ndata;
+        }
+      }
+    });    
+    
+    setDataContacts(newData);
+  };
+
+  /* Form Event Handlers */
+  const onCreateOrder = async (data: ITransferOrder) => {
+    console.log("DATA PARA POST: ", data);
+    try {
+      const response = await addTransferOrder(data);
+      if (response.status === CREATED) {
+        messageApi.open({
+          type: "success",
+          content: "La orden fue creada exitosamente."
+        });
+        push("/");
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Oops, hubo un error por favor intenta mas tarde."
+      });
+    }
+  };
 
   /* acoordion */
   const actionsOptions = [
@@ -774,10 +1170,11 @@ export const CreateOrderView = () => {
                 popupMatchSelectWidth={500}
                 style={{ width: 250 }}
                 size="large"
+                options={optionsVehicles}
               >
                 <Input.Search size="large" placeholder="Agregar vehículo" />
               </AutoComplete>
-              <Table columns={columnsCargaVehiculo} />
+              <Table columns={columnsCargaVehiculo} dataSource={dataVehicles} />
               </>
         </div>
         
@@ -802,64 +1199,77 @@ export const CreateOrderView = () => {
             style={{ width: '350px' }}
             options={[{ value: '1', label: 'Halliburton' },{ value: '2', label: 'Halliburton zona franca' }]}
           />
-          <div className="divdistance">
-            <Row>
-              <Col span={10}>
-                <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                  <text>Product Service Line (PSL)</text>
-                </label>
-                <Select
+          {dataPsl.map((psl) => (
+            <>
+            <div className="divdistance">
+              <Row>
+                <Col span={10}>
+                  <label className="locationLabels" style={{ display: 'flex', marginTop: '1rem' }}>
+                    <text>Product Service Line (PSL)</text>
+                  </label>
+                  <Select
+                      style={{ width: '100%' }}
+                      options={[{ value: 1, label: 'PSL 1' }]}
+                      defaultValue={{ key: psl.idpsl}}
+                  />
+                </Col>
+                <Col span={8} style={{paddingLeft:'30px'}}>
+                  <label className="locationLabels" style={{ display: 'flex', marginTop: '1rem' }}>
+                    <text>Porcentaje PSL</text>
+                  </label>
+                  <InputNumber<number>
                     style={{ width: '100%' }}
-                    options={[{ value: '1', label: 'PSL 1' }]}
-                />
-              </Col>
-              <Col span={8} style={{paddingLeft:'30px'}}>
-                <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                  <text>Porcentaje PSL</text>
-                </label>
-                <InputNumber<number>
-                  style={{ width: '100%' }}
-                  defaultValue={100}
-                  min={0}
-                  max={100}
-                  formatter={(value) => `${value}%`}
-                  parser={(value) => value?.replace('%', '') as unknown as number}
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col span={10} style={{paddingLeft:'30px'}}>
-                <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                  <text>Centro de costos</text>
-                </label>
-                <Select
-                    style={{ width: '100%' }}
-                    options={[{ value: '1', label: 'Centro de costos 1' }]}
-                />
-              </Col>
-              <Col span={8} style={{paddingLeft:'30px'}}>
-                <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                  <text>Porcentaje CC</text>
-                </label>
-                <InputNumber<number>
-                  style={{ width: '100%' }}
-                  defaultValue={100}
-                  min={0}
-                  max={100}
-                  formatter={(value) => `${value}%`}
-                  parser={(value) => value?.replace('%', '') as unknown as number}
-                />
-              </Col>
-              <Col span={6} style={{textAlign:'center'}}>
-                <p>&nbsp;</p>
-                <p>&nbsp;</p>
-                <PlusCircle></PlusCircle><text>Agregar centro de costos</text>
-              </Col>
-            </Row>
-          </div>
+                    defaultValue={psl.percent}
+                    min={0}
+                    max={100}
+                    formatter={(value) => `${value}%`}
+                    parser={(value) => value?.replace('%', '') as unknown as number}
+                    value={psl.percent}
+                  />
+                </Col>
+              </Row>
+              {psl.costcenters.map((cc) => (
+                <>
+                <Row>
+                  <Col span={10} style={{paddingLeft:'30px'}}>
+                    <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
+                      <text>Centro de costos</text>
+                    </label>
+                    <Select
+                        style={{ width: '100%' }}
+                        options={[{ value: 1, label: 'Centro de costos 1' }]}
+                        defaultValue={{ key: cc.idpslcostcenter}}
+                    />
+                  </Col>
+                  <Col span={8} style={{paddingLeft:'30px'}}>
+                    <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
+                      <text>Porcentaje CC</text>
+                    </label>
+                    <InputNumber<number>
+                      style={{ width: '100%' }}
+                      defaultValue={cc.percent}
+                      min={0}
+                      max={100}
+                      formatter={(value) => `${value}%`}
+                      parser={(value) => value?.replace('%', '') as unknown as number}
+                    />
+                  </Col>                  
+                </Row>
+                </>
+              ))}
+              <Row>
+                <Col span={18}>
+                </Col>
+                <Col span={6} style={{textAlign:'center'}}>
+                    <button onClick={() => addPslCostCenter(psl.key)} className="btnagregarpsl"><PlusCircle></PlusCircle>&nbsp;&nbsp;<text>Agregar centro de costos</text></button>
+                </Col>
+              </Row>
+            </div>
+            </>
+          ))}
           <Row>
             <Col span={24} className="text-right">
-              <PlusCircle></PlusCircle><text>Agregar PSL</text>
+              <button onClick={() => addPsl()} className="btnagregarpsl"><PlusCircle></PlusCircle>&nbsp;&nbsp;<text>Agregar PSL</text></button>
             </Col>
           </Row>
         </>
@@ -895,7 +1305,7 @@ export const CreateOrderView = () => {
           </Row>
           <Row>
             <Col span={24} className="text-right">
-              <PlusCircle></PlusCircle><text>Agregar otro documento</text>
+              <button onClick={() =>AddFileModal()} className="btnagregarpsl"><PlusCircle></PlusCircle>&nbsp;&nbsp;<text>Agregar otro documento</text></button>
             </Col>
           </Row>
           <Row>
@@ -904,9 +1314,10 @@ export const CreateOrderView = () => {
                 <text>Cliente final</text>
               </label>
               <Select
-                  placeholder = 'Seleccione cliente final'
-                  style={{ width: '100%' }}
-                  options={[{ value: '1', label: 'Cliente 1' }]}
+                mode="multiple"
+                placeholder = 'Seleccione cliente final'
+                style={{ width: '100%' }}
+                options={[{ value: '1', label: 'Cliente 1' }]}
               />
             </Col>   
           </Row>
@@ -918,9 +1329,10 @@ export const CreateOrderView = () => {
               <Select
                   placeholder = 'Seleccione requerimiento adicional'
                   style={{ width: '50%' }}
-                  options={[{ value: '1', label: 'Requerimiento adicional 1' }]}
+                  options={optionsRequirements}
+                  allowClear={true}
               />
-              <Table columns={columnsRequerimientosAdicionales} />
+              <Table columns={columnsRequerimientosAdicionales} dataSource={dataRequirements} />
             </Col>   
           </Row>
           <Row>
@@ -941,32 +1353,41 @@ export const CreateOrderView = () => {
                   <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
                     <text>Contacto punto origen</text>
                   </label>
+                  {dataContacts.filter(f => f.contact_type == 1).map((contact)=>(
+                  <>
                   <Row>
                     <Col span={12} style={{paddingRight:'15px'}}>
-                      <Input placeholder="Nombre del contacto"/>
+                      <Input placeholder="Nombre del contacto" key={contact.key} value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
                     </Col>
                     <Col span={12} style={{paddingLeft:'15px'}}>
-                      <Input placeholder="Teléfono: 000 000 0000 " />
+                      <Input placeholder="Teléfono: 000 000 0000 " key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}/>
                     </Col>                  
                   </Row>
+                  </>
+                  ))}
+
                 </Col>
                 <Col span={24}>
                   <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                    <text>Contacto punto origen</text>
+                    <text>Contacto punto destino</text>
                   </label>
+                  {dataContacts.filter(f => f.contact_type == 2).map((contact)=>(
+                  <>
                   <Row>
                     <Col span={12} style={{paddingRight:'15px'}}>
-                      <Input placeholder="Nombre del contacto"/>
+                      <Input placeholder="Nombre del contacto"  key={contact.key}  value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
                     </Col>
                     <Col span={12} style={{paddingLeft:'15px'}}>
-                      <Input placeholder="Teléfono: 000 000 0000 " />
+                      <Input placeholder="Teléfono: 000 000 0000 "  key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}/>
                     </Col>                  
                   </Row>
+                  </>
+                  ))}
                 </Col>
               </Row>
               <Row style={{marginTop:'2rem'}}>
                 <Col span={24} className="text-right">
-                  <PlusCircle></PlusCircle><text>Agregar otro contacto</text>
+                  <button onClick={() =>AddContactModal()} className="btnagregarpsl"><PlusCircle></PlusCircle>&nbsp;&nbsp;<text>Agregar otro contacto</text></button>
                 </Col>
               </Row>
             </Col>   
