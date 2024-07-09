@@ -18,6 +18,8 @@ import { ShipToContext } from "../ModalShipTo";
 import { useLocations } from "@/hooks/useLocations";
 import { locationAddress } from "@/types/locations/ILocations";
 import { ShipToFormType } from "@/types/shipTo/IShipTo";
+import { useMessageApi } from "@/context/MessageContext";
+
 import "./modaladdress.scss";
 
 const { Title } = Typography;
@@ -45,7 +47,7 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
     address: string;
     id: number;
   } | null>(null);
-  const [messageApi, contextHolder] = message.useMessage();
+  const { showMessage } = useMessageApi();
 
   const { selectedShipToData } = useContext(ShipToContext);
 
@@ -117,7 +119,7 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
     };
 
     try {
-      const response = await createLocation(newAddressData, messageApi);
+      const response = await createLocation(newAddressData, showMessage);
       setParentFormValue("shipTo.address_id", response[0].id, { shouldValidate: true });
       setParentFormValue("shipTo.address", newAddressData.address, { shouldValidate: true });
       setIsModalAddressOpen(false);
@@ -129,7 +131,6 @@ export const ModalAddress = ({ setIsModalAddressOpen, setParentFormValue }: Prop
 
   return (
     <>
-      {contextHolder}
       <form className="modalAddress">
         <Button
           className="modalTitle"
