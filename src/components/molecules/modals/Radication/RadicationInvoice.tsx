@@ -1,9 +1,8 @@
 import React from "react";
-import { Button, Flex, Modal, UploadFile } from "antd";
+import { Button, Flex, Modal } from "antd";
 import { CaretLeft, Plus } from "@phosphor-icons/react";
 import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
-import { UploadChangeParam } from "antd/es/upload";
 import { IInvoice } from "@/types/invoices/IInvoices";
 import { MessageInstance } from "antd/es/message/interface";
 import { useForm, Controller, FieldError } from "react-hook-form";
@@ -20,6 +19,11 @@ interface RadicationInvoiceProps {
   projectId?: number;
   invoiceSelected?: IInvoice[];
   messageShow: MessageInstance;
+}
+
+interface infoObject {
+  file: File;
+  fileList: File[];
 }
 
 interface IFormRadicationInvoice {
@@ -65,17 +69,17 @@ const RadicationInvoice = ({
 
   const evidence = watch("evidence");
 
-  const handleOnChangeDocument = (info: UploadChangeParam<UploadFile<any>>) => {
-    const file = info.file.originFileObj;
-    if (file) {
-      const fileSizeInMB = file.size / (1024 * 1024);
+  const handleOnChangeDocument: any = (info: infoObject) => {
+    const { file: rawFile } = info;
+    if (rawFile) {
+      const fileSizeInMB = rawFile.size / (1024 * 1024);
       if (fileSizeInMB > 30) {
         messageShow.error(
           "El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB."
         );
         return;
       }
-      setValue("evidence", [...evidence, file]);
+      setValue("evidence", [...evidence, rawFile]);
       trigger("evidence");
     }
   };
