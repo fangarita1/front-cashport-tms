@@ -76,7 +76,7 @@ export function CreateDiscountView({ params }: Props) {
               onClick={handleExecCallback}
               loading={loading}
             >
-              {discountId ? "Editar Descuento" : "Crear Descuento"}
+              {discountId ? "Guardar Descuento" : "Crear Descuento"}
             </PrincipalButton>
           )}
         </Flex>
