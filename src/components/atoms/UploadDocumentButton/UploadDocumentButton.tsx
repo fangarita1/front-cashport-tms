@@ -17,6 +17,7 @@ interface DocumentProps {
   isMandatory: boolean;
   setFiles: Dispatch<SetStateAction<FileObject[]>>;
   containerClassName?: string;
+  draggerClassname?: string;
   disabled?: boolean;
   children?: React.ReactNode;
 }
@@ -26,8 +27,9 @@ export const UploadDocumentButton = ({
   isMandatory,
   setFiles,
   containerClassName,
+  draggerClassname,
   disabled,
-  children
+  children,
 }: DocumentProps) => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
@@ -123,6 +125,7 @@ export const UploadDocumentButton = ({
         fileName={uploadedFile?.name}
         fileSize={uploadedFile?.size}
         disabled={disabled}
+        className={draggerClassname}
       >
         {children}
       </DocumentButton>

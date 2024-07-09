@@ -14,12 +14,8 @@ export default function UploadDocumentChild(props: Props) {
   const { showTrash, onDelete, linkFile, nameFile } = props;
   return (
     <Flex gap={20} align="center">
-      <Button
-        type="text"
-        icon={<FileArrowDown size={"25px"} />}
-        href={linkFile}
-        target="_blank"
-      >
+      <Button type="text" href={linkFile} target="_blank" style={{ padding: 0 }}>
+        <FileArrowDown size={"25px"} />
         <Text className="nameFile">{nameFile}</Text>
       </Button>
       {showTrash && (

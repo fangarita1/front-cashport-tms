@@ -136,6 +136,7 @@ export default function AnnualDiscountDefinition({
           isMandatory={true}
           setFiles={setFiles}
           containerClassName={style.uploadDocumentButton}
+          draggerClassname={style.dragger}
           disabled={statusForm === "review" || !!getValues("contract_archive")}
         >
           {(statusForm === "review" || !!getValues("contract_archive")) && (
