@@ -153,21 +153,6 @@ export const ClientProjectForm = ({
   );
 
   useEffect(() => {
-    // UseEffect para actualizar el valor de billingPeriod
-    if (dataClient.data.billing_period) {
-      setBillingPeriod(dataClient.data.billing_period_config);
-      return;
-    }
-
-    const formattedBillingPeriod = billingPeriod?.day_flag
-      ? `El dia ${billingPeriod?.day} del mes`
-      : `El ${billingPeriod?.order} ${billingPeriod?.day_of_week} del mes`;
-
-    // Establecer el valor formateado al string de billing period
-    setValue("infoClient.billing_period", formattedBillingPeriod, { shouldValidate: true });
-  }, [billingPeriod, setValue, dataClient.data.billing_period]);
-
-  useEffect(() => {
     // UseEffect para dar un valor a dataClient, para pintar el form
     (async () => {
       if (isViewDetailsClient?.id === 0) {
@@ -493,7 +478,7 @@ export const ClientProjectForm = ({
                           onClick={() => setIsBillingPeriodOpen(true)}
                           {...field}
                           value={
-                            billingPeriod?.day_flag
+                            billingPeriod
                               ? stringToBoolean(billingPeriod.day_flag)
                                 ? `El dia ${billingPeriod.day} del mes`
                                 : `El ${billingPeriod?.order} ${billingPeriod?.day_of_week} del mes`
