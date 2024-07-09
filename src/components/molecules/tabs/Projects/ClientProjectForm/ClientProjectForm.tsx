@@ -120,9 +120,6 @@ export const ClientProjectForm = ({
       }
     };
   };
-  useEffect(() => {
-    console.log(clientDocuments);
-  }, [clientDocuments]);
   const {
     control,
     handleSubmit,
@@ -156,11 +153,6 @@ export const ClientProjectForm = ({
 
     // Establecer el valor formateado al string de billing period
     setValue("infoClient.billing_period", formattedBillingPeriod, { shouldValidate: true });
-    setValue("infoClient.city", {
-      value: dataClient.data.locations?.[0]?.data?.[0].id,
-      label: dataClient.data.locations?.[0]?.data?.[0].city
-    });
-    setValue("infoClient.address", dataClient.data.locations?.[0]?.data?.[0].address);
   }, [billingPeriod, setValue, dataClient.data.billing_period]);
 
   useEffect(() => {
@@ -176,6 +168,7 @@ export const ClientProjectForm = ({
       });
       const response = await getClientById(isViewDetailsClient.id.toString(), idProject);
       const finalData = response.data.data;
+      console.log(finalData);
 
       setDataClient({
         isLoading: false,
