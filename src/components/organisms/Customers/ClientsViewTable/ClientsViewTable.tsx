@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Spin, TableProps, Button, Col, Flex, Row, Table, Typography } from "antd";
 import {
@@ -18,11 +18,18 @@ import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
 import { formatMoney } from "@/utils/utils";
+import { useAppStore } from "@/lib/store/store";
+import redirectModal from "@/components/molecules/modals/redirectModal/RedirectModal";
 import "./ClientsViewTable.scss";
 
 const { Text } = Typography;
 
 export const ClientsViewTable = () => {
+  const { ID } = useAppStore((projects) => projects.selectProject);
+  useEffect(() => {
+    if (!ID) redirectModal();
+  }, []);
+
   const { data: clients } = usePortfolios();
 
   const [selectFilters] = useState({

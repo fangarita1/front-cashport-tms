@@ -57,6 +57,7 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
       }
       setIsEditProject(false);
     } catch (error) {
+      console.warn("error update project: ", error);
       messageApi.open({
         type: "error",
         content: "Oops, hubo un error por favor intenta mas tarde."
@@ -176,11 +177,9 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
                     <Skeleton.Input size="large" />
                   </>
                 ) : (
-                  <>
-                    <Title level={1} className="titleName">
-                      {data.PROJECT_DESCRIPTION ?? ""}
-                    </Title>
-                  </>
+                  <Title level={1} className="titleName">
+                    {data.PROJECT_DESCRIPTION ?? ""}
+                  </Title>
                 )}
               </Flex>
             </Flex>

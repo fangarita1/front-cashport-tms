@@ -32,8 +32,7 @@ export const InputForm = ({
   disabled,
   validationRules,
   className,
-  readOnly,
-  value,
+  readOnly
 }: Props) => {
   return (
     <Flex vertical className={`containerInput ${className}`} style={customStyle}>
@@ -47,13 +46,17 @@ export const InputForm = ({
         rules={{ required: true, maxLength: 123, ...validationRules }}
         control={control}
         disabled={disabled}
-        render={({ field }) => (
+        render={({ field: { onChange, ...field } }) => (
           <Input
             readOnly={readOnly}
             type={typeInput}
             className={!error ? "inputForm" : "inputFormError"}
             variant="borderless"
             placeholder={placeholder?.length > 0 ? placeholder : titleInput}
+            onChange={(e) => {
+              onChange(e);
+              changeInterceptor?.(e.target.value);
+            }}
             {...field}
             value={value}
           />

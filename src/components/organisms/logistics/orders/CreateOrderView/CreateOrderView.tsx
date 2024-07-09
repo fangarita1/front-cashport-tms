@@ -48,6 +48,8 @@ import "./createorder.scss";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import TextArea from "antd/es/input/TextArea";
 import { addTransferOrder } from "@/services/logistics/transfer-orders";
+import { getOtherRequirements } from "@/services/logistics/other-requirements";
+import { getPsl } from "@/services/logistics/psl";
 
 const { Title, Text } = Typography;
 
@@ -65,6 +67,8 @@ export const CreateOrderView = () => {
   const [destinoIzaje, setDestinoIzaje] = useState(false);
   const [fechaInicial, setFechaInicial] = useState<Dayjs | null>(null);
   const [horaInicial, setHoraInicial] = useState<Dayjs | null>(null);
+  const [fechaFinal, setFechaFinal] = useState<Dayjs | null>(null);
+  const [horaFinal, setHoraFinal] = useState<Dayjs | null>(null);
 
   /* MAPBOX */
   const mapsAccessToken = 'pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA';//import.meta.env.VITE_MAP_BOX_ACCESS_TOKEN,
@@ -86,6 +90,8 @@ export const CreateOrderView = () => {
 
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationOptions, setLocationOptions] = useState<any>([]);
+  const [locationOrigin, setLocationOrigin] = useState<ILocation>();
+  const [locationDestination, setLocationDestination] = useState<ILocation>();
 
   const handleToggleExpand = () => {
     setExpand(!expand);
@@ -127,6 +133,7 @@ export const CreateOrderView = () => {
     locations.forEach(async (item, index) => {
       if(item.id == value){
         console.log(item);
+        setLocationOrigin(item);
         origin.current = [item.longitude, item.latitude];
         calcRouteDirection();
       }
@@ -139,6 +146,7 @@ export const CreateOrderView = () => {
     locations.forEach(async (item, index) => {
       if(item.id == value){
         console.log(item);
+        setLocationDestination(item);
         destination.current = [item.longitude, item.latitude];
         calcRouteDirection();
       }
@@ -589,8 +597,28 @@ export const CreateOrderView = () => {
 
   // TODO: Load PSL
   // TODO: load CostCenters
+  const [optionsPSL, setOptionsPSL] = useState<SelectProps<object>['options']>([]);
   const [dataPsl, setDataPsl] = useState<IOrderPsl[]>([]);
   let pslIdx = 0;
+
+  const loadPSL = async () => {
+    if(optionsPSL !== undefined && optionsPSL.length >0 ) return;
+
+    const res = await (getPsl());
+    const result:any = [];
+    //console.log (res);
+    if(res.data.data.length > 0){
+      res.data.data.forEach((item) => {
+        result.push({value:item.id, label: item.description})
+      });      
+    }
+
+    setOptionsPSL(result); 
+  };
+
+  useEffect(() => {
+    loadPSL();
+  });
 
   const addPsl = async () =>{
     pslIdx = pslIdx + 1;   
@@ -687,7 +715,6 @@ export const CreateOrderView = () => {
   
   /*requerimientos adicionales*/
 
-  // TODO: load requerimientos
   const columnsRequerimientosAdicionales: TableProps<IAditionalByMaterial>['columns']= [
     {
       title: 'Nombre',
@@ -725,16 +752,11 @@ export const CreateOrderView = () => {
   const loadRequirements = async () => {
     if(optionsRequirements !== undefined && optionsRequirements.length >0 ) return;
 
-    const res = [
-      {
-        id:1,
-        description:'Requerimiento adicional 1'
-      }
-    ] //await (getRequeriments());
+    const res = await (getOtherRequirements());
     const result:any = [];
     //console.log (res);
-    if(res.length > 0){
-      res.forEach((item) => {
+    if(res.data.data.length > 0){
+      res.data.data.forEach((item) => {
         const strlabel = <div
                           style={{
                             display: 'flex',
@@ -923,7 +945,34 @@ export const CreateOrderView = () => {
   };
 
   /* Form Event Handlers */
-  const onCreateOrder = async (data: ITransferOrder) => {
+  const onCreateOrder = async () => {
+    
+    fechaInicial?.hour(horaInicial?horaInicial.get('hour'):0);
+    fechaInicial?.hour(horaInicial?horaInicial.get('minute'):0);
+
+    console.log(fechaInicial);
+    console.log(horaInicial);
+
+    const data: ITransferOrder = {
+      id_start_location: (locationOrigin?locationOrigin.id:0),
+      id_end_location: (locationDestination?locationDestination?.id:0),
+      id: 0,
+      id_user: 0,
+      start_date:  new Date(),
+      end_date: new Date(),
+      start_freight_equipment: "",
+      end_freight_equipment: "",
+      rotation: "",
+      start_date_flexible: 0,
+      end_date_flexible: 0,
+      image: "",
+      id_company: 0,
+      active: "",
+      created_at: new Date(),
+      created_by: ""
+    }
+    
+
     console.log("DATA PARA POST: ", data);
     try {
       const response = await addTransferOrder(data);
@@ -1055,8 +1104,9 @@ export const CreateOrderView = () => {
                   <DatePicker
                     placeholder="Seleccione fecha"                    
                     onChange={(value, dateString) => {
-                      console.log('Selected Time: ', value);
-                      console.log('Formatted Selected Time: ', dateString);
+                      //console.log('Selected Time: ', value);
+                      //console.log('Formatted Selected Time: ', dateString);
+                      setFechaFinal(value);
                     }}
                   />
                 </Col>
@@ -1066,7 +1116,10 @@ export const CreateOrderView = () => {
                   minuteStep={15} 
                   hourStep={1}
                   type={'time'} 
-                  onChange={(value) => console.log(value)} />
+                  onChange={(value) => {
+                    console.log(value);
+                    setHoraFinal(value);
+                  }} />
                 </Col>
                 <Col span={8}>
                 <Select
@@ -1451,8 +1504,8 @@ export const CreateOrderView = () => {
               </Col>
               <Col span={6} offset={18} className="text-right" style={{marginTop:'2rem', marginBottom:'2rem'}}>
                 <Flex gap="middle" align="flex-end">
-                  <Button type="primary">
-                    Guardar como drfat
+                  <Button type="primary" onClick={() => onCreateOrder()}>
+                    Guardar como draft
                   </Button>
                   <Button disabled >
                     Siguiente
