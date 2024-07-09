@@ -3,7 +3,7 @@ import config from "@/config";
 import { API, getIdToken } from "@/utils/api/api";
 import { ICreateLocation, ICities, IAddAddressToLocation } from "@/types/locations/ILocations";
 import { CREATED, SUCCESS } from "@/utils/constants/globalConstants";
-import { MessageInstance } from "antd/es/message/interface";
+import { MessageType } from "@/context/MessageContext";
 
 export const fetchAllLocations = async (): Promise<ICities[]> => {
   try {
@@ -29,7 +29,8 @@ export const addAddressToLocation = async (
     complement: string;
   },
   projectId: number,
-  messageApi: MessageInstance
+  // eslint-disable-next-line no-unused-vars
+  showMessage: (type: MessageType, content: string) => void
 ): Promise<IAddAddressToLocation> => {
   const modelData: ICreateLocation = {
     address: data.address,
@@ -42,15 +43,9 @@ export const addAddressToLocation = async (
     const response: AxiosResponse = await API.post(`${config.API_HOST}/location`, modelData);
 
     if (response.status === CREATED || SUCCESS) {
-      messageApi.open({
-        type: "success",
-        content: `Direccion creada exitosamente.`
-      });
+      showMessage("success", "Direccion creada exitosamente.");
     } else {
-      messageApi.open({
-        type: "error",
-        content: "Oops ocurrio un error."
-      });
+      showMessage("error", "Oops ocurrio un error.");
     }
     return response.data as IAddAddressToLocation;
   } catch (error) {

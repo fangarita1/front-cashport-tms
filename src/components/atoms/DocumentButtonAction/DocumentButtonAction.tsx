@@ -19,7 +19,7 @@ export const DocumentButtonAction = ({
   className,
   documentUrl // Agregado para la URL del documento
 }: Props) => {
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleDocumentClick = () => {
     const fileExtension = documentUrl?.split(".").pop()?.toLowerCase() ?? "";
