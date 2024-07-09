@@ -7,7 +7,6 @@ import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 import { SelectCountries } from "@/components/molecules/selects/SelectCountries/SelectCountries";
 import { SelectCurrencies } from "@/components/molecules/selects/SelectCurrencies/SelectCurrencies";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
-import { IUpdateFormProject } from "@/types/projects/IUpdateFormProject";
 import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
 
 //interfaces

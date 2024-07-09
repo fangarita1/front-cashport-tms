@@ -6,9 +6,9 @@ import Title from "antd/es/typography/Title";
 import { SetStateAction } from "react";
 import { UseFormReset, UseFormSetValue } from "react-hook-form";
 
-export interface ProjectFormTabProps {
+export interface DriverFormTabProps {
   idProjectForm?: string;
-  data?: IProject;
+  data?: IDriver[];
   disabled?: boolean;
   onEditProject?: () => void;
   onSubmitForm?: (data: any) => void;
@@ -19,7 +19,6 @@ export interface ProjectFormTabProps {
 
 export const dataToProjectFormData = (data: IDriver): IFormDriver => {
   return {
-    logo: data.document,
     general: {
       id: data.id,
       phone: data.phone,
@@ -63,6 +62,17 @@ export const _onSubmit = (
     console.warn({ error });
     setloading(false);
   }
+};
+
+export const effectFunction = (
+  generalDSOCurrentlyYear: string,
+  setValue: UseFormSetValue<IFormProject>,
+  billingPeriod: IBillingPeriodForm | undefined
+) => {
+  if (generalDSOCurrentlyYear === "Sí") {
+    setValue("general.DSO_days", undefined);
+  }
+  if (billingPeriod) setValue("general.billing_period", JSON.stringify(billingPeriod));
 };
 
 export const validationButtonText = (statusForm: "create" | "edit" | "review") => {

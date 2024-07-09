@@ -1973,5 +1973,4 @@ export interface IVehiclesWithDefaults {
 
 export interface IFormDriver {
   general: IDriver;
-  logo: any;
 }
