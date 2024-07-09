@@ -1,11 +1,4 @@
-import {
-  Dispatch,
-  JSXElementConstructor,
-  ReactElement,
-  SetStateAction,
-  useEffect,
-  useState
-} from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Col, Flex, Input, Row, Spin, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
@@ -13,7 +6,6 @@ import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
 
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
-import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
 import { DividerCustom } from "@/components/atoms/DividerCustom/DividerCustom";
 import { ShipToProjectTable } from "@/components/molecules/tables/ShipToProjectTable/ShipToProjectTable";
 
@@ -21,8 +13,6 @@ import { ModalUploadDocument } from "@/components/molecules/modals/ModalUploadDo
 import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
 import { ModalStatusClient } from "@/components/molecules/modals/ModalStatusClient/ModalStatusClient";
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
-
-import "./clientprojectform.scss";
 import {
   createClient,
   deleteClientById,
@@ -44,9 +34,12 @@ import {
   isNonEmptyObject,
   stringToBoolean
 } from "@/utils/utils";
-import { MessageInstance } from "antd/es/message/interface";
 import { useCheckLocationFields, useGetClientValues } from "./clientProjectFormHooks";
 import { SelectLocations } from "@/components/molecules/selects/clients/SelectLocations/SelectLocations";
+import { useMessageApi } from "@/context/MessageContext";
+
+import "./clientprojectform.scss";
+import { DocumentButtonAction } from "@/components/atoms/DocumentButtonAction/DocumentButtonAction";
 
 const { Title } = Typography;
 
@@ -63,16 +56,12 @@ interface Props {
     }>
   >;
   setIsCreateClient: Dispatch<SetStateAction<boolean>>;
-  messageApi: MessageInstance;
-  messageContext?: ReactElement<any, string | JSXElementConstructor<any>>;
 }
 export const ClientProjectForm = ({
   onGoBackTable,
   isViewDetailsClient,
   setIsViewDetailsClient,
-  setIsCreateClient,
-  messageApi,
-  messageContext
+  setIsCreateClient
 }: Props) => {
   const [isUploadDocument, setIsUploadDocument] = useState(false);
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
@@ -85,6 +74,7 @@ export const ClientProjectForm = ({
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
   const [clientDocuments, setClientDocuments] = useState<File[] | any[]>([]);
   const [isCreateLoading, setIsCreateLoading] = useState(false);
+  const { showMessage } = useMessageApi();
 
   const { id: idProject } = useParams<{ id: string }>();
 
@@ -130,7 +120,6 @@ export const ClientProjectForm = ({
       }
     };
   };
-
   const {
     control,
     handleSubmit,
@@ -153,21 +142,6 @@ export const ClientProjectForm = ({
   );
 
   useEffect(() => {
-    // UseEffect para actualizar el valor de billingPeriod
-    if (dataClient.data.billing_period) {
-      setBillingPeriod(dataClient.data.billing_period_config);
-      return;
-    }
-
-    const formattedBillingPeriod = billingPeriod?.day_flag
-      ? `El dia ${billingPeriod?.day} del mes`
-      : `El ${billingPeriod?.order} ${billingPeriod?.day_of_week} del mes`;
-
-    // Establecer el valor formateado al string de billing period
-    setValue("infoClient.billing_period", formattedBillingPeriod, { shouldValidate: true });
-  }, [billingPeriod, setValue, dataClient.data.billing_period]);
-
-  useEffect(() => {
     // UseEffect para dar un valor a dataClient, para pintar el form
     (async () => {
       if (isViewDetailsClient?.id === 0) {
@@ -180,11 +154,13 @@ export const ClientProjectForm = ({
       });
       const response = await getClientById(isViewDetailsClient.id.toString(), idProject);
       const finalData = response.data.data;
+      console.log(finalData);
 
       setDataClient({
         isLoading: false,
         data: finalData
       });
+
       setClientDocuments(finalData.documents);
       setBillingPeriod(finalData.billing_period_config);
     })();
@@ -202,63 +178,31 @@ export const ClientProjectForm = ({
             complement: "."
           },
           parseInt(idProject),
-          messageApi
+          showMessage
         );
 
-        const response = await updateClient(
+        await updateClient(
           idProject,
           isViewDetailsClient?.id,
           data,
           locationResponse,
           hasLocationChanged,
+          showMessage,
           billingPeriod
         );
-
-        if (response.status === 200 || response.status === 202) {
-          setIsEditAvailable(false);
-          messageApi.open({
-            type: "success",
-            content: `El cliente fue editado exitosamente.`
-          });
-        } else if (response.response.status === 400) {
-          messageApi.open({
-            type: "error",
-            content: "Algo salio mal con los datos subidos."
-          });
-        } else {
-          messageApi.open({
-            type: "error",
-            content: "Oops ocurrio un error."
-          });
-        }
+        setIsEditAvailable(false);
       } else {
         //Location did not change
-        const response = await updateClient(
+        await updateClient(
           idProject,
           isViewDetailsClient?.id,
           data,
           dataClient.data.locations,
           hasLocationChanged,
+          showMessage,
           billingPeriod
         );
-
-        if (response.status === 200 || response.status === 202) {
-          setIsEditAvailable(false);
-          messageApi.open({
-            type: "success",
-            content: `El cliente fue editado exitosamente.`
-          });
-        } else if (response.response.status === 400) {
-          messageApi.open({
-            type: "error",
-            content: "Algo salio mal con los datos subidos."
-          });
-        } else {
-          messageApi.open({
-            type: "error",
-            content: "Oops ocurrio un error."
-          });
-        }
+        setIsEditAvailable(false);
       }
     } else {
       // Create New Client
@@ -270,31 +214,19 @@ export const ClientProjectForm = ({
           complement: "Burned complement"
         },
         parseInt(idProject),
-        messageApi
+        showMessage
       );
 
       if (billingPeriod) {
-        const response = await createClient(
+        await createClient(
           idProject,
           data,
           billingPeriod,
           clientDocuments,
-          locationResponse.data[0]
+          locationResponse.data[0],
+          showMessage
         );
-
-        if (response.status === 200) {
-          setIsCreateClient(false);
-
-          messageApi.open({
-            type: "success",
-            content: `El cliente fue creado exitosamente.`
-          });
-        } else {
-          messageApi.open({
-            type: "error",
-            content: response.response.data.message
-          });
-        }
+        setIsCreateClient(false);
       }
       setIsCreateLoading(false);
     }
@@ -302,7 +234,7 @@ export const ClientProjectForm = ({
 
   const onDeleteClient = async () => {
     if (isViewDetailsClient?.id) {
-      await deleteClientById(isViewDetailsClient?.id, idProject, messageApi, () =>
+      await deleteClientById(isViewDetailsClient?.id, idProject, showMessage, () =>
         setIsViewDetailsClient({ active: false, id: 0 })
       );
     }
@@ -310,7 +242,6 @@ export const ClientProjectForm = ({
 
   return (
     <>
-      {messageContext}
       <form className="newClientProjectForm" onSubmit={handleSubmit(onSubmitHandler)}>
         <Flex vertical style={{ height: "100%" }}>
           <Flex component={"header"} className="headerNewUserProyectsForm">
@@ -356,7 +287,7 @@ export const ClientProjectForm = ({
             <Spin />
           ) : (
             <Flex vertical component={"main"} className="mainClientForm">
-              <Title level={4}>Información del usuario</Title>
+              <Title level={4}>Información del Cliente</Title>
               {/* -----------------------------------Informacion del Cliente--------------------------------------- */}
               <div className="generalProject">
                 <Flex vertical className="inputContainer">
@@ -493,7 +424,7 @@ export const ClientProjectForm = ({
                           onClick={() => setIsBillingPeriodOpen(true)}
                           {...field}
                           value={
-                            billingPeriod?.day_flag
+                            billingPeriod
                               ? stringToBoolean(billingPeriod.day_flag)
                                 ? `El dia ${billingPeriod.day} del mes`
                                 : `El ${billingPeriod?.order} ${billingPeriod?.day_of_week} del mes`
@@ -549,12 +480,14 @@ export const ClientProjectForm = ({
               <Flex vertical align="flex-start">
                 <Row className="clientDocuments" gutter={16}>
                   {clientDocuments?.map((document, index) => (
-                    <Col key={`${index}${document.name}`} span={6}>
-                      <DocumentButton fileName={document.name} fileSize={document.size} disabled />
+                    <Col key={`${index}${document.name}`} span={6} style={{ marginBottom: "1rem" }}>
+                      <DocumentButtonAction
+                        fileName={document.name}
+                        documentUrl={document.URL?.trim()}
+                      />
                     </Col>
                   ))}
                 </Row>
-
                 {!isViewDetailsClient.id && isEditAvailable ? (
                   <Button
                     size="large"
@@ -611,7 +544,13 @@ export const ClientProjectForm = ({
         setBillingPeriod={setBillingPeriod}
         billingPeriod={billingPeriod}
       />
-      <ModalStatusClient isOpen={isModalStatus.status} setIsStatusClient={setIsModalStatus} />
+      <ModalStatusClient
+        isOpen={isModalStatus.status}
+        setIsStatusClient={setIsModalStatus}
+        showMessage={showMessage}
+        clientId={isViewDetailsClient?.id?.toString()}
+        initialStatus={dataClient.data.status}
+      />
       <ModalRemove
         name="cliente"
         isOpen={isModalStatus.remove}

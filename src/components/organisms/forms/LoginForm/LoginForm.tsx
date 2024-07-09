@@ -101,7 +101,7 @@ export const LoginForm = () => {
         <Button disabled={isLoading} loading={isLoading} className="button" htmlType="submit">
           {isLoading ? "Cargando..." : "Ingresar"}
         </Button>
-        <Text underline className={"textForgotPassword"}>
+        <Text underline style={{ marginLeft: 20 }} className={"textForgotPassword"}>
           Olvide mi contraseña
         </Text>
       </Flex>

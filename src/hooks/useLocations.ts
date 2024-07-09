@@ -1,12 +1,12 @@
 import useSWR from "swr";
 
 import { API } from "@/utils/api/api";
-import { MessageInstance } from "antd/es/message/interface";
 import { IAddAddressData, ILocation } from "@/types/locations/ILocations";
 
 import { useAppStore } from "@/lib/store/store";
 import { addAddressToLocation, getOneLocation } from "@/services/locations/locations";
 import { useCallback } from "react";
+import { MessageType } from "@/context/MessageContext";
 
 export const useLocations = () => {
   const { ID: projectId } = useAppStore((state) => state.selectProject);
@@ -18,9 +18,10 @@ export const useLocations = () => {
       id: number;
       complement: string;
     },
-    messageApi: MessageInstance
+    // eslint-disable-next-line no-unused-vars
+    showMessage: (type: MessageType, content: string) => void
   ) => {
-    const response = await addAddressToLocation(newAddressData, projectId, messageApi);
+    const response = await addAddressToLocation(newAddressData, projectId, showMessage);
     return response.data as IAddAddressData[];
   };
 
