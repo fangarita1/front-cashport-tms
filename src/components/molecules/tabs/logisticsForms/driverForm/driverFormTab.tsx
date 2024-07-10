@@ -207,29 +207,27 @@ export const DriverFormTab = ({
             Vehiculos
           </Title>
           <Row style={{width:'100%'}}>
-            <Col>
-            <Flex component={"section"} className="containerInput"  style={{width:'100%'}}>
-            <Row style={{width:'100%'}}>
-              <Col>
-              <label className="input-form-title">Vehículos que está autorizados a manejar</label>
-              </Col>
-            </Row>
-            <Row style={{width:'100%'}}>
-              <Col>
-              <Select
-                mode="multiple"
-                allowClear
-                style={{ width: '50%' }}
-                placeholder="Seleccione vehiculos"
-                defaultValue={['vehiculo1', 'vehiculo2']}
-                options={[
-                  { label: <span>vehiculo1</span>, value: 'vehiculo1' },
-                  { label: <span>vehiculo2</span>, value: 'vehiculo2' },
-                ]}
-                />
-              </Col>
-            </Row>
-          </Flex>
+            <Col span={24}>
+              <Flex component={"section"} className="containerInput"  style={{width:'100%'}}>
+                <Row style={{width:'100%'}}>
+                  <Col span={8}>
+                  <label className="input-form-title">Vehículos que está autorizados a manejar</label>
+                  </Col>
+                  <Col span={16} >
+                    <Select
+                      mode="multiple"
+                      allowClear
+                      style={{ width: '50%' }}
+                      placeholder="Seleccione vehiculos"
+                      defaultValue={['vehiculo1', 'vehiculo2']}
+                      options={[
+                        { label: <span>vehiculo1</span>, value: 'vehiculo1' },
+                        { label: <span>vehiculo2</span>, value: 'vehiculo2' },
+                      ]}
+                      />
+                  </Col>
+                </Row>
+              </Flex>
             </Col>
           </Row>
           
@@ -238,19 +236,19 @@ export const DriverFormTab = ({
           <Title className="title" level={4}>
             Datos de Contacto
           </Title>
-          {/* <Flex component={"section"} className="generalProject" justify="flex-start">
+         <Flex component={"section"} className="generalProject" justify="flex-start">
             <InputForm
               titleInput="Nombres y apellidos"
               nameInput="contact.name"
               control={control}
-              error={errors.contact?.name}
+              error={errors?.general?.email}
             />
             <InputForm
               typeInput="tel"
               titleInput="Telefono"
               nameInput="contact.phone"
               control={control}
-              error={errors.contact?.phone}
+              error={errors?.general?.email}
               validationRules={{
                 pattern: {
                   value: /^\+?\d+$/,
@@ -258,7 +256,7 @@ export const DriverFormTab = ({
                 }
               }}
             />
-          </Flex> */}
+          </Flex>
           {/* -----------------------------------Project Config----------------------------------- */}
 
           <Flex className="buttonNewProject">
