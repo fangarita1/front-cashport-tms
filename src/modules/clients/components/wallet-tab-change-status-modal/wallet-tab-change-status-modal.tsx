@@ -17,21 +17,11 @@ interface Props {
   onCloseAllModals: () => void;
 }
 
-interface FileFromDragger {
-  lastModified: number;
-  lastModifiedDate: Date;
-  name: string;
-  originFileObj: File;
-  percent: number;
-  size: number;
-  status: string;
-  type: string;
-  uid: string;
+interface infoObject {
+  file: File;
+  fileList: File[];
 }
-interface FileObjectFromButton {
-  file: FileFromDragger;
-  fileList: FileFromDragger[];
-}
+
 
 const WalletTabChangeStatusModal: React.FC<Props> = ({
   isOpen,
@@ -86,17 +76,16 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
     }
   };
 
-  const handleOnChangeDocument: any = (info: FileObjectFromButton) => {
-    const { file } = info;
-    const rawFile = file.originFileObj;
+  const handleOnChangeDocument: any = (info: infoObject) => {
+    const { file: rawFile } = info;
     if (rawFile) {
       const fileSizeInMB = rawFile.size / (1024 * 1024);
-
       if (fileSizeInMB > 30) {
-        alert("El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB.");
+        messageShow.error(
+          "El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB."
+        );
         return;
       }
-
       setSelectedEvidence([...selectedEvidence, rawFile]);
     }
   };
@@ -106,17 +95,19 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
     setSelectedEvidence(updatedFiles);
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files as FileList);
-
-    for (let i = 0; i < files.length; i++) {
-      if (selectedEvidence.some((file) => file.name === files[i].name)) {
-        alert("Ya existe un archivo con el mismo nombre");
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const fileSizeInMB = file.size / (1024 * 1024);
+      if (fileSizeInMB > 30) {
+        messageShow.error(
+          "El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB."
+        );
         return;
       }
+      setSelectedEvidence((prevFiles) => [...prevFiles, file]);
     }
-
-    setSelectedEvidence((prevFiles) => [...prevFiles, ...files]);
   };
 
   const firstViewModal = {
@@ -163,6 +154,7 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
           <em className="descriptionDocument">*Obligatorio</em>
         </Flex>
         <DocumentButton
+          key={selectedEvidence[0]?.name}
           title={selectedEvidence[0]?.name}
           handleOnChange={handleOnChangeDocument}
           handleOnDelete={() => handleOnDeleteDocument(selectedEvidence[0]?.name)}
