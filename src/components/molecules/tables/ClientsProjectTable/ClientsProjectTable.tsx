@@ -7,17 +7,7 @@ import {
   JSXElementConstructor
 } from "react";
 import { useParams } from "next/navigation";
-import {
-  Button,
-  Flex,
-  MenuProps,
-  message,
-  Popconfirm,
-  Spin,
-  Table,
-  TableProps,
-  Typography
-} from "antd";
+import { Button, Flex, MenuProps, message, Spin, Table, TableProps, Typography } from "antd";
 import { Eye, Plus, Triangle } from "phosphor-react";
 import { FilterClients } from "@/components/atoms/Filters/FilterClients/FilterClients";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
@@ -163,6 +153,7 @@ export const ClientsProjectTable = ({
         render: (text) => <Text>{text}</Text>
       },
       {
+        width: 96,
         title: "Usuarios",
         key: "users",
         dataIndex: "users",
@@ -197,37 +188,15 @@ export const ClientsProjectTable = ({
         key: "status",
         width: "150px",
         dataIndex: "status",
-        render: (_, { ACTIVE = true }) => (
-          <>
-            {ACTIVE ? (
-              <Flex
-                align="center"
-                className={ACTIVE ? "statusContainer" : "statusContainerPending"}
-              >
-                <div className={ACTIVE ? "statusActive" : "statusPending"} />
-                <Text>{ACTIVE ? "Activo" : "Inactivo"}</Text>
-              </Flex>
-            ) : (
-              <Popconfirm
-                placement="topRight"
-                title={"Invitación pendiente de aprobación"}
-                description={"Volver a Enviar invitacion?"}
-                okText="Si"
-                cancelText="No"
-              >
-                <Flex
-                  align="center"
-                  className={ACTIVE ? "statusContainer" : "statusContainerPending"}
-                >
-                  <div className={ACTIVE ? "statusActive" : "statusPending"} />
-                  <Text>{ACTIVE ? "Activo" : "Inactivo"}</Text>
-                </Flex>
-              </Popconfirm>
-            )}
-          </>
+        render: (status) => (
+          <Flex align="center" className="statusContainer">
+            <div className="statusActive" />
+            <Text className="statusContainer__text">{status}</Text>
+          </Flex>
         )
       },
       {
+        align: "center",
         title: "",
         key: "seeProject",
         width: 100,

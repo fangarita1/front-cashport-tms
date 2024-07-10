@@ -14,7 +14,7 @@ export const GroupTable = ({ dataClients }: PropsGroupTable) => {
       dataIndex: "client_name",
       key: "client_name",
       render: (text) => <p>{text}</p>,
-      sorter: (a, b) => a.client_name.localeCompare(b.client_name),
+      sorter: (a, b) => b.client_name.localeCompare(a.client_name),
       showSorterTooltip: false
     },
     {
@@ -43,10 +43,10 @@ export const GroupTable = ({ dataClients }: PropsGroupTable) => {
     },
     {
       title: "Grupos",
-      key: "client_count",
-      dataIndex: "client_count",
+      key: "groups_count",
+      dataIndex: "groups_count",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => b.client_count - a.client_count,
+      sorter: (a, b) => b.groups_count - a.groups_count,
       showSorterTooltip: false
     },
     {
@@ -54,15 +54,17 @@ export const GroupTable = ({ dataClients }: PropsGroupTable) => {
       key: "holding_name",
       dataIndex: "holding_name",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => a.holding_name?.localeCompare(b.holding_name),
+      sorter: (a, b) => b.holding_name?.localeCompare(a.holding_name),
       showSorterTooltip: false
     },
     {
       title: "Estado",
-      key: "status",
+      key: "status_name",
+      dataIndex: "status_name",
       width: "150px",
-      dataIndex: "status",
-      render: () => <></>
+      render: (status) => <Text>{status}</Text>,
+      sorter: (a, b) => b.status_name.localeCompare(a.status_name),
+      showSorterTooltip: false
     }
   ];
 

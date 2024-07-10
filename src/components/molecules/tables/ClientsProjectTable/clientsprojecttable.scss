@@ -37,6 +37,11 @@
         border-radius: 1rem;
         width: fit-content;
         border: 1px solid $active;
+
+        &__text {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     }
 
     .statusContainerPending {

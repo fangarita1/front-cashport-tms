@@ -15,7 +15,8 @@ export interface IClient {
   client_type_name: string;
   shipto_count: number;
   total_portfolio: number;
-  client_count: number;
+  groups_count: number;
+  status_name: string;
 }
 
 export interface IClientsGroups {

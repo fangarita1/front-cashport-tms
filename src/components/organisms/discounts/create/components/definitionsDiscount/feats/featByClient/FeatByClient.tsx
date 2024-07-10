@@ -1,7 +1,7 @@
 import styles from "./FeatByClient.module.scss";
 import { Flex, Radio, Typography } from "antd";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-import { UseFormReturn, useForm } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 import ProductList from "../../productList/ProductList";
 import GroupClients from "../../groupClients/GroupClients";
 import useDiscountFeats from "../hooks/useDiscountFeats";
@@ -9,25 +9,6 @@ import { DiscountSchema } from "../../../../resolvers/generalResolver";
 import { useClientsGroups } from "@/hooks/useClientsGroups";
 
 const { Title, Text } = Typography;
-
-const clientDummy = [
-  {
-    id: 1,
-    name: "Grupo 1"
-  },
-  {
-    id: 2,
-    name: "Grupo 2"
-  },
-  {
-    id: 3,
-    name: "Grupo 3"
-  },
-  {
-    id: 4,
-    name: "Grupo 4"
-  }
-];
 
 type FeatByOrderProps = {
   discountType: number;
