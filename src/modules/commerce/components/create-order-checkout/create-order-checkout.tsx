@@ -50,11 +50,11 @@ const CreateOrderCheckout: FC = ({}) => {
   };
 
   const onSubmitSaveDraft = (data: IShippingInfoForm) => {
-    console.log("Guardar borrador: ", data);
+    console.info("Guardar borrador: ", data);
   };
 
   const onSubmitFinishOrder = (data: IShippingInfoForm) => {
-    console.log("Finalizar orden: ", data);
+    console.info("Finalizar orden: ", data);
 
     setLoading(true);
     setTimeout(() => {

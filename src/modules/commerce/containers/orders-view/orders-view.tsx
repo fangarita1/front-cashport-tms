@@ -17,7 +17,7 @@ export const OrdersView: FC = () => {
   const [selectedRows, setSelectedRows] = useState<any[] | undefined>();
 
   const handleDeleteOrders = () => {
-    console.log("Delete orders: ", selectedRows);
+    console.info("Delete orders: ", selectedRows);
     setIsOpenModalRemove(false);
   };
 
@@ -41,7 +41,7 @@ export const OrdersView: FC = () => {
             placeholder="Buscar"
             onChange={(event) => {
               setTimeout(() => {
-                console.log(event.target.value);
+                console.info(event.target.value);
               }, 1000);
             }}
           />

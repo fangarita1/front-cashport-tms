@@ -48,7 +48,7 @@ const CreateOrderMarket: FC = ({}) => {
           placeholder="Buscar"
           onChange={(event) => {
             setTimeout(() => {
-              console.log(event.target.value);
+              console.info(event.target.value);
             }, 1000);
           }}
         />
