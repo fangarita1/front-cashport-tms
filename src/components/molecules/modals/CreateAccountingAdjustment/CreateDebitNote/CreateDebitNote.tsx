@@ -65,7 +65,7 @@ export const CreateDebitNote = ({ onClose, messageApi, projectIdParam, clientIdP
         },
         users_aproved: [142, 146], // TODO: users_aproved esta mal escrito ya que el back lo pide asi
         project_id: projectIdParam || "19",
-        client_id: clientIdParam ?? "98765232"
+        client_id: clientIdParam || "98765232"
       });
 
       messageApi.open({
@@ -129,7 +129,7 @@ export const CreateDebitNote = ({ onClose, messageApi, projectIdParam, clientIdP
             type="submit"
             className={`button__action__text ${isValid ? "button__action__text__green" : ""}`}
           >
-            Crear descuento
+            Crear Nota Débito
           </button>
         </div>
       </form>

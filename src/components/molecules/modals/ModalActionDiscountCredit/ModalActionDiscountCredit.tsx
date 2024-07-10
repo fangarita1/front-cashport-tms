@@ -87,6 +87,8 @@ export const ModalActionDiscountCredit = ({
             setSelectedRows={setSelectedRows}
             onClose={onClose}
             setCurrentView={setCurrentView}
+            clientIdParam={clientIdParam}
+            projectIdParam={projectIdParam}
           />
         )}
         {currentView === "create" && (

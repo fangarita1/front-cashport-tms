@@ -12,6 +12,8 @@ interface Props {
   setSelectedRows: Dispatch<SetStateAction<ISelectedAccountingAdjustment[]>>;
   onClose: () => void;
   setCurrentView: Dispatch<SetStateAction<string>>;
+  clientIdParam?: string;
+  projectIdParam?: string;
 }
 interface ItemsSelected {
   id: number;
@@ -27,9 +29,15 @@ export const SelectAccountingAdjustment = ({
   selectedRows,
   onClose,
   setCurrentView,
-  setSelectedRows
+  setSelectedRows,
+  clientIdParam,
+  projectIdParam
 }: Props) => {
-  const { data, isLoading } = useAcountingAdjustment(98765232, type);
+  const { data, isLoading } = useAcountingAdjustment(
+    clientIdParam || "0",
+    projectIdParam || "0",
+    type
+  );
   const [dateSelect, setDateSelect] = useState<ItemsSelected[]>([]);
   const handleCheckClick = (item: ISelectedAccountingAdjustment) => {
     const isExist = selectedRows.some((row) => row.id === item.id);
