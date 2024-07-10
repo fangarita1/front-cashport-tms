@@ -52,7 +52,7 @@ export const InputForm = ({
           <Input
             readOnly={readOnly}
             type={typeInput}
-            className={!error ? "inputForm" : "inputFormError"}
+            className={!error ? `inputForm ${readOnly && "-readOnly"}` : "inputFormError"}
             variant="borderless"
             placeholder={placeholder?.length > 0 ? placeholder : titleInput}
             onChange={(e) => {

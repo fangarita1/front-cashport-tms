@@ -44,6 +44,11 @@
             // background-color: #909090;
             color: $dark-gray !important;
         }
+
+        &.-readOnly {
+            background-color: $dark-gray;
+            color: $darker-gray;
+        }
     }
 
     .textError {
