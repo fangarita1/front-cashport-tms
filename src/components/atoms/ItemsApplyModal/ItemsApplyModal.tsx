@@ -24,7 +24,7 @@ const ItemApplyModal: FC<ItemsApplyModalProps> = ({ item, type, availableValue }
           <div className={"mainText"}>
             <strong className={"name"}>
               {titleMap[type]}
-              <span>{item.id}</span>
+              <span>{item?.id}</span>
             </strong>
           </div>
           <div className={"label"}>{item.motive_name ?? "Volumen"}</div>

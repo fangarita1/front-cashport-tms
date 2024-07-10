@@ -131,7 +131,7 @@ export const CreateCreditNote = ({ onClose, messageApi, projectIdParam, clientId
             type="submit"
             className={`button__action__text ${isValid ? "button__action__text__green" : ""}`}
           >
-            Crear descuento
+            Crear Nota Crédito
           </button>
         </div>
       </form>
