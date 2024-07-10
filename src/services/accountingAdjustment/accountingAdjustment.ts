@@ -94,7 +94,7 @@ export const changeStatusInvoice = async (
 };
 
 export const reportInvoiceIncident = async (
-  invoicesId: string[],
+  invoicesId: number[],
   comments: string,
   motiveId: string,
   files: File[] | null,
