@@ -126,7 +126,7 @@ const RegisterNews = ({
   const onSubmit = async (data: IFormRegisterNews) => {
     try {
       await reportInvoiceIncident(
-        invoiceSelected?.map((invoice) => invoice.id.toString()) || [],
+        invoiceSelected?.map((invoice) => invoice.id) || [],
         data.commentary,
         motives?.find((motive) => motive.name === data.motive)?.id.toString() || "",
         data.evidence,
