@@ -1,61 +1,37 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Flex, Spin } from "antd";
 import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
-import { useClientsGroups } from "@/hooks/useClientsGroups";
 
 import "./selectedGroupView.scss";
 import { GroupTable } from "@/components/molecules/tables/GroupTable/GroupTable";
-import { ISingleClientGroup } from "@/types/clientsGroups/IClientsGroups";
 import { groupInfo } from "../ClientsGroupsProjectView/ClientsGroupsProjectView";
+import { ModalClientsGroup } from "@/components/molecules/modals/ModalClientsGroup/ModalClientsGroup";
+import { useClientGroup } from "@/hooks/useClientGroup";
 
 interface PropsSelectedGroupView {
   onClickBack: () => void;
-  onClickEdit: () => void;
   showGroupDetails: {
-    groupId: number | undefined;
+    groupId: number;
     showDetails: boolean;
   };
-  setGroupInfoForEdit: Dispatch<SetStateAction<groupInfo>>;
 }
-export const SelectedGroupView = ({
-  onClickBack,
-  onClickEdit,
-  showGroupDetails,
-  setGroupInfoForEdit
-}: PropsSelectedGroupView) => {
+export const SelectedGroupView = ({ onClickBack, showGroupDetails }: PropsSelectedGroupView) => {
   const [isOpenModalStatus, setIsOpenModalStatus] = useState({ status: false, remove: false });
-  const [group, setGroup] = useState<ISingleClientGroup>({} as ISingleClientGroup);
-  const [loading, setLoading] = useState(false);
-  const { getGroup } = useClientsGroups({});
-
-  useEffect(() => {
-    const fetchGroup = async () => {
-      if (showGroupDetails.groupId) {
-        setLoading(true);
-        try {
-          const fetchedGroup = await getGroup(showGroupDetails.groupId);
-          setGroup(fetchedGroup.data);
-        } catch (error) {
-          console.warn("Failed to fetch group:", error);
-          setGroup({} as ISingleClientGroup);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchGroup();
-  }, [showGroupDetails.groupId]);
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [groupInfoForEdit, setGroupInfoForEdit] = useState<groupInfo>({} as groupInfo);
+  const { data, loading, updateClientsGroup } = useClientGroup(showGroupDetails.groupId);
 
   const handleEditGroup = () => {
-    setGroupInfoForEdit({
-      groupId: group.id,
-      groupName: group.group_name,
-      clientsIds: group.clients.map((client) => client.id)
-    });
-    onClickEdit();
+    data &&
+      setGroupInfoForEdit({
+        groupId: data?.data.id,
+        groupName: data?.data.group_name,
+        clientsIds: data?.data.clients.map((client) => client.id)
+      });
+
+    setIsOpenModal(true);
   };
 
   const onRemoveGroup = async () => {
@@ -83,7 +59,7 @@ export const SelectedGroupView = ({
           className="buttonGoBack"
           icon={<CaretLeft size={"1.45rem"} />}
         >
-          {group?.group_name}
+          {data?.data.group_name}
         </Button>
 
         <Flex gap="1.5rem">
@@ -110,8 +86,16 @@ export const SelectedGroupView = ({
       {loading ? (
         <Spin style={{ margin: "50px auto" }} />
       ) : (
-        group && <GroupTable dataClients={group?.clients} />
+        <GroupTable dataClients={data?.data.clients} />
       )}
+
+      <ModalClientsGroup
+        isOpen={isOpenModal}
+        isEditGroup={true}
+        setIsOpenModal={setIsOpenModal}
+        selectedGroupInfo={groupInfoForEdit}
+        updateClientsGroup={updateClientsGroup}
+      />
 
       <ModalChangeStatus
         isActiveStatus={true}

@@ -15,7 +15,7 @@ const { Text, Link } = Typography;
 interface PropsClientsGroupsTable {
   setShowGroupDetails: Dispatch<
     SetStateAction<{
-      groupId: number | undefined;
+      groupId: number;
       showDetails: boolean;
     }>
   >;
@@ -48,7 +48,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     status: "all" as "all" | "active" | "inactive"
   };
 
-  const { data, loading } = useClientsGroups({
+  const { data, loading, deleteSelectedGroups } = useClientsGroups({
     page,
     clients: selectedFilters.clients,
     subscribers: selectedFilters.subscribers,
@@ -79,7 +79,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
   };
 
   const deleteGroups = () => {
-    console.log("delete groups ", selectedRows);
+    deleteSelectedGroups(selectedRows.map((group: IClientsGroups) => group.id));
   };
 
   const items: MenuProps["items"] = [

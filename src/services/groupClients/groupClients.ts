@@ -39,13 +39,13 @@ export const createGroup = async (data: any, id: number): Promise<any> => {
 };
 
 export const updateGroup = async (
-  data: { group_id: number; clients: string[] },
+  group_id: number,
+  clients: string[],
   project_id: number
 ): Promise<any> => {
-  console.log("modelDataPUT:", data);
-
   const modelData = {
-    ...data,
+    group_id,
+    clients,
     project_id
   };
 
@@ -60,9 +60,31 @@ export const updateGroup = async (
       }
     });
 
-    // if (response.status === 200) {
-    //   return response;
-    // }
+    return response;
+  } catch (error) {
+    console.warn("error updating group: ", error);
+    return error as any;
+  }
+};
+
+export const deleteGroups = async (groupsId: number[], project_id: number): Promise<any> => {
+  const modelData = {
+    ids: groupsId,
+    project_id
+  };
+
+  const token = await getIdToken();
+
+  try {
+    const response: AxiosResponse = await axios.put(`${config.API_HOST}/group-client`, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "application/json; charset=utf-8",
+        Authorization: `Bearer ${token}`
+      },
+      data: modelData
+    });
+
     return response;
   } catch (error) {
     return error as any;

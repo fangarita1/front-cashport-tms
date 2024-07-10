@@ -49,3 +49,9 @@ export interface ISingleClientGroup {
   group_name: string;
   clients: IClient[];
 }
+
+export interface ISingleClientGroupResponse {
+  status: number;
+  message: string;
+  data: ISingleClientGroup;
+}

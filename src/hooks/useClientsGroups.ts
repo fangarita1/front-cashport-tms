@@ -1,8 +1,8 @@
 import useSWR from "swr";
-import { API, fetcher } from "@/utils/api/api";
+import { fetcher } from "@/utils/api/api";
 import { IClientsGroupsFull } from "@/types/clientsGroups/IClientsGroups";
 import { useAppStore } from "@/lib/store/store";
-import { getOneGroup, updateGroup } from "@/services/groupClients/groupClients";
+import { deleteGroups } from "@/services/groupClients/groupClients";
 
 interface Props {
   page?: number;
@@ -30,15 +30,8 @@ export const useClientsGroups = ({ page, clients, subscribers, activeUsers, noLi
 
   const { data, error, isLoading, mutate } = useSWR<IClientsGroupsFull>(pathKey, fetcher, {});
 
-  const getGroup = async (groupId: number) => {
-    const response = await getOneGroup(groupId, projectId);
-    return response;
-  };
-
-  const updateClientsGroup = async (data: { group_id: number; clients: string[] }) => {
-    console.log("modelDataPUT:", data);
-
-    const response = await updateGroup(data, projectId);
+  const deleteSelectedGroups = async (selectedGroups: number[]) => {
+    await deleteGroups(selectedGroups, projectId);
     mutate();
   };
 
@@ -46,7 +39,6 @@ export const useClientsGroups = ({ page, clients, subscribers, activeUsers, noLi
     data: data,
     loading: isLoading,
     error,
-    getGroup,
-    updateClientsGroup
+    deleteSelectedGroups
   };
 };

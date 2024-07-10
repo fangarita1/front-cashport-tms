@@ -3,7 +3,7 @@ import { Flex, message, Modal, Typography } from "antd";
 import { useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { ClientsProjectTable } from "@/components/molecules/tables/ClientsProjectTable/ClientsProjectTable";
-import { createGroup, updateGroup } from "@/services/groupClients/groupClients";
+import { createGroup } from "@/services/groupClients/groupClients";
 
 import "./modalClientsGroup.scss";
 import { IClient } from "@/types/clients/IClients";
@@ -17,6 +17,8 @@ interface CreateGroupProps {
   isEditGroup?: boolean;
   setIsOpenModal: Dispatch<SetStateAction<boolean>>;
   selectedGroupInfo?: groupInfo;
+  // eslint-disable-next-line no-unused-vars
+  updateClientsGroup?: (clients: string[]) => Promise<void>;
 }
 
 export type NameType = {
@@ -27,7 +29,8 @@ export const ModalClientsGroup = ({
   isOpen,
   setIsOpenModal,
   isEditGroup,
-  selectedGroupInfo
+  selectedGroupInfo,
+  updateClientsGroup
 }: CreateGroupProps) => {
   const [groupName, setGroupName] = useState("");
   const { ID } = useAppStore((state) => state.selectProject);
@@ -73,18 +76,8 @@ export const ModalClientsGroup = ({
   };
 
   const onUpdateGroup = () => {
-    console.log("selectedRowsMOdla", selectedRows);
-    if (selectedRows.length > 0 && selectedGroupInfo?.groupId) {
-      try {
-        const group = {
-          group_id: selectedGroupInfo?.groupId,
-          clients: selectedRows.map((client: IClient) => client.nit.toString())
-        };
-        updateGroup(group);
-      } catch (error) {
-        console.warn(error);
-      }
-    }
+    if (!updateClientsGroup) return;
+    updateClientsGroup(selectedRows.map((client: IClient) => client.nit.toString()));
 
     setIsOpenModal(false);
     setGroupName("");
