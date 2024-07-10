@@ -16,6 +16,7 @@ import WalletTabChangeStatusModal from "@/modules/clients/components/wallet-tab-
 import PaymentAgreementModal from "@/modules/clients/components/wallet-tab-payment-agreement-modal";
 import { ModalActionDiscountCredit } from "@/components/molecules/modals/ModalActionDiscountCredit/ModalActionDiscountCredit";
 import LabelCollapse from "@/components/ui/label-collapse";
+import RadicationInvoice from "@/components/molecules/modals/Radication/RadicationInvoice";
 import RegisterNews from "@/components/molecules/modals/RegisterNews/RegisterNews";
 import { useSWRConfig } from "swr";
 
@@ -179,8 +180,16 @@ export const WalletTab = () => {
         invoiceSelected={selectedRows}
         clientId={clientId}
         projectId={projectId}
-        messageShow={messageShow}
         onCloseAllModals={closeAllModal}
+        messageShow={messageShow}
+      />
+      <RadicationInvoice
+        isOpen={isSelectOpen.selected === 3}
+        onClose={onCloseModal}
+        invoiceSelected={selectedRows}
+        clientId={clientId}
+        projectId={projectId}
+        messageShow={messageShow}
       />
       <RegisterNews
         isOpen={isSelectOpen.selected === 1}
