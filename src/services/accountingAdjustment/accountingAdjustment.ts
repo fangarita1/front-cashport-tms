@@ -52,3 +52,70 @@ export const applyAccountingAdjustment = async (
   );
   return response.data;
 };
+
+export const changeStatusInvoice = async (
+  statusName: string,
+  invoiceIds: number[],
+  comments: string,
+  docFiles: File[] | null,
+  projectId: number,
+  clientId: number
+): Promise<AxiosResponse<any>> => {
+  const token = await getIdToken();
+  const formData = new FormData();
+  formData.append("status_name", statusName);
+  formData.append("invoice_ids", JSON.stringify(invoiceIds));
+  formData.append("comments", comments);
+  if (docFiles) {
+    docFiles.forEach((file) => {
+      formData.append("files", file);
+    });
+  }
+
+  const response: AxiosResponse<any> = await axios.post(
+    `${config.API_HOST}/invoice/project/${projectId}/client/${clientId}/update_status`,
+    formData,
+    {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data;
+};
+
+export const reportInvoiceIncident = async (
+  invoicesId: string[],
+  comments: string,
+  motiveId: string,
+  files: File[] | null,
+  clientId: string
+): Promise<AxiosResponse<any>> => {
+  const token = await getIdToken();
+
+  const formData = new FormData();
+  formData.append("invoices_id", JSON.stringify(invoicesId));
+  formData.append("comments", comments);
+  formData.append("motive_id", motiveId);
+
+  if (files) {
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
+  }
+
+  const response: AxiosResponse<any> = await axios.post(
+    `${config.API_HOST}/invoice/incident/client/${clientId}`,
+    formData,
+    {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data;
+};

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, use, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Modal, Typography, message } from "antd";
 import "./modalActionDiscountCredit.scss";
 import { CreateCreditNote } from "../CreateAccountingAdjustment/CreateCreditNote/CreateCreditNote";
@@ -27,6 +27,7 @@ interface Props {
     }>
   >;
   invoiceSelected?: IInvoice[];
+  onCloseAllModals?: () => void;
 }
 export interface ISelectedAccountingAdjustment {
   id: number;
@@ -40,7 +41,8 @@ export const ModalActionDiscountCredit = ({
   isOpen,
   onClose,
   showActionDetailModal,
-  invoiceSelected
+  invoiceSelected,
+  onCloseAllModals
 }: Props) => {
   const [selectedRows, setSelectedRows] = useState<ISelectedAccountingAdjustment[]>([]);
   const [currentView, setCurrentView] = useState("select");
@@ -58,7 +60,10 @@ export const ModalActionDiscountCredit = ({
       <Modal
         width={"40%"}
         open={isOpen}
-        style={{ top: "10%", height: "auto" }}
+        style={{ top: "5%" }}
+        bodyStyle={{
+          height: currentView === "select" ? "calc(80vh - 20px)" : "auto"
+        }}
         title={
           <Title level={4}>
             {(currentView === "create" && titleCreateMap[showActionDetailModal?.actionType || 1]) ||
@@ -124,6 +129,14 @@ export const ModalActionDiscountCredit = ({
             selectedRows={selectedRows}
             setSelectedRows={setSelectedRows}
             setCurrentView={setCurrentView}
+            onClosePrincipalModal={
+              onCloseAllModals
+                ? () => {
+                    onCloseAllModals();
+                    onClose();
+                  }
+                : onClose
+            }
             invoiceSelected={invoiceSelected}
             messageApi={messageApi}
           />

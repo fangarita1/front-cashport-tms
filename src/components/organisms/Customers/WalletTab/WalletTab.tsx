@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Collapse, Flex, Spin } from "antd";
+import { Button, Collapse, Flex, Spin, message } from "antd";
 import { useParams } from "next/navigation";
 import { CaretDoubleRight, DotsThree } from "phosphor-react";
 import { extractSingleParam } from "@/utils/utils";
@@ -16,6 +16,8 @@ import WalletTabChangeStatusModal from "@/modules/clients/components/wallet-tab-
 import PaymentAgreementModal from "@/modules/clients/components/wallet-tab-payment-agreement-modal";
 import { ModalActionDiscountCredit } from "@/components/molecules/modals/ModalActionDiscountCredit/ModalActionDiscountCredit";
 import LabelCollapse from "@/components/ui/label-collapse";
+import RegisterNews from "@/components/molecules/modals/RegisterNews/RegisterNews";
+import { useSWRConfig } from "swr";
 
 export const WalletTab = () => {
   const [invoices, setInvoices] = useState<InvoicesData[] | undefined>([]);
@@ -25,6 +27,7 @@ export const WalletTab = () => {
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
+  const { mutate } = useSWRConfig();
   const [showInvoiceDetailModal, setShowInvoiceDetailModal] = useState<{
     isOpen: boolean;
     invoiceId: number;
@@ -40,7 +43,10 @@ export const WalletTab = () => {
     actionType: 0
   });
   const [isPaymentAgreementOpen, setIsPaymentAgreementOpen] = useState(false);
-
+  const [isSelectOpen, setIsSelectOpen] = useState({
+    selected: 0
+  });
+  const [messageShow, contextHolder] = message.useMessage();
   const clientId = clientIdParam ? parseInt(clientIdParam) : 0;
   const projectId = projectIdParam ? parseInt(projectIdParam) : 0;
 
@@ -57,10 +63,19 @@ export const WalletTab = () => {
 
   const handleisGenerateActionOpen = () => {
     setisGenerateActionOpen(!isGenerateActionOpen);
+    mutate(`/invoice/client/${clientId}/project/${projectId}`);
+  };
+  const onCloseModal = () => {
+    setIsSelectOpen({ selected: 0 });
+  };
+  const closeAllModal = () => {
+    setIsSelectOpen({ selected: 0 });
+    handleisGenerateActionOpen();
   };
 
   return (
     <>
+      {contextHolder}
       {selectedRows && selectedRows?.length > 0 && (
         <ModalEstimateTotalInvoices selectedInvoices={selectedRows} />
       )}
@@ -132,6 +147,7 @@ export const WalletTab = () => {
         onClose={handleisGenerateActionOpen}
         setIsPaymentAgreementOpen={setIsPaymentAgreementOpen}
         setShowActionDetailModal={setShowActionDetailModal}
+        setSelectOpen={setIsSelectOpen}
       />
       {isPaymentAgreementOpen && (
         <PaymentAgreementModal
@@ -155,8 +171,26 @@ export const WalletTab = () => {
         showActionDetailModal={showActionDetailModal}
         setShowActionDetailModal={setShowActionDetailModal}
         invoiceSelected={selectedRows}
+        onCloseAllModals={closeAllModal}
       />
-      <WalletTabChangeStatusModal isOpen={false} />
+      <WalletTabChangeStatusModal
+        isOpen={isSelectOpen.selected === 2}
+        onClose={onCloseModal}
+        invoiceSelected={selectedRows}
+        clientId={clientId}
+        projectId={projectId}
+        messageShow={messageShow}
+        onCloseAllModals={closeAllModal}
+      />
+      <RegisterNews
+        isOpen={isSelectOpen.selected === 1}
+        onClose={onCloseModal}
+        invoiceSelected={selectedRows}
+        clientId={clientId}
+        projectId={projectId}
+        messageShow={messageShow}
+        onCloseAllModals={closeAllModal}
+      />
     </>
   );
 };
