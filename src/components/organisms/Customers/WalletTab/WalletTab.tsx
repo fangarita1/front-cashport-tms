@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Flex, Spin } from "antd";
+import { Button, Flex, Spin, message } from "antd";
 import { useParams } from "next/navigation";
 import { CaretDoubleRight, DotsThree } from "phosphor-react";
 import { extractSingleParam } from "@/utils/utils";
@@ -9,13 +9,15 @@ import { ModalGenerateAction } from "@/components/molecules/modals/ModalGenerate
 import UiSearchInput from "@/components/ui/search-input";
 import { ModalEstimateTotalInvoices } from "@/components/molecules/modals/modal-estimate-total-invoices/modal-estimate-total-invoices";
 import InvoiceDetailModalProps from "@/modules/clients/containers/invoice-detail-modal";
+import { IInvoice, InvoicesData } from "@/types/invoices/IInvoices";
 import LabelCollapse from "@/components/ui/label-collapse";
 import Collapse from "@/components/ui/collapse";
 import WalletTabChangeStatusModal from "@/modules/clients/components/wallet-tab-change-status-modal";
 import PaymentAgreementModal from "@/modules/clients/components/wallet-tab-payment-agreement-modal";
 import { ModalActionDiscountCredit } from "@/components/molecules/modals/ModalActionDiscountCredit/ModalActionDiscountCredit";
-import { IInvoice, InvoicesData } from "@/types/invoices/IInvoices";
-
+import RadicationInvoice from "@/components/molecules/modals/Radication/RadicationInvoice";
+import RegisterNews from "@/components/molecules/modals/RegisterNews/RegisterNews";
+import { useSWRConfig } from "swr";
 import "./wallettab.scss";
 
 export const WalletTab = () => {
@@ -26,6 +28,7 @@ export const WalletTab = () => {
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
+  const { mutate } = useSWRConfig();
   const [showInvoiceDetailModal, setShowInvoiceDetailModal] = useState<{
     isOpen: boolean;
     invoiceId: number;
@@ -41,7 +44,10 @@ export const WalletTab = () => {
     actionType: 0
   });
   const [isPaymentAgreementOpen, setIsPaymentAgreementOpen] = useState(false);
-
+  const [isSelectOpen, setIsSelectOpen] = useState({
+    selected: 0
+  });
+  const [messageShow, contextHolder] = message.useMessage();
   const clientId = clientIdParam ? parseInt(clientIdParam) : 0;
   const projectId = projectIdParam ? parseInt(projectIdParam) : 0;
 
@@ -58,10 +64,19 @@ export const WalletTab = () => {
 
   const handleisGenerateActionOpen = () => {
     setisGenerateActionOpen(!isGenerateActionOpen);
+    mutate(`/invoice/client/${clientId}/project/${projectId}`);
+  };
+  const onCloseModal = () => {
+    setIsSelectOpen({ selected: 0 });
+  };
+  const closeAllModal = () => {
+    setIsSelectOpen({ selected: 0 });
+    handleisGenerateActionOpen();
   };
 
   return (
     <>
+      {contextHolder}
       {selectedRows && selectedRows?.length > 0 && (
         <ModalEstimateTotalInvoices selectedInvoices={selectedRows} />
       )}
@@ -129,6 +144,7 @@ export const WalletTab = () => {
         onClose={handleisGenerateActionOpen}
         setIsPaymentAgreementOpen={setIsPaymentAgreementOpen}
         setShowActionDetailModal={setShowActionDetailModal}
+        setSelectOpen={setIsSelectOpen}
       />
       {isPaymentAgreementOpen && (
         <PaymentAgreementModal
@@ -152,8 +168,34 @@ export const WalletTab = () => {
         showActionDetailModal={showActionDetailModal}
         setShowActionDetailModal={setShowActionDetailModal}
         invoiceSelected={selectedRows}
+        onCloseAllModals={closeAllModal}
       />
-      <WalletTabChangeStatusModal isOpen={false} />
+      <WalletTabChangeStatusModal
+        isOpen={isSelectOpen.selected === 2}
+        onClose={onCloseModal}
+        invoiceSelected={selectedRows}
+        clientId={clientId}
+        projectId={projectId}
+        onCloseAllModals={closeAllModal}
+        messageShow={messageShow}
+      />
+      <RadicationInvoice
+        isOpen={isSelectOpen.selected === 3}
+        onClose={onCloseModal}
+        invoiceSelected={selectedRows}
+        clientId={clientId}
+        projectId={projectId}
+        messageShow={messageShow}
+      />
+      <RegisterNews
+        isOpen={isSelectOpen.selected === 1}
+        onClose={onCloseModal}
+        invoiceSelected={selectedRows}
+        clientId={clientId}
+        projectId={projectId}
+        messageShow={messageShow}
+        onCloseAllModals={closeAllModal}
+      />
     </>
   );
 };

@@ -12,7 +12,6 @@ import {
   XCircle,
   MagnifyingGlassMinus
 } from "phosphor-react";
-
 import { useProjects } from "@/hooks/useProjects";
 import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";

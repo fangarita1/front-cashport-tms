@@ -1,11 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Flex, Modal, Radio, RadioChangeEvent } from "antd";
 import styles from "./wallet-tab-change-status-modal.module.scss";
 import { CaretLeft, Plus } from "phosphor-react";
 import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
+import { IInvoice } from "@/types/invoices/IInvoices";
+import { changeStatusInvoice } from "@/services/accountingAdjustment/accountingAdjustment";
+import { MessageInstance } from "antd/es/message/interface";
 
 interface Props {
   isOpen: boolean;
+  onClose: () => void;
+  clientId?: number;
+  projectId?: number;
+  invoiceSelected?: IInvoice[];
+  messageShow: MessageInstance;
+  onCloseAllModals: () => void;
 }
 
 interface FileFromDragger {
@@ -24,7 +33,15 @@ interface FileObjectFromButton {
   fileList: FileFromDragger[];
 }
 
-const WalletTabChangeStatusModal: React.FC<Props> = ({ isOpen }) => {
+const WalletTabChangeStatusModal: React.FC<Props> = ({
+  isOpen,
+  onClose,
+  invoiceSelected,
+  clientId,
+  projectId,
+  messageShow,
+  onCloseAllModals
+}) => {
   const [selectedState, setSelectedState] = useState<string | undefined>();
   const [selectedEvidence, setSelectedEvidence] = useState<File[]>([]);
   const [commentary, setCommentary] = useState<string | undefined>();
@@ -45,9 +62,28 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({ isOpen }) => {
     setCommentary(e.target.value);
   };
 
-  const handleAttachEvidence = () => {
-    // Aqui se debe hacer la llamada a la API para adjuntar la evidencia
-    // que esta en los estados de selectedEvidence, selectedState y commentary
+  const handleAttachEvidence = async () => {
+    try {
+      await changeStatusInvoice(
+        selectedState as string,
+        invoiceSelected?.map((invoice) => invoice.id) as number[],
+        commentary as string,
+        selectedEvidence,
+        projectId as number,
+        clientId as number
+      );
+      messageShow.open({
+        type: "success",
+        content: "La factura ha cambiado de estado correctamente a"
+      });
+      onCloseAllModals();
+      handlegoBackToFirstView();
+    } catch (error) {
+      messageShow.open({
+        type: "error",
+        content: "Ha ocurrido un error al cambiar el estado de la factura"
+      });
+    }
   };
 
   const handleOnChangeDocument: any = (info: FileObjectFromButton) => {
@@ -89,8 +125,12 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({ isOpen }) => {
     innerContent: (
       <div className={styles.content__status}>
         {invoiceStates.map((state) => (
-          <Radio.Group onChange={handleOnChangeRadioGroup} value={selectedState} key={state}>
-            <Radio className={styles.content__status__item} value={state}>
+          <Radio.Group
+            onChange={handleOnChangeRadioGroup}
+            value={selectedState?.toLocaleLowerCase()}
+            key={state}
+          >
+            <Radio className={styles.content__status__item} value={state?.toLocaleLowerCase()}>
               {state}
             </Radio>
           </Radio.Group>
@@ -99,7 +139,9 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({ isOpen }) => {
     ),
     footer: (
       <div className={styles.footer}>
-        <Button className={styles.cancelButton}>Cancelar</Button>
+        <Button className={styles.cancelButton} onClick={onClose}>
+          Cancelar
+        </Button>
         <Button
           disabled={!selectedState}
           className={styles.acceptButton}
@@ -172,7 +214,9 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({ isOpen }) => {
     ),
     footer: (
       <div className={styles.footer}>
-        <Button className={styles.cancelButton}>Cancelar</Button>
+        <Button className={styles.cancelButton} onClick={() => setIsSecondView(false)}>
+          Cancelar
+        </Button>
         <Button
           onClick={handleAttachEvidence}
           disabled={commentary && selectedEvidence.length > 0 ? false : true}
@@ -184,34 +228,64 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({ isOpen }) => {
     )
   };
 
-  return (
-    <>
-      <Modal
-        className={styles.wrapper}
-        width={"50%"}
-        open={isOpen}
-        footer={isSecondView ? secondViewModal.footer : firstViewModal.footer}
-        closable={false}
-      >
-        <div className={styles.content}>
-          <Button
-            onClick={isSecondView ? handlegoBackToFirstView : undefined}
-            className={styles.content__header}
-          >
-            <CaretLeft size={"1.25rem"} />
-            <p>{isSecondView ? secondViewModal.title : firstViewModal.title}</p>
-          </Button>
+  useEffect(() => {
+    return () => {
+      setSelectedState(undefined);
+      setSelectedEvidence([]);
+      setCommentary(undefined);
+    };
+  }, [isOpen]);
 
-          <p className={styles.content__description}>
-            {isSecondView ? secondViewModal.description : firstViewModal.description}
-          </p>
-          {isSecondView ? secondViewModal.innerContent : firstViewModal.innerContent}
+  return (
+    <Modal
+      className={styles.wrapper}
+      width="50%"
+      open={isOpen}
+      footer={
+        <div className={styles.footer}>
+          {isSecondView ? secondViewModal.footer : firstViewModal.footer}
         </div>
-      </Modal>
-    </>
+      }
+      closable={false}
+      bodyStyle={{
+        height: !isSecondView ? "calc(80vh - 20px)" : "auto",
+        maxHeight: "calc(80vh - 20px)",
+        padding: 0,
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        overflowY: "auto"
+      }}
+      style={{ top: "10px" }}
+    >
+      <div className={styles.content} style={{ height: "100%" }}>
+        <Button
+          onClick={isSecondView ? handlegoBackToFirstView : onClose}
+          className={styles.content__header}
+        >
+          <CaretLeft size="1.25rem" />
+          <span>{isSecondView ? secondViewModal.title : firstViewModal.title}</span>
+        </Button>
+
+        <p className={styles.content__description}>
+          {isSecondView ? secondViewModal.description : firstViewModal.description}
+        </p>
+
+        <div>{isSecondView ? secondViewModal.innerContent : firstViewModal.innerContent}</div>
+      </div>
+    </Modal>
   );
 };
 
 export default WalletTabChangeStatusModal;
 
-const invoiceStates = ["Emitida", "Conciliada", "Glosada", "Devolucion", "Anulación"];
+const invoiceStates = [
+  "Conciliada",
+  "Sin consiliar",
+  "Glosado",
+  "Devolucion",
+  "Anulada",
+  "Vencida",
+  "Saldo",
+  "Novedad"
+];
