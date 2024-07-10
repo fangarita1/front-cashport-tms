@@ -13,43 +13,49 @@ export const GroupTable = ({ dataClients }: PropsGroupTable) => {
       title: "Nombre",
       dataIndex: "client_name",
       key: "client_name",
-      render: (text) => <p>{text}</p>
+      render: (text) => <p>{text}</p>,
+      sorter: (a, b) => a.client_name.localeCompare(b.client_name),
+      showSorterTooltip: false
     },
     {
       title: "NIT",
       dataIndex: "id",
       key: "id",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => b.id - a.id,
+      showSorterTooltip: false
     },
     {
       title: "Cartera",
-      key: "budget",
-      dataIndex: "budget",
-      render: (text) => <Text>{text}</Text>
-    },
-    {
-      title: "Usuarios",
-      key: "usuarios",
-      dataIndex: "usuarios",
-      render: (text) => <Text>{text}</Text>
+      key: "total_portfolio",
+      dataIndex: "total_portfolio",
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => a.total_portfolio - b.total_portfolio,
+      showSorterTooltip: false
     },
     {
       title: "Ship To",
-      key: "shipTo",
-      dataIndex: "shipTo",
-      render: (text) => <Text>{text}</Text>
+      key: "shipto_count",
+      dataIndex: "shipto_count",
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => b.shipto_count - a.shipto_count,
+      showSorterTooltip: false
     },
     {
       title: "Grupos",
-      key: "budget",
-      dataIndex: "budget",
-      render: (text) => <Text>{text}</Text>
+      key: "client_count",
+      dataIndex: "client_count",
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => b.client_count - a.client_count,
+      showSorterTooltip: false
     },
     {
       title: "Holding",
       key: "holding_name",
       dataIndex: "holding_name",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => a.holding_name?.localeCompare(b.holding_name),
+      showSorterTooltip: false
     },
     {
       title: "Estado",

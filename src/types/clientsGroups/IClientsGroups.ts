@@ -10,9 +10,12 @@ export interface IClientsGroupsFull {
 export interface IClient {
   id: number;
   client_name: string;
-  holding_name: string | null;
+  holding_name: string;
   bussiness_name: string;
   client_type_name: string;
+  shipto_count: number;
+  total_portfolio: number;
+  client_count: number;
 }
 
 export interface IClientsGroups {

@@ -95,7 +95,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
       key: "2",
       label: (
         <Button className="buttonOutlined" onClick={deleteGroups}>
-          Eliminar grupo
+          Eliminar
         </Button>
       )
     }

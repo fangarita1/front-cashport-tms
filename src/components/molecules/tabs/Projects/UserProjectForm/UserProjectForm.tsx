@@ -50,7 +50,7 @@ export const UserProjectForm = ({
 }: Props) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [isEditAvailable, setIsEditAvailable] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [dataUser, setDataUser] = useState({
     data: {},
     isLoading: false
@@ -114,7 +114,7 @@ export const UserProjectForm = ({
   }, [ID, isViewDetailsUser, messageApi]);
 
   const onSubmitHandler = async (data: IUserForm) => {
-    setLoading(true)
+    setLoading(true);
     setCustomFieldsError({
       zone: zones.length === 0,
       channel: selectedBusinessRules?.channels.length === 0
@@ -150,7 +150,7 @@ export const UserProjectForm = ({
         content: "Oops ocurrio un error."
       });
     }
-    setLoading(false)
+    setLoading(false);
   };
   const onRemoveUser = async () =>
     await onRemoveUserById(dataUser.data.ID, ID, messageApi, () =>
@@ -168,7 +168,7 @@ export const UserProjectForm = ({
   return (
     <>
       <form className="newUserProjectForm" onSubmit={handleSubmit(onSubmitHandler)}>
-      {contextHolder}
+        {contextHolder}
         <Flex vertical style={{ height: "100%" }}>
           <Flex component={"header"} className="headerNewUserProyectsForm">
             {/* -------------------left buttons------------------------ */}
@@ -277,7 +277,6 @@ export const UserProjectForm = ({
                 <Flex vertical style={{ width: "30%" }}>
                   <SelectClientsGroup
                     userID={dataUser?.data?.ID}
-                    projectID={ID}
                     disabled={!isEditAvailable}
                     assignedGroups={assignedGroups}
                     setAssignedGroups={setAssignedGroups}
@@ -297,9 +296,15 @@ export const UserProjectForm = ({
               htmlType="submit"
               disabled={loading}
               size="large"
-              icon={loading ? null :<Plus weight="bold" size={15} />}
+              icon={loading ? null : <Plus weight="bold" size={15} />}
             >
-              {loading ? <Spin /> : isViewDetailsUser?.id ? "Actualizar usuario" : "Registrar usuario"}
+              {loading ? (
+                <Spin />
+              ) : isViewDetailsUser?.id ? (
+                "Actualizar usuario"
+              ) : (
+                "Registrar usuario"
+              )}
             </Button>
           </Flex>
         )}

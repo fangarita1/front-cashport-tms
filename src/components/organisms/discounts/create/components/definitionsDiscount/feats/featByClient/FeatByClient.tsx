@@ -42,9 +42,8 @@ export default function FeatByCient({ form, statusForm }: FeatByOrderProps) {
     control,
     formState: { errors }
   } = form;
-  const { lines, onChange, isLoading, projectId } = useDiscountFeats({ setValue });
+  const { lines, onChange, isLoading } = useDiscountFeats({ setValue });
   const { data, error, loading } = useClientsGroups({
-    idProject: projectId.toString(),
     noLimit: true
   });
 

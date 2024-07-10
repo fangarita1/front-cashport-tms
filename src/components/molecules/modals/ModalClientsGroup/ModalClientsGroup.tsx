@@ -8,6 +8,7 @@ import { createGroup, updateGroup } from "@/services/groupClients/groupClients";
 import "./modalClientsGroup.scss";
 import { IClient } from "@/types/clients/IClients";
 import { useAppStore } from "@/lib/store/store";
+import { groupInfo } from "@/components/organisms/projects/ClientsGroupsProjectView/ClientsGroupsProjectView";
 
 const { Text } = Typography;
 
@@ -15,13 +16,19 @@ interface CreateGroupProps {
   isOpen: boolean;
   isEditGroup?: boolean;
   setIsOpenModal: Dispatch<SetStateAction<boolean>>;
+  selectedGroupInfo?: groupInfo;
 }
 
 export type NameType = {
   name: string;
 };
 
-export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: CreateGroupProps) => {
+export const ModalClientsGroup = ({
+  isOpen,
+  setIsOpenModal,
+  isEditGroup,
+  selectedGroupInfo
+}: CreateGroupProps) => {
   const [groupName, setGroupName] = useState("");
   const { ID } = useAppStore((state) => state.selectProject);
   const [selectedRows, setSelectedRows] = useState<any>([]);
@@ -126,7 +133,7 @@ export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: Creat
       ) : (
         <Modal
           width={900}
-          title={isEditGroup ? "Nombre grupo a editar" : groupName}
+          title={isEditGroup ? selectedGroupInfo?.groupName : groupName}
           open={isOpen}
           onCancel={onCancel}
           okButtonProps={{
@@ -151,7 +158,7 @@ export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: Creat
             <ClientsProjectTable
               placedIn="modal"
               setSelectedRows={setSelectedRows}
-              selectedClientsKeys={["0347623472-5643", "4347623472-5643"]}
+              selectedClientsKeys={selectedGroupInfo?.clientsIds}
               messageContext={contextHolder}
             />
           </Flex>

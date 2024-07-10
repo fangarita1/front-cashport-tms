@@ -37,7 +37,7 @@ interface Props {
   >;
   placedIn?: string;
   setSelectedRows?: Dispatch<SetStateAction<{}>>;
-  selectedClientsKeys?: string[];
+  selectedClientsKeys?: number[];
   messageContext?: ReactElement<any, string | JSXElementConstructor<any>>;
 }
 
@@ -71,15 +71,14 @@ export const ClientsProjectTable = ({
     // Este useEffect es para seleccionar las filas
     // de clientes que ya pertenecen al grupo
     // cuando se va hacer PUT
-    if (
-      placedIn === "modal" &&
-      selectedClientsKeys &&
-      selectedClientsKeys.length > 0 &&
-      selectedRowKeys.length === 0
-    ) {
+    if (placedIn === "modal" && selectedClientsKeys && selectedClientsKeys.length > 0) {
       setSelectedRowKeys(selectedClientsKeys);
     }
-  }, [placedIn, selectedClientsKeys, selectedRowKeys.length]);
+
+    return () => {
+      setSelectedRowKeys([]);
+    };
+  }, [placedIn, selectedClientsKeys]);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
     setSelectedRowKeys(newSelectedRowKeys);
