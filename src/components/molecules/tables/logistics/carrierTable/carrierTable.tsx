@@ -16,12 +16,13 @@ export const CarrierTable = () => {
   const [driversOptions, setDriversOptions] = useState<any>([]);
   const datasource: any[] = [];
 
+
   const loadCarriers = async () => {
+    if(drivers != undefined && drivers.length > 0) return;
     const result = await getAllCarriers();
     if (result.data.data.length > 0) {
       const listCarriers: any[] | ((prevState: ICarrier[]) => ICarrier[]) = [];
       const listCarriersOptions: { label: any; value: any }[] = [];
-
       result.data.data.forEach((item, index) => {
         listCarriers.push(item);
         listCarriersOptions.push({ label: item.name, value: item.id });

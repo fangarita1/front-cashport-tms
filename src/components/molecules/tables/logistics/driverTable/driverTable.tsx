@@ -18,6 +18,7 @@ export const DriverTable = () => {
   const { Text } = Typography;
 
   const loadDrivers = async () => {
+    if(drivers != undefined && drivers.length > 0) return;
     const result = await getAllDrivers();
     if (result.data.data.length > 0) {
       const listDrivers: any[] | ((prevState: IDriver[]) => IDriver[]) = [];
@@ -133,7 +134,7 @@ export const DriverTable = () => {
             type="primary"
             className="buttonNewProject"
             size="large"
-            href="/logistics/drivers/driver"
+            href="/logistics/drivers/new"
           >
             Nuevo Conductor
             {<Plus weight="bold" size={14} />}

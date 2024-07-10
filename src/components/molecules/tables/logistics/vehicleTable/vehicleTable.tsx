@@ -17,6 +17,7 @@ export const VehicleTable = () => {
   const datasource: any[] = [];
 
   const loadDrivers = async () => {
+    if(vehicles != undefined && vehicles.length > 0) return;
     const result = await getAllVehicles();
     if (result.data.data.length > 0) {
       const listVehicles: any[] | ((prevState: IVehicle[]) => IVehicle[]) = [];

@@ -1127,7 +1127,10 @@ export const CreateOrderView = () => {
                     className="puntoOrigen"
                     style={{ width:'100%' }}
                     options={[
-                      { value: '2', label: 'Exacto' },
+                      { value: '0', label: 'Exacto' },
+                      { value: '1', label: '+/- 1 día' },
+                      { value: '2', label: '+/- 2 días' },
+                      { value: '3', label: '+/- 3 días' },
                     ]}
                   />
                 </Col>
