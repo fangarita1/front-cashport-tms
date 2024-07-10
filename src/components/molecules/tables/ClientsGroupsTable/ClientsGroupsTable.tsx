@@ -65,6 +65,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
   };
 
   const rowSelection = {
+    columnWidth: 40,
     selectedRowKeys,
     onChange: onSelectChange
   };
@@ -129,7 +130,6 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
       title: "Estado",
       key: "active",
       dataIndex: "active",
-      width: "150px",
       render: (_, { active }) => (
         <>
           {active ? (
@@ -160,7 +160,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     {
       title: "",
       key: "seeProject",
-      width: "40px",
+      width: 110,
       dataIndex: "",
       render: (_, row) => (
         <Button onClick={() => handleSeeGroupDetails(row.id)} icon={<Eye size={"1.3rem"} />} />
@@ -199,6 +199,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
             virtual
             scroll={{ y: height - 400, x: 100 }}
             pagination={{
+              current: page,
               pageSize: 25,
               showSizeChanger: false,
               position: ["none", "bottomRight"],

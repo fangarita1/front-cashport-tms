@@ -9,7 +9,7 @@ const theme: ThemeConfig = {
     colorSplit: "#FFFFFF",
     colorBgElevated: "#575a6b",
     fontFamily: "inherit",
-    green: "#CBE71E",
+    green: "#CBE71E"
   },
   components: {
     Message: {
@@ -38,11 +38,13 @@ const theme: ThemeConfig = {
     Table: {
       headerBg: "#FFF",
       headerColor: "#141414",
-      headerSplitColor: "transparent"
+      headerSplitColor: "transparent",
+      rowSelectedBg: "transparent",
+      rowSelectedHoverBg: "transparent"
     },
     DatePicker: {
       colorBgElevated: "#FFFFFF",
-      controlHeight: 47,
+      controlHeight: 47
     }
   }
 };

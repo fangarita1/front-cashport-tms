@@ -90,6 +90,7 @@ export const ClientsProjectTable = ({
   };
 
   const rowSelection = {
+    columnWidth: 40,
     selectedRowKeys,
     onChange: onSelectChange
   };
@@ -230,7 +231,7 @@ export const ClientsProjectTable = ({
       {
         title: "",
         key: "seeProject",
-        width: "40px",
+        width: 100,
         dataIndex: "",
         render: (_, { nit }) => (
           <Button
@@ -323,6 +324,7 @@ export const ClientsProjectTable = ({
               rowSelection={rowSelection}
               rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
               pagination={{
+                current: page,
                 pageSize: 50,
                 showSizeChanger: false,
                 position: ["none", "bottomRight"],
