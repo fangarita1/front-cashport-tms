@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Col, ColorPicker, Flex, Input, Select, Typography } from "antd";
+import { Button, Col, ColorPicker, Flex, Input, Row, Select, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, CaretRight, Pencil } from "phosphor-react";
 
@@ -104,15 +104,17 @@ export const DriverFormTab = ({
           </Flex>
         </Flex>
         <Flex component={"main"} flex="1" vertical>
-          {/* ------------Image Project-------------- */}
-          <UploadImg
-            disabled={statusForm === "review"}
-            imgDefault={"https://www.google.com/url?sa=i&url=https%3A%2F%2Ficon-icons.com%2Fes%2Ficono%2Fsistema-usuarios-usuario%2F104569&psig=AOvVaw3556LaiR41fV6eVL7vnkqN&ust=1720623960292000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCLDAnvWdmocDFQAAAAAdAAAAABAE"}
-            setImgFile={setImageFile}
-          />
-          {imageError && <Text className="textError">{"Logo del proyecto es obligatorio *"}</Text>}
-          {/* -----------------------------------General--------------------------------------- */}
-          <Col>
+          <Row>
+            <Col span={8}>
+              {/* ------------Photo Driver-------------- */}
+              <UploadImg
+                disabled={statusForm === "review"}
+                imgDefault={"https://cdn.icon-icons.com/icons2/1622/PNG/512/3741756-bussiness-ecommerce-marketplace-onlinestore-store-user_108907.png"}
+                setImgFile={setImageFile}
+              />
+              {imageError && <Text className="textError">{"foto del conductor es obligatorio *"}</Text>}
+            </Col>
+            <Col span={16}>
               <Title className="title" level={4}>
                 Informacion General
               </Title>
@@ -196,24 +198,41 @@ export const DriverFormTab = ({
                   />
                 </Flex>
                 </Flex>
-          </Col>
+            </Col>
+          </Row>
+
+          {/* -----------------------------------General--------------------------------------- */}
+
           <Title className="title" level={4}>
-            Informacion General
+            Vehiculos
           </Title>
-          <Flex component={"section"} className="generalProject" justify="flex-start">
-            <InputForm
-              titleInput="Nombre del Proyecto"
-              nameInput="general.name"
-              control={control}
-              error={errors.general?.name}
-            />
-            <InputForm
-              titleInput="NIT"
-              nameInput="general.document"
-              control={control}
-              error={errors.general?.document}
-            />
+          <Row style={{width:'100%'}}>
+            <Col>
+            <Flex component={"section"} className="containerInput"  style={{width:'100%'}}>
+            <Row style={{width:'100%'}}>
+              <Col>
+              <label className="input-form-title">Vehículos que está autorizados a manejar</label>
+              </Col>
+            </Row>
+            <Row style={{width:'100%'}}>
+              <Col>
+              <Select
+                mode="multiple"
+                allowClear
+                style={{ width: '50%' }}
+                placeholder="Seleccione vehiculos"
+                defaultValue={['vehiculo1', 'vehiculo2']}
+                options={[
+                  { label: <span>vehiculo1</span>, value: 'vehiculo1' },
+                  { label: <span>vehiculo2</span>, value: 'vehiculo2' },
+                ]}
+                />
+              </Col>
+            </Row>
           </Flex>
+            </Col>
+          </Row>
+          
 
           {/* -----------------------------------Contact----------------------------------- */}
           <Title className="title" level={4}>

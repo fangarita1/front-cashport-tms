@@ -80,11 +80,11 @@ export const effectFunction = (
 export const validationButtonText = (statusForm: "create" | "edit" | "review") => {
   switch (statusForm) {
     case "create":
-      return "Crear nuevo proyecto";
+      return "Crear nuevo conductor";
     case "edit":
       return "Guardar Cambios";
     case "review":
-      return "Editar Proyecto";
+      return "Editar conductor";
   }
 };
 
