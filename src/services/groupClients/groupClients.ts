@@ -38,10 +38,15 @@ export const createGroup = async (data: any, id: number): Promise<any> => {
   }
 };
 
-export const updateGroup = async (data: any): Promise<any> => {
+export const updateGroup = async (
+  data: { group_id: number; clients: string[] },
+  project_id: number
+): Promise<any> => {
+  console.log("modelDataPUT:", data);
+
   const modelData = {
-    group_id: data.group_id,
-    clients: data.clientsId
+    ...data,
+    project_id
   };
 
   const token = await getIdToken();
@@ -54,6 +59,10 @@ export const updateGroup = async (data: any): Promise<any> => {
         Authorization: `Bearer ${token}`
       }
     });
+
+    // if (response.status === 200) {
+    //   return response;
+    // }
     return response;
   } catch (error) {
     return error as any;

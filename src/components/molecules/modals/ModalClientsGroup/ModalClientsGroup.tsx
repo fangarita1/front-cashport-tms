@@ -31,7 +31,7 @@ export const ModalClientsGroup = ({
 }: CreateGroupProps) => {
   const [groupName, setGroupName] = useState("");
   const { ID } = useAppStore((state) => state.selectProject);
-  const [selectedRows, setSelectedRows] = useState<any>([]);
+  const [selectedRows, setSelectedRows] = useState<IClient[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
   const {
     control,
@@ -73,11 +73,12 @@ export const ModalClientsGroup = ({
   };
 
   const onUpdateGroup = () => {
-    if (selectedRows.length > 0) {
+    console.log("selectedRowsMOdla", selectedRows);
+    if (selectedRows.length > 0 && selectedGroupInfo?.groupId) {
       try {
         const group = {
-          group_id: 3,
-          clients: selectedRows.map((client: IClient) => client.nit)
+          group_id: selectedGroupInfo?.groupId,
+          clients: selectedRows.map((client: IClient) => client.nit.toString())
         };
         updateGroup(group);
       } catch (error) {

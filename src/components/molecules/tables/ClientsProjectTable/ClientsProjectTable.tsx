@@ -26,7 +26,7 @@ interface Props {
     }>
   >;
   placedIn?: string;
-  setSelectedRows?: Dispatch<SetStateAction<{}>>;
+  setSelectedRows?: Dispatch<SetStateAction<IClient[]>>;
   selectedClientsKeys?: number[];
   messageContext?: ReactElement<any, string | JSXElementConstructor<any>>;
 }
@@ -284,8 +284,8 @@ export const ClientsProjectTable = ({
             <Table
               columns={columns}
               dataSource={data?.data?.map((client) => ({
-                key: client.nit,
-                ...client
+                ...client,
+                key: client.nit
               }))}
               virtual
               scroll={{ y: height - 400, x: 100 }}
@@ -370,8 +370,8 @@ export const ClientsProjectTable = ({
           <Table
             columns={columns}
             dataSource={data?.data?.map((client) => ({
-              key: client.nit,
-              ...client
+              ...client,
+              key: client.nit
             }))}
             pagination={{ pageSize: 8 }}
             rowSelection={rowSelection}
