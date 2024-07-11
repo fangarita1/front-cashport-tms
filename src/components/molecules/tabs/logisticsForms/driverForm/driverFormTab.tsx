@@ -27,6 +27,9 @@ import { SelectRh } from "@/components/molecules/logistics/SelectRh/SelectRh";
 import { SelectGlasses } from "@/components/molecules/logistics/SelectGlasses/SelectGlasses";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { SelectLCategory } from "@/components/molecules/logistics/SelectLicenceCategory/SelectLicenceCategory";
+import useSWR from "swr";
+import { getDocumentsByEntityType } from "@/services/logistics/certificates";
+import { CertificateType } from "@/types/logistics/certificate/certificate";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -40,13 +43,17 @@ export const DriverFormTab = ({
   onDesactivateProject = () => {}
 }: DriverFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
+    "0",
+    getDocumentsByEntityType
+  );
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
   const [imageFile, setImageFile] = useState<any | undefined>(undefined);
   const [loading, setloading] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
   const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data[0]);
-    const {
+  const {
     watch,
     setValue,
     control,
@@ -69,55 +76,88 @@ export const DriverFormTab = ({
   }
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
 
-  const [mockFiles, setMockFiles] = useState<any[]>([]);
+  const [mockFiles, setMockFiles] = useState<CertificateType[]>([]);
 
-  if(mockFiles.length < 1){
+  /* if (mockFiles.length < 1) {
     setMockFiles([
-      { id: 1, key:1, title: "archivo 1", isMandatory: true },
-      { id: 2, key:2, title: "archivo 2", isMandatory: true },
-      { id: 3, key:3, title: "archivo 3", isMandatory: false },
+      { id: 1, key: 1, title: "archivo 1", isMandatory: true },
+      { id: 2, key: 2, title: "archivo 2", isMandatory: true },
+      { id: 3, key: 3, title: "archivo 3", isMandatory: false }
     ]);
-  }
-  const newfile = useRef<any>('');
+  } */
+  const newfile = useRef<any>("");
 
-  const AddFileModal = ()=> {
-    newfile.current ='';
+  const AddFileModal = () => {
     Modal.info({
-      title: 'Agregar otro documento',
+      title: "Agregar otro documento",
       content: (
-        <Flex style={{width:'100%'}}>          
-          <Row style={{width:'100%'}}>
+        <Flex style={{ width: "100%" }}>
+          <Row style={{ width: "100%" }}>
+          <Text >
+          Cargar documentos adicionales
+          </Text>
             <Col span={24}>
-              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
+              <Select
+                mode="multiple"
+                allowClear
+                style={{ width: "100%" }}
+                placeholder="Seleccione documentos"
+                defaultValue={mockFiles?.map((document) => document.id.toString()) || []}
+                loading={isLoadingDocuments}
+                onChange={(value) => {
+                  setMockFiles(documentsType?.filter((document) => value.includes(document.id.toString()))|| []);
+                }}
+                options={documentsType?.map((document) => ({
+                  label: <span>{document.description}</span>,
+                  value: document.id.toString()
+                }))}
+              />{/* 
+              <label className="locationLabels" style={{ display: "flex", marginTop: "2rem" }}>
                 <text>Nombre del documento</text>
               </label>
-              <Input placeholder="Escribir nombre" onChange={(e)=>{ 
-                newfile.current = (e.target.value);
-              }} />
-            </Col>   
+              <Input
+                placeholder="Escribir nombre"
+                onChange={(e) => {
+                  newfile.current = e.target.value;
+                }}
+              /> */}
+            </Col>
           </Row>
         </Flex>
       ),
-      onOk: ()=>{
-        if(newfile.current.length <= 0){
-          message.error('Debe digitar un nombre de archivo');
-        }else{
+      onOk: () => {/* 
+        if (newfile.current.length <= 0) {
+          message.error("Debe digitar un nombre de archivo");
+        } else {
           const lastitem = mockFiles.at(-1);
-          const newvalue = { id: (lastitem!=undefined ? lastitem.id +1 : 1), key:(lastitem!=undefined ? lastitem.key +1 : 1), title: newfile.current, isMandatory: false };
-          setMockFiles(mockFiles => [...mockFiles, newvalue]);
-        }
-      },
+          const newvalue = {
+            id: lastitem != undefined ? lastitem.id + 1 : 1,
+            key: lastitem != undefined ? lastitem.key + 1 : 1,
+            title: newfile.current,
+            isMandatory: false
+          };
+          setMockFiles((mockFiles) => [...mockFiles, newvalue]);
+        } */
+      }
     });
-  }
+  };
 
   useEffect(()=>{
     console.log(files)
   }, [files])
   
 
-  const onSubmit = (data: any) =>{
-    _onSubmit(data, setloading, setImageError, imageFile?[{docReference: 'imagen', file: imageFile}]:undefined, files, onSubmitForm, reset);
-  }
+  const onSubmit = (data: any) => {
+    _onSubmit(
+      data,
+      setloading,
+      setImageError,
+      imageFile ? [{ docReference: "imagen", file: imageFile }] : undefined,
+      files,
+      onSubmitForm,
+      reset
+    );
+  };
   return (
     <>
       <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
@@ -197,10 +237,8 @@ export const DriverFormTab = ({
                   <Controller
                     name="general.rh"
                     control={control}
-                    rules={{ required: true, }}
-                    render={({ field }) => (
-                      <SelectRh errors={errors} field={field} />
-                    )}
+                    rules={{ required: true }}
+                    render={({ field }) => <SelectRh errors={errors} field={field} />}
                   />
                 </Flex>
                 <Flex vertical className="containerInput">
@@ -220,9 +258,7 @@ export const DriverFormTab = ({
                     name="general.document_type"
                     control={control}
                     rules={{ required: true }}
-                    render={({ field }) => (
-                      <SelectDocument errors={errors} field={field} />
-                    )}
+                    render={({ field }) => <SelectDocument errors={errors} field={field} />}
                   />
                 </Flex>
                 <InputForm
@@ -295,7 +331,6 @@ export const DriverFormTab = ({
                     error={undefined}
                   />
                 </Flex>
-                
               </Flex>
             </Col>
           </Row>
@@ -328,13 +363,12 @@ export const DriverFormTab = ({
               </Flex>
             </Col>
           </Row>
-          
 
           {/* -----------------------------------Contact----------------------------------- */}
           <Title className="title" level={4}>
             Datos de Contacto
           </Title>
-         <Flex component={"section"} className="generalProject" justify="flex-start">
+          <Flex component={"section"} className="generalProject" justify="flex-start">
             <InputForm
               titleInput="Nombres y apellidos"
               nameInput="general.emergency_contact"
@@ -364,8 +398,8 @@ export const DriverFormTab = ({
               <Col span={12} style={{padding:'15px'}} key={file.key}>
                 <UploadDocumentButton
                   key={file.id}
-                  title={file.title}
-                  isMandatory={file.isMandatory}
+                  title={file.description}
+                  isMandatory={file.optional.data.includes(1)}
                   setFiles={setFiles}
                 />
               </Col>
