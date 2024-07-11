@@ -1,6 +1,6 @@
 import { Flex } from "antd";
 import { Files, Money } from "phosphor-react";
-import { insertPeriodEveryThreeDigits } from "@/utils/utils";
+import { formatMoney, insertPeriodEveryThreeDigits } from "@/utils/utils";
 import styles from "./label-collapse.module.scss";
 
 interface PropsLabelCollapseInvoice {
@@ -8,6 +8,7 @@ interface PropsLabelCollapseInvoice {
   total?: number;
   quantity?: number;
   color?: string;
+  removeIcons?: boolean;
 }
 
 const randomColors = [
@@ -21,7 +22,13 @@ const randomColors = [
   "#A9BA43"
 ];
 
-const LabelCollapse = ({ status, total, quantity, color }: PropsLabelCollapseInvoice) => {
+const LabelCollapse = ({
+  status,
+  total,
+  quantity,
+  color,
+  removeIcons
+}: PropsLabelCollapseInvoice) => {
   const randomColor = randomColors[Math.floor(Math.random() * randomColors.length)];
 
   return (
@@ -32,17 +39,17 @@ const LabelCollapse = ({ status, total, quantity, color }: PropsLabelCollapseInv
       >
         {capitalizeFirstLetter(status)}
       </h5>
-      {total && (
+      {!!total && (
         <Flex className={styles.labelCollapse__total}>
-          <Money size={16} className={styles.labelCollapse__total__icon} />
-          <h5 className={styles.labelCollapse__total__title}>
-            ${insertPeriodEveryThreeDigits(total)}
-          </h5>
+          {removeIcons ? null : <Money size={16} className={styles.labelCollapse__total__icon} />}
+          <h5 className={styles.labelCollapse__total__title}>{formatMoney(total)}</h5>
         </Flex>
       )}
       {quantity && (
         <Flex className={styles.labelCollapse__quantity}>
-          <Files size={16} className={styles.labelCollapse__quantity__icon} />
+          {removeIcons ? null : (
+            <Files size={16} className={styles.labelCollapse__quantity__icon} />
+          )}
           <h5 className={styles.labelCollapse__quantity__title}>{quantity}</h5>
         </Flex>
       )}

@@ -10,8 +10,7 @@ interface UseInvoicesProps {
 
 export const useInvoices = (props: UseInvoicesProps) => {
   const { data, isLoading } = useSWR<IInvoices>(
-    `/invoice/client/${props.clientId}/project/${props.projectId}
-  `,
+    `/invoice/client/${props.clientId}/project/${props.projectId}`,
     fetcher,
     {}
   );

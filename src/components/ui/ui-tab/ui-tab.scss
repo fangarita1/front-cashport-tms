@@ -8,7 +8,6 @@
 
     &.-sticky {
         .ant-tabs-nav {
-            position: -webkit-sticky; /* For Safari */
             position: sticky !important;
             top: 1rem;
             margin-left: -0.5rem !important;

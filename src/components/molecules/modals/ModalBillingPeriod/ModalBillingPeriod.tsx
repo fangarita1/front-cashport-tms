@@ -57,7 +57,12 @@ export const ModalBillingPeriod = ({
     dispatch({ type: actionTypes.SET_DAY_OF_WEEK, payload: event });
   }, []);
   const handleSetDay = useCallback((event: number | undefined) => {
-    dispatch({ type: actionTypes.SET_DAY, payload: event });
+    const intEvent = Math.floor(event ?? 0);
+    if (intEvent > 0 && intEvent < 31) {
+      dispatch({ type: actionTypes.SET_DAY, payload: intEvent });
+    } else {
+      dispatch({ type: actionTypes.SET_DAY, payload: undefined });
+    }
   }, []);
 
   const handle = (
@@ -146,6 +151,7 @@ export const ModalBillingPeriod = ({
                   variant="borderless"
                   className="input"
                   placeholder="10"
+                  max={30}
                   onChange={(e) => handleSetDay(e ? e : undefined)}
                 />
               </Flex>

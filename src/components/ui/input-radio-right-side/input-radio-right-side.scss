@@ -1,0 +1,18 @@
+@import "@styles/variables.scss";
+
+.customRadio {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+
+    .ant-radio {
+        margin-left: auto !important;
+    }
+
+    span {
+        padding: 0 !important;
+    }
+}

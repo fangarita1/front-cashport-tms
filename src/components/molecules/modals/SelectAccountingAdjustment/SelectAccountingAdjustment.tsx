@@ -12,6 +12,8 @@ interface Props {
   setSelectedRows: Dispatch<SetStateAction<ISelectedAccountingAdjustment[]>>;
   onClose: () => void;
   setCurrentView: Dispatch<SetStateAction<string>>;
+  clientIdParam?: string;
+  projectIdParam?: string;
 }
 interface ItemsSelected {
   id: number;
@@ -27,14 +29,18 @@ export const SelectAccountingAdjustment = ({
   selectedRows,
   onClose,
   setCurrentView,
-  setSelectedRows
+  setSelectedRows,
+  clientIdParam,
+  projectIdParam
 }: Props) => {
-  const { data, isLoading } = useAcountingAdjustment(98765232, type);
+  const { data, isLoading } = useAcountingAdjustment(
+    clientIdParam || "0",
+    projectIdParam || "0",
+    type
+  );
   const [dateSelect, setDateSelect] = useState<ItemsSelected[]>([]);
   const handleCheckClick = (item: ISelectedAccountingAdjustment) => {
     const isExist = selectedRows.some((row) => row.id === item.id);
-    console.log(isExist);
-
     if (isExist) setSelectedRows((prevRows) => prevRows.filter((row) => row.id !== item.id));
     else setSelectedRows((prevRows) => [...prevRows, item]);
   };
@@ -61,7 +67,7 @@ export const SelectAccountingAdjustment = ({
       <p className="subTitleModalAction">{subtitleMap[type || 1]}</p>
       <div className="modalContentScroll">
         {isLoading ? (
-          <Spin />
+          <Spin size="large" style={{ margin: "auto" }} />
         ) : (
           dateSelect.map((item, index) => (
             <ItemsActionsModal

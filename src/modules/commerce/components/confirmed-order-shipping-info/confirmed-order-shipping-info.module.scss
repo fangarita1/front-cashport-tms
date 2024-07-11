@@ -1,0 +1,18 @@
+@import "@/styles/variables.scss";
+
+.item {
+    display: flex;
+    flex-direction: column;
+
+    &__title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: $gray;
+        margin-bottom: 0.5rem;
+    }
+
+    &__data {
+        font-size: 1rem;
+        font-weight: 300;
+    }
+}
