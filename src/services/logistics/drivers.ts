@@ -66,7 +66,7 @@ export const addDriver = async (
     form.append("body", JSON.stringify(body));
     form.append("logo", logo[0].file as unknown as File);
     files.forEach((file: FileObject, index: number) => {
-      form.append(`files[${index}]`, file.file as unknown as File);
+      form.append(`file-for-${file.aditionalData}`, file.file as unknown as File);
     });
     const response: IListData = await axios.post(`${config.API_HOST}/driver/create`, form, {
       headers: {

@@ -395,11 +395,12 @@ export const DriverFormTab = ({
           <Row className="mainUploadDocuments">
             {mockFiles.map((file) => (
               // eslint-disable-next-line react/jsx-key
-              <Col span={12} style={{padding:'15px'}} key={file.key}>
+              <Col span={12} style={{padding:'15px'}} key={`file-${file.id}`}>
                 <UploadDocumentButton
                   key={file.id}
                   title={file.description}
                   isMandatory={file.optional.data.includes(1)}
+                  aditionalData={file.id}
                   setFiles={setFiles}
                 />
               </Col>
