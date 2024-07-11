@@ -2,11 +2,11 @@ import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { API, getIdToken } from "@/utils/api/api";
 import { GenericResponse } from "@/types/global/IGlobal";
-import { ISingleClientGroup } from "@/types/clientsGroups/IClientsGroups";
+import { IClientsGroup } from "@/types/clientsGroups/IClientsGroups";
 
 export const getOneGroup = async (groupId: number, projectId: number) => {
   try {
-    const response: GenericResponse<ISingleClientGroup> = await API.get(
+    const response: GenericResponse<IClientsGroup> = await API.get(
       `${config.API_HOST}/group-client/${groupId}/project/${projectId}`
     );
     return response;

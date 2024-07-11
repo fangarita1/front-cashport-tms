@@ -9,6 +9,7 @@ import { GroupTable } from "@/components/molecules/tables/GroupTable/GroupTable"
 import { groupInfo } from "../ClientsGroupsProjectView/ClientsGroupsProjectView";
 import { ModalClientsGroup } from "@/components/molecules/modals/ModalClientsGroup/ModalClientsGroup";
 import { useClientGroup } from "@/hooks/useClientGroup";
+import { useClientsGroups } from "@/hooks/useClientsGroups";
 
 interface PropsSelectedGroupView {
   onClickBack: () => void;
@@ -22,6 +23,7 @@ export const SelectedGroupView = ({ onClickBack, showGroupDetails }: PropsSelect
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [groupInfoForEdit, setGroupInfoForEdit] = useState<groupInfo>({} as groupInfo);
   const { data, loading, updateClientsGroup } = useClientGroup(showGroupDetails.groupId);
+  const { changeGroupsState, deleteSelectedGroups } = useClientsGroups({});
 
   const handleEditGroup = () => {
     data &&
@@ -35,14 +37,17 @@ export const SelectedGroupView = ({ onClickBack, showGroupDetails }: PropsSelect
   };
 
   const onRemoveGroup = async () => {
+    deleteSelectedGroups([showGroupDetails.groupId]);
     setIsOpenModalStatus({ status: false, remove: false });
   };
 
   const onActiveGroup = async () => {
+    changeGroupsState([showGroupDetails.groupId], 1);
     setIsOpenModalStatus({ status: false, remove: false });
   };
 
   const onInactiveGroup = async () => {
+    changeGroupsState([showGroupDetails.groupId], 0);
     setIsOpenModalStatus({ status: false, remove: false });
   };
   const onClickChangeState = () => {
@@ -98,7 +103,7 @@ export const SelectedGroupView = ({ onClickBack, showGroupDetails }: PropsSelect
       />
 
       <ModalChangeStatus
-        isActiveStatus={true}
+        isActiveStatus={data?.data.active === 1 ? true : false}
         isOpen={isOpenModalStatus.status}
         onActive={onActiveGroup}
         onDesactivate={onInactiveGroup}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Checkbox, Flex, Modal, Typography } from "antd";
 
 import "./modalchangestatus.scss";
@@ -18,7 +18,7 @@ interface Props {
 
 export const ModalChangeStatus = ({
   isOpen,
-  isActiveStatus = false,
+  isActiveStatus,
   onClose,
   onActive,
   onDesactivate,
@@ -26,7 +26,11 @@ export const ModalChangeStatus = ({
   onRemove,
   customOnOk
 }: Props) => {
-  const [isActive, setIsActive] = useState(isActiveStatus);
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    if (isActiveStatus) return setIsActive(isActiveStatus);
+  }, [isActiveStatus]);
 
   const onOk = async () => {
     if (onActive && onDesactivate) {

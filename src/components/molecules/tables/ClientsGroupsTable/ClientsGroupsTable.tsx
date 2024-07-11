@@ -4,7 +4,7 @@ import { Button, Flex, Popconfirm, Table, TableProps, Typography, Spin, MenuProp
 import { Eye, Plus, Triangle } from "phosphor-react";
 import { ModalClientsGroup } from "@/components/molecules/modals/ModalClientsGroup/ModalClientsGroup";
 import { useClientsGroups } from "@/hooks/useClientsGroups";
-import { IClientsGroups } from "@/types/clientsGroups/IClientsGroups";
+import { IClientsGroup } from "@/types/clientsGroups/IClientsGroups";
 
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 
@@ -81,11 +81,11 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
   };
 
   const deleteGroups = () => {
-    deleteSelectedGroups(selectedRows.map((group: IClientsGroups) => group.id));
+    deleteSelectedGroups(selectedRows.map((group: IClientsGroup) => group.id));
   };
 
   const handleChangeGroupsState = (selectedStatusState: boolean) => {
-    const groups_id = selectedRows.map((group: IClientsGroups) => group.id);
+    const groups_id = selectedRows.map((group: IClientsGroup) => group.id);
     const status = selectedStatusState ? 1 : 0;
 
     changeGroupsState(groups_id, status);
@@ -111,7 +111,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     }
   ];
 
-  const columns: TableProps<IClientsGroups>["columns"] = [
+  const columns: TableProps<IClientsGroup>["columns"] = [
     {
       title: "Nombre Grupo",
       dataIndex: "group_name",
