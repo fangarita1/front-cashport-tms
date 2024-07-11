@@ -126,33 +126,33 @@ export const VehicleInfoForm = ({
                 Tipo de Vehiculo
               </Title>
               <Controller
-                name="general.currencies"
+                name="general.vehicle_type"
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
               />
               <Text className="textError">
-                {errors?.general?.currencies && "Divisa es obligatorio *"}
+                {errors?.general?.vehicle_type && "Tipo es obligatorio *"}
               </Text>
             </Flex>
             <InputForm
               titleInput="Placa"
-              nameInput="general.placa"
+              nameInput="general.plate_number"
               control={control}
-              error={errors.general?.nit}
+              error={errors.general?.plate_number}
             />
             <Flex vertical className="containerInput">
               <Title className="title" level={5}>
                 Marca
               </Title>
               <Controller
-                name="general.currencies"
+                name="general.brand"
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
               />
               <Text className="textError">
-                {errors?.general?.currencies && "Divisa es obligatorio *"}
+                {errors?.general?.brand && "Marca es obligatorio *"}
               </Text>
             </Flex>
             <Flex vertical className="containerInput">
@@ -160,40 +160,40 @@ export const VehicleInfoForm = ({
                 Modelo
               </Title>
               <Controller
-                name="general.currencies"
+                name="general.model"
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
               />
               <Text className="textError">
-                {errors?.general?.currencies && "Divisa es obligatorio *"}
+                {errors?.general?.model && "Modelo es obligatorio *"}
               </Text>
             </Flex>
             <InputForm
               titleInput="Linea"
-              nameInput="general.linea"
+              nameInput="general.line"
               control={control}
-              error={errors.general?.address}
+              error={errors.general?.line}
             />
             <Flex vertical className="containerInput">
               <Title className="title" level={5}>
                 Año
               </Title>
               <Controller
-                name="general.DSO_currenly_year"
+                name="general.year"
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
               />
               <Text className="textError">
-                {errors?.general?.currencies && "Divisa es obligatorio *"}
+                {errors?.general?.year && "Año es obligatorio *"}
               </Text>
             </Flex>
             <InputForm
               titleInput="Color"
               nameInput="general.color"
               control={control}
-              error={errors.general?.billing_period}
+              error={errors.general?.color}
             />
             <Flex vertical className="containerInput">
               <Title className="title" level={5}>
@@ -206,7 +206,7 @@ export const VehicleInfoForm = ({
                 render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
               />
               <Text className="textError">
-                {errors?.general?.currencies && "Divisa es obligatorio *"}
+                {errors?.general?.country && "Divisa es obligatorio *"}
               </Text>
             </Flex>
           </Flex>
@@ -216,9 +216,9 @@ export const VehicleInfoForm = ({
           <InputForm
             placeholder="Escribir información adicional"
             titleInput=""
-            nameInput="general.color"
+            nameInput="general.aditional_info"
             control={control}
-            error={errors.general?.billing_period}
+            error={errors.general?.aditional_info}
           />
           <Title className="title" level={4}>
             Documentos

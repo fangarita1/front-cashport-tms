@@ -51,7 +51,7 @@ export const _onSubmit = (
   setImageError: (value: SetStateAction<boolean>) => void,
   imageFile: string,
   onSubmitForm: (data: any) => void,
-  reset: UseFormReset<IFormProject>
+  reset: UseFormReset<IFormDriver>
 ) => {
   setloading(true);
   try {
@@ -80,11 +80,11 @@ export const effectFunction = (
 export const validationButtonText = (statusForm: "create" | "edit" | "review") => {
   switch (statusForm) {
     case "create":
-      return "Crear nuevo proyecto";
+      return "Crear nuevo conductor";
     case "edit":
       return "Guardar Cambios";
     case "review":
-      return "Editar Proyecto";
+      return "Editar conductor";
   }
 };
 

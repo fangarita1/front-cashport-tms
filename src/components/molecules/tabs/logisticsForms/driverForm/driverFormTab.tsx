@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Col, ColorPicker, Flex, Input, Select, Typography } from "antd";
+import { Button, Col, ColorPicker, Flex, Input, Row, Select, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, CaretRight, Pencil } from "phosphor-react";
 
@@ -19,7 +19,7 @@ import {
   dataToProjectFormData,
   validationButtonText,
   DriverFormTabProps
-} from "./driverformtab.mapper";
+} from "./driverFormTab.mapper";
 import { IDriver, IFormDriver } from "@/types/logistics/schema";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 import { SelectDocument } from "@/components/molecules/logistics/SelectDocument/SelectDocument";
@@ -58,7 +58,7 @@ export const DriverFormTab = ({
 
   const onSubmit = (data: any) =>
     _onSubmit(data, setloading, setImageError, imageFile, onSubmitForm, reset);
-  console.log(data[0].birth_date)
+  //console.log(data[0].birth_date)
   return (
     <>
       <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
@@ -104,15 +104,17 @@ export const DriverFormTab = ({
           </Flex>
         </Flex>
         <Flex component={"main"} flex="1" vertical>
-          {/* ------------Image Project-------------- */}
-          <UploadImg
-            disabled={statusForm === "review"}
-            imgDefault={"https://www.google.com/url?sa=i&url=https%3A%2F%2Ficon-icons.com%2Fes%2Ficono%2Fsistema-usuarios-usuario%2F104569&psig=AOvVaw3556LaiR41fV6eVL7vnkqN&ust=1720623960292000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCLDAnvWdmocDFQAAAAAdAAAAABAE"}
-            setImgFile={setImageFile}
-          />
-          {imageError && <Text className="textError">{"Logo del proyecto es obligatorio *"}</Text>}
-          {/* -----------------------------------General--------------------------------------- */}
-          <Col>
+          <Row>
+            <Col span={8}>
+              {/* ------------Photo Driver-------------- */}
+              <UploadImg
+                disabled={statusForm === "review"}
+                imgDefault={"https://cdn.icon-icons.com/icons2/1622/PNG/512/3741756-bussiness-ecommerce-marketplace-onlinestore-store-user_108907.png"}
+                setImgFile={setImageFile}
+              />
+              {imageError && <Text className="textError">{"foto del conductor es obligatorio *"}</Text>}
+            </Col>
+            <Col span={16}>
               <Title className="title" level={4}>
                 Informacion General
               </Title>
@@ -196,157 +198,57 @@ export const DriverFormTab = ({
                   />
                 </Flex>
                 </Flex>
-          </Col>
-          <Title className="title" level={4}>
-            Informacion General
-          </Title>
-          <Flex component={"section"} className="generalProject" justify="flex-start">
-            <InputForm
-              titleInput="Nombre del Proyecto"
-              nameInput="general.name"
-              control={control}
-              error={errors.general?.name}
-            />
-            <InputForm
-              titleInput="NIT"
-              nameInput="general.document"
-              control={control}
-              error={errors.general?.document}
-            />
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Divisas
-              </Title>
-              <Controller
-                name="general.currencies"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.currencies && "Divisa es obligatorio *"}
-              </Text>
-            </Flex>
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                País
-              </Title>
-              <Controller
-                name="general.country"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCountries errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.country && "Pais es obligatorio *"}
-              </Text>
-            </Flex>
-            <InputForm
-              titleInput="Direccion"
-              nameInput="general.address"
-              control={control}
-              error={errors.general?.address}
-            />
+            </Col>
+          </Row>
 
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Fecha de vigencia de factura
-              </Title>
-              <Controller
-                name="general.accept_date"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => {
-                  return (
+          {/* -----------------------------------General--------------------------------------- */}
+
+          <Title className="title" level={4}>
+            Vehiculos
+          </Title>
+          <Row style={{width:'100%'}}>
+            <Col span={24}>
+              <Flex component={"section"} className="containerInput"  style={{width:'100%'}}>
+                <Row style={{width:'100%'}}>
+                  <Col span={8}>
+                  <label className="input-form-title">Vehículos que está autorizados a manejar</label>
+                  </Col>
+                  <Col span={16} >
                     <Select
-                      placeholder="Fecha de aceptación"
-                      className={errors?.general?.birth_date ? "selectInputError" : "selectInput"}
-                      loading={false}
-                      variant="borderless"
-                      optionLabelProp="label"
-                      {...field}
-                    >
-                      <Option value={`Fecha de aceptación`} key={1}>
-                        Fecha de aceptación
-                      </Option>
-                      <Option value={`Fecha de emisión`} key={2}>
-                        Fecha de emisión
-                      </Option>
-                    </Select>
-                  );
-                }}
-              />
-              <Text className="textError">
-                {errors?.general?.accept_date && "Campo obligatorio *"}
-              </Text>
-            </Flex>
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                DSO - Calculo solo del año actual
-              </Title>
-              <Controller
-                name="general.DSO_currenly_year"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => {
-                  return (
-                    <Select
-                      placeholder="Si | No"
-                      className={
-                        errors?.general?.DSO_currenly_year ? "selectInputError" : "selectInput"
-                      }
-                      loading={false}
-                      variant="borderless"
-                      optionLabelProp="label"
-                      {...field}
-                    >
-                      <Option value={`Sí`} key={1}>
-                        {`Sí`}
-                      </Option>
-                      <Option value={`No`} key={2}>
-                        {`No`}
-                      </Option>
-                    </Select>
-                  );
-                }}
-              />
-              <Text className="textError">
-                {errors?.general?.DSO_currenly_year && "Campo obligatorio *"}
-              </Text>
-            </Flex>
-          </Flex>
+                      mode="multiple"
+                      allowClear
+                      style={{ width: '50%' }}
+                      placeholder="Seleccione vehiculos"
+                      defaultValue={['vehiculo1', 'vehiculo2']}
+                      options={[
+                        { label: <span>vehiculo1</span>, value: 'vehiculo1' },
+                        { label: <span>vehiculo2</span>, value: 'vehiculo2' },
+                      ]}
+                      />
+                  </Col>
+                </Row>
+              </Flex>
+            </Col>
+          </Row>
+          
 
           {/* -----------------------------------Contact----------------------------------- */}
           <Title className="title" level={4}>
-            Informacion de Contacto
+            Datos de Contacto
           </Title>
-          <Flex component={"section"} className="generalProject" justify="flex-start">
+         <Flex component={"section"} className="generalProject" justify="flex-start">
             <InputForm
-              titleInput="Nombre"
+              titleInput="Nombres y apellidos"
               nameInput="contact.name"
               control={control}
-              error={errors.contact?.name}
-            />
-            <InputForm
-              typeInput="cargo"
-              titleInput="Cargo"
-              nameInput="contact.position_contact"
-              control={control}
-              error={errors.contact?.position_contact}
-            />
-            <InputForm
-              typeInput="email"
-              titleInput="Correo"
-              nameInput="contact.email"
-              control={control}
-              error={errors.contact?.email}
+              error={errors?.general?.email}
             />
             <InputForm
               typeInput="tel"
               titleInput="Telefono"
               nameInput="contact.phone"
               control={control}
-              error={errors.contact?.phone}
+              error={errors?.general?.email}
               validationRules={{
                 pattern: {
                   value: /^\+?\d+$/,
@@ -356,33 +258,7 @@ export const DriverFormTab = ({
             />
           </Flex>
           {/* -----------------------------------Project Config----------------------------------- */}
-          <Title className="title" level={4}>
-            Personalizar Proyecto
-          </Title>
-          <Flex component={"section"} className="generalProject" justify="flex-start">
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Color Personalizado
-              </Title>
-              <Controller
-                name="personalization.color"
-                rules={{ required: true, maxLength: 123 }}
-                control={control}
-                render={({ field }) => <ColorPicker format="rgb" showText {...field} />}
-              />
-              <Text className="textError">
-                {errors?.personalization?.color && "Color Personalizado es obligatorio *"}
-              </Text>
-            </Flex>
-            <InputForm
-              typeInput="personalization.description"
-              titleInput="Descripción"
-              nameInput="personalization.description"
-              className="description"
-              control={control}
-              error={errors.personalization?.description}
-            />
-          </Flex>
+
           <Flex className="buttonNewProject">
             {["edit", "create"].includes(statusForm) && (
               <Button
