@@ -7,11 +7,13 @@ const { Text } = Typography;
 interface Props {
   isOpen: boolean;
   name?: string;
-  isActiveStatus: boolean;
+  isActiveStatus?: boolean;
   onClose: () => void;
-  onActive: () => void;
-  onDesactivate: () => void;
+  onActive?: () => void;
+  onDesactivate?: () => void;
   onRemove?: () => void;
+  // eslint-disable-next-line no-unused-vars
+  customOnOk?: (selectedActiveState: boolean) => void;
 }
 
 export const ModalChangeStatus = ({
@@ -21,13 +23,17 @@ export const ModalChangeStatus = ({
   onActive,
   onDesactivate,
   name = "",
-  onRemove
+  onRemove,
+  customOnOk
 }: Props) => {
   const [isActive, setIsActive] = useState(isActiveStatus);
 
   const onOk = async () => {
-    if (isActive) return await onActive();
-    await onDesactivate();
+    if (onActive && onDesactivate) {
+      if (isActive) return await onActive();
+      return await onDesactivate();
+    }
+    if (customOnOk) return customOnOk(isActive);
   };
   return (
     <Modal

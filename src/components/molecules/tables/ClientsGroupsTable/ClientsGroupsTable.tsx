@@ -9,6 +9,7 @@ import { IClientsGroups } from "@/types/clientsGroups/IClientsGroups";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 
 import "./ClientsGroupsTable.scss";
+import { ModalChangeStatus } from "../../modals/ModalChangeStatus/ModalChangeStatus";
 
 const { Text, Link } = Typography;
 
@@ -23,6 +24,7 @@ interface PropsClientsGroupsTable {
 
 export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTable) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isOpenModalStatus, setIsOpenModalStatus] = useState(false);
   const [height, setHeight] = useState<number>(window.innerHeight);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<any>([]);
@@ -48,7 +50,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     status: "all" as "all" | "active" | "inactive"
   };
 
-  const { data, loading, deleteSelectedGroups } = useClientsGroups({
+  const { data, loading, deleteSelectedGroups, changeGroupsState } = useClientsGroups({
     page,
     clients: selectedFilters.clients,
     subscribers: selectedFilters.subscribers,
@@ -70,8 +72,8 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     onChange: onSelectChange
   };
 
-  const changeGroupsState = () => {
-    console.log("change groups state for ", selectedRows);
+  const handleOpenChangeGroupsState = () => {
+    setIsOpenModalStatus(true);
   };
 
   const onChangePage = (pagePagination: number) => {
@@ -82,11 +84,19 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     deleteSelectedGroups(selectedRows.map((group: IClientsGroups) => group.id));
   };
 
+  const handleChangeGroupsState = (selectedStatusState: boolean) => {
+    const groups_id = selectedRows.map((group: IClientsGroups) => group.id);
+    const status = selectedStatusState ? 1 : 0;
+
+    changeGroupsState(groups_id, status);
+    setIsOpenModalStatus(false);
+  };
+
   const items: MenuProps["items"] = [
     {
       key: "1",
       label: (
-        <Button className="buttonOutlined" onClick={changeGroupsState}>
+        <Button className="buttonOutlined" onClick={handleOpenChangeGroupsState}>
           Cambiar de estado
         </Button>
       )
@@ -220,6 +230,12 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
         </div>
       )}
       <ModalClientsGroup isOpen={isOpenModal} setIsOpenModal={setIsOpenModal} />
+      <ModalChangeStatus
+        isActiveStatus={true}
+        isOpen={isOpenModalStatus}
+        onClose={() => setIsOpenModalStatus(false)}
+        customOnOk={handleChangeGroupsState}
+      />
     </main>
   );
 };
