@@ -116,7 +116,11 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
       title: "Nombre Grupo",
       dataIndex: "group_name",
       key: "group_name",
-      render: (text) => <Link underline>{text}</Link>
+      render: (text, row) => (
+        <Link onClick={() => handleSeeGroupDetails(row.id)} underline>
+          {text}
+        </Link>
+      )
     },
     {
       title: "Clientes",

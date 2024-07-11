@@ -64,7 +64,7 @@ export const SelectedGroupView = ({ onClickBack, showGroupDetails }: PropsSelect
           className="buttonGoBack"
           icon={<CaretLeft size={"1.45rem"} />}
         >
-          {data?.data.group_name}
+          {data?.data.group_name ? data?.data.group_name : "Loading..."}
         </Button>
 
         <Flex gap="1.5rem">
@@ -89,7 +89,9 @@ export const SelectedGroupView = ({ onClickBack, showGroupDetails }: PropsSelect
       </Flex>
 
       {loading ? (
-        <Spin style={{ margin: "50px auto" }} />
+        <Flex style={{ height: "30%" }} align="center" justify="center">
+          <Spin size="large" />
+        </Flex>
       ) : (
         <GroupTable dataClients={data?.data.clients} />
       )}

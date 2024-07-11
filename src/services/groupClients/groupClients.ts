@@ -73,17 +73,11 @@ export const deleteGroups = async (groupsId: number[], project_id: number): Prom
     project_id
   };
 
-  const token = await getIdToken();
-
   try {
-    const response: AxiosResponse = await axios.put(`${config.API_HOST}/group-client`, {
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        "Content-Type": "application/json; charset=utf-8",
-        Authorization: `Bearer ${token}`
-      },
-      data: modelData
-    });
+    const response: AxiosResponse = await API.put(
+      `${config.API_HOST}/group-client/delete`,
+      modelData
+    );
 
     return response;
   } catch (error) {
