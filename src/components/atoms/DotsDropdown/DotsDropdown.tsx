@@ -2,8 +2,13 @@ import { ReactNode } from "react";
 import { Dropdown, Button } from "antd";
 import { DotsThree } from "phosphor-react";
 import "./dotsDropdown.scss";
+import { ItemType } from "antd/es/menu/interface";
 
-export const DotsDropdown = ({ items }: any) => {
+interface DotsDropdownProps {
+  items?: ItemType[];
+}
+
+export const DotsDropdown = ({ items }: DotsDropdownProps) => {
   const customDropdown = (menu: ReactNode) => <div className="dropdown">{menu}</div>;
 
   return (

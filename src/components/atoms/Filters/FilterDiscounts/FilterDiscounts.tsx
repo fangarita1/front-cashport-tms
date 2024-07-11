@@ -2,7 +2,7 @@ import { Cascader } from "antd";
 import "../filterCascader.scss";
 
 type Props = {
-  handleChangeActive: (
+  handleChangeActive?: (
     // eslint-disable-next-line no-unused-vars
     filter: {
       label: string;
@@ -25,7 +25,7 @@ export default function FilterDiscounts({ handleChangeActive }: Props) {
         { label: "Activo", value: 1 },
         { label: "Inactivo", value: 0 }
       ]}
-      onChange={(_, filter) => handleChangeActive(filter)}
+      onChange={(_, filter) => handleChangeActive?.(filter)}
     />
   );
 }

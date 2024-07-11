@@ -1,0 +1,36 @@
+@import "@/styles/variables.scss";
+
+.genericCollapse {
+    .ant-collapse-item {
+        margin-left: 1rem !important;
+        padding-bottom: 1.5rem !important;
+        margin-right: 0.5rem !important;
+        border-bottom: 1px solid $dark-gray !important;
+        border-radius: none !important;
+
+        &:last-child {
+            border-bottom: none !important;
+            padding-bottom: 0 !important;
+        }
+    }
+
+    .ant-collapse-header {
+        display: flex;
+        align-items: center !important;
+        padding: 0 !important;
+        margin-top: 1.5rem;
+        margin-left: -1.5rem;
+
+        &-text {
+            h4 {
+                margin: 0;
+            }
+        }
+    }
+
+    .ant-collapse-content {
+        &-box {
+            padding: 0.75rem 0.5rem !important;
+        }
+    }
+}

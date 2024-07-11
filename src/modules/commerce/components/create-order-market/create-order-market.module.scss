@@ -1,0 +1,54 @@
+@import "@/styles/variables.scss";
+
+.marketContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    background-color: $white;
+    padding: 1.625rem 1.5rem;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    border-radius: 1rem;
+    border: 1px solid $dark-gray;
+
+    .buttonGoBack {
+        display: flex;
+        justify-content: center;
+        width: fit-content;
+        padding: 0;
+        color: black;
+        box-shadow: none;
+        padding: 0.5rem;
+        padding-left: 0;
+
+        &:hover {
+            opacity: 0.8;
+            color: black;
+        }
+    }
+
+    .productsGrid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.625rem;
+        row-gap: 1rem;
+        scrollbar-width: none;
+    }
+}
+
+@media screen and (max-width: 1280px) {
+    .marketContainer {
+        .productsGrid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+}
+
+@media screen and (max-width: 840px) {
+    .marketContainer {
+        .productsGrid {
+            grid-template-columns: 1fr;
+        }
+    }
+}

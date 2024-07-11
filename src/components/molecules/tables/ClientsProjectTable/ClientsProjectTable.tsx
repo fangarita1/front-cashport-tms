@@ -1,11 +1,4 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useState,
-  useEffect,
-  ReactElement,
-  JSXElementConstructor
-} from "react";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Button, Flex, MenuProps, message, Spin, Table, TableProps, Typography } from "antd";
 import { Eye, Plus, Triangle } from "phosphor-react";
@@ -28,7 +21,6 @@ interface Props {
   placedIn?: string;
   setSelectedRows?: Dispatch<SetStateAction<IClient[]>>;
   selectedClientsKeys?: number[];
-  messageContext?: ReactElement<any, string | JSXElementConstructor<any>>;
 }
 
 export const ClientsProjectTable = ({

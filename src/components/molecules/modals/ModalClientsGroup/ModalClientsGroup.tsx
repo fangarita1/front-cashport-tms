@@ -153,7 +153,6 @@ export const ModalClientsGroup = ({
               placedIn="modal"
               setSelectedRows={setSelectedRows}
               selectedClientsKeys={selectedGroupInfo?.clientsIds}
-              messageContext={contextHolder}
             />
           </Flex>
         </Modal>

@@ -26,15 +26,45 @@ export interface IClientLocation {
   nit: string;
   address: string;
   position: IPosition;
-  city: number;
+  city: string;
   complement: string;
   project_id: number;
+}
+
+export interface IClientLocationResponse {
+  data: IClientLocation[];
+  error: boolean;
+  message: string;
 }
 
 interface IDocument {
   URL: string;
 }
 
+export interface IClientForm {
+  nit: number;
+  uuid: string;
+  project_id: number;
+  client_name: string;
+  business_name: string;
+  client_type: string;
+  client_type_id: number;
+  phone: string;
+  status: string;
+  risk: string;
+  email: string;
+  billing_period: string;
+  radication_type: number;
+  holding_id: number;
+  holding_name: string;
+  document_type: string;
+  locations: IClientLocationResponse[];
+  is_deleted: number;
+  documents: IDocument[];
+  ACTIVE: boolean;
+  payment_condition: number;
+  billing_period_config: IBillingPeriodForm;
+}
 export interface IClient {
   billing_period: string;
   billing_period_config: IBillingPeriodForm;
