@@ -15,7 +15,7 @@ export const FileDownloadModal: React.FC<InvoiceDownloadModalProps> = ({
 }) => {
   return (
     <Modal
-      title="Factura"
+      title="Documento adjunto"
       className="wrapper"
       open={isModalOpen}
       footer={null}
