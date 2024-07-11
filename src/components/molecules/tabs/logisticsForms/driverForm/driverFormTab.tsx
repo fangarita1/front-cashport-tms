@@ -58,6 +58,10 @@ export const DriverFormTab = ({
     disabled: statusForm === "review"
   });
 
+  useEffect(()=> {
+    console.log(watch("general.rh"));
+  }, [watch("general.rh")]);
+
    /*archivos*/
    interface FileObject {
     docReference: string;
@@ -105,6 +109,10 @@ export const DriverFormTab = ({
       },
     });
   }
+
+  useEffect(()=>{
+    console.log(errors)
+  }, [errors])
   
 
   const onSubmit = (data: any) =>{
@@ -191,7 +199,7 @@ export const DriverFormTab = ({
                   <Controller
                     name="general.rh"
                     control={control}
-                    rules={{ required: true }}
+                    rules={{ required: true, }}
                     render={({ field }) => (
                       <SelectRh errors={errors} field={field} />
                     )}
@@ -265,7 +273,7 @@ export const DriverFormTab = ({
                   titleInput="Licencia"
                   nameInput="general.licence"
                   control={control}
-                  error={undefined}
+                  error={errors?.general?.license}
                 />
                 <Flex vertical className="containerInput">
                   <Title className="title" level={5}>
@@ -276,7 +284,7 @@ export const DriverFormTab = ({
                     control={control}
                     rules={{ required: true }}
                     render={({ field }) => (
-                      <SelectLCategory errors={errors} field={field} />
+                      <SelectLCategory errors={errors?.general?.license_category} field={field} />
                     )}
                   />
                 </Flex>

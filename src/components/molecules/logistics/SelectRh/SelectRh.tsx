@@ -52,8 +52,8 @@ export const SelectRh = ({ errors, field, selected }: Props) => {
     };
   });
 
-    return (
-      <>
+  return (
+    <>
       <Select
         placeholder="Selecciona Tipo de Sangre"
         className={
@@ -64,7 +64,9 @@ export const SelectRh = ({ errors, field, selected }: Props) => {
         {...field}
         options={options}
       />
-      {errors && <Typography.Text className="textError">Campo es obligatorio *</Typography.Text>}
-      </>
-    );
+      {errors?.general?.rh && (
+        <Typography.Text className="textError">Campo es obligatorio *</Typography.Text>
+      )}
+    </>
+  );
 };

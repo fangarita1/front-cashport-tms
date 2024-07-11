@@ -36,7 +36,7 @@ export const SelectDocument = ({ errors, field, selected }: Props) => {
       <Select
         placeholder="Selecciona Tipo de Sangre"
         className={
-          errors?.general?.currencies ? "selectInputCurrenciesError" : "selectInputCurrencies"
+          errors?.general?.document_type ? "selectInputCurrenciesError" : "selectInputCurrencies"
         }
         variant="borderless"
         optionLabelProp="label"
