@@ -28,7 +28,7 @@ export const dataToProjectFormData = (data: IDriver): IFormDriver => {
       document_type: data.document_type,
       document: data.document,
       license: data.license,
-      license_categorie: data.license_categorie,
+      license_category: data.license_category,
       license_expiration: data.license_expiration,
       name: data.name,
       last_name: data.last_name,

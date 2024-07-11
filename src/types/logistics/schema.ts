@@ -834,7 +834,7 @@ export interface IDriver {
     document_type: number;
     document: string;
     license: string;
-    license_categorie: string;
+    license_category: string;
     license_expiration: Date;
     name: string;
     last_name: string;

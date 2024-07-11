@@ -1,6 +1,6 @@
 import { Select, Typography } from "antd";
 
-import "./SelectGlasses.scss";
+import "./SelectLicenceCategory.scss";
 
 interface Props {
   errors: any;
@@ -8,17 +8,33 @@ interface Props {
   selected?: any;
 }
 
-export const SelectGlasses = ({ errors, field, selected }: Props) => {
+export const SelectLCategory = ({ errors, field, selected }: Props) => {
   const data = {
     data: [
       {
         id: 1,
-        value: "Si"
+        value: "B1"
       },
       {
         id: 2,
-        value: "No"
-      }
+        value: "B2"
+      },
+      {
+        id: 3,
+        value: "B3"
+      },
+      {
+        id: 4,
+        value: "C1"
+      },
+      {
+        id: 5,
+        value: "C2"
+      },
+      {
+        id: 6,
+        value: "C3"
+      },
     ]
   };
   const options = data?.data.map((option) => {
@@ -28,18 +44,19 @@ export const SelectGlasses = ({ errors, field, selected }: Props) => {
     };
   });
 
-
     return (
       <>
       <Select
-        placeholder="Selecciona"
-        className={"selectInputGlasses"}
+        placeholder="Selecciona categoria de la licencia"
+        className={
+          errors?.general?.currencies ? "selectInputCurrenciesError" : "selectInputCurrencies"
+        }
         variant="borderless"
         optionLabelProp="label"
         {...field}
         options={options}
       />
       {errors && <Typography.Text className="textError">Campo es obligatorio *</Typography.Text>}
-    </>
+      </>
     );
 };

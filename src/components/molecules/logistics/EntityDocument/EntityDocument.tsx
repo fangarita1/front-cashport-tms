@@ -1,6 +1,6 @@
-import { Select, Typography } from "antd";
+import { Select } from "antd";
 
-import "./SelectGlasses.scss";
+import "./EntityDocument.scss";
 
 interface Props {
   errors: any;
@@ -8,16 +8,20 @@ interface Props {
   selected?: any;
 }
 
-export const SelectGlasses = ({ errors, field, selected }: Props) => {
+export const EntityDocument = ({ errors, field, selected }: Props) => {
   const data = {
     data: [
       {
         id: 1,
-        value: "Si"
+        value: "Cedula de ciudadania"
       },
       {
         id: 2,
-        value: "No"
+        value: "Tarjeta de identidad"
+      },
+      {
+        id: 3,
+        value: "Pasaporte"
       }
     ]
   };
@@ -28,18 +32,16 @@ export const SelectGlasses = ({ errors, field, selected }: Props) => {
     };
   });
 
-
     return (
-      <>
       <Select
-        placeholder="Selecciona"
-        className={"selectInputGlasses"}
+        placeholder="Selecciona Tipo de Documento"
+        className={
+          errors?.general?.currencies ? "selectInputCurrenciesError" : "selectInputCurrencies"
+        }
         variant="borderless"
         optionLabelProp="label"
         {...field}
         options={options}
       />
-      {errors && <Typography.Text className="textError">Campo es obligatorio *</Typography.Text>}
-    </>
     );
 };
