@@ -1,3 +1,4 @@
+import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { IDriver, IFormDriver } from "@/types/logistics/schema";
 import { IFormProject } from "@/types/projects/IFormProject";
@@ -49,7 +50,8 @@ export const _onSubmit = (
   data: any,
   setloading: (value: SetStateAction<boolean>) => void,
   setImageError: (value: SetStateAction<boolean>) => void,
-  imageFile: string,
+  imageFile: FileObject[] | undefined,
+  files: FileObject[] | undefined,
   onSubmitForm: (data: any) => void,
   reset: UseFormReset<IFormDriver>
 ) => {
@@ -57,7 +59,7 @@ export const _onSubmit = (
   try {
     if (!imageFile) return setImageError(true);
     setImageError(false);
-    onSubmitForm({ ...data, logo: imageFile });
+    onSubmitForm({ ...data, logo: imageFile, files });
     reset(data);
     setloading(false);
   } catch (error) {

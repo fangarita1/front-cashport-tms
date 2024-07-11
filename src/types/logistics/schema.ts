@@ -1,3 +1,5 @@
+import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+
 export interface IListData {
   id: any;
   data: Data;
@@ -2043,6 +2045,8 @@ export interface IVehiclesWithDefaults {
 
 export interface IFormDriver {
   general: IDriver;
+  logo: FileObject[];
+  files: FileObject[];
 }
 export interface IFormVehicle {
   general: IVehicle;

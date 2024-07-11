@@ -22,7 +22,7 @@ export const CreateDriverView = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const onCreateDriver = async (data: IFormDriver) => {
     try {
-      const response = await addDriver(data.general);
+      const response = await addDriver(data.general, data.logo, data.files);
       if (response.status === 200) {
         messageApi.open({
           type: "success",

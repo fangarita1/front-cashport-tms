@@ -41,7 +41,7 @@ export const DriverFormTab = ({
 }: DriverFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
-  const [imageFile, setImageFile] = useState('');
+  const [imageFile, setImageFile] = useState<any | undefined>(undefined);
   const [loading, setloading] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
@@ -111,14 +111,12 @@ export const DriverFormTab = ({
   }
 
   useEffect(()=>{
-    console.log(errors)
-  }, [errors])
+    console.log(files)
+  }, [files])
   
 
   const onSubmit = (data: any) =>{
-    console.log(data);
-    _onSubmit(data, setloading, setImageError, imageFile, onSubmitForm, reset);
-    //console.log(data[0].birth_date)
+    _onSubmit(data, setloading, setImageError, imageFile?[{docReference: 'imagen', file: imageFile}]:undefined, files, onSubmitForm, reset);
   }
   return (
     <>
