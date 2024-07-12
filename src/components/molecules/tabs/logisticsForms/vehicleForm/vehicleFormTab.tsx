@@ -11,65 +11,71 @@ import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import {
-  _onSubmit,
   dataToVehicleFormData,
   validationButtonText,
   VehicleFormTabProps
 } from "./vehicleFormTab.mapper";
 
 import "./vehicleformtab.scss";
-import { IFormVehicle, IVehicle } from "@/types/logistics/schema";
+import { IFormVehicle, IVehicle, VehicleType } from "@/types/logistics/schema";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
 import { CertificateType } from "@/types/logistics/certificate/certificate";
 import useSWR from "swr";
 import { SelectVehicleType } from "@/components/molecules/logistics/SelectVehicleType/SelectVehicleType";
 import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
+import { addVehicle, getVehicleType } from "@/services/logistics/vehicle";
 
 const { Title, Text } = Typography;
 
+type ImageKeys =
+  | "general.image1"
+  | "general.image2"
+  | "general.image3"
+  | "general.image4"
+  | "general.image5";
+interface ImageState {
+  file: File | undefined;
+}
+
 export const VehicleFormTab = ({
   onEditVehicle = () => {},
-  onSubmitForm = () => {},
   statusForm = "review",
   data = [] as IVehicle[],
   onActiveVehicle = () => {},
   onDesactivateVehicle = () => {}
 }: VehicleFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [loading, setloading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
 
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
-    "0",
+    "1",
     getDocumentsByEntityType
   );
+  const { data: vehiclesTypesData, isLoading: loadingVicles } = useSWR(
+    "/vehicle/type",
+    getVehicleType
+  );
 
-  const [imageFile1, setImageFile1] = useState<any | undefined>(undefined);
-  const [imageError1, setImageError1] = useState(false);
-  const [imageFile2, setImageFile2] = useState<any | undefined>(undefined);
-  const [imageError2, setImageError2] = useState(false);
-  const [imageFile3, setImageFile3] = useState<any | undefined>(undefined);
-  const [imageError3, setImageError3] = useState(false);
-  const [imageFile4, setImageFile4] = useState<any | undefined>(undefined);
-  const [imageError4, setImageError4] = useState(false);
-  const [imageFile5, setImageFile5] = useState<any | undefined>(undefined);
-  const [imageError5, setImageError5] = useState(false);
-
+  const [images, setImages] = useState<ImageState[]>(
+    Array(5).fill({ file: undefined, error: false })
+  );
   const defaultValues = statusForm === "create" ? {} : dataToVehicleFormData(data[0]);
   const {
     watch,
     control,
     handleSubmit,
     reset,
+    getValues,
     formState: { errors, isDirty }
   } = useForm<IFormVehicle>({
     defaultValues,
     disabled: statusForm === "review"
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(errors);
-  },[errors]);
+  }, [errors]);
 
   /*archivos*/
   interface FileObject {
@@ -77,37 +83,55 @@ export const VehicleFormTab = ({
     file: File | undefined;
   }
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
-
   const [mockFiles, setMockFiles] = useState<CertificateType[]>([]);
 
   useEffect(() => {
     console.log(files);
   }, [files]);
 
-  const onSubmit = (data: any) => {
-    if (!imageFile1) return setImageError1(true);
-    setImageError1(false);
+  const onSubmit = async (data: any) => {
+    const hasImage = images.some((image) => image.file);
+    if (!hasImage) return;
 
-    console.log(data);
+    const imageFiles = images
+      .map((image, index) =>
+        image.file ? { docReference: `imagen${index + 1}`, file: image.file } : undefined
+      )
+      .filter(Boolean) as { docReference: string; file: File }[];
 
-    _onSubmit(
-      data,
-      setloading,
-      setImageError1,
-      imageFile1 ? [{ docReference: "imagen1", file: imageFile1 }] : undefined,
-      setImageError2,
-      imageFile2 ? [{ docReference: "imagen2", file: imageFile2 }] : undefined,
-      setImageError3,
-      imageFile3 ? [{ docReference: "imagen3", file: imageFile3 }] : undefined,
-      setImageError4,
-      imageFile4 ? [{ docReference: "imagen4", file: imageFile4 }] : undefined,
-      setImageError5,
-      imageFile5 ? [{ docReference: "imagen5", file: imageFile5 }] : undefined,
-      files,
-      onSubmitForm,
-      reset
-    );
+    const vehicleData: any = {
+      ...data.general,
+      id_carrier: Number(data.general.id_carrier) || 14,
+    };
+
+    console.log({
+      general: vehicleData,
+      images: imageFiles,
+      files: files
+    });
+
+    try {
+      const response = await addVehicle(vehicleData, imageFiles, files);
+      console.log("Vehicle created successfully:", response.data);
+      // Optionally reset the form and images after successful submission
+      setImages(Array(5).fill({ file: undefined }));
+      reset();
+    } catch (error) {
+      console.log("Error creating vehicle:", error);
+    }
   };
+
+  const getImageKey = (index: number): ImageKeys => {
+    return `general.image${index}` as ImageKeys;
+  };
+
+  const convertToSelectOptions = (vehicleTypes: VehicleType[]) => {
+    return vehicleTypes.map((vehicleType) => ({
+      label: vehicleType.description,
+      value: vehicleType.id.toString()
+    }));
+  };
+
   return (
     <>
       <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
@@ -155,40 +179,28 @@ export const VehicleFormTab = ({
                   <UploadImg
                     disabled={statusForm === "review"}
                     imgDefault={watch("general.image1")}
-                    setImgFile={setImageFile1}
-                  />
-                  <Text className="textError">
-                    {imageError1 && "Imagen es obligatoria *"}
-                  </Text>
-                </Col>
-                <Col span={6} className="colfotomin">
-                  <UploadImg
-                    disabled={statusForm === "review"}
-                    imgDefault={watch("general.image2")}
-                    setImgFile={setImageFile2}
+                    setImgFile={(file) =>
+                      setImages((prev) =>
+                        prev.map((img, index) => (index === 0 ? { ...img, file } : img))
+                      )
+                    }
                   />
                 </Col>
-                <Col span={6} className="colfotomin">
-                  <UploadImg
-                    disabled={statusForm === "review"}
-                    imgDefault={watch("general.image3")}
-                    setImgFile={setImageFile3}
-                  />
-                </Col>
-                <Col span={6} className="colfotomin">
-                  <UploadImg
-                    disabled={statusForm === "review"}
-                    imgDefault={watch("general.image4")}
-                    setImgFile={setImageFile4}
-                  />
-                </Col>
-                <Col span={6} className="colfotomin">
-                  <UploadImg
-                    disabled={statusForm === "review"}
-                    imgDefault={watch("general.image5")}
-                    setImgFile={setImageFile5}
-                  />
-                </Col>
+                {images.slice(1).map((image, index) => (
+                  <Col span={6} className="colfotomin" key={index + 1}>
+                    <UploadImg
+                      disabled={statusForm === "review"}
+                      imgDefault={getValues(getImageKey(index + 1))}
+                      setImgFile={(file) =>
+                        setImages((prev) =>
+                          prev.map((img, imgIndex) =>
+                            imgIndex === index + 1 ? { ...img, file } : img
+                          )
+                        )
+                      }
+                    />
+                  </Col>
+                ))}
               </Row>
             </Col>
             <Col span={18}>
@@ -201,10 +213,17 @@ export const VehicleFormTab = ({
                     Tipo de Vehiculo
                   </Title>
                   <Controller
-                    name="general.vehicle_type"
+                    name="general.id_vehicle_type"
                     control={control}
                     rules={{ required: true }}
-                    render={({ field }) => <SelectVehicleType errors={errors} field={field} />}
+                    render={({ field }) => (
+                      <SelectVehicleType
+                        errors={errors}
+                        field={field}
+                        options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
+                        loading={loadingVicles}
+                      />
+                    )}
                   />
                   <Text className="textError">
                     {errors?.general?.vehicle_type && "Tipo es obligatorio *"}
@@ -322,7 +341,6 @@ export const VehicleFormTab = ({
             </Col>
           </Row>
           {/* -----------------------------------Project Config----------------------------------- */}
-
           <Flex className="buttonNewProject">
             {["edit", "create"].includes(statusForm) && (
               <Button

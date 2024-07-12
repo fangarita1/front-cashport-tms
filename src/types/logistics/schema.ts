@@ -129,16 +129,16 @@ export interface IOrderPsl {
  * interface.
  */
 export interface IAditionalByLocation {
-  id: number
-  id_location: number
-  entity_type: number
-  id_vehicle_type: number
-  description: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_location: number;
+  entity_type: number;
+  id_vehicle_type: number;
+  description: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -149,34 +149,34 @@ export interface IAditionalByLocation {
  * should be able to omit these fields if you'd like
  */
 export interface IAditionalByLocationWithDefaults {
-  id?: number
-  id_location: number
-  entity_type: number
-  id_vehicle_type: number
-  description: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_location: number;
+  entity_type: number;
+  id_vehicle_type: number;
+  description: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in aditional_by_material as a typescript
  * interface.
  */
 export interface IAditionalByMaterial {
-  key: number
-  id: number
-  id_material: number
-  entity_type: number
-  id_vehicle_type: number
-  description: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  quantity: number
+  key: number;
+  id: number;
+  id_material: number;
+  entity_type: number;
+  id_vehicle_type: number;
+  description: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  quantity: number;
 }
 
 /**
@@ -187,30 +187,30 @@ export interface IAditionalByMaterial {
  * should be able to omit these fields if you'd like
  */
 export interface IAditionalByMaterialWithDefaults {
-  id?: number
-  id_material: number
-  entity_type: number
-  id_vehicle_type: number
-  description: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_material: number;
+  entity_type: number;
+  id_vehicle_type: number;
+  description: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in carrier_by_group as a typescript
  * interface.
  */
 export interface ICarrierByGroup {
-  id: number
-  id_grouplocation: number
-  id_carrier: number
-  status?: string | null
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_grouplocation: number;
+  id_carrier: number;
+  status?: string | null;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -221,30 +221,30 @@ export interface ICarrierByGroup {
  * should be able to omit these fields if you'd like
  */
 export interface ICarrierByGroupWithDefaults {
-  id?: number
-  id_grouplocation: number
-  id_carrier: number
-  status?: string | null
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_grouplocation: number;
+  id_carrier: number;
+  status?: string | null;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in carrier_drivers as a typescript
  * interface.
  */
 export interface ICarrierDrivers {
-  id: number
-  id_carrier: number
-  id_driver: number
-  start_date: Date
-  end_date: Date
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_carrier: number;
+  id_driver: number;
+  start_date: Date;
+  end_date: Date;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -255,40 +255,40 @@ export interface ICarrierDrivers {
  * should be able to omit these fields if you'd like
  */
 export interface ICarrierDriversWithDefaults {
-  id?: number
-  id_carrier: number
-  id_driver: number
-  start_date: Date
-  end_date: Date
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_carrier: number;
+  id_driver: number;
+  start_date: Date;
+  end_date: Date;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in carrier_pricing_dynamic as a typescript
  * interface.
  */
 export interface ICarrierPricingDynamic {
-  id: number
-  id_contract: number
-  id_carrier: number
-  id_vehicle_type: number
-  price: number
-  start_date: Date
-  end_date: Date
+  id: number;
+  id_contract: number;
+  id_carrier: number;
+  id_vehicle_type: number;
+  price: number;
+  start_date: Date;
+  end_date: Date;
   /**  Defaults to: 0. */
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  unit_type: number
-  from_units: number
-  to_units: number
-  price_unit_aditional: number
-  id_carrier_vehicle_contract: number
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  unit_type: number;
+  from_units: number;
+  to_units: number;
+  price_unit_aditional: number;
+  id_carrier_vehicle_contract: number;
 }
 
 /**
@@ -299,46 +299,46 @@ export interface ICarrierPricingDynamic {
  * should be able to omit these fields if you'd like
  */
 export interface ICarrierPricingDynamicWithDefaults {
-  id?: number
-  id_contract: number
-  id_carrier: number
-  id_vehicle_type: number
-  price: number
-  start_date: Date
-  end_date: Date
+  id?: number;
+  id_contract: number;
+  id_carrier: number;
+  id_vehicle_type: number;
+  price: number;
+  start_date: Date;
+  end_date: Date;
   /**  Defaults to: 0. */
-  active?: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  unit_type: number
-  from_units: number
-  to_units: number
-  price_unit_aditional: number
-  id_carrier_vehicle_contract: number
+  active?: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  unit_type: number;
+  from_units: number;
+  to_units: number;
+  price_unit_aditional: number;
+  id_carrier_vehicle_contract: number;
 }
 /**
  * Exposes all fields present in carrier_pricing_trips as a typescript
  * interface.
  */
 export interface ICarrierPricingTrips {
-  id: number
-  id_contract: number
-  id_carrier: number
-  id_vehicle_type: number
-  valid_from: Date
-  valid_to: Date
-  price: number
-  to_location?: any | null
+  id: number;
+  id_contract: number;
+  id_carrier: number;
+  id_vehicle_type: number;
+  valid_from: Date;
+  valid_to: Date;
+  price: number;
+  to_location?: any | null;
   /**  Defaults to: 0. */
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  from_location?: any | null
-  id_carrier_vehicle_contract: number
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  from_location?: any | null;
+  id_carrier_vehicle_contract: number;
 }
 
 /**
@@ -349,44 +349,44 @@ export interface ICarrierPricingTrips {
  * should be able to omit these fields if you'd like
  */
 export interface ICarrierPricingTripsWithDefaults {
-  id?: number
-  id_contract: number
-  id_carrier: number
-  id_vehicle_type: number
-  valid_from: Date
-  valid_to: Date
-  price: number
-  to_location?: any | null
+  id?: number;
+  id_contract: number;
+  id_carrier: number;
+  id_vehicle_type: number;
+  valid_from: Date;
+  valid_to: Date;
+  price: number;
+  to_location?: any | null;
   /**  Defaults to: 0. */
-  active?: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  from_location?: any | null
-  id_carrier_vehicle_contract: number
+  active?: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  from_location?: any | null;
+  id_carrier_vehicle_contract: number;
 }
 /**
  * Exposes all fields present in carrier_request as a typescript
  * interface.
  */
 export interface ICarrierRequest {
-  id: number
-  id_transfer_request: number
-  date_sended: string
-  id_request: number
-  id_carrier: number
-  id_vehicle_type: number
-  id_vehicle: number
-  response: string
-  date_response: string
-  start_date_flexible: number
-  fare: number
-  status: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_transfer_request: number;
+  date_sended: string;
+  id_request: number;
+  id_carrier: number;
+  id_vehicle_type: number;
+  id_vehicle: number;
+  response: string;
+  date_response: string;
+  start_date_flexible: number;
+  fare: number;
+  status: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -397,45 +397,45 @@ export interface ICarrierRequest {
  * should be able to omit these fields if you'd like
  */
 export interface ICarrierRequestWithDefaults {
-  id?: number
-  id_transfer_request: number
-  date_sended: string
-  id_request: number
-  id_carrier: number
-  id_vehicle_type: number
-  id_vehicle: number
-  response: string
-  date_response: string
-  start_date_flexible: number
-  fare: number
-  status: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_transfer_request: number;
+  date_sended: string;
+  id_request: number;
+  id_carrier: number;
+  id_vehicle_type: number;
+  id_vehicle: number;
+  response: string;
+  date_response: string;
+  start_date_flexible: number;
+  fare: number;
+  status: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in carrier_vehicles_contracts as a typescript
  * interface.
  */
 export interface ICarrierVehiclesContracts {
-  id: number
-  id_contract: number
-  id_carrier: number
-  id_vehicle: number
-  start_date: Date
-  end_date: Date
-  periodicyty: string
-  contract_type: number
-  price_unit: number
-  current_location_lat?: number | null
+  id: number;
+  id_contract: number;
+  id_carrier: number;
+  id_vehicle: number;
+  start_date: Date;
+  end_date: Date;
+  periodicyty: string;
+  contract_type: number;
+  price_unit: number;
+  current_location_lat?: number | null;
   /**  Defaults to: 0. */
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  current_location_lng?: number | null
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  current_location_lng?: number | null;
 }
 
 /**
@@ -446,38 +446,38 @@ export interface ICarrierVehiclesContracts {
  * should be able to omit these fields if you'd like
  */
 export interface ICarrierVehiclesContractsWithDefaults {
-  id?: number
-  id_contract: number
-  id_carrier: number
-  id_vehicle: number
-  start_date: Date
-  end_date: Date
-  periodicyty: string
-  contract_type: number
-  price_unit: number
-  current_location_lat?: number | null
+  id?: number;
+  id_contract: number;
+  id_carrier: number;
+  id_vehicle: number;
+  start_date: Date;
+  end_date: Date;
+  periodicyty: string;
+  contract_type: number;
+  price_unit: number;
+  current_location_lat?: number | null;
   /**  Defaults to: 0. */
-  active?: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  current_location_lng?: number | null
+  active?: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  current_location_lng?: number | null;
 }
 /**
  * Exposes all fields present in carriers as a typescript
  * interface.
  */
 export interface ICarriers {
-  id: number
-  description: string
-  nit: string
-  icon: string
-  active: string
-  created_at: Date
-  created_by: Date
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  description: string;
+  nit: string;
+  icon: string;
+  active: string;
+  created_at: Date;
+  created_by: Date;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -488,34 +488,34 @@ export interface ICarriers {
  * should be able to omit these fields if you'd like
  */
 export interface ICarriersWithDefaults {
-  id?: number
-  description: string
-  nit: string
-  icon: string
-  active: string
-  created_at: Date
-  created_by: Date
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  description: string;
+  nit: string;
+  icon: string;
+  active: string;
+  created_at: Date;
+  created_by: Date;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in certificates as a typescript
  * interface.
  */
 export interface ICertificates {
-  id: number
-  entity_type: number
-  id_entity: number
-  url_archive: string
-  start_date: Date
-  expiration_date: Date
-  upload_date: Date
-  status: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  entity_type: number;
+  id_entity: number;
+  url_archive: string;
+  start_date: Date;
+  expiration_date: Date;
+  upload_date: Date;
+  status: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -526,40 +526,40 @@ export interface ICertificates {
  * should be able to omit these fields if you'd like
  */
 export interface ICertificatesWithDefaults {
-  id?: number
-  entity_type: number
-  id_entity: number
-  url_archive: string
-  start_date: Date
-  expiration_date: Date
-  upload_date: Date
-  status: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  entity_type: number;
+  id_entity: number;
+  url_archive: string;
+  start_date: Date;
+  expiration_date: Date;
+  upload_date: Date;
+  status: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in contracts as a typescript
  * interface.
  */
 export interface IContracts {
-  id: number
-  description: string
-  url_archive: string
-  id_carrier: number
-  total_amount: number
-  start_date: Date
-  end_date: Date
-  status: string
+  id: number;
+  description: string;
+  url_archive: string;
+  id_carrier: number;
+  total_amount: number;
+  start_date: Date;
+  end_date: Date;
+  status: string;
   /**  Defaults to: curdate(). */
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  standby_hours: number
-  id_contract_type: number
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  standby_hours: number;
+  id_contract_type: number;
 }
 
 /**
@@ -570,38 +570,38 @@ export interface IContracts {
  * should be able to omit these fields if you'd like
  */
 export interface IContractsWithDefaults {
-  id?: number
-  description: string
-  url_archive: string
-  id_carrier: number
-  total_amount: number
-  start_date: Date
-  end_date: Date
-  status: string
+  id?: number;
+  description: string;
+  url_archive: string;
+  id_carrier: number;
+  total_amount: number;
+  start_date: Date;
+  end_date: Date;
+  status: string;
   /**  Defaults to: curdate(). */
-  created_at?: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  standby_hours: number
-  id_contract_type: number
+  created_at?: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  standby_hours: number;
+  id_contract_type: number;
 }
 /**
  * Exposes all fields present in contracts_extension as a typescript
  * interface.
  */
 export interface IContractsExtension {
-  id: number
-  id_contract: number
-  url_archive: string
-  id_carrier: number
-  total_amount: number
-  current_amount: number
-  status: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_contract: number;
+  url_archive: string;
+  id_carrier: number;
+  total_amount: number;
+  current_amount: number;
+  status: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -612,30 +612,30 @@ export interface IContractsExtension {
  * should be able to omit these fields if you'd like
  */
 export interface IContractsExtensionWithDefaults {
-  id?: number
-  id_contract: number
-  url_archive: string
-  id_carrier: number
-  total_amount: number
-  current_amount: number
-  status: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_contract: number;
+  url_archive: string;
+  id_carrier: number;
+  total_amount: number;
+  current_amount: number;
+  status: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in contracts_types as a typescript
  * interface.
  */
 export interface IContractsTypes {
-  id: number
-  description: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  description: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -646,26 +646,26 @@ export interface IContractsTypes {
  * should be able to omit these fields if you'd like
  */
 export interface IContractsTypesWithDefaults {
-  id?: number
-  description: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  description: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in driver_by_carrier_request as a typescript
  * interface.
  */
 export interface IDriverByCarrierRequest {
-  id: number
-  id_driver: number
-  id_vehicle: number
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_driver: number;
+  id_vehicle: number;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -676,35 +676,35 @@ export interface IDriverByCarrierRequest {
  * should be able to omit these fields if you'd like
  */
 export interface IDriverByCarrierRequestWithDefaults {
-  id?: number
-  id_driver: number
-  id_vehicle: number
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_driver: number;
+  id_vehicle: number;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in drivers as a typescript
  * interface.
  */
 export interface IDrivers {
-  id: number
-  name: string
-  last_name: string
-  document_type: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  phone: string
-  document: string
-  licence: string
-  licence_category?: string | null
-  licence_expiration: Date
-  emergency_number: number
-  emergency_contact: string
+  id: number;
+  name: string;
+  last_name: string;
+  document_type: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  phone: string;
+  document: string;
+  licence: string;
+  licence_category?: string | null;
+  licence_expiration: Date;
+  emergency_number: number;
+  emergency_contact: string;
 }
 
 /**
@@ -715,37 +715,37 @@ export interface IDrivers {
  * should be able to omit these fields if you'd like
  */
 export interface IDriversWithDefaults {
-  id?: number
-  name: string
-  last_name: string
-  document_type: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  phone: string
-  document: string
-  licence: string
-  licence_category?: string | null
-  licence_expiration: Date
-  emergency_number: number
-  emergency_contact: string
+  id?: number;
+  name: string;
+  last_name: string;
+  document_type: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  phone: string;
+  document: string;
+  licence: string;
+  licence_category?: string | null;
+  licence_expiration: Date;
+  emergency_number: number;
+  emergency_contact: string;
 }
 /**
  * Exposes all fields present in group_by_location as a typescript
  * interface.
  */
 export interface IGroupByLocation {
-  id: number
-  description: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  city_id: number
-  geojson?: string | null
+  id: number;
+  description: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  city_id: number;
+  geojson?: string | null;
 }
 
 /**
@@ -756,33 +756,33 @@ export interface IGroupByLocation {
  * should be able to omit these fields if you'd like
  */
 export interface IGroupByLocationWithDefaults {
-  id?: number
-  description: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  city_id: number
-  geojson?: string | null
+  id?: number;
+  description: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  city_id: number;
+  geojson?: string | null;
 }
 /**
  * Exposes all fields present in incidents as a typescript
  * interface.
  */
 export interface IIncidents {
-  id: number
-  id_trip: number
-  incident_type: number
-  url_archive: string
-  description: string
-  incident_date: Date
-  status: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_trip: number;
+  incident_type: number;
+  url_archive: string;
+  description: string;
+  incident_date: Date;
+  status: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -793,68 +793,68 @@ export interface IIncidents {
  * should be able to omit these fields if you'd like
  */
 export interface IIncidentsWithDefaults {
-  id?: number
-  id_trip: number
-  incident_type: number
-  url_archive: string
-  description: string
-  incident_date: Date
-  status: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_trip: number;
+  incident_type: number;
+  url_archive: string;
+  description: string;
+  incident_date: Date;
+  status: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in location as a typescript
  * interface.
  */
 export interface ILocation {
-  id: number
-  description: string
-  city_id: number
-  postal_code: string
-  url_location: string
-  latitude: number
-  longitude: number
-  location_type: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  description: string;
+  city_id: number;
+  postal_code: string;
+  url_location: string;
+  latitude: number;
+  longitude: number;
+  location_type: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in driver as a typescript
  * interface.
  */
 export interface IDriver {
-    id: number;
-    phone: number;
-    email: string;
-    document_type: number;
-    document: string;
-    license: string;
-    license_category: string;
-    licence_category?: string;
-    license_expiration: Date;
-    name: string;
-    last_name: string;
-    emergency_number: number;
-    emergency_contact: string;
-    firebaseguid?: string;
-    active: any;
-    status?: any;
-    created_at: Date
-    created_by: string
-    modified_at?: Date | null
-    modified_by?: string | null
-    company: string
-    rh: string;
-    glasses: any,
-    birth_date: Date,
-    photo?: string;
+  id: number;
+  phone: number;
+  email: string;
+  document_type: number;
+  document: string;
+  license: string;
+  license_category: string;
+  licence_category?: string;
+  license_expiration: Date;
+  name: string;
+  last_name: string;
+  emergency_number: number;
+  emergency_contact: string;
+  firebaseguid?: string;
+  active: any;
+  status?: any;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  company: string;
+  rh: string;
+  glasses: any;
+  birth_date: Date;
+  photo?: string;
 }
 /**
  * Exposes all fields present in vehicle as a typescript
@@ -904,10 +904,10 @@ export interface ICarrier {
   vehicles: any;
   drivers: any;
   carrier_type: string;
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes the same fields as Location,
@@ -917,33 +917,33 @@ export interface ICarrier {
  * should be able to omit these fields if you'd like
  */
 export interface ILocationWithDefaults {
-  id?: number
-  description: string
-  city_id: number
-  postal_code: string
-  url_location: string
-  latitude: number
-  longitude: number
-  location_type: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  description: string;
+  city_id: number;
+  postal_code: string;
+  url_location: string;
+  latitude: number;
+  longitude: number;
+  location_type: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in location_by_grouplocation as a typescript
  * interface.
  */
 export interface ILocationByGrouplocation {
-  id: number
-  id_location: number
-  id_grouplocation: number
-  status?: string | null
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_location: number;
+  id_grouplocation: number;
+  status?: string | null;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -954,42 +954,42 @@ export interface ILocationByGrouplocation {
  * should be able to omit these fields if you'd like
  */
 export interface ILocationByGrouplocationWithDefaults {
-  id?: number
-  id_location: number
-  id_grouplocation: number
-  status?: string | null
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_location: number;
+  id_grouplocation: number;
+  status?: string | null;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in material as a typescript
  * interface.
  */
 export interface IMaterial {
-  key: number
-  id: number
-  description: string
-  id_type_material: number
-  kg_weight: number
-  mt_height: number
-  mt_width: number
-  mt_length?: number | null
-  m3_volume: number
-  rotation: string
-  can_stack: string
-  image: string
-  aditional_info?: string | null
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  icon: string
-  restriction?: string | null
-  type_description: string  
-  quantity: number
+  key: number;
+  id: number;
+  description: string;
+  id_type_material: number;
+  kg_weight: number;
+  mt_height: number;
+  mt_width: number;
+  mt_length?: number | null;
+  m3_volume: number;
+  rotation: string;
+  can_stack: string;
+  image: string;
+  aditional_info?: string | null;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  icon: string;
+  restriction?: string | null;
+  type_description: string;
+  quantity: number;
 }
 
 /**
@@ -1000,39 +1000,39 @@ export interface IMaterial {
  * should be able to omit these fields if you'd like
  */
 export interface IMaterialWithDefaults {
-  id?: number
-  description: string
-  id_type_material: number
-  kg_weight: number
-  mt_height: number
-  mt_width: number
-  mt_length?: number | null
-  m3_volume: number
-  rotation: string
-  can_stack: string
-  image: string
-  aditional_info?: string | null
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  icon: string
-  restriction?: string | null
+  id?: number;
+  description: string;
+  id_type_material: number;
+  kg_weight: number;
+  mt_height: number;
+  mt_width: number;
+  mt_length?: number | null;
+  m3_volume: number;
+  rotation: string;
+  can_stack: string;
+  image: string;
+  aditional_info?: string | null;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  icon: string;
+  restriction?: string | null;
 }
 /**
  * Exposes all fields present in material_type as a typescript
  * interface.
  */
 export interface IMaterialType {
-  id: number
-  description: string
-  line: string
-  subline: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  description: string;
+  line: string;
+  subline: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -1043,14 +1043,14 @@ export interface IMaterialType {
  * should be able to omit these fields if you'd like
  */
 export interface IMaterialTypeWithDefaults {
-  id?: number
-  description: string
-  line: string
-  subline: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  description: string;
+  line: string;
+  subline: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 export interface IOtherRequirements {
@@ -1119,40 +1119,40 @@ export interface IPsl {
  * interface.
  */
 export interface ITransferOrder {
-  id: number
-  id_user: number
-  id_start_location: number
-  id_end_location: number
-  start_date: Date
-  end_date: Date
-  start_freight_equipment: string
-  end_freight_equipment: string
-  rotation: string
-  start_date_flexible: number
-  end_date_flexible: number
-  image: string
-  id_company: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_user: number;
+  id_start_location: number;
+  id_end_location: number;
+  start_date: Date;
+  end_date: Date;
+  start_freight_equipment: string;
+  end_freight_equipment: string;
+  rotation: string;
+  start_date_flexible: number;
+  end_date_flexible: number;
+  image: string;
+  id_company: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
   //material
-  transfer_order_material?:  ITransferOrderMaterial[] | null
+  transfer_order_material?: ITransferOrderMaterial[] | null;
   //vehiculo sugerido
-  transfer_order_vehicle?: ITransferOrderVehicle[] | null
+  transfer_order_vehicle?: ITransferOrderVehicle[] | null;
   //productos
-  transfer_order_products?: ITransferOrderProducts[] | null
+  transfer_order_products?: ITransferOrderProducts[] | null;
   //centros de costo
-  transfer_order_cost_center?: ITransferRequestCostCenter[] | null
+  transfer_order_cost_center?: ITransferRequestCostCenter[] | null;
   //documentos
-  transfer_order_documents?: ITransferOrderDocuments[] | null
+  transfer_order_documents?: ITransferOrderDocuments[] | null;
   //requerimientos adicionales
-  transfer_order_other_requeriments?: ITransferOrderOtherRequirements[] | null
+  transfer_order_other_requeriments?: ITransferOrderOtherRequirements[] | null;
   //datos de contacto
-  transfer_order_contacts?: ITransferOrderContacts[] | null  
+  transfer_order_contacts?: ITransferOrderContacts[] | null;
   //personas -- aplica para viaje tipo persona
-  transfer_order_persons?: ITransferOrderPersons[] | null
+  transfer_order_persons?: ITransferOrderPersons[] | null;
 }
 
 /**
@@ -1163,39 +1163,39 @@ export interface ITransferOrder {
  * should be able to omit these fields if you'd like
  */
 export interface ITransferOrderWithDefaults {
-  id?: number
-  id_user: number
-  id_start_location: number
-  id_end_location: number
-  start_date: Date
-  end_date: Date
-  start_freight_equipment: string
-  end_freight_equipment: string
-  rotation: string
-  start_date_flexible: number
-  end_date_flexible: number
-  image: string
-  id_company: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_user: number;
+  id_start_location: number;
+  id_end_location: number;
+  start_date: Date;
+  end_date: Date;
+  start_freight_equipment: string;
+  end_freight_equipment: string;
+  rotation: string;
+  start_date_flexible: number;
+  end_date_flexible: number;
+  image: string;
+  id_company: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in transfer_order_by_transfer_request as a typescript
  * interface.
  */
 export interface ITransferOrderByTransferRequest {
-  id: number
-  id_transfer_order: number
-  id_transfer_request: number
-  datastamp: Date
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_transfer_order: number;
+  id_transfer_request: number;
+  datastamp: Date;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -1206,33 +1206,33 @@ export interface ITransferOrderByTransferRequest {
  * should be able to omit these fields if you'd like
  */
 export interface ITransferOrderByTransferRequestWithDefaults {
-  id?: number
-  id_transfer_order: number
-  id_transfer_request: number
-  datastamp: Date
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_transfer_order: number;
+  id_transfer_request: number;
+  datastamp: Date;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in transfer_order_contacts as a typescript
  * interface.
  */
 export interface ITransferOrderContacts {
-  key:number
-  id: number
-  id_transfer_order: number
-  id_contact: number
-  contact_type: number
-  name: string
-  contact_number: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  key: number;
+  id: number;
+  id_transfer_order: number;
+  id_contact: number;
+  contact_type: number;
+  name: string;
+  contact_number: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -1243,31 +1243,31 @@ export interface ITransferOrderContacts {
  * should be able to omit these fields if you'd like
  */
 export interface ITransferOrderContactsWithDefaults {
-  id?: number
-  id_transfer_order: number
-  id_contact: number
-  contact_number: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  contact_type: number
+  id?: number;
+  id_transfer_order: number;
+  id_contact: number;
+  contact_number: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  contact_type: number;
 }
 /**
  * Exposes all fields present in transfer_order_cost_center as a typescript
  * interface.
  */
 export interface ITransferOrderCostCenter {
-  id: number
-  id_transfer_order: number
-  id_costcenter: number
-  percentage: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_transfer_order: number;
+  id_costcenter: number;
+  percentage: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -1278,31 +1278,31 @@ export interface ITransferOrderCostCenter {
  * should be able to omit these fields if you'd like
  */
 export interface ITransferOrderCostCenterWithDefaults {
-  id?: number
-  id_transfer_order: number
-  id_costcenter: number
-  percentage: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_transfer_order: number;
+  id_costcenter: number;
+  percentage: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in transfer_order_documents as a typescript
  * interface.
  */
 export interface ITransferOrderDocuments {
-  id: number
-  id_transfer_order: number
-  id_document_type: number
-  url_document: string
-  status: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_transfer_order: number;
+  id_document_type: number;
+  url_document: string;
+  status: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -1313,32 +1313,32 @@ export interface ITransferOrderDocuments {
  * should be able to omit these fields if you'd like
  */
 export interface ITransferOrderDocumentsWithDefaults {
-  id?: number
-  id_transfer_order: number
-  id_document_type: number
-  url_document: string
-  status: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_transfer_order: number;
+  id_document_type: number;
+  url_document: string;
+  status: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in transfer_order_persons as a typescript
  * interface.
  */
 export interface ITransferOrderPersons {
-  id: number
-  id_transfer_order: number
-  id_user: number
-  id_user_line: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_user_subline: number
+  id: number;
+  id_transfer_order: number;
+  id_user: number;
+  id_user_line: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_user_subline: number;
 }
 
 /**
@@ -1349,31 +1349,31 @@ export interface ITransferOrderPersons {
  * should be able to omit these fields if you'd like
  */
 export interface ITransferOrderPersonsWithDefaults {
-  id?: number
-  id_transfer_order: number
-  id_user: number
-  id_user_line: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_user_subline: number
+  id?: number;
+  id_transfer_order: number;
+  id_user: number;
+  id_user_line: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_user_subline: number;
 }
 /**
  * Exposes all fields present in transfer_order_products as a typescript
  * interface.
  */
 export interface ITransferOrderProducts {
-  id: number
-  id_transfer_order: number
-  id_product: number
-  units: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_transfer_order: number;
+  id_product: number;
+  units: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -1384,38 +1384,38 @@ export interface ITransferOrderProducts {
  * should be able to omit these fields if you'd like
  */
 export interface ITransferOrderProductsWithDefaults {
-  id?: number
-  id_transfer_order: number
-  id_product: number
-  units: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_transfer_order: number;
+  id_product: number;
+  units: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in transfer_request as a typescript
  * interface.
  */
 export interface ITransferRequest {
-  id: number
-  id_trip: number
-  id_start_location: number
-  id_end_location: number
-  start_date: Date
-  end_date: Date
-  start_freight_equipment: string
-  end_freight_equipment: string
-  start_date_flexible: number
-  end_date_flexible: number
-  id_company: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_user: number
+  id: number;
+  id_trip: number;
+  id_start_location: number;
+  id_end_location: number;
+  start_date: Date;
+  end_date: Date;
+  start_freight_equipment: string;
+  end_freight_equipment: string;
+  start_date_flexible: number;
+  end_date_flexible: number;
+  id_company: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_user: number;
 }
 
 /**
@@ -1426,40 +1426,40 @@ export interface ITransferRequest {
  * should be able to omit these fields if you'd like
  */
 export interface ITransferRequestWithDefaults {
-  id?: number
-  id_trip: number
-  id_start_location: number
-  id_end_location: number
-  start_date: Date
-  end_date: Date
-  start_freight_equipment: string
-  end_freight_equipment: string
-  start_date_flexible: number
-  end_date_flexible: number
-  id_company: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_user: number
+  id?: number;
+  id_trip: number;
+  id_start_location: number;
+  id_end_location: number;
+  start_date: Date;
+  end_date: Date;
+  start_freight_equipment: string;
+  end_freight_equipment: string;
+  start_date_flexible: number;
+  end_date_flexible: number;
+  id_company: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_user: number;
 }
 /**
  * Exposes all fields present in transfer_request_contacts as a typescript
  * interface.
  */
 export interface ITransferRequestContacts {
-  id: number
-  id_transfer_order: number
-  id_contact: number
-  contact_number: number
-  contact_type: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_transfer_request: number
+  id: number;
+  id_transfer_order: number;
+  id_contact: number;
+  contact_number: number;
+  contact_type: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_transfer_request: number;
 }
 
 /**
@@ -1470,33 +1470,33 @@ export interface ITransferRequestContacts {
  * should be able to omit these fields if you'd like
  */
 export interface ITransferRequestContactsWithDefaults {
-  id?: number
-  id_transfer_order: number
-  id_contact: number
-  contact_number: number
-  contact_type: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_transfer_request: number
+  id?: number;
+  id_transfer_order: number;
+  id_contact: number;
+  contact_number: number;
+  contact_type: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_transfer_request: number;
 }
 /**
  * Exposes all fields present in transfer_request_cost_center as a typescript
  * interface.
  */
 export interface ITransferRequestCostCenter {
-  id: number
-  id_transfer_order: number
-  id_costcenter: number
-  percentage: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_transfer_request: number
+  id: number;
+  id_transfer_order: number;
+  id_costcenter: number;
+  percentage: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_transfer_request: number;
 }
 
 /**
@@ -1507,33 +1507,33 @@ export interface ITransferRequestCostCenter {
  * should be able to omit these fields if you'd like
  */
 export interface ITransferRequestCostCenterWithDefaults {
-  id?: number
-  id_transfer_order: number
-  id_costcenter: number
-  percentage: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_transfer_request: number
+  id?: number;
+  id_transfer_order: number;
+  id_costcenter: number;
+  percentage: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_transfer_request: number;
 }
 /**
  * Exposes all fields present in transfer_request_documents as a typescript
  * interface.
  */
 export interface ITransferRequestDocuments {
-  id: number
-  id_transfer_order: number
-  id_document_type: number
-  url_document: string
-  status: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_transfer_request: number
+  id: number;
+  id_transfer_order: number;
+  id_document_type: number;
+  url_document: string;
+  status: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_transfer_request: number;
 }
 
 /**
@@ -1544,34 +1544,34 @@ export interface ITransferRequestDocuments {
  * should be able to omit these fields if you'd like
  */
 export interface ITransferRequestDocumentsWithDefaults {
-  id?: number
-  id_transfer_order: number
-  id_document_type: number
-  url_document: string
-  status: string
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_transfer_request: number
+  id?: number;
+  id_transfer_order: number;
+  id_document_type: number;
+  url_document: string;
+  status: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_transfer_request: number;
 }
 /**
  * Exposes all fields present in transfer_request_persons as a typescript
  * interface.
  */
 export interface ITransferRequestPersons {
-  id: number
-  id_transfer_order: number
-  id_user: number
-  id_user_line: number
-  id_user_subline: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_transfer_request: number
+  id: number;
+  id_transfer_order: number;
+  id_user: number;
+  id_user_line: number;
+  id_user_subline: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_transfer_request: number;
 }
 
 /**
@@ -1582,33 +1582,33 @@ export interface ITransferRequestPersons {
  * should be able to omit these fields if you'd like
  */
 export interface ITransferRequestPersonsWithDefaults {
-  id?: number
-  id_transfer_order: number
-  id_user: number
-  id_user_line: number
-  id_user_subline: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_transfer_request: number
+  id?: number;
+  id_transfer_order: number;
+  id_user: number;
+  id_user_line: number;
+  id_user_subline: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_transfer_request: number;
 }
 /**
  * Exposes all fields present in transfer_request_products as a typescript
  * interface.
  */
 export interface ITransferRequestProducts {
-  id: number
-  id_transfer_order: number
-  id_product: number
-  units: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_transfer_request: number
+  id: number;
+  id_transfer_order: number;
+  id_product: number;
+  units: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_transfer_request: number;
 }
 
 /**
@@ -1619,30 +1619,30 @@ export interface ITransferRequestProducts {
  * should be able to omit these fields if you'd like
  */
 export interface ITransferRequestProductsWithDefaults {
-  id?: number
-  id_transfer_order: number
-  id_product: number
-  units: number
-  active: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_transfer_request: number
+  id?: number;
+  id_transfer_order: number;
+  id_product: number;
+  units: number;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_transfer_request: number;
 }
 /**
  * Exposes all fields present in traveling_restrictions_by_locations as a typescript
  * interface.
  */
 export interface ITravelingRestrictionsByLocations {
-  id: number
-  id_location: number
-  id_location_dest: number
-  status?: string | null
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_location: number;
+  id_location_dest: number;
+  status?: string | null;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -1653,28 +1653,28 @@ export interface ITravelingRestrictionsByLocations {
  * should be able to omit these fields if you'd like
  */
 export interface ITravelingRestrictionsByLocationsWithDefaults {
-  id?: number
-  id_location: number
-  id_location_dest: number
-  status?: string | null
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_location: number;
+  id_location_dest: number;
+  status?: string | null;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in traveling_restrictions_by_material as a typescript
  * interface.
  */
 export interface ITravelingRestrictionsByMaterial {
-  id: number
-  id_type_material: number
-  id_material: number
-  status?: string | null
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_type_material: number;
+  id_material: number;
+  status?: string | null;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -1685,31 +1685,31 @@ export interface ITravelingRestrictionsByMaterial {
  * should be able to omit these fields if you'd like
  */
 export interface ITravelingRestrictionsByMaterialWithDefaults {
-  id?: number
-  id_type_material: number
-  id_material: number
-  status?: string | null
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_type_material: number;
+  id_material: number;
+  status?: string | null;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in trip as a typescript
  * interface.
  */
 export interface ITrip {
-  id: number
-  id_start_location: number
-  id_end_location: number
-  start_time: Date
-  end_time?: Date | null
-  fare: number
-  status: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_start_location: number;
+  id_end_location: number;
+  start_time: Date;
+  end_time?: Date | null;
+  fare: number;
+  status: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -1720,31 +1720,31 @@ export interface ITrip {
  * should be able to omit these fields if you'd like
  */
 export interface ITripWithDefaults {
-  id?: number
-  id_start_location: number
-  id_end_location: number
-  start_time: Date
-  end_time?: Date | null
-  fare: number
-  status: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_start_location: number;
+  id_end_location: number;
+  start_time: Date;
+  end_time?: Date | null;
+  fare: number;
+  status: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in trip_costcenter as a typescript
  * interface.
  */
 export interface ITripCostcenter {
-  id: number
-  id_trip: number
-  id_costcenter: number
-  percentage: number
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_trip: number;
+  id_costcenter: number;
+  percentage: number;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -1755,30 +1755,30 @@ export interface ITripCostcenter {
  * should be able to omit these fields if you'd like
  */
 export interface ITripCostcenterWithDefaults {
-  id?: number
-  id_trip: number
-  id_costcenter: number
-  percentage: number
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_trip: number;
+  id_costcenter: number;
+  percentage: number;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in trip_events as a typescript
  * interface.
  */
 export interface ITripEvents {
-  id: number
-  id_trip: number
-  id_status: number
-  location: string
-  date: Date
-  url_image: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_trip: number;
+  id_status: number;
+  location: string;
+  date: Date;
+  url_image: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -1789,33 +1789,33 @@ export interface ITripEvents {
  * should be able to omit these fields if you'd like
  */
 export interface ITripEventsWithDefaults {
-  id?: number
-  id_trip: number
-  id_status: number
-  location: string
-  date: Date
-  url_image: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_trip: number;
+  id_status: number;
+  location: string;
+  date: Date;
+  url_image: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in trip_incidents as a typescript
  * interface.
  */
 export interface ITripIncidents {
-  id: number
-  id_trip: number
-  id_driver: number
-  id_incident_type: number
-  description: string
-  url_image: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  date: Date
+  id: number;
+  id_trip: number;
+  id_driver: number;
+  id_incident_type: number;
+  description: string;
+  url_image: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  date: Date;
 }
 
 /**
@@ -1826,33 +1826,33 @@ export interface ITripIncidents {
  * should be able to omit these fields if you'd like
  */
 export interface ITripIncidentsWithDefaults {
-  id?: number
-  id_trip: number
-  id_driver: number
-  id_incident_type: number
-  description: string
-  url_image: string
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
-  date: Date
+  id?: number;
+  id_trip: number;
+  id_driver: number;
+  id_incident_type: number;
+  description: string;
+  url_image: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  date: Date;
 }
 /**
  * Exposes all fields present in trip_material as a typescript
  * interface.
  */
 export interface ITripMaterial {
-  id: number
-  id_trip: number
-  id_request: number
-  id_vehicle: number
-  id_material: number
-  units: number
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_trip: number;
+  id_request: number;
+  id_vehicle: number;
+  id_material: number;
+  units: number;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -1863,29 +1863,29 @@ export interface ITripMaterial {
  * should be able to omit these fields if you'd like
  */
 export interface ITripMaterialWithDefaults {
-  id?: number
-  id_trip: number
-  id_request: number
-  id_vehicle: number
-  id_material: number
-  units: number
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_trip: number;
+  id_request: number;
+  id_vehicle: number;
+  id_material: number;
+  units: number;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in trip_request as a typescript
  * interface.
  */
 export interface ITripRequest {
-  id: number
-  id_trip: number
-  id_request: number
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_trip: number;
+  id_request: number;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -1896,29 +1896,29 @@ export interface ITripRequest {
  * should be able to omit these fields if you'd like
  */
 export interface ITripRequestWithDefaults {
-  id?: number
-  id_trip: number
-  id_request: number
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_trip: number;
+  id_request: number;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in trip_vehicle as a typescript
  * interface.
  */
 export interface ITripVehicle {
-  id: number
-  id_trip: number
-  id_carrier_request_id: number
-  id_vehicle: number
-  id_contract: number
-  id_driver: number
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id: number;
+  id_trip: number;
+  id_carrier_request_id: number;
+  id_vehicle: number;
+  id_contract: number;
+  id_driver: number;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 
 /**
@@ -1929,43 +1929,43 @@ export interface ITripVehicle {
  * should be able to omit these fields if you'd like
  */
 export interface ITripVehicleWithDefaults {
-  id?: number
-  id_trip: number
-  id_carrier_request_id: number
-  id_vehicle: number
-  id_contract: number
-  id_driver: number
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  id?: number;
+  id_trip: number;
+  id_carrier_request_id: number;
+  id_vehicle: number;
+  id_contract: number;
+  id_driver: number;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
 }
 /**
  * Exposes all fields present in vehicle_type as a typescript
  * interface.
  */
 export interface IVehicleType {
-  key: number
-  id: number
-  description: string
-  vehicle_subtype: number
-  actyvity_type: number
-  kg_capacity: number
-  m3_volume: number
-  width: number
-  height: number
-  aditional_info?: string | null
-  length?: number | null
-  passenger_capacity: number
-  speed_multiple: number
-  active: string
-  created_at: Date
-  created_by: Date
-  modified_at?: Date | null
-  modified_by?: string | null
-  icon: string
-  image: string,
-  quantity: number
+  key: number;
+  id: number;
+  description: string;
+  vehicle_subtype: number;
+  actyvity_type: number;
+  kg_capacity: number;
+  m3_volume: number;
+  width: number;
+  height: number;
+  aditional_info?: string | null;
+  length?: number | null;
+  passenger_capacity: number;
+  speed_multiple: number;
+  active: string;
+  created_at: Date;
+  created_by: Date;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  icon: string;
+  image: string;
+  quantity: number;
 }
 
 /**
@@ -1976,50 +1976,50 @@ export interface IVehicleType {
  * should be able to omit these fields if you'd like
  */
 export interface IVehicleTypeWithDefaults {
-  id?: number
-  description: string
-  vehicle_subtype: number
-  actyvity_type: number
-  kg_capacity: number
-  m3_volume: number
-  width: number
-  height: number
-  aditional_info?: string | null
-  length?: number | null
-  passenger_capacity: number
-  speed_multiple: number
-  active: string
-  created_at: Date
-  created_by: Date
-  modified_at?: Date | null
-  modified_by?: string | null
-  icon: string
-  image: string
+  id?: number;
+  description: string;
+  vehicle_subtype: number;
+  actyvity_type: number;
+  kg_capacity: number;
+  m3_volume: number;
+  width: number;
+  height: number;
+  aditional_info?: string | null;
+  length?: number | null;
+  passenger_capacity: number;
+  speed_multiple: number;
+  active: string;
+  created_at: Date;
+  created_by: Date;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  icon: string;
+  image: string;
 }
 /**
  * Exposes all fields present in vehicles as a typescript
  * interface.
  */
 export interface IVehicles {
-  id: number
-  plate_number: string
-  brand: string
-  line: string
-  active: string
-  created_at: Date
-  created_by: Date
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_carrier: number
-  id_vehicle_type: number
-  model: string
-  year: number
-  color: string
-  country: number
-  aditional_info?: string | null
-  gps_link?: string | null
-  gps_user?: string | null
-  gps_password?: string | null
+  id: number;
+  plate_number: string;
+  brand: string;
+  line: string;
+  active: string;
+  created_at: Date;
+  created_by: Date;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_carrier: number;
+  id_vehicle_type: number;
+  model: string;
+  year: number;
+  color: string;
+  country: number;
+  aditional_info?: string | null;
+  gps_link?: string | null;
+  gps_user?: string | null;
+  gps_password?: string | null;
 }
 
 /**
@@ -2030,25 +2030,25 @@ export interface IVehicles {
  * should be able to omit these fields if you'd like
  */
 export interface IVehiclesWithDefaults {
-  id?: number
-  plate_number: string
-  brand: string
-  line: string
-  active: string
-  created_at: Date
-  created_by: Date
-  modified_at?: Date | null
-  modified_by?: string | null
-  id_carrier: number
-  id_vehicle_type: number
-  model: string
-  year: number
-  color: string
-  country: number
-  aditional_info?: string | null
-  gps_link?: string | null
-  gps_user?: string | null
-  gps_password?: string | null
+  id?: number;
+  plate_number: string;
+  brand: string;
+  line: string;
+  active: string;
+  created_at: Date;
+  created_by: Date;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  id_carrier: number;
+  id_vehicle_type: number;
+  model: string;
+  year: number;
+  color: string;
+  country: number;
+  aditional_info?: string | null;
+  gps_link?: string | null;
+  gps_user?: string | null;
+  gps_password?: string | null;
 }
 
 export interface IFormDriver {
@@ -2068,4 +2068,49 @@ export interface IFormVehicle {
 }
 export interface IFormCarrier {
   general: ICarrier;
+}
+
+export interface VehicleType {
+  id: number;
+  description: string;
+  vehicle_subtype: number;
+  actyvity_type: number;
+  kg_capacity: number;
+  m3_volume: number;
+  width: number;
+  height: number;
+  aditional_info: string;
+  length: number;
+  passenger_capacity: number;
+  speed_multiple: number;
+  active: ActiveVehicleType;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+  icon: string;
+  image: string;
+  available: number;
+  price: number;
+}
+
+export interface ActiveVehicleType {
+  type: string;
+  data: number[];
+}
+
+export interface IListDataVehiche {
+  id: any;
+  data: DataVihicleType;
+  status: number;
+  statusText: string;
+  headers: WelcomeHeaders;
+  config: Config;
+  request: Request;
+}
+
+export interface DataVihicleType {
+  status: number;
+  message: string;
+  data: VehicleType[];
 }

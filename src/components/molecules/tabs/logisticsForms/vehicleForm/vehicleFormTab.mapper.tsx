@@ -45,38 +45,10 @@ export const dataToVehicleFormData = (data: IVehicle): IFormVehicle => {
       modified_by: data.modified_by,
       IS_ACTIVE: data.IS_ACTIVE
     },
-    IS_ACTIVE:{} = data.IS_ACTIVE
+    IS_ACTIVE: ({} = data.IS_ACTIVE)
   };
 };
 
-export const _onSubmit = (
-  data: any,
-  setloading: (value: SetStateAction<boolean>) => void,
-  setImageError1: (value: SetStateAction<boolean>) => void,
-  imageFile1: FileObject[] | undefined,
-  setImageError2: (value: SetStateAction<boolean>) => void,
-  imageFile2: FileObject[] | undefined,
-  setImageError3: (value: SetStateAction<boolean>) => void,
-  imageFile3: FileObject[] | undefined,
-  setImageError4: (value: SetStateAction<boolean>) => void,
-  imageFile4: FileObject[] | undefined,
-  setImageError5: (value: SetStateAction<boolean>) => void,
-  imageFile5: FileObject[] | undefined,
-  files: FileObject[] | undefined,
-  onSubmitForm: (data: any) => void,
-  reset: UseFormReset<IFormVehicle>
-) => {
-  setloading(true);
-  try {
-    console.log(data);
-    onSubmitForm({ ...data, imageFile1,imageFile2,imageFile3,imageFile4,imageFile5, files });
-    reset(data);
-    setloading(false);
-  } catch (error) {
-    console.warn({ error });
-    setloading(false);
-  }
-};
 
 export const validationButtonText = (statusForm: "create" | "edit" | "review") => {
   switch (statusForm) {

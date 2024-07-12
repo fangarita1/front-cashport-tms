@@ -1,12 +1,4 @@
-import {
-  Flex,
-  Typography,
-  message,
-  Row,
-  Col,
-  Tabs,
-  TabsProps,
-} from "antd";
+import { Flex, Typography, message, Row, Col, Tabs, TabsProps } from "antd";
 import React, { useRef, useEffect, useState, useContext } from "react";
 
 // components
@@ -30,15 +22,12 @@ const { Title } = Typography;
 export const CreateVehicleView = () => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
-    
+
   const [value, setValue] = useState("2");
 
   const onChange = (key: string) => {
     setValue(key);
     //setRenderInfo(true)
-  };
-  const onSubmitForm = (data: any) => {
-    console.log(data);
   };
 
   const items: TabsProps["items"] = [
@@ -47,7 +36,7 @@ export const CreateVehicleView = () => {
       label: "General",
       children: (
         <>
-            <>{<CarrierTable></CarrierTable>}</>
+          <>{<CarrierTable></CarrierTable>}</>
         </>
       )
     },
@@ -56,7 +45,7 @@ export const CreateVehicleView = () => {
       label: "Vehiculo",
       children: (
         <>
-            <>{<VehicleFormTab statusForm={"create"} onSubmitForm={onSubmitForm}></VehicleFormTab>}</>
+          <>{<VehicleFormTab statusForm={"create"}></VehicleFormTab>}</>
         </>
       )
     },
@@ -65,40 +54,38 @@ export const CreateVehicleView = () => {
       label: "Conductor",
       children: (
         <>
-           <>{<DriverFormTab statusForm={"review"}></DriverFormTab>}</>
+          <>{<DriverFormTab statusForm={"review"}></DriverFormTab>}</>
         </>
       )
     }
   ];
 
-  return (    
+  return (
     <>
-    {contextHolder}
-    <main className="mainCreateOrder">
-      <SideBar />
-      <Flex vertical className="containerCreateOrder">
-        <Flex className="infoHeaderOrder">
-          <Flex gap={"2rem"}>
-            <Title level={2} className="titleName">
-              Proveedores
-            </Title>
+      {contextHolder}
+      <main className="mainCreateOrder">
+        <SideBar />
+        <Flex vertical className="containerCreateOrder">
+          <Flex className="infoHeaderOrder">
+            <Flex gap={"2rem"}>
+              <Title level={2} className="titleName">
+                Proveedores
+              </Title>
+            </Flex>
+            <Flex component={"navbar"} align="center" justify="space-between">
+              <NavRightSection />
+            </Flex>
           </Flex>
-          <Flex component={"navbar"} align="center" justify="space-between">
-            <NavRightSection />
+          {/* ------------Main Info Order-------------- */}
+          <Flex className="orderContainer">
+            <Row style={{ width: "100%" }}>
+              <Col span={24}>
+                <Tabs defaultActiveKey={value} items={items} onChange={onChange}></Tabs>
+              </Col>
+            </Row>
           </Flex>
         </Flex>
-        {/* ------------Main Info Order-------------- */}
-        <Flex className="orderContainer">
-          <Row style={{ width: "100%" }}>
-            <Col span={24}>
-              <Tabs defaultActiveKey={value} items={items} onChange={onChange}>
-                
-              </Tabs>
-            </Col>
-          </Row>
-        </Flex>
-      </Flex>
-    </main>
-  </>
+      </main>
+    </>
   );
 };

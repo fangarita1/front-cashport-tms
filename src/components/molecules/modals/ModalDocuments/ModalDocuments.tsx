@@ -5,7 +5,7 @@ import {
 } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { CertificateType } from "@/types/logistics/certificate/certificate";
 import { Cross } from "@phosphor-icons/react";
-import { Col, Flex, Modal, Row, Select, Typography } from "antd";
+import { Col, Flex, Modal, Row, Select, Spin, Typography } from "antd";
 import { X } from "phosphor-react";
 
 const { Text, Title } = Typography;
@@ -57,23 +57,28 @@ export default function ModalDocuments(props: PropsModalDocuments) {
             <Title className="title" level={5}>
               Seleccione los documentos adicionales
             </Title>
-            <Select
-              mode="multiple"
-              allowClear
-              style={{ width: "100%" }}
-              placeholder="Seleccione documentos"
-              defaultValue={mockFiles?.map((document) => document.id.toString()) || []}
-              loading={isLoadingDocuments}
-              onChange={(value) => {
-                setMockFiles(
-                  documentsType?.filter((document) => value.includes(document.id.toString())) || []
-                );
-              }}
-              options={documentsType?.map((document) => ({
-                label: <span>{document.description}</span>,
-                value: document.id.toString()
-              }))}
-            />
+            {documentsType && Array.isArray(documentsType) ? (
+              <Select
+                mode="multiple"
+                allowClear
+                style={{ width: "100%" }}
+                placeholder="Seleccione documentos"
+                defaultValue={mockFiles?.map((document) => document.id.toString()) || []}
+                loading={isLoadingDocuments}
+                onChange={(value) => {
+                  setMockFiles(
+                    documentsType?.filter((document) => value.includes(document.id.toString())) ||
+                      []
+                  );
+                }}
+                options={documentsType?.map((document) => ({
+                  label: <span>{document.description}</span>,
+                  value: document.id.toString()
+                }))}
+              />
+            ) : (
+              <Spin spinning={true}>Loading documents...</Spin>
+            )}
           </Col>
         </Row>
       </Flex>

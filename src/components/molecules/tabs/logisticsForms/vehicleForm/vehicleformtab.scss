@@ -6,6 +6,7 @@
     display: flex;
     overflow-y: scroll;
     flex-direction: column;
+
     .title {
         font-size: 1rem;
         color: #141414;
@@ -13,11 +14,13 @@
         font-style: normal;
         line-height: normal;
     }
+
     .buttonNewProject {
         display: flex;
         padding: 0 24px;
         margin: 24px 24px;
         justify-content: flex-end;
+
         .button {
             width: 240px;
             height: 40px;
@@ -30,6 +33,7 @@
             line-height: normal;
             justify-content: center;
             background: var(--Dark-Grey, #ddd);
+
             &.active {
                 background-color: #cbe71e;
             }
@@ -46,11 +50,13 @@
         padding-right: 0.5rem;
         justify-content: space-between;
         align-items: center;
+
         h2,
         h3,
         h4 {
             color: $secondary-gray;
         }
+
         .buttons {
             gap: 10px;
             width: 210px;
@@ -64,21 +70,26 @@
             color: var(--Black, #141414);
             border: 1px solid #ddd;
         }
+
         .containerInput {
             width: 30%;
             margin: 0.25rem 0.5rem;
+
             .title {
                 font-size: 0.75rem;
                 font-weight: 600;
                 font-style: normal;
                 line-height: normal;
-            }}
+            }
+        }
+
         .buttonGoBack {
             justify-content: flex-start;
             color: #141414;
             box-shadow: none;
             padding: inherit;
             font-weight: 600;
+
             &:hover {
                 opacity: 0.8;
                 color: black;
@@ -90,11 +101,11 @@
         width: 100% !important;
     }
 
-    .uploadText{
+    .uploadText {
         display: none !important;
     }
 
-    .colfoto .ant-upload-select{
+    .colfoto .ant-upload-select {
         width: 300px !important;
         height: 180px !important;
         flex-shrink: 0;
@@ -124,13 +135,16 @@
             color: #141414;
         }
     }
+
     .generalProject {
         display: flex;
         width: 100%;
         flex-wrap: wrap;
+
         .description {
             width: 47% !important;
         }
+
         h2,
         h3,
 
@@ -138,15 +152,18 @@
         h5 {
             color: $gray;
         }
+
         .containerInput {
             width: 30%;
             margin: 0.25rem 0.5rem;
+
             .title {
                 font-size: 0.75rem;
                 font-weight: 600;
                 font-style: normal;
                 line-height: normal;
             }
+
             .ant-color-picker-trigger {
                 background-color: $background;
                 justify-content: flex-start;
@@ -165,17 +182,21 @@
             .ant-input-disabled {
                 color: black;
             }
+
             .ant-select-selection-item {
                 color: #141414;
             }
+
             .ant-input-disabled {
                 color: #141414;
             }
+
             .ant-color-picker-trigger-text {
                 color: #141414;
             }
-            .Controller{
-                .selectDocument{
+
+            .Controller {
+                .selectDocument {
                     padding: 0.7rem;
                 }
             }
@@ -215,7 +236,7 @@
     }
 }
 
-.btnagregarpsl{
+.btnagregarpsl {
     padding: 8px;
     border: none;
     border-radius: 5px;
