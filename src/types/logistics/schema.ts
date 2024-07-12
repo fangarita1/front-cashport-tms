@@ -837,6 +837,7 @@ export interface IDriver {
     document: string;
     license: string;
     license_category: string;
+    licence_category?: string;
     license_expiration: Date;
     name: string;
     last_name: string;
@@ -853,6 +854,7 @@ export interface IDriver {
     rh: string;
     glasses: any,
     birth_date: Date,
+    photo?: string;
 }
 /**
  * Exposes all fields present in vehicle as a typescript
@@ -2045,8 +2047,8 @@ export interface IVehiclesWithDefaults {
 
 export interface IFormDriver {
   general: IDriver;
-  logo: FileObject[];
-  files: FileObject[];
+  logo?: FileObject[];
+  files?: FileObject[];
 }
 export interface IFormVehicle {
   general: IVehicle;

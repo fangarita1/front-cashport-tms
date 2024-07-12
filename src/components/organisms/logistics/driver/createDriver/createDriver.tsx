@@ -22,13 +22,14 @@ export const CreateDriverView = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const onCreateDriver = async (data: IFormDriver) => {
     try {
-      const response = await addDriver(data.general, data.logo, data.files);
+      const response = await addDriver(data.general, data.logo as any, data?.files as any);
+
       if (response.status === 200) {
         messageApi.open({
           type: "success",
           content: "El conductor fue creado exitosamente."
         });
-        push("/");
+        push("/logistics/drivers/driver/" + response.data.data.id);
       }
     } catch (error) {
       messageApi.open({
@@ -51,7 +52,7 @@ export const CreateDriverView = () => {
       label: "General",
       children: (
         <>
-            <>{<CarrierTable></CarrierTable>}</>
+          <>{<CarrierTable></CarrierTable>}</>
         </>
       )
     },
@@ -60,7 +61,7 @@ export const CreateDriverView = () => {
       label: "Vehiculo",
       children: (
         <>
-            <>{<VehicleTable></VehicleTable>}</>
+          <>{<VehicleTable></VehicleTable>}</>
         </>
       )
     },
@@ -69,40 +70,38 @@ export const CreateDriverView = () => {
       label: "Conductor",
       children: (
         <>
-           <>{<DriverFormTab onSubmitForm={onCreateDriver} statusForm={"create"}></DriverFormTab>}</>
+          <>{<DriverFormTab onSubmitForm={onCreateDriver} statusForm={"create"}></DriverFormTab>}</>
         </>
       )
     }
   ];
 
-  return (    
+  return (
     <>
-    {contextHolder}
-    <main className="mainCreateOrder">
-      <SideBar />
-      <Flex vertical className="containerCreateOrder">
-        <Flex className="infoHeaderOrder">
-          <Flex gap={"2rem"}>
-            <Title level={2} className="titleName">
-              Proveedores
-            </Title>
+      {contextHolder}
+      <main className="mainCreateOrder">
+        <SideBar />
+        <Flex vertical className="containerCreateOrder">
+          <Flex className="infoHeaderOrder">
+            <Flex gap={"2rem"}>
+              <Title level={2} className="titleName">
+                Proveedores
+              </Title>
+            </Flex>
+            <Flex component={"navbar"} align="center" justify="space-between">
+              <NavRightSection />
+            </Flex>
           </Flex>
-          <Flex component={"navbar"} align="center" justify="space-between">
-            <NavRightSection />
+          {/* ------------Main Info Order-------------- */}
+          <Flex className="orderContainer">
+            <Row style={{ width: "100%" }}>
+              <Col span={24}>
+                <Tabs defaultActiveKey={value} items={items} onChange={onChange}></Tabs>
+              </Col>
+            </Row>
           </Flex>
         </Flex>
-        {/* ------------Main Info Order-------------- */}
-        <Flex className="orderContainer">
-          <Row style={{ width: "100%" }}>
-            <Col span={24}>
-              <Tabs defaultActiveKey={value} items={items} onChange={onChange}>
-                
-              </Tabs>
-            </Col>
-          </Row>
-        </Flex>
-      </Flex>
-    </main>
-  </>
+      </main>
+    </>
   );
 };

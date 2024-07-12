@@ -8,44 +8,44 @@ interface Props {
   selected?: any;
 }
 
+export const bloodTypes = {
+  data: [
+    {
+      id: 1,
+      value: "A+"
+    },
+    {
+      id: 2,
+      value: "A-"
+    },
+    {
+      id: 3,
+      value: "B+"
+    },
+    {
+      id: 4,
+      value: "B-"
+    },
+    {
+      id: 5,
+      value: "O+"
+    },
+    {
+      id: 6,
+      value: "O-"
+    },
+    {
+      id: 7,
+      value: "AB+"
+    },
+    {
+      id: 8,
+      value: "AB-"
+    }
+  ]
+};
 export const SelectRh = ({ errors, field, selected }: Props) => {
-  const data = {
-    data: [
-      {
-        id: 1,
-        value: "A+"
-      },
-      {
-        id: 2,
-        value: "A-"
-      },
-      {
-        id: 3,
-        value: "B+"
-      },
-      {
-        id: 4,
-        value: "B-"
-      },
-      {
-        id: 5,
-        value: "O+"
-      },
-      {
-        id: 6,
-        value: "O-"
-      },
-      {
-        id: 7,
-        value: "AB+"
-      },
-      {
-        id: 8,
-        value: "AB-"
-      }
-    ]
-  };
-  const options = data?.data.map((option) => {
+  const options = bloodTypes?.data.map((option) => {
     return {
       value: option.id,
       label: option.value
