@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, Col, Flex, Row, Switch, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowsClockwise, Pencil, Plus } from "phosphor-react";
+import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
 
 // components
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
@@ -11,13 +11,13 @@ import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import {
-  dataToVehicleFormData,
+  normalizeVehicleData,
   validationButtonText,
   VehicleFormTabProps
 } from "./vehicleFormTab.mapper";
 
 import "./vehicleformtab.scss";
-import { IFormVehicle, IVehicle, VehicleType } from "@/types/logistics/schema";
+import { IFormVehicle, VehicleType } from "@/types/logistics/schema";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
 import { CertificateType } from "@/types/logistics/certificate/certificate";
 import useSWR from "swr";
@@ -39,9 +39,10 @@ interface ImageState {
 }
 
 export const VehicleFormTab = ({
+  data,
+  messageApi,
   onEditVehicle = () => {},
   statusForm = "review",
-  data = [] as IVehicle[],
   onActiveVehicle = () => {},
   onDesactivateVehicle = () => {}
 }: VehicleFormTabProps) => {
@@ -61,7 +62,7 @@ export const VehicleFormTab = ({
   const [images, setImages] = useState<ImageState[]>(
     Array(5).fill({ file: undefined, error: false })
   );
-  const defaultValues = statusForm === "create" ? {} : dataToVehicleFormData(data[0]);
+  const defaultValues = statusForm === "create" ? {} : normalizeVehicleData(data as any);
   const {
     watch,
     control,
@@ -87,8 +88,8 @@ export const VehicleFormTab = ({
   const [mockFiles, setMockFiles] = useState<CertificateType[]>([]);
 
   useEffect(() => {
-    console.log(files);
-  }, [files]);
+    reset(normalizeVehicleData(data as any) as any);
+  }, []);
 
   const onSubmit = async (data: any) => {
     const hasImage = images.some((image) => image.file);
@@ -104,12 +105,6 @@ export const VehicleFormTab = ({
       ...data.general,
       id_carrier: Number(data.general.id_carrier) || 14
     };
-
-    console.log({
-      general: vehicleData,
-      images: imageFiles,
-      files: files
-    });
 
     try {
       const response = await addVehicle(vehicleData, imageFiles, files);
@@ -138,6 +133,15 @@ export const VehicleFormTab = ({
       <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
         <Flex component={"header"} className="headerProyectsForm">
           <Flex gap={"1rem"}>
+            <Button
+              type="text"
+              size="large"
+              href="/logistics/providers/all"
+              className="buttonGoBack"
+              icon={<CaretLeft size={"1.45rem"} />}
+            >
+              Ver Vehiculos
+            </Button>
             {(statusForm === "review" || statusForm === "edit") && (
               <Button
                 className="buttons"

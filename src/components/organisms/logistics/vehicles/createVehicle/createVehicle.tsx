@@ -4,18 +4,14 @@ import React, { useRef, useEffect, useState, useContext } from "react";
 // components
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
-
-import { IListData, ILocation } from "@/types/logistics/schema";
-
 import { useRouter } from "next/navigation";
 
 import "../../../../../styles/_variables_logistics.css";
 
 import "./createVehicle.scss";
-import { CarrierInfoForm } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
 import { VehicleFormTab } from "@/components/molecules/tabs/logisticsForms/vehicleForm/vehicleFormTab";
-import { DriverFormTab } from "@/components/molecules/tabs/logisticsForms/driverForm/driverFormTab";
 import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTable/carrierTable";
+import { DriverTable } from "@/components/molecules/tables/logistics/driverTable/driverTable";
 
 const { Title } = Typography;
 
@@ -54,7 +50,7 @@ export const CreateVehicleView = () => {
       label: "Conductor",
       children: (
         <>
-          <>{<DriverFormTab statusForm={"review"}></DriverFormTab>}</>
+          <>{<DriverTable></DriverTable>}</>
         </>
       )
     }

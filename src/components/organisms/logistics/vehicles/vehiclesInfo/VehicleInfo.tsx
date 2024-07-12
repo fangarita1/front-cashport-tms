@@ -1,72 +1,63 @@
-import {
-  Flex,
-  Typography,
-  message,
-  Row,
-  Col,
-} from "antd";
-import React, { useRef, useEffect, useState, useContext } from "react";
-import Tabs2 from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-
+import { Flex, Typography, message, Row, Col, Tabs } from "antd";
+import React, { useState } from "react";
 // components
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 
-import { IListData, ILocation } from "@/types/logistics/schema";
-
-//locations
-import { getAllLocations } from "@/services/logistics/locations";
-
-import { useRouter } from "next/navigation";
-
-
 import "../../../../../styles/_variables_logistics.css";
 
 import "./vehicleInfo.scss";
-import { CarrierInfoForm } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
-import { VehicleInfoForm } from "@/components/molecules/tabs/logisticsForms/vehicleForm/vehicleFormTab";
+import { VehicleFormTab } from "@/components/molecules/tabs/logisticsForms/vehicleForm/vehicleFormTab";
+import { TabsProps } from "antd/lib";
+import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTable/carrierTableConfig";
+import { DriverTable } from "@/components/molecules/tables/logistics/driverTable/driverTable";
+import { getVehicleById } from "@/services/logistics/vehicle";
+import useSWR from "swr";
 
 const { Title } = Typography;
-
-export const VehicleInfoView = () => {
-  const { push } = useRouter();
+interface Props {
+  isEdit?: boolean;
+  idParam: string;
+}
+export const VehicleInfoView = ({ isEdit = false, idParam = "" }: Props) => {
   const [messageApi, contextHolder] = message.useMessage();
-  const [routeInfo, setRouteInfo] = useState([]);
-  const [locations, setLocations] = useState<ILocation[]>([]);
-  const [locationOptions, setLocationOptions] = useState<any>([]);
-  const [value, setValue] = useState(1);
+  const [value, setValue] = useState("2");
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  console.log("VehicleInfoView", isEdit, idParam);
+
+  const fetcher = async ({ id, key }: { id: string; key: string }) => {
+    return getVehicleById(id);
   };
+  const { data } = useSWR({ id: idParam, key: "1" }, fetcher);
 
-  console.log("routeInfo==>", routeInfo);
-
-  useEffect(() => {
-    loadLocations();
-  });
-
-  const loadLocations = async () => {
-    if (locations.length > 0) return;
-    const result = await getAllLocations();
-    if (result.data.data.length > 0) {
-      console.log(result.data.data);
-
-      const listlocations: any[] | ((prevState: ILocation[]) => ILocation[]) = [];
-      const listlocationoptions: { label: any; value: any }[] = [];
-
-      result.data.data.forEach((item, index) => {
-        listlocations.push(item);
-        listlocationoptions.push({ label: item.description, value: item.id });
-      });
-
-      setLocations(listlocations);
-      setLocationOptions(listlocationoptions);
-
-      console.log(locations);
-      console.log(locationOptions);
+  const items: TabsProps["items"] = [
+    {
+      key: "1",
+      label: "General",
+      children: (
+        <>
+          <>{<CarrierTable></CarrierTable>}</>
+        </>
+      )
+    },
+    {
+      key: "2",
+      label: "Vehiculo",
+      children: <></>
+    },
+    {
+      key: "3",
+      label: "Conductor",
+      children: (
+        <>
+          <>{<DriverTable></DriverTable>}</>
+        </>
+      )
     }
+  ];
+
+  const onChange = (key: string) => {
+    setValue(key);
   };
 
   return (
@@ -89,18 +80,13 @@ export const VehicleInfoView = () => {
           <Flex className="orderContainer">
             <Row style={{ width: "100%" }}>
               <Col span={24}>
-                <Tabs2
-                  className="tabs"
-                  value={value}
-                  onChange={handleChange}
-                  role="navigation"
-                >
-                  <Tab className={"tab"} value={0} label="General" href="/logistics/providers/all" />
-                  <Tab className={"tab"} value={1} label="Vehiculo" href="/logistics/vehicles/all" />
-                  <Tab className={"tab"} value={2} label="Conductor" href="/spam" />
-                </Tabs2>
+                <Tabs defaultActiveKey={value} items={items} onChange={onChange}></Tabs>
               </Col>
-              <VehicleInfoForm statusForm={"create"}></VehicleInfoForm>
+              <VehicleFormTab
+                statusForm={"edit"}
+                messageApi={messageApi}
+                data={data?.data?.data}
+              ></VehicleFormTab>
             </Row>
           </Flex>
         </Flex>

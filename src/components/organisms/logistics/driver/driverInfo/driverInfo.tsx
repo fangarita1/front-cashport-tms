@@ -8,6 +8,8 @@ import "./driverInfo.scss";
 import { DriverFormTab } from "@/components/molecules/tabs/logisticsForms/driverForm/driverFormTab";
 import { getDriverById, updateDriver } from "@/services/logistics/drivers";
 import { IDriver, IFormDriver } from "@/types/logistics/schema";
+import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTable/carrierTableConfig";
+import { VehicleTable } from "@/components/molecules/tables/logistics/vehicleTable/vehicleTable";
 
 interface Props {
   isEdit?: boolean;
@@ -97,12 +99,20 @@ export const DriverInfoView = ({ isEdit = false, idParam = "" }: Props) => {
     {
       key: "1",
       label: "General",
-      children: <></>
+      children: (
+        <>
+          <>{<CarrierTable></CarrierTable>}</>
+        </>
+      )
     },
     {
       key: "2",
       label: "Vehiculo",
-      children: <></>
+      children: (
+        <>
+          <>{<VehicleTable></VehicleTable>}</>
+        </>
+      )
     },
     {
       key: "3",
