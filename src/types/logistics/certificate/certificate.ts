@@ -1,4 +1,7 @@
+import { Key } from "react";
+
 export interface CertificateType {
+  key: Key | null | undefined;
   id: number;
   entity_type: number;
   description: string;

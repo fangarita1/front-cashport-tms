@@ -2050,6 +2050,7 @@ export interface IFormDriver {
 }
 export interface IFormVehicle {
   general: IVehicle;
+  files: FileObject[];
 }
 export interface IFormCarrier {
   general: ICarrier;

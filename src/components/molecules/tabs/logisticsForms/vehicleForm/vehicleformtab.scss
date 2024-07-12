@@ -65,7 +65,7 @@
             border: 1px solid #ddd;
         }
         .containerInput {
-            width: 33%;
+            width: 30%;
             margin: 0.25rem 0.5rem;
             .title {
                 font-size: 0.75rem;
@@ -87,15 +87,33 @@
     }
 
     .ant-upload-wrapper {
-        width: 50% !important;
+        width: 100% !important;
     }
-    .ant-upload-select {
-        width: 180px !important;
-        height: 120px !important;
+
+    .uploadText{
+        display: none !important;
+    }
+
+    .colfoto .ant-upload-select{
+        width: 300px !important;
+        height: 180px !important;
         flex-shrink: 0;
         border-radius: 8px;
         background: #f7f7f7;
     }
+
+    .colfotomin .ant-upload-select {
+        width: 60px !important;
+        height: 60px !important;
+        flex-shrink: 0;
+        border-radius: 8px;
+        background: #f7f7f7;
+    }
+
+
+
+
+
 
     .buttonAction {
         color: #141414;
@@ -121,7 +139,7 @@
             color: $gray;
         }
         .containerInput {
-            width: 32%;
+            width: 30%;
             margin: 0.25rem 0.5rem;
             .title {
                 font-size: 0.75rem;
@@ -155,6 +173,11 @@
             }
             .ant-color-picker-trigger-text {
                 color: #141414;
+            }
+            .Controller{
+                .selectDocument{
+                    padding: 0.7rem;
+                }
             }
         }
 
@@ -190,4 +213,14 @@
             border-radius: 0.25rem;
         }
     }
+}
+
+.btnagregarpsl{
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    background: none !important;
+    cursor: pointer;
 }

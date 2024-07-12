@@ -109,7 +109,7 @@ export const VehicleTable = () => {
           type="primary"
           className="buttonNewProject"
           size="large"
-          href="/logistics/vehicles/vehicle"
+          href="/logistics/vehicles/new"
         >
           Nuevo Vehiculo
           {<Plus weight="bold" size={14} />}

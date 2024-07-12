@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { Button, ColorPicker, Flex, Select, Typography } from "antd";
+import { Button, Col, ColorPicker, Flex, Row, Select, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 
 // components
-import { SelectCountries } from "@/components/molecules/selects/SelectCountries/SelectCountries";
 import { SelectCurrencies } from "@/components/molecules/selects/SelectCurrencies/SelectCurrencies";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
 import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
@@ -14,15 +13,14 @@ import { IProject } from "@/types/projects/IProject";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import "./vehicleformtab.scss";
-import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
-import { IFormVehicle } from "@/types/logistics/schema";
+import { IFormVehicle, IVehicle } from "@/types/logistics/schema";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
 interface Props {
   idProjectForm?: string;
-  data?: IProject;
+  data?: IFormVehicle;
   disabled?: boolean;
   // eslint-disable-next-line no-unused-vars
   onEditProject?: () => void;
@@ -37,7 +35,7 @@ export const VehicleInfoForm = ({
   onEditProject = () => {},
   onSubmitForm = () => {},
   statusForm = "review",
-  data = {} as IProject,
+  data = {} as IFormVehicle,
   onActiveProject = () => {},
   onDesactivateProject = () => {}
 }: Props) => {
@@ -108,133 +106,173 @@ export const VehicleInfoForm = ({
           </Flex>
         </Flex>
         <Flex component={"main"} flex="3" vertical>
-          <Title className="title" level={4}>
-            Logo
-          </Title>
-          {/* ------------Image Project-------------- */}
-          <UploadImg
-            disabled={statusForm === "review"}
-            imgDefault={data.LOGO}
-            setImgFile={setImageFile}
-          />
-          <Title className="title" level={4}>
-            Informacion General
-          </Title>
-          <Flex component={"section"} className="generalProject" justify="flex-start">
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Tipo de Vehiculo
+          <Row>
+            <Col span={6}>
+              <Title className="title" level={4}>
+                Fotos de vehículo
               </Title>
-              <Controller
-                name="general.vehicle_type"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.vehicle_type && "Tipo es obligatorio *"}
-              </Text>
-            </Flex>
-            <InputForm
-              titleInput="Placa"
-              nameInput="general.plate_number"
-              control={control}
-              error={errors.general?.plate_number}
-            />
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Marca
+              {/* ------------Image Project-------------- */}
+              <Row>
+                <Col span={24} className="colfoto">
+                  <UploadImg
+                    disabled={statusForm === "review"}
+                    imgDefault={data.LOGO}
+                    setImgFile={setImageFile}
+                  />
+                </Col>
+                <Col span={6} className="colfotomin">
+                  <UploadImg
+                    disabled={statusForm === "review"}
+                    imgDefault={data.LOGO}
+                    setImgFile={setImageFile}
+                  />
+                </Col>
+                <Col span={6} className="colfotomin">
+                  <UploadImg
+                    disabled={statusForm === "review"}
+                    imgDefault={data.LOGO}
+                    setImgFile={setImageFile}
+                  />
+                </Col>
+                <Col span={6} className="colfotomin">
+                  <UploadImg
+                    disabled={statusForm === "review"}
+                    imgDefault={data.LOGO}
+                    setImgFile={setImageFile}
+                  />
+                </Col>
+                <Col span={6} className="colfotomin">
+                  <UploadImg
+                    disabled={statusForm === "review"}
+                    imgDefault={data.LOGO}
+                    setImgFile={setImageFile}
+                  />
+                </Col>
+              </Row>
+
+            </Col>
+            <Col span={18}>
+              <Title className="title" level={4}>
+                Informacion General
               </Title>
-              <Controller
-                name="general.brand"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.brand && "Marca es obligatorio *"}
-              </Text>
-            </Flex>
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Modelo
+              <Flex component={"section"} className="generalProject" justify="flex-start">
+                <Flex vertical className="containerInput">
+                  <Title className="title" level={5}>
+                    Tipo de Vehiculo
+                  </Title>
+                  <Controller
+                    name="general.vehicle_type"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
+                  />
+                  <Text className="textError">
+                    {errors?.general?.vehicle_type && "Tipo es obligatorio *"}
+                  </Text>
+                </Flex>
+                <InputForm
+                  titleInput="Placa"
+                  nameInput="general.plate_number"
+                  control={control}
+                  error={errors.general?.plate_number}
+                />
+                <Flex vertical className="containerInput">
+                  <Title className="title" level={5}>
+                    Marca
+                  </Title>
+                  <Controller
+                    name="general.brand"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
+                  />
+                  <Text className="textError">
+                    {errors?.general?.brand && "Marca es obligatorio *"}
+                  </Text>
+                </Flex>
+                <Flex vertical className="containerInput">
+                  <Title className="title" level={5}>
+                    Modelo
+                  </Title>
+                  <Controller
+                    name="general.model"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
+                  />
+                  <Text className="textError">
+                    {errors?.general?.model && "Modelo es obligatorio *"}
+                  </Text>
+                </Flex>
+                <InputForm
+                  titleInput="Linea"
+                  nameInput="general.line"
+                  control={control}
+                  error={errors.general?.line}
+                />
+                <Flex vertical className="containerInput">
+                  <Title className="title" level={5}>
+                    Año
+                  </Title>
+                  <Controller
+                    name="general.year"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
+                  />
+                  <Text className="textError">
+                    {errors?.general?.year && "Año es obligatorio *"}
+                  </Text>
+                </Flex>
+                <InputForm
+                  titleInput="Color"
+                  nameInput="general.color"
+                  control={control}
+                  error={errors.general?.color}
+                />
+                <Flex vertical className="containerInput">
+                  <Title className="title" level={5}>
+                    Ciudad
+                  </Title>
+                  <Controller
+                    name="general.country"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
+                  />
+                  <Text className="textError">
+                    {errors?.general?.country && "Divisa es obligatorio *"}
+                  </Text>
+                </Flex>
+              </Flex>
+              <Title className="title" level={4}>
+                Informacion Adicional
               </Title>
-              <Controller
-                name="general.model"
+              <InputForm
+                placeholder="Escribir información adicional"
+                titleInput=""
+                nameInput="general.aditional_info"
                 control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
+                error={errors.general?.aditional_info}
               />
-              <Text className="textError">
-                {errors?.general?.model && "Modelo es obligatorio *"}
-              </Text>
-            </Flex>
-            <InputForm
-              titleInput="Linea"
-              nameInput="general.line"
-              control={control}
-              error={errors.general?.line}
-            />
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Año
+              <Title className="title" level={4}>
+                Documentos
               </Title>
-              <Controller
-                name="general.year"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.year && "Año es obligatorio *"}
-              </Text>
-            </Flex>
-            <InputForm
-              titleInput="Color"
-              nameInput="general.color"
-              control={control}
-              error={errors.general?.color}
-            />
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Ciudad
-              </Title>
-              <Controller
-                name="general.country"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.country && "Divisa es obligatorio *"}
-              </Text>
-            </Flex>
-          </Flex>
-          <Title className="title" level={4}>
-            Informacion Adicional
-          </Title>
-          <InputForm
-            placeholder="Escribir información adicional"
-            titleInput=""
-            nameInput="general.aditional_info"
-            control={control}
-            error={errors.general?.aditional_info}
-          />
-          <Title className="title" level={4}>
-            Documentos
-          </Title>
-          <Flex className="buttonNewProject">
-            {statusForm === "edit" && (
-              <Button
-                disabled={!isDirty}
-                className={`button ${isDirty ? "active" : ""}`}
-                style={{ display: "flex" }}
-                htmlType={"submit"}
-              >
-                {validationButtonText}
-              </Button>
-            )}
-          </Flex>
+              <Flex className="buttonNewProject">
+                {statusForm === "edit" && (
+                  <Button
+                    disabled={!isDirty}
+                    className={`button ${isDirty ? "active" : ""}`}
+                    style={{ display: "flex" }}
+                    htmlType={"submit"}
+                  >
+                    {validationButtonText}
+                  </Button>
+                )}
+              </Flex>
+            </Col>
+          </Row>
+                    
         </Flex>
       </form>
       <ModalChangeStatus

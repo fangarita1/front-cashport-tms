@@ -4,10 +4,10 @@ import {
   message,
   Row,
   Col,
+  Tabs,
+  TabsProps,
 } from "antd";
 import React, { useRef, useEffect, useState, useContext } from "react";
-import Tabs2 from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 
 // components
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
@@ -15,96 +15,87 @@ import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSect
 
 import { IListData, ILocation } from "@/types/logistics/schema";
 
-//locations
-import { getAllLocations } from "@/services/logistics/locations";
-
 import { useRouter } from "next/navigation";
-
 
 import "../../../../../styles/_variables_logistics.css";
 
 import "./createVehicle.scss";
 import { CarrierInfoForm } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
 import { VehicleInfoForm } from "@/components/molecules/tabs/logisticsForms/vehicleForm/vehicleFormTab";
+import { DriverFormTab } from "@/components/molecules/tabs/logisticsForms/driverForm/driverFormTab";
+import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTable/carrierTable";
 
 const { Title } = Typography;
 
-export const VehicleInfoView = () => {
+export const CreateVehicleView = () => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
-  const [routeInfo, setRouteInfo] = useState([]);
-  const [locations, setLocations] = useState<ILocation[]>([]);
-  const [locationOptions, setLocationOptions] = useState<any>([]);
-  const [value, setValue] = useState(1);
+    
+  const [value, setValue] = useState("2");
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const onChange = (key: string) => {
+    setValue(key);
+    //setRenderInfo(true)
   };
 
-  console.log("routeInfo==>", routeInfo);
-
-  useEffect(() => {
-    loadLocations();
-  });
-
-  const loadLocations = async () => {
-    if (locations.length > 0) return;
-    const result = await getAllLocations();
-    if (result.data.data.length > 0) {
-      console.log(result.data.data);
-
-      const listlocations: any[] | ((prevState: ILocation[]) => ILocation[]) = [];
-      const listlocationoptions: { label: any; value: any }[] = [];
-
-      result.data.data.forEach((item, index) => {
-        listlocations.push(item);
-        listlocationoptions.push({ label: item.description, value: item.id });
-      });
-
-      setLocations(listlocations);
-      setLocationOptions(listlocationoptions);
-
-      console.log(locations);
-      console.log(locationOptions);
+  const items: TabsProps["items"] = [
+    {
+      key: "1",
+      label: "General",
+      children: (
+        <>
+            <>{<CarrierTable></CarrierTable>}</>
+        </>
+      )
+    },
+    {
+      key: "2",
+      label: "Vehiculo",
+      children: (
+        <>
+            <>{<VehicleInfoForm statusForm={"create"}></VehicleInfoForm>}</>
+        </>
+      )
+    },
+    {
+      key: "3",
+      label: "Conductor",
+      children: (
+        <>
+           <>{<DriverFormTab statusForm={"review"}></DriverFormTab>}</>
+        </>
+      )
     }
-  };
+  ];
 
-  return (
+  return (    
     <>
-      {contextHolder}
-      <main className="mainCreateOrder">
-        <SideBar />
-        <Flex vertical className="containerCreateOrder">
-          <Flex className="infoHeaderOrder">
-            <Flex gap={"2rem"}>
-              <Title level={2} className="titleName">
-                Proveedores
-              </Title>
-            </Flex>
-            <Flex component={"navbar"} align="center" justify="space-between">
-              <NavRightSection />
-            </Flex>
+    {contextHolder}
+    <main className="mainCreateOrder">
+      <SideBar />
+      <Flex vertical className="containerCreateOrder">
+        <Flex className="infoHeaderOrder">
+          <Flex gap={"2rem"}>
+            <Title level={2} className="titleName">
+              Proveedores
+            </Title>
           </Flex>
-          {/* ------------Main Info Order-------------- */}
-          <Flex className="orderContainer">
-            <Row style={{ width: "100%" }}>
-              <Col span={24}>
-                <Tabs2
-                  className="tabs"
-                  value={value}
-                  onChange={handleChange}
-                  role="navigation"
-                >
-                  <Tab className={"tab"} value={0} label="General" href="/logistics/providers/all" />
-                  <Tab className={"tab"} value={1} label="Vehiculo" href="/logistics/vehicles/all" />
-                  <Tab className={"tab"} value={2} label="Conductor" href="/spam" />
-                </Tabs2>
-              </Col>
-              <VehicleInfoForm statusForm={"create"}></VehicleInfoForm>
-            </Row>
+          <Flex component={"navbar"} align="center" justify="space-between">
+            <NavRightSection />
           </Flex>
         </Flex>
-      </main>
-    </>
+        {/* ------------Main Info Order-------------- */}
+        <Flex className="orderContainer">
+          <Row style={{ width: "100%" }}>
+            <Col span={24}>
+              <Tabs defaultActiveKey={value} items={items} onChange={onChange}>
+                
+              </Tabs>
+            </Col>
+          </Row>
+        </Flex>
+      </Flex>
+    </main>
+  </>
   );
 };
