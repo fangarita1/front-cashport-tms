@@ -24,6 +24,7 @@ import useSWR from "swr";
 import { SelectVehicleType } from "@/components/molecules/logistics/SelectVehicleType/SelectVehicleType";
 import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
 import { addVehicle, getVehicleType } from "@/services/logistics/vehicle";
+import { DocumentButtonAction } from "@/components/atoms/DocumentButtonAction/DocumentButtonAction";
 
 const { Title, Text } = Typography;
 
@@ -101,7 +102,7 @@ export const VehicleFormTab = ({
 
     const vehicleData: any = {
       ...data.general,
-      id_carrier: Number(data.general.id_carrier) || 14,
+      id_carrier: Number(data.general.id_carrier) || 14
     };
 
     console.log({
@@ -126,7 +127,7 @@ export const VehicleFormTab = ({
   };
 
   const convertToSelectOptions = (vehicleTypes: VehicleType[]) => {
-    return vehicleTypes.map((vehicleType) => ({
+    return vehicleTypes?.map((vehicleType) => ({
       label: vehicleType.description,
       value: vehicleType.id.toString()
     }));
@@ -339,6 +340,15 @@ export const VehicleFormTab = ({
                 </Flex>
               </Row>
             </Col>
+          </Row>
+          <Row className="clientDocuments" gutter={16}>
+            {files?.map((document, index) => (
+              <Col key={`${index}${document.name}`} span={6}>
+                <DocumentButtonAction
+                  documentUrl={document.file ? URL.createObjectURL(document.file) : ""}
+                />
+              </Col>
+            ))}
           </Row>
           {/* -----------------------------------Project Config----------------------------------- */}
           <Flex className="buttonNewProject">
