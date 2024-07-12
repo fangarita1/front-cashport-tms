@@ -13,7 +13,7 @@ import { DiscountSchema } from "../../resolvers/generalResolver";
 import { getAllByProject } from "@/services/clients/clients";
 import { useAppStore } from "@/lib/store/store";
 import { Pencil } from "phosphor-react";
-import Link from "next/link";
+import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 
 const { Title, Text } = Typography;
 
@@ -25,6 +25,7 @@ type Props = {
   // eslint-disable-next-line no-unused-vars
   handleChangeStatusForm: (status: "create" | "edit" | "review") => void;
   loadingMain: boolean;
+  handleUpdateContract: () => void;
 };
 
 export default function AnnualDiscountDefinition({
@@ -33,7 +34,8 @@ export default function AnnualDiscountDefinition({
   setFiles,
   statusForm,
   handleChangeStatusForm,
-  loadingMain
+  loadingMain,
+  handleUpdateContract
 }: Props) {
   const { ID: projectId } = useAppStore((project) => project.selectProject);
   const [loading, setLoading] = useState(false);
@@ -129,18 +131,23 @@ export default function AnnualDiscountDefinition({
       </Flex>
       <Title level={4}>{statusForm === "create" ? "Adjuntar contrato" : "Ver contrato"}</Title>
       <Flex gap={20}>
-        {statusForm === "create" ? (
-          <UploadDocumentButton
-            title="Contrato"
-            isMandatory={true}
-            setFiles={setFiles}
-            containerClassName={style.uploadDocumentButton}
-          />
-        ) : (
-          <Link href={getValues("contract_archive") || ""} target="_blank">
-            {getValues("contract_archive")?.split("-").pop()}
-          </Link>
-        )}
+        <UploadDocumentButton
+          title="Contrato"
+          isMandatory={true}
+          setFiles={setFiles}
+          containerClassName={style.uploadDocumentButton}
+          draggerClassname={style.dragger}
+          disabled={statusForm === "review" || !!getValues("contract_archive")}
+        >
+          {(statusForm === "review" || !!getValues("contract_archive")) && (
+            <UploadDocumentChild
+              showTrash={statusForm !== "review"}
+              linkFile={getValues("contract_archive") || ""}
+              nameFile={getValues("contract_archive")?.split("-").pop() || ""}
+              onDelete={handleUpdateContract}
+            />
+          )}
+        </UploadDocumentButton>
       </Flex>
       <Title level={4}>Descripción</Title>
       <Flex gap={20}>
