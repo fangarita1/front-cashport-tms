@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { Button, Col, ColorPicker, Flex, Form, Modal, Row, Select, Switch, Typography } from "antd";
+import { useEffect, useState } from "react";
+import { Button, Col, Flex, Row, Switch, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowsClockwise, CaretLeft, Pencil, Plus, PlusCircle } from "phosphor-react";
+import { ArrowsClockwise, Pencil, Plus } from "phosphor-react";
 
 // components
-import { SelectCurrencies } from "@/components/molecules/selects/SelectCurrencies/SelectCurrencies";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
 import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
 
@@ -24,11 +23,9 @@ import { getDocumentsByEntityType } from "@/services/logistics/certificates";
 import { CertificateType } from "@/types/logistics/certificate/certificate";
 import useSWR from "swr";
 import { SelectVehicleType } from "@/components/molecules/logistics/SelectVehicleType/SelectVehicleType";
-import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
 
 const { Title, Text } = Typography;
-const { Option } = Select;
 
 export const VehicleFormTab = ({
   onEditVehicle = () => {},
@@ -61,7 +58,6 @@ export const VehicleFormTab = ({
   const defaultValues = statusForm === "create" ? {} : dataToVehicleFormData(data[0]);
   const {
     watch,
-    setValue,
     control,
     handleSubmit,
     reset,
@@ -79,89 +75,6 @@ export const VehicleFormTab = ({
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
 
   const [mockFiles, setMockFiles] = useState<CertificateType[]>([]);
-
-  /* if (mockFiles.length < 1) {
-      setMockFiles([
-        { id: 1, key: 1, title: "archivo 1", isMandatory: true },
-        { id: 2, key: 2, title: "archivo 2", isMandatory: true },
-        { id: 3, key: 3, title: "archivo 3", isMandatory: false }
-      ]);
-    } */
-  const newfile = useRef<any>("");
-
-  const AddFileModal = () => {
-    Modal.info({
-      title: "Agregar otro documento",
-      content: (
-        <Flex style={{ width: "100%" }}>
-          <Row style={{ width: "100%" }}>
-            <Text>Cargar documentos adicionales</Text>
-            <Col span={24}>
-              <Row style={{ width: "100%" }}>
-                {mockFiles.map((file) => (
-                  // eslint-disable-next-line react/jsx-key
-                  <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
-                    <UploadDocumentButton
-                      key={file.id}
-                      title={file.description}
-                      isMandatory={file.optional.data.includes(1)}
-                      aditionalData={file.id}
-                      setFiles={setFiles}
-                    />
-                  </Col>
-                ))}
-              </Row>
-            </Col>
-            <Col span={24}>
-              <Select
-                mode="multiple"
-                allowClear
-                style={{ width: "100%" }}
-                placeholder="Seleccione documentos"
-                defaultValue={mockFiles?.map((document) => document.id.toString()) || []}
-                loading={isLoadingDocuments}
-                onChange={(value) => {
-                  setMockFiles(
-                    documentsType?.filter((document) => value.includes(document.id.toString())) ||
-                      []
-                  );
-                }}
-                options={documentsType?.map((document) => ({
-                  label: <span>{document.description}</span>,
-                  value: document.id.toString()
-                }))}
-              />
-              {/* 
-                <label className="locationLabels" style={{ display: "flex", marginTop: "2rem" }}>
-                  <text>Nombre del documento</text>
-                </label>
-                <Input
-                  placeholder="Escribir nombre"
-                  onChange={(e) => {
-                    newfile.current = e.target.value;
-                  }}
-                /> */}
-            </Col>
-          </Row>
-        </Flex>
-      ),
-      onOk: () => {
-        /* 
-          if (newfile.current.length <= 0) {
-            message.error("Debe digitar un nombre de archivo");
-          } else {
-            const lastitem = mockFiles.at(-1);
-            const newvalue = {
-              id: lastitem != undefined ? lastitem.id + 1 : 1,
-              key: lastitem != undefined ? lastitem.key + 1 : 1,
-              title: newfile.current,
-              isMandatory: false
-            };
-            setMockFiles((mockFiles) => [...mockFiles, newvalue]);
-          } */
-      }
-    });
-  };
 
   useEffect(() => {
     console.log(files);
