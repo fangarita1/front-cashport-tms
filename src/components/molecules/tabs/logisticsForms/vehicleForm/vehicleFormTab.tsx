@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Button, Col, ColorPicker, Flex, Modal, Row, Select, Switch, Typography } from "antd";
+import { Button, Col, ColorPicker, Flex, Form, Modal, Row, Select, Switch, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowsClockwise, CaretLeft, Pencil, PlusCircle } from "phosphor-react";
+import { ArrowsClockwise, CaretLeft, Pencil, Plus, PlusCircle } from "phosphor-react";
 
 // components
 import { SelectCurrencies } from "@/components/molecules/selects/SelectCurrencies/SelectCurrencies";
@@ -16,7 +16,7 @@ import {
   dataToVehicleFormData,
   validationButtonText,
   VehicleFormTabProps
-} from "./vehicleFormTab.mapper"
+} from "./vehicleFormTab.mapper";
 
 import "./vehicleformtab.scss";
 import { IFormVehicle, IVehicle } from "@/types/logistics/schema";
@@ -25,10 +25,10 @@ import { CertificateType } from "@/types/logistics/certificate/certificate";
 import useSWR from "swr";
 import { SelectVehicleType } from "@/components/molecules/logistics/SelectVehicleType/SelectVehicleType";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
-
 
 export const VehicleFormTab = ({
   onEditVehicle = () => {},
@@ -38,15 +38,15 @@ export const VehicleFormTab = ({
   onActiveVehicle = () => {},
   onDesactivateVehicle = () => {}
 }: VehicleFormTabProps) => {
-
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [loading, setloading] = useState(false);
+  const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
 
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
     "0",
     getDocumentsByEntityType
   );
-  
+
   const [imageFile1, setImageFile1] = useState<any | undefined>(undefined);
   const [imageError1, setImageError1] = useState(false);
   const [imageFile2, setImageFile2] = useState<any | undefined>(undefined);
@@ -57,7 +57,7 @@ export const VehicleFormTab = ({
   const [imageError4, setImageError4] = useState(false);
   const [imageFile5, setImageFile5] = useState<any | undefined>(undefined);
   const [imageError5, setImageError5] = useState(false);
-  
+
   const defaultValues = statusForm === "create" ? {} : dataToVehicleFormData(data[0]);
   const {
     watch,
@@ -71,65 +71,67 @@ export const VehicleFormTab = ({
     disabled: statusForm === "review"
   });
 
-    /*archivos*/
-    interface FileObject {
-      docReference: string;
-      file: File | undefined;
-    }
-    const [files, setFiles] = useState<FileObject[] | any[]>([]);
-  
-    const [mockFiles, setMockFiles] = useState<CertificateType[]>([]);
-  
-    /* if (mockFiles.length < 1) {
+  /*archivos*/
+  interface FileObject {
+    docReference: string;
+    file: File | undefined;
+  }
+  const [files, setFiles] = useState<FileObject[] | any[]>([]);
+
+  const [mockFiles, setMockFiles] = useState<CertificateType[]>([]);
+
+  /* if (mockFiles.length < 1) {
       setMockFiles([
         { id: 1, key: 1, title: "archivo 1", isMandatory: true },
         { id: 2, key: 2, title: "archivo 2", isMandatory: true },
         { id: 3, key: 3, title: "archivo 3", isMandatory: false }
       ]);
     } */
-    const newfile = useRef<any>("");
-  
-    const AddFileModal = () => {
-      Modal.info({
-        title: "Agregar otro documento",
-        content: (
-          <Flex style={{ width: "100%" }}>
-            <Row style={{ width: "100%" }}>
-              <Text >
-              Cargar documentos adicionales
-              </Text>
-              <Col span={24}>
-                <Row style={{ width: "100%" }}>
-                  {mockFiles.map((file) => (
-                    // eslint-disable-next-line react/jsx-key
-                    <Col span={12} style={{padding:'15px'}} key={`file-${file.id}`}>
-                      <UploadDocumentButton
-                        key={file.id}
-                        title={file.description}
-                        isMandatory={file.optional.data.includes(1)}
-                        aditionalData={file.id}
-                        setFiles={setFiles}
-                      />
-                    </Col>
-                  ))}
-                </Row>
-              </Col>
-              <Col span={24}>
-                <Select
-                  mode="multiple"
-                  allowClear
-                  style={{ width: "100%" }}
-                  placeholder="Seleccione documentos"
-                  defaultValue={mockFiles?.map((document) => document.id.toString()) || []}
-                  loading={isLoadingDocuments}
-                  onChange={(value) => {
-                    setMockFiles(documentsType?.filter((document) => value.includes(document.id.toString()))|| []);
-                  }}
-                  options={documentsType?.map((document) => ({
-                    label: <span>{document.description}</span>,
-                    value: document.id.toString()
-                  }))}
-                />{/* 
+  const newfile = useRef<any>("");
+
+  const AddFileModal = () => {
+    Modal.info({
+      title: "Agregar otro documento",
+      content: (
+        <Flex style={{ width: "100%" }}>
+          <Row style={{ width: "100%" }}>
+            <Text>Cargar documentos adicionales</Text>
+            <Col span={24}>
+              <Row style={{ width: "100%" }}>
+                {mockFiles.map((file) => (
+                  // eslint-disable-next-line react/jsx-key
+                  <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
+                    <UploadDocumentButton
+                      key={file.id}
+                      title={file.description}
+                      isMandatory={file.optional.data.includes(1)}
+                      aditionalData={file.id}
+                      setFiles={setFiles}
+                    />
+                  </Col>
+                ))}
+              </Row>
+            </Col>
+            <Col span={24}>
+              <Select
+                mode="multiple"
+                allowClear
+                style={{ width: "100%" }}
+                placeholder="Seleccione documentos"
+                defaultValue={mockFiles?.map((document) => document.id.toString()) || []}
+                loading={isLoadingDocuments}
+                onChange={(value) => {
+                  setMockFiles(
+                    documentsType?.filter((document) => value.includes(document.id.toString())) ||
+                      []
+                  );
+                }}
+                options={documentsType?.map((document) => ({
+                  label: <span>{document.description}</span>,
+                  value: document.id.toString()
+                }))}
+              />
+              {/* 
                 <label className="locationLabels" style={{ display: "flex", marginTop: "2rem" }}>
                   <text>Nombre del documento</text>
                 </label>
@@ -139,11 +141,12 @@ export const VehicleFormTab = ({
                     newfile.current = e.target.value;
                   }}
                 /> */}
-              </Col>
-            </Row>
-          </Flex>
-        ),
-        onOk: () => {/* 
+            </Col>
+          </Row>
+        </Flex>
+      ),
+      onOk: () => {
+        /* 
           if (newfile.current.length <= 0) {
             message.error("Debe digitar un nombre de archivo");
           } else {
@@ -156,16 +159,15 @@ export const VehicleFormTab = ({
             };
             setMockFiles((mockFiles) => [...mockFiles, newvalue]);
           } */
-        }
-      });
-    };
-  
-    useEffect(()=>{
-      console.log(files)
-    }, [files])
-    
-  const onSubmit = (data: any) => {
+      }
+    });
+  };
 
+  useEffect(() => {
+    console.log(files);
+  }, [files]);
+
+  const onSubmit = (data: any) => {
     if (!imageFile1) return setImageError1(true);
     setImageError1(false);
 
@@ -233,7 +235,7 @@ export const VehicleFormTab = ({
                 <Col span={24} className="colfoto">
                   <UploadImg
                     disabled={statusForm === "review"}
-                    imgDefault={watch("general.image1")}      
+                    imgDefault={watch("general.image1")}
                     setImgFile={setImageFile1}
                   />
                 </Col>
@@ -266,7 +268,6 @@ export const VehicleFormTab = ({
                   />
                 </Col>
               </Row>
-
             </Col>
             <Col span={18}>
               <Title className="title" level={4}>
@@ -294,17 +295,17 @@ export const VehicleFormTab = ({
                   error={errors.general?.plate_number}
                 />
                 <InputForm
-                    titleInput="Marca"
-                    nameInput="general.brand"
-                    control={control}
-                    error={errors?.general?.brand}
-                  /> 
+                  titleInput="Marca"
+                  nameInput="general.brand"
+                  control={control}
+                  error={errors?.general?.brand}
+                />
                 <InputForm
-                    titleInput="Modelo"
-                    nameInput="general.model"
-                    control={control}
-                    error={errors?.general?.model}
-                  /> 
+                  titleInput="Modelo"
+                  nameInput="general.model"
+                  control={control}
+                  error={errors?.general?.model}
+                />
                 <InputForm
                   titleInput="Linea"
                   nameInput="general.line"
@@ -314,10 +315,10 @@ export const VehicleFormTab = ({
                 <InputForm
                   titleInput="Año"
                   nameInput="general.year"
-                  control={control} 
+                  control={control}
                   error={undefined}
                   // error={errors.general?.year}
-                  /> 
+                />
                 <InputForm
                   titleInput="Color"
                   nameInput="general.color"
@@ -331,10 +332,21 @@ export const VehicleFormTab = ({
                   error={errors.general?.country}
                 />
               </Flex>
-              <Flex component={"section"} className="generalProject" justify="flex-start" style={{ marginTop:'2rem'}}>                
-                <Switch defaultChecked /> <h5 className="ant-typography input-form-title">&nbsp;&nbsp;Equipado por GPS</h5>
+              <Flex
+                component={"section"}
+                className="generalProject"
+                justify="flex-start"
+                style={{ marginTop: "2rem" }}
+              >
+                <Switch defaultChecked />{" "}
+                <h5 className="ant-typography input-form-title">&nbsp;&nbsp;Equipado por GPS</h5>
               </Flex>
-              <Flex component={"section"} className="generalProject" justify="flex-start" style={{ marginTop:'2rem'}}>                
+              <Flex
+                component={"section"}
+                className="generalProject"
+                justify="flex-start"
+                style={{ marginTop: "2rem" }}
+              >
                 <InputForm
                   titleInput="Usuario"
                   nameInput="general.gps_user"
@@ -354,7 +366,6 @@ export const VehicleFormTab = ({
                   error={errors.general?.gps_link}
                 />
               </Flex>
-                            
             </Col>
             <Col span={24}>
               <Title className="title" level={4}>
@@ -368,32 +379,27 @@ export const VehicleFormTab = ({
                 error={errors.general?.aditional_info}
               />
             </Col>
-            <Col span={24}>
-              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                <text>Documentos</text>
-              </label>
-              <Row className="mainUploadDocuments">
-                {mockFiles.map((file) => (
-                  // eslint-disable-next-line react/jsx-key
-                  <Col span={12} style={{padding:'15px'}} key={`file-${file.id}`}>
-                    <UploadDocumentButton
-                      key={file.id}
-                      title={file.description}
-                      isMandatory={file.optional.data.includes(1)}
-                      aditionalData={file.id}
-                      setFiles={setFiles}
-                    />
-                  </Col>
-                ))}
-              </Row>
+            <Col span={24} className="text-right">
+              <ModalDocuments
+                isOpen={isOpenModalDocuments}
+                mockFiles={mockFiles}
+                setFiles={setFiles}
+                setMockFiles={setMockFiles}
+                documentsType={documentsType}
+                isLoadingDocuments={isLoadingDocuments}
+                onClose={() => setIsOpenModalDocuments(false)}
+              />
               <Row>
-                <Col span={24} className="text-right">
-                  <button onClick={() =>AddFileModal()} className="btnagregarpsl"><PlusCircle></PlusCircle>&nbsp;&nbsp;<text>Agregar otro documento</text></button>
-                </Col>
-              </Row>              
+                <Flex justify="flex-end" style={{ width: "100%", margin: "1rem" }}>
+                  <Button type="text" onClick={() => setIsOpenModalDocuments(true)}>
+                    <Plus />
+                    &nbsp;<Text>Cargar documentos</Text>
+                  </Button>
+                </Flex>
+              </Row>
             </Col>
           </Row>
-                  {/* -----------------------------------Project Config----------------------------------- */}
+          {/* -----------------------------------Project Config----------------------------------- */}
 
           <Flex className="buttonNewProject">
             {["edit", "create"].includes(statusForm) && (
