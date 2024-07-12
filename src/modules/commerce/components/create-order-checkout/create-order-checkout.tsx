@@ -163,7 +163,6 @@ const CreateOrderCheckout: FC = ({}) => {
           <AlternativeBlackButton
             onClick={handleSubmit(onSubmitSaveDraft)}
             fullWidth
-            disabled={!isValid}
             loading={loading}
           >
             Guardar borrador
