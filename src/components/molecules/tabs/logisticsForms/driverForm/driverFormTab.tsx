@@ -32,7 +32,7 @@ import {
   validationButtonText,
   DriverFormTabProps
 } from "./driverFormTab.mapper";
-import { IDriver, IFormDriver } from "@/types/logistics/schema";
+import { IDriver, IFormDriver, VehicleType } from "@/types/logistics/schema";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 import { SelectDocument } from "@/components/molecules/logistics/SelectDocument/SelectDocument";
 import { bloodTypes, SelectRh } from "@/components/molecules/logistics/SelectRh/SelectRh";
@@ -49,6 +49,7 @@ import useSWR from "swr";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
 import { CertificateType } from "@/types/logistics/certificate/certificate";
 import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
+import { getVehicleType } from "@/services/logistics/vehicle";
 
 const { Title, Text } = Typography;
 
@@ -67,6 +68,11 @@ export const DriverFormTab = ({
     getDocumentsByEntityType
   );
 
+  const { data: vehiclesTypesData, isLoading: loadingVicles } = useSWR(
+    "/vehicle/type",
+    getVehicleType
+  );
+
   const [imageFile, setImageFile] = useState<any | undefined>(undefined);
   const [loading, setloading] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -75,6 +81,7 @@ export const DriverFormTab = ({
   const {
     watch,
     setValue,
+    getValues,
     control,
     handleSubmit,
     reset,
@@ -96,6 +103,14 @@ export const DriverFormTab = ({
   useEffect(() => {
     console.log(files);
   }, [files]);
+
+  const convertToSelectOptions = (vehicleTypes: VehicleType[]) => {
+    if (!Array.isArray(vehicleTypes)) return [];
+    return vehicleTypes?.map((vehicleType) => ({
+      label: vehicleType.description,
+      value: vehicleType.id.toString()
+    }));
+  };
 
   const onSubmit = (data: any) => {
     data.general.license_categorie = licences.data.find(
@@ -313,11 +328,12 @@ export const DriverFormTab = ({
                       allowClear
                       style={{ width: "50%" }}
                       placeholder="Seleccione vehiculos"
-                      defaultValue={["vehiculo1", "vehiculo2"]}
-                      options={[
-                        { label: <span>vehiculo1</span>, value: "vehiculo1" },
-                        { label: <span>vehiculo2</span>, value: "vehiculo2" }
-                      ]}
+                      loading={loadingVicles}
+                      defaultValue={getValues("general.vehicle_type")?.map(
+                        (i: any) => i.id_vehicle_type.toString()
+                      )}
+                      onChange={(value) => setValue("general.vehicle_type", value.map(Number))}
+                      options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
                     />
                   </Col>
                 </Row>

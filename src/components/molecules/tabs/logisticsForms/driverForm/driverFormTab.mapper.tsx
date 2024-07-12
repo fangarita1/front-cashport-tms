@@ -2,8 +2,6 @@ import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocume
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { IDriver, IFormDriver } from "@/types/logistics/schema";
 import { IFormProject } from "@/types/projects/IFormProject";
-import { IProject } from "@/types/projects/IProject";
-import { formatDateBars } from "@/utils/utils";
 import Title from "antd/es/typography/Title";
 import dayjs from "dayjs";
 import { SetStateAction } from "react";
@@ -21,7 +19,6 @@ export interface DriverFormTabProps {
 }
 
 export const dataToProjectFormData = (data: IDriver): IFormDriver => {
-  console.log(data.birth_date);
   return {
     general: {
       id: data.id,
@@ -42,8 +39,9 @@ export const dataToProjectFormData = (data: IDriver): IFormDriver => {
       company: data.company,
       rh: data.rh,
       glasses: data.glasses,
-      birth_date: dayjs(data.birth_date) as any,
-      photo: data.photo
+      birth_date: dayjs(data?.birth_date) as any,
+      photo: data.photo,
+      vehicle_type: data.vehicle_type
     }
   };
 };
