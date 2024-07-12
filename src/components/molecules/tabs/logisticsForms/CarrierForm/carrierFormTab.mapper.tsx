@@ -71,11 +71,11 @@ export const effectFunction = (
 export const validationButtonText = (statusForm: "create" | "edit" | "review") => {
   switch (statusForm) {
     case "create":
-      return "Crear nuevo conductor";
+      return "Crear nuevo proveedor";
     case "edit":
       return "Guardar Cambios";
     case "review":
-      return "Editar conductor";
+      return "Editar proveedor";
   }
 };
 

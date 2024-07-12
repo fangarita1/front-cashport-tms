@@ -330,7 +330,7 @@ export const DriverFormTab = ({
                       placeholder="Seleccione vehiculos"
                       loading={loadingVicles}
                       defaultValue={getValues("general.vehicle_type")?.map(
-                        (i: any) => i.id_vehicle_type.toString()
+                        (i: any) => i.id_vehicle_type?.toString()
                       )}
                       onChange={(value) => setValue("general.vehicle_type", value.map(Number))}
                       options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
