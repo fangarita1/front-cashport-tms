@@ -1,9 +1,11 @@
+import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { IDriver, IFormDriver } from "@/types/logistics/schema";
 import { IFormProject } from "@/types/projects/IFormProject";
 import { IProject } from "@/types/projects/IProject";
 import { formatDateBars } from "@/utils/utils";
 import Title from "antd/es/typography/Title";
+import dayjs from "dayjs";
 import { SetStateAction } from "react";
 import { UseFormReset, UseFormSetValue } from "react-hook-form";
 
@@ -19,7 +21,7 @@ export interface DriverFormTabProps {
 }
 
 export const dataToProjectFormData = (data: IDriver): IFormDriver => {
-  console.log(data.birth_date)
+  console.log(data.birth_date);
   return {
     general: {
       id: data.id,
@@ -28,8 +30,8 @@ export const dataToProjectFormData = (data: IDriver): IFormDriver => {
       document_type: data.document_type,
       document: data.document,
       license: data.license,
-      license_categorie: data.license_categorie,
-      license_expiration: data.license_expiration,
+      license_category: data.licence_category || "",
+      license_expiration: dayjs(data.license_expiration) as any,
       name: data.name,
       last_name: data.last_name,
       emergency_number: data.emergency_number,
@@ -40,7 +42,8 @@ export const dataToProjectFormData = (data: IDriver): IFormDriver => {
       company: data.company,
       rh: data.rh,
       glasses: data.glasses,
-      birth_date: data.birth_date,
+      birth_date: dayjs(data.birth_date) as any,
+      photo: data.photo
     }
   };
 };
@@ -49,7 +52,8 @@ export const _onSubmit = (
   data: any,
   setloading: (value: SetStateAction<boolean>) => void,
   setImageError: (value: SetStateAction<boolean>) => void,
-  imageFile: string,
+  imageFile: FileObject[] | undefined,
+  files: FileObject[] | undefined,
   onSubmitForm: (data: any) => void,
   reset: UseFormReset<IFormDriver>
 ) => {
@@ -57,7 +61,7 @@ export const _onSubmit = (
   try {
     if (!imageFile) return setImageError(true);
     setImageError(false);
-    onSubmitForm({ ...data, logo: imageFile });
+    onSubmitForm({ ...data, logo: imageFile, files });
     reset(data);
     setloading(false);
   } catch (error) {

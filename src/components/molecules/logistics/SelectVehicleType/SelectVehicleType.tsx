@@ -1,6 +1,6 @@
 import { Select, Typography } from "antd";
 
-import "./SelectRh.scss";
+import "./SelectVehicleType.scss";
 
 interface Props {
   errors: any;
@@ -8,44 +8,44 @@ interface Props {
   selected?: any;
 }
 
-export const bloodTypes = {
+export const vehicleTypes = {
   data: [
     {
       id: 1,
-      value: "A+"
+      value: "test"
     },
     {
       id: 2,
-      value: "A-"
+      value: "CAMIONETA 4X4"
     },
     {
       id: 3,
-      value: "B+"
+      value: "CAMPERO"
     },
     {
       id: 4,
-      value: "B-"
+      value: "VAN 9 PASAJEROS"
     },
     {
       id: 5,
-      value: "O+"
+      value: "MICROBUS 12 PASAJEROS"
     },
     {
       id: 6,
-      value: "O-"
+      value: "MICROBUS 13 PASAJEROS"
     },
     {
       id: 7,
-      value: "AB+"
+      value: "MICROBUS 16 PASAJEROS"
     },
     {
       id: 8,
-      value: "AB-"
+      value: "MICROBUS 19 PASAJEROS"
     }
   ]
 };
-export const SelectRh = ({ errors, field, selected }: Props) => {
-  const options = bloodTypes?.data.map((option) => {
+export const SelectVehicleType = ({ errors, field, selected }: Props) => {
+  const options = vehicleTypes?.data.map((option) => {
     return {
       value: option.id,
       label: option.value
@@ -55,7 +55,7 @@ export const SelectRh = ({ errors, field, selected }: Props) => {
   return (
     <>
       <Select
-        placeholder="Selecciona Tipo de Sangre"
+        placeholder="Selecciona Tipo de Vehiculo"
         className={
           errors?.general?.currencies ? "selectInputCurrenciesError" : "selectInputCurrencies"
         }

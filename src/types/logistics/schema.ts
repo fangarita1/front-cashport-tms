@@ -1,3 +1,5 @@
+import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+
 export interface IListData {
   id: any;
   data: Data;
@@ -834,7 +836,8 @@ export interface IDriver {
     document_type: number;
     document: string;
     license: string;
-    license_categorie: string;
+    license_category: string;
+    licence_category?: string;
     license_expiration: Date;
     name: string;
     last_name: string;
@@ -851,6 +854,7 @@ export interface IDriver {
     rh: string;
     glasses: any,
     birth_date: Date,
+    photo?: string;
 }
 /**
  * Exposes all fields present in vehicle as a typescript
@@ -879,6 +883,12 @@ export interface IVehicle {
   modified_at: Date;
   modified_by: string;
   company: string;
+  image1?: string;
+  image2?: string;
+  image3?: string;
+  image4?: string;
+  image5?: string;
+  IS_ACTIVE: boolean;
 }
 /**
  * Exposes all fields present in carrier as a typescript
@@ -2043,9 +2053,17 @@ export interface IVehiclesWithDefaults {
 
 export interface IFormDriver {
   general: IDriver;
+  logo?: FileObject[];
+  files?: FileObject[];
 }
 export interface IFormVehicle {
   general: IVehicle;
+  image1?: FileObject[];
+  image2?: FileObject[];
+  image3?: FileObject[];
+  image4?: FileObject[];
+  image5?: FileObject[];
+  IS_ACTIVE: boolean;
 }
 export interface IFormCarrier {
   general: ICarrier;

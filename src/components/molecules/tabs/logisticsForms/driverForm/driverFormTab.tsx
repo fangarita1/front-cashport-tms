@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { Button, Col, ColorPicker, Flex, Input, Row, Select, Typography } from "antd";
+import { useEffect, useRef, useState } from "react";
+import { Button, Col, ColorPicker, Flex, Form, Input, message, Modal, Row, Select, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowsClockwise, CaretLeft, CaretRight, Pencil } from "phosphor-react";
+import { ArrowsClockwise, CaretLeft, CaretRight, Pencil, PlusCircle } from "phosphor-react";
 
 // components
 import { SelectCountries } from "@/components/molecules/selects/SelectCountries/SelectCountries";
@@ -23,8 +23,13 @@ import {
 import { IDriver, IFormDriver } from "@/types/logistics/schema";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 import { SelectDocument } from "@/components/molecules/logistics/SelectDocument/SelectDocument";
-import { SelectRh } from "@/components/molecules/logistics/SelectRh/SelectRh";
-import { SelectGlasses } from "@/components/molecules/logistics/SelectGlasses/SelectGlasses";
+import { bloodTypes, SelectRh } from "@/components/molecules/logistics/SelectRh/SelectRh";
+import { glasses, SelectGlasses } from "@/components/molecules/logistics/SelectGlasses/SelectGlasses";
+import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+import { licences, SelectLCategory } from "@/components/molecules/logistics/SelectLicenceCategory/SelectLicenceCategory";
+import useSWR from "swr";
+import { getDocumentsByEntityType } from "@/services/logistics/certificates";
+import { CertificateType } from "@/types/logistics/certificate/certificate";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -38,13 +43,17 @@ export const DriverFormTab = ({
   onDesactivateProject = () => {}
 }: DriverFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
-  const [imageFile, setImageFile] = useState('');
+  const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
+    "0",
+    getDocumentsByEntityType
+  );
+
+  const [imageFile, setImageFile] = useState<any | undefined>(undefined);
   const [loading, setloading] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
+
   const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data[0]);
-    const {
+  const {
     watch,
     setValue,
     control,
@@ -56,12 +65,100 @@ export const DriverFormTab = ({
     disabled: statusForm === "review"
   });
 
-  const onSubmit = (data: any) =>
-    _onSubmit(data, setloading, setImageError, imageFile, onSubmitForm, reset);
-  //console.log(data[0].birth_date)
+   /*archivos*/
+   interface FileObject {
+    docReference: string;
+    file: File | undefined;
+  }
+  const [files, setFiles] = useState<FileObject[] | any[]>([]);
+
+  const [mockFiles, setMockFiles] = useState<CertificateType[]>([]);
+
+  /* if (mockFiles.length < 1) {
+    setMockFiles([
+      { id: 1, key: 1, title: "archivo 1", isMandatory: true },
+      { id: 2, key: 2, title: "archivo 2", isMandatory: true },
+      { id: 3, key: 3, title: "archivo 3", isMandatory: false }
+    ]);
+  } */
+  const newfile = useRef<any>("");
+
+  const AddFileModal = () => {
+    Modal.info({
+      title: "Agregar otro documento",
+      content: (
+        <Flex style={{ width: "100%" }}>
+          <Row style={{ width: "100%" }}>
+          <Text >
+          Cargar documentos adicionales
+          </Text>
+            <Col span={24}>
+              <Select
+                mode="multiple"
+                allowClear
+                style={{ width: "100%" }}
+                placeholder="Seleccione documentos"
+                defaultValue={mockFiles?.map((document) => document.id.toString()) || []}
+                loading={isLoadingDocuments}
+                onChange={(value) => {
+                  setMockFiles(documentsType?.filter((document) => value.includes(document.id.toString()))|| []);
+                }}
+                options={documentsType?.map((document) => ({
+                  label: <span>{document.description}</span>,
+                  value: document.id.toString()
+                }))}
+              />{/* 
+              <label className="locationLabels" style={{ display: "flex", marginTop: "2rem" }}>
+                <text>Nombre del documento</text>
+              </label>
+              <Input
+                placeholder="Escribir nombre"
+                onChange={(e) => {
+                  newfile.current = e.target.value;
+                }}
+              /> */}
+            </Col>
+          </Row>
+        </Flex>
+      ),
+      onOk: () => {/* 
+        if (newfile.current.length <= 0) {
+          message.error("Debe digitar un nombre de archivo");
+        } else {
+          const lastitem = mockFiles.at(-1);
+          const newvalue = {
+            id: lastitem != undefined ? lastitem.id + 1 : 1,
+            key: lastitem != undefined ? lastitem.key + 1 : 1,
+            title: newfile.current,
+            isMandatory: false
+          };
+          setMockFiles((mockFiles) => [...mockFiles, newvalue]);
+        } */
+      }
+    });
+  };
+
+  useEffect(()=>{
+    console.log(files)
+  }, [files])
+  
+
+  const onSubmit = (data: any) => {
+    data.general.license_categorie = licences.data.find((item) => item.id === data.general.license_category)?.value;
+    data.general.rh = bloodTypes.data.find((item) => item.id === data.general.rh)?.value;
+    _onSubmit(
+      data,
+      setloading,
+      setImageError,
+      imageFile ? [{ docReference: "imagen", file: imageFile }] : undefined,
+      files,
+      onSubmitForm,
+      reset
+    );
+  };
   return (
     <>
-      <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
+      <Form className="mainProyectsForm">
         <Flex component={"header"} className="headerProyectsForm">
           <Button
             type="text"
@@ -105,16 +202,16 @@ export const DriverFormTab = ({
         </Flex>
         <Flex component={"main"} flex="1" vertical>
           <Row>
-            <Col span={8}>
+            <Col span={5}>
               {/* ------------Photo Driver-------------- */}
               <UploadImg
                 disabled={statusForm === "review"}
-                imgDefault={"https://cdn.icon-icons.com/icons2/1622/PNG/512/3741756-bussiness-ecommerce-marketplace-onlinestore-store-user_108907.png"}
+                imgDefault={watch("general.photo") || "https://cdn.icon-icons.com/icons2/1622/PNG/512/3741756-bussiness-ecommerce-marketplace-onlinestore-store-user_108907.png"}
                 setImgFile={setImageFile}
               />
               {imageError && <Text className="textError">{"foto del conductor es obligatorio *"}</Text>}
             </Col>
-            <Col span={16}>
+            <Col span={19}>
               <Title className="title" level={4}>
                 Informacion General
               </Title>
@@ -139,9 +236,7 @@ export const DriverFormTab = ({
                     name="general.rh"
                     control={control}
                     rules={{ required: true }}
-                    render={({ field }) => (
-                      <SelectRh errors={errors} field={field} />
-                    )}
+                    render={({ field }) => <SelectRh errors={errors} field={field} />}
                   />
                 </Flex>
                 <Flex vertical className="containerInput">
@@ -161,9 +256,7 @@ export const DriverFormTab = ({
                     name="general.document_type"
                     control={control}
                     rules={{ required: true }}
-                    render={({ field }) => (
-                      <SelectDocument errors={errors} field={field} />
-                    )}
+                    render={({ field }) => <SelectDocument errors={errors} field={field} />}
                   />
                 </Flex>
                 <InputForm
@@ -176,13 +269,13 @@ export const DriverFormTab = ({
                   titleInput="Telefono"
                   nameInput="general.phone"
                   control={control}
-                  error={undefined}
+                  error={errors?.general?.phone}
                 />
                 <InputForm
                   titleInput="Correo"
                   nameInput="general.email"
                   control={control}
-                  error={undefined}
+                  error={errors?.general?.email}
                 />
                 <Flex vertical className="containerInput">
                   <Title className="title" level={5}>
@@ -193,14 +286,53 @@ export const DriverFormTab = ({
                     control={control}
                     rules={{ required: true }}
                     render={({ field }) => (
-                      <SelectGlasses errors={errors} field={field} />
+                      <SelectGlasses errors={errors.general?.glasses} field={field} />
                     )}
                   />
                 </Flex>
                 </Flex>
             </Col>
           </Row>
-
+          <Row>
+            <Col span={5}>
+            </Col>
+            <Col span={19}>
+              <Title className="title" level={4}>
+                Datos de la licencia
+              </Title>
+              <Flex component={"section"} className="generalProject" justify="flex-start">
+                <InputForm
+                  titleInput="Licencia"
+                  nameInput="general.license"
+                  control={control}
+                  error={errors?.general?.license}
+                />
+                <Flex vertical className="containerInput">
+                  <Title className="title" level={5}>
+                    Categoria
+                  </Title>
+                  <Controller
+                    name="general.license_category"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <SelectLCategory errors={errors?.general?.license_category} field={field} />
+                    )}
+                  />
+                </Flex>
+                <Flex vertical className="containerInput">
+                  <InputDateForm
+                    titleInput="Fecha de expiración"
+                    nameInput="general.license_expiration"
+                    placeholder="Seleccionar fecha de expiración"
+                    control={control}
+                    validationRules={{required: true}}
+                    error={errors?.general?.license_expiration}
+                  />
+                </Flex>
+              </Flex>
+            </Col>
+          </Row>
           {/* -----------------------------------General--------------------------------------- */}
 
           <Title className="title" level={4}>
@@ -230,25 +362,24 @@ export const DriverFormTab = ({
               </Flex>
             </Col>
           </Row>
-          
 
           {/* -----------------------------------Contact----------------------------------- */}
           <Title className="title" level={4}>
             Datos de Contacto
           </Title>
-         <Flex component={"section"} className="generalProject" justify="flex-start">
+          <Flex component={"section"} className="generalProject" justify="flex-start">
             <InputForm
               titleInput="Nombres y apellidos"
-              nameInput="contact.name"
+              nameInput="general.emergency_contact"
               control={control}
-              error={errors?.general?.email}
+              error={errors?.general?.emergency_contact}
             />
             <InputForm
               typeInput="tel"
               titleInput="Telefono"
-              nameInput="contact.phone"
+              nameInput="general.emergency_number"
               control={control}
-              error={errors?.general?.email}
+              error={errors?.general?.emergency_number}
               validationRules={{
                 pattern: {
                   value: /^\+?\d+$/,
@@ -257,6 +388,29 @@ export const DriverFormTab = ({
               }}
             />
           </Flex>
+          <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
+            <text>Documentos</text>
+          </label>
+          <Row className="mainUploadDocuments">
+            {mockFiles.map((file) => (
+              // eslint-disable-next-line react/jsx-key
+              <Col span={12} style={{padding:'15px'}} key={`file-${file.id}`}>
+                <UploadDocumentButton
+                  key={file.id}
+                  title={file.description}
+                  isMandatory={file.optional.data.includes(1)}
+                  aditionalData={file.id}
+                  setFiles={setFiles}
+                />
+              </Col>
+            ))}
+          </Row>
+          <Row>
+            <Col span={24} className="text-right">
+              <button onClick={() =>AddFileModal()} className="btnagregarpsl"><PlusCircle></PlusCircle>&nbsp;&nbsp;<text>Agregar otro documento</text></button>
+            </Col>
+          </Row>
+          
           {/* -----------------------------------Project Config----------------------------------- */}
 
           <Flex className="buttonNewProject">
@@ -266,13 +420,14 @@ export const DriverFormTab = ({
                 className={`button ${isDirty ? "active" : ""}`}
                 style={{ display: "flex" }}
                 htmlType={"submit"}
+                onClick={handleSubmit(onSubmit)}
               >
                 {validationButtonText(statusForm)}
               </Button>
             )}
           </Flex>
         </Flex>
-      </form>
+      </Form>
       <ModalChangeStatus
         isActiveStatus={true}
         isOpen={isOpenModal}

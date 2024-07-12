@@ -1,4 +1,4 @@
-import { Select } from "antd";
+import { Select, Typography } from "antd";
 
 import "./SelectGlasses.scss";
 
@@ -8,20 +8,20 @@ interface Props {
   selected?: any;
 }
 
+export const glasses = {
+  data: [
+    {
+      id: 1,
+      value: "Si"
+    },
+    {
+      id: 2,
+      value: "No"
+    }
+  ]
+};
 export const SelectGlasses = ({ errors, field, selected }: Props) => {
-  const data = {
-    data: [
-      {
-        id: 1,
-        value: "Si"
-      },
-      {
-        id: 2,
-        value: "No"
-      }
-    ]
-  };
-  const options = data?.data.map((option) => {
+  const options = glasses?.data.map((option) => {
     return {
       value: option.id,
       label: option.value
@@ -30,15 +30,16 @@ export const SelectGlasses = ({ errors, field, selected }: Props) => {
 
 
     return (
+      <>
       <Select
         placeholder="Selecciona"
-        className={
-          "selectInputGlasses"
-        }
+        className={"selectInputGlasses"}
         variant="borderless"
         optionLabelProp="label"
         {...field}
         options={options}
       />
+      {errors && <Typography.Text className="textError">Campo es obligatorio *</Typography.Text>}
+    </>
     );
 };

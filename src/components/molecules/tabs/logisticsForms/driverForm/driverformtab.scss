@@ -65,7 +65,7 @@
             border: 1px solid #ddd;
         }
         .containerInput {
-            width: 32%;
+            width: 30%;
             margin: 0.25rem 0.5rem;
             .title {
                 font-size: 0.75rem;
@@ -87,11 +87,11 @@
     }
 
     .ant-upload-wrapper {
-        width: 50% !important;
+        width: 100% !important;
     }
     .ant-upload-select {
-        width: 385px !important;
-        height: 250px !important;
+        width: 280px !important;
+        height: 280px !important;
         flex-shrink: 0;
         border-radius: 8px;
         background: #f7f7f7;
@@ -121,7 +121,7 @@
             color: $gray;
         }
         .containerInput {
-            width: 32%;
+            width: 30%;
             margin: 0.25rem 0.5rem;
             .title {
                 font-size: 0.75rem;
@@ -195,4 +195,14 @@
             border-radius: 0.25rem;
         }
     }
+}
+
+.btnagregarpsl{
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    background: none !important;
+    cursor: pointer;
 }

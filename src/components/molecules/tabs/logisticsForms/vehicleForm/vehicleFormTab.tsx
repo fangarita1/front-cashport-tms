@@ -1,51 +1,64 @@
-import { useEffect, useState } from "react";
-import { Button, ColorPicker, Flex, Select, Typography } from "antd";
+import { useEffect, useRef, useState } from "react";
+import { Button, Col, ColorPicker, Flex, Modal, Row, Select, Switch, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
+import { ArrowsClockwise, CaretLeft, Pencil, PlusCircle } from "phosphor-react";
 
 // components
-import { SelectCountries } from "@/components/molecules/selects/SelectCountries/SelectCountries";
 import { SelectCurrencies } from "@/components/molecules/selects/SelectCurrencies/SelectCurrencies";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
 import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
 
 //interfaces
-import { IProject } from "@/types/projects/IProject";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
+import {
+  _onSubmit,
+  dataToVehicleFormData,
+  validationButtonText,
+  VehicleFormTabProps
+} from "./vehicleFormTab.mapper"
+
 import "./vehicleformtab.scss";
-import { ModalBillingPeriod } from "@/components/molecules/modals/ModalBillingPeriod/ModalBillingPeriod";
-import { IFormVehicle } from "@/types/logistics/schema";
+import { IFormVehicle, IVehicle } from "@/types/logistics/schema";
+import { getDocumentsByEntityType } from "@/services/logistics/certificates";
+import { CertificateType } from "@/types/logistics/certificate/certificate";
+import useSWR from "swr";
+import { SelectVehicleType } from "@/components/molecules/logistics/SelectVehicleType/SelectVehicleType";
+import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-interface Props {
-  idProjectForm?: string;
-  data?: IProject;
-  disabled?: boolean;
-  // eslint-disable-next-line no-unused-vars
-  onEditProject?: () => void;
-  // eslint-disable-next-line no-unused-vars
-  onSubmitForm?: (data: any) => void;
-  onActiveProject?: () => void;
-  onDesactivateProject?: () => void;
-  statusForm: "create" | "edit" | "review";
-}
 
-export const VehicleInfoForm = ({
-  onEditProject = () => {},
+export const VehicleFormTab = ({
+  onEditVehicle = () => {},
   onSubmitForm = () => {},
   statusForm = "review",
-  data = {} as IProject,
-  onActiveProject = () => {},
-  onDesactivateProject = () => {}
-}: Props) => {
+  data = [] as IVehicle[],
+  onActiveVehicle = () => {},
+  onDesactivateVehicle = () => {}
+}: VehicleFormTabProps) => {
+
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
-  const [imageFile, setImageFile] = useState(data.LOGO);
-  const [imageError, setImageError] = useState(false);
-  const defaultValues = statusForm === "create" ? {} : true;
+  const [loading, setloading] = useState(false);
+
+  const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
+    "0",
+    getDocumentsByEntityType
+  );
+  
+  const [imageFile1, setImageFile1] = useState<any | undefined>(undefined);
+  const [imageError1, setImageError1] = useState(false);
+  const [imageFile2, setImageFile2] = useState<any | undefined>(undefined);
+  const [imageError2, setImageError2] = useState(false);
+  const [imageFile3, setImageFile3] = useState<any | undefined>(undefined);
+  const [imageError3, setImageError3] = useState(false);
+  const [imageFile4, setImageFile4] = useState<any | undefined>(undefined);
+  const [imageError4, setImageError4] = useState(false);
+  const [imageFile5, setImageFile5] = useState<any | undefined>(undefined);
+  const [imageError5, setImageError5] = useState(false);
+  
+  const defaultValues = statusForm === "create" ? {} : dataToVehicleFormData(data[0]);
   const {
     watch,
     setValue,
@@ -58,20 +71,122 @@ export const VehicleInfoForm = ({
     disabled: statusForm === "review"
   });
 
-  const validationButtonText =
-    statusForm === "create"
-      ? "Crear nuevo proyecto"
-      : statusForm === "edit"
-        ? "Guardar Cambios"
-        : "Editar Proyecto";
-
+    /*archivos*/
+    interface FileObject {
+      docReference: string;
+      file: File | undefined;
+    }
+    const [files, setFiles] = useState<FileObject[] | any[]>([]);
+  
+    const [mockFiles, setMockFiles] = useState<CertificateType[]>([]);
+  
+    /* if (mockFiles.length < 1) {
+      setMockFiles([
+        { id: 1, key: 1, title: "archivo 1", isMandatory: true },
+        { id: 2, key: 2, title: "archivo 2", isMandatory: true },
+        { id: 3, key: 3, title: "archivo 3", isMandatory: false }
+      ]);
+    } */
+    const newfile = useRef<any>("");
+  
+    const AddFileModal = () => {
+      Modal.info({
+        title: "Agregar otro documento",
+        content: (
+          <Flex style={{ width: "100%" }}>
+            <Row style={{ width: "100%" }}>
+              <Text >
+              Cargar documentos adicionales
+              </Text>
+              <Col span={24}>
+                <Row style={{ width: "100%" }}>
+                  {mockFiles.map((file) => (
+                    // eslint-disable-next-line react/jsx-key
+                    <Col span={12} style={{padding:'15px'}} key={`file-${file.id}`}>
+                      <UploadDocumentButton
+                        key={file.id}
+                        title={file.description}
+                        isMandatory={file.optional.data.includes(1)}
+                        aditionalData={file.id}
+                        setFiles={setFiles}
+                      />
+                    </Col>
+                  ))}
+                </Row>
+              </Col>
+              <Col span={24}>
+                <Select
+                  mode="multiple"
+                  allowClear
+                  style={{ width: "100%" }}
+                  placeholder="Seleccione documentos"
+                  defaultValue={mockFiles?.map((document) => document.id.toString()) || []}
+                  loading={isLoadingDocuments}
+                  onChange={(value) => {
+                    setMockFiles(documentsType?.filter((document) => value.includes(document.id.toString()))|| []);
+                  }}
+                  options={documentsType?.map((document) => ({
+                    label: <span>{document.description}</span>,
+                    value: document.id.toString()
+                  }))}
+                />{/* 
+                <label className="locationLabels" style={{ display: "flex", marginTop: "2rem" }}>
+                  <text>Nombre del documento</text>
+                </label>
+                <Input
+                  placeholder="Escribir nombre"
+                  onChange={(e) => {
+                    newfile.current = e.target.value;
+                  }}
+                /> */}
+              </Col>
+            </Row>
+          </Flex>
+        ),
+        onOk: () => {/* 
+          if (newfile.current.length <= 0) {
+            message.error("Debe digitar un nombre de archivo");
+          } else {
+            const lastitem = mockFiles.at(-1);
+            const newvalue = {
+              id: lastitem != undefined ? lastitem.id + 1 : 1,
+              key: lastitem != undefined ? lastitem.key + 1 : 1,
+              title: newfile.current,
+              isMandatory: false
+            };
+            setMockFiles((mockFiles) => [...mockFiles, newvalue]);
+          } */
+        }
+      });
+    };
+  
+    useEffect(()=>{
+      console.log(files)
+    }, [files])
+    
   const onSubmit = (data: any) => {
-    if (!imageFile) return setImageError(true);
-    setImageError(false);
-    onSubmitForm({ ...data, logo: imageFile });
-    reset(data);
-  };
 
+    if (!imageFile1) return setImageError1(true);
+    setImageError1(false);
+
+    _onSubmit(
+      data,
+      setloading,
+      setImageError1,
+      imageFile1 ? [{ docReference: "imagen1", file: imageFile1 }] : undefined,
+      setImageError2,
+      imageFile2 ? [{ docReference: "imagen2", file: imageFile2 }] : undefined,
+      setImageError3,
+      imageFile3 ? [{ docReference: "imagen3", file: imageFile3 }] : undefined,
+      setImageError4,
+      imageFile4 ? [{ docReference: "imagen4", file: imageFile4 }] : undefined,
+      setImageError5,
+      imageFile5 ? [{ docReference: "imagen5", file: imageFile5 }] : undefined,
+      files,
+      onSubmitForm,
+      reset
+    );
+  };
   return (
     <>
       <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
@@ -96,10 +211,10 @@ export const VehicleInfoForm = ({
                 htmlType="button"
                 onClick={(e) => {
                   e.preventDefault();
-                  onEditProject();
+                  onEditVehicle();
                 }}
               >
-                {validationButtonText}
+                {validationButtonText(statusForm)}
                 <Pencil size={"1.2rem"} />
               </Button>
             ) : (
@@ -108,171 +223,200 @@ export const VehicleInfoForm = ({
           </Flex>
         </Flex>
         <Flex component={"main"} flex="3" vertical>
-          <Title className="title" level={4}>
-            Logo
-          </Title>
-          {/* ------------Image Project-------------- */}
-          <UploadImg
-            disabled={statusForm === "review"}
-            imgDefault={data.LOGO}
-            setImgFile={setImageFile}
-          />
-          <Title className="title" level={4}>
-            Informacion General
-          </Title>
-          <Flex component={"section"} className="generalProject" justify="flex-start">
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Tipo de Vehiculo
+          <Row>
+            <Col span={6}>
+              <Title className="title" level={4}>
+                Fotos de vehículo
               </Title>
-              <Controller
-                name="general.vehicle_type"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.vehicle_type && "Tipo es obligatorio *"}
-              </Text>
-            </Flex>
-            <InputForm
-              titleInput="Placa"
-              nameInput="general.plate_number"
-              control={control}
-              error={errors.general?.plate_number}
-            />
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Marca
+              {/* ------------Image Project-------------- */}
+              <Row>
+                <Col span={24} className="colfoto">
+                  <UploadImg
+                    disabled={statusForm === "review"}
+                    imgDefault={watch("general.image1")}      
+                    setImgFile={setImageFile1}
+                  />
+                </Col>
+                <Col span={6} className="colfotomin">
+                  <UploadImg
+                    disabled={statusForm === "review"}
+                    imgDefault={watch("general.image2")}
+                    setImgFile={setImageFile2}
+                  />
+                </Col>
+                <Col span={6} className="colfotomin">
+                  <UploadImg
+                    disabled={statusForm === "review"}
+                    imgDefault={watch("general.image3")}
+                    setImgFile={setImageFile3}
+                  />
+                </Col>
+                <Col span={6} className="colfotomin">
+                  <UploadImg
+                    disabled={statusForm === "review"}
+                    imgDefault={watch("general.image4")}
+                    setImgFile={setImageFile4}
+                  />
+                </Col>
+                <Col span={6} className="colfotomin">
+                  <UploadImg
+                    disabled={statusForm === "review"}
+                    imgDefault={watch("general.image5")}
+                    setImgFile={setImageFile5}
+                  />
+                </Col>
+              </Row>
+
+            </Col>
+            <Col span={18}>
+              <Title className="title" level={4}>
+                Informacion General
               </Title>
-              <Controller
-                name="general.brand"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.brand && "Marca es obligatorio *"}
-              </Text>
-            </Flex>
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Modelo
+              <Flex component={"section"} className="generalProject" justify="flex-start">
+                <Flex vertical className="containerInput">
+                  <Title className="title" level={5}>
+                    Tipo de Vehiculo
+                  </Title>
+                  <Controller
+                    name="general.vehicle_type"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => <SelectVehicleType errors={errors} field={field} />}
+                  />
+                  <Text className="textError">
+                    {errors?.general?.vehicle_type && "Tipo es obligatorio *"}
+                  </Text>
+                </Flex>
+                <InputForm
+                  titleInput="Placa"
+                  nameInput="general.plate_number"
+                  control={control}
+                  error={errors.general?.plate_number}
+                />
+                <InputForm
+                    titleInput="Marca"
+                    nameInput="general.brand"
+                    control={control}
+                    error={errors?.general?.brand}
+                  /> 
+                <InputForm
+                    titleInput="Modelo"
+                    nameInput="general.model"
+                    control={control}
+                    error={errors?.general?.model}
+                  /> 
+                <InputForm
+                  titleInput="Linea"
+                  nameInput="general.line"
+                  control={control}
+                  error={errors.general?.line}
+                />
+                <InputForm
+                  titleInput="Año"
+                  nameInput="general.year"
+                  control={control} 
+                  error={undefined}
+                  // error={errors.general?.year}
+                  /> 
+                <InputForm
+                  titleInput="Color"
+                  nameInput="general.color"
+                  control={control}
+                  error={errors.general?.color}
+                />
+                <InputForm
+                  titleInput="Ciudad"
+                  nameInput="general.country"
+                  control={control}
+                  error={errors.general?.country}
+                />
+              </Flex>
+              <Flex component={"section"} className="generalProject" justify="flex-start" style={{ marginTop:'2rem'}}>                
+                <Switch defaultChecked /> <h5 className="ant-typography input-form-title">&nbsp;&nbsp;Equipado por GPS</h5>
+              </Flex>
+              <Flex component={"section"} className="generalProject" justify="flex-start" style={{ marginTop:'2rem'}}>                
+                <InputForm
+                  titleInput="Usuario"
+                  nameInput="general.gps_user"
+                  control={control}
+                  error={errors.general?.gps_user}
+                />
+                <InputForm
+                  titleInput="Contraseña"
+                  nameInput="general.gps_password"
+                  control={control}
+                  error={errors.general?.gps_password}
+                />
+                <InputForm
+                  titleInput="Link"
+                  nameInput="general.gps_link"
+                  control={control}
+                  error={errors.general?.gps_link}
+                />
+              </Flex>
+                            
+            </Col>
+            <Col span={24}>
+              <Title className="title" level={4}>
+                Informacion Adicional
               </Title>
-              <Controller
-                name="general.model"
+              <InputForm
+                placeholder="Escribir información adicional"
+                titleInput=""
+                nameInput="general.aditional_info"
                 control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
+                error={errors.general?.aditional_info}
               />
-              <Text className="textError">
-                {errors?.general?.model && "Modelo es obligatorio *"}
-              </Text>
-            </Flex>
-            <InputForm
-              titleInput="Linea"
-              nameInput="general.line"
-              control={control}
-              error={errors.general?.line}
-            />
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Año
-              </Title>
-              <Controller
-                name="general.year"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.year && "Año es obligatorio *"}
-              </Text>
-            </Flex>
-            <InputForm
-              titleInput="Color"
-              nameInput="general.color"
-              control={control}
-              error={errors.general?.color}
-            />
-            <Flex vertical className="containerInput">
-              <Title className="title" level={5}>
-                Ciudad
-              </Title>
-              <Controller
-                name="general.country"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => <SelectCurrencies errors={errors} field={field} />}
-              />
-              <Text className="textError">
-                {errors?.general?.country && "Divisa es obligatorio *"}
-              </Text>
-            </Flex>
-          </Flex>
-          <Title className="title" level={4}>
-            Informacion Adicional
-          </Title>
-          <InputForm
-            placeholder="Escribir información adicional"
-            titleInput=""
-            nameInput="general.aditional_info"
-            control={control}
-            error={errors.general?.aditional_info}
-          />
-          <Title className="title" level={4}>
-            Documentos
-          </Title>
+            </Col>
+            <Col span={24}>
+              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
+                <text>Documentos</text>
+              </label>
+              <Row className="mainUploadDocuments">
+                {mockFiles.map((file) => (
+                  // eslint-disable-next-line react/jsx-key
+                  <Col span={12} style={{padding:'15px'}} key={`file-${file.id}`}>
+                    <UploadDocumentButton
+                      key={file.id}
+                      title={file.description}
+                      isMandatory={file.optional.data.includes(1)}
+                      aditionalData={file.id}
+                      setFiles={setFiles}
+                    />
+                  </Col>
+                ))}
+              </Row>
+              <Row>
+                <Col span={24} className="text-right">
+                  <button onClick={() =>AddFileModal()} className="btnagregarpsl"><PlusCircle></PlusCircle>&nbsp;&nbsp;<text>Agregar otro documento</text></button>
+                </Col>
+              </Row>              
+            </Col>
+          </Row>
+                  {/* -----------------------------------Project Config----------------------------------- */}
+
           <Flex className="buttonNewProject">
-            {statusForm === "edit" && (
+            {["edit", "create"].includes(statusForm) && (
               <Button
                 disabled={!isDirty}
                 className={`button ${isDirty ? "active" : ""}`}
                 style={{ display: "flex" }}
                 htmlType={"submit"}
+                onClick={handleSubmit(onSubmit)}
               >
-                {validationButtonText}
+                {validationButtonText(statusForm)}
               </Button>
             )}
           </Flex>
         </Flex>
       </form>
       <ModalChangeStatus
-        isActiveStatus={data?.IS_ACTIVE!}
+        isActiveStatus={true}
         isOpen={isOpenModal}
         onClose={() => setIsOpenModal(false)}
-        onActive={onActiveProject}
-        onDesactivate={onDesactivateProject}
+        onActive={onActiveVehicle}
+        onDesactivate={onDesactivateVehicle}
       />
     </>
   );
 };
-/*const dataToProjectFormData = (data: IProject) => {
-  const currenciesFormated = data?.CURRENCY?.map(
-    (currency) => `${currency.id}-${currency.CURRENCY_NAME ?? currency.currency_name}`
-  );
-
-  return {
-    general: {
-      name: data.PROJECT_DESCRIPTION,
-      nit: data.NIT,
-      currencies: currenciesFormated,
-      country: `${data.COUNTRY_ID}-${data.COUNTRY_NAME}`,
-      address: data.ADDRESS,
-      billing_period: data.BILLING_PERIOD,
-      description: data.PROJECT_DESCRIPTION,
-      DSO_currenly_year: data.DSO_CURRENLY_YEAR === 0 ? "No" : "Sí",
-      DSO_days: data.DSO_DAYS,
-      accept_date: data?.ACCEPT_DATE === 0 ? "Fecha de emisión" : "Fecha de aceptación"
-    },
-    contact: {
-      name: data.CONTACT,
-      position: "",
-      email: data.EMAIL,
-      phone: data.PHONE
-    },
-    personalization: {
-      color: data.RGB_CONFIG
-    }
-  };
-};*/

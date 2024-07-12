@@ -1,6 +1,6 @@
 import { Select } from "antd";
 
-import "./SelectDocument.scss";
+import "./EntityDocument.scss";
 
 interface Props {
   errors: any;
@@ -8,7 +8,7 @@ interface Props {
   selected?: any;
 }
 
-export const SelectDocument = ({ errors, field, selected }: Props) => {
+export const EntityDocument = ({ errors, field, selected }: Props) => {
   const data = {
     data: [
       {
@@ -34,9 +34,9 @@ export const SelectDocument = ({ errors, field, selected }: Props) => {
 
     return (
       <Select
-        placeholder="Selecciona Tipo de Sangre"
+        placeholder="Selecciona Tipo de Documento"
         className={
-          errors?.general?.document_type ? "selectInputCurrenciesError" : "selectInputCurrencies"
+          errors?.general?.currencies ? "selectInputCurrenciesError" : "selectInputCurrencies"
         }
         variant="borderless"
         optionLabelProp="label"

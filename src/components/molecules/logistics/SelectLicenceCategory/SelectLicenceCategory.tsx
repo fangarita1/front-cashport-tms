@@ -1,6 +1,6 @@
 import { Select, Typography } from "antd";
 
-import "./SelectRh.scss";
+import "./SelectLicenceCategory.scss";
 
 interface Props {
   errors: any;
@@ -8,54 +8,47 @@ interface Props {
   selected?: any;
 }
 
-export const bloodTypes = {
+export const licences = {
   data: [
     {
       id: 1,
-      value: "A+"
+      value: "B1"
     },
     {
       id: 2,
-      value: "A-"
+      value: "B2"
     },
     {
       id: 3,
-      value: "B+"
+      value: "B3"
     },
     {
       id: 4,
-      value: "B-"
+      value: "C1"
     },
     {
       id: 5,
-      value: "O+"
+      value: "C2"
     },
     {
       id: 6,
-      value: "O-"
+      value: "C3"
     },
-    {
-      id: 7,
-      value: "AB+"
-    },
-    {
-      id: 8,
-      value: "AB-"
-    }
   ]
 };
-export const SelectRh = ({ errors, field, selected }: Props) => {
-  const options = bloodTypes?.data.map((option) => {
+
+export const SelectLCategory = ({ errors, field, selected }: Props) => {
+  const options = licences?.data.map((option) => {
     return {
       value: option.id,
       label: option.value
     };
   });
 
-  return (
-    <>
+    return (
+      <>
       <Select
-        placeholder="Selecciona Tipo de Sangre"
+        placeholder="Selecciona categoria de la licencia"
         className={
           errors?.general?.currencies ? "selectInputCurrenciesError" : "selectInputCurrencies"
         }
@@ -64,9 +57,7 @@ export const SelectRh = ({ errors, field, selected }: Props) => {
         {...field}
         options={options}
       />
-      {errors?.general?.rh && (
-        <Typography.Text className="textError">Campo es obligatorio *</Typography.Text>
-      )}
-    </>
-  );
+      {errors && <Typography.Text className="textError">Campo es obligatorio *</Typography.Text>}
+      </>
+    );
 };
