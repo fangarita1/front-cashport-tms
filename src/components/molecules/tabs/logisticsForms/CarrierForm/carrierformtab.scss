@@ -112,7 +112,7 @@
             color: $gray;
         }
         .containerInput {
-            width: 33%;
+            width: 30%;
             margin: 0.25rem 0.5rem;
             .title {
                 font-size: 0.75rem;
@@ -180,5 +180,14 @@
             padding: 0.45rem;
             border-radius: 0.25rem;
         }
+    }
+    .btnagregarpsl{
+        padding: 8px;
+        border: none;
+        border-radius: 5px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        background: none !important;
+        cursor: pointer;
     }
 }

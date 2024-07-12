@@ -908,6 +908,7 @@ export interface ICarrier {
   created_by: string
   modified_at?: Date | null
   modified_by?: string | null
+  photo?: string;
 }
 /**
  * Exposes the same fields as Location,
