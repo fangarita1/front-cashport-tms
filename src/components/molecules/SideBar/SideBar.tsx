@@ -51,6 +51,16 @@ export const SideBar = () => {
             {isSideBarLarge && "Descuentos"}
           </Button>
         </Link>
+        <Link href="/notificaciones" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<BellSimpleRinging size={26} />}
+            className={path.startsWith("/notificaciones") ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Notificaciones"}
+          </Button>
+        </Link>
         <Link href="/comercio" passHref legacyBehavior>
           <Button
             type="primary"
