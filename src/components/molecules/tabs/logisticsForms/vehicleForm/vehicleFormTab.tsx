@@ -67,6 +67,10 @@ export const VehicleFormTab = ({
     disabled: statusForm === "review"
   });
 
+  useEffect(()=>{
+    console.log(errors);
+  },[errors]);
+
   /*archivos*/
   interface FileObject {
     docReference: string;
@@ -83,6 +87,8 @@ export const VehicleFormTab = ({
   const onSubmit = (data: any) => {
     if (!imageFile1) return setImageError1(true);
     setImageError1(false);
+
+    console.log(data);
 
     _onSubmit(
       data,
@@ -151,6 +157,9 @@ export const VehicleFormTab = ({
                     imgDefault={watch("general.image1")}
                     setImgFile={setImageFile1}
                   />
+                  <Text className="textError">
+                    {imageError1 && "Imagen es obligatoria *"}
+                  </Text>
                 </Col>
                 <Col span={6} className="colfotomin">
                   <UploadImg
