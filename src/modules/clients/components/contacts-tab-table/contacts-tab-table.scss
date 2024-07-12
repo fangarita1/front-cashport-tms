@@ -2,17 +2,6 @@
 
 .contactsTable {
     margin-top: 1rem;
-    &__id {
-        color: $link;
-        text-decoration: underline;
-        cursor: pointer;
-    }
-
-    .selectedRow {
-        td {
-            background-color: inherit !important;
-        }
-    }
 
     .ant-table-column-title {
         font-size: 1rem;
@@ -35,6 +24,14 @@
             display: flex;
             justify-content: flex-end;
             padding-right: 5px;
+        }
+    }
+
+    .eyeButton {
+        background-color: $dark-gray;
+
+        &:hover {
+            background-color: $darker-gray !important;
         }
     }
 }

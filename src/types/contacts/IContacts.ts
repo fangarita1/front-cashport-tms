@@ -1,3 +1,5 @@
+import { ISelectType } from "../clients/IClients";
+
 export interface IContact {
   id: number;
   client_id: number;
@@ -17,4 +19,36 @@ export interface IGetContacts {
   status: number;
   data: IContact[];
   message: string;
+}
+
+export interface IContactForm {
+  name: string;
+  lastname: string;
+  position: number;
+  role: ISelectType;
+  indicative: ISelectType;
+  phone: number;
+  email: string;
+}
+
+export interface IResponseContactOptions {
+  status: number;
+  message: string;
+  data: IContactOptions;
+}
+
+interface IContactOptions {
+  country_calling_code: ICountryCallingCode[];
+  contact_position: IContactPosition[];
+}
+
+interface ICountryCallingCode {
+  id: number;
+  country_name: string;
+  code: string;
+}
+
+interface IContactPosition {
+  id: number;
+  name: string;
 }

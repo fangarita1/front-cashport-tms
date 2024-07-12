@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Button, Table, TableProps, Typography } from "antd";
-
-import { Eye } from "phosphor-react";
-import "./contacts-table.scss";
+import { Button, Flex, Table, TableProps, Typography } from "antd";
+import { Eye, Triangle } from "phosphor-react";
 import { IContact } from "@/types/contacts/IContacts";
+import useScreenHeight from "@/components/hooks/useScreenHeight";
 
+import "./contacts-tab-table.scss";
 const { Text } = Typography;
 
 interface PropsInvoicesTable {
@@ -24,6 +24,8 @@ const ContactsTable = ({
   setShowContactModal
 }: PropsInvoicesTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [page, setPage] = useState(1);
+  const height = useScreenHeight();
 
   const openContactDetail = (contactId: number) => {
     setShowContactModal({ isOpen: true, contactId });
@@ -35,8 +37,13 @@ const ContactsTable = ({
   };
 
   const rowSelection = {
+    columnWidth: 40,
     selectedRowKeys,
     onChange: onSelectChange
+  };
+
+  const onChangePage = (pagePagination: number) => {
+    setPage(pagePagination);
   };
 
   const columns: TableProps<IContact>["columns"] = [
@@ -44,12 +51,8 @@ const ContactsTable = ({
       title: "Nombre",
       dataIndex: "contact_name",
       key: "contact_name",
-      render: (contact_name, row) => (
-        <p onClick={() => openContactDetail(row.id)} className="adjustmentsTable__id">
-          {contact_name}
-        </p>
-      ),
-      // sorter: (a, b) => a.id - b.id,
+      render: (contact_name) => <Text className="cell">{contact_name}</Text>,
+      sorter: (a, b) => a.contact_name.localeCompare(b.contact_name),
       showSorterTooltip: false
     },
     {
@@ -57,9 +60,7 @@ const ContactsTable = ({
       dataIndex: "contact_lastname",
       key: "contact_lastname",
       render: (text) => <Text className="cell">{text}</Text>,
-      // sorter: (a, b) => Date.parse(a.create_at) - Date.parse(b.create_at),
-      // align: "center",
-      // width: 80,
+      sorter: (a, b) => a.contact_lastname.localeCompare(b.contact_lastname),
       showSorterTooltip: false
     },
     {
@@ -67,8 +68,7 @@ const ContactsTable = ({
       key: "name_position",
       dataIndex: "name_position",
       render: (text) => <Text className="cell">{text}</Text>,
-      // align: "right",
-      // sorter: (a, b) => a.contact_position - b.initial_value,
+      sorter: (a, b) => a.name_position.localeCompare(b.name_position),
       showSorterTooltip: false
     },
     {
@@ -76,39 +76,35 @@ const ContactsTable = ({
       key: "contact_position",
       dataIndex: "contact_position",
       render: (text) => <Text className="cell">{text}</Text>,
-      // align: "right",
-      // sorter: (a, b) => a.initial_value - b.initial_value,
+      sorter: (a, b) => a.contact_position.localeCompare(b.contact_position),
       showSorterTooltip: false
     },
     {
       title: "Teléfono",
       key: "contact_phone",
       dataIndex: "contact_phone",
-      render: (amount) => <Text className="cell -alignRight">{amount}</Text>,
-      // align: "right",
-      // sorter: (a, b) => b.contact_phone - a.contact_phone,
+      render: (amount) => <Text className="cell">{amount}</Text>,
+      sorter: (a, b) => parseInt(b.contact_phone) - parseInt(a.contact_phone),
       showSorterTooltip: false
     },
     {
       title: "Email",
       key: "contact_email",
       dataIndex: "contact_email",
-      render: (amount) => <Text className="cell -alignRight">{amount}</Text>,
-      // align: "right",
-      // sorter: (a, b) => b.contact_email - a.contact_email,
+      render: (amount) => <Text className="cell">{amount}</Text>,
+      sorter: (a, b) => a.contact_email.localeCompare(b.contact_email),
       showSorterTooltip: false
     },
     {
       title: "",
       render: (_, record) => (
-        <Button onClick={() => openContactDetail(record.id)} icon={<Eye size={"1.2rem"} />} />
+        <Button
+          className="eyeButton"
+          onClick={() => openContactDetail(record.id)}
+          icon={<Eye size={"1.2rem"} />}
+        />
       ),
       width: 60
-      // onCell: () => ({
-      //   style: {
-      //     flex: 2
-      //   }
-      // })
     }
   ];
 
@@ -117,10 +113,27 @@ const ContactsTable = ({
       <Table
         className="contactsTable"
         columns={columns}
-        dataSource={data.map((data) => ({ ...data, key: data.id }))}
+        dataSource={data?.map((data) => ({ ...data, key: data.id }))}
         rowSelection={rowSelection}
         rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
-        pagination={false}
+        virtual
+        scroll={{ y: height - 400, x: 100 }}
+        pagination={{
+          current: page,
+          showSizeChanger: false,
+          position: ["none", "bottomRight"],
+          onChange: onChangePage,
+          itemRender: (page, type, originalElement) => {
+            if (type === "prev") {
+              return <Triangle size={".75rem"} weight="fill" className="prev" />;
+            } else if (type === "next") {
+              return <Triangle size={".75rem"} weight="fill" className="next" />;
+            } else if (type === "page") {
+              return <Flex className="pagination">{page}</Flex>;
+            }
+            return originalElement;
+          }
+        }}
       />
     </>
   );

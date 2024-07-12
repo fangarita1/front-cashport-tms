@@ -1,35 +1,56 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { Flex, Spin } from "antd";
+import { Button, Flex, MenuProps, Spin } from "antd";
 import { Plus } from "phosphor-react";
 import UiSearchInput from "@/components/ui/search-input";
 import { extractSingleParam } from "@/utils/utils";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 import UiFilterDropdown from "@/components/ui/ui-filter-dropdown";
-
-import "./contacts-tab.scss";
-import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
-import ContactsTable from "../../components/contacts-table";
+import ContactsTable from "../../components/contacts-tab-table";
 import { IContact } from "@/types/contacts/IContacts";
 import { useClientContacts } from "@/hooks/useClientContacts";
+import ContactsModal from "../../components/contacts-tab-modal";
+
+import "./contacts-tab.scss";
+
+type showContactModalType = {
+  isOpen: boolean;
+  contactId: number;
+};
 
 const ContactsTab = () => {
   const [selectedRows, setSelectedRows] = useState<IContact[] | undefined>(undefined);
-  const [showContactModal, setShowContactModal] = useState<{
-    isOpen: boolean;
-    contactId: number;
-  }>({} as { isOpen: boolean; contactId: number });
+  const [showContactModal, setShowContactModal] = useState<showContactModalType>(
+    {} as showContactModalType
+  );
   const [search, setSearch] = useState("");
 
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const clientId = clientIdParam ? parseInt(clientIdParam) : 0;
-
-  // Hacer el hook de get contacts by client
   const { data, isLoading } = useClientContacts(clientId);
-  console.log("contactsData:", data);
 
-  // const mockData = [] as IContact[];
+  const handleDeleteClients = () => {
+    console.log(
+      "delete contacts with id:",
+      selectedRows?.map((contact) => contact.id)
+    );
+  };
+
+  const handleCreateNewContact = () => {
+    setShowContactModal({ isOpen: true, contactId: 0 });
+  };
+
+  const items: MenuProps["items"] = [
+    {
+      key: "1",
+      label: (
+        <Button className="buttonOutlined" onClick={handleDeleteClients}>
+          Eliminar
+        </Button>
+      )
+    }
+  ];
 
   return (
     <>
@@ -51,17 +72,13 @@ const ContactsTab = () => {
                 }}
               />
               <UiFilterDropdown />
-              <DotsDropdown />
+              <DotsDropdown items={items} />
             </Flex>
 
-            <PrincipalButton
-              type="primary"
-              // className="availableAdjustments"
-              onClick={() => console.log("click crear nuevocontacto")}
-            >
+            <Button type="primary" className="newContactButton" onClick={handleCreateNewContact}>
               Nuevo Contacto
               <Plus size={16} style={{ marginLeft: "0.5rem" }} />
-            </PrincipalButton>
+            </Button>
           </Flex>
 
           <ContactsTable
@@ -69,6 +86,13 @@ const ContactsTab = () => {
             setSelectedRows={setSelectedRows}
             setShowContactModal={setShowContactModal}
           />
+
+          {showContactModal.isOpen && (
+            <ContactsModal
+              setShowContactModal={setShowContactModal}
+              showContactModal={showContactModal}
+            />
+          )}
         </div>
       )}
     </>
