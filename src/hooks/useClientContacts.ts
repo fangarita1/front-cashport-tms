@@ -1,5 +1,5 @@
 import { MessageType } from "@/context/MessageContext";
-import { postContact, putContact } from "@/services/contacts/contacts";
+import { deleteContact, postContact, putContact } from "@/services/contacts/contacts";
 import { IContactForm, IGetContacts } from "@/types/contacts/IContacts";
 import { fetcher } from "@/utils/api/api";
 import useSWR from "swr";
@@ -70,10 +70,31 @@ export const useClientContacts = (clientId: number) => {
     }
   };
 
+  const deleteSelectedContacts = async (
+    contactsIds: number[],
+    // eslint-disable-next-line no-unused-vars
+    showMessage: (type: MessageType, content: string) => void
+  ) => {
+    const formattedIds = { contacts_ids: contactsIds };
+
+    try {
+      const response = await deleteContact(formattedIds, clientId);
+      if (response.status === 200) {
+        showMessage("success", "Contactos eliminados exitosamente");
+      }
+    } catch (error) {
+      showMessage("error", "Error al eliminar contactos");
+      console.warn("Error al eliminar contactos", error);
+    } finally {
+      mutate();
+    }
+  };
+
   return {
     data,
     isLoading,
     createContact,
-    updateContact
+    updateContact,
+    deleteSelectedContacts
   };
 };

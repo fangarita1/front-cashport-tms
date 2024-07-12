@@ -12,6 +12,7 @@ import { useClientContacts } from "@/hooks/useClientContacts";
 import ContactsModal from "../../components/contacts-tab-modal";
 
 import "./contacts-tab.scss";
+import { useMessageApi } from "@/context/MessageContext";
 
 type showContactModalType = {
   isOpen: boolean;
@@ -24,17 +25,18 @@ const ContactsTab = () => {
     {} as showContactModalType
   );
   const [search, setSearch] = useState("");
-
+  const { showMessage } = useMessageApi();
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const clientId = clientIdParam ? parseInt(clientIdParam) : 0;
-  const { data, isLoading, createContact, updateContact } = useClientContacts(clientId);
+  const { data, isLoading, createContact, updateContact, deleteSelectedContacts } =
+    useClientContacts(clientId);
 
   const handleDeleteClients = () => {
-    console.log(
-      "delete contacts with id:",
-      selectedRows?.map((contact) => contact.id)
-    );
+    if (selectedRows) {
+      const selectedContactIds = selectedRows.map((contact) => contact.id);
+      deleteSelectedContacts(selectedContactIds, showMessage);
+    }
   };
 
   const handleCreateNewContact = () => {
