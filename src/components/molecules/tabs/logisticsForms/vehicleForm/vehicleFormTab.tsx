@@ -95,9 +95,25 @@ export const VehicleFormTab = ({
         content: (
           <Flex style={{ width: "100%" }}>
             <Row style={{ width: "100%" }}>
-            <Text >
-            Cargar documentos adicionales
-            </Text>
+              <Text >
+              Cargar documentos adicionales
+              </Text>
+              <Col span={24}>
+                <Row style={{ width: "100%" }}>
+                  {mockFiles.map((file) => (
+                    // eslint-disable-next-line react/jsx-key
+                    <Col span={12} style={{padding:'15px'}} key={`file-${file.id}`}>
+                      <UploadDocumentButton
+                        key={file.id}
+                        title={file.description}
+                        isMandatory={file.optional.data.includes(1)}
+                        aditionalData={file.id}
+                        setFiles={setFiles}
+                      />
+                    </Col>
+                  ))}
+                </Row>
+              </Col>
               <Col span={24}>
                 <Select
                   mode="multiple"
