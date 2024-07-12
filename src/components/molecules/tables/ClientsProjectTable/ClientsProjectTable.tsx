@@ -1,16 +1,6 @@
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import {
-  Button,
-  Flex,
-  MenuProps,
-  message,
-  Popconfirm,
-  Spin,
-  Table,
-  TableProps,
-  Typography
-} from "antd";
+import { Button, Flex, MenuProps, message, Spin, Table, TableProps, Typography } from "antd";
 import { Eye, Plus, Triangle } from "phosphor-react";
 import { FilterClients } from "@/components/atoms/Filters/FilterClients/FilterClients";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
@@ -29,8 +19,8 @@ interface Props {
     }>
   >;
   placedIn?: string;
-  setSelectedRows?: Dispatch<SetStateAction<{}>>;
-  selectedClientsKeys?: string[];
+  setSelectedRows?: Dispatch<SetStateAction<IClient[]>>;
+  selectedClientsKeys?: number[];
 }
 
 export const ClientsProjectTable = ({
@@ -63,15 +53,14 @@ export const ClientsProjectTable = ({
     // Este useEffect es para seleccionar las filas
     // de clientes que ya pertenecen al grupo
     // cuando se va hacer PUT
-    if (
-      placedIn === "modal" &&
-      selectedClientsKeys &&
-      selectedClientsKeys.length > 0 &&
-      selectedRowKeys.length === 0
-    ) {
+    if (placedIn === "modal" && selectedClientsKeys && selectedClientsKeys.length > 0) {
       setSelectedRowKeys(selectedClientsKeys);
     }
-  }, [placedIn, selectedClientsKeys, selectedRowKeys.length]);
+
+    return () => {
+      setSelectedRowKeys([]);
+    };
+  }, [placedIn, selectedClientsKeys]);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
     setSelectedRowKeys(newSelectedRowKeys);
@@ -82,6 +71,7 @@ export const ClientsProjectTable = ({
   };
 
   const rowSelection = {
+    columnWidth: 40,
     selectedRowKeys,
     onChange: onSelectChange
   };
@@ -155,6 +145,7 @@ export const ClientsProjectTable = ({
         render: (text) => <Text>{text}</Text>
       },
       {
+        width: 96,
         title: "Usuarios",
         key: "users",
         dataIndex: "users",
@@ -189,40 +180,18 @@ export const ClientsProjectTable = ({
         key: "status",
         width: "150px",
         dataIndex: "status",
-        render: (_, { ACTIVE = true }) => (
-          <>
-            {ACTIVE ? (
-              <Flex
-                align="center"
-                className={ACTIVE ? "statusContainer" : "statusContainerPending"}
-              >
-                <div className={ACTIVE ? "statusActive" : "statusPending"} />
-                <Text>{ACTIVE ? "Activo" : "Inactivo"}</Text>
-              </Flex>
-            ) : (
-              <Popconfirm
-                placement="topRight"
-                title={"Invitación pendiente de aprobación"}
-                description={"Volver a Enviar invitacion?"}
-                okText="Si"
-                cancelText="No"
-              >
-                <Flex
-                  align="center"
-                  className={ACTIVE ? "statusContainer" : "statusContainerPending"}
-                >
-                  <div className={ACTIVE ? "statusActive" : "statusPending"} />
-                  <Text>{ACTIVE ? "Activo" : "Inactivo"}</Text>
-                </Flex>
-              </Popconfirm>
-            )}
-          </>
+        render: (status) => (
+          <Flex align="center" className="statusContainer">
+            <div className="statusActive" />
+            <Text className="statusContainer__text">{status}</Text>
+          </Flex>
         )
       },
       {
+        align: "center",
         title: "",
         key: "seeProject",
-        width: "40px",
+        width: 100,
         dataIndex: "",
         render: (_, { nit }) => (
           <Button
@@ -307,14 +276,15 @@ export const ClientsProjectTable = ({
             <Table
               columns={columns}
               dataSource={data?.data?.map((client) => ({
-                key: client.nit,
-                ...client
+                ...client,
+                key: client.nit
               }))}
               virtual
               scroll={{ y: height - 400, x: 100 }}
               rowSelection={rowSelection}
               rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
               pagination={{
+                current: page,
                 pageSize: 50,
                 showSizeChanger: false,
                 position: ["none", "bottomRight"],
@@ -392,117 +362,12 @@ export const ClientsProjectTable = ({
           <Table
             columns={columns}
             dataSource={data?.data?.map((client) => ({
-              key: client.nit,
-              ...client
+              ...client,
+              key: client.nit
             }))}
             pagination={{ pageSize: 8 }}
             rowSelection={rowSelection}
             rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
-          />
-        )}
-      </main>
-    );
-  } else if (placedIn === "groupTable") {
-    columns = [
-      {
-        title: "Nombre",
-        dataIndex: "client_name",
-        key: "client_name",
-        render: (text) => <Link underline>{text}</Link>
-      },
-      {
-        title: "NIT",
-        dataIndex: "nit",
-        key: "nit",
-        render: (text) => <Text>{text}</Text>
-      },
-      {
-        title: "Cartera",
-        key: "budget",
-        dataIndex: "budget",
-        render: (text) => <Text>{text}</Text>
-      },
-      {
-        title: "Usuarios",
-        key: "usuarios",
-        dataIndex: "usuarios",
-        render: (text) => <Text>{text}</Text>
-      },
-      {
-        title: "Ship To",
-        key: "shipTo",
-        dataIndex: "shipTo",
-        render: (text) => <Text>{text}</Text>
-      },
-      {
-        title: "Grupos",
-        key: "budget",
-        dataIndex: "budget",
-        render: (text) => <Text>{text}</Text>
-      },
-      {
-        title: "Holding",
-        key: "holding_name",
-        dataIndex: "holding_name",
-        render: (text) => <Text>{text}</Text>
-      },
-      {
-        title: "Estado",
-        key: "status",
-        width: "150px",
-        dataIndex: "status",
-        render: (_, { ACTIVE = true }) => (
-          <>
-            {ACTIVE ? (
-              <Flex
-                align="center"
-                className={ACTIVE ? "statusContainer" : "statusContainerPending"}
-              >
-                <div className={ACTIVE ? "statusActive" : "statusPending"} />
-                <Text>{ACTIVE ? "Activo" : "Inactivo"}</Text>
-              </Flex>
-            ) : (
-              <Popconfirm
-                placement="topRight"
-                title={"Invitación pendiente de aprobación"}
-                description={"Volver a Enviar invitacion?"}
-                okText="Si"
-                cancelText="No"
-              >
-                <Flex
-                  align="center"
-                  className={ACTIVE ? "statusContainer" : "statusContainerPending"}
-                >
-                  <div className={ACTIVE ? "statusActive" : "statusPending"} />
-                  <Text>{ACTIVE ? "Activo" : "Inactivo"}</Text>
-                </Flex>
-              </Popconfirm>
-            )}
-          </>
-        )
-      }
-    ];
-
-    return (
-      <main className="mainClientsProjectTable">
-        <Flex justify="space-between" className="mainClientsProjectTable_header">
-          <Flex>
-            <FilterClients setFilterClients={setFilterClients} />
-          </Flex>
-        </Flex>
-
-        {isLoading ? (
-          <Flex style={{ height: "30%" }} align="center" justify="center">
-            <Spin size="large" />
-          </Flex>
-        ) : (
-          <Table
-            columns={columns}
-            dataSource={data.data.map((client) => ({
-              key: client.nit,
-              ...client
-            }))}
-            pagination={{ pageSize: 8 }}
           />
         )}
       </main>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Checkbox, Flex, Modal, Typography } from "antd";
 
 import "./modalchangestatus.scss";
@@ -7,27 +7,37 @@ const { Text } = Typography;
 interface Props {
   isOpen: boolean;
   name?: string;
-  isActiveStatus: boolean;
+  isActiveStatus?: boolean;
   onClose: () => void;
-  onActive: () => void;
-  onDesactivate: () => void;
+  onActive?: () => void;
+  onDesactivate?: () => void;
   onRemove?: () => void;
+  // eslint-disable-next-line no-unused-vars
+  customOnOk?: (selectedActiveState: boolean) => void;
 }
 
 export const ModalChangeStatus = ({
   isOpen,
-  isActiveStatus = false,
+  isActiveStatus,
   onClose,
   onActive,
   onDesactivate,
   name = "",
-  onRemove
+  onRemove,
+  customOnOk
 }: Props) => {
-  const [isActive, setIsActive] = useState(isActiveStatus);
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    if (isActiveStatus) return setIsActive(isActiveStatus);
+  }, [isActiveStatus]);
 
   const onOk = async () => {
-    if (isActive) return await onActive();
-    await onDesactivate();
+    if (onActive && onDesactivate) {
+      if (isActive) return await onActive();
+      return await onDesactivate();
+    }
+    if (customOnOk) return customOnOk(isActive);
   };
   return (
     <Modal

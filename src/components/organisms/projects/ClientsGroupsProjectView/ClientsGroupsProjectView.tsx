@@ -1,28 +1,37 @@
 import { useState } from "react";
-import { GroupTable } from "@/components/molecules/tables/GroupTable/GroupTable";
+import { SelectedGroupView } from "@/components/organisms/projects/SelectedGroupView/SelectedGroupView";
 import { ClientsGroupsTable } from "@/components/molecules/tables/ClientsGroupsTable/ClientsGroupsTable";
-import { ModalClientsGroup } from "@/components/molecules/modals/ModalClientsGroup/ModalClientsGroup";
+
+export type groupInfo = {
+  groupId: number;
+  groupName: string;
+  clientsIds: number[];
+};
+
+type showGroupDetails = {
+  groupId: number;
+  showDetails: boolean;
+};
 
 export const ClientsGroupsProjectView = () => {
-  const [showGroupDetails, setShowGroupDetails] = useState(false);
-  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [showGroupDetails, setShowGroupDetails] = useState<showGroupDetails>(
+    {} as showGroupDetails
+  );
 
   const goBackToClientsGroups = () => {
-    setShowGroupDetails(false);
-  };
-
-  const openEditModal = () => {
-    setIsOpenModal(true);
+    setShowGroupDetails({} as showGroupDetails);
   };
 
   return (
     <>
-      {showGroupDetails ? (
-        <GroupTable onClickBack={goBackToClientsGroups} onClickEdit={openEditModal} />
+      {showGroupDetails.showDetails ? (
+        <SelectedGroupView
+          onClickBack={goBackToClientsGroups}
+          showGroupDetails={showGroupDetails}
+        />
       ) : (
         <ClientsGroupsTable setShowGroupDetails={setShowGroupDetails} />
       )}
-      <ModalClientsGroup isOpen={isOpenModal} isEditGroup={true} setIsOpenModal={setIsOpenModal} />
     </>
   );
 };
