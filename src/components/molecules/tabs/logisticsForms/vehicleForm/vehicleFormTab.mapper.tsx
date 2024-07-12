@@ -68,16 +68,7 @@ export const _onSubmit = (
 ) => {
   setloading(true);
   try {
-    if (!imageFile1) return setImageError1(true);
-    setImageError1(false);
-    if (!imageFile2) return setImageError2(true);
-    setImageError2(false);
-    if (!imageFile3) return setImageError3(true);
-    setImageError3(false);
-    if (!imageFile4) return setImageError4(true);
-    setImageError4(false);
-    if (!imageFile5) return setImageError5(true);
-    setImageError5(false);
+    console.log(data);
     onSubmitForm({ ...data, imageFile1,imageFile2,imageFile3,imageFile4,imageFile5, files });
     reset(data);
     setloading(false);

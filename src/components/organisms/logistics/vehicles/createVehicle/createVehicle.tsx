@@ -37,6 +37,9 @@ export const CreateVehicleView = () => {
     setValue(key);
     //setRenderInfo(true)
   };
+  const onSubmitForm = (data: any) => {
+    console.log(data);
+  };
 
   const items: TabsProps["items"] = [
     {
@@ -53,7 +56,7 @@ export const CreateVehicleView = () => {
       label: "Vehiculo",
       children: (
         <>
-            <>{<VehicleFormTab statusForm={"create"}></VehicleFormTab>}</>
+            <>{<VehicleFormTab statusForm={"create"} onSubmitForm={onSubmitForm}></VehicleFormTab>}</>
         </>
       )
     },

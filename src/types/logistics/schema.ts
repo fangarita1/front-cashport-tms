@@ -2064,6 +2064,7 @@ export interface IFormVehicle {
   image3?: FileObject[];
   image4?: FileObject[];
   image5?: FileObject[];
+  files?: FileObject[];
   IS_ACTIVE: boolean;
 }
 export interface IFormCarrier {
