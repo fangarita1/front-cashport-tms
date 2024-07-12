@@ -25,6 +25,7 @@ import { SelectVehicleType } from "@/components/molecules/logistics/SelectVehicl
 import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
 import { addVehicle, getVehicleType } from "@/services/logistics/vehicle";
 import { DocumentButtonAction } from "@/components/atoms/DocumentButtonAction/DocumentButtonAction";
+import { useRouter } from "next/navigation";
 
 const { Title, Text } = Typography;
 
@@ -74,6 +75,8 @@ export const VehicleFormTab = ({
     disabled: statusForm === "review"
   });
 
+  const { push } = useRouter();
+
   useEffect(() => {
     console.log(errors);
   }, [errors]);
@@ -116,6 +119,7 @@ export const VehicleFormTab = ({
       console.log("Vehicle created successfully:", response.data);
       // Optionally reset the form and images after successful submission
       setImages(Array(5).fill({ file: undefined }));
+      push("/logistics/providers/all");
       reset();
     } catch (error) {
       console.log("Error creating vehicle:", error);
