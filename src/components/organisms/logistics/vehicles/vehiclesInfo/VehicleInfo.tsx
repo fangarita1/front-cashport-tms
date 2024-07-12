@@ -24,8 +24,8 @@ import { useRouter } from "next/navigation";
 import "../../../../../styles/_variables_logistics.css";
 
 import "./vehicleInfo.scss";
-import { CarrierInfoForm } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
-import { VehicleInfoForm } from "@/components/molecules/tabs/logisticsForms/vehicleForm/vehicleFormTab";
+import { CarrierFormTab } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
+import { VehicleFormTab } from "@/components/molecules/tabs/logisticsForms/vehicleForm/vehicleFormTab";
 
 const { Title } = Typography;
 
@@ -100,7 +100,7 @@ export const VehicleInfoView = () => {
                   <Tab className={"tab"} value={2} label="Conductor" href="/spam" />
                 </Tabs2>
               </Col>
-              <VehicleInfoForm statusForm={"create"}></VehicleInfoForm>
+              <VehicleFormTab statusForm={"create"}></VehicleFormTab>
             </Row>
           </Flex>
         </Flex>

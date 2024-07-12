@@ -24,7 +24,7 @@ import { useRouter } from "next/navigation";
 import "../../../../../styles/_variables_logistics.css";
 
 import "./carrierInfoConfig.scss";
-import { CarrierInfoForm } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
+import { CarrierFormTab } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
 import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTable/carrierTableConfig";
 
 const { Title } = Typography;

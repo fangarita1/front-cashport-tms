@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import "../../../../../styles/_variables_logistics.css";
 
 import "./createVehicle.scss";
-import { CarrierInfoForm } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
+import { CarrierFormTab } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
 import { VehicleFormTab } from "@/components/molecules/tabs/logisticsForms/vehicleForm/vehicleFormTab";
 import { DriverFormTab } from "@/components/molecules/tabs/logisticsForms/driverForm/driverFormTab";
 import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTable/carrierTable";
