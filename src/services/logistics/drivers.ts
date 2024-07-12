@@ -50,9 +50,8 @@ export const addDriver = async (
   data: IDriver,
   logo: FileObject[],
   files: FileObject[]
-): Promise<IListData> => {
+): Promise<AxiosResponse<any, any>> => {
   try {
-    console.log(logo, files);
     const form = new FormData();
     const body: any = data;
     body.logo = logo.map((file: any) => ({
@@ -65,10 +64,10 @@ export const addDriver = async (
     }));
     form.append("body", JSON.stringify(body));
     form.append("logo", logo[0].file as unknown as File);
-    files.forEach((file: FileObject, index: number) => {
-      form.append(`files[${index}]`, file.file as unknown as File);
+    files.forEach((file: FileObject) => {
+      form.append(`file-for-${file.aditionalData}`, file.file as unknown as File);
     });
-    const response: IListData = await axios.post(`${config.API_HOST}/driver/create`, form, {
+    const response = await axios.post(`${config.API_HOST}/driver/create`, form, {
       headers: {
         "content-type": "multipart/form-data",
         Accept: "application/json, text/plain, */*"

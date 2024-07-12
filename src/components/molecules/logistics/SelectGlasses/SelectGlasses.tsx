@@ -8,20 +8,20 @@ interface Props {
   selected?: any;
 }
 
+export const glasses = {
+  data: [
+    {
+      id: 1,
+      value: "Si"
+    },
+    {
+      id: 2,
+      value: "No"
+    }
+  ]
+};
 export const SelectGlasses = ({ errors, field, selected }: Props) => {
-  const data = {
-    data: [
-      {
-        id: 1,
-        value: "Si"
-      },
-      {
-        id: 2,
-        value: "No"
-      }
-    ]
-  };
-  const options = data?.data.map((option) => {
+  const options = glasses?.data.map((option) => {
     return {
       value: option.id,
       label: option.value

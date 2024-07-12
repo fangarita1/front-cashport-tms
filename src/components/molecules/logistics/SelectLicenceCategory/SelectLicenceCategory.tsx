@@ -8,36 +8,37 @@ interface Props {
   selected?: any;
 }
 
+export const licences = {
+  data: [
+    {
+      id: 1,
+      value: "B1"
+    },
+    {
+      id: 2,
+      value: "B2"
+    },
+    {
+      id: 3,
+      value: "B3"
+    },
+    {
+      id: 4,
+      value: "C1"
+    },
+    {
+      id: 5,
+      value: "C2"
+    },
+    {
+      id: 6,
+      value: "C3"
+    },
+  ]
+};
+
 export const SelectLCategory = ({ errors, field, selected }: Props) => {
-  const data = {
-    data: [
-      {
-        id: 1,
-        value: "B1"
-      },
-      {
-        id: 2,
-        value: "B2"
-      },
-      {
-        id: 3,
-        value: "B3"
-      },
-      {
-        id: 4,
-        value: "C1"
-      },
-      {
-        id: 5,
-        value: "C2"
-      },
-      {
-        id: 6,
-        value: "C3"
-      },
-    ]
-  };
-  const options = data?.data.map((option) => {
+  const options = licences?.data.map((option) => {
     return {
       value: option.id,
       label: option.value

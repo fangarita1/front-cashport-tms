@@ -1,6 +1,6 @@
 "use client";
 
-import { VehicleInfoView } from "@/components/organisms/logistics/vehiculos/vehiclesInfo/VehicleInfo";
+import { VehicleInfoView } from "@/components/organisms/logistics/vehicles/vehiclesInfo/VehicleInfo";
 
 
 function VehicleInfoPage() {

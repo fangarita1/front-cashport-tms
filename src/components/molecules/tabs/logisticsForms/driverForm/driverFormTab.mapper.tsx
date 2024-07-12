@@ -5,6 +5,7 @@ import { IFormProject } from "@/types/projects/IFormProject";
 import { IProject } from "@/types/projects/IProject";
 import { formatDateBars } from "@/utils/utils";
 import Title from "antd/es/typography/Title";
+import dayjs from "dayjs";
 import { SetStateAction } from "react";
 import { UseFormReset, UseFormSetValue } from "react-hook-form";
 
@@ -20,7 +21,7 @@ export interface DriverFormTabProps {
 }
 
 export const dataToProjectFormData = (data: IDriver): IFormDriver => {
-  console.log(data.birth_date)
+  console.log(data.birth_date);
   return {
     general: {
       id: data.id,
@@ -29,8 +30,8 @@ export const dataToProjectFormData = (data: IDriver): IFormDriver => {
       document_type: data.document_type,
       document: data.document,
       license: data.license,
-      license_category: data.license_category,
-      license_expiration: data.license_expiration,
+      license_category: data.licence_category || "",
+      license_expiration: dayjs(data.license_expiration) as any,
       name: data.name,
       last_name: data.last_name,
       emergency_number: data.emergency_number,
@@ -41,7 +42,8 @@ export const dataToProjectFormData = (data: IDriver): IFormDriver => {
       company: data.company,
       rh: data.rh,
       glasses: data.glasses,
-      birth_date: data.birth_date,
+      birth_date: dayjs(data.birth_date) as any,
+      photo: data.photo
     }
   };
 };

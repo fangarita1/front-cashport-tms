@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Button, Col, ColorPicker, Flex, Input, message, Modal, Row, Select, Typography } from "antd";
+import { Button, Col, ColorPicker, Flex, Form, Input, message, Modal, Row, Select, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, CaretRight, Pencil, PlusCircle } from "phosphor-react";
 
@@ -23,10 +23,10 @@ import {
 import { IDriver, IFormDriver } from "@/types/logistics/schema";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 import { SelectDocument } from "@/components/molecules/logistics/SelectDocument/SelectDocument";
-import { SelectRh } from "@/components/molecules/logistics/SelectRh/SelectRh";
-import { SelectGlasses } from "@/components/molecules/logistics/SelectGlasses/SelectGlasses";
+import { bloodTypes, SelectRh } from "@/components/molecules/logistics/SelectRh/SelectRh";
+import { glasses, SelectGlasses } from "@/components/molecules/logistics/SelectGlasses/SelectGlasses";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
-import { SelectLCategory } from "@/components/molecules/logistics/SelectLicenceCategory/SelectLicenceCategory";
+import { licences, SelectLCategory } from "@/components/molecules/logistics/SelectLicenceCategory/SelectLicenceCategory";
 import useSWR from "swr";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
 import { CertificateType } from "@/types/logistics/certificate/certificate";
@@ -64,10 +64,6 @@ export const DriverFormTab = ({
     defaultValues,
     disabled: statusForm === "review"
   });
-
-  useEffect(()=> {
-    console.log(watch("general.rh"));
-  }, [watch("general.rh")]);
 
    /*archivos*/
    interface FileObject {
@@ -148,6 +144,8 @@ export const DriverFormTab = ({
   
 
   const onSubmit = (data: any) => {
+    data.general.license_categorie = licences.data.find((item) => item.id === data.general.license_category)?.value;
+    data.general.rh = bloodTypes.data.find((item) => item.id === data.general.rh)?.value;
     _onSubmit(
       data,
       setloading,
@@ -160,7 +158,7 @@ export const DriverFormTab = ({
   };
   return (
     <>
-      <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
+      <Form className="mainProyectsForm">
         <Flex component={"header"} className="headerProyectsForm">
           <Button
             type="text"
@@ -208,7 +206,7 @@ export const DriverFormTab = ({
               {/* ------------Photo Driver-------------- */}
               <UploadImg
                 disabled={statusForm === "review"}
-                imgDefault={"https://cdn.icon-icons.com/icons2/1622/PNG/512/3741756-bussiness-ecommerce-marketplace-onlinestore-store-user_108907.png"}
+                imgDefault={watch("general.photo") || "https://cdn.icon-icons.com/icons2/1622/PNG/512/3741756-bussiness-ecommerce-marketplace-onlinestore-store-user_108907.png"}
                 setImgFile={setImageFile}
               />
               {imageError && <Text className="textError">{"foto del conductor es obligatorio *"}</Text>}
@@ -305,7 +303,7 @@ export const DriverFormTab = ({
               <Flex component={"section"} className="generalProject" justify="flex-start">
                 <InputForm
                   titleInput="Licencia"
-                  nameInput="general.licence"
+                  nameInput="general.license"
                   control={control}
                   error={errors?.general?.license}
                 />
@@ -325,10 +323,11 @@ export const DriverFormTab = ({
                 <Flex vertical className="containerInput">
                   <InputDateForm
                     titleInput="Fecha de expiración"
-                    nameInput="general.birth_date"
+                    nameInput="general.license_expiration"
                     placeholder="Seleccionar fecha de expiración"
                     control={control}
-                    error={undefined}
+                    validationRules={{required: true}}
+                    error={errors?.general?.license_expiration}
                   />
                 </Flex>
               </Flex>
@@ -395,11 +394,12 @@ export const DriverFormTab = ({
           <Row className="mainUploadDocuments">
             {mockFiles.map((file) => (
               // eslint-disable-next-line react/jsx-key
-              <Col span={12} style={{padding:'15px'}} key={file.key}>
+              <Col span={12} style={{padding:'15px'}} key={`file-${file.id}`}>
                 <UploadDocumentButton
                   key={file.id}
                   title={file.description}
                   isMandatory={file.optional.data.includes(1)}
+                  aditionalData={file.id}
                   setFiles={setFiles}
                 />
               </Col>
@@ -420,13 +420,14 @@ export const DriverFormTab = ({
                 className={`button ${isDirty ? "active" : ""}`}
                 style={{ display: "flex" }}
                 htmlType={"submit"}
+                onClick={handleSubmit(onSubmit)}
               >
                 {validationButtonText(statusForm)}
               </Button>
             )}
           </Flex>
         </Flex>
-      </form>
+      </Form>
       <ModalChangeStatus
         isActiveStatus={true}
         isOpen={isOpenModal}
