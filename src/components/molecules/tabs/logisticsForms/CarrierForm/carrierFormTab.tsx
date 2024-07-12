@@ -18,7 +18,7 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 
 interface Props {
-  idProjectForm?: string;
+  idCarrierParam?: string;
   data?: IProject;
   disabled?: boolean;
   // eslint-disable-next-line no-unused-vars

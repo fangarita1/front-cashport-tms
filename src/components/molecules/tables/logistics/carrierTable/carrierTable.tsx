@@ -46,6 +46,7 @@ export const CarrierTable = () => {
       element.status = false;
     }
     datasource.push({
+      id: element.id,
       nit: element.nit,
       name: element.description,
       type: element.carrier_type,
@@ -105,7 +106,7 @@ export const CarrierTable = () => {
       width: "54px",
       dataIndex: "",
       render: (_, { id }) => (
-        <Button href={`/carrier/${id}`} className="icon-detail" icon={<Eye size={20} />} />
+        <Button href={`provider/${id}`} className="icon-detail" icon={<Eye size={20} />} />
       )
     }
   ];

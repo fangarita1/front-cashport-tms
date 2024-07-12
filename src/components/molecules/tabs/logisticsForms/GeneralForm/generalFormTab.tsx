@@ -1,31 +1,50 @@
-import { Flex, Typography, message, Row, Col, Table, AutoComplete, Input, Tabs } from "antd";
-import React, { useRef, useEffect, useState, useContext } from "react";
-import type { TabsProps } from "antd";
+// NuevoComponenteTab.tsx
 
-// components
+import { Flex, Typography, message, Row, Col, Tabs } from "antd";
+import React, { useState } from "react";
+import type { TabsProps } from "antd";
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
-
-import { IListData, ILocation } from "@/types/logistics/schema";
-
-//locations
-import { getAllLocations } from "@/services/logistics/locations";
-
+import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTable/carrierTable";
+import { DriverTable } from "@/components/molecules/tables/logistics/driverTable/driverTable";
+import { VehicleTable } from "@/components/molecules/tables/logistics/vehicleTable/vehicleTable";
 import { useRouter } from "next/navigation";
 
 import "../../../../../styles/_variables_logistics.css";
-
-import "./createGeneralView.scss";
-import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTable/carrierTable";
-
+import "./nuevoComponenteTab.scss";
 
 const { Title } = Typography;
 
-export const CreateGeneralView = () => {
+interface NuevoComponenteTabProps {
+  id?: string;
+}
+
+export const NuevoComponenteTab = ({ id }: NuevoComponenteTabProps) => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
-  const [renderAllInfo, setRenderInfo] = useState(true);
   const [value, setValue] = useState("1");
+
+  const onChange = (key: string) => {
+    setValue(key);
+  };
+
+  const items: TabsProps["items"] = [
+    {
+      key: "1",
+      label: "General",
+      children: <CarrierTable />
+    },
+    {
+      key: "2",
+      label: "Vehiculo",
+      children: <VehicleTable />
+    },
+    {
+      key: "3",
+      label: "Conductor",
+      children: <DriverTable />
+    }
+  ];
 
   return (
     <>
@@ -43,11 +62,10 @@ export const CreateGeneralView = () => {
               <NavRightSection />
             </Flex>
           </Flex>
-          {/* ------------Main Info Order-------------- */}
           <Flex className="orderContainer">
             <Row style={{ width: "100%" }}>
               <Col span={24}>
-                <CarrierTable />
+                <Tabs defaultActiveKey={value} items={items} onChange={onChange} />
               </Col>
             </Row>
           </Flex>

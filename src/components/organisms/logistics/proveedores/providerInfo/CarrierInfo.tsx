@@ -26,9 +26,14 @@ import "../../../../../styles/_variables_logistics.css";
 import "./carrierInfo.scss";
 import { CarrierInfoForm } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
 
+interface Props {
+  idCarrierParam?: string;
+}
+
 const { Title } = Typography;
 
-export const CarrierInfoView = () => {
+export const CarrierInfoView = ({ idCarrierParam }: Props) => {
+  console.log(idCarrierParam);
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const [routeInfo, setRouteInfo] = useState([]);
