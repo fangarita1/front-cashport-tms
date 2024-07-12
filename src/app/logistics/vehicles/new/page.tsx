@@ -1,9 +1,9 @@
 "use client";
 
-import { VehicleInfoView } from "@/components/organisms/logistics/vehicles/createVehicle/createVehicle";
+import { CreateVehicleView } from "@/components/organisms/logistics/vehicles/createVehicle/createVehicle";
 
 function VehicleInfoPage() {
-  return <VehicleInfoView/>;
+  return <CreateVehicleView/>;
 }
 
 export default VehicleInfoPage;

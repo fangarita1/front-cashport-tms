@@ -47,11 +47,11 @@ export const DriverFormTab = ({
     "0",
     getDocumentsByEntityType
   );
-  const [isBillingPeriodOpen, setIsBillingPeriodOpen] = useState(false);
+
   const [imageFile, setImageFile] = useState<any | undefined>(undefined);
   const [loading, setloading] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
+
   const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data[0]);
   const {
     watch,

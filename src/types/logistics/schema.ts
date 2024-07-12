@@ -883,6 +883,12 @@ export interface IVehicle {
   modified_at: Date;
   modified_by: string;
   company: string;
+  image1?: string;
+  image2?: string;
+  image3?: string;
+  image4?: string;
+  image5?: string;
+  IS_ACTIVE: boolean;
 }
 /**
  * Exposes all fields present in carrier as a typescript
@@ -2052,7 +2058,12 @@ export interface IFormDriver {
 }
 export interface IFormVehicle {
   general: IVehicle;
-  files: FileObject[];
+  image1?: FileObject[];
+  image2?: FileObject[];
+  image3?: FileObject[];
+  image4?: FileObject[];
+  image5?: FileObject[];
+  IS_ACTIVE: boolean;
 }
 export interface IFormCarrier {
   general: ICarrier;

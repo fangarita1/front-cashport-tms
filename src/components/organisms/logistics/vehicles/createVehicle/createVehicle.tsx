@@ -21,7 +21,7 @@ import "../../../../../styles/_variables_logistics.css";
 
 import "./createVehicle.scss";
 import { CarrierInfoForm } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
-import { VehicleInfoForm } from "@/components/molecules/tabs/logisticsForms/vehicleForm/vehicleFormTab";
+import { VehicleFormTab } from "@/components/molecules/tabs/logisticsForms/vehicleForm/vehicleFormTab";
 import { DriverFormTab } from "@/components/molecules/tabs/logisticsForms/driverForm/driverFormTab";
 import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTable/carrierTable";
 
@@ -53,7 +53,7 @@ export const CreateVehicleView = () => {
       label: "Vehiculo",
       children: (
         <>
-            <>{<VehicleInfoForm statusForm={"create"}></VehicleInfoForm>}</>
+            <>{<VehicleFormTab statusForm={"create"}></VehicleFormTab>}</>
         </>
       )
     },
