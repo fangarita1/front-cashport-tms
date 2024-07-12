@@ -273,7 +273,7 @@ export default WalletTabChangeStatusModal;
 
 const invoiceStates = [
   "Conciliada",
-  "Sin consiliar",
+  "Sin conciliar",
   "Glosado",
   "Devolucion",
   "Anulada",
