@@ -20,6 +20,7 @@ export interface FileObject {
 }
 
 export const normalizeVehicleData = (data: any): any => {
+  console.log(data);
   if (!data) return {};
   // Extract images and documents
   const images = data.images.map((image: any) => image.url_archive);

@@ -1,4 +1,4 @@
-import { Flex, Typography, message, Row, Col, Tabs } from "antd";
+import { Flex, Typography, message, Row, Col, Tabs, Skeleton } from "antd";
 import React, { useState } from "react";
 // components
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
@@ -28,7 +28,7 @@ export const VehicleInfoView = ({ isEdit = false, idParam = "" }: Props) => {
   const fetcher = async ({ id, key }: { id: string; key: string }) => {
     return getVehicleById(id);
   };
-  const { data } = useSWR({ id: idParam, key: "1" }, fetcher);
+  const { data, isLoading } = useSWR({ id: idParam, key: "1" }, fetcher);
 
   const items: TabsProps["items"] = [
     {
@@ -82,11 +82,15 @@ export const VehicleInfoView = ({ isEdit = false, idParam = "" }: Props) => {
               <Col span={24}>
                 <Tabs defaultActiveKey={value} items={items} onChange={onChange}></Tabs>
               </Col>
+              {!isLoading ? (
               <VehicleFormTab
                 statusForm={"edit"}
                 messageApi={messageApi}
-                data={data?.data?.data}
+                data={data?.data}
               ></VehicleFormTab>
+              ) : (
+                <Skeleton/>
+              )}
             </Row>
           </Flex>
         </Flex>
