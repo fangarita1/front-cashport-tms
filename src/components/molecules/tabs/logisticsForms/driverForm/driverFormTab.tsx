@@ -1,7 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import { Button, Col, ColorPicker, Flex, Form, Input, message, Modal, Row, Select, Typography } from "antd";
+import {
+  Button,
+  Col,
+  ColorPicker,
+  Flex,
+  Form,
+  Input,
+  message,
+  Modal,
+  Row,
+  Select,
+  Typography
+} from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowsClockwise, CaretLeft, CaretRight, Pencil, PlusCircle } from "phosphor-react";
+import { ArrowsClockwise, CaretLeft, CaretRight, Pencil, Plus, PlusCircle } from "phosphor-react";
 
 // components
 import { SelectCountries } from "@/components/molecules/selects/SelectCountries/SelectCountries";
@@ -24,15 +36,21 @@ import { IDriver, IFormDriver } from "@/types/logistics/schema";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 import { SelectDocument } from "@/components/molecules/logistics/SelectDocument/SelectDocument";
 import { bloodTypes, SelectRh } from "@/components/molecules/logistics/SelectRh/SelectRh";
-import { glasses, SelectGlasses } from "@/components/molecules/logistics/SelectGlasses/SelectGlasses";
+import {
+  glasses,
+  SelectGlasses
+} from "@/components/molecules/logistics/SelectGlasses/SelectGlasses";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
-import { licences, SelectLCategory } from "@/components/molecules/logistics/SelectLicenceCategory/SelectLicenceCategory";
+import {
+  licences,
+  SelectLCategory
+} from "@/components/molecules/logistics/SelectLicenceCategory/SelectLicenceCategory";
 import useSWR from "swr";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
 import { CertificateType } from "@/types/logistics/certificate/certificate";
+import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
 
 const { Title, Text } = Typography;
-const { Option } = Select;
 
 export const DriverFormTab = ({
   onEditProject = () => {},
@@ -43,8 +61,9 @@ export const DriverFormTab = ({
   onDesactivateProject = () => {}
 }: DriverFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
-    "0",
+    "2",
     getDocumentsByEntityType
   );
 
@@ -65,8 +84,8 @@ export const DriverFormTab = ({
     disabled: statusForm === "review"
   });
 
-   /*archivos*/
-   interface FileObject {
+  /*archivos*/
+  interface FileObject {
     docReference: string;
     file: File | undefined;
   }
@@ -74,77 +93,14 @@ export const DriverFormTab = ({
 
   const [mockFiles, setMockFiles] = useState<CertificateType[]>([]);
 
-  /* if (mockFiles.length < 1) {
-    setMockFiles([
-      { id: 1, key: 1, title: "archivo 1", isMandatory: true },
-      { id: 2, key: 2, title: "archivo 2", isMandatory: true },
-      { id: 3, key: 3, title: "archivo 3", isMandatory: false }
-    ]);
-  } */
-  const newfile = useRef<any>("");
-
-  const AddFileModal = () => {
-    Modal.info({
-      title: "Agregar otro documento",
-      content: (
-        <Flex style={{ width: "100%" }}>
-          <Row style={{ width: "100%" }}>
-          <Text >
-          Cargar documentos adicionales
-          </Text>
-            <Col span={24}>
-              <Select
-                mode="multiple"
-                allowClear
-                style={{ width: "100%" }}
-                placeholder="Seleccione documentos"
-                defaultValue={mockFiles?.map((document) => document.id.toString()) || []}
-                loading={isLoadingDocuments}
-                onChange={(value) => {
-                  setMockFiles(documentsType?.filter((document) => value.includes(document.id.toString()))|| []);
-                }}
-                options={documentsType?.map((document) => ({
-                  label: <span>{document.description}</span>,
-                  value: document.id.toString()
-                }))}
-              />{/* 
-              <label className="locationLabels" style={{ display: "flex", marginTop: "2rem" }}>
-                <text>Nombre del documento</text>
-              </label>
-              <Input
-                placeholder="Escribir nombre"
-                onChange={(e) => {
-                  newfile.current = e.target.value;
-                }}
-              /> */}
-            </Col>
-          </Row>
-        </Flex>
-      ),
-      onOk: () => {/* 
-        if (newfile.current.length <= 0) {
-          message.error("Debe digitar un nombre de archivo");
-        } else {
-          const lastitem = mockFiles.at(-1);
-          const newvalue = {
-            id: lastitem != undefined ? lastitem.id + 1 : 1,
-            key: lastitem != undefined ? lastitem.key + 1 : 1,
-            title: newfile.current,
-            isMandatory: false
-          };
-          setMockFiles((mockFiles) => [...mockFiles, newvalue]);
-        } */
-      }
-    });
-  };
-
-  useEffect(()=>{
-    console.log(files)
-  }, [files])
-  
+  useEffect(() => {
+    console.log(files);
+  }, [files]);
 
   const onSubmit = (data: any) => {
-    data.general.license_categorie = licences.data.find((item) => item.id === data.general.license_category)?.value;
+    data.general.license_categorie = licences.data.find(
+      (item) => item.id === data.general.license_category
+    )?.value;
     data.general.rh = bloodTypes.data.find((item) => item.id === data.general.rh)?.value;
     _onSubmit(
       data,
@@ -206,10 +162,15 @@ export const DriverFormTab = ({
               {/* ------------Photo Driver-------------- */}
               <UploadImg
                 disabled={statusForm === "review"}
-                imgDefault={watch("general.photo") || "https://cdn.icon-icons.com/icons2/1622/PNG/512/3741756-bussiness-ecommerce-marketplace-onlinestore-store-user_108907.png"}
+                imgDefault={
+                  watch("general.photo") ||
+                  "https://cdn.icon-icons.com/icons2/1622/PNG/512/3741756-bussiness-ecommerce-marketplace-onlinestore-store-user_108907.png"
+                }
                 setImgFile={setImageFile}
               />
-              {imageError && <Text className="textError">{"foto del conductor es obligatorio *"}</Text>}
+              {imageError && (
+                <Text className="textError">{"foto del conductor es obligatorio *"}</Text>
+              )}
             </Col>
             <Col span={19}>
               <Title className="title" level={4}>
@@ -290,12 +251,11 @@ export const DriverFormTab = ({
                     )}
                   />
                 </Flex>
-                </Flex>
+              </Flex>
             </Col>
           </Row>
           <Row>
-            <Col span={5}>
-            </Col>
+            <Col span={5}></Col>
             <Col span={19}>
               <Title className="title" level={4}>
                 Datos de la licencia
@@ -326,7 +286,7 @@ export const DriverFormTab = ({
                     nameInput="general.license_expiration"
                     placeholder="Seleccionar fecha de expiración"
                     control={control}
-                    validationRules={{required: true}}
+                    validationRules={{ required: true }}
                     error={errors?.general?.license_expiration}
                   />
                 </Flex>
@@ -338,25 +298,27 @@ export const DriverFormTab = ({
           <Title className="title" level={4}>
             Vehiculos
           </Title>
-          <Row style={{width:'100%'}}>
+          <Row style={{ width: "100%" }}>
             <Col span={24}>
-              <Flex component={"section"} className="containerInput"  style={{width:'100%'}}>
-                <Row style={{width:'100%'}}>
+              <Flex component={"section"} className="containerInput" style={{ width: "100%" }}>
+                <Row style={{ width: "100%" }}>
                   <Col span={8}>
-                  <label className="input-form-title">Vehículos que está autorizados a manejar</label>
+                    <label className="input-form-title">
+                      Vehículos que está autorizados a manejar
+                    </label>
                   </Col>
-                  <Col span={16} >
+                  <Col span={16}>
                     <Select
                       mode="multiple"
                       allowClear
-                      style={{ width: '50%' }}
+                      style={{ width: "50%" }}
                       placeholder="Seleccione vehiculos"
-                      defaultValue={['vehiculo1', 'vehiculo2']}
+                      defaultValue={["vehiculo1", "vehiculo2"]}
                       options={[
-                        { label: <span>vehiculo1</span>, value: 'vehiculo1' },
-                        { label: <span>vehiculo2</span>, value: 'vehiculo2' },
+                        { label: <span>vehiculo1</span>, value: "vehiculo1" },
+                        { label: <span>vehiculo2</span>, value: "vehiculo2" }
                       ]}
-                      />
+                    />
                   </Col>
                 </Row>
               </Flex>
@@ -388,13 +350,13 @@ export const DriverFormTab = ({
               }}
             />
           </Flex>
-          <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
+          <label className="locationLabels" style={{ display: "flex", marginTop: "2rem" }}>
             <text>Documentos</text>
           </label>
           <Row className="mainUploadDocuments">
             {mockFiles.map((file) => (
               // eslint-disable-next-line react/jsx-key
-              <Col span={12} style={{padding:'15px'}} key={`file-${file.id}`}>
+              <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
                 <UploadDocumentButton
                   key={file.id}
                   title={file.description}
@@ -407,10 +369,26 @@ export const DriverFormTab = ({
           </Row>
           <Row>
             <Col span={24} className="text-right">
-              <button onClick={() =>AddFileModal()} className="btnagregarpsl"><PlusCircle></PlusCircle>&nbsp;&nbsp;<text>Agregar otro documento</text></button>
+              <ModalDocuments
+                isOpen={isOpenModalDocuments}
+                mockFiles={mockFiles}
+                setFiles={setFiles}
+                setMockFiles={setMockFiles}
+                documentsType={documentsType}
+                isLoadingDocuments={isLoadingDocuments}
+                onClose={() => setIsOpenModalDocuments(false)}
+              />
+              <Row>
+                <Flex justify="flex-end" style={{ width: "100%", margin: "1rem" }}>
+                  <Button type="text" onClick={() => setIsOpenModalDocuments(true)}>
+                    <Plus />
+                    &nbsp;<Text>Cargar documentos</Text>
+                  </Button>
+                </Flex>
+              </Row>
             </Col>
           </Row>
-          
+
           {/* -----------------------------------Project Config----------------------------------- */}
 
           <Flex className="buttonNewProject">
