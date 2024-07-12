@@ -16,7 +16,6 @@ interface InputDateFormProps {
   disabled?: boolean;
   validationRules?: RegisterOptions;
   className?: string;
-  value?: string;
 }
 
 export const InputDateForm = ({
@@ -29,7 +28,6 @@ export const InputDateForm = ({
   disabled,
   validationRules,
   className,
-  value
 }: InputDateFormProps) => {
     return (
       <Flex vertical className={`datePickerContainer ${className}`}>

@@ -904,10 +904,11 @@ export interface ICarrier {
   vehicles: any;
   drivers: any;
   carrier_type: string;
-  created_at: Date;
-  created_by: string;
-  modified_at?: Date | null;
-  modified_by?: string | null;
+  created_at: Date
+  created_by: string
+  modified_at?: Date | null
+  modified_by?: string | null
+  photo?: string;
 }
 /**
  * Exposes the same fields as Location,
