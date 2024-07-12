@@ -24,10 +24,10 @@ export interface IGetContacts {
 export interface IContactForm {
   name: string;
   lastname: string;
-  position: number;
+  position: string;
   role: ISelectType;
   indicative: ISelectType;
-  phone: number;
+  phone: string;
   email: string;
 }
 
@@ -51,4 +51,15 @@ interface ICountryCallingCode {
 interface IContactPosition {
   id: number;
   name: string;
+}
+
+export interface ICreateEditContact {
+  client_id: number;
+  contact_name: string;
+  contact_lastname: string;
+  contact_email: string;
+  contact_phone: string;
+  position: number;
+  name_position: string;
+  country_calling_code_id: number;
 }

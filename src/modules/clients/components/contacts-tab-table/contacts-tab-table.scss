@@ -8,7 +8,15 @@
         margin: 0.5rem 0;
     }
 
-    .ant-table-content {
+    .ant-table-tbody {
+        overflow-x: hidden;
+
+        &-virtual-scrollbar-horizontal {
+            display: none;
+        }
+    }
+
+    .ant-table-container {
         table {
             .ant-table-cell {
                 padding-top: 0.4rem;
@@ -19,12 +27,6 @@
 
     .cell {
         display: inline-block;
-
-        &.-alignRight {
-            display: flex;
-            justify-content: flex-end;
-            padding-right: 5px;
-        }
     }
 
     .eyeButton {
@@ -33,5 +35,9 @@
         &:hover {
             background-color: $darker-gray !important;
         }
+    }
+
+    .pagination {
+        justify-content: center;
     }
 }

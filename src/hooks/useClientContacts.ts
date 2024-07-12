@@ -1,4 +1,6 @@
-import { IGetContacts } from "@/types/contacts/IContacts";
+import { MessageType } from "@/context/MessageContext";
+import { postContact, putContact } from "@/services/contacts/contacts";
+import { IContactForm, IGetContacts } from "@/types/contacts/IContacts";
 import { fetcher } from "@/utils/api/api";
 import useSWR from "swr";
 
@@ -9,8 +11,69 @@ export const useClientContacts = (clientId: number) => {
     {}
   );
 
+  const createContact = async (
+    contactInfo: IContactForm,
+    // eslint-disable-next-line no-unused-vars
+    showMessage: (type: MessageType, content: string) => void
+  ) => {
+    const contact = {
+      client_id: clientId,
+      contact_name: contactInfo.name,
+      contact_lastname: contactInfo.lastname,
+      contact_email: contactInfo.email,
+      contact_phone: contactInfo.phone,
+      position: contactInfo.role.value,
+      name_position: contactInfo.position,
+      country_calling_code_id: contactInfo.indicative.value
+    };
+
+    try {
+      const response = await postContact(contact);
+      if (response.status === 200) {
+        showMessage("success", "Contacto creado exitosamente");
+      }
+    } catch (error) {
+      showMessage("error", "Error al crear contacto");
+      console.warn("Error al crear contacto", error);
+    } finally {
+      mutate();
+    }
+  };
+
+  const updateContact = async (
+    contactInfo: IContactForm,
+    contactId: number,
+    // eslint-disable-next-line no-unused-vars
+    showMessage: (type: MessageType, content: string) => void
+  ) => {
+    const contact = {
+      client_id: clientId,
+      contact_name: contactInfo.name,
+      contact_lastname: contactInfo.lastname,
+      contact_email: contactInfo.email,
+      contact_phone: contactInfo.phone,
+      position: contactInfo.role.value,
+      name_position: contactInfo.position,
+      country_calling_code_id: contactInfo.indicative.value
+    };
+
+    try {
+      const response = await putContact(contact, contactId);
+      if (response.status === 200) {
+        showMessage("success", "Contacto actualizado exitosamente");
+      }
+    } catch (error) {
+      showMessage("error", "Error al actualizar contacto");
+      console.warn("Error al actualizar contacto", error);
+    } finally {
+      mutate();
+    }
+  };
+
   return {
     data,
-    isLoading
+    isLoading,
+    createContact,
+    updateContact
   };
 };

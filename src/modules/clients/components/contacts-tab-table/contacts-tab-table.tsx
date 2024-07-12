@@ -69,7 +69,8 @@ const ContactsTable = ({
       dataIndex: "name_position",
       render: (text) => <Text className="cell">{text}</Text>,
       sorter: (a, b) => a.name_position.localeCompare(b.name_position),
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      width: 140
     },
     {
       title: "Rol",
@@ -77,13 +78,16 @@ const ContactsTable = ({
       dataIndex: "contact_position",
       render: (text) => <Text className="cell">{text}</Text>,
       sorter: (a, b) => a.contact_position.localeCompare(b.contact_position),
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      width: 140
     },
     {
       title: "Teléfono",
       key: "contact_phone",
       dataIndex: "contact_phone",
-      render: (amount) => <Text className="cell">{amount}</Text>,
+      render: (phone, row) => (
+        <Text className="cell">{`(${row.country_calling_code}) ${phone}`}</Text>
+      ),
       sorter: (a, b) => parseInt(b.contact_phone) - parseInt(a.contact_phone),
       showSorterTooltip: false
     },

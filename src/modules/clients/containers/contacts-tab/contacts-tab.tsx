@@ -28,7 +28,7 @@ const ContactsTab = () => {
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const clientId = clientIdParam ? parseInt(clientIdParam) : 0;
-  const { data, isLoading } = useClientContacts(clientId);
+  const { data, isLoading, createContact, updateContact } = useClientContacts(clientId);
 
   const handleDeleteClients = () => {
     console.log(
@@ -91,6 +91,9 @@ const ContactsTab = () => {
             <ContactsModal
               setShowContactModal={setShowContactModal}
               showContactModal={showContactModal}
+              createContact={createContact}
+              updateContact={updateContact}
+              clientId={clientId}
             />
           )}
         </div>
