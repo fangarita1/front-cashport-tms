@@ -46,6 +46,7 @@ export const VehicleTable = () => {
       element.status = false;
     }
     datasource.push({
+      id: element.id,
       company: element.company,
       type: element.vehicle_type,
       mark: element.brand,
@@ -87,7 +88,7 @@ export const VehicleTable = () => {
     width: "54px",
     dataIndex: "",
     render: (_, { id }) => (
-      <Button href={`/vehicle/${id}`} className="icon-detail" icon={<Eye size={20} />} />
+      <Button href={`/logistics/vehicles/vehicle/${id}`} className="icon-detail" icon={<Eye size={20} />} />
     )
   }
 ];

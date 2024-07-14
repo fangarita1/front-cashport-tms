@@ -21,3 +21,18 @@ export const getSuggestedVehicles = async (): Promise<IListData> => {
     return error as any;
   }
 };
+
+export const getVehicleById = async (id: string): Promise<IListData> => {
+  try {
+    const response: IListData = await axios.get(`${config.API_HOST}/vehicle/${id}`, {
+      headers: {
+        Accept: "application/json, text/plain, */*"
+      }
+    });
+    console.log(response)
+    return response;
+  } catch (error) {
+    console.log("Error: ", error);
+    return error as any;
+  }
+};

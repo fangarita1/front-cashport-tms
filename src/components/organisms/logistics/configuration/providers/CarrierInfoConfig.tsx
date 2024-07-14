@@ -4,10 +4,10 @@ import {
   message,
   Row,
   Col,
+  TabsProps,
+  Tabs,
 } from "antd";
-import React, { useRef, useEffect, useState, useContext } from "react";
-import Tabs2 from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+import React, { useEffect, useState, useContext } from "react";
 
 // components
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
@@ -24,7 +24,6 @@ import { useRouter } from "next/navigation";
 import "../../../../../styles/_variables_logistics.css";
 
 import "./carrierInfoConfig.scss";
-import { CarrierFormTab } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
 import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTable/carrierTableConfig";
 
 const { Title } = Typography;
@@ -35,10 +34,10 @@ export const CarrierInfoConfigView = () => {
   const [routeInfo, setRouteInfo] = useState([]);
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationOptions, setLocationOptions] = useState<any>([]);
-  const [value, setValue] = useState(3);
+  const [value, setValue] = useState('4');
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const onChange = (key: string) => {
+    setValue(key);
   };
 
   console.log("routeInfo==>", routeInfo);
@@ -47,6 +46,43 @@ export const CarrierInfoConfigView = () => {
     loadLocations();
   });
 
+  const items: TabsProps["items"] = [
+    {
+      key: "1",
+      label: "Reglas de Negocio",
+      children: <></>
+    },
+    {
+      key: "2",
+      label: "Materiales",
+      children: <></>
+    },
+    {
+      key: "3",
+      label: "Usuarios",
+      children: <></>
+    },
+    {
+      key: "4",
+      label: "Proveedores",
+      children: <><CarrierTable></CarrierTable></>
+    },
+    {
+      key: "5",
+      label: "Ubicacion",
+      children: <></>
+    },
+    {
+      key: "6",
+      label: "Grupos de Ubicaciones",
+      children: <></>
+    },
+    {
+      key: "7",
+      label: "Rutas de Seguridad",
+      children: <></>
+    }
+  ];
   const loadLocations = async () => {
     if (locations.length > 0) return;
     const result = await getAllLocations();
@@ -89,22 +125,8 @@ export const CarrierInfoConfigView = () => {
           <Flex className="orderContainer">
             <Row style={{ width: "100%" }}>
               <Col span={24}>
-                <Tabs2
-                  className="tabs"
-                  value={value}
-                  onChange={handleChange}
-                  role="navigation"
-                >
-                  <Tab className={"tab"} value={0} label="Reglas de Negocio" href="/" />
-                  <Tab className={"tab"} value={1} label="Materiales" href="/" />
-                  <Tab className={"tab"} value={2} label="Usuarios" href="/spam" />
-                  <Tab className={"tab"} value={3} label="Proveedores" href="/logistics/configuration" />
-                  <Tab className={"tab"} value={4} label="Ubicacion" href="/"  />
-                  <Tab className={"tab"} value={5} label="Grupos de Ubicaciones" href="/spam" />
-                  <Tab className={"tab"} value={6} label="Rutas de Seguridad" href="/spam" />
-                </Tabs2>
+              <Tabs defaultActiveKey={value} items={items} onChange={onChange}></Tabs>
               </Col>
-              <CarrierTable></CarrierTable>
             </Row>
           </Flex>
         </Flex>
