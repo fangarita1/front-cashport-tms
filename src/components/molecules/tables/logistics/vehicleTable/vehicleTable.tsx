@@ -1,16 +1,21 @@
+"use client";
 import { useEffect, useState } from "react";
 import { Button, Flex, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import { DotsThree, Eye, Plus, Triangle } from "phosphor-react";
+import Link from "next/link";
 import "./vehicleTable.scss";
 import UiSearchInput from "@/components/ui/search-input";
 import { IVehicle } from "@/types/logistics/schema";
 import { getAllVehicles } from "@/services/logistics/vehicle";
 import useSWR from "swr";
 
-const { Text } = Typography;
-
-export const VehicleTable = () => {
+type Props = {
+  params: {
+    id: string;
+  };
+};
+export const VehicleTable = ({ params: { id } }: Props) => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
@@ -50,12 +55,10 @@ export const VehicleTable = () => {
       key: "buttonSee",
       width: "54px",
       dataIndex: "",
-      render: (_, { id }) => (
-        <Button
-          href={`/logistics/vehicles/vehicle/${id}`}
-          className="icon-detail"
-          icon={<Eye size={20} />}
-        />
+      render: (_, { id: vehicleId }) => (
+        <Link href={`/logistics/providers/${id}/vehicle/${vehicleId}`} passHref>
+          <Button className="icon-detail" icon={<Eye size={20} />} />
+        </Link>
       )
     }
   ];
@@ -72,20 +75,13 @@ export const VehicleTable = () => {
               }, 1000);
             }}
           />
-          <Button
-            className="options"
-            href="/logistics/vehicles/vehicle"
-            icon={<DotsThree size={"1.5rem"} />}
-          />
-          <Button
-            type="primary"
-            className="buttonNewProject"
-            size="large"
-            href="/logistics/vehicles/new"
-          >
-            Nuevo Vehiculo
-            {<Plus weight="bold" size={14} />}
-          </Button>
+          <Button className="options" icon={<DotsThree size={"1.5rem"} />} />
+          <Link href={`/logistics/providers/${id}/vehicle/new`}>
+            <Button type="primary" className="buttonNewProject" size="large">
+              Nuevo Vehiculo
+              {<Plus weight="bold" size={14} />}
+            </Button>
+          </Link>
         </Flex>
       </Flex>
       <Table

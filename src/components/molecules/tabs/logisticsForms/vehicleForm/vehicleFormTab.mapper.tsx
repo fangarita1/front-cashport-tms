@@ -12,6 +12,10 @@ export interface VehicleFormTabProps {
   onDesactivateVehicle?: () => void;
   statusForm: "create" | "edit" | "review";
   messageApi?: MessageInstance;
+  params: {
+    id: string;
+    vehicleId: string;
+  };
 }
 
 export interface FileObject {

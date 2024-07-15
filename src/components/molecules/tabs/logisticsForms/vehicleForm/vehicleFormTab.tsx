@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import { Button, Col, Flex, Row, Switch, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
@@ -26,6 +27,7 @@ import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDo
 import { addVehicle, getVehicleType } from "@/services/logistics/vehicle";
 import { DocumentButtonAction } from "@/components/atoms/DocumentButtonAction/DocumentButtonAction";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const { Title, Text } = Typography;
 
@@ -45,7 +47,8 @@ export const VehicleFormTab = ({
   onEditVehicle = () => {},
   statusForm = "review",
   onActiveVehicle = () => {},
-  onDesactivateVehicle = () => {}
+  onDesactivateVehicle = () => {},
+  params
 }: VehicleFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -114,8 +117,7 @@ export const VehicleFormTab = ({
       console.log("Vehicle created successfully:", response.data);
       // Optionally reset the form and images after successful submission
       setImages(Array(5).fill({ file: undefined }));
-      push("/logistics/providers/all");
-      reset();
+      push(`/logistics/providers/${params.id}/vehicle`);
     } catch (error) {
       console.log("Error creating vehicle:", error);
     }
@@ -137,15 +139,16 @@ export const VehicleFormTab = ({
       <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
         <Flex component={"header"} className="headerProyectsForm">
           <Flex gap={"1rem"}>
-            <Button
-              type="text"
-              size="large"
-              href="/logistics/providers/all"
-              className="buttonGoBack"
-              icon={<CaretLeft size={"1.45rem"} />}
-            >
-              Ver Vehiculos
-            </Button>
+            <Link href={`/logistics/providers/${params.id}/vehicle`} passHref>
+              <Button
+                type="text"
+                size="large"
+                className="buttonGoBack"
+                icon={<CaretLeft size={"1.45rem"} />}
+              >
+                Ver Vehiculos
+              </Button>
+            </Link>
             {(statusForm === "review" || statusForm === "edit") && (
               <Button
                 className="buttons"

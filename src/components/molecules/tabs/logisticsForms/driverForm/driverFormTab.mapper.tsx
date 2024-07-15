@@ -16,6 +16,10 @@ export interface DriverFormTabProps {
   onActiveProject?: () => void;
   onDesactivateProject?: () => void;
   statusForm: "create" | "edit" | "review";
+  params: {
+    id: string;
+    driverId: string;
+  };
 }
 
 export const dataToProjectFormData = (data: IDriver): IFormDriver => {
