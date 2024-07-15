@@ -7,6 +7,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 export interface FileObject {
   docReference: string;
   file: File | undefined;
+  aditionalData?: any;
 }
 interface infoObject {
   file: File;
@@ -20,6 +21,7 @@ interface DocumentProps {
   draggerClassname?: string;
   disabled?: boolean;
   children?: React.ReactNode;
+  aditionalData?: any;
 }
 
 export const UploadDocumentButton = ({
@@ -30,6 +32,7 @@ export const UploadDocumentButton = ({
   draggerClassname,
   disabled,
   children,
+  aditionalData
 }: DocumentProps) => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
@@ -51,7 +54,7 @@ export const UploadDocumentButton = ({
 
       setUploadedFile(rawFile);
 
-      const fileObject = { docReference: title, file: rawFile };
+      const fileObject = { docReference: title, file: rawFile, aditionalData };
       updateFiles(fileObject);
     }
   };
@@ -68,7 +71,7 @@ export const UploadDocumentButton = ({
       }
       setUploadedFile(rawFile);
 
-      const fileObject = { docReference: title, file: rawFile };
+      const fileObject = { docReference: title, file: rawFile, aditionalData };
       updateFiles(fileObject);
     }
   };
@@ -76,7 +79,7 @@ export const UploadDocumentButton = ({
   const handleOnDelete = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     setUploadedFile(null);
-    const fileObject = { docReference: title, file: undefined };
+    const fileObject = { docReference: title, file: undefined, aditionalData };
 
     setFiles((prevState: FileObject[]) => {
       const existingFileIndex = prevState.findIndex(
