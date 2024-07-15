@@ -39,6 +39,9 @@
 
             &.active {
                 background-color: $secondary;
+                span {
+                    font-weight: 800;
+                }
             }
         }
     }

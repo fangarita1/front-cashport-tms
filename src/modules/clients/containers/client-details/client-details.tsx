@@ -11,6 +11,7 @@ import { InvoiceAction } from "../../constants/invoice-actions.constants";
 import AccountingAdjustmentsTab from "../accounting-adjustments-tab";
 
 import styles from "./client-details.module.scss";
+import ContactsTab from "../contacts-tab";
 
 interface ClientDetailsProps {}
 export const ClientDetailsContext = createContext<any>({});
@@ -47,6 +48,11 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
       ) : (
         <Spin style={{ margin: "1rem auto", display: "block" }} />
       )
+    },
+    {
+      key: "4",
+      label: "Contactos",
+      children: <ContactsTab />
     }
   ];
 
@@ -60,7 +66,6 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
     }),
     [portfolioData, selectedOption, showInvoiceActionsModal]
   );
-
 
   return (
     <ClientDetailsContext.Provider value={ClientDetailObject}>

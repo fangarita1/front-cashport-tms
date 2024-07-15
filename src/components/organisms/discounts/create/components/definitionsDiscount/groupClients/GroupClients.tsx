@@ -1,13 +1,13 @@
 import { Checkbox, Flex, Typography } from "antd";
 import styles from "./GroupClients.module.scss";
-import { IClientsGroups } from "@/types/clientsGroups/IClientsGroups";
+import { IClientsGroup } from "@/types/clientsGroups/IClientsGroups";
 import { UseFormReturn } from "react-hook-form";
 import { DiscountSchema } from "../../../resolvers/generalResolver";
 
 const { Text } = Typography;
 
 type Props = {
-  clients?: IClientsGroups[];
+  clients?: IClientsGroup[];
   error: any;
   loading: boolean;
   form: UseFormReturn<DiscountSchema, any, undefined>;

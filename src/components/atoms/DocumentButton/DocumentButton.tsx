@@ -20,6 +20,7 @@ interface Props {
   // eslint-disable-next-line no-unused-vars
   handleOnDelete?: (_: React.MouseEvent<HTMLElement>) => void;
   disabled?: boolean;
+  children?: React.ReactNode;
 }
 
 export const DocumentButton = ({
@@ -30,7 +31,8 @@ export const DocumentButton = ({
   handleOnDrop,
   handleOnDelete,
   disabled,
-  className
+  className,
+  children
 }: Props) => {
   const props: UploadProps = {
     name: title,
@@ -44,8 +46,7 @@ export const DocumentButton = ({
     beforeUpload: (file) => {
       const reader = new FileReader();
 
-      reader.onload = (e) => {
-      };
+      reader.onload = (e) => {};
       reader.readAsText(file);
 
       // Prevent upload
@@ -65,23 +66,27 @@ export const DocumentButton = ({
       {...props}
       openFileDialogOnClick={fileName === "Seleccionar archivo"}
     >
-      <Flex justify="space-between" align="center">
-        <Flex align="left" vertical>
-          <Flex>
-            <FileArrowUp size={"25px"} />
-            <Text className="nameFile">{fileName}</Text>
+      {children ? (
+        children
+      ) : (
+        <Flex justify="space-between" align="center">
+          <Flex align="left" vertical>
+            <Flex>
+              <FileArrowUp size={"25px"} />
+              <Text className="nameFile">{fileName}</Text>
+            </Flex>
+            <Text className="sizeFile">{fileSize}</Text>
           </Flex>
-          <Text className="sizeFile">{fileSize}</Text>
+          {!disabled && fileName !== "Seleccionar archivo" ? (
+            <Button
+              onClick={handleOnDelete}
+              className="deleteDocButton"
+              type="text"
+              icon={<Trash size={"20px"} />}
+            />
+          ) : null}
         </Flex>
-        {!disabled && fileName !== "Seleccionar archivo" ? (
-          <Button
-            onClick={handleOnDelete}
-            className="deleteDocButton"
-            type="text"
-            icon={<Trash size={"20px"} />}
-          />
-        ) : null}
-      </Flex>
+      )}
     </Dragger>
   );
 };
