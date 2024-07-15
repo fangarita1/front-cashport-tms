@@ -4,7 +4,7 @@ import { FieldError, useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import * as yup from "yup";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
-import { useFinancialDiscountMotives } from "@/hooks/useMotives";
+import { useFinancialDiscountMotives } from "@/hooks/useFinancialDiscountMotives";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createAccountingAdjustment } from "@/services/accountingAdjustment/accountingAdjustment";
 import { InputSelect } from "@/components/atoms/inputs/InputSelect/InputSelect";
@@ -131,7 +131,7 @@ export const CreateCreditNote = ({ onClose, messageApi, projectIdParam, clientId
             type="submit"
             className={`button__action__text ${isValid ? "button__action__text__green" : ""}`}
           >
-            Crear descuento
+            Crear Nota Crédito
           </button>
         </div>
       </form>

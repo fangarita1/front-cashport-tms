@@ -4,7 +4,7 @@ import { FieldError, useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import * as yup from "yup";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
-import { useFinancialDiscountMotives } from "@/hooks/useMotives";
+import { useFinancialDiscountMotives } from "@/hooks/useFinancialDiscountMotives";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createAccountingAdjustment } from "@/services/accountingAdjustment/accountingAdjustment";
 import { InputSelect } from "@/components/atoms/inputs/InputSelect/InputSelect";
@@ -65,7 +65,7 @@ export const CreateDebitNote = ({ onClose, messageApi, projectIdParam, clientIdP
         },
         users_aproved: [142, 146], // TODO: users_aproved esta mal escrito ya que el back lo pide asi
         project_id: projectIdParam || "19",
-        client_id: clientIdParam ?? "98765232"
+        client_id: clientIdParam || "98765232"
       });
 
       messageApi.open({
@@ -129,7 +129,7 @@ export const CreateDebitNote = ({ onClose, messageApi, projectIdParam, clientIdP
             type="submit"
             className={`button__action__text ${isValid ? "button__action__text__green" : ""}`}
           >
-            Crear descuento
+            Crear Nota Débito
           </button>
         </div>
       </form>

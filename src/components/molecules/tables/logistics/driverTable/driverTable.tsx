@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { Button, Flex, Table, Typography } from "antd";
 import type { TableProps } from "antd";
@@ -7,8 +8,15 @@ import "./driverTable.scss";
 import UiSearchInput from "@/components/ui/search-input";
 import { IDriver } from "@/types/logistics/schema";
 import { getAllDrivers } from "@/services/logistics/drivers";
+import Link from "next/link";
 
-export const DriverTable = () => {
+interface Props {
+  params: {
+    id: string;
+  };
+}
+
+export const DriverTable = ({ params: { id } }: Props) => {
   const [drivers, setDrivers] = useState<IDriver[]>([]);
   const [driversOptions, setDriversOptions] = useState<any>([]);
   const [page, setPage] = useState(1);
@@ -18,7 +26,7 @@ export const DriverTable = () => {
   const { Text } = Typography;
 
   const loadDrivers = async () => {
-    if(drivers != undefined && drivers.length > 0) return;
+    if (drivers != undefined && drivers.length > 0) return;
     const result = await getAllDrivers();
     if (result.data.data.length > 0) {
       const listDrivers: any[] | ((prevState: IDriver[]) => IDriver[]) = [];
@@ -106,8 +114,10 @@ export const DriverTable = () => {
       key: "buttonSee",
       width: "54px",
       dataIndex: "",
-      render: (_, { id }) => (
-        <Button href={`/logistics/drivers/driver/${id}`} className="icon-detail" icon={<Eye size={20} />} />
+      render: (_, { id: driverId }) => (
+        <Link href={`/logistics/providers/${id}/driver/${driverId}`} passHref>
+          <Button className="icon-detail" icon={<Eye size={20} />} />
+        </Link>
       )
     }
   ];
@@ -125,20 +135,13 @@ export const DriverTable = () => {
               }, 1000);
             }}
           />
-          <Button
-            className="options"
-            href="/logistics/drivers/driver"
-            icon={<DotsThree size={"1.5rem"} />}
-          />
-          <Button
-            type="primary"
-            className="buttonNewProject"
-            size="large"
-            href="/logistics/drivers/new"
-          >
-            Nuevo Conductor
-            {<Plus weight="bold" size={14} />}
-          </Button>
+          <Button className="options" icon={<DotsThree size={"1.5rem"} />} />
+          <Link href={`/logistics/providers/${id}/driver/new`}>
+            <Button type="primary" className="buttonNewProject" size="large">
+              Nuevo Conductor
+              {<Plus weight="bold" size={14} />}
+            </Button>
+          </Link>
         </Flex>
       </Flex>
       <Table

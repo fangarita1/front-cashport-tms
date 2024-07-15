@@ -1,7 +1,8 @@
+"use client";
 import { useEffect, useState } from "react";
 import { Button, Col, Flex, Row, Switch, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowsClockwise, Pencil, Plus } from "phosphor-react";
+import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
 
 // components
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
@@ -11,13 +12,13 @@ import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import {
-  dataToVehicleFormData,
+  normalizeVehicleData,
   validationButtonText,
   VehicleFormTabProps
 } from "./vehicleFormTab.mapper";
 
 import "./vehicleformtab.scss";
-import { IFormVehicle, IVehicle, VehicleType } from "@/types/logistics/schema";
+import { IFormVehicle, VehicleType } from "@/types/logistics/schema";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
 import { CertificateType } from "@/types/logistics/certificate/certificate";
 import useSWR from "swr";
@@ -26,6 +27,7 @@ import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDo
 import { addVehicle, getVehicleType } from "@/services/logistics/vehicle";
 import { DocumentButtonAction } from "@/components/atoms/DocumentButtonAction/DocumentButtonAction";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const { Title, Text } = Typography;
 
@@ -40,11 +42,13 @@ interface ImageState {
 }
 
 export const VehicleFormTab = ({
+  data,
+  messageApi,
   onEditVehicle = () => {},
   statusForm = "review",
-  data = [] as IVehicle[],
   onActiveVehicle = () => {},
-  onDesactivateVehicle = () => {}
+  onDesactivateVehicle = () => {},
+  params
 }: VehicleFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -62,7 +66,7 @@ export const VehicleFormTab = ({
   const [images, setImages] = useState<ImageState[]>(
     Array(5).fill({ file: undefined, error: false })
   );
-  const defaultValues = statusForm === "create" ? {} : dataToVehicleFormData(data[0]);
+  const defaultValues = statusForm === "create" ? {} : normalizeVehicleData(data as any);
   const {
     watch,
     control,
@@ -90,8 +94,8 @@ export const VehicleFormTab = ({
   const [mockFiles, setMockFiles] = useState<CertificateType[]>([]);
 
   useEffect(() => {
-    console.log(files);
-  }, [files]);
+    reset(normalizeVehicleData(data as any) as any);
+  }, []);
 
   const onSubmit = async (data: any) => {
     const hasImage = images.some((image) => image.file);
@@ -108,19 +112,12 @@ export const VehicleFormTab = ({
       id_carrier: Number(data.general.id_carrier) || 14
     };
 
-    console.log({
-      general: vehicleData,
-      images: imageFiles,
-      files: files
-    });
-
     try {
       const response = await addVehicle(vehicleData, imageFiles, files);
       console.log("Vehicle created successfully:", response.data);
       // Optionally reset the form and images after successful submission
       setImages(Array(5).fill({ file: undefined }));
-      push("/logistics/providers/all");
-      reset();
+      push(`/logistics/providers/${params.id}/vehicle`);
     } catch (error) {
       console.log("Error creating vehicle:", error);
     }
@@ -142,6 +139,16 @@ export const VehicleFormTab = ({
       <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
         <Flex component={"header"} className="headerProyectsForm">
           <Flex gap={"1rem"}>
+            <Link href={`/logistics/providers/${params.id}/vehicle`} passHref>
+              <Button
+                type="text"
+                size="large"
+                className="buttonGoBack"
+                icon={<CaretLeft size={"1.45rem"} />}
+              >
+                Ver Vehiculos
+              </Button>
+            </Link>
             {(statusForm === "review" || statusForm === "edit") && (
               <Button
                 className="buttons"

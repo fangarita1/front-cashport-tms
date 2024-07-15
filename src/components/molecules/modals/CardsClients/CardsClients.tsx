@@ -10,7 +10,7 @@ interface Props {
 
 const CardsClients = ({ total, icon, title }: Props) => {
   return (
-    <Flex className="wrapper">
+    <Flex className="wrapperCardsClient">
       <Flex className="icon">{icon}</Flex>
       <Flex className="header">
         <Flex className="title">{title}</Flex>

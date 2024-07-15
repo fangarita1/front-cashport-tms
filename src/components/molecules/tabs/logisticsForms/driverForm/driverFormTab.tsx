@@ -50,6 +50,7 @@ import { getDocumentsByEntityType } from "@/services/logistics/certificates";
 import { CertificateType } from "@/types/logistics/certificate/certificate";
 import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
 import { getVehicleType } from "@/services/logistics/vehicle";
+import Link from "next/link";
 
 const { Title, Text } = Typography;
 
@@ -59,7 +60,8 @@ export const DriverFormTab = ({
   statusForm = "review",
   data = [] as IDriver[],
   onActiveProject = () => {},
-  onDesactivateProject = () => {}
+  onDesactivateProject = () => {},
+  params
 }: DriverFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
@@ -131,15 +133,16 @@ export const DriverFormTab = ({
     <>
       <Form className="mainProyectsForm">
         <Flex component={"header"} className="headerProyectsForm">
-          <Button
-            type="text"
-            size="large"
-            href="/logistics/providers/all"
-            className="buttonGoBack"
-            icon={<CaretLeft size={"1.45rem"} />}
-          >
-            Ver Conductores
-          </Button>
+          <Link href={`/logistics/providers/${params.id}/driver`} passHref>
+            <Button
+              type="text"
+              size="large"
+              className="buttonGoBack"
+              icon={<CaretLeft size={"1.45rem"} />}
+            >
+              Ver Conductores
+            </Button>
+          </Link>
           <Flex gap={"1rem"}>
             {(statusForm === "review" || statusForm === "edit") && (
               <Button
@@ -329,8 +332,8 @@ export const DriverFormTab = ({
                       style={{ width: "50%" }}
                       placeholder="Seleccione vehiculos"
                       loading={loadingVicles}
-                      defaultValue={getValues("general.vehicle_type")?.map(
-                        (i: any) => i.id_vehicle_type?.toString()
+                      defaultValue={getValues("general.vehicle_type")?.map((i: any) =>
+                        i.id_vehicle_type?.toString()
                       )}
                       onChange={(value) => setValue("general.vehicle_type", value.map(Number))}
                       options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}

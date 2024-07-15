@@ -3,19 +3,23 @@ import { Pagination } from "../global/IGlobal";
 export interface IClientsGroupsFull {
   status: number;
   message: string;
-  data: IClientsGroups[];
+  data: IClientsGroup[];
   pagination: Pagination;
 }
 
-interface IClient {
+export interface IClient {
   id: number;
   client_name: string;
-  holding_name: string | null;
+  holding_name: string;
   bussiness_name: string;
   client_type_name: string;
+  shipto_count: number;
+  total_portfolio: number;
+  groups_count: number;
+  status_name: string;
 }
 
-export interface IClientsGroups {
+export interface IClientsGroup {
   id: number;
   group_name: string;
   clients: IClient[];
@@ -38,4 +42,9 @@ export interface IGroupByUser {
   group_id: number;
   group_name: string;
   project_id: number;
+}
+export interface ISingleClientGroupResponse {
+  status: number;
+  message: string;
+  data: IClientsGroup;
 }

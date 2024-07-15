@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Button, Flex, Spin, Typography, message } from "antd";
+import { Button, Flex, Spin, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
 
@@ -23,9 +23,11 @@ import { IUserData, IUserForm } from "@/types/users/IUser";
 
 import { SelectClientsGroup } from "@/components/molecules/selects/SelectClientsGroup/SelectClientsGroup";
 
-import "./userprojectform.scss";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 import { IGroupByUser } from "@/types/clientsGroups/IClientsGroups";
+import { useMessageApi } from "@/context/MessageContext";
+
+import "./userprojectform.scss";
 const { Title } = Typography;
 
 interface Props {
@@ -48,9 +50,9 @@ export const UserProjectForm = ({
   setIsCreateUser,
   setIsViewDetailsUser
 }: Props) => {
-  const [messageApi, contextHolder] = message.useMessage();
+  const { showMessage } = useMessageApi();
   const [isEditAvailable, setIsEditAvailable] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [dataUser, setDataUser] = useState({
     data: {},
     isLoading: false
@@ -111,10 +113,10 @@ export const UserProjectForm = ({
         setAssignedGroups(groupsByUserResponse.data.map((group: IGroupByUser) => group.group_id));
       }
     })();
-  }, [ID, isViewDetailsUser, messageApi]);
+  }, [ID, isViewDetailsUser]);
 
   const onSubmitHandler = async (data: IUserForm) => {
-    setLoading(true)
+    setLoading(true);
     setCustomFieldsError({
       zone: zones.length === 0,
       channel: selectedBusinessRules?.channels.length === 0
@@ -132,43 +134,37 @@ export const UserProjectForm = ({
           dataUser.data?.ACTIVE === 1
         )
       : await inviteUser(data, selectedBusinessRules, assignedGroups, zones, ID);
+
+    setIsEditAvailable(false);
     if (response.status === 200 || response.status === 202) {
       const isEdit = isViewDetailsUser?.id ? "editado" : "creado";
-      messageApi.open({
-        type: "success",
-        content: `El usuario fue ${isEdit} exitosamente.`
-      });
+      showMessage("success", `El usuario fue ${isEdit} exitosamente.`);
       !isViewDetailsUser?.id && setIsCreateUser(false);
     } else if (response.response.status === 409) {
-      messageApi.open({
-        type: "error",
-        content: "Este emaiil esta en uso, prueba otro."
-      });
+      showMessage("error", "Este email ya esta en uso, prueba otro.");
     } else {
-      messageApi.open({
-        type: "error",
-        content: "Oops ocurrio un error."
-      });
+      showMessage("error", "Oops ocurrio un error.");
     }
-    setLoading(false)
+    setLoading(false);
   };
   const onRemoveUser = async () =>
-    await onRemoveUserById(dataUser.data.ID, ID, messageApi, () =>
+    await onRemoveUserById(dataUser.data.ID, ID, showMessage, () =>
       setIsViewDetailsUser({ active: false, id: 0 })
     );
   const onActiveUser = async () =>
-    await onChangeStatusById(dataUser.data, 1, messageApi, () =>
-      setIsOpenModalStatus(initDataOpenModalStatus)
-    );
+    await onChangeStatusById(dataUser.data.ID, 1, showMessage, () => {
+      setIsOpenModalStatus(initDataOpenModalStatus);
+      setIsViewDetailsUser({ active: false, id: 0 });
+    });
   const onInactiveUser = async () =>
-    await onChangeStatusById(dataUser.data, 0, messageApi, () =>
-      setIsOpenModalStatus(initDataOpenModalStatus)
-    );
+    await onChangeStatusById(dataUser.data.ID, 0, showMessage, () => {
+      setIsOpenModalStatus(initDataOpenModalStatus);
+      setIsViewDetailsUser({ active: false, id: 0 });
+    });
 
   return (
     <>
       <form className="newUserProjectForm" onSubmit={handleSubmit(onSubmitHandler)}>
-      {contextHolder}
         <Flex vertical style={{ height: "100%" }}>
           <Flex component={"header"} className="headerNewUserProyectsForm">
             {/* -------------------left buttons------------------------ */}
@@ -277,7 +273,6 @@ export const UserProjectForm = ({
                 <Flex vertical style={{ width: "30%" }}>
                   <SelectClientsGroup
                     userID={dataUser?.data?.ID}
-                    projectID={ID}
                     disabled={!isEditAvailable}
                     assignedGroups={assignedGroups}
                     setAssignedGroups={setAssignedGroups}
@@ -297,9 +292,15 @@ export const UserProjectForm = ({
               htmlType="submit"
               disabled={loading}
               size="large"
-              icon={loading ? null :<Plus weight="bold" size={15} />}
+              icon={loading ? null : <Plus weight="bold" size={15} />}
             >
-              {loading ? <Spin /> : isViewDetailsUser?.id ? "Actualizar usuario" : "Registrar usuario"}
+              {loading ? (
+                <Spin />
+              ) : isViewDetailsUser?.id ? (
+                "Actualizar usuario"
+              ) : (
+                "Registrar usuario"
+              )}
             </Button>
           </Flex>
         )}

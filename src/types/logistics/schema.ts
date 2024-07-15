@@ -905,10 +905,10 @@ export interface ICarrier {
   vehicles: any;
   drivers: any;
   carrier_type: string;
-  created_at: Date
-  created_by: string
-  modified_at?: Date | null
-  modified_by?: string | null
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
   photo?: string;
 }
 /**
@@ -2110,9 +2110,51 @@ export interface IListDataVehiche {
   config: Config;
   request: Request;
 }
+export interface IListDataVehicheDetail {
+  id: any;
+  data: DataVihicleDetail;
+  status: number;
+  statusText: string;
+  headers: WelcomeHeaders;
+  config: Config;
+  request: Request;
+}
 
 export interface DataVihicleType {
   status: number;
   message: string;
   data: VehicleType[];
 }
+export interface DataVihicleDetail {
+  status: number;
+  message: string;
+  data: VihicleDetail;
+}
+
+export interface VihicleDetail {
+  id: number;
+  plate_number: string;
+  brand: string;
+  line: string;
+  active: ActiveVehicleType;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+  id_carrier: number;
+  id_vehicle_type: number;
+  model: string;
+  year: number;
+  color: string;
+  country: number;
+  aditional_info: string;
+  gps_link: string;
+  gps_user: string;
+  gps_password: string;
+  documents: any[];
+  images: any[];
+}
+
+
+
+

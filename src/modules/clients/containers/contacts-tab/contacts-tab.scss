@@ -1,0 +1,27 @@
+@import "@styles/variables.scss";
+
+.contactsTab {
+    .newContactButton {
+        background-color: $secondary;
+        box-shadow: none;
+        color: $black;
+        display: flex;
+        align-items: center;
+        font-size: 1rem;
+        font-weight: 600;
+        height: 3rem;
+
+        &:hover {
+            color: $white;
+            background-color: $secondary !important;
+        }
+    }
+
+    .next {
+        transform: rotate(90deg);
+    }
+
+    .prev {
+        transform: rotate(-90deg);
+    }
+}

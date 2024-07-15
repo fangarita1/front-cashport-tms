@@ -1,60 +1,28 @@
-import { useState } from "react";
+"use client";
+import { useEffect, useState } from "react";
 import { Button, Flex, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import { DotsThree, Eye, Plus, Triangle } from "phosphor-react";
+import Link from "next/link";
 import "./vehicleTable.scss";
 import UiSearchInput from "@/components/ui/search-input";
 import { IVehicle } from "@/types/logistics/schema";
 import { getAllVehicles } from "@/services/logistics/vehicle";
+import useSWR from "swr";
 
-const { Text } = Typography;
-
-export const VehicleTable = () => {
+type Props = {
+  params: {
+    id: string;
+  };
+};
+export const VehicleTable = ({ params: { id } }: Props) => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [vehicles, setDrivers] = useState<IVehicle[]>([]);
-  const [vehiclesOptions, setDriversOptions] = useState<any>([]);
-  const datasource: any[] = [];
-
-  const loadDrivers = async () => {
-    if(vehicles != undefined && vehicles.length > 0) return;
-    const result = await getAllVehicles();
-    if (result.data.data.length > 0) {
-      const listVehicles: any[] | ((prevState: IVehicle[]) => IVehicle[]) = [];
-      const listVehiclesOptions: { label: any; value: any }[] = [];
-
-      result.data.data.forEach((item, index) => {
-        listVehicles.push(item);
-        listVehiclesOptions.push({ label: item.name, value: item.id });
-      });
-
-      setDrivers(listVehicles);
-      setDriversOptions(listVehiclesOptions);
-    }
-  };
-
-  loadDrivers();
 
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);
   };
-
-  vehicles.forEach((element) => {
-    if (element.active.data[0] === 1) {
-      element.status = true;
-    } else {
-      element.status = false;
-    }
-    datasource.push({
-      id: element.id,
-      company: element.company,
-      type: element.vehicle_type,
-      mark: element.brand,
-      plate: element.plate_number,
-      model: element.model,
-      status: element.status
-    });
-  });
+  const { data: vihicles, error } = useSWR("/vehicle/all", getAllVehicles);
 
   const columns: TableProps<IVehicle>["columns"] = [
     {
@@ -82,16 +50,18 @@ export const VehicleTable = () => {
       dataIndex: "model",
       key: "model"
     },
-  {
-    title: "",
-    key: "buttonSee",
-    width: "54px",
-    dataIndex: "",
-    render: (_, { id }) => (
-      <Button href={`/logistics/vehicles/vehicle/${id}`} className="icon-detail" icon={<Eye size={20} />} />
-    )
-  }
-];
+    {
+      title: "",
+      key: "buttonSee",
+      width: "54px",
+      dataIndex: "",
+      render: (_, { id: vehicleId }) => (
+        <Link href={`/logistics/providers/${id}/vehicle/${vehicleId}`} passHref>
+          <Button className="icon-detail" icon={<Eye size={20} />} />
+        </Link>
+      )
+    }
+  ];
   return (
     <div className="mainProjectsTable">
       <Flex justify="space-between" className="mainProjectsTable_header">
@@ -105,16 +75,13 @@ export const VehicleTable = () => {
               }, 1000);
             }}
           />
-          <Button className="options" href="/logistics/vehicles/vehicle" icon={<DotsThree size={"1.5rem"}/>} />
-          <Button
-          type="primary"
-          className="buttonNewProject"
-          size="large"
-          href="/logistics/vehicles/new"
-        >
-          Nuevo Vehiculo
-          {<Plus weight="bold" size={14} />}
-        </Button>
+          <Button className="options" icon={<DotsThree size={"1.5rem"} />} />
+          <Link href={`/logistics/providers/${id}/vehicle/new`}>
+            <Button type="primary" className="buttonNewProject" size="large">
+              Nuevo Vehiculo
+              {<Plus weight="bold" size={14} />}
+            </Button>
+          </Link>
         </Flex>
       </Flex>
       <Table
@@ -135,7 +102,16 @@ export const VehicleTable = () => {
             return originalElement;
           }
         }}
-        dataSource={datasource}
+        dataSource={
+          vihicles?.data?.data?.map((e) => ({
+            company: e.company,
+            type: e.vehicle_type,
+            mark: e.brand,
+            plate: e.plate_number,
+            model: e.model,
+            id: e.id
+          })) || []
+        }
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
-import { IListData, IListDataVehiche } from "@/types/logistics/schema";
+import { IListData, IListDataVehiche, IListDataVehicheDetail } from "@/types/logistics/schema";
 
 export const getAllVehicles = async (): Promise<IListData> => {
   try {
@@ -26,6 +26,24 @@ export const getVehicleType = async (): Promise<IListDataVehiche> => {
         }
       }
     );
+
+    return response.data;
+  } catch (error) {
+    console.log("Error get vehicle vehicles: ", error);
+    return error as any;
+  }
+};
+export const getVehicleById = async (id: string): Promise<IListDataVehicheDetail> => {
+  try {
+    const response: AxiosResponse<IListDataVehicheDetail> = await axios.get(
+      `${config.API_HOST}/vehicle/${id}`,
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*"
+        }
+      }
+    );
+    console.log(response.data);
 
     return response.data;
   } catch (error) {

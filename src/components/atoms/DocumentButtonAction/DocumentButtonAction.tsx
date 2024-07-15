@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Flex, Typography } from "antd";
 import { FileArrowUp } from "phosphor-react";
 import "./documentButtonAction.scss";
+import { FileDownloadModal } from "@/components/molecules/modals/FileDownloadModal/FileDownloadModal";
 
 const { Text } = Typography;
 
@@ -18,22 +19,23 @@ export const DocumentButtonAction = ({
   className,
   documentUrl // Agregado para la URL del documento
 }: Props) => {
-//   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleDocumentClick = () => {
     const fileExtension = documentUrl?.split(".").pop()?.toLowerCase() ?? "";
     if (fileExtension === "pdf") {
       window.open(documentUrl, "_blank");
     } else if (["png", "jpg", "jpeg"].includes(fileExtension)) {
-    //   if (isModalOpen === false) setIsModalOpen(true);
+      if (isModalOpen === false) setIsModalOpen(true);
     } else {
       alert("Formato de archivo no soportado");
     }
   };
 
+
   return (
     <div
-      className={className ? `documentDraggerAction ${className}` : "documentDraggerAction"}
+      className={className ? `documentDragger ${className}` : "documentDragger"}
       onClick={handleDocumentClick}
     >
       <Flex justify="space-between" align="center">
@@ -46,6 +48,11 @@ export const DocumentButtonAction = ({
           </Flex>
         </Flex>
       </Flex>
+      <FileDownloadModal
+        isModalOpen={isModalOpen}
+        onCloseModal={setIsModalOpen}
+        url={documentUrl ?? ""}
+      />
     </div>
   );
 };

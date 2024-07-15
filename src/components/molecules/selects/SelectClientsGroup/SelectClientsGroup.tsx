@@ -6,21 +6,13 @@ import "./selectClientsGroup.scss";
 
 interface Props {
   userID: number;
-  projectID: number;
   disabled?: boolean;
   assignedGroups: number[];
   setAssignedGroups: Dispatch<SetStateAction<any>>;
 }
 
-export const SelectClientsGroup = ({
-  projectID,
-  disabled,
-  assignedGroups,
-  setAssignedGroups
-}: Props) => {
-  const { data, loading: isLoading } = useClientsGroups({
-    idProject: `${projectID}`
-  });
+export const SelectClientsGroup = ({ disabled, assignedGroups, setAssignedGroups }: Props) => {
+  const { data, loading: isLoading } = useClientsGroups({});
 
   return (
     <div className="selectClientsGroup">

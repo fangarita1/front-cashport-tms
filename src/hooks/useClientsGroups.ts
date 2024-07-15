@@ -1,17 +1,20 @@
 import useSWR from "swr";
 import { fetcher } from "@/utils/api/api";
-import { IClientsGroups, IClientsGroupsFull } from "@/types/clientsGroups/IClientsGroups";
+import { IClientsGroupsFull } from "@/types/clientsGroups/IClientsGroups";
+import { useAppStore } from "@/lib/store/store";
+import { changeGroupState, deleteGroups } from "@/services/groupClients/groupClients";
 
 interface Props {
   page?: number;
-  idProject: string;
   clients?: any[];
   subscribers?: any[];
   activeUsers?: "all" | "active" | "inactive";
   noLimit?: boolean;
 }
 
-export const useClientsGroups = ({ page, idProject, clients, subscribers, activeUsers, noLimit }: Props) => {
+export const useClientsGroups = ({ page, clients, subscribers, activeUsers, noLimit }: Props) => {
+  const { ID: projectId } = useAppStore((state) => state.selectProject);
+
   const clientsQuery = (clients?.length ?? 0) > 0 ? `&zone=${clients?.join(",")}` : "";
   const subsQuery = (subscribers?.length ?? 0) > 0 ? `&rol=${subscribers?.join(",")}` : "";
 
@@ -23,13 +26,25 @@ export const useClientsGroups = ({ page, idProject, clients, subscribers, active
   const pageQuery = page ? `&page=${page}` : "";
   const limitQuery = noLimit ? "&noLimit=true" : "";
 
-  const pathKey = `/group-client/?project_id=${idProject}${pageQuery}${clientsQuery}${subsQuery}${statusQuery}${limitQuery}`;
+  const pathKey = `/group-client/?project_id=${projectId}${pageQuery}${clientsQuery}${subsQuery}${statusQuery}${limitQuery}`;
 
-  const { data, error, isLoading } = useSWR<IClientsGroupsFull>(pathKey, fetcher, {});
+  const { data, error, isLoading, mutate } = useSWR<IClientsGroupsFull>(pathKey, fetcher, {});
+
+  const deleteSelectedGroups = async (selectedGroups: number[]) => {
+    await deleteGroups(selectedGroups, projectId);
+    mutate();
+  };
+
+  const changeGroupsState = async (groups_id: number[], status: 0 | 1) => {
+    await changeGroupState(groups_id, status, projectId);
+    mutate();
+  };
 
   return {
     data: data,
     loading: isLoading,
-    error
+    error,
+    deleteSelectedGroups,
+    changeGroupsState
   };
 };
