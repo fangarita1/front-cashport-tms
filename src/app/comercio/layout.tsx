@@ -6,6 +6,6 @@ export const metadata: Metadata = {
   description: "Comercio"
 };
 
-export default function Layout({ children }: { children: React.ReactNode; pathname: string }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return <Wrapper>{children}</Wrapper>;
 }

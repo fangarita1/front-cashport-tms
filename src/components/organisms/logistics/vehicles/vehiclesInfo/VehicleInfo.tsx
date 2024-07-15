@@ -35,7 +35,7 @@ export const VehicleInfoView = ({ isEdit = false, idParam = "", params }: Props)
             <VehicleFormTab
               statusForm={"edit"}
               messageApi={messageApi}
-              data={data?.data}
+              data={data?.data as any}
               params={params}
             ></VehicleFormTab>
           ) : (
