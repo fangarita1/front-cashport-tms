@@ -1,0 +1,81 @@
+.notificationView {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 0 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #FFFFFF;
+    padding: 0.5rem 1rem;
+    margin-top: 0.5rem;
+}
+
+.searchBar__container {
+    height: 48px;
+    gap: 0.5rem;
+}
+
+.notifications__container {
+    width: 100%;
+
+    .item__title {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 24px;
+    }
+
+    .item__name {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 24px;
+    }
+
+    .item__date {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 24px;
+        color: #0085FF;
+    }
+
+    .ant-spin-container {
+        width: 100%;
+    }
+
+    .ant-list-item {
+        width: 100% !important;
+    }
+
+    .list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100% !important;
+        border-bottom: 1px solid #d3d3d3 !important;
+        padding: 16px 0;
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    .notifications__list {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .eyeIcon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 4px;
+        border-radius: 4px;
+        background-color: #DDDDDD;
+    }
+
+    .ant-spin-container .ant-spin-nested-loading {
+        width: 100% !important;
+    }
+}
