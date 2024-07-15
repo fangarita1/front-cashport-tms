@@ -315,7 +315,7 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
             )}
           />
         </TabPane>
-        <TabPane tab="Rechazados" key="3"></TabPane>
+        <TabPane tab="Cerradas" key="3"></TabPane>
       </Tabs>
     </div>
   );

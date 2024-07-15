@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
 import "./notificationsView.scss";
-import { Descriptions, Flex, Tabs } from "antd";
+import { Flex, Tabs } from "antd";
 import UiSearchInput from "@/components/ui/search-input/search-input";
 import FiltersNotifications from "@/components/atoms/Filters/FiltersNotifications/FiltersNotifications";
-import { formatDateAndTime, timeAgo } from "@/utils/utils";
-import { Eye } from "phosphor-react";
+import { formatDateAndTime } from "@/utils/utils";
+import { Check, Eye, X } from "phosphor-react";
 
 const ListPanel = [
   { key: "pending", value: "Pendientes" },
@@ -89,11 +89,25 @@ export const NotificationsView = () => {
                 <p className="item__name">{item.name}</p>
                 <p className="item__date">{formatDateAndTime(item.time.toString())}</p>
               </Flex>
-              <p className="item__name">{item.description}</p>
+              <p className="item__description">{item.description}</p>
             </div>
-            <div className="eyeIcon">
-              <Eye size={28} />
-            </div>
+            <Flex gap="1rem">
+              {type === "closed" && (
+                <>
+                  <div className="label__status">
+                    <Check size={14} />
+                    Aprobar
+                  </div>
+                  <div className="label__status">
+                    <X size={14} />
+                    Rechazar
+                  </div>
+                </>
+              )}
+              <div className="eyeIcon">
+                <Eye size={28} />
+              </div>
+            </Flex>
           </div>
         </div>
       </Flex>

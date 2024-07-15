@@ -78,4 +78,16 @@
     .ant-spin-container .ant-spin-nested-loading {
         width: 100% !important;
     }
+
+    .label__status {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        font-size: 14px;
+        font-weight: 400;
+        gap: 0.5rem;
+        border-radius: 8px;
+        background-color: #F7F7F7;
+    }
 }
