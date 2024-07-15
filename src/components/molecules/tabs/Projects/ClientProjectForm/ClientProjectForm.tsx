@@ -19,7 +19,7 @@ import {
   getClientById,
   updateClient
 } from "@/services/clients/clients";
-import { ClientFormType, IClient, IClientLocation } from "@/types/clients/IClients";
+import { ClientFormType, IClient } from "@/types/clients/IClients";
 import { SelectRisks } from "@/components/molecules/selects/clients/SelectRisks/SelectRisks";
 import { SelectDocumentTypes } from "@/components/molecules/selects/clients/SelectDocumentTypes/SelectDocumentTypes";
 import { SelectClientTypes } from "@/components/molecules/selects/clients/SelectClientTypes/SelectClientTypes";
@@ -28,12 +28,7 @@ import { SelectPaymentConditions } from "@/components/molecules/selects/clients/
 import { SelectHoldings } from "@/components/molecules/selects/clients/SelectHoldings/SelectHoldings";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { addAddressToLocation } from "@/services/locations/locations";
-import {
-  docTypeIdBasedOnDocType,
-  getCityName,
-  isNonEmptyObject,
-  stringToBoolean
-} from "@/utils/utils";
+import { docTypeIdBasedOnDocType, isNonEmptyObject, stringToBoolean } from "@/utils/utils";
 import { useCheckLocationFields, useGetClientValues } from "./clientProjectFormHooks";
 import { SelectLocations } from "@/components/molecules/selects/clients/SelectLocations/SelectLocations";
 import { useMessageApi } from "@/context/MessageContext";
@@ -78,19 +73,23 @@ export const ClientProjectForm = ({
 
   const { id: idProject } = useParams<{ id: string }>();
 
-  const dataToDataForm = (data: any) => {
+  const dataToDataForm = (data: IClient) => {
     return {
       infoClient: {
         address:
           Array.isArray(data?.locations) && data.locations.length > 0
             ? data?.locations[0]?.address
             : undefined,
-        city: {
-          value: data.locations?.find((loc: IClientLocation) => loc != null)?.city,
-          label: data.locations?.find((loc: IClientLocation) => loc != null)?.city
-            ? getCityName(data.locations?.find((loc: IClientLocation) => loc != null)?.city)
-            : undefined
-        },
+        city:
+          data?.locations && data.locations.length > 0
+            ? {
+                value: data.locations[0].id,
+                label: data.locations[0].city
+              }
+            : {
+                value: undefined,
+                label: undefined
+              },
         document_type: {
           value: docTypeIdBasedOnDocType(data.document_type),
           label: data.document_type
@@ -141,21 +140,6 @@ export const ClientProjectForm = ({
     isNonEmptyObject(dataClient.data)
   );
 
-  // // useEffect(() => {
-  // //   // UseEffect para actualizar el valor de billingPeriod
-  // //   if (dataClient.data.billing_period) {
-  // //     setBillingPeriod(dataClient.data.billing_period_config);
-  // //     return;
-  // //   }
-
-  // //   const formattedBillingPeriod = billingPeriod?.day_flag
-  // //     ? `El dia ${billingPeriod?.day} del mes`
-  // //     : `El ${billingPeriod?.order} ${billingPeriod?.day_of_week} del mes`;
-
-  // //   // Establecer el valor formateado al string de billing period
-  // //   setValue("infoClient.billing_period", formattedBillingPeriod, { shouldValidate: true });
-  // // }, [billingPeriod, setValue, dataClient.data.billing_period]);
-
   useEffect(() => {
     // UseEffect tu update billingPeriod Value in the form
     // so react-hook-form can validate the field
@@ -179,7 +163,6 @@ export const ClientProjectForm = ({
       });
       const response = await getClientById(isViewDetailsClient.id.toString(), idProject);
       const finalData = response.data.data;
-      console.log(finalData);
 
       setDataClient({
         isLoading: false,
@@ -206,11 +189,15 @@ export const ClientProjectForm = ({
           showMessage
         );
 
+        const formattedLocations = locationResponse?.data?.data;
+
+        if (!formattedLocations) return;
+
         await updateClient(
           idProject,
           isViewDetailsClient?.id,
           data,
-          locationResponse,
+          formattedLocations[0],
           hasLocationChanged,
           showMessage,
           billingPeriod
@@ -248,7 +235,7 @@ export const ClientProjectForm = ({
           data,
           billingPeriod,
           clientDocuments,
-          locationResponse.data[0],
+          locationResponse.data.data[0],
           showMessage
         );
         setIsCreateClient(false);
