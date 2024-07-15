@@ -5,7 +5,7 @@ import Link from "next/link";
 import { BellSimpleRinging, Eye } from "phosphor-react";
 import { timeAgo } from "@/utils/utils";
 import TabPane from "antd/es/tabs/TabPane";
-
+import { notifications } from "./mockData";
 interface PopoverUserNotificationsProps {
   setIsPopoverVisible: React.Dispatch<React.SetStateAction<boolean>>;
   isPopoverVisible: boolean;
@@ -19,246 +19,6 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
     setIsPopoverVisible(visible);
   };
 
-  const notifications = {
-    opens: [
-      {
-        title: "Notificacion 1",
-        name: "Descripcion de la notificacion 1",
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 12",
-        name: "Descripcion de la notificacion 1",
-
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 13",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000 * 2)
-      },
-      {
-        title: "Notificacion 14",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 24)
-      },
-      {
-        title: "Notificacion 15",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 8)
-      },
-      {
-        title: "Notificacion 1",
-        name: "Descripcion de la notificacion 1",
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 12",
-        name: "Descripcion de la notificacion 1",
-
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 13",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000 * 2)
-      },
-      {
-        title: "Notificacion 14",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 24)
-      },
-      {
-        title: "Notificacion 15",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 8)
-      },
-      {
-        title: "Notificacion 1",
-        name: "Descripcion de la notificacion 1",
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 12",
-        name: "Descripcion de la notificacion 1",
-
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 13",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000 * 2)
-      },
-      {
-        title: "Notificacion 14",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 24)
-      },
-      {
-        title: "Notificacion 15",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 8)
-      },
-      {
-        title: "Notificacion 1",
-        name: "Descripcion de la notificacion 1",
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 12",
-        name: "Descripcion de la notificacion 1",
-
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 13",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000 * 2)
-      },
-      {
-        title: "Notificacion 14",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 24)
-      },
-      {
-        title: "Notificacion 15",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 8)
-      },
-      {
-        title: "Notificacion 1",
-        name: "Descripcion de la notificacion 1",
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 12",
-        name: "Descripcion de la notificacion 1",
-
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 13",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000 * 2)
-      },
-      {
-        title: "Notificacion 14",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 24)
-      },
-      {
-        title: "Notificacion 15",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 8)
-      },
-      {
-        title: "Notificacion 1",
-        name: "Descripcion de la notificacion 1",
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 12",
-        name: "Descripcion de la notificacion 1",
-
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 13",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000 * 2)
-      },
-      {
-        title: "Notificacion 14",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 24)
-      },
-      {
-        title: "Notificacion 15",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 8)
-      },
-      {
-        title: "Notificacion 1",
-        name: "Descripcion de la notificacion 1",
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 12",
-        name: "Descripcion de la notificacion 1",
-
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 13",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000 * 2)
-      },
-      {
-        title: "Notificacion 14",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 24)
-      },
-      {
-        title: "Notificacion 15",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 8)
-      },
-      {
-        title: "Notificacion 16",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000 * 24 * 30)
-      }
-    ],
-    pending: [
-      {
-        title: "Notificacion 1",
-        name: "Descripcion de la notificacion 1",
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 12",
-        name: "Descripcion de la notificacion 1",
-
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 13",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000 * 2)
-      },
-      {
-        title: "Notificacion 14",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 24)
-      },
-      {
-        title: "Notificacion 15",
-        name: "Farmatodo",
-
-        time: new Date(Date.now() - 3600000 * 8)
-      },
-      {
-        title: "Notificacion 16",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000 * 24 * 30)
-      }
-    ]
-  };
   const content = (
     <div className="notificationsPopoverContent">
       <div className="modalTitle">
@@ -332,9 +92,11 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
       arrow={false}
     >
       <div className="notificationsWrapper">
-        <div className={`notifications ${notifications?.pending.length > 0 ? "notifications_active" : ""}`}>
+        <div
+          className={`notifications ${notifications?.pending.length > 0 ? "notifications_active" : ""}`}
+        >
           <BellSimpleRinging />
-          {notifications?.pending.length> 0 && (
+          {notifications?.pending.length > 0 && (
             <span className="notificationsLength">{notifications?.pending.length}</span>
           )}
         </div>

@@ -6,6 +6,7 @@ import UiSearchInput from "@/components/ui/search-input/search-input";
 import FiltersNotifications from "@/components/atoms/Filters/FiltersNotifications/FiltersNotifications";
 import { formatDateAndTime } from "@/utils/utils";
 import { Check, Eye, X } from "phosphor-react";
+import { notifications } from "./mockdata";
 
 const ListPanel = [
   { key: "pending", value: "Pendientes" },
@@ -26,57 +27,6 @@ interface Notifications {
   closed: Notification[];
 }
 export const NotificationsView = () => {
-  const notifications = {
-    opens: [
-      {
-        title: "Notificacion 1",
-        description: "Pendiente por aprobación de Santiago Pachón",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Cambio de estado factura",
-        description: "Pendiente por aprobación de Santiago Pachón",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Notificacion 13",
-        description: "Pendiente por aprobación de Santiago Pachón",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000)
-      }
-    ],
-    pending: [
-      {
-        title: "Notificacion 1",
-        description: "Pendiente por aprobación de Santiago Pachón",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Actualización datos de cliente",
-        description: "Pendiente por aprobación de Santiago Pachón",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000)
-      },
-      {
-        title: "Cambio de estado factura",
-        description: "Pendiente por aprobación de Santiago Pachón",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000)
-      }
-    ],
-    closed: [
-      {
-        title: "Notificacion 1",
-        description: "Pendiente por aprobación de Santiago Pachón",
-        name: "Farmatodo",
-        time: new Date(Date.now() - 3600000)
-      }
-    ]
-  };
-
   const renderNotifications = (type: keyof Notifications) => {
     const currentNotifications = notifications[type];
     return currentNotifications?.map((item, index) => (
