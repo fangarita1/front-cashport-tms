@@ -248,7 +248,6 @@ export const stringToBoolean = (value: string | boolean | undefined): boolean =>
   return value === "true" || value === true;
 };
 
-//dame una funcion que pase un fache pasada ejemplo uno fecha de hace una hora y me devuelva "hace 1 hora" o "hace 2 horas" hasta 24  o "hace 1 dia" o "hace 2 dias" o "hace 1 semana" o "hace 2 semanas" o "hace 1 mes"
 export const timeAgo = (date: string): string => {
   const currentDate = new Date();
   const dateToCompare = new Date(date);
