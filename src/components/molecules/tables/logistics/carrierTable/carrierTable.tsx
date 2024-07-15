@@ -111,8 +111,8 @@ export const CarrierTable = () => {
     }
   ];
   return (
-    <div className="mainProjectsTable">
-      <Flex justify="space-between" className="mainProjectsTable_header">
+    <div className="mainCarrierTable">
+      <Flex justify="space-between" className="mainCarrierTable_header">
         <Flex gap={"10px"}>
           <UiSearchInput
             className="search"
