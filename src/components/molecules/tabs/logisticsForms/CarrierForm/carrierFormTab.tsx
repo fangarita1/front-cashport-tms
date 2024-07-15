@@ -163,7 +163,7 @@ export const CarrierFormTab = ({
             className="buttonGoBack"
             icon={<CaretLeft size={"1.45rem"} />}
           >
-            Ver Conductores
+            Ver Proveedores
           </Button>
           <Flex gap={"1rem"}>
             {(statusForm === "review" || statusForm === "edit") && (

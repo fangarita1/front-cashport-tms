@@ -834,6 +834,7 @@ export interface IDriver {
   phone: number;
   email: string;
   document_type: number;
+  vehicle_type: number[];
   document: string;
   license: string;
   license_category: string;

@@ -1,9 +1,9 @@
 "use client";
 
-import { CarrierInfoView } from "@/components/organisms/logistics/proveedores/providerInfo/CarrierInfo";
+import { ProviderInfoView } from "@/components/organisms/logistics/proveedores/providerInfo/providerInfo";
 
 function CarrierInfoPage() {
-  return <CarrierInfoView />;
+  return <ProviderInfoView idParam={""} />;
 }
 
 export default CarrierInfoPage;

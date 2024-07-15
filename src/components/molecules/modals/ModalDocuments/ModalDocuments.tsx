@@ -40,16 +40,16 @@ export default function ModalDocuments(props: PropsModalDocuments) {
       <Flex style={{ width: "100%" }} justify="space-between">
         <Row style={{ width: "100%" }} justify="space-between">
           <Col span={24}>
-            <Row style={{ width: "100%" }}>
+            <Row style={{ width: "100%", marginBottom: "1rem" }}>
               {mockFiles.map((file) => (
-                // eslint-disable-next-line react/jsx-key
-                <UploadDocumentButton
-                  key={file.id}
-                  title={file.description}
-                  isMandatory={file.optional.data.includes(0)}
-                  aditionalData={file.id}
-                  setFiles={setFiles}
-                />
+                <Row key={file.id} style={{ width: "100%", margin: "1rem 0" }}>
+                  <UploadDocumentButton
+                    title={file.description}
+                    isMandatory={file.optional.data.includes(0)}
+                    aditionalData={file.id}
+                    setFiles={setFiles}
+                  />
+                </Row>
               ))}
             </Row>
           </Col>

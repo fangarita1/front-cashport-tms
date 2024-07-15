@@ -26,7 +26,6 @@ export const getVehicleType = async (): Promise<IListDataVehiche> => {
         }
       }
     );
-    console.log(response.data);
 
     return response.data;
   } catch (error) {

@@ -13,6 +13,7 @@ import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTab
 import { DriverTable } from "@/components/molecules/tables/logistics/driverTable/driverTable";
 import { getVehicleById } from "@/services/logistics/vehicle";
 import useSWR from "swr";
+import { CarrierFormTab } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
 
 const { Title } = Typography;
 interface Props {
