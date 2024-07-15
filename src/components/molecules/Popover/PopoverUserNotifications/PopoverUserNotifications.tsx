@@ -266,7 +266,7 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
           <p>Notificaciones</p>
         </div>
         <div>
-          <Link href="/notifications" passHref>
+          <Link href="/notificaciones" passHref>
             Ver todo
           </Link>
         </div>
