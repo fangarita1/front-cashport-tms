@@ -8,7 +8,8 @@ interface Props {
 }
 export const usePortfolios = ({ page }: Props) => {
   const { ID } = useAppStore((state) => state.selectProject);
-  const pathKey = `/portfolio/client/project/${ID}?page=${page}`;
+  const limit = 100;
+  const pathKey = `/portfolio/client/project/${ID}?page=${page}&limit=${limit}`;
   const { data, isLoading } = useSWR<IViewClientsTable>(pathKey, fetcher);
 
   return {
