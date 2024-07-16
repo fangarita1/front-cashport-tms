@@ -112,11 +112,7 @@ const columns: TableProps<IProject>["columns"] = [
     render: (_, { LOGO }) => (
       <>
         {LOGO ? (
-          <Avatar
-            shape="square"
-            size={70}
-            src={LOGO.trim()}
-          />
+          <Avatar shape="square" size={70} src={LOGO.trim()} />
         ) : (
           <Avatar shape="square" className="imageWithoutImage" size={65} icon={<Clipboard />} />
         )}
@@ -177,8 +173,8 @@ const columns: TableProps<IProject>["columns"] = [
     render: (_, { CURRENCY }) => {
       return (
         <>
-          {CURRENCY.map(({ CURRENCY_NAME, currency_name = "", id }) => {
-            const currencyName = CURRENCY_NAME ?? currency_name;
+          {CURRENCY.map(({ CURRENCY_NAME = "", id }) => {
+            const currencyName = CURRENCY_NAME ?? CURRENCY_NAME;
             return <Text key={`${id}-${currencyName}`}>{currencyName.toUpperCase() + " "}</Text>;
           })}
         </>

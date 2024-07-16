@@ -10,12 +10,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { logOut } from "../../../../firebase-utils";
 import Link from "next/link";
 import { useAppStore } from "@/lib/store/store";
+import useStore from "@/lib/hook/useStore";
 
 export const SideBar = () => {
   const [isSideBarLarge, setIsSideBarLarge] = useState(false);
   const router = useRouter();
   const path = usePathname();
-  const { LOGO } = useAppStore((state) => state.selectProject);
+  const project = useStore(useAppStore, (state) => state.selectProject);
+  const LOGO = project?.LOGO;
 
   return (
     <div className={isSideBarLarge ? "mainLarge" : "main"}>
@@ -49,6 +51,16 @@ export const SideBar = () => {
             className={path.startsWith("/descuentos") ? "buttonIcon" : "buttonIconActive"}
           >
             {isSideBarLarge && "Descuentos"}
+          </Button>
+        </Link>
+        <Link href="/notificaciones" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<BellSimpleRinging size={26} />}
+            className={path.startsWith("/notificaciones") ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Notificaciones"}
           </Button>
         </Link>
         <Link href="/comercio" passHref legacyBehavior>
