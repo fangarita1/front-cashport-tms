@@ -25,7 +25,6 @@ export const DriverTable = ({ params: { id } }: Props) => {
     },
     refreshInterval: 30000
   });
-  const [driversOptions, setDriversOptions] = useState<any>([]);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
@@ -66,15 +65,15 @@ export const DriverTable = ({ params: { id } }: Props) => {
       key: "status",
       className: "tableTitle",
       width: "130px",
-      dataIndex: "status",
-      render: (_, { status }) => (
+      dataIndex: "active",
+      render: (_, { active }) => (
         <Flex>
           <Flex
             align="center"
-            className={status ? "statusContainerActive" : "statusContainerInactive"}
+            className={active ? "statusContainerActive" : "statusContainerInactive"}
           >
-            <div className={status ? "statusActive" : "statusInactive"} />
-            <Text>{status ? "Activo" : "Inactivo"}</Text>
+            <div className={active ? "statusActive" : "statusInactive"} />
+            <Text>{active ? "Activo" : "Inactivo"}</Text>
           </Flex>
         </Flex>
       )
