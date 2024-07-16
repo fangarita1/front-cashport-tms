@@ -19,6 +19,7 @@ export const CreateDriverView = ({ params }: Props) => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const onCreateDriver = async (data: IFormDriver) => {
+    data.general.company_id = params.id;
     try {
       const response = await addDriver(data.general, data.logo as any, data?.files as any);
 
@@ -27,7 +28,7 @@ export const CreateDriverView = ({ params }: Props) => {
           type: "success",
           content: "El conductor fue creado exitosamente."
         });
-        push("/logistics/drivers/driver/" + response.data.data.id);
+        push(`/logistics/providers/${params.id}/driver/${response.data.data.id}`);
       }
     } catch (error) {
       messageApi.open({

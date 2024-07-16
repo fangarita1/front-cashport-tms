@@ -1,4 +1,4 @@
-import { Flex, Typography, message } from "antd";
+import { Flex, Typography } from "antd";
 
 // components
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
@@ -12,10 +12,8 @@ import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTab
 const { Title } = Typography;
 
 export const CreateGeneralView = () => {
-  const [messageApi, contextHolder] = message.useMessage();
   return (
     <>
-      {contextHolder}
       <main className="mainCreateOrder">
         <SideBar />
         <Flex vertical className="containerCreateOrder">

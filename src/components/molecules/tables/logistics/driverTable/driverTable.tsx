@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Button, Flex, Table, Typography } from "antd";
+import { Button, Flex, message, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import { DotsThree, Eye, Plus, Triangle } from "phosphor-react";
 
@@ -9,6 +9,7 @@ import UiSearchInput from "@/components/ui/search-input";
 import { IDriver } from "@/types/logistics/schema";
 import { getAllDrivers } from "@/services/logistics/drivers";
 import Link from "next/link";
+import useSWR from "swr";
 
 interface Props {
   params: {
@@ -17,53 +18,22 @@ interface Props {
 }
 
 export const DriverTable = ({ params: { id } }: Props) => {
-  const [drivers, setDrivers] = useState<IDriver[]>([]);
+  const { data: drivers, isLoading } = useSWR({ providerId: id }, getAllDrivers, {
+    onError: (error: any) => {
+      console.error(error);
+      message.error(error.message);
+    },
+    refreshInterval: 30000
+  });
   const [driversOptions, setDriversOptions] = useState<any>([]);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const datasource: any[] = [];
 
   const { Text } = Typography;
-
-  const loadDrivers = async () => {
-    if (drivers != undefined && drivers.length > 0) return;
-    const result = await getAllDrivers();
-    if (result.data.data.length > 0) {
-      const listDrivers: any[] | ((prevState: IDriver[]) => IDriver[]) = [];
-      const listDriversOptions: { label: any; value: any }[] = [];
-
-      result.data.data.forEach((item, index) => {
-        listDrivers.push(item);
-        listDriversOptions.push({ label: item.name, value: item.id });
-      });
-
-      setDrivers(listDrivers);
-      setDriversOptions(listDriversOptions);
-    }
-  };
-
-  loadDrivers();
 
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);
   };
-
-  drivers.forEach((element) => {
-    if (element.active.data[0] === 1) {
-      element.status = true;
-    } else {
-      element.status = false;
-    }
-    datasource.push({
-      id: element.id,
-      company: element.company,
-      name: element.name,
-      docuemnt: element.document,
-      phone: element.phone,
-      email: element.email,
-      status: element.status
-    });
-  });
 
   const columns: TableProps<IDriver>["columns"] = [
     {
@@ -78,8 +48,8 @@ export const DriverTable = ({ params: { id } }: Props) => {
     },
     {
       title: "Documento",
-      dataIndex: "docuemnt",
-      key: "docuemnt"
+      dataIndex: "document",
+      key: "document"
     },
     {
       title: "Telefono",
@@ -147,6 +117,7 @@ export const DriverTable = ({ params: { id } }: Props) => {
       <Table
         scroll={{ y: "61dvh", x: undefined }}
         columns={columns as TableProps<any>["columns"]}
+        loading={isLoading}
         pagination={{
           pageSize: 25,
           showSizeChanger: false,
@@ -162,7 +133,7 @@ export const DriverTable = ({ params: { id } }: Props) => {
             return originalElement;
           }
         }}
-        dataSource={datasource}
+        dataSource={drivers}
       />
     </div>
   );

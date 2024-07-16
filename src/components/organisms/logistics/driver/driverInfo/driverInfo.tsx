@@ -1,16 +1,11 @@
 "use client";
-import { Flex, Typography, message, Row, Col, Tabs, TabsProps, Spin, Button, Result } from "antd";
+import { Flex, Typography, message, Button, Result } from "antd";
 import React, { useEffect, useState } from "react";
-import { SideBar } from "@/components/molecules/SideBar/SideBar";
-import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
-import { useRouter } from "next/navigation";
 import "../../../../../styles/_variables_logistics.css";
 import "./driverInfo.scss";
 import { DriverFormTab } from "@/components/molecules/tabs/logisticsForms/driverForm/driverFormTab";
 import { getDriverById, updateDriver } from "@/services/logistics/drivers";
 import { IDriver, IFormDriver } from "@/types/logistics/schema";
-import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTable/carrierTableConfig";
-import { VehicleTable } from "@/components/molecules/tables/logistics/vehicleTable/vehicleTable";
 import Link from "next/link";
 
 interface Props {
@@ -21,30 +16,15 @@ interface Props {
   };
 }
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 export const DriverInfoView = ({ isEdit = false, params }: Props) => {
-  const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const [drivers, setDrivers] = useState<IDriver[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [value, setValue] = useState("3");
 
   const [isEditProject, setIsEditProject] = useState(isEdit);
-  const [isCreateUser, setIsCreateUser] = useState(false);
-  const [isViewDetailsUser, setIsViewDetailsUser] = useState({
-    active: false,
-    id: 0
-  });
-
-  const onGoBackTableUsers = () => {
-    setIsCreateUser(false);
-    setIsViewDetailsUser({
-      active: false,
-      id: 0
-    });
-  };
 
   const onUpdateDriver = async (finalData: IFormDriver) => {
     try {
