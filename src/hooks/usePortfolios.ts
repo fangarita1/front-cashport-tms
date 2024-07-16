@@ -3,12 +3,16 @@ import { IViewClientsTable } from "@/types/clients/IViewClientsTable";
 import useSWR from "swr";
 import { useAppStore } from "@/lib/store/store";
 
-export const usePortfolios = () => {
+interface Props {
+  page?: number;
+}
+export const usePortfolios = ({ page }: Props) => {
   const { ID } = useAppStore((state) => state.selectProject);
-  const { data, isLoading } = useSWR<IViewClientsTable>(`/portfolio/client/project/${ID}`, fetcher);
+  const pathKey = `/portfolio/client/project/${ID}?page=${page}`;
+  const { data, isLoading } = useSWR<IViewClientsTable>(pathKey, fetcher);
 
   return {
-    data: data?.data,
+    data: data,
     loading: isLoading
   };
 };
