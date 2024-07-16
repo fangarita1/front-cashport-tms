@@ -31,7 +31,10 @@ export const ClientsViewTable = () => {
 
   const { data, loading } = usePortfolios({ page: page });
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingOpenPortfolio, setLoadingOpenPortfolio] = useState({
+    isLoading: false,
+    loadingId: 0
+  });
 
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);
@@ -112,9 +115,16 @@ export const ClientsViewTable = () => {
       render: (_, row: IClientsPortfolio) => (
         <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
           <Button
-            onClick={() => setIsLoading(true)}
+            key={row.client_id}
+            onClick={() => setLoadingOpenPortfolio({ isLoading: true, loadingId: row.client_id })}
             className="buttonSeeProject"
-            icon={isLoading ? <Spin /> : <Eye size={"1.3rem"} />}
+            icon={
+              loadingOpenPortfolio.loadingId === row.client_id && loadingOpenPortfolio.isLoading ? (
+                <Spin />
+              ) : (
+                <Eye size={"1.3rem"} />
+              )
+            }
           />
         </Link>
       )
