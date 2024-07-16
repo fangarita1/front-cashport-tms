@@ -20,14 +20,25 @@ import { formatMoney } from "@/utils/utils";
 import { useAppStore } from "@/lib/store/store";
 import redirectModal from "@/components/molecules/modals/redirectModal/RedirectModal";
 import "./ClientsViewTable.scss";
+import useStore from "@/lib/hook/useStore";
 
 const { Text } = Typography;
 
 export const ClientsViewTable = () => {
-  const { ID } = useAppStore((projects) => projects.selectProject);
+  const [isComponentLoading, setIsComponentLoading] = useState(true);
+
+  const project = useStore(useAppStore, (projects) => projects.selectProject);
+  const ID = project?.ID;
+
   useEffect(() => {
-    if (!ID) redirectModal();
+    setIsComponentLoading(false);
   }, []);
+
+  useEffect(() => {
+    if (!isComponentLoading && !ID) {
+      redirectModal();
+    }
+  }, [isComponentLoading, ID]);
 
   const { data: clients } = usePortfolios();
 
