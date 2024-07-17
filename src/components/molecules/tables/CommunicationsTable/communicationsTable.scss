@@ -1,0 +1,27 @@
+@import "@styles/variables.scss";
+
+.mainCommunicationsTable {
+    margin-top: 1rem;
+    width: 100%;
+    overflow-y: none;
+    height: 100%;
+
+    .buttonNewCommunication {
+        background-color: $secondary;
+        color: black;
+        font-weight: 600;
+        box-shadow: none;
+        display: flex;
+        align-items: center;
+
+        &:hover {
+            background-color: $secondary !important;
+            opacity: 0.8;
+            color: black;
+        }
+    }
+
+    .communicationsTable {
+        margin-top: 1rem;
+    }
+}
