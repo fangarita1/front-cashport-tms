@@ -26,3 +26,5 @@ export interface Active {
   type: string;
   data: number[];
 }
+
+export type DocumentCompleteType = CertificateType & { file: File | undefined } & { expirationDate: any } & { link?: string };

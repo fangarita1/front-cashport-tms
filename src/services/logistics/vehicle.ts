@@ -1,19 +1,13 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { IListData, IListDataVehiche, IListDataVehicheDetail } from "@/types/logistics/schema";
+import { API } from "@/utils/api/api";
+import { GenericResponse } from "@/types/global/IGlobal";
 
-export const getAllVehicles = async (): Promise<IListData> => {
-  try {
-    const response: IListData = await axios.get(`${config.API_HOST}/vehicle/all`, {
-      headers: {
-        Accept: "application/json, text/plain, */*"
-      }
-    });
-    return response;
-  } catch (error) {
-    console.log("Error get all vehicles: ", error);
-    return error as any;
-  }
+export const getAllVehicles = async ({ id }: { id: string }): Promise<any[]> => {
+  const response: GenericResponse<any[]> = await API.get(`/vehicle/provider/${id}`);
+  if (response.success) return response.data;
+  else throw response;
 };
 
 export const getVehicleType = async (): Promise<IListDataVehiche> => {

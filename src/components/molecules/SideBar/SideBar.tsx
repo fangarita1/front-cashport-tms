@@ -61,21 +61,21 @@ export const SideBar = () => {
             {isSideBarLarge && "Descuentos"}
           </Button>
         </Link>
-        <Link href="/" passHref legacyBehavior>
-          <Button
-            type="primary"
-            size="large"
-            icon={<UsersThree size={26} />}
-            className={path.startsWith("/clientes") ? "buttonIcon" : "buttonIconActive"}
-          >
-            {isSideBarLarge && "Clientes"}
-          </Button>
-        </Link>
         <Link href="/logistics/providers/all" passHref legacyBehavior>
           <Button
             type="primary"
             size="large"
             icon={<UsersThree size={26} />}
+            className={path.startsWith("/logistics/providers") ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Clientes"}
+          </Button>
+        </Link>
+        <Link href="/" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<Gear size={26} />}
             className={path.startsWith("/clientes") ? "buttonIcon" : "buttonIconActive"}
           >
             {isSideBarLarge && "Clientes"}
@@ -86,7 +86,7 @@ export const SideBar = () => {
             type="primary"
             size="large"
             icon={<Gear size={26} />}
-            className={path === "/" ? "buttonIcon" : "buttonIconActive"}
+            className={path.startsWith("/logistics/configuration") ? "buttonIcon" : "buttonIconActive"}
           >
             {isSideBarLarge && "Ajustes"}
           </Button>

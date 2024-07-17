@@ -109,7 +109,7 @@ export const VehicleFormTab = ({
 
     const vehicleData: any = {
       ...data.general,
-      id_carrier: Number(data.general.id_carrier) || 14
+      id_carrier: Number(params.id) || 14
     };
 
     try {

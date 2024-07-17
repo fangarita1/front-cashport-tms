@@ -1,60 +1,53 @@
-import { useState } from "react";
-import { Button, Flex, Table, Typography } from "antd";
+import { useEffect, useState } from "react";
+import { Button, Flex, message, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import { DotsThree, Eye, Triangle } from "phosphor-react";
 import "./carrierTable.scss";
 import UiSearchInput from "@/components/ui/search-input";
 import { ICarrier } from "@/types/logistics/schema";
 import { getAllCarriers } from "@/services/logistics/carrier";
+import useSWR from "swr";
 
 const { Text } = Typography;
 
 export const CarrierTable = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [drivers, setDrivers] = useState<ICarrier[]>([]);
-  const [driversOptions, setDriversOptions] = useState<any>([]);
-  const datasource: any[] = [];
+  const [datasource, setDatasource] = useState<any[]>([]);
 
-
-  const loadCarriers = async () => {
-    if(drivers != undefined && drivers.length > 0) return;
-    const result = await getAllCarriers();
-    if (result.data.data.length > 0) {
-      const listCarriers: any[] | ((prevState: ICarrier[]) => ICarrier[]) = [];
-      const listCarriersOptions: { label: any; value: any }[] = [];
-      result.data.data.forEach((item, index) => {
-        listCarriers.push(item);
-        listCarriersOptions.push({ label: item.name, value: item.id });
-      });
-
-      setDrivers(listCarriers);
-      setDriversOptions(listCarriersOptions);
-    }
-  };
+  const { data: drivers, isLoading } = useSWR({},getAllCarriers, {
+    onError: (error: any) => {
+      console.error(error);
+      message.error(error.message);
+    },
+    refreshInterval: 30000
+  });
 
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);
   };
 
-  loadCarriers();
+/*   loadCarriers(); */
 
-  drivers.forEach((element) => {
-    if (element.active.data[0] === 1) {
-      element.status = true;
-    } else {
-      element.status = false;
-    }
-    datasource.push({
-      id: element.id,
-      nit: element.nit,
-      name: element.description,
-      type: element.carrier_type,
-      vehicle: element.vehicles,
-      drivers: element.drivers,
-      status: element.status
-    });
-  });
+  useEffect(() => {
+    const data = drivers?.map((element: any) => {
+      if (element.active.data[0] === 1) {
+        element.status = true;
+      } else {
+        element.status = false;
+      }
+      return {
+        id: element.id,
+        nit: element.nit,
+        name: element.description,
+        type: element.carrier_type,
+        vehicle: element.vehicles,
+        drivers: element.drivers,
+        status: element.status
+      };
+    }) || [];
+    setDatasource(data);
+  }, [drivers]);
 
   const columns: TableProps<ICarrier>["columns"] = [
     {
@@ -106,13 +99,17 @@ export const CarrierTable = () => {
       width: "54px",
       dataIndex: "",
       render: (_, { id }) => (
-        <Button href={`/logistics/providers/${id}`} className="icon-detail" icon={<Eye size={20} />} />
+        <Button
+          href={`/logistics/providers/${id}`}
+          className="icon-detail"
+          icon={<Eye size={20} />}
+        />
       )
     }
   ];
   return (
-    <div className="mainProjectsTable">
-      <Flex justify="space-between" className="mainProjectsTable_header">
+    <div className="mainCarrierTable">
+      <Flex justify="space-between" className="mainCarrierTable_header">
         <Flex gap={"10px"}>
           <UiSearchInput
             className="search"
@@ -133,6 +130,7 @@ export const CarrierTable = () => {
       <Table
         scroll={{ y: "61dvh", x: undefined }}
         columns={columns as TableProps<any>["columns"]}
+        loading={isLoading}
         pagination={{
           pageSize: 25,
           onChange: onChangePage,

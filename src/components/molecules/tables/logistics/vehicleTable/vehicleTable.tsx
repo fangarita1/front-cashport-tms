@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Button, Flex, Table, Typography } from "antd";
+import { Button, Flex, message, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import { DotsThree, Eye, Plus, Triangle } from "phosphor-react";
 import Link from "next/link";
@@ -22,7 +22,14 @@ export const VehicleTable = ({ params: { id } }: Props) => {
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);
   };
-  const { data: vihicles, error } = useSWR("/vehicle/all", getAllVehicles);
+
+  const { data: vihicles, error } = useSWR({ id }, ({ id }) => getAllVehicles({ id }), {
+    onError: (error) => {
+      message.error(error?.message);
+    }
+  });
+
+  console.log(vihicles);
 
   const columns: TableProps<IVehicle>["columns"] = [
     {
@@ -103,7 +110,7 @@ export const VehicleTable = ({ params: { id } }: Props) => {
           }
         }}
         dataSource={
-          vihicles?.data?.data?.map((e) => ({
+          vihicles?.map((e) => ({
             company: e.company,
             type: e.vehicle_type,
             mark: e.brand,

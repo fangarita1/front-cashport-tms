@@ -7,6 +7,7 @@ import "./createDriver.scss";
 import { DriverFormTab } from "@/components/molecules/tabs/logisticsForms/driverForm/driverFormTab";
 import { addDriver } from "@/services/logistics/drivers";
 import { IFormDriver } from "@/types/logistics/schema";
+import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 
 type Props = {
   params: {
@@ -19,21 +20,33 @@ export const CreateDriverView = ({ params }: Props) => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const onCreateDriver = async (data: IFormDriver) => {
+    data.general.company_id = params.id;
     try {
-      const response = await addDriver(data.general, data.logo as any, data?.files as any);
+      const response = await addDriver(
+        data.general,
+        data.logo as any,
+        data?.files as DocumentCompleteType[]
+      );
 
       if (response.status === 200) {
         messageApi.open({
           type: "success",
           content: "El conductor fue creado exitosamente."
         });
-        push("/logistics/drivers/driver/" + response.data.data.id);
+        push(`/logistics/providers/${params.id}/driver/${response.data.data.id}`);
       }
     } catch (error) {
-      messageApi.open({
-        type: "error",
-        content: "Oops, hubo un error por favor intenta mas tarde."
-      });
+      if (error instanceof Error) {
+        messageApi.open({
+          type: "error",
+          content: error.message
+        });
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "Oops, hubo un error por favor intenta mas tarde."
+        });
+      }
     }
   };
 
