@@ -11,6 +11,7 @@ import { SelectZone } from "@/components/molecules/selects/SelectZone/SelectZone
 import { SelectStructure } from "@/components/molecules/selects/SelectStructure/SelectStructure";
 import { SelectClientsGroup } from "@/components/molecules/selects/SelectClientsGroup/SelectClientsGroup";
 import GeneralSelect from "@/components/ui/general-select";
+import GeneralSearchSelect from "@/components/ui/general-search-select";
 
 const { Title } = Typography;
 
@@ -24,17 +25,17 @@ interface Props {
 export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
   const [zones, setZones] = useState([] as number[]);
   const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
-    {} as ISelectedBussinessRules
+    initDatSelectedBusinessRules
   );
   const [assignedGroups, setAssignedGroups] = useState([] as any[]);
 
   const {
     control,
-    // handleSubmit,
+    handleSubmit,
     formState: { errors }
   } = useForm<any>({});
 
-  const onSubmitHandler = async (data: any) => {
+  const handleCreateCommunication = (data: any) => {
     console.log(data);
   };
 
@@ -61,7 +62,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
         <InputForm
           titleInput="Descripción"
           control={control}
-          nameInput="address"
+          nameInput="description"
           // error={errors.description}
         />
       </div>
@@ -100,21 +101,37 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               title="Via"
               placeholder="Seleccionar via"
               options={mockVias}
-              customStyleContainer={{ maxWidth: "25%" }}
+              customStyleContainer={{ width: "25%", paddingRight: "0.25rem" }}
             />
           )}
         />
-        <InputForm
-          titleInput="TEMPORAL Para"
+        <Controller
+          name="forward"
           control={control}
-          nameInput="forward"
-          // error={errors.description}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <GeneralSearchSelect
+              errors={errors.forward}
+              field={field}
+              title="Para"
+              placeholder="Enviar a"
+              options={mockForward}
+            />
+          )}
         />
-        <InputForm
-          titleInput="TEMPORAL Copia"
+        <Controller
+          name="forward_copy"
           control={control}
-          nameInput="forwardCopy"
-          // error={errors.description}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <GeneralSearchSelect
+              errors={errors.forward}
+              field={field}
+              title="Copia"
+              placeholder="Copia a"
+              options={mockForward}
+            />
+          )}
         />
         <Flex gap={"1rem"}>
           <Controller
@@ -125,15 +142,15 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               <GeneralSelect
                 errors={errors.tags}
                 field={field}
-                title="Via"
+                title="Tags"
                 placeholder="Seleccionar tag"
                 options={mockTags}
-                customStyleContainer={{ maxWidth: "25%" }}
+                customStyleContainer={{ width: "25%" }}
               />
             )}
           />
           <InputForm
-            customStyle={{ width: "100%" }}
+            customStyle={{ width: "75%" }}
             titleInput="Asunto"
             control={control}
             nameInput="subject"
@@ -145,7 +162,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
           control={control}
           render={({ field }) => (
             <div className={styles.textArea}>
-              <p className={styles.textArea__label}>Observaciones</p>
+              <p className={styles.textArea__label}>Cuerpo</p>
               <textarea
                 {...field}
                 placeholder="Ingresar cuerpo del correo"
@@ -171,7 +188,9 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
       </div>
 
       <Flex justify="end">
-        <PrincipalButton>Crear comunicación</PrincipalButton>
+        <PrincipalButton onClick={handleSubmit(handleCreateCommunication)}>
+          Crear comunicación
+        </PrincipalButton>
       </Flex>
     </main>
   );
@@ -193,3 +212,22 @@ const mockAttachments = [
   { id: 1, value: 1, label: "PDF Estado de cuenta" },
   { id: 2, value: 2, label: "Excel cartera" }
 ];
+
+const mockForward = [
+  { value: 1, label: "Santiago Pachon" },
+  { value: 2, label: "Miguel Martinez" },
+  { value: 3, label: "Felipe Angarita" },
+  { value: 4, label: "Juan Perez" },
+  { value: 5, label: "Carlos Sanchez" },
+  { value: 6, label: "Jhon Doe" },
+  { value: 7, label: "Maria Perez" },
+  { value: 8, label: "Laura Martinez" },
+  { value: 9, label: "Sara Perez" },
+  { value: 10, label: "Camila Sanchez" }
+];
+
+const initDatSelectedBusinessRules: ISelectedBussinessRules = {
+  channels: [],
+  lines: [],
+  sublines: []
+};
