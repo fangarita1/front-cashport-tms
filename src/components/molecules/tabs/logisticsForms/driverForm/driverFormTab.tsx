@@ -30,7 +30,8 @@ import {
   _onSubmit,
   dataToProjectFormData,
   validationButtonText,
-  DriverFormTabProps
+  DriverFormTabProps,
+  DriverData
 } from "./driverFormTab.mapper";
 import { IDriver, IFormDriver, VehicleType } from "@/types/logistics/schema";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
@@ -47,10 +48,12 @@ import {
 } from "@/components/molecules/logistics/SelectLicenceCategory/SelectLicenceCategory";
 import useSWR from "swr";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
-import { CertificateType } from "@/types/logistics/certificate/certificate";
+import { CertificateType, DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
 import { getVehicleType } from "@/services/logistics/vehicle";
 import Link from "next/link";
+import dayjs from "dayjs";
+import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 
 const { Title, Text } = Typography;
 
@@ -58,7 +61,7 @@ export const DriverFormTab = ({
   onEditProject = () => {},
   onSubmitForm = () => {},
   statusForm = "review",
-  data = [] as IDriver[],
+  data = [] as DriverData[],
   onActiveProject = () => {},
   onDesactivateProject = () => {},
   params
@@ -79,6 +82,8 @@ export const DriverFormTab = ({
   const [loading, setloading] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
+
   const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data[0]);
   const {
     watch,
@@ -98,13 +103,43 @@ export const DriverFormTab = ({
     docReference: string;
     file: File | undefined;
   }
-  const [files, setFiles] = useState<FileObject[] | any[]>([]);
-
-  const [mockFiles, setMockFiles] = useState<CertificateType[]>([]);
+  const [files, setFiles] = useState<(FileObject & { aditionalData?: any })[]>([]);
 
   useEffect(() => {
-    console.log(files);
-  }, [files]);
+    if (Array.isArray(documentsType)) {
+      if (data[0]?.documents?.length) {
+        const fileSelected =
+          documentsType
+            ?.filter((f) => data[0].documents?.find((d) => d.id_document_type === f.id))
+            .map((f) => ({
+              ...f,
+              file: undefined,
+              link: data[0].documents?.find((d) => d.id_document_type === f.id)?.url_archive,
+              expirationDate: dayjs(
+                data[0].documents?.find((d) => d.id_document_type === f.id)?.expiration_date
+              )
+            })) || [];
+        console.log(fileSelected);
+        setSelectedFiles(fileSelected);
+      } else {
+        const fileSelected = documentsType
+          ?.filter(
+            (f) => f?.optional?.data?.includes(0) || selectedFiles?.find((f2) => f2.id === f.id)
+          )
+          ?.map((f) => ({
+            ...f,
+            file: files.find((f2) => f2.aditionalData === f.id)?.file,
+            expirationDate: selectedFiles.find((f2) => f2.id === f.id)?.expirationDate
+          }));
+        console.log(fileSelected);
+        if (fileSelected?.length) {
+          setSelectedFiles([...fileSelected]);
+        } else {
+          setSelectedFiles([]);
+        }
+      }
+    }
+  }, [files, documentsType]);
 
   const convertToSelectOptions = (vehicleTypes: VehicleType[]) => {
     if (!Array.isArray(vehicleTypes)) return [];
@@ -114,17 +149,38 @@ export const DriverFormTab = ({
     }));
   };
 
+  const handleChangeExpirationDate = (index: number, value: any) => {
+    setSelectedFiles((prevState: any[]) => {
+      const updatedFiles = [...prevState];
+      updatedFiles[index].expirationDate = value;
+      return updatedFiles;
+    });
+  };
+
+  const handleChange = (value: string[]) => {
+    const sf = documentsType?.filter((file) => value.includes(file.id.toString()));
+    if (sf) {
+      setSelectedFiles((prevState) => {
+        return sf.map((file) => ({
+          ...file,
+          file: prevState.find((f) => f.id === file.id)?.file,
+          expirationDate: prevState.find((f) => f.id === file.id)?.expirationDate
+        }));
+      });
+    }
+  };
+
   const onSubmit = (data: any) => {
     data.general.license_categorie = licences.data.find(
       (item) => item.id === data.general.license_category
     )?.value;
-    data.general.rh = bloodTypes.data.find((item) => item.id === data.general.rh)?.value;
+    data.general.rhval = bloodTypes.data.find((item) => item.id === data.general.rh)?.value;
     _onSubmit(
       data,
       setloading,
       setImageError,
       imageFile ? [{ docReference: "imagen", file: imageFile }] : undefined,
-      files,
+      selectedFiles,
       onSubmitForm,
       reset
     );
@@ -373,16 +429,27 @@ export const DriverFormTab = ({
             <text>Documentos</text>
           </label>
           <Row className="mainUploadDocuments">
-            {mockFiles.map((file) => (
+            {selectedFiles.map((file) => (
               // eslint-disable-next-line react/jsx-key
               <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
                 <UploadDocumentButton
                   key={file.id}
                   title={file.description}
-                  isMandatory={file.optional.data.includes(1)}
+                  isMandatory={file.optional.data.includes(0)}
                   aditionalData={file.id}
-                  setFiles={setFiles}
-                />
+                  setFiles={() => {}}
+                  files={file.file}
+                  disabled
+                >
+                  {file?.link ? (
+                    <UploadDocumentChild
+                      linkFile={file.link}
+                      nameFile={file.link.split("-").pop() || ""}
+                      onDelete={() => {}}
+                      showTrash={false}
+                    />
+                  ) : undefined}
+                </UploadDocumentButton>
               </Col>
             ))}
           </Row>
@@ -390,20 +457,23 @@ export const DriverFormTab = ({
             <Col span={24} className="text-right">
               <ModalDocuments
                 isOpen={isOpenModalDocuments}
-                mockFiles={mockFiles}
+                mockFiles={selectedFiles}
                 setFiles={setFiles}
-                setMockFiles={setMockFiles}
                 documentsType={documentsType}
                 isLoadingDocuments={isLoadingDocuments}
                 onClose={() => setIsOpenModalDocuments(false)}
+                handleChange={handleChange}
+                handleChangeExpirationDate={handleChangeExpirationDate}
               />
               <Row>
-                <Flex justify="flex-end" style={{ width: "100%", margin: "1rem" }}>
-                  <Button type="text" onClick={() => setIsOpenModalDocuments(true)}>
-                    <Plus />
-                    &nbsp;<Text>Cargar documentos</Text>
-                  </Button>
-                </Flex>
+                {statusForm === "create" && (
+                  <Flex justify="flex-end" style={{ width: "100%", margin: "1rem" }}>
+                    <Button type="text" onClick={() => setIsOpenModalDocuments(true)}>
+                      <Plus />
+                      &nbsp;<Text>Cargar documentos</Text>
+                    </Button>
+                  </Flex>
+                )}
               </Row>
             </Col>
           </Row>
@@ -413,8 +483,7 @@ export const DriverFormTab = ({
           <Flex className="buttonNewProject">
             {["edit", "create"].includes(statusForm) && (
               <Button
-                disabled={!isDirty}
-                className={`button ${isDirty ? "active" : ""}`}
+                className={`button ${true ? "active" : ""}`}
                 style={{ display: "flex" }}
                 htmlType={"submit"}
                 onClick={handleSubmit(onSubmit)}

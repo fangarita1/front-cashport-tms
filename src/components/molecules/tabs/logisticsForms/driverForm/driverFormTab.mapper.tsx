@@ -1,6 +1,7 @@
 import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
-import { IDriver, IFormDriver } from "@/types/logistics/schema";
+import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
+import { ICertificates, IDriver, IFormDriver } from "@/types/logistics/schema";
 import { IFormProject } from "@/types/projects/IFormProject";
 import Title from "antd/es/typography/Title";
 import dayjs from "dayjs";
@@ -9,7 +10,7 @@ import { UseFormReset, UseFormSetValue } from "react-hook-form";
 
 export interface DriverFormTabProps {
   idProjectForm?: string;
-  data?: IDriver[];
+  data?: DriverData[];
   disabled?: boolean;
   onEditProject?: () => void;
   onSubmitForm?: (data: any) => void;
@@ -22,7 +23,9 @@ export interface DriverFormTabProps {
   };
 }
 
-export const dataToProjectFormData = (data: IDriver): IFormDriver => {
+export type DriverData = IDriver & { licence?: string } & { documents?: ICertificates[] };
+
+export const dataToProjectFormData = (data: DriverData ): IFormDriver => {
   return {
     general: {
       id: data.id,
@@ -30,7 +33,7 @@ export const dataToProjectFormData = (data: IDriver): IFormDriver => {
       email: data.email,
       document_type: data.document_type,
       document: data.document,
-      license: data.license,
+      license: data?.licence || data.license,
       license_category: data.licence_category || "",
       license_expiration: dayjs(data.license_expiration) as any,
       name: data.name,
@@ -55,7 +58,7 @@ export const _onSubmit = (
   setloading: (value: SetStateAction<boolean>) => void,
   setImageError: (value: SetStateAction<boolean>) => void,
   imageFile: FileObject[] | undefined,
-  files: FileObject[] | undefined,
+  files: DocumentCompleteType[],
   onSubmitForm: (data: any) => void,
   reset: UseFormReset<IFormDriver>
 ) => {

@@ -1,4 +1,5 @@
 import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+import { DocumentCompleteType } from "./certificate/certificate";
 
 export interface IListData {
   id: any;
@@ -516,6 +517,7 @@ export interface ICertificates {
   created_by: string;
   modified_at?: Date | null;
   modified_by?: string | null;
+  id_document_type: number;
 }
 
 /**
@@ -2057,7 +2059,7 @@ export interface IVehiclesWithDefaults {
 export interface IFormDriver {
   general: IDriver;
   logo?: FileObject[];
-  files?: FileObject[];
+  files?: DocumentCompleteType[];
 }
 export interface IFormVehicle {
   general: IVehicle;

@@ -4,6 +4,7 @@ import { API } from "@/utils/api/api";
 import { IDriver, IListData } from "@/types/logistics/schema";
 import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { GenericResponse } from "@/types/global/IGlobal";
+import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 
 export const getAllDrivers = async ({ providerId }: { providerId: number }): Promise<any[]> => {
   const response: GenericResponse<any[]> = await API.get(`/driver/provider/${providerId}`);
@@ -42,7 +43,7 @@ export const updateDriver = async (data: IDriver): Promise<IListData> => {
 export const addDriver = async (
   data: IDriver,
   logo: FileObject[],
-  files: FileObject[]
+  files: DocumentCompleteType[]
 ): Promise<AxiosResponse<any, any>> => {
   try {
     const form = new FormData();
@@ -51,14 +52,16 @@ export const addDriver = async (
       docReference: file.docReference,
       uid: file?.file?.uid
     }));
-    body.files = files.map((file: any) => ({
-      docReference: file.docReference,
-      uid: file?.file?.uid
-    }));
-    form.append("body", JSON.stringify(body));
+    const expiration = files.find(f=>!f.expirationDate && f.expiry?.data.includes(1));
+    if(expiration){
+      throw new Error(`El documento ${expiration.description} debe tener una fecha de vencimiento`);
+    }
+    body.files = files
+    form.append("body", JSON.stringify({...body, rh: body.rhval as any}));
     form.append("logo", logo[0].file as unknown as File);
-    files.forEach((file: FileObject) => {
-      form.append(`file-for-${file.aditionalData}`, file.file as unknown as File);
+    files.forEach((file) => {
+      if (!file.file) throw new Error(`El archivo ${file.description} no se puede cargar`);
+      form.append(`file-for-${file.id}`, file.file);
     });
     const response = await axios.post(`${config.API_HOST}/driver/create`, form, {
       headers: {

@@ -22,6 +22,7 @@ interface DocumentProps {
   disabled?: boolean;
   children?: React.ReactNode;
   aditionalData?: any;
+  files?: File;
 }
 
 export const UploadDocumentButton = ({
@@ -32,14 +33,18 @@ export const UploadDocumentButton = ({
   draggerClassname,
   disabled,
   children,
-  aditionalData
+  aditionalData,
+  files,
 }: DocumentProps) => {
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(files || null);
 
   useEffect(() => {
-    if (children)
-      setUploadedFile(null);
+    if (children) setUploadedFile(null);
   }, [children]);
+
+  useEffect(() => {
+    setUploadedFile(files || null);
+  }, [files]);
 
   const handleOnChange: any = (info: infoObject) => {
     const { file: rawFile } = info;
@@ -90,7 +95,7 @@ export const UploadDocumentButton = ({
         prevState.splice(existingFileIndex, 1);
       }
 
-      return prevState;
+      return [...prevState];
     });
   };
 
