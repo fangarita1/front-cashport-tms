@@ -8,6 +8,7 @@ import UiSearchInput from "@/components/ui/search-input";
 import UiFilterDropdown from "@/components/ui/ui-filter-dropdown";
 
 import "./communicationsTable.scss";
+import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 
 const { Text, Link } = Typography;
 
@@ -15,27 +16,26 @@ interface PropsCommunicationsTable {
   setShowCommunicationDetails: Dispatch<
     SetStateAction<{
       communicationId: number;
-      showDetails: boolean;
+      active: boolean;
     }>
   >;
+  onCreateCommunication: () => void;
 }
 
-export const CommunicationsTable = ({ setShowCommunicationDetails }: PropsCommunicationsTable) => {
+export const CommunicationsTable = ({
+  setShowCommunicationDetails,
+  onCreateCommunication
+}: PropsCommunicationsTable) => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<any>([]);
-
   const height = useScreenHeight();
-
-  const onCreateCommunication = () => {
-    console.log("create communication");
-  };
 
   const loading = false;
 
   function handleSeeCommunicationDetails(communicationId: number) {
-    setShowCommunicationDetails({ communicationId, showDetails: true });
+    setShowCommunicationDetails({ communicationId, active: true });
   }
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
@@ -115,7 +115,7 @@ export const CommunicationsTable = ({ setShowCommunicationDetails }: PropsCommun
   return (
     <main className="mainCommunicationsTable">
       <Flex justify="space-between">
-        <Flex gap={"1.75rem"}>
+        <Flex gap={"0.625rem"}>
           <UiSearchInput
             className="search"
             placeholder="Buscar"
@@ -128,15 +128,10 @@ export const CommunicationsTable = ({ setShowCommunicationDetails }: PropsCommun
           <UiFilterDropdown />
           <DotsDropdown />
         </Flex>
-        <Button
-          type="primary"
-          className="buttonNewCommunication"
-          size="large"
-          onClick={onCreateCommunication}
-        >
+        <PrincipalButton onClick={onCreateCommunication}>
           Crear Comunicación
           <Plus weight="bold" size={15} />
-        </Button>
+        </PrincipalButton>
       </Flex>
 
       {loading ? (

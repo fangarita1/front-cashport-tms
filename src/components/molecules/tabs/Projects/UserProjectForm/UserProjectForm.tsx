@@ -272,7 +272,6 @@ export const UserProjectForm = ({
                 </Flex>
                 <Flex vertical style={{ width: "30%" }}>
                   <SelectClientsGroup
-                    userID={dataUser?.data?.ID}
                     disabled={!isEditAvailable}
                     assignedGroups={assignedGroups}
                     setAssignedGroups={setAssignedGroups}

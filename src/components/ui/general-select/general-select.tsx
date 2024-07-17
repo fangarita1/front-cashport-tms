@@ -54,7 +54,7 @@ const GeneralSelect = <T extends FieldValues>({
         labelInValue
       />
       {errors && (
-        <Typography.Text className="textError">La ciudad es obligatoria *</Typography.Text>
+        <Typography.Text className="textError">La {title} es obligatoria *</Typography.Text>
       )}
     </Flex>
   );

@@ -5,7 +5,6 @@ import { useClientsGroups } from "@/hooks/useClientsGroups";
 import "./selectClientsGroup.scss";
 
 interface Props {
-  userID: number;
   disabled?: boolean;
   assignedGroups: number[];
   setAssignedGroups: Dispatch<SetStateAction<any>>;

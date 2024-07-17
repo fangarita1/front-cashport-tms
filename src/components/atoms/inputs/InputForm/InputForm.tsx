@@ -8,7 +8,7 @@ interface Props {
   titleInput?: string;
   nameInput: string;
   control: Control<any> | undefined;
-  error: FieldError | undefined;
+  error?: FieldError | undefined;
   typeInput?: string;
   customStyle?: any;
   hiddenTitle?: boolean;

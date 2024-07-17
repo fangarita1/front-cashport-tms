@@ -1,25 +1,38 @@
 import { useState } from "react";
 import { CommunicationsTable } from "@/components/molecules/tables/CommunicationsTable/CommunicationsTable";
+import { CommunicationProjectForm } from "@/components/molecules/tabs/Projects/CommunicationProjectForm/CommunicationProjectForm";
 
 type showCommunicationDetails = {
   communicationId: number;
-  showDetails: boolean;
+  active: boolean;
 };
 
 export const CommunicationsProjectView = () => {
+  const [isCreateCommunication, setIsCreateCommunication] = useState(false);
   const [showCommunicationDetails, setShowCommunicationDetails] =
     useState<showCommunicationDetails>({} as showCommunicationDetails);
 
   const goBackToCommunicationsTable = () => {
     setShowCommunicationDetails({} as showCommunicationDetails);
+    setIsCreateCommunication(false);
+  };
+
+  const onCreateCommunication = () => {
+    setIsCreateCommunication(true);
   };
 
   return (
     <>
-      {showCommunicationDetails.showDetails ? (
-        <p>WIP</p>
+      {isCreateCommunication || showCommunicationDetails.active ? (
+        <CommunicationProjectForm
+          onGoBackTable={goBackToCommunicationsTable}
+          showCommunicationDetails={showCommunicationDetails}
+        />
       ) : (
-        <CommunicationsTable setShowCommunicationDetails={setShowCommunicationDetails} />
+        <CommunicationsTable
+          setShowCommunicationDetails={setShowCommunicationDetails}
+          onCreateCommunication={onCreateCommunication}
+        />
       )}
     </>
   );
