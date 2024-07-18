@@ -60,7 +60,7 @@ export const addDriver = async (
     form.append("body", JSON.stringify({...body, rh: body.rhval as any}));
     form.append("logo", logo[0].file as unknown as File);
     files.forEach((file) => {
-      if (!file.file) throw new Error(`El archivo ${file.description} no se puede cargar`);
+      if (!file.file) throw new Error(`No se puedo cargar el archivo ${file.description}`);
       form.append(`file-for-${file.id}`, file.file);
     });
     const response = await axios.post(`${config.API_HOST}/driver/create`, form, {
