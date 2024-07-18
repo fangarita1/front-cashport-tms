@@ -333,7 +333,7 @@ export const VehicleFormTab = ({
               />
             </Col>
             <Col span={24} className="text-right">
-              <ModalDocuments
+              {/* <ModalDocuments
                 isOpen={isOpenModalDocuments}
                 mockFiles={mockFiles}
                 setFiles={setFiles}
@@ -341,7 +341,7 @@ export const VehicleFormTab = ({
                 documentsType={documentsType}
                 isLoadingDocuments={isLoadingDocuments}
                 onClose={() => setIsOpenModalDocuments(false)}
-              />
+              /> */}
               <Row>
                 <Flex justify="flex-end" style={{ width: "100%", margin: "1rem" }}>
                   <Button type="text" onClick={() => setIsOpenModalDocuments(true)}>
