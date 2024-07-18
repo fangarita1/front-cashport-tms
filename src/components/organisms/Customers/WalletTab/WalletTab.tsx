@@ -145,6 +145,7 @@ export const WalletTab = () => {
         setIsPaymentAgreementOpen={setIsPaymentAgreementOpen}
         setShowActionDetailModal={setShowActionDetailModal}
         setSelectOpen={setIsSelectOpen}
+        clientId={clientId}
       />
       {isPaymentAgreementOpen && (
         <PaymentAgreementModal

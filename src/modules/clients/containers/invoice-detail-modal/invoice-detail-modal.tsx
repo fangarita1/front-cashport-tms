@@ -18,6 +18,7 @@ interface InvoiceDetailModalProps {
   onClose: () => void;
   invoiceId: number;
   clientId: number;
+  hiddenActions?: boolean;
   handleisGenerateActionOpen: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -26,6 +27,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
   onClose,
   invoiceId,
   clientId,
+  hiddenActions,
   handleisGenerateActionOpen
 }) => {
   const { data: invoiceData } = useInvoiceDetail({ invoiceId, clientId });
@@ -77,14 +79,16 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
             <Receipt size={20} />
             Ver factura
           </div>
-          <Button
-            className={styles.button__actions}
-            size="large"
-            icon={<DotsThree size={"1.5rem"} />}
-            onClick={() => handleisGenerateActionOpen(true)}
-          >
-            Generar acción
-          </Button>
+          {hiddenActions ? null : (
+            <Button
+              className={styles.button__actions}
+              size="large"
+              icon={<DotsThree size={"1.5rem"} />}
+              onClick={() => handleisGenerateActionOpen(true)}
+            >
+              Generar acción
+            </Button>
+          )}
         </div>
         <div className={styles.idOrder}>
           ID orden de compra
