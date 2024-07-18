@@ -133,7 +133,7 @@ export const CreateTransferOrderView = () => {
     try {
       const response = await addTransferOrder(
         data.body,
-        data?.files as TransferOrderDocumentType[]
+        data?.files || []
       );      
       if (response.status === SUCCESS) {
         messageApi.open({
