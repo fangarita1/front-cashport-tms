@@ -390,7 +390,7 @@ export const CreateOrderView = () => {
     }
   ];
   
-  const [optionsMaterial, setOptionsMaterial] = useState<SelectProps<object>['options']>([]);
+  const [optionsMaterial, setOptionsMaterial] = useState<any>([]);//useState<SelectProps<object>['options']>([]);
   const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
   let cargaIdx = 0;
 
@@ -447,7 +447,7 @@ export const CreateOrderView = () => {
                           </span>
                         </div>;
 
-        result.push({value:item.description, label: strlabel})
+        result.push({label: strlabel,value:item.description })
       });      
     }
 
@@ -536,7 +536,7 @@ export const CreateOrderView = () => {
     },
   ];
 
-  const [optionsVehicles, setOptionsVehicles] = useState<SelectProps<object>['options']>([]);
+  const [optionsVehicles, setOptionsVehicles] = useState<any>([]);//useState<SelectProps<object>['options']>([]);
   const [dataVehicles, setDataVehicles] = useState<IVehicleType[]>([]);
   let vehiclesIdx = 0;
 
@@ -1300,15 +1300,18 @@ export const CreateOrderView = () => {
               <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
                 Material
               </label><p>&nbsp;</p>
-              <AutoComplete
-                popupClassName="certain-category-search-dropdown"
-                popupMatchSelectWidth={500}
-                style={{ width: 250 }}
-                size="large"
-                options={optionsMaterial}
-              >
-                <Input.Search size="large" placeholder="Buscar material" />
-              </AutoComplete>
+              <Select
+                  showSearch
+                  placeholder="Buscar material"                  
+                  className="certain-category-search-dropdown"
+                  style={{ width:'400px' }}
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>                    
+                    option!.value!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  { optionsMaterial.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
+                </Select>
               <Table columns={columnsCarga} dataSource={dataCarga} />
               </>
             }
@@ -1332,15 +1335,18 @@ export const CreateOrderView = () => {
               <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
                 Vehículo Sugerido
               </label><p>&nbsp;</p>
-              <AutoComplete
-                popupClassName="certain-category-search-dropdown"
-                popupMatchSelectWidth={500}
-                style={{ width: 250 }}
-                size="large"
-                options={optionsVehicles}
-              >
-                <Input.Search size="large" placeholder="Agregar vehículo" />
-              </AutoComplete>
+              <Select
+                  showSearch
+                  placeholder="Agregar vehículo"                  
+                  className="certain-category-search-dropdown"
+                  style={{ width:'400px' }}
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>                    
+                    option!.value!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  { optionsVehicles.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
+                </Select>
               <Table columns={columnsCargaVehiculo} dataSource={dataVehicles} />
               </>
         </div>
