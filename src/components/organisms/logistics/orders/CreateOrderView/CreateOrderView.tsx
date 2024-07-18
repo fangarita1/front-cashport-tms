@@ -17,7 +17,7 @@ import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 
 //schemas
-import { IAditionalByMaterial, ICreateRegister, IFormTransferOrder, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ITransferOrder, ITransferOrderContacts, ITransferOrderOtherRequirements, IVehicleType, TransferOrderDocumentType } from "@/types/logistics/schema";
+import { IAditionalByMaterial, ICreateRegister, IFormTransferOrder, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ITransferOrder, ITransferOrderContacts, ITransferOrderDocuments, ITransferOrderOtherRequirements, IVehicleType, TransferOrderDocumentType } from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
@@ -45,12 +45,18 @@ import {
 import "../../../../../styles/_variables_logistics.css";
 
 import "./createorder.scss";
-import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+import { FileObject, UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import TextArea from "antd/es/input/TextArea";
 import { addTransferOrder } from "@/services/logistics/transfer-orders";
 import { getOtherRequirements } from "@/services/logistics/other-requirements";
 import { getPsl } from "@/services/logistics/psl";
 import { auth } from "../../../../../../firebase";
+import useSWRInmutable from "swr/immutable";
+import { getDocumentsByEntityType } from "@/services/logistics/certificates";
+import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
+import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
+import { FileText } from "phosphor-react";
+import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 
 const { Title, Text } = Typography;
 
@@ -74,6 +80,13 @@ export const CreateOrderView = () => {
   const [fechaInicialFlexible, setFechaInicialFlexible] = useState(0);
   const [fechaFinalFlexible, setFechaFinalFlexible] = useState(0);
   const [company, setCompany] = useState(1);
+
+  const { data: documentsType, isLoading: isLoadingDocuments } = useSWRInmutable(
+    "0",
+    getDocumentsByEntityType);
+  const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
+  const [files, setFiles] = useState<FileObject[] | any[]>([]);
 
   /* MAPBOX */
   const mapsAccessToken = 'pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA';//import.meta.env.VITE_MAP_BOX_ACCESS_TOKEN,
@@ -110,7 +123,7 @@ export const CreateOrderView = () => {
 
   useEffect(() => {
     loadLocations();
-  });
+  }, []);
 
   const loadLocations = async () => {
     if(locations.length >0 ) return;
@@ -130,6 +143,25 @@ export const CreateOrderView = () => {
       setLocationOptions(listlocationoptions);
     }
   };
+
+  useEffect(() => {
+    if (Array.isArray(documentsType)) {
+        const fileSelected = documentsType
+          ?.filter(
+            (f) => selectedFiles?.find((f2) => f2.id === f.id)
+          )
+          ?.map((f) => ({
+            ...f,
+            file: files.find((f2) => f2.aditionalData === f.id)?.file,
+            expirationDate: undefined
+          }));
+        if (fileSelected?.length) {
+          setSelectedFiles([...fileSelected]);
+        } else {
+          setSelectedFiles([]);
+        }
+      }
+  }, [files, documentsType]);
 
 
   // Cambia origen 
@@ -280,12 +312,17 @@ export const CreateOrderView = () => {
         return directions;
       } else {
         // No routes found
-        throw new Error("Unable to calculate directions");
+        throw new Error("No se encontraron rutas");
       }
     } catch (error) {
       // Handle error
-      console.error("Error calculating directions:", error);
-      throw error;
+      console.error("Error calculating directions:", error as any);
+      if (error instanceof Error) {
+        messageApi.error("Error calculando direcciones: " + error.message);
+      }
+      else {
+        messageApi.error("Error calculando direcciones: " + error);
+      }
     }
   };
 
@@ -456,7 +493,7 @@ export const CreateOrderView = () => {
   
   useEffect(() => {
     loadMaterials();
-  });
+  }, []);
 
   const addMaterial = async (value:any) =>{
     cargaIdx = cargaIdx + 1;
@@ -575,7 +612,7 @@ export const CreateOrderView = () => {
   
   useEffect(() => {
     loadSuggestedVehicles();
-  });
+  }, []);
 
   const addVehicle = async (value:any) =>{
     vehiclesIdx = vehiclesIdx + 1;
@@ -638,7 +675,7 @@ export const CreateOrderView = () => {
 
   useEffect(() => {
     loadPSL();
-  });
+  }, []);
 
   const addPsl = async () =>{
     pslIdx = pslIdx + 1;   
@@ -684,55 +721,28 @@ export const CreateOrderView = () => {
   };
 
 
-  /* informacion adicional */
-  /*archivos*/
-  interface FileObject {
-    docReference: string;
-    file: File | undefined;
-  }
-  const [files, setFiles] = useState<FileObject[] | any[]>([]);
 
-  const [mockFiles, setMockFiles] = useState<any[]>([]);
-
-  if(mockFiles.length < 1){
-    setMockFiles([
-      { id: 1, key:1, title: "archivo 1", isMandatory: true },
-      { id: 2, key:2, title: "archivo 2", isMandatory: true },
-      { id: 3, key:3, title: "archivo 3", isMandatory: false },
-    ]);
-  }
-  const newfile = useRef<any>('');
-
-  const AddFileModal = ()=> {
-    newfile.current ='';
-    Modal.info({
-      title: 'Agregar otro documento',
-      content: (
-        <Flex style={{width:'100%'}}>          
-          <Row style={{width:'100%'}}>
-            <Col span={24}>
-              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                <text>Nombre del documento</text>
-              </label>
-              <Input placeholder="Escribir nombre" onChange={(e)=>{ 
-                newfile.current = (e.target.value);
-              }} />
-            </Col>   
-          </Row>
-        </Flex>
-      ),
-      onOk: ()=>{
-        if(newfile.current.length <= 0){
-          message.error('Debe digitar un nombre de archivo');
-        }else{
-          const lastitem = mockFiles.at(-1);
-          const newvalue = { id: (lastitem!=undefined ? lastitem.id +1 : 1), key:(lastitem!=undefined ? lastitem.key +1 : 1), title: newfile.current, isMandatory: false };
-          setMockFiles(mockFiles => [...mockFiles, newvalue]);
-        }
-      },
+  const handleChangeExpirationDate = (index: number, value: any) => {
+    setSelectedFiles((prevState: any[]) => {
+      const updatedFiles = [...prevState];
+      updatedFiles[index].expirationDate = value;
+      return updatedFiles;
     });
-  }
-  
+  };
+
+  const handleChange = (value: string[]) => {
+    const sf = documentsType?.filter((file) => value.includes(file.id.toString()));
+    if (sf) {
+      setSelectedFiles((prevState) => {
+        return sf.map((file) => ({
+          ...file,
+          file: prevState.find((f) => f.id === file.id)?.file,
+          expirationDate: prevState.find((f) => f.id === file.id)?.expirationDate
+        }));
+      });
+    }
+  };
+
   /*requerimientos adicionales*/
 
   const columnsRequerimientosAdicionales: TableProps<ITransferOrderOtherRequirements>['columns']= [
@@ -800,7 +810,7 @@ export const CreateOrderView = () => {
 
   useEffect(() => {
     loadRequirements();
-  });
+  }, []);
 
   const addRequeriment = async (value:any) =>{
     requirementsIdx = requirementsIdx + 1;
@@ -877,7 +887,7 @@ export const CreateOrderView = () => {
 
   useEffect(() => {
     loadContacts();
-  });
+  }, []);
 
   const newcontacttype = useRef<number>(0);
   const newcontacname = useRef<string>('');
@@ -1068,17 +1078,20 @@ export const CreateOrderView = () => {
 
     //documentos
     datato.transfer_order_documents =[];
+
+
     
     // archivos
     const data: IFormTransferOrder = {
-      body: datato
+      body: datato,
+      files: selectedFiles
     };
 
     console.log("DATA PARA POST: ", data);
     try {
       const response = await addTransferOrder(
         datato,
-        data?.files as TransferOrderDocumentType[]
+        data?.files || [] as DocumentCompleteType[]
       );      
       if (response.status === SUCCESS) {
         messageApi.open({
@@ -1088,10 +1101,11 @@ export const CreateOrderView = () => {
         push("/logistics/orders");
       }
     } catch (error) {
-      messageApi.open({
-        type: "error",
-        content: "Oops, hubo un error por favor intenta mas tarde."
-      });
+      if (error instanceof Error) {
+        messageApi.error(error.message);
+      } else {
+        messageApi.error("Oops, hubo un error por favor intenta mas tarde.");
+      }
     }
   };
 
@@ -1461,21 +1475,33 @@ export const CreateOrderView = () => {
             <text>Documentos</text>
           </label>
           <Row className="mainUploadDocuments">
-            {mockFiles.map((file) => (
+            {selectedFiles.map((file) => (
               // eslint-disable-next-line react/jsx-key
-              <Col span={12} style={{padding:'15px'}} key={file.key}>
+              <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
                 <UploadDocumentButton
                   key={file.id}
-                  title={file.title}
-                  isMandatory={file.isMandatory}
-                  setFiles={setFiles}
-                />
+                  title={file.description}
+                  isMandatory={file.optional.data.includes(0)}
+                  aditionalData={file.id}
+                  setFiles={() => {}}
+                  files={file.file}
+                  disabled
+                >
+                  {file?.link ? (
+                    <UploadDocumentChild
+                      linkFile={file.link}
+                      nameFile={file.link.split("-").pop() || ""}
+                      onDelete={() => {}}
+                      showTrash={false}
+                    />
+                  ) : undefined}
+                </UploadDocumentButton>
               </Col>
             ))}
           </Row>
           <Row>
             <Col span={24} className="text-right">
-              <button onClick={() =>AddFileModal()} className="btnagregarpsl"><PlusCircle></PlusCircle>&nbsp;&nbsp;<text>Agregar otro documento</text></button>
+              <Button type="text" onClick={() => setIsOpenModalDocuments(true)} icon={<FileText size={15}/>} > <Text style={{fontWeight:'bold'}}>Agregar otro documento</Text></Button>
             </Col>
           </Row>
           <Row>
@@ -1633,6 +1659,18 @@ export const CreateOrderView = () => {
           </Flex>
         </Flex>
       </main>
+      <ModalDocuments
+        isOpen={isOpenModalDocuments}
+        mockFiles={selectedFiles}
+        setFiles={setFiles}
+        documentsType={documentsType}
+        isLoadingDocuments={isLoadingDocuments}
+        onClose={() => setIsOpenModalDocuments(false)}
+        handleChange={handleChange}
+        handleChangeExpirationDate={handleChangeExpirationDate}
+        showExpiry={false}
+        allOptional={true}
+      />
     </>
   );
 };

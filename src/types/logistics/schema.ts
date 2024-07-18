@@ -1166,7 +1166,7 @@ export interface ITransferOrder {
 
 export interface IFormTransferOrder {
   body: ITransferOrder;
-  files?: TransferOrderDocumentType[];
+  files?: DocumentCompleteType[];
 }
 
 /**
