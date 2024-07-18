@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Flex, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import { DotsThree, Eye, Plus, Triangle } from "phosphor-react";
@@ -22,7 +22,7 @@ export const CarrierTable = () => {
       const listCarriers: any[] | ((prevState: ICarrier[]) => ICarrier[]) = [];
       const listCarriersOptions: { label: any; value: any }[] = [];
 
-      result.data.data.forEach((item, index) => {
+      result.data.data.forEach((item: any, index: number) => {
         listCarriers.push(item);
         listCarriersOptions.push({ label: item.name, value: item.id });
       });
@@ -35,8 +35,10 @@ export const CarrierTable = () => {
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);
   };
+  useEffect(() => {
+    loadCarriers();
+  }, []);
 
-  loadCarriers();
 
   drivers.forEach((element) => {
     if (element.active.data[0] === 1) {
