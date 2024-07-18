@@ -20,6 +20,8 @@ type PropsModalDocuments = {
   handleChange: (value: string[]) => void;
   // eslint-disable-next-line no-unused-vars
   handleChangeExpirationDate: (index: number, value: any) => void;
+  showExpiry?: boolean;
+  allOptional?: boolean;
 };
 
 const calculateExpirate = (expiry?: number[]) => {
@@ -41,7 +43,9 @@ export default function ModalDocuments(props: PropsModalDocuments) {
     isOpen,
     onClose,
     handleChange,
-    handleChangeExpirationDate
+    handleChangeExpirationDate,
+    showExpiry = true,
+    allOptional = false
   } = props;
   return (
     <Modal
@@ -69,21 +73,27 @@ export default function ModalDocuments(props: PropsModalDocuments) {
                     aditionalData={file.id}
                     setFiles={setFiles}
                   />
-                  <Row justify="end" align="middle" style={{ gap: "10px" }}>
-                    <p style={{ fontSize: "12px" }}>
-                      Fecha de <br />
-                      vencimiento
-                    </p>
-                    <DatePicker
-                      size="small"
-                      placeholder="dd/mm/aaaa"
-                      value={file.expirationDate}
-                      disabled={!calculateExpirate(file.expiry?.data)}
-                      onChange={(value) => handleChangeExpirationDate(index, value)}
-                    />
-                    <Switch size="default" checked={calculateExpirate(file.expiry?.data)} disabled />
-                    aplica
-                  </Row>
+                  {showExpiry && (
+                    <Row justify="end" align="middle" style={{ gap: "10px" }}>
+                      <p style={{ fontSize: "12px" }}>
+                        Fecha de <br />
+                        vencimiento
+                      </p>
+                      <DatePicker
+                        size="small"
+                        placeholder="dd/mm/aaaa"
+                        value={file.expirationDate}
+                        disabled={!calculateExpirate(file.expiry?.data)}
+                        onChange={(value) => handleChangeExpirationDate(index, value)}
+                      />
+                      <Switch
+                        size="default"
+                        checked={calculateExpirate(file.expiry?.data)}
+                        disabled
+                      />
+                      aplica
+                    </Row>
+                  )}
                 </Col>
               ))}
             </Row>
@@ -104,7 +114,7 @@ export default function ModalDocuments(props: PropsModalDocuments) {
                 options={documentsType?.map((document) => ({
                   label: <span>{document.description}</span>,
                   value: document.id.toString(),
-                  disabled: document.optional.data.includes(0)
+                  disabled: allOptional ? false : document.optional.data.includes(0)
                 }))}
               />
             ) : (
