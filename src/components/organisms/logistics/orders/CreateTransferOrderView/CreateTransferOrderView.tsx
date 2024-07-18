@@ -29,7 +29,7 @@ import { getAllLocations } from "@/services/logistics/locations";
 import { ICreatePayload } from "@/types/projects/IProjects";
 
 //vars
-import { CREATED } from "@/utils/constants/globalConstants";
+import { CREATED, SUCCESS } from "@/utils/constants/globalConstants";
 import { useRouter } from "next/navigation";
 import {
   PlusCircle,
@@ -135,12 +135,12 @@ export const CreateTransferOrderView = () => {
         data.body,
         data?.files as TransferOrderDocumentType[]
       );      
-      if (response.status === CREATED) {
+      if (response.status === SUCCESS) {
         messageApi.open({
           type: "success",
           content: "El viaje fue creado exitosamente."
         });
-        push("/");
+        //push("/");
       }
     } catch (error) {
       messageApi.open({

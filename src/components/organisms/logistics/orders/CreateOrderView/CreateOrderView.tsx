@@ -29,7 +29,7 @@ import { getAllMaterials, getSearchMaterials } from "@/services/logistics/materi
 import { getSuggestedVehicles } from "@/services/logistics/vehicles";
 
 //vars
-import { CREATED } from "@/utils/constants/globalConstants";
+import { CREATED, SUCCESS } from "@/utils/constants/globalConstants";
 import { useRouter } from "next/navigation";
 import {
   PlusCircle,
@@ -57,6 +57,7 @@ const { Title, Text } = Typography;
 export const CreateOrderView = () => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
+  const [isButtonDisabled, setButtonDisabled] = useState(false);
 
   /* Tipo de viaje */
   const [typeactive, setTypeActive] = useState("1");
@@ -1079,12 +1080,12 @@ export const CreateOrderView = () => {
         datato,
         data?.files as TransferOrderDocumentType[]
       );      
-      if (response.status === CREATED) {
+      if (response.status === SUCCESS) {
         messageApi.open({
           type: "success",
           content: "El viaje fue creado exitosamente."
         });
-        push("/");
+        push("/logistics/orders");
       }
     } catch (error) {
       messageApi.open({
@@ -1623,7 +1624,7 @@ export const CreateOrderView = () => {
                   <Button type="primary" onClick={() => onCreateOrder()}>
                     Guardar como draft
                   </Button>
-                  <Button disabled >
+                  <Button disabled={isButtonDisabled} className="active" onClick={()=>{ onCreateOrder()}} >
                     Siguiente
                   </Button>
                 </Flex>
