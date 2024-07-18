@@ -132,7 +132,7 @@ export const CreateTransferOrderView = () => {
     console.log("DATA PARA POST: ", data);
     try {
       const response = await addTransferOrder(
-        data.general,
+        data.body,
         data?.files as TransferOrderDocumentType[]
       );      
       if (response.status === CREATED) {
