@@ -1,4 +1,4 @@
-import { Button, Flex, Typography } from "antd";
+import { Button, Flex, Radio, RadioChangeEvent, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { CaretLeft } from "phosphor-react";
 
@@ -12,6 +12,7 @@ import { SelectStructure } from "@/components/molecules/selects/SelectStructure/
 import { SelectClientsGroup } from "@/components/molecules/selects/SelectClientsGroup/SelectClientsGroup";
 import GeneralSelect from "@/components/ui/general-select";
 import GeneralSearchSelect from "@/components/ui/general-search-select";
+import SelectOuterTags from "@/components/ui/select-outer-tags";
 
 const { Title } = Typography;
 
@@ -23,11 +24,16 @@ interface Props {
   onGoBackTable: () => void;
 }
 export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
+  const [radioValue, setRadioValue] = useState(0);
   const [zones, setZones] = useState([] as number[]);
   const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
     initDatSelectedBusinessRules
   );
   const [assignedGroups, setAssignedGroups] = useState([] as any[]);
+
+  const handleChangeRadio = (e: RadioChangeEvent) => {
+    setRadioValue(parseInt(e.target.value));
+  };
 
   const {
     control,
@@ -71,6 +77,15 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
         <Title className={styles.forwardType__title} level={5}>
           Tipo de envio
         </Title>
+        <Radio.Group className={styles.radioGroup} onChange={handleChangeRadio} value={radioValue}>
+          <Radio key={1} value={1}>
+            <div className={styles.radioGroup__label}>
+              input
+              {/* <p>{discount.discount}</p>
+              {discount.isReached && <p className={styles.reachedDiscount}>Descuento Alcanzado</p>} */}
+            </div>
+          </Radio>
+        </Radio.Group>
       </div>
 
       <div className={styles.businessRules}>
@@ -125,7 +140,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
           rules={{ required: true }}
           render={({ field }) => (
             <GeneralSearchSelect
-              errors={errors.forward}
+              errors={errors.forward_copy}
               field={field}
               title="Copia"
               placeholder="Copia a"
@@ -176,12 +191,12 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
           control={control}
           rules={{ required: true }}
           render={({ field }) => (
-            <GeneralSelect
-              errors={errors.tags}
-              field={field}
+            <SelectOuterTags
               title="Adjunto"
               placeholder="Seleccionar adjunto"
               options={mockAttachments}
+              errors={errors.attached}
+              field={field}
             />
           )}
         />
@@ -210,7 +225,17 @@ const mockTags = [
 
 const mockAttachments = [
   { id: 1, value: 1, label: "PDF Estado de cuenta" },
-  { id: 2, value: 2, label: "Excel cartera" }
+  { id: 2, value: 2, label: "Excel cartera" },
+  { id: 3, value: 3, label: "PDF Factura" },
+  { id: 4, value: 4, label: "PDF Estado de cuenta" },
+  { id: 5, value: 5, label: "Excel cartera" },
+  { id: 6, value: 6, label: "PDF Factura" },
+  { id: 7, value: 7, label: "PDF Estado de cuenta" },
+  { id: 8, value: 8, label: "Excel cartera" },
+  { id: 9, value: 9, label: "PDF Factura" },
+  { id: 10, value: 10, label: "PDF Estado de cuenta" },
+  { id: 11, value: 11, label: "Excel cartera" },
+  { id: 12, value: 12, label: "PDF Factura" }
 ];
 
 const mockForward = [

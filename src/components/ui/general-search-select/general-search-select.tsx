@@ -37,8 +37,7 @@ const GeneralSearchSelect = <T extends FieldValues>({
   const usedOptions = options?.map((option) => {
     return {
       value: option.value,
-      label: option.label,
-      className: "selectOptions"
+      label: option.label
     };
   });
 
@@ -69,8 +68,8 @@ const GeneralSearchSelect = <T extends FieldValues>({
     <Flex vertical className="selectTitleAndError" style={customStyleContainer}>
       <h4 className="inputTitle">{title}</h4>
       <Select
-        showSearch
-        mode="multiple"
+        {...field}
+        mode="tags"
         suffixIcon={null}
         tagRender={tagRender}
         maxTagCount={"responsive"}
@@ -80,7 +79,6 @@ const GeneralSearchSelect = <T extends FieldValues>({
         loading={loading}
         variant="borderless"
         optionLabelProp="label"
-        {...field}
         popupClassName="selectSearchCustomDrop"
         options={usedOptions}
         labelInValue

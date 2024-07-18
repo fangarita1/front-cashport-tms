@@ -1,0 +1,112 @@
+@import "@styles/variables.scss";
+
+.selectOuterTags {
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .inputTitle {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: $gray;
+        margin-bottom: 0.25rem;
+    }
+
+    .inputRegular {
+        height: 3rem !important;
+        background-color: $background;
+        border-radius: 0.25rem;
+        width: 100% !important;
+
+        .ant-select-selector {
+            font-size: 1rem !important;
+
+            .ant-select-selection-item {
+                font-weight: 300;
+            }
+
+            .ant-select-selection-placeholder {
+                color: $dark-gray;
+            }
+        }
+    }
+    .inputError {
+        border: 1px dashed $error;
+        height: 3rem !important;
+        margin-bottom: 0.2rem;
+        background-color: $background;
+        padding: 0.45rem;
+        border-radius: 0.25rem;
+        font-weight: 300;
+
+        .ant-select-selector {
+            .ant-select-selection-placeholder {
+                color: $dark-gray;
+                font-size: 1rem;
+            }
+        }
+    }
+
+    .textError {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: $error;
+        margin-top: 0.25rem;
+    }
+
+    .selectPlaceholder {
+        position: absolute;
+        top: 50%;
+        left: 0.7rem;
+        top: 2.4rem;
+        color: $dark-gray;
+        font-size: 1rem;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .selectDrop {
+        background-color: $background !important;
+        font-size: 1rem;
+
+        .selectOptions {
+            background-color: $background !important;
+            border-top: 1px solid $white;
+            padding: 0.7rem !important;
+            font-size: 1rem !important;
+            font-size: 1rem;
+        }
+    }
+
+    .selectedOptions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+
+        &__tag {
+            width: fit-content;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            background-color: $gray;
+            border-radius: 6px;
+            color: $white;
+            padding: 4px 8px;
+
+            p {
+                white-space: nowrap;
+            }
+
+            .deleteTag {
+                border-radius: 50%;
+                cursor: pointer;
+
+                &:hover {
+                    opacity: 0.7;
+                }
+            }
+        }
+    }
+}

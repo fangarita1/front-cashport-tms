@@ -1,7 +1,5 @@
 @import "@styles/variables.scss";
 
-@import "@styles/variables.scss";
-
 .selectTitleAndError {
     .selectSearchCustom {
         height: 3rem !important;
@@ -89,6 +87,24 @@
     flex-direction: column;
     gap: 1.5rem;
     width: 300px !important;
+
+    .rc-virtual-list-holder-inner {
+        gap: 0.25rem;
+
+        .ant-select-item-option {
+            background-color: $background;
+            padding: 12px;
+            font-weight: 300;
+        }
+
+        .ant-select-item-option-selected {
+            background-color: $dark-gray !important;
+        }
+
+        .ant-select-item-option-active {
+            background-color: $dark-gray !important;
+        }
+    }
 
     .selectOptions {
         background-color: $background !important;
