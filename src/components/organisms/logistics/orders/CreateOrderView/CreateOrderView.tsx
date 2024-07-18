@@ -17,13 +17,13 @@ import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 
 //schemas
-import { IAditionalByMaterial, ICreateRegister, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ITransferOrder, ITransferOrderContacts, IVehicleType } from "@/types/logistics/schema";
+import { IAditionalByMaterial, ICreateRegister, IFormTransferOrder, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ITransferOrder, ITransferOrderContacts, ITransferOrderOtherRequirements, IVehicleType, TransferOrderDocumentType } from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
 
 //materials
-import { getSearchMaterials } from "@/services/logistics/materials";
+import { getAllMaterials, getSearchMaterials } from "@/services/logistics/materials";
 
 //materials
 import { getSuggestedVehicles } from "@/services/logistics/vehicles";
@@ -50,6 +50,7 @@ import TextArea from "antd/es/input/TextArea";
 import { addTransferOrder } from "@/services/logistics/transfer-orders";
 import { getOtherRequirements } from "@/services/logistics/other-requirements";
 import { getPsl } from "@/services/logistics/psl";
+import { auth } from "../../../../../../firebase";
 
 const { Title, Text } = Typography;
 
@@ -69,6 +70,9 @@ export const CreateOrderView = () => {
   const [horaInicial, setHoraInicial] = useState<Dayjs | null>(null);
   const [fechaFinal, setFechaFinal] = useState<Dayjs | null>(null);
   const [horaFinal, setHoraFinal] = useState<Dayjs | null>(null);
+  const [fechaInicialFlexible, setFechaInicialFlexible] = useState(0);
+  const [fechaFinalFlexible, setFechaFinalFlexible] = useState(0);
+  const [company, setCompany] = useState(1);
 
   /* MAPBOX */
   const mapsAccessToken = 'pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA';//import.meta.env.VITE_MAP_BOX_ACCESS_TOKEN,
@@ -83,10 +87,10 @@ export const CreateOrderView = () => {
 
   const [expand, setExpand] = useState(false);
   const initialItemCount = 4;
-  const directions = routeInfo.length > 0 ? routeInfo[0]['legs'][0]['steps'] : [];
-  const displayedDirections = expand
-    ? directions
-    : directions.slice(0, initialItemCount);
+  // const directions = routeInfo.length > 0 ? routeInfo[0]['legs'][0]['steps'] : [];
+  // const displayedDirections = expand
+  //   ? directions
+  //   : directions.slice(0, initialItemCount);
 
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationOptions, setLocationOptions] = useState<any>([]);
@@ -101,7 +105,7 @@ export const CreateOrderView = () => {
     accessToken: mapsAccessToken
   });
 
-  console.log("routeInfo==>", routeInfo);
+  //console.log("routeInfo==>", routeInfo);
 
   useEffect(() => {
     loadLocations();
@@ -235,73 +239,53 @@ export const CreateOrderView = () => {
 
   // calculate direction
   const calcRouteDirection = async () => {
-    //if (origin.length > 2) {
-      console.log('entro0');
-      console.log('entro1:'+origin.current.length);
-      console.log('entro2:'+destination.current.length);
-      if (origin.current.length == 0 || destination.current.length == 0) return;
 
-      try {
-        // const originp = 'Bogotá';
-        // try {
-        //   console.log('entro1');
-        //   const response = await geocodingClient
-        //     .forwardGeocode({
-        //       query: originp,
-        //       types: ["place"],
-        //       limit: 1,
-        //     })
-        //     .send();
+    if (origin.current.length == 0 || destination.current.length == 0) return;
 
-        //   const destinationCoordinates = response.body.features[0].center;
-        //   console.log(destinationCoordinates);
-        //   //originCoordinates = destinationCoordinates;
-        //   setOrigin(destinationCoordinates);
-        // } catch (error) {
-        //   console.error("Error calculating directions:", error);
-        //   throw error;
-        // }
+    try {
+      console.log(origin);        
+      console.log(destination);
 
-        //setOrigin([-74.07231699675322, 4.66336863727521]);
-        //setDestination([-74.027990000000000, 4.918570000000000]);
+      const response = await axios.get(
+        `https://api.mapbox.com/directions/v5/mapbox/driving/${origin.current[0]},${origin.current[1]};${
+          destination.current[0]
+        },${destination.current[1]}?steps=true&geometries=geojson&access_token=${
+          mapsAccessToken
+        }`
+      );
 
-        console.log(origin);        
-        console.log(destination);
-
-        const response = await axios.get(
-          `https://api.mapbox.com/directions/v5/mapbox/driving/${origin.current[0]},${origin.current[1]};${
-            destination.current[0]
-          },${destination.current[1]}?steps=true&geometries=geojson&access_token=${
-            mapsAccessToken
-          }`
-        );
-
-        const routes = response.data.routes;
-        console.log("routes=>", routes);
-        setRouteInfo(routes);
-        // Check if any routes are returned
-        if (routes.length > 0) {
-          const { distance, duration, geometry } = routes[0];
-
-          // Valid directions, use the distance and duration for further processing
-          const directions = {
-            distance,
-            duration,
-          };
-          setRouteGeometry(geometry); // Set the route geometry
-          setDistance(distance);
-          setTimeTravel(duration)
-          return directions;
-        } else {
-          // No routes found
-          throw new Error("Unable to calculate directions");
-        }
-      } catch (error) {
-        // Handle error
-        console.error("Error calculating directions:", error);
-        throw error;
+      const routes = response.data.routes;      
+      console.log("routes=>", routes);
+      if(routes != undefined && routes.length> 0){
+        routes[0].legs = [];
       }
-    //}
+      setRouteInfo(routes);
+      // Check if any routes are returned
+      if (routes.length > 0) {
+       
+        const { distance, duration, geometry } = routes[0];
+
+        // Valid directions, use the distance and duration for further processing
+        const directions = {
+          distance,
+          duration,
+        };        
+        setRouteGeometry(geometry); // Set the route geometry
+        setDistance(parseFloat((distance/1000).toFixed(2)) + " Km");
+        var date = new Date();
+        date.setSeconds(duration);
+        var hrs = date.toISOString().substr(11, 5);
+        setTimeTravel(hrs + " Hrs")
+        return directions;
+      } else {
+        // No routes found
+        throw new Error("Unable to calculate directions");
+      }
+    } catch (error) {
+      // Handle error
+      console.error("Error calculating directions:", error);
+      throw error;
+    }
   };
 
   /* Tipo de viaje */
@@ -437,6 +421,41 @@ export const CreateOrderView = () => {
 
     return result;
   }     
+
+  const loadMaterials = async () => {
+    if(optionsMaterial !== undefined && optionsMaterial.length >0 ) return;
+
+    const res = await (getAllMaterials());
+    const result:any = [];
+    //console.log (res);
+    if(res.data.data.length > 0){
+      res.data.data.forEach((item) => {
+        const strlabel = <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                          }}
+                        >
+                          <span>
+                              {item.type_description} - {item.description}
+                              <br></br>
+                              Volumen {item.kg_weight} m3 - Peso {item.m3_volume} Kg
+                          </span>
+                          <span>
+                            <button className="btnagregar active" onClick={() => addMaterial(item)}>Agregar</button>
+                          </span>
+                        </div>;
+
+        result.push({value:item.description, label: strlabel})
+      });      
+    }
+
+    setOptionsMaterial(result);    
+  };
+  
+  useEffect(() => {
+    loadMaterials();
+  });
 
   const addMaterial = async (value:any) =>{
     cargaIdx = cargaIdx + 1;
@@ -715,7 +734,7 @@ export const CreateOrderView = () => {
   
   /*requerimientos adicionales*/
 
-  const columnsRequerimientosAdicionales: TableProps<IAditionalByMaterial>['columns']= [
+  const columnsRequerimientosAdicionales: TableProps<ITransferOrderOtherRequirements>['columns']= [
     {
       title: 'Nombre',
       dataIndex: 'description',
@@ -746,7 +765,7 @@ export const CreateOrderView = () => {
   ];
 
   const [optionsRequirements, setOptionsRequirements] = useState<SelectProps<object>['options']>([]);
-  const [dataRequirements, setDataRequirements] = useState<IAditionalByMaterial[]>([]);
+  const [dataRequirements, setDataRequirements] = useState<ITransferOrderOtherRequirements[]>([]);
   let requirementsIdx = 0;
 
   const loadRequirements = async () => {
@@ -788,7 +807,7 @@ export const CreateOrderView = () => {
     value.quantity = 1;
     value.key = requirementsIdx;
 
-    const newvalue : IAditionalByMaterial = value;
+    const newvalue : ITransferOrderOtherRequirements = value;
     console.log(newvalue);
     await setDataRequirements(dataRequirements => [...dataRequirements, newvalue]);
   };
@@ -928,7 +947,7 @@ export const CreateOrderView = () => {
   }
 
   const UpdateContact = (key: React.Key, field: string, ndata: string) => {
-    console.log(key)
+    //console.log(key)
     const newData = [...dataContacts];
     newData.forEach(item => {
       if(item.key === key){
@@ -947,39 +966,123 @@ export const CreateOrderView = () => {
   /* Form Event Handlers */
   const onCreateOrder = async () => {
     
+    const cuser = auth.currentUser;
+
     fechaInicial?.hour(horaInicial?horaInicial.get('hour'):0);
-    fechaInicial?.hour(horaInicial?horaInicial.get('minute'):0);
+    fechaInicial?.minute(horaInicial?horaInicial.get('minute'):0);
+    fechaFinal?.hour(horaFinal?horaFinal.get('hour'):0);
+    fechaFinal?.minute(horaFinal?horaFinal.get('minute'):0);
 
-    console.log(fechaInicial);
-    console.log(horaInicial);
-
-    const data: ITransferOrder = {
+    const datato: ITransferOrder = {
       id_start_location: (locationOrigin?locationOrigin.id:0),
       id_end_location: (locationDestination?locationDestination?.id:0),
       id: 0,
-      id_user: 0,
-      start_date:  new Date(),
-      end_date: new Date(),
-      start_freight_equipment: "",
-      end_freight_equipment: "",
-      rotation: "",
-      start_date_flexible: 0,
-      end_date_flexible: 0,
-      image: "",
-      id_company: 0,
-      active: "",
-      created_at: new Date(),
-      created_by: ""
+      id_user: 1,
+      user: cuser?.email,
+      start_date:  fechaInicial?.toDate().toISOString(),
+      end_date: fechaFinal?.toDate().toISOString(),
+      start_freight_equipment: String(origenIzaje),
+      end_freight_equipment: String(destinoIzaje),
+      rotation: "0",
+      start_date_flexible: fechaInicialFlexible,
+      end_date_flexible: fechaFinalFlexible,
+      id_route: "",
+      id_company: company,
+      active: "true",
+      created_at: new Date().toISOString(),
+      created_by: cuser?.email,
+      geometry: routeGeometry
     }
+
+    //contactos
+    datato.transfer_order_contacts = dataContacts;
     
+    //materiales
+    datato.transfer_order_material = [];
+    dataCarga.forEach(material => {
+      datato.transfer_order_material?.push({
+        id: 0,
+        id_transfer_order: 0,
+        id_material: material.id,
+        quantity: material.quantity,
+        created_at: new Date(),
+        created_by: cuser?.email,
+        modified_at: new Date(),
+        modified_by: ""
+      });  
+    });
+    
+    //otrosrequerimientos
+    datato.transfer_order_other_requeriments = dataRequirements;
+    
+    //productos
+    datato.transfer_order_products = [];
+    //centros de costo
+    datato.transfer_order_cost_center = [];
+
+    dataPsl.forEach(psl => {
+      datato.transfer_order_products?.push({
+        id: 0,
+        id_transfer_order: 0,
+        id_product: psl.idpsl,
+        units: psl.percent,
+        created_at: new Date(),
+        created_by: cuser?.email,
+        modified_at: new Date(),
+        modified_by: "",
+        active: ""
+      });
+
+      psl.costcenters.forEach(cost=>{
+        datato.transfer_order_cost_center?.push({
+          id: 0,
+          id_transfer_order: 0,
+          id_psl: psl.idpsl,
+          id_costcenter: cost.idpslcostcenter,
+          percentage: cost.percent,
+          active: "",
+          created_at: new Date(),
+          created_by: cuser?.email
+        });
+      });
+    });
+
+    //vehiculos
+    datato.transfer_order_vehicles = [];
+    dataVehicles.forEach(vehicle => {
+      datato.transfer_order_vehicles?.push({
+        id: 0,
+        id_transfer_order: 0,
+        id_vehicle_type: vehicle.id,
+        quantity: vehicle.quantity,
+        created_at: new Date(),
+        created_by: cuser?.email,
+        modified_at: new Date(),
+        modified_by: ""
+      });  
+    });
+
+    //personas
+    datato.transfer_order_persons =[];
+
+    //documentos
+    datato.transfer_order_documents =[];
+    
+    // archivos
+    const data: IFormTransferOrder = {
+      body: datato
+    };
 
     console.log("DATA PARA POST: ", data);
     try {
-      const response = await addTransferOrder(data);
+      const response = await addTransferOrder(
+        datato,
+        data?.files as TransferOrderDocumentType[]
+      );      
       if (response.status === CREATED) {
         messageApi.open({
           type: "success",
-          content: "La orden fue creada exitosamente."
+          content: "El viaje fue creado exitosamente."
         });
         push("/");
       }
@@ -1078,7 +1181,7 @@ export const CreateOrderView = () => {
                     hourStep={1}
                     type={'time'} 
                     onChange={(value) => {
-                      console.log(value)
+                      //console.log(value)
                       setHoraInicial(value);
                     }}
                   />
@@ -1089,8 +1192,14 @@ export const CreateOrderView = () => {
                     className="puntoOrigen"
                     style={{ width:'100%' }}
                     options={[
-                      { value: '2', label: 'Exacto' },
+                      { value: '0', label: 'Exacto' },
+                      { value: '1', label: '+/- 1 día' },
+                      { value: '2', label: '+/- 2 días' },
+                      { value: '3', label: '+/- 3 días' },
                     ]}
+                    onChange={(value)=>{
+                      setFechaInicialFlexible(value);
+                    }}
                   />
                 </Col>
               </Row>
@@ -1117,7 +1226,7 @@ export const CreateOrderView = () => {
                   hourStep={1}
                   type={'time'} 
                   onChange={(value) => {
-                    console.log(value);
+                    //console.log(value);
                     setHoraFinal(value);
                   }} />
                 </Col>
@@ -1132,6 +1241,9 @@ export const CreateOrderView = () => {
                       { value: '2', label: '+/- 2 días' },
                       { value: '3', label: '+/- 3 días' },
                     ]}
+                    onChange={(value)=>{
+                      setFechaFinalFlexible(value);
+                    }}
                   />
                 </Col>
               </Row>
@@ -1193,10 +1305,8 @@ export const CreateOrderView = () => {
                 style={{ width: 250 }}
                 size="large"
                 options={optionsMaterial}
-                onSelect={onSelectMaterial}
-                onSearch={handleSearchMaterial}
               >
-                <Input.Search size="large" placeholder="Buscar material" enterButton />
+                <Input.Search size="large" placeholder="Buscar material" />
               </AutoComplete>
               <Table columns={columnsCarga} dataSource={dataCarga} />
               </>
@@ -1254,6 +1364,9 @@ export const CreateOrderView = () => {
           <Select
             style={{ width: '350px' }}
             options={[{ value: '1', label: 'Halliburton' },{ value: '2', label: 'Halliburton zona franca' }]}
+            onChange={(value)=>{
+              setCompany(value);
+            }}
           />
           {dataPsl.map((psl) => (
             <>

@@ -1070,6 +1070,7 @@ export interface IOtherRequirements {
 }
 
 export interface ITransferOrderOtherRequirements {
+  key: number;
   id: number;
   id_transfer_order: number;
   id_other_requeriments: number;
@@ -1083,10 +1084,10 @@ export interface ITransferOrderOtherRequirements {
 export interface ITransferOrderVehicle {
   id: number;
   id_transfer_order: number;
-  id_material: number;
+  id_vehicle_type: number;
   quantity: number;
   created_at: Date;
-  created_by: string;
+  created_by: string | null | undefined;
   modified_at: Date;
   modified_by: string;
 }
@@ -1097,7 +1098,7 @@ export interface ITransferOrderMaterial {
   id_material: number;
   quantity: number;
   created_at: Date;
-  created_by: string;
+  created_by: string | null | undefined;
   modified_at: Date;
   modified_by: string;
 }
@@ -1126,38 +1127,46 @@ export interface IPsl {
 export interface ITransferOrder {
   id: number;
   id_user: number;
+  user: string | null | undefined;
   id_start_location: number;
   id_end_location: number;
-  start_date: Date;
-  end_date: Date;
+  start_date?: string;
+  end_date?: string;
   start_freight_equipment: string;
   end_freight_equipment: string;
   rotation: string;
   start_date_flexible: number;
   end_date_flexible: number;
-  image: string;
+  id_route: string;
   id_company: number;
   active: string;
-  created_at: Date;
-  created_by: string;
-  modified_at?: Date | null;
-  modified_by?: string | null;
-  //material
-  transfer_order_material?: ITransferOrderMaterial[] | null;
-  //vehiculo sugerido
-  transfer_order_vehicle?: ITransferOrderVehicle[] | null;
-  //productos
-  transfer_order_products?: ITransferOrderProducts[] | null;
-  //centros de costo
-  transfer_order_cost_center?: ITransferRequestCostCenter[] | null;
-  //documentos
-  transfer_order_documents?: ITransferOrderDocuments[] | null;
-  //requerimientos adicionales
-  transfer_order_other_requeriments?: ITransferOrderOtherRequirements[] | null;
+  created_at?: string | null | undefined;
+  created_by?: string | null | undefined;
+  modified_at?: string | null | undefined;
+  modified_by?: string | null | undefined;
+  //geometry
+  geometry: any;
   //datos de contacto
   transfer_order_contacts?: ITransferOrderContacts[] | null;
+  //centros de costo
+  transfer_order_cost_center?: ITransferOrderCostCenter[] | null;
+  //documentos
+  transfer_order_documents?: ITransferOrderDocuments[] | null;
+  //material
+  transfer_order_material?: ITransferOrderMaterial[] | null;
+  //requerimientos adicionales
+  transfer_order_other_requeriments?: ITransferOrderOtherRequirements[] | null;
   //personas -- aplica para viaje tipo persona
   transfer_order_persons?: ITransferOrderPersons[] | null;
+  //productos
+  transfer_order_products?: ITransferOrderProducts[] | null;
+  //vehiculo sugerido
+  transfer_order_vehicles?: ITransferOrderVehicle[] | null;
+}
+
+export interface IFormTransferOrder {
+  body: ITransferOrder;
+  files?: TransferOrderDocumentType[];
 }
 
 /**
@@ -1266,11 +1275,12 @@ export interface ITransferOrderContactsWithDefaults {
 export interface ITransferOrderCostCenter {
   id: number;
   id_transfer_order: number;
+  id_psl: number;
   id_costcenter: number;
   percentage: number;
   active: string;
   created_at: Date;
-  created_by: string;
+  created_by: string | null | undefined;
   modified_at?: Date | null;
   modified_by?: string | null;
 }
@@ -1309,6 +1319,8 @@ export interface ITransferOrderDocuments {
   modified_at?: Date | null;
   modified_by?: string | null;
 }
+
+export type TransferOrderDocumentType = ITransferOrderDocuments & { file: File | undefined } & { expirationDate: any } & { link?: string } & { description: any };
 
 /**
  * Exposes the same fields as TransferOrderDocuments,
@@ -1376,7 +1388,7 @@ export interface ITransferOrderProducts {
   units: number;
   active: string;
   created_at: Date;
-  created_by: string;
+  created_by: string | null | undefined;
   modified_at?: Date | null;
   modified_by?: string | null;
 }
@@ -1965,7 +1977,7 @@ export interface IVehicleType {
   speed_multiple: number;
   active: string;
   created_at: Date;
-  created_by: Date;
+  created_by: string | null;
   modified_at?: Date | null;
   modified_by?: string | null;
   icon: string;

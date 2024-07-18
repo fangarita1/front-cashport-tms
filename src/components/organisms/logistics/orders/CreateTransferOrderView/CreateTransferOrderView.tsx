@@ -20,7 +20,7 @@ import { ProjectFormTab } from "@/components/molecules/tabs/Projects/ProjectForm
 import { addProject } from "@/services/projects/projects";
 
 //schemas
-import { IListData, ILocation } from "@/types/logistics/schema";
+import { IFormTransferOrder, IListData, ILocation, TransferOrderDocumentType } from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
@@ -51,6 +51,7 @@ import TabPane from "antd/es/tabs/TabPane";
 
 import FormWizard from "react-form-wizard-component";
 import 'react-form-wizard-component/dist/style.css';
+import { addTransferOrder } from "@/services/logistics/transfer-orders";
 
 const { Title, Text } = Typography;
 
@@ -127,25 +128,27 @@ export const CreateTransferOrderView = () => {
   };
 
   /* Event Handlers */
-  // const onCreateProject = async (data: ICreatePayload) => {
-  //   console.log("DATA PARA POST: ", data);
-  //   if (!data.logo) return;
-  //   try {
-  //     const response = await addProject(data);
-  //     if (response.status === CREATED) {
-  //       messageApi.open({
-  //         type: "success",
-  //         content: "El proyecto fue creado exitosamente."
-  //       });
-  //       push("/");
-  //     }
-  //   } catch (error) {
-  //     messageApi.open({
-  //       type: "error",
-  //       content: "Oops, hubo un error por favor intenta mas tarde."
-  //     });
-  //   }
-  // };
+  const onCreateTransferOrder = async (data: IFormTransferOrder) => {
+    console.log("DATA PARA POST: ", data);
+    try {
+      const response = await addTransferOrder(
+        data.general,
+        data?.files as TransferOrderDocumentType[]
+      );      
+      if (response.status === CREATED) {
+        messageApi.open({
+          type: "success",
+          content: "El viaje fue creado exitosamente."
+        });
+        push("/");
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Oops, hubo un error por favor intenta mas tarde."
+      });
+    }
+  };
 
   // Cambia origen 
   const onChangeOrigin = (value:any) =>{
@@ -207,7 +210,9 @@ export const CreateTransferOrderView = () => {
       }
 
       if (routeGeometry) {
+        routeGeometry.legs = [];
         console.log(routeGeometry);
+        
         const datajson: GeoJSON.Feature = {
             type: 'Feature',
             geometry: routeGeometry,

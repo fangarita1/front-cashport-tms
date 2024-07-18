@@ -21,3 +21,20 @@ export const getSearchMaterials = async (term:string): Promise<IListData> => {
     return error as any;
   }
 };
+
+export const getAllMaterials = async (): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const response: IListData = await axios.get(`${config.API_HOST}/material/all`, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error get all materials: ", error);
+    return error as any;
+  }
+};

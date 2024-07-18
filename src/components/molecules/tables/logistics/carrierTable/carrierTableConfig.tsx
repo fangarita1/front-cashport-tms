@@ -22,7 +22,7 @@ export const CarrierTable = () => {
       const listCarriers: any[] | ((prevState: ICarrier[]) => ICarrier[]) = [];
       const listCarriersOptions: { label: any; value: any }[] = [];
 
-      result.data.data.forEach((item, index) => {
+      result.data.data.forEach((item: { name: any; id: any; }, index: any) => {
         listCarriers.push(item);
         listCarriersOptions.push({ label: item.name, value: item.id });
       });
