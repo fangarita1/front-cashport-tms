@@ -87,21 +87,6 @@ export const CarrierFormTab = ({
               )
             })) || [];
         setSelectedFiles(fileSelected);
-      } else {
-        const fileSelected = documentsType
-          ?.filter(
-            (f) => f?.optional?.data?.includes(0) || selectedFiles?.find((f2) => f2.id === f.id)
-          )
-          ?.map((f) => ({
-            ...f,
-            file: files.find((f2) => f2.aditionalData === f.id)?.file,
-            expirationDate: selectedFiles.find((f2) => f2.id === f.id)?.expirationDate
-          }));
-        if (fileSelected?.length) {
-          setSelectedFiles([...fileSelected]);
-        } else {
-          setSelectedFiles([]);
-        }
       }
     }
   }, [files, documentsType]);
