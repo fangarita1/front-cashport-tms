@@ -1,6 +1,9 @@
 import { IVehicle, VihicleDetail, IFormVehicle, ICertificates } from "@/types/logistics/schema";
 import { MessageInstance } from "antd/es/message/interface";
 import Title from "antd/es/typography/Title";
+import { SetStateAction } from "react";
+import { UseFormReset, UseFormSetValue } from "react-hook-form";
+import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 
 export interface VehicleFormTabProps {
   idVehicleForm?: string;
@@ -75,6 +78,40 @@ export const normalizeVehicleData = (data: any): any => {
     files: documents,
     IS_ACTIVE: data.active.data[0] === 1
   };
+};
+
+export const _onSubmitVehicle = (
+  data: any,
+  setloading: (value: SetStateAction<boolean>) => void,
+  setImageError: (value: SetStateAction<boolean>) => void,
+  imageFiles: { docReference: string; file: File }[],
+  selectedFiles: DocumentCompleteType[],
+  onSubmitForm: (data: any, imageFiles: { docReference: string; file: File }[], selectedFiles: DocumentCompleteType[]) => Promise<any>,
+  reset: UseFormReset<IFormVehicle>
+) => {
+  setloading(true);
+  try {
+    const hasImage = imageFiles.length > 0;
+    if (!hasImage) {
+      setImageError(true);
+      setloading(false);
+      return;
+    }
+
+    setImageError(false);
+    onSubmitForm(data, imageFiles, selectedFiles)
+      .then(() => {
+        reset(data);
+        setloading(false);
+      })
+      .catch((error) => {
+        console.warn({ error });
+        setloading(false);
+      });
+  } catch (error) {
+    console.warn({ error });
+    setloading(false);
+  }
 };
 
 export const validationButtonText = (statusForm: "create" | "edit" | "review") => {

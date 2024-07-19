@@ -11,6 +11,7 @@ import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import {
+  _onSubmitVehicle,
   normalizeVehicleData,
   validationButtonText,
   VehicleData,
@@ -48,6 +49,7 @@ export const VehicleFormTab = ({
   data,
   messageApi,
   onEditVehicle = () => {},
+  onSubmitForm = () => {},
   statusForm = "review",
   onActiveVehicle = () => {},
   onDesactivateVehicle = () => {},
@@ -162,33 +164,33 @@ export const VehicleFormTab = ({
 
   const onSubmit = async (data: any) => {
     const hasImage = images.some((image) => image.file);
-    if (!hasImage){
+    if (!hasImage) {
       setImageError(true);
       return;
-    } 
-
+    }
+  
     const imageFiles = images
       .map((image, index) =>
         image.file ? { docReference: `imagen${index + 1}`, file: image.file } : undefined
       )
       .filter(Boolean) as { docReference: string; file: File }[];
-
+  
     const vehicleData: any = {
       ...data.general,
       id_carrier: Number(params.id) || 14
     };
-
-    try {
-      const response = await addVehicle(vehicleData, imageFiles, selectedFiles);
-      console.log("Vehicle created successfully:", response.data);
-      // Optionally reset the form and images after successful submission
-      setImages(Array(5).fill({ file: undefined }));
-      setImageError(false);
-      push(`/logistics/providers/${params.id}/vehicle`);
-    } catch (error) {
-      console.log("Error creating vehicle:", error);
-    }
+  
+    _onSubmitVehicle(
+      vehicleData,
+      setLoading,
+      setImageError,
+      imageFiles,
+      selectedFiles,
+      addVehicle,
+      reset
+    );
   };
+  
 
   const getImageKey = (index: number): ImageKeys => {
     return `general.image${index}` as ImageKeys;

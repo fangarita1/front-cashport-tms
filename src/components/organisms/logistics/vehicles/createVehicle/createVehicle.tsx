@@ -34,7 +34,7 @@ export const CreateVehicleView = ({ params }: Props) => {
       );
       console.log(response);
       if (response.status === 200) {
-        message.open({
+        messageApi.open({
           type: "success",
           content: "El vehículo fue creado exitosamente."
         });
@@ -42,7 +42,7 @@ export const CreateVehicleView = ({ params }: Props) => {
       }
     } catch (error) {
       if (error instanceof Error) {
-        message.open({
+        messageApi.open({
           type: "error",
           content: error.message
         });
