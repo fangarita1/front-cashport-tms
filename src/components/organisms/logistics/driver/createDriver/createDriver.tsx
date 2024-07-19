@@ -33,7 +33,7 @@ export const CreateDriverView = ({ params }: Props) => {
           type: "success",
           content: "El conductor fue creado exitosamente."
         });
-        push(`/logistics/providers/${params.id}/driver/${response.data.data.id}`);
+        push(`/logistics/providers/${params.id}/driver`);
       }
     } catch (error) {
       if (error instanceof Error) {

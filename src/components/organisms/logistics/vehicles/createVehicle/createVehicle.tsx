@@ -32,22 +32,22 @@ export const CreateVehicleView = ({ params }: Props) => {
         ],
         data.files as DocumentCompleteType[]
       );
-
+      console.log(response);
       if (response.status === 200) {
-        messageApi.open({
+        message.open({
           type: "success",
           content: "El vehículo fue creado exitosamente."
         });
-        push(`/logistics/providers/${params.id}/vehicle/${response.data.data.id}`);
+        push(`/logistics/providers/${params.id}/vehicle`);
       }
     } catch (error) {
       if (error instanceof Error) {
-        messageApi.open({
+        message.open({
           type: "error",
           content: error.message
         });
       } else {
-        messageApi.open({
+        message.open({
           type: "error",
           content: "Oops, hubo un error por favor intenta más tarde."
         });

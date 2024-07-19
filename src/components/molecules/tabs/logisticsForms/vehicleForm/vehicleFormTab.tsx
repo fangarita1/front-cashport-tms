@@ -1,4 +1,3 @@
-"use client";
 import { useEffect, useState } from "react";
 import { Button, Col, Flex, Row, Switch, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
