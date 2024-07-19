@@ -10,6 +10,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { logOut } from "../../../../firebase-utils";
 import Link from "next/link";
 import { useAppStore } from "@/lib/store/store";
+import config from "@/config";
+
+const { isLogistics } = config;
 
 export const SideBar = () => {
   const [isSideBarLarge, setIsSideBarLarge] = useState(false);
@@ -31,6 +34,7 @@ export const SideBar = () => {
           </Flex>
         )}
 
+        {!isLogistics && (
         <Link href="/clientes/all">
           <Button
             type="primary"
@@ -41,6 +45,8 @@ export const SideBar = () => {
             {isSideBarLarge && "Clientes"}
           </Button>
         </Link>
+        )}
+        {!isLogistics && (
         <Link href="/descuentos" passHref legacyBehavior>
           <Button
             type="primary"
@@ -51,6 +57,8 @@ export const SideBar = () => {
             {isSideBarLarge && "Descuentos"}
           </Button>
         </Link>
+        )}
+        {!isLogistics && (
         <Link href="/comercio" passHref legacyBehavior>
           <Button
             type="primary"
@@ -61,6 +69,7 @@ export const SideBar = () => {
             {isSideBarLarge && "Descuentos"}
           </Button>
         </Link>
+        )}
         <Link href="/logistics/orders" passHref legacyBehavior>
           <Button
             type="primary"
@@ -70,7 +79,7 @@ export const SideBar = () => {
           >
             {isSideBarLarge && "Solicitudes"}
           </Button>
-        </Link>        
+        </Link>
         <Link href="/logistics/providers/all" passHref legacyBehavior>
           <Button
             type="primary"
@@ -81,6 +90,7 @@ export const SideBar = () => {
             {isSideBarLarge && "Clientes"}
           </Button>
         </Link>
+        {!isLogistics && (
         <Link href="/" passHref legacyBehavior>
           <Button
             type="primary"
@@ -91,6 +101,7 @@ export const SideBar = () => {
             {isSideBarLarge && "Clientes"}
           </Button>
         </Link>
+        )}
         <Link href="/logistics/configuration" passHref legacyBehavior>
           <Button
             type="primary"
