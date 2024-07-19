@@ -11,9 +11,11 @@ import { logOut } from "../../../../firebase-utils";
 import Link from "next/link";
 import { useAppStore } from "@/lib/store/store";
 import useStore from "@/lib/hook/useStore";
+import { ModalProjectSelector } from "../modals/ModalProjectSelector/ModalProjectSelector";
 
 export const SideBar = () => {
   const [isSideBarLarge, setIsSideBarLarge] = useState(false);
+  const [modalProjectSelectorOpen, setModalProjectSelectorOpen] = useState(false);
   const router = useRouter();
   const path = usePathname();
   const project = useStore(useAppStore, (state) => state.selectProject);
@@ -23,14 +25,14 @@ export const SideBar = () => {
     <div className={isSideBarLarge ? "mainLarge" : "main"}>
       <Flex vertical className="containerButtons">
         {LOGO && (
-          <Flex className="logoContainer">
+          <button className="logoContainer" onClick={() => setModalProjectSelectorOpen(true)}>
             <Image
               width={isSideBarLarge ? 75 : 50}
               height={isSideBarLarge ? 75 : 50}
               alt="logo company"
               src={LOGO.trim()}
             />
-          </Flex>
+          </button>
         )}
 
         <Link href="/clientes/all">
@@ -95,6 +97,10 @@ export const SideBar = () => {
           {isSideBarLarge && "Salir"}
         </Button>
       </Flex>
+      <ModalProjectSelector
+        isOpen={modalProjectSelectorOpen}
+        onClose={() => setModalProjectSelectorOpen(false)}
+      />
     </div>
   );
 };

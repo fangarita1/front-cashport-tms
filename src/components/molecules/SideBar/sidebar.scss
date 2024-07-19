@@ -1,4 +1,4 @@
-@import '../../../styles/variables';
+@import "../../../styles/variables";
 
 .main {
     width: 90px;
@@ -14,103 +14,104 @@
     position: relative;
     box-shadow: 7px 1px 5px 2px #f0f0f0;
 
-		.containerButtons {
-			display: flex;
-			padding: 10px 14px;
-			align-items: center;
-			row-gap: 6px;
-			
-			.logoContainer {
-					margin-bottom: 2rem;
-			}
-	
-			.buttonIcon {
-					background-color: $secondary;
-					box-shadow: none;
-					color: black;
-					align-items: center;
-	
-					&:hover {
-							background-color: $secondary !important;
-							color: black;
-							
-					}
-			}
-	
-			.buttonIconActive {
-					background-color: transparent;
-					color: black;
-					box-shadow: none;
-					align-items: center;
-	
-					&:hover {
-							background-color: $secondary !important;
-							color: black;
-	
-					}
-			}
-		}
+    .containerButtons {
+        display: flex;
+        padding: 10px 14px;
+        align-items: center;
+        row-gap: 6px;
+
+        .logoContainer {
+            display: flex;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .buttonIcon {
+            background-color: $secondary;
+            box-shadow: none;
+            color: black;
+            align-items: center;
+
+            &:hover {
+                background-color: $secondary !important;
+                color: black;
+            }
+        }
+
+        .buttonIconActive {
+            background-color: transparent;
+            color: black;
+            box-shadow: none;
+            align-items: center;
+
+            &:hover {
+                background-color: $secondary !important;
+                color: black;
+            }
+        }
+    }
 }
 
 .mainLarge {
-	width: 272px;
-	height: 100%;
-	background-color: $white;
-	border-radius: 1rem;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	align-items: center;
-	padding: 3rem 0;
-	padding-top: 5rem;
-	position: relative;
-	box-shadow: 7px 1px 5px 2px #f0f0f0;
+    width: 272px;
+    height: 100%;
+    background-color: $white;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3rem 0;
+    padding-top: 5rem;
+    position: relative;
+    box-shadow: 7px 1px 5px 2px #f0f0f0;
 
-	.containerButtons {
-		display: flex;
-		width: 90%;
-		padding: 10px 14px;
-		align-items: center;
-		row-gap: 6px;
-		.logoContainer {
-				margin-bottom: 2rem;
-		}
-	
-		.buttonIcon {
-				background-color: $secondary;
-				box-shadow: none;
-				display: flex;
-				width: 100%;
-				color: black;
-				align-items: center;
+    .containerButtons {
+        display: flex;
+        width: 90%;
+        padding: 10px 14px;
+        align-items: center;
+        row-gap: 6px;
+        .logoContainer {
+            margin-bottom: 2rem;
+        }
 
-				&:hover {
-						background-color: $secondary !important;
-						color: black;
-				}
-		}
+        .buttonIcon {
+            background-color: $secondary;
+            box-shadow: none;
+            display: flex;
+            width: 100%;
+            color: black;
+            align-items: center;
 
-		.buttonIconActive {
-				width: 100%;
-				background-color: transparent;
-				color: black;
-				box-shadow: none;
-				display: flex;
-				align-items: center;
+            &:hover {
+                background-color: $secondary !important;
+                color: black;
+            }
+        }
 
-				&:hover {
-						background-color: $secondary !important;
-						color: black;
-				}
-		}
-	}
-	.exit {
-		display: flex;
-		.buttonExit {
-			display: flex;
-			align-items: center;
-			box-shadow: none;
-			justify-content: center;
-		}
-	}
+        .buttonIconActive {
+            width: 100%;
+            background-color: transparent;
+            color: black;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+
+            &:hover {
+                background-color: $secondary !important;
+                color: black;
+            }
+        }
+    }
+    .exit {
+        display: flex;
+        .buttonExit {
+            display: flex;
+            align-items: center;
+            box-shadow: none;
+            justify-content: center;
+        }
+    }
 }
