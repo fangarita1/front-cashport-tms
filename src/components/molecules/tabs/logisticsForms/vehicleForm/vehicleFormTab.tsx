@@ -197,7 +197,6 @@ export const VehicleFormTab = ({
     <>
       <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
         <Flex component={"header"} className="headerProyectsForm">
-          <Flex gap={"1rem"}>
             <Link href={`/logistics/providers/${params.id}/vehicle`} passHref>
               <Button
                 type="text"
@@ -208,39 +207,38 @@ export const VehicleFormTab = ({
                 Ver Vehiculos
               </Button>
             </Link>
-            <Flex gap={"1rem"}>
-            {(statusForm === "review") && (
-              <Button
-                className="buttons"
-                htmlType="button"
-                disabled={statusForm === "review"}  
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsOpenModal(true);
-                }}
-              >
-                Cambiar Estado
-                <ArrowsClockwise size={"1.2rem"} />
-              </Button>
-            )}
-            {statusForm === "review" ? (
-              <Button
-                className="buttons -edit"
-                htmlType="button"
-                disabled={statusForm === "review"} 
-                onClick={(e) => {
-                  e.preventDefault();
-                  onEditVehicle();
-                }}
-              >
-                {validationButtonText(statusForm)}
-                <Pencil size={"1.2rem"} />
-              </Button>
-            ) : (
-              ""
-            )}
-          </Flex>
-          </Flex>
+              <Flex gap={"1rem"}>
+              {(statusForm === "review") && (
+                <Button
+                  className="buttons"
+                  htmlType="button"
+                  disabled={statusForm === "review"}  
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsOpenModal(true);
+                  }}
+                >
+                  Cambiar Estado
+                  <ArrowsClockwise size={"1.2rem"} />
+                </Button>
+              )}
+              {statusForm === "review" ? (
+                <Button
+                  className="buttons -edit"
+                  htmlType="button"
+                  disabled={statusForm === "review"} 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onEditVehicle();
+                  }}
+                >
+                  {validationButtonText(statusForm)}
+                  <Pencil size={"1.2rem"} />
+                </Button>
+              ) : (
+                ""
+              )}
+            </Flex>
         </Flex>
         <Flex component={"main"} flex="3" vertical>
           <Row>
