@@ -15,7 +15,7 @@ type ExtendedFieldError =
 interface PropsGeneralSelect<T extends FieldValues> {
   errors: ExtendedFieldError | undefined;
   field: ControllerRenderProps<T, any>;
-  title: string;
+  title?: string;
   placeholder: string;
   options: { value: number; label: string }[] | undefined;
   loading?: boolean;
@@ -40,8 +40,8 @@ const GeneralSelect = <T extends FieldValues>({
   });
 
   return (
-    <Flex vertical style={customStyleContainer}>
-      <h4 className="inputTitle">{title}</h4>
+    <Flex vertical style={customStyleContainer} className="generalSelectContainer">
+      {title && <h4 className="inputTitle">{title}</h4>}
       <Select
         placeholder={placeholder}
         className={errors ? "selectInputError" : "selectInputCustom"}

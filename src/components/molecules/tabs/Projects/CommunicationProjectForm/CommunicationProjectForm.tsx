@@ -1,6 +1,6 @@
-import { Button, Flex, Radio, RadioChangeEvent, Typography } from "antd";
+import { Button, Flex, Radio, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { CaretLeft } from "phosphor-react";
+import { CaretLeft, Minus, Plus } from "phosphor-react";
 
 import styles from "./communicationProjectForm.module.scss";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
@@ -13,6 +13,7 @@ import { SelectClientsGroup } from "@/components/molecules/selects/SelectClients
 import GeneralSelect from "@/components/ui/general-select";
 import GeneralSearchSelect from "@/components/ui/general-search-select";
 import SelectOuterTags from "@/components/ui/select-outer-tags";
+import InputClickable from "@/components/ui/input-clickable";
 
 const { Title } = Typography;
 
@@ -24,15 +25,29 @@ interface Props {
   onGoBackTable: () => void;
 }
 export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
-  const [radioValue, setRadioValue] = useState(0);
+  const [radioValue, setRadioValue] = useState<any>(0);
+  const [noticeDays, setNoticeDays] = useState<{ days: number; suffix: "días" }>({
+    days: 0,
+    suffix: "días"
+  });
   const [zones, setZones] = useState([] as number[]);
   const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
     initDatSelectedBusinessRules
   );
+  const [frequencyError, setFrequencyError] = useState(false);
   const [assignedGroups, setAssignedGroups] = useState([] as any[]);
+  const [isFrequencyModalOpen, setIsFrequencyModalOpen] = useState(false);
 
-  const handleChangeRadio = (e: RadioChangeEvent) => {
-    setRadioValue(parseInt(e.target.value));
+  const handleChangeRadio = (value: any) => {
+    setRadioValue(value);
+  };
+
+  const handleDecrementNotice = () => {
+    setNoticeDays((prev) => ({ ...prev, days: prev.days - 1 }));
+  };
+
+  const handleIncrementNotice = () => {
+    setNoticeDays((prev) => ({ ...prev, days: prev.days + 1 }));
   };
 
   const {
@@ -77,15 +92,104 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
         <Title className={styles.forwardType__title} level={5}>
           Tipo de envio
         </Title>
-        <Radio.Group className={styles.radioGroup} onChange={handleChangeRadio} value={radioValue}>
-          <Radio key={1} value={1}>
-            <div className={styles.radioGroup__label}>
-              input
-              {/* <p>{discount.discount}</p>
-              {discount.isReached && <p className={styles.reachedDiscount}>Descuento Alcanzado</p>} */}
+
+        <div className={styles.radioGroup}>
+          <div className={styles.radioGroup__frequency}>
+            <Radio
+              checked={radioValue === 1}
+              onChange={() => handleChangeRadio(1)}
+              className={styles.radioGroup__frequency__radio}
+              value={1}
+            >
+              <InputClickable
+                title="Frecuencia"
+                error={frequencyError}
+                disabled={radioValue !== 1}
+                callBackFunction={() => setIsFrequencyModalOpen(true)}
+              />
+            </Radio>
+          </div>
+
+          <div className={styles.radioGroup__event}>
+            <Radio
+              checked={radioValue === 2}
+              onChange={() => handleChangeRadio(2)}
+              name="test"
+              className={styles.radioGroup__event__radio}
+              value={2}
+            >
+              <Controller
+                disabled={radioValue !== 2}
+                name="event_type"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <GeneralSelect
+                    errors={errors.event_type}
+                    field={field}
+                    title="Tipo de evento"
+                    placeholder="Seleccionar tipo de evento"
+                    options={mockEventTypes}
+                  />
+                )}
+              />
+            </Radio>
+            <div className={styles.noticeDays}>
+              <Button className={styles.buttonMinus} onClick={() => handleDecrementNotice()}>
+                <Minus size={14} weight="light" />
+              </Button>
+              <input
+                readOnly
+                className={styles.input}
+                value={`${noticeDays.days} ${noticeDays.suffix}`}
+              />
+              <Button className={styles.buttonPlus} onClick={() => handleIncrementNotice()}>
+                <Plus size={14} weight="light" />
+              </Button>
             </div>
-          </Radio>
-        </Radio.Group>
+          </div>
+
+          <div className={styles.radioGroup__actions}>
+            <Radio
+              className={styles.radioGroup__actions__radio}
+              checked={radioValue === 3}
+              onChange={() => handleChangeRadio(3)}
+              name="test"
+              value={3}
+            >
+              <Controller
+                disabled={radioValue !== 3}
+                name="action_type"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <SelectOuterTags
+                    title="Tipo de acción"
+                    placeholder="Seleccionar tipo de acción"
+                    options={mockAttachments}
+                    errors={errors.attached}
+                    field={field}
+                  />
+                )}
+              />
+            </Radio>
+            <Controller
+              disabled={radioValue !== 3}
+              name="sub_action_type"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <SelectOuterTags
+                  title="Subtipo de acción"
+                  placeholder="Seleccionar subtipo de acción"
+                  options={mockAttachments}
+                  errors={errors.attached}
+                  field={field}
+                />
+              )}
+            />
+          </div>
+        </div>
       </div>
 
       <div className={styles.businessRules}>
@@ -207,6 +311,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
           Crear comunicación
         </PrincipalButton>
       </Flex>
+      {isFrequencyModalOpen && <h1>Modal frecuencia</h1>}
     </main>
   );
 };
@@ -249,6 +354,14 @@ const mockForward = [
   { value: 8, label: "Laura Martinez" },
   { value: 9, label: "Sara Perez" },
   { value: 10, label: "Camila Sanchez" }
+];
+
+const mockEventTypes = [
+  { value: 1, label: "Emisión" },
+  { value: 2, label: "Radicación" },
+  { value: 3, label: "Vencimiento de pronto pago" },
+  { value: 4, label: "Vencimiento de factura" },
+  { value: 5, label: "Vencimiento acuerdo de pago" }
 ];
 
 const initDatSelectedBusinessRules: ISelectedBussinessRules = {
