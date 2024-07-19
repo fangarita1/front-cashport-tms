@@ -33,7 +33,7 @@ export const VehicleInfoView = ({ isEdit = false, idParam = "", params }: Props)
         <Row style={{ width: "100%" }}>
           {!isLoading ? (
             <VehicleFormTab
-              statusForm={"edit"}
+              statusForm={"review"}
               messageApi={messageApi}
               data={data?.data as any}
               params={params}

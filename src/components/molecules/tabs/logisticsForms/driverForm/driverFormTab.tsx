@@ -204,7 +204,7 @@ export const DriverFormTab = ({
               <Button
                 className="buttons"
                 htmlType="button"
-                disabled={true} 
+                disabled={statusForm === "review"}  
                 onClick={(e) => {
                   e.preventDefault();
                   setIsOpenModal(true);
@@ -218,7 +218,7 @@ export const DriverFormTab = ({
               <Button
                 className="buttons -edit"
                 htmlType="button"
-                disabled={true}
+                disabled={statusForm === "review"} 
                 onClick={(e) => {
                   e.preventDefault();
                   onEditProject();
@@ -281,7 +281,7 @@ export const DriverFormTab = ({
                     titleInput="Fecha de nacimiento"
                     nameInput="general.birth_date"
                     placeholder="Seleccionar fecha de nacimiento"
-                    disabled={true} 
+                    disabled={statusForm === "review"}  
                     control={control}
                     error={undefined}
                   />
@@ -363,7 +363,7 @@ export const DriverFormTab = ({
                     nameInput="general.license_expiration"
                     placeholder="Seleccionar fecha de expiración"
                     control={control}
-                    disabled={true} 
+                    disabled={statusForm === "review"}  
                     validationRules={{ required: true }}
                     error={errors?.general?.license_expiration}
                   />
@@ -392,7 +392,7 @@ export const DriverFormTab = ({
                       style={{ width: "50%" }}
                       placeholder="Seleccione vehiculos"
                       loading={loadingVicles}
-                      disabled={true} 
+                      disabled={statusForm === "review"}  
                       defaultValue={getValues("general.vehicle_type")?.map((i: any) =>
                         i.id_vehicle_type?.toString()
                       )}
