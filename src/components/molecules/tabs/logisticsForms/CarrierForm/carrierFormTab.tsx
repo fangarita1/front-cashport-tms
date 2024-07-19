@@ -25,7 +25,10 @@ import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/Up
 import { licences, SelectLCategory } from "@/components/molecules/logistics/SelectLicenceCategory/SelectLicenceCategory";
 import useSWR from "swr";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
-import { CertificateType } from "@/types/logistics/certificate/certificate";
+import { CertificateType, DocumentCompleteType } from "@/types/logistics/certificate/certificate";
+import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
+import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
+import dayjs from "dayjs";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -34,7 +37,7 @@ export const CarrierFormTab = ({
   onEditProject = () => {},
   onSubmitForm = () => {},
   statusForm = "review",
-  data = [] as ICarrier[],
+  data = [],
   onActiveProject = () => {},
   onDesactivateProject = () => {}
 }: CarrierFormTabProps) => {
@@ -43,6 +46,7 @@ export const CarrierFormTab = ({
     "0",
     getDocumentsByEntityType
   );
+  const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
 
   const [imageFile, setImageFile] = useState<any | undefined>(undefined);
   const [loading, setloading] = useState(false);
@@ -68,71 +72,25 @@ export const CarrierFormTab = ({
   }
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
 
-  const [mockFiles, setMockFiles] = useState<CertificateType[]>([]);
-
-  /* if (mockFiles.length < 1) {
-    setMockFiles([
-      { id: 1, key: 1, title: "archivo 1", isMandatory: true },
-      { id: 2, key: 2, title: "archivo 2", isMandatory: true },
-      { id: 3, key: 3, title: "archivo 3", isMandatory: false }
-    ]);
-  } */
-  const newfile = useRef<any>("");
-
-  const AddFileModal = () => {
-    Modal.info({
-      title: "Agregar otro documento",
-      content: (
-        <Flex style={{ width: "100%" }}>
-          <Row style={{ width: "100%" }}>
-          <Text >
-          Cargar documentos adicionales
-          </Text>
-            <Col span={24}>
-              <Select
-                mode="multiple"
-                allowClear
-                style={{ width: "100%" }}
-                placeholder="Seleccione documentos"
-                defaultValue={mockFiles?.map((document) => document.id.toString()) || []}
-                loading={isLoadingDocuments}
-                onChange={(value) => {
-                  setMockFiles(documentsType?.filter((document) => value.includes(document.id.toString()))|| []);
-                }}
-                options={documentsType?.map((document) => ({
-                  label: <span>{document.description}</span>,
-                  value: document.id.toString()
-                }))}
-              />{/* 
-              <label className="locationLabels" style={{ display: "flex", marginTop: "2rem" }}>
-                <text>Nombre del documento</text>
-              </label>
-              <Input
-                placeholder="Escribir nombre"
-                onChange={(e) => {
-                  newfile.current = e.target.value;
-                }}
-              /> */}
-            </Col>
-          </Row>
-        </Flex>
-      ),
-      onOk: () => {/* 
-        if (newfile.current.length <= 0) {
-          message.error("Debe digitar un nombre de archivo");
-        } else {
-          const lastitem = mockFiles.at(-1);
-          const newvalue = {
-            id: lastitem != undefined ? lastitem.id + 1 : 1,
-            key: lastitem != undefined ? lastitem.key + 1 : 1,
-            title: newfile.current,
-            isMandatory: false
-          };
-          setMockFiles((mockFiles) => [...mockFiles, newvalue]);
-        } */
+  useEffect(() => {
+    if (Array.isArray(documentsType)) {
+      if (data[0]?.documents?.length) {
+        const fileSelected =
+          documentsType
+            ?.filter((f) => data[0].documents?.find((d) => d.id_document_type === f.id))
+            .map((f) => ({
+              ...f,
+              file: undefined,
+              link: data[0].documents?.find((d) => d.id_document_type === f.id)?.url_archive,
+              expirationDate: dayjs(
+                data[0].documents?.find((d) => d.id_document_type === f.id)?.expiration_date
+              )
+            })) || [];
+        setSelectedFiles(fileSelected);
       }
-    });
-  };
+    }
+  }, [files, documentsType]);
+
 
   useEffect(()=>{
     console.log(files)
@@ -256,20 +214,30 @@ export const CarrierFormTab = ({
             <text>Documentos</text>
           </label>
           <Row className="mainUploadDocuments">
-            {mockFiles.map((file) => (
+            {selectedFiles.map((file) => (
               // eslint-disable-next-line react/jsx-key
-              <Col span={12} style={{padding:'15px'}} key={`file-${file.id}`}>
+              <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
                 <UploadDocumentButton
                   key={file.id}
                   title={file.description}
-                  isMandatory={file.optional.data.includes(1)}
+                  isMandatory={file.optional.data.includes(0)}
                   aditionalData={file.id}
-                  setFiles={setFiles}
-                />
+                  setFiles={() => {}}
+                  files={file.file}
+                  disabled
+                >
+                  {file?.link ? (
+                    <UploadDocumentChild
+                      linkFile={file.link}
+                      nameFile={file.link.split("-").pop() || ""}
+                      onDelete={() => {}}
+                      showTrash={false}
+                    />
+                  ) : undefined}
+                </UploadDocumentButton>
               </Col>
             ))}
           </Row>
-          
           {/* -----------------------------------Project Config----------------------------------- */}
 
           <Flex className="buttonNewProject">
