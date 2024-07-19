@@ -3,6 +3,7 @@ import { CreateVehicleView } from "@/components/organisms/logistics/vehicles/cre
 type Props = {
   params: {
     id: string;
+    vehicleId: string;
   };
 };
 
