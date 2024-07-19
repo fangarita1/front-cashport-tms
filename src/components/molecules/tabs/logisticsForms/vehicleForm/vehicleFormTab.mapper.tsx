@@ -1,10 +1,10 @@
-import { IVehicle, VihicleDetail, IFormVehicle } from "@/types/logistics/schema";
+import { IVehicle, VihicleDetail, IFormVehicle, ICertificates } from "@/types/logistics/schema";
 import { MessageInstance } from "antd/es/message/interface";
 import Title from "antd/es/typography/Title";
 
 export interface VehicleFormTabProps {
   idVehicleForm?: string;
-  data?: VihicleDetail;
+  data?: VehicleData;
   disabled?: boolean;
   onEditVehicle?: () => void;
   onSubmitForm?: (data: any) => void;
@@ -17,6 +17,8 @@ export interface VehicleFormTabProps {
     vehicleId: string;
   };
 }
+
+export type VehicleData = IVehicle & { licence?: string } & { documents?: ICertificates[] };
 
 export interface FileObject {
   file: File;

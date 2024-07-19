@@ -1,8 +1,10 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
-import { IListData, IListDataVehiche, IListDataVehicheDetail } from "@/types/logistics/schema";
+import { IVehicle, IListDataVehiche, IListDataVehicheDetail } from "@/types/logistics/schema";
 import { API } from "@/utils/api/api";
 import { GenericResponse } from "@/types/global/IGlobal";
+import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
+import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 
 export const getAllVehicles = async ({ id }: { id: string }): Promise<any[]> => {
   const response: GenericResponse<any[]> = await API.get(`/vehicle/provider/${id}`);
@@ -27,6 +29,7 @@ export const getVehicleType = async (): Promise<IListDataVehiche> => {
     return error as any;
   }
 };
+
 export const getVehicleById = async (id: string): Promise<IListDataVehicheDetail> => {
   try {
     const response: AxiosResponse<IListDataVehicheDetail> = await axios.get(
@@ -46,59 +49,47 @@ export const getVehicleById = async (id: string): Promise<IListDataVehicheDetail
   }
 };
 
-interface IVehicle {
-  id: string;
-  id_carrier: number;
-  id_vehicle_type: number;
-  plate_number: string;
-  brand: string;
-  line: string;
-  model: string;
-  year: number;
-  color: string;
-  country: number;
-  aditional_info: string;
-  gps_link: string;
-  gps_user: string;
-  gps_password: string;
-}
-
-interface FileObject {
-  file: File;
-  docReference?: string;
-}
-
 export const addVehicle = async (
   data: IVehicle,
   imageFiles: FileObject[],
-  files: FileObject[] | any[]
+  files: DocumentCompleteType[]
 ): Promise<AxiosResponse<any, any>> => {
   try {
     const form = new FormData();
     const body: any = { ...data };
 
-    // Check if there is at least one image file
     if (!imageFiles.some((file) => file.file)) {
       throw new Error("At least one image file is required.");
     }
 
-    // Handle images
     body.images = imageFiles.map((file: any, index) => ({
       docReference: file.docReference || `imagen${index + 1}`,
       uid: file?.file?.uid
     }));
 
-    // Append body to form
+    const expiration = files.find(f => !f.expirationDate && f.expiry?.data.includes(1));
+    if (expiration) {
+      throw new Error(`El documento ${expiration.description} debe tener una fecha de vencimiento`);
+    }
+
+    body.files = files;
+
     form.append("body", JSON.stringify(body));
 
-    // Append each image file to form data
     imageFiles.forEach((file: FileObject, index: number) => {
-      form.append(`image${index + 1}`, file.file);
+      if (file.file) {
+        form.append(`image${index + 1}`, file.file);
+      } else {
+        console.warn(`Image ${index + 1} is undefined.`);
+      }
     });
 
-    // Append each additional file to form data
-    files.forEach((file: FileObject, index: number) => {
-      form.append(`file-for-${index + 1}`, file.file);
+    files.forEach((file) => {
+      if (file.file) {
+        form.append(`file-for-${file.id}`, file.file);
+      } else {
+        console.warn(`File with id ${file.id} is undefined.`);
+      }
     });
 
     const response = await axios.post(`${config.API_HOST}/vehicle/create`, form, {

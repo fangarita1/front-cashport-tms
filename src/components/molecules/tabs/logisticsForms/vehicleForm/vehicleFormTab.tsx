@@ -14,20 +14,24 @@ import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import {
   normalizeVehicleData,
   validationButtonText,
+  VehicleData,
   VehicleFormTabProps
 } from "./vehicleFormTab.mapper";
 
 import "./vehicleformtab.scss";
 import { IFormVehicle, VehicleType } from "@/types/logistics/schema";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
-import { CertificateType } from "@/types/logistics/certificate/certificate";
 import useSWR from "swr";
 import { SelectVehicleType } from "@/components/molecules/logistics/SelectVehicleType/SelectVehicleType";
 import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
 import { addVehicle, getVehicleType } from "@/services/logistics/vehicle";
+import { CertificateType, DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 import { DocumentButtonAction } from "@/components/atoms/DocumentButtonAction/DocumentButtonAction";
+import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import dayjs from "dayjs";
 
 const { Title, Text } = Typography;
 
@@ -91,11 +95,64 @@ export const VehicleFormTab = ({
     file: File | undefined;
   }
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
   const [mockFiles, setMockFiles] = useState<CertificateType[]>([]);
 
   useEffect(() => {
-    reset(normalizeVehicleData(data as any) as any);
-  }, []);
+    if (Array.isArray(documentsType)) {
+      console.log(data);
+      if (data?.documents?.length) {
+        const fileSelected =
+          documentsType
+            ?.filter((f) => data.documents?.find((d) => d.id_document_type === f.id))
+            .map((f) => ({
+              ...f,
+              file: undefined,
+              link: data.documents?.find((d) => d.id_document_type === f.id)?.url_archive,
+              expirationDate: dayjs(
+                data.documents?.find((d) => d.id_document_type === f.id)?.expiration_date
+              )
+            })) || [];
+        setSelectedFiles(fileSelected);
+      } else {
+        const fileSelected = documentsType
+          ?.filter(
+            (f) => f?.optional?.data?.includes(0) || selectedFiles?.find((f2) => f2.id === f.id)
+          )
+          ?.map((f) => ({
+            ...f,
+            file: files.find((f2) => f2.aditionalData === f.id)?.file,
+            expirationDate: selectedFiles.find((f2) => f2.id === f.id)?.expirationDate
+          }));
+        if (fileSelected?.length) {
+          setSelectedFiles([...fileSelected]);
+        } else {
+          setSelectedFiles([]);
+        }
+      }
+    }
+  }, [files, documentsType]);
+
+  const handleChangeExpirationDate = (index: number, value: any) => {
+    setSelectedFiles((prevState: any[]) => {
+      const updatedFiles = [...prevState];
+      updatedFiles[index].expirationDate = value;
+      return updatedFiles;
+    });
+  };
+
+  const handleChange = (value: string[]) => {
+    const sf = documentsType?.filter((file) => value.includes(file.id.toString()));
+    if (sf) {
+      setSelectedFiles((prevState) => {
+        return sf.map((file) => ({
+          ...file,
+          file: prevState.find((f) => f.id === file.id)?.file,
+          expirationDate: prevState.find((f) => f.id === file.id)?.expirationDate
+        }));
+      });
+    }
+  };
 
   const onSubmit = async (data: any) => {
     const hasImage = images.some((image) => image.file);
@@ -113,7 +170,7 @@ export const VehicleFormTab = ({
     };
 
     try {
-      const response = await addVehicle(vehicleData, imageFiles, files);
+      const response = await addVehicle(vehicleData, imageFiles, selectedFiles);
       console.log("Vehicle created successfully:", response.data);
       // Optionally reset the form and images after successful submission
       setImages(Array(5).fill({ file: undefined }));
@@ -332,34 +389,60 @@ export const VehicleFormTab = ({
                 error={errors.general?.aditional_info}
               />
             </Col>
+            <Col span={24}>
+            <label className="locationLabels" style={{ display: "flex", marginTop: "2rem" }}>
+              <text>Documentos</text>
+            </label>
+            </Col>
+            <Col span={24}>
+            <Row className="mainUploadDocuments">
+              {selectedFiles.map((file) => (
+                // eslint-disable-next-line react/jsx-key
+                <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
+                  <UploadDocumentButton
+                    key={file.id}
+                    title={file.description}
+                    isMandatory={file.optional.data.includes(0)}
+                    aditionalData={file.id}
+                    setFiles={() => {}}
+                    files={file.file}
+                    disabled
+                  >
+                    {file?.link ? (
+                      <UploadDocumentChild
+                        linkFile={file.link}
+                        nameFile={file.link.split("-").pop() || ""}
+                        onDelete={() => {}}
+                        showTrash={false}
+                      />
+                    ) : undefined}
+                  </UploadDocumentButton>
+                </Col>
+              ))}
+            </Row>
+            </Col>
             <Col span={24} className="text-right">
-              {/* <ModalDocuments
-                isOpen={isOpenModalDocuments}
-                mockFiles={mockFiles}
-                setFiles={setFiles}
-                setMockFiles={setMockFiles}
-                documentsType={documentsType}
-                isLoadingDocuments={isLoadingDocuments}
-                onClose={() => setIsOpenModalDocuments(false)}
-              /> */}
+              <ModalDocuments
+                  isOpen={isOpenModalDocuments}
+                  mockFiles={selectedFiles}
+                  setFiles={setFiles}
+                  documentsType={documentsType}
+                  isLoadingDocuments={isLoadingDocuments}
+                  onClose={() => setIsOpenModalDocuments(false)}
+                  handleChange={handleChange}
+                  handleChangeExpirationDate={handleChangeExpirationDate}
+                />
               <Row>
-                <Flex justify="flex-end" style={{ width: "100%", margin: "1rem" }}>
-                  <Button type="text" onClick={() => setIsOpenModalDocuments(true)}>
-                    <Plus />
-                    &nbsp;<Text>Cargar documentos</Text>
-                  </Button>
-                </Flex>
+                {statusForm === "create" && (
+                    <Flex justify="flex-end" style={{ width: "100%", margin: "1rem" }}>
+                      <Button type="text" onClick={() => setIsOpenModalDocuments(true)}>
+                        <Plus />
+                        &nbsp;<Text>Cargar documentos</Text>
+                      </Button>
+                    </Flex>
+                  )}
               </Row>
             </Col>
-          </Row>
-          <Row className="clientDocuments" gutter={16}>
-            {files?.map((document, index) => (
-              <Col key={`${index}${document.name}`} span={6}>
-                <DocumentButtonAction
-                  documentUrl={document.file ? URL.createObjectURL(document.file) : ""}
-                />
-              </Col>
-            ))}
           </Row>
           {/* -----------------------------------Project Config----------------------------------- */}
           <Flex className="buttonNewProject">
