@@ -57,6 +57,9 @@ export const VehicleFormTab = ({
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  
 
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
     "1",
@@ -70,6 +73,8 @@ export const VehicleFormTab = ({
   const [images, setImages] = useState<ImageState[]>(
     Array(5).fill({ file: undefined, error: false })
   );
+
+  
   const defaultValues = statusForm === "create" ? {} : normalizeVehicleData(data as any);
   const {
     watch,
@@ -158,7 +163,10 @@ export const VehicleFormTab = ({
 
   const onSubmit = async (data: any) => {
     const hasImage = images.some((image) => image.file);
-    if (!hasImage) return;
+    if (!hasImage){
+      setImageError(true);
+      return;
+    } 
 
     const imageFiles = images
       .map((image, index) =>
@@ -176,6 +184,7 @@ export const VehicleFormTab = ({
       console.log("Vehicle created successfully:", response.data);
       // Optionally reset the form and images after successful submission
       setImages(Array(5).fill({ file: undefined }));
+      setImageError(false);
       push(`/logistics/providers/${params.id}/vehicle`);
     } catch (error) {
       console.log("Error creating vehicle:", error);
@@ -250,27 +259,36 @@ export const VehicleFormTab = ({
               <Row>
                 <Col span={24} className="colfoto">
                   <UploadImg
-                    disabled={statusForm === "review"}  
+                    disabled={statusForm === "review"}
                     imgDefault={watch("general.image1")}
-                    setImgFile={(file) =>
+                    setImgFile={(file) => {
                       setImages((prev) =>
                         prev.map((img, index) => (index === 0 ? { ...img, file } : img))
-                      )
-                    }
+                      );
+                      if (file) {
+                        setImageError(false);
+                      }
+                    }}
                   />
+                  {imageError && (
+                    <Text className="textError">{"Al menos 1 imagen debe ser cargada *"}</Text>
+                  )}
                 </Col>
                 {images.slice(1).map((image, index) => (
                   <Col span={6} className="colfotomin" key={index + 1}>
                     <UploadImg
-                      disabled={statusForm === "review"}  
+                      disabled={statusForm === "review"}
                       imgDefault={getValues(getImageKey(index + 1))}
-                      setImgFile={(file) =>
+                      setImgFile={(file) => {
                         setImages((prev) =>
                           prev.map((img, imgIndex) =>
                             imgIndex === index + 1 ? { ...img, file } : img
                           )
-                        )
-                      }
+                        );
+                        if (file) {
+                          setImageError(false);
+                        }
+                      }}
                     />
                   </Col>
                 ))}
@@ -288,7 +306,7 @@ export const VehicleFormTab = ({
                   <Controller
                     name="general.id_vehicle_type"
                     control={control}
-                    disabled={statusForm === "review"}  
+                    disabled={statusForm === "review"} 
                     rules={{ required: true }}
                     render={({ field }) => (
                       <SelectVehicleType
