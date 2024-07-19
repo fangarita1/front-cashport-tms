@@ -14,7 +14,6 @@ export interface VehicleFormTabProps {
   onActiveVehicle?: () => void;
   onDesactivateVehicle?: () => void;
   statusForm: "create" | "edit" | "review";
-  messageApi?: MessageInstance;
   params: {
     id: string;
     vehicleId: string;
@@ -86,28 +85,15 @@ export const _onSubmitVehicle = (
   setImageError: (value: SetStateAction<boolean>) => void,
   imageFiles: { docReference: string; file: File }[],
   selectedFiles: DocumentCompleteType[],
-  onSubmitForm: (data: any, imageFiles: { docReference: string; file: File }[], selectedFiles: DocumentCompleteType[]) => Promise<any>,
+  onSubmitForm: (data: any) => void,
   reset: UseFormReset<IFormVehicle>
 ) => {
   setloading(true);
   try {
-    const hasImage = imageFiles.length > 0;
-    if (!hasImage) {
-      setImageError(true);
-      setloading(false);
-      return;
-    }
-
     setImageError(false);
-    onSubmitForm(data, imageFiles, selectedFiles)
-      .then(() => {
-        reset(data);
-        setloading(false);
-      })
-      .catch((error) => {
-        console.warn({ error });
-        setloading(false);
-      });
+    onSubmitForm({...data, images: imageFiles, files: selectedFiles});
+    reset(data);
+    setloading(false);
   } catch (error) {
     console.warn({ error });
     setloading(false);

@@ -21,6 +21,7 @@ export const CreateVehicleView = ({ params }: Props) => {
 
   const onCreateVehicle = async (data: IFormVehicle) => {
     try {
+      console.log(data.general);
       const response = await addVehicle(
         data.general,
         [

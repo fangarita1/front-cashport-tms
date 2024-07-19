@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, Col, Flex, Row, Switch, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
+import { message } from "antd";
 
 // components
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
@@ -11,7 +12,6 @@ import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import {
-  _onSubmitVehicle,
   normalizeVehicleData,
   validationButtonText,
   VehicleData,
@@ -47,7 +47,6 @@ interface ImageState {
 
 export const VehicleFormTab = ({
   data,
-  messageApi,
   onEditVehicle = () => {},
   onSubmitForm = () => {},
   statusForm = "review",
@@ -59,6 +58,7 @@ export const VehicleFormTab = ({
   const [loading, setLoading] = useState(false);
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
   
 
@@ -164,33 +164,50 @@ export const VehicleFormTab = ({
 
   const onSubmit = async (data: any) => {
     const hasImage = images.some((image) => image.file);
-    if (!hasImage) {
+    if (!hasImage){
       setImageError(true);
       return;
-    }
-  
+    } 
+
     const imageFiles = images
       .map((image, index) =>
         image.file ? { docReference: `imagen${index + 1}`, file: image.file } : undefined
       )
       .filter(Boolean) as { docReference: string; file: File }[];
-  
+
     const vehicleData: any = {
       ...data.general,
       id_carrier: Number(params.id) || 14
     };
-  
-    _onSubmitVehicle(
-      vehicleData,
-      setLoading,
-      setImageError,
-      imageFiles,
-      selectedFiles,
-      addVehicle,
-      reset
-    );
+
+    try {
+      const response = await addVehicle(vehicleData, imageFiles, selectedFiles);
+      console.log("Vehicle created successfully:", response.data);
+      if (response.status === 200) {
+        messageApi.open({
+          type: "success",
+          content: "El vehículo fue creado exitosamente."
+        });
+        push(`/logistics/providers/${params.id}/vehicle`);
+      }
+      // Optionally reset the form and images after successful submission
+      setImages(Array(5).fill({ file: undefined }));
+      setImageError(false);
+      push(`/logistics/providers/${params.id}/vehicle`);
+    } catch (error) {
+      if (error instanceof Error) {
+        messageApi.open({
+          type: "error",
+          content: error.message
+        });
+      } else {
+        message.open({
+          type: "error",
+          content: "Oops, hubo un error por favor intenta más tarde."
+        });
+      }
+    }
   };
-  
 
   const getImageKey = (index: number): ImageKeys => {
     return `general.image${index}` as ImageKeys;
@@ -205,6 +222,7 @@ export const VehicleFormTab = ({
 
   return (
     <>
+      {contextHolder}
       <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
         <Flex component={"header"} className="headerProyectsForm">
             <Link href={`/logistics/providers/${params.id}/vehicle`} passHref>
