@@ -14,10 +14,6 @@ export const MassConcilationView = () => {
   const clientIdParam = extractSingleParam(params.clientId);
   const clientId = clientIdParam ? parseInt(clientIdParam) : 0;
 
-  useEffect(() => {
-    console.log(invoices);
-  }, [invoices]);
-
   return (
     <div>
       {currentView === "paste" ? (
