@@ -223,6 +223,7 @@ export const VehicleFormTab = ({
               <Button
                 className="buttons"
                 htmlType="button"
+                disabled={true} 
                 onClick={(e) => {
                   e.preventDefault();
                   onEditVehicle();
@@ -246,7 +247,7 @@ export const VehicleFormTab = ({
               <Row>
                 <Col span={24} className="colfoto">
                   <UploadImg
-                    disabled={statusForm === "review"}
+                    disabled={true} 
                     imgDefault={watch("general.image1")}
                     setImgFile={(file) =>
                       setImages((prev) =>
@@ -258,7 +259,7 @@ export const VehicleFormTab = ({
                 {images.slice(1).map((image, index) => (
                   <Col span={6} className="colfotomin" key={index + 1}>
                     <UploadImg
-                      disabled={statusForm === "review"}
+                      disabled={true} 
                       imgDefault={getValues(getImageKey(index + 1))}
                       setImgFile={(file) =>
                         setImages((prev) =>
@@ -284,6 +285,7 @@ export const VehicleFormTab = ({
                   <Controller
                     name="general.id_vehicle_type"
                     control={control}
+                    disabled={true} 
                     rules={{ required: true }}
                     render={({ field }) => (
                       <SelectVehicleType
@@ -302,30 +304,35 @@ export const VehicleFormTab = ({
                   titleInput="Placa"
                   nameInput="general.plate_number"
                   control={control}
+                  disabled={true} 
                   error={errors.general?.plate_number}
                 />
                 <InputForm
                   titleInput="Marca"
                   nameInput="general.brand"
                   control={control}
+                  disabled={true} 
                   error={errors?.general?.brand}
                 />
                 <InputForm
                   titleInput="Modelo"
                   nameInput="general.model"
                   control={control}
+                  disabled={true} 
                   error={errors?.general?.model}
                 />
                 <InputForm
                   titleInput="Linea"
                   nameInput="general.line"
                   control={control}
+                  disabled={true} 
                   error={errors.general?.line}
                 />
                 <InputForm
                   titleInput="Año"
                   nameInput="general.year"
                   control={control}
+                  disabled={true} 
                   error={undefined}
                   // error={errors.general?.year}
                 />
@@ -333,12 +340,14 @@ export const VehicleFormTab = ({
                   titleInput="Color"
                   nameInput="general.color"
                   control={control}
+                  disabled={true} 
                   error={errors.general?.color}
                 />
                 <InputForm
                   titleInput="Ciudad"
                   nameInput="general.country"
                   control={control}
+                  disabled={true} 
                   error={errors.general?.country}
                 />
               </Flex>
@@ -348,7 +357,7 @@ export const VehicleFormTab = ({
                 justify="flex-start"
                 style={{ marginTop: "2rem" }}
               >
-                <Switch defaultChecked />{" "}
+                <Switch defaultChecked disabled />{" "}
                 <h5 className="ant-typography input-form-title">&nbsp;&nbsp;Equipado por GPS</h5>
               </Flex>
               <Flex
@@ -361,18 +370,21 @@ export const VehicleFormTab = ({
                   titleInput="Usuario"
                   nameInput="general.gps_user"
                   control={control}
+                  disabled={true}
                   error={errors.general?.gps_user}
                 />
                 <InputForm
                   titleInput="Contraseña"
                   nameInput="general.gps_password"
                   control={control}
+                  disabled={true}
                   error={errors.general?.gps_password}
                 />
                 <InputForm
                   titleInput="Link"
                   nameInput="general.gps_link"
                   control={control}
+                  disabled={true}
                   error={errors.general?.gps_link}
                 />
               </Flex>
@@ -386,6 +398,7 @@ export const VehicleFormTab = ({
                 titleInput=""
                 nameInput="general.aditional_info"
                 control={control}
+                disabled={true}
                 error={errors.general?.aditional_info}
               />
             </Col>

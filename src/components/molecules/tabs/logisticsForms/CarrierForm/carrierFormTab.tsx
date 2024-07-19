@@ -165,36 +165,6 @@ export const CarrierFormTab = ({
           >
             Ver Proveedores
           </Button>
-          <Flex gap={"1rem"}>
-            {(statusForm === "review" || statusForm === "edit") && (
-              <Button
-                className="buttons"
-                htmlType="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsOpenModal(true);
-                }}
-              >
-                Cambiar Estado
-                <ArrowsClockwise size={"1.2rem"} />
-              </Button>
-            )}
-            {statusForm === "review" ? (
-              <Button
-                className="buttons -edit"
-                htmlType="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onEditProject();
-                }}
-              >
-                {validationButtonText(statusForm)}
-                <Pencil size={"1.2rem"} />
-              </Button>
-            ) : (
-              ""
-            )}
-          </Flex>
         </Flex>
         <Flex component={"main"} flex="1" vertical>
           <Row>
@@ -298,11 +268,6 @@ export const CarrierFormTab = ({
                 />
               </Col>
             ))}
-          </Row>
-          <Row>
-            <Col span={24} className="text-right">
-              <button onClick={() =>AddFileModal()} className="btnagregarpsl"><PlusCircle></PlusCircle>&nbsp;&nbsp;<text>Agregar otro documento</text></button>
-            </Col>
           </Row>
           
           {/* -----------------------------------Project Config----------------------------------- */}
