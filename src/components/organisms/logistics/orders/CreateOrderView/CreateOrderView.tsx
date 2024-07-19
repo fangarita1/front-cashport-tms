@@ -985,12 +985,12 @@ export const CreateOrderView = () => {
     fechaFinal?.minute(horaFinal?horaFinal.get('minute'):0);
 
     const datato: ITransferOrder = {
-      id_start_location: (locationOrigin?locationOrigin.id:0),
-      id_end_location: (locationDestination?locationDestination?.id:0),
+      id_start_location: (locationOrigin ? locationOrigin.id : 0),
+      id_end_location: (locationDestination ? locationDestination?.id : 0),
       id: 0,
       id_user: 1,
       user: cuser?.email,
-      start_date:  fechaInicial?.toDate().toISOString(),
+      start_date: fechaInicial?.toDate().toISOString(),
       end_date: fechaFinal?.toDate().toISOString(),
       start_freight_equipment: String(origenIzaje),
       end_freight_equipment: String(destinoIzaje),
@@ -1002,7 +1002,9 @@ export const CreateOrderView = () => {
       active: "true",
       created_at: new Date().toISOString(),
       created_by: cuser?.email,
-      geometry: routeGeometry
+      geometry: routeGeometry,
+      id_service_type: typeactive,
+      id_client: 1
     }
 
     //contactos

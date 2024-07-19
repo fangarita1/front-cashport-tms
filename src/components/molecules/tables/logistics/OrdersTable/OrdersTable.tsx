@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
-import { Avatar, Button, Flex, Table, Typography } from "antd";
+import { Avatar, Button, Checkbox, Flex, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import { Clipboard, DotsThree, Eye, Plus, Triangle } from "phosphor-react";
 
 import { FilterProjects } from "@/components/atoms/Filters/FilterProjects/FilterProjects";
 import { useProjects } from "@/hooks/useProjects";
 import { useAppStore } from "@/lib/store/store";
-import { IProject } from "@/types/projects/IProjects";
+
 
 import "./orderstable.scss";
 import UiSearchInput from "@/components/ui/search-input";
 import { countries } from "@/utils/countries";
+import { ITransferOrderList } from "@/types/logistics/schema";
+import { getAllTransferOrderList } from "@/services/logistics/transfer-orders";
 
 const { Text } = Typography;
 
@@ -28,29 +30,26 @@ export const OrdersTable = () => {
     searchQuery:''
   });
 
-  const projects = useAppStore((state) => state.projects);
-  const setProjects = useAppStore((state) => state.getProjects);
-
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);
   };
 
-  useEffect(() => {
-    if (data.data?.length === 0) return;
-    setProjects(
-      data.data
-        ?.filter((f) => f.ID !== 44)
-        .map((data) => {
-          return { ...data, key: data.ID };
-        })
-    );
-  }, [data, setProjects]);
+  const [transferOrderList, setTransferOrderList] = useState<ITransferOrderList[]>([]);
 
-  const invFiltered =
-    projects &&
-    projects.filter((f) => {
-      return f.PROJECT_DESCRIPTION.toLowerCase().includes(search.trim().toLowerCase());
-    });
+  useEffect(() => {
+    loadTransferOrders();
+  });
+
+  const loadTransferOrders = async () => {
+    if(transferOrderList.length >0 ) return;
+    const result = await getAllTransferOrderList();
+    if(result.data.data.length > 0){
+      //console.log(result.data.data);    
+
+      setTransferOrderList(result.data.data);
+
+    }
+  };
 
   return (
     <main className="mainProjectsTable">
@@ -97,119 +96,80 @@ export const OrdersTable = () => {
             return originalElement;
           }
         }}
-        dataSource={invFiltered}
+        dataSource={transferOrderList}
       />
     </main>
   );
 };
 
-const columns: TableProps<IProject>["columns"] = [
+const columns: TableProps<ITransferOrderList>["columns"] = [
   {
-    title: "Viaje",
-    dataIndex: "name",
-    className: "tableTitle",
-    key: "name",
-    render: (_, { LOGO }) => (
-      <>
-        {LOGO ? (
-          <Avatar
-            shape="square"
-            size={70}
-            src={<img src={LOGO ?? ""} style={{ objectFit: "contain" }} alt="avatar" />}
-          />
-        ) : (
-          <Avatar shape="square" className="imageWithoutImage" size={65} icon={<Clipboard />} />
-        )}
-      </>
+    title: "",
+    key: "buttonSee",
+    width: "54px",
+    dataIndex: "",
+    render: (_, { id }) => (
+      <Checkbox value={{id}} ></Checkbox>    
     )
   },
   {
-    title: "Nombre",
-    dataIndex: "PROJECT_DESCRIPTION",
+    title: "TO",
+    dataIndex: "id",
     className: "tableTitle",
-    key: "PROJECT_DESCRIPTION",
-    render: (text) => <Text>{text}</Text>
+    key: "id",
+    width: "54px",
   },
   {
-    title: "País",
-    dataIndex: "COUNTRY_NAME",
+    title: "Origen y destino",
+    dataIndex: "origin",
     className: "tableTitle",
-    key: "COUNTRY_NAME",
-    render: (text) => (
-      <Text className="text">
-        {countries(text)}
-        {text}
-      </Text>
-    )
+    key: "origin",
+    render: (_,{start_location,end_location}) => <>
+      <small><b>Origen&nbsp;&nbsp;&nbsp;</b><Text>{start_location}</Text></small><br></br>
+      <small><b>Destino&nbsp;&nbsp;</b><Text>{end_location}</Text></small>
+    </>
   },
   {
-    title: "Dirección",
+    title: "Fechas",
+    dataIndex: "dates",
     className: "tableTitle",
-    dataIndex: "ADDRESS",
-    key: "ADDRESS"
+    key: "dates",
+    width: "250px",
+    render: (_,{start_date,end_date}) => <>
+      <small><Text>{start_date}</Text></small><br></br>
+      <small><Text>{end_date}</Text></small>
+    </>
   },
   {
-    title: "Contacto",
-    key: "CONTACT",
+    title: "Tipo de viaje",
     className: "tableTitle",
-    dataIndex: "CONTACT",
-    render: (text) => <Text>{text}</Text>
+    dataIndex: "service_type",
+    key: "service_type",
+    width: "120px",
   },
   {
-    title: "Teléfono",
-    key: "PHONE",
+    title: "Tiempo transcurrido",
+    key: "time",
     className: "tableTitle",
-    dataIndex: "PHONE",
-    render: (text) => <Text>{text}</Text>
+    dataIndex: "time",
+    width: "200px",
+    render: (text) => <Text>0 min</Text>
   },
   {
-    title: "Usuarios",
-    key: "NUMBER_USERS",
+    title: "Valor",
+    key: "amount",
     className: "tableTitle",
-    dataIndex: "NUMBER_USERS",
-    render: (text) => <Text>{text}</Text>
-  },
-  {
-    title: "Divisas",
-    key: "CURRENCY",
-    className: "tableTitle",
-    dataIndex: "CURRENCY",
-    render: (_, { CURRENCY }) => {
-      return (
-        <>
-          {CURRENCY.map(({ CURRENCY_NAME, currency_name = "", id }) => {
-            const currencyName = CURRENCY_NAME ?? currency_name;
-            return <Text key={`${id}-${currencyName}`}>{currencyName.toUpperCase() + " "}</Text>;
-          })}
-        </>
-      );
-    }
-  },
-  {
-    title: "Estado",
-    key: "status",
-    className: "tableTitle",
-    width: "130px",
-    dataIndex: "status",
-    render: (_, { IS_ACTIVE }) => (
-      <Flex>
-        <Flex
-          align="center"
-          className={IS_ACTIVE ? "statusContainerActive" : "statusContainerInactive"}
-        >
-          <div className={IS_ACTIVE ? "statusActive" : "statusInactive"} />
-          <Text>{IS_ACTIVE ? "Activo" : "Inactivo"}</Text>
-        </Flex>
-      </Flex>
-    )
+    dataIndex: "amount",
+    width: "200px",
+    render: (text) => <Text>$ 0.00</Text>
   },
   {
     title: "",
     key: "buttonSee",
     width: "54px",
     dataIndex: "",
-    render: (_, { ID }) => (
-      <Button href={`/proyectos/review/${ID}`} className="icon-detail" icon={<Eye size={20} />} />
+    render: (_, { id }) => (
+      <Button href={`/orders/details/${id}`} className="icon-detail" icon={<Eye size={20} />} />
     )
   }
 ];

@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 
 import { getIdToken } from "@/utils/api/api";
 import config from "@/config";
-import { ICreateRegister, ITransferOrder, TransferOrderDocumentType } from "@/types/logistics/schema";
+import { ICreateRegister, IListData, ITransferOrder, TransferOrderDocumentType } from "@/types/logistics/schema";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 
 export const addTransferOrder = async (
@@ -32,3 +32,21 @@ export const addTransferOrder = async (
       throw error as any;
     }
   };
+
+  export const getAllTransferOrderList = async (): Promise<IListData> => {
+    const token = await getIdToken();
+    try {
+      const response: IListData = await axios.get(`${config.API_HOST}/transfer-order/list`, {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`
+        }
+      });
+      return response;
+    } catch (error) {
+      console.log("Error get all getAllTransferOrderList: ", error);
+      return error as any;
+    }
+  };
+  

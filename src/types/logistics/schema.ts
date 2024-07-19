@@ -1126,6 +1126,7 @@ export interface IPsl {
  */
 export interface ITransferOrder {
   id: number;
+  id_service_type: string;
   id_user: number;
   user: string | null | undefined;
   id_start_location: number;
@@ -1139,6 +1140,7 @@ export interface ITransferOrder {
   end_date_flexible: number;
   id_route: string;
   id_company: number;
+  id_client: number;
   active: string;
   created_at?: string | null | undefined;
   created_by?: string | null | undefined;
@@ -1167,6 +1169,23 @@ export interface ITransferOrder {
 export interface IFormTransferOrder {
   body: ITransferOrder;
   files?: DocumentCompleteType[];
+}
+
+export interface ITransferOrderList {
+  id: number;
+  id_service_type: number;
+  service_type: string;
+  start_date: string;
+  end_date: string;
+  id_start_location: number;
+  start_location: string;
+  id_end_location: number;
+  end_location: string;
+  status: string;
+  created_at: string;
+  created_by: string;  
+  time: string;  
+  amount: string;  
 }
 
 /**
