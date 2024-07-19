@@ -102,6 +102,7 @@ export const SideBar = () => {
           </Button>
         </Link>
         )}
+
         <Link href="/logistics/configuration" passHref legacyBehavior>
           <Button
             type="primary"
