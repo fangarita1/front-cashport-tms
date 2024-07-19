@@ -1,4 +1,4 @@
-import { List, Popover, Tabs } from "antd";
+import { Badge, List, Popover, Tabs } from "antd";
 import React from "react";
 import "./popoverUserNotifications.scss";
 import Link from "next/link";
@@ -95,9 +95,12 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
         <div
           className={`notifications ${notifications?.pending.length > 0 ? "notifications_active" : ""}`}
         >
-          <BellSimpleRinging />
-          {notifications?.pending.length > 0 && (
-            <span className="notificationsLength">{notifications?.pending.length}</span>
+          {notifications?.pending.length > 0 ? (
+            <Badge size="small" color="black" count={notifications?.pending.length}>
+              <BellSimpleRinging size={18} />
+            </Badge>
+          ) : (
+            <BellSimpleRinging size={18} />
           )}
         </div>
       </div>

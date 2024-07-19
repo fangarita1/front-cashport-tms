@@ -71,6 +71,7 @@ export const WalletTab = () => {
   };
   const closeAllModal = () => {
     setIsSelectOpen({ selected: 0 });
+    setSelectedRows([]);
     handleisGenerateActionOpen();
   };
 
