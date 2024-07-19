@@ -4,6 +4,7 @@ import { CheckCircle, Eye } from "phosphor-react";
 import "./concilationTable.scss";
 import { formatDate, formatDateBars, formatMoney } from "@/utils/utils";
 import { IInvoiceConcilation } from "@/types/concilation/concilation";
+import { useInvoiceIncidentMotives } from "@/hooks/useInvoiceIncidentMotives";
 
 const { Text } = Typography;
 
@@ -15,16 +16,21 @@ interface PropsInvoicesTable {
       invoiceId: number;
     }>
   >;
+
+  // eslint-disable-next-line no-unused-vars
+  addSelectMotive: (invoiceId: number, motiveId: number) => void;
 }
 
 export const ConcilationTable = ({
   dataSingleInvoice: data,
+  addSelectMotive,
   setShowInvoiceDetailModal
 }: PropsInvoicesTable) => {
   const openInvoiceDetail = (invoiceId: number) => {
     setShowInvoiceDetailModal({ isOpen: true, invoiceId });
   };
 
+  const { data: motives, isLoading } = useInvoiceIncidentMotives();
   const columns: TableProps<IInvoiceConcilation>["columns"] = [
     {
       title: "Factura",
@@ -87,17 +93,15 @@ export const ConcilationTable = ({
     },
     {
       title: "Acción",
-      key: "action",
+      key: "motive_id",
       render: (_, record) => (
         <div className="actionWrapper">
           <Select
             placeholder="Seleccionar acción"
-            options={[
-              { label: "Devolución", value: "devolucion" },
-              { label: "No existe factura", value: "no_existe_factura" }
-            ]}
+            loading={isLoading}
+            options={motives?.map((motive) => ({ value: motive?.name, label: motive?.name })) || []}
             onChange={(value) =>
-              console.log(`Acción seleccionada: ${value} para factura ${record.id}`)
+              addSelectMotive(record.id, motives?.find((motive) => motive.name === value)?.id || 0)
             }
             style={{ width: "100%" }}
           />
@@ -115,7 +119,7 @@ export const ConcilationTable = ({
             title={
               <div className="toolTip -clientAccept">
                 <p>Aceptación cliente</p>
-                <strong>{formatDateBars(record.accept_date.toString())}</strong>
+                <strong>{formatDateBars(record.accept_date?.toString() || "0")}</strong>
               </div>
             }
             color={"#f7f7f7"}

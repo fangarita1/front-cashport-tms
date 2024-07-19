@@ -67,15 +67,16 @@
             height: 1rem;
         }
 
-        .divider {
-            border-bottom: 1px solid #DDDDDD;
-            margin: 0;
-            padding-bottom: 0.3rem;
-        }
         .text__diference {
             font-size: 0.875rem;
             font-weight: 300;
             color: #E53261;
         }
+    }
+
+    .divider__conciliation {
+        border-top: 1px solid #DDDDDD;
+        margin: 0;
+        padding-top: 0.3rem;
     }
 }

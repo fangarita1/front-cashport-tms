@@ -23,4 +23,17 @@ export interface IInvoiceConcilation {
   observation: null | string;
   difference_amount: number | null;
   accept_date: Date;
+  motive_id?: number | null;
+}
+
+export interface IInvoiceIncident {
+  invoice_id: number;
+  motive_id: number | null;
+  difference: number | null;
+  status: string;
+}
+
+export interface CreateIncidentResponse {
+  status: number;
+  message: string;
 }

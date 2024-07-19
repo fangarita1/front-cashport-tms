@@ -2,11 +2,14 @@
 import UiSearchInput from "@/components/ui/search-input/search-input";
 import type { ColumnsType } from "antd/es/table";
 import { Button, Flex, Input, message, Table } from "antd";
-import React, { useState, useRef, useCallback, useMemo, use, useEffect } from "react";
+import React, { useState, useRef, useCallback, useMemo, Dispatch, SetStateAction } from "react";
 import "./pasteConcilationTable.scss";
 import { useDebounce } from "@/hooks/useSearch";
 import { ModalNextConcilation } from "@/components/molecules/modals/ModalNextConcilation/ModalNextConcilation";
 import { MicrosoftExcelLogo } from "phosphor-react";
+import { invoiceConciliation } from "@/services/concilation/concilation";
+import { dataConcilation, InfoConcilation } from "@/types/concilation/concilation";
+import { useAppStore } from "@/lib/store/store";
 
 interface DataType {
   key: string;
@@ -14,8 +17,20 @@ interface DataType {
   monto: number;
   observacion: string;
 }
+interface Props {
+  invoices?: InfoConcilation;
+  setCurrentView: (view: "paste" | "state") => void;
+  setInvoices?: Dispatch<SetStateAction<InfoConcilation | undefined>>;
+  clientId: number;
+}
 
-export const PasteConcilationTable = () => {
+export const PasteConcilationTable = ({
+  setCurrentView,
+  setInvoices,
+  invoices,
+  clientId
+}: Props) => {
+  const { ID } = useAppStore((state) => state.selectProject);
   const [dataSource, setDataSource] = useState<DataType[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
   const [messageApi, contextHolder] = message.useMessage();
@@ -34,6 +49,7 @@ export const PasteConcilationTable = () => {
   const filteredData = useMemo(() => {
     return dataSource.filter((item) => item.factura.toString().includes(debouncedSearchValue));
   }, [dataSource, debouncedSearchValue]);
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handlePaste = useCallback(
@@ -42,7 +58,6 @@ export const PasteConcilationTable = () => {
       const rows = pasteData.split("\n").filter((row) => row.trim() !== "");
       const validRows: { key: string; factura: string; monto: number; observacion: string }[] = [];
       let hasError = false;
-      console.log(rows);
 
       rows.forEach((row, index) => {
         const columns = row.split("\t");
@@ -59,10 +74,11 @@ export const PasteConcilationTable = () => {
           });
         } else {
           hasError = true;
-          messageApi.error(`valor invalido en  ${index}: ${row}`);
+          messageApi.error(`Valor inválido en la fila ${index + 1}: ${row}`);
           return;
         }
       });
+
       if (!hasError && validRows.length > 0) {
         setDataSource((prevData) => [...prevData, ...validRows]);
       } else {
@@ -73,7 +89,6 @@ export const PasteConcilationTable = () => {
         `Se han agregado ${validRows.length} filas a la tabla. Total de filas: ${dataSource.length + validRows.length}`
       );
     },
-
     [dataSource.length, messageApi]
   );
 
@@ -101,7 +116,7 @@ export const PasteConcilationTable = () => {
         dataIndex: "monto",
         key: "monto",
         width: "20%",
-        render: (text) => `$${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+        render: (text) => `$${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, "."),
         sorter: (a, b) => a.monto - b.monto
       },
       {
@@ -123,42 +138,56 @@ export const PasteConcilationTable = () => {
     ],
     [handleSave]
   );
+
   const convertToCSV = (data: DataType[]) => {
     const header = "factura;monto;observacion\n";
     const rows = data.map((row) => `${row.factura};${row.monto};${row.observacion}`).join("\n");
     return header + rows;
   };
 
-  const submitCSV = () => {
+  const submitCSV = async () => {
     const csvData = convertToCSV(dataSource);
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.setAttribute("download", "data.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const blob = new Blob([csvData], { type: "text/csv" });
+    const file = new File([blob], "conciliacion.csv", { type: "text/csv" });
+    try {
+      const response: dataConcilation = await invoiceConciliation([file], clientId, ID);
+      response && setInvoices && setInvoices(response.data);
+      showModal();
+    } catch (error) {
+      messageApi.error("Error al realizar la conciliación");
+      console.error("Error:", error);
+    }
   };
-
-  useEffect(() => {
-    console.log("dataSource", dataSource);
-  }, [dataSource]);
 
   return (
     <div className="concilation__view">
       {contextHolder}
       <Flex vertical gap={"1rem"}>
         <Flex className="searchBar__container">
-          <UiSearchInput
-            placeholder="Buscar por factura"
-            onChange={(event) => handleSearch(event.target.value)}
-          />
-          {/* <FiltersConcilation /> */} {/* en el diseno esta, por peticion lo comentamos */}
-          <Button className="button__format" onClick={showModal}>
+          <Flex className="searchBar__input">
+            <UiSearchInput
+              placeholder="Buscar por factura"
+              onChange={(event) => handleSearch(event.target.value)}
+            />
+            {/* <FiltersConcilation /> */} {/* en el diseño está, por petición lo comentamos */}
+            <Button
+              className="button__format"
+              onClick={() => {
+                textareaRef.current?.focus();
+              }}
+            >
+              <MicrosoftExcelLogo size={22} /> Pegar desde excel
+            </Button>
+          </Flex>
+
+          <Button
+            className="button__format"
+            disabled={dataSource.length === 0}
+            onClick={() => {
+              dataSource.length > 0 && submitCSV();
+            }}
+          >
             Conciliar
-          </Button>
-          <Button className="button__format" onClick={submitCSV}>
-            Descargar
           </Button>
         </Flex>
         <Table dataSource={filteredData} columns={columns} pagination={false} />
@@ -167,15 +196,13 @@ export const PasteConcilationTable = () => {
           onPaste={handlePaste}
           style={{ position: "absolute", left: "-9999px" }}
         />
-        <Button
-          onClick={() => {
-            textareaRef.current?.focus();
-          }}
-        >
-          haz click y pegue las facturas <MicrosoftExcelLogo size={22} />
-        </Button>
       </Flex>
-      <ModalNextConcilation visible={isModalVisible} onClose={closeModal} />
+      <ModalNextConcilation
+        visible={isModalVisible}
+        onClose={closeModal}
+        invoices={invoices}
+        changeView={() => setCurrentView("state")}
+      />
     </div>
   );
 };

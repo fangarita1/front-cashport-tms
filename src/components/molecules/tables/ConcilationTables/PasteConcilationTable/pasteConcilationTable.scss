@@ -14,8 +14,16 @@
 
 
     .searchBar__container {
+        display: flex;
+        justify-content: space-between;
         height: 48px;
         gap: 0.5rem;
+        width: 100%;
+    }
+
+    .searchBar__input {
+        gap: 1rem;
+        width: 100%;
     }
 
     .button__format {

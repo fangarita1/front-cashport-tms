@@ -27,7 +27,7 @@ export const ModalEstimatedConcilation = ({
     setDefaultPosition({ x: window.innerWidth - modalWidth - 20, y: 0 });
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     updateDefaultPosition();
     window.addEventListener("resize", updateDefaultPosition);
     return () => window.removeEventListener("resize", updateDefaultPosition);
@@ -67,7 +67,7 @@ export const ModalEstimatedConcilation = ({
           className="custom-collapse"
         >
           <Panel header="Resumen" key="1" className="custom-panel">
-            <Flex vertical gap="0.3rem" className="divider">
+            <Flex vertical gap="0.3rem">
               <Flex justify="space-between" gap="1.5rem">
                 <div>Facturas: ({invoice?.quantity})</div> {formatMoney(invoice?.amount.toString())}
               </Flex>
@@ -82,9 +82,8 @@ export const ModalEstimatedConcilation = ({
             </Flex>
           </Panel>
         </Collapse>
-        <Flex justify="space-between" gap="1.5rem" className="divider">
+        <Flex justify="space-between" gap="1.5rem" className="divider__conciliation">
           <div>Total:</div>
-          {/* suma toda las factur */}
           {formatMoney(invoice?.amount + notFoundInvoices?.amount + differenceInvoices?.amount)}
         </Flex>
       </div>

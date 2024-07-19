@@ -1,82 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import LabelCollapse from "@/components/ui/label-collapse";
 import UiSearchInput from "@/components/ui/search-input/search-input";
-import { Button, Collapse, Flex } from "antd";
+import { Button, Collapse, Flex, message } from "antd";
 import { ConcilationTable } from "../ConcilationTable/ConcilationTable";
-import { InfoConcilation } from "@/types/concilation/concilation";
+import { InfoConcilation, InvoicesConcilation } from "@/types/concilation/concilation";
 import "./stateConcilationTable.scss";
 import { ModalEstimatedConcilation } from "@/components/molecules/modals/ModalEstimatedConcilation/ModalEstimatedConcilation";
 import InvoiceDetailModal from "@/modules/clients/containers/invoice-detail-modal";
-import { extractSingleParam } from "@/utils/utils";
-import { useParams } from "next/navigation";
+import { invoiceCreateIncident } from "@/services/concilation/concilation";
+import { useRouter } from "next/navigation";
+import { useAppStore } from "@/lib/store/store";
 
-export const StateConcilationTable = () => {
-  const [invoices, setInvoices] = useState<InfoConcilation | undefined>({
-    reconciled_invoices: {
-      invoices: [
-        {
-          id: 1,
-          create_at: new Date("2024-04-12T03:00:00.000Z"),
-          current_value: 50000,
-          observation: null,
-          difference_amount: 0.2,
-          accept_date: new Date("2024-06-15T03:00:00.000Z")
-        },
-        {
-          id: 2,
-          create_at: new Date("2024-04-12T03:00:00.000Z"),
-          current_value: 50000,
-          observation: null,
-          difference_amount: null,
-          accept_date: new Date("2024-06-15T03:00:00.000Z")
-        },
-        {
-          id: 3,
-          create_at: new Date("2024-04-12T03:00:00.000Z"),
-          current_value: 5000000,
-          observation: null,
-          difference_amount: 20000,
-          accept_date: new Date("2024-06-15T03:00:00.000Z")
-        }
-      ],
-      quantity: 3,
-      amount: 51000000
-    },
-    invoices_not_found: {
-      invoices: [
-        {
-          id: 1,
-          create_at: new Date("2024-04-12T03:00:00.000Z"),
-          current_value: 20000000,
-          observation: null,
-          difference_amount: null,
-          accept_date: new Date("2024-06-15T03:00:00.000Z")
-        }
-      ],
-      quantity: 1,
-      amount: 20000000
-    },
-    invoices_with_differences: {
-      invoices: [
-        {
-          id: 1,
-          create_at: new Date("2024-04-12T03:00:00.000Z"),
-          current_value: 100000000,
-          observation: null,
-          difference_amount: null,
-          accept_date: new Date("2024-06-15T03:00:00.000Z")
-        }
-      ],
-      quantity: 1,
-      amount: 100000000
-    }
-  });
+interface Props {
+  invoices: InfoConcilation | undefined;
+  clientId: number;
+  setInvoices: Dispatch<SetStateAction<InfoConcilation | undefined>>;
+}
+
+export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props) => {
+  const { ID } = useAppStore((state) => state.selectProject);
+  const [messageApi, contextHolder] = message.useMessage();
+  const router = useRouter();
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [_, setIsDetailInvoiceModalOpen] = useState(false);
 
-  const [isDetailInvoiceModalOpen, setIsDetailInvoiceModalOpen] = useState(false);
-  const params = useParams();
-  const clientIdParam = extractSingleParam(params.clientId);
-  const clientId = clientIdParam ? parseInt(clientIdParam) : 0;
   const [showInvoiceDetailModal, setShowInvoiceDetailModal] = useState({
     isOpen: false,
     invoiceId: 0
@@ -85,12 +33,79 @@ export const StateConcilationTable = () => {
   useEffect(() => {
     if (invoices) {
       const keys = Object.keys(invoices);
-      setActiveKeys(keys.slice(1)); // Dejar el primer ítem cerrado
+      setActiveKeys(keys.slice(1));
     }
   }, [invoices]);
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredInvoices = (invoiceCategory: InvoicesConcilation) => {
+    return {
+      ...invoiceCategory,
+      invoices: invoiceCategory?.invoices.filter((invoice) =>
+        invoice?.id.toString().includes(searchTerm)
+      )
+    };
+  };
+
+  const addSelectMotive = (invoiceId: number, motiveId: number) => {
+    if (invoices) {
+      const updatedInvoices = { ...invoices };
+      for (const categoryKey in updatedInvoices) {
+        if (Object.prototype.hasOwnProperty.call(updatedInvoices, categoryKey)) {
+          const category = updatedInvoices[categoryKey as keyof InfoConcilation];
+          category.invoices = category.invoices.map((invoice) =>
+            invoice.id === invoiceId ? { ...invoice, motive_id: motiveId } : invoice
+          );
+        }
+      }
+      setInvoices(updatedInvoices);
+    }
+  };
+
+  const onSubmitConcilation = async () => {
+    if (!invoices) return;
+
+    // Validate that all invoices in specified categories have a motive_id
+    const categoriesToValidate = ["invoices_not_found", "invoices_with_differences"];
+    for (const category of categoriesToValidate) {
+      const invoiceCategory = invoices[category as keyof InfoConcilation];
+      if (invoiceCategory) {
+        for (const invoice of invoiceCategory.invoices) {
+          if (invoice.motive_id == null) {
+            messageApi.error(
+              "Por favor seleccione un motivo para todas las facturas no encontradas y con direncias"
+            );
+            return;
+          }
+        }
+      }
+    }
+
+    const invoiceList = Object.entries(invoices).flatMap(([key, category]) =>
+      category.invoices.map((invoice: { id: string; motive_id: string; difference: string }) => ({
+        invoice_id: invoice.id,
+        motive_id: invoice.motive_id,
+        difference: invoice.difference,
+        status: key
+      }))
+    );
+
+    const files: File[] = [];
+    const comments = "Entrega conciliacion masiva";
+
+    try {
+      const response = await invoiceCreateIncident(files, invoiceList, comments, clientId);
+      if (response.status == 200) {
+        router.push(`/clientes/detail/${clientId}/project/${ID}`);
+      }
+    } catch (error) {}
+  };
   return (
     <div className="concilation_table">
+      {contextHolder}
       {invoices && (
         <ModalEstimatedConcilation
           invoice={{
@@ -112,15 +127,9 @@ export const StateConcilationTable = () => {
           <UiSearchInput
             className="search"
             placeholder="Buscar por factura"
-            onChange={(event) => {
-              console.log(event.target.value);
-            }}
+            onChange={handleSearchChange}
           />
-          <Button
-            className="button__actions"
-            size="large"
-            onClick={() => console.log("click generar accion")}
-          >
+          <Button className="button__actions" size="large" onClick={onSubmitConcilation}>
             Guardar
           </Button>
         </Flex>
@@ -133,7 +142,6 @@ export const StateConcilationTable = () => {
           invoices
             ? Object.entries(invoices).map(([key, invoiceState]) => ({
                 key: key,
-
                 label: (
                   <LabelCollapse
                     status={getStatusTitle(key)}
@@ -144,8 +152,9 @@ export const StateConcilationTable = () => {
                 ),
                 children: (
                   <ConcilationTable
-                    dataSingleInvoice={invoiceState.invoices}
+                    dataSingleInvoice={filteredInvoices(invoiceState)?.invoices}
                     setShowInvoiceDetailModal={setShowInvoiceDetailModal}
+                    addSelectMotive={addSelectMotive}
                   />
                 )
               }))
@@ -178,6 +187,7 @@ const getStatusColor = (status: string) => {
       return "gray";
   }
 };
+
 const getStatusTitle = (status: string) => {
   switch (status) {
     case "reconciled_invoices":
