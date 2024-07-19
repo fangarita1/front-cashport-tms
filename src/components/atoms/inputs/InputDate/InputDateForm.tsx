@@ -15,6 +15,8 @@ interface InputDateFormProps {
   disabled?: boolean;
   validationRules?: RegisterOptions;
   className?: string;
+  customStyleContainer?: React.CSSProperties;
+  hiddenIcon?: boolean;
 }
 
 export const InputDateForm = ({
@@ -26,10 +28,12 @@ export const InputDateForm = ({
   placeholder = "",
   disabled,
   validationRules,
-  className
+  className,
+  customStyleContainer,
+  hiddenIcon
 }: InputDateFormProps) => {
   return (
-    <Flex vertical className={`datePickerContainer ${className}`}>
+    <Flex vertical className={`datePickerContainer ${className}`} style={customStyleContainer}>
       {!hiddenTitle && <p className="input-date-custom-title">{titleInput}</p>}
       <Controller
         name={nameInput}
@@ -43,7 +47,9 @@ export const InputDateForm = ({
             size="large"
             disabled={disabled}
             placeholder={placeholder || `Select ${titleInput.toLowerCase()}`}
-            suffixIcon={<Calendar className="dateInputForm__icon" />}
+            suffixIcon={
+              !hiddenIcon ? <Calendar weight="light" className="dateInputForm__icon" /> : false
+            }
             className={!error ? "dateInputForm" : "dateInputFormError"}
           />
         )}

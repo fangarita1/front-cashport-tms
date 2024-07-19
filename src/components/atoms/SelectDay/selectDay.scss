@@ -1,0 +1,33 @@
+@import "@styles/variables.scss";
+
+.selectDayContainer {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+
+    &__day {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        border-radius: 50%;
+        padding: 4px;
+        transition: all 0.1s ease-in-out;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &:hover {
+            background-color: $background;
+        }
+
+        &.-selected {
+            background-color: $secondary;
+        }
+
+        &__label {
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 300;
+        }
+    }
+}

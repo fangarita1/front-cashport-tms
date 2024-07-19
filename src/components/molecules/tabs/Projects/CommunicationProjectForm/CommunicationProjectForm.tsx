@@ -14,6 +14,7 @@ import GeneralSelect from "@/components/ui/general-select";
 import GeneralSearchSelect from "@/components/ui/general-search-select";
 import SelectOuterTags from "@/components/ui/select-outer-tags";
 import InputClickable from "@/components/ui/input-clickable";
+import { ModalPeriodicity } from "@/components/molecules/modals/ModalPeriodicity/ModalPeriodicity";
 
 const { Title } = Typography;
 
@@ -58,6 +59,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
 
   const handleCreateCommunication = (data: any) => {
     console.log(data);
+    console.log("zonas:", zones, selectedBusinessRules, "grupos:", assignedGroups);
   };
 
   return (
@@ -135,6 +137,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               />
             </Radio>
             <div className={styles.noticeDays}>
+              <p className={styles.noticeDays__title}>Aviso de vencimiento</p>
               <Button className={styles.buttonMinus} onClick={() => handleDecrementNotice()}>
                 <Minus size={14} weight="light" />
               </Button>
@@ -252,7 +255,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
             />
           )}
         />
-        <Flex gap={"1rem"}>
+        <Flex gap={"1rem"} align="flex-end">
           <Controller
             name="tags"
             control={control}
@@ -301,6 +304,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               options={mockAttachments}
               errors={errors.attached}
               field={field}
+              customStyleContainer={{ marginTop: "1rem" }}
             />
           )}
         />
@@ -311,7 +315,10 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
           Crear comunicación
         </PrincipalButton>
       </Flex>
-      {isFrequencyModalOpen && <h1>Modal frecuencia</h1>}
+      <ModalPeriodicity
+        isOpen={isFrequencyModalOpen}
+        onClose={() => setIsFrequencyModalOpen(false)}
+      />
     </main>
   );
 };
