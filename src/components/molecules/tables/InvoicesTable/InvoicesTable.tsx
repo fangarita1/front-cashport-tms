@@ -209,6 +209,7 @@ export const InvoicesTable = ({
         dataSource={data.map((data) => ({ ...data, key: data.id }))}
         rowSelection={rowSelection}
         rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
+        pagination={false}
       />
     </>
   );
