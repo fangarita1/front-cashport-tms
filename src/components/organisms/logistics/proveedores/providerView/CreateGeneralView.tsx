@@ -29,7 +29,7 @@ export const CreateGeneralView = () => {
           </Flex>
           {/* ------------Main Info Order-------------- */}
           <Flex className="orderContainer">
-            <CarrierTable></CarrierTable>
+            <CarrierTable/>
           </Flex>
         </Flex>
       </main>
