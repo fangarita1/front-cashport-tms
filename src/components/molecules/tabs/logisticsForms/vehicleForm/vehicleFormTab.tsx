@@ -59,8 +59,8 @@ export const VehicleFormTab = ({
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+  const [hasGPS, setHasGPS] = useState(true);
 
-  
 
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
     "1",
@@ -397,7 +397,11 @@ export const VehicleFormTab = ({
                 justify="flex-start"
                 style={{ marginTop: "2rem" }}
               >
-                <Switch defaultChecked disabled={statusForm === "review"}  />{" "}
+                <Switch
+                  disabled={statusForm === 'review'}
+                  checked={hasGPS}
+                  onChange={()=>setHasGPS(!hasGPS)}
+                />
                 <h5 className="ant-typography input-form-title">&nbsp;&nbsp;Equipado por GPS</h5>
               </Flex>
               <Flex
@@ -410,22 +414,22 @@ export const VehicleFormTab = ({
                   titleInput="Usuario"
                   nameInput="general.gps_user"
                   control={control}
-                  disabled={statusForm === "review"} 
+                  disabled={statusForm === "review" || !hasGPS} 
                   error={errors.general?.gps_user}
                 />
                 <InputForm
                   titleInput="Contraseña"
                   nameInput="general.gps_password"
                   control={control}
-                  disabled={statusForm === "review"} 
-                  error={errors.general?.gps_password}
+                  disabled={statusForm === "review" || !hasGPS} 
+                  error={errors.general?.gps_password }
                 />
                 <InputForm
                   titleInput="Link"
                   nameInput="general.gps_link"
                   control={control}
-                  disabled={statusForm === "review"} 
-                  error={errors.general?.gps_link}
+                  disabled={statusForm === "review"|| !hasGPS} 
+                  error={errors.general?.gps_link }
                 />
               </Flex>
             </Col>
