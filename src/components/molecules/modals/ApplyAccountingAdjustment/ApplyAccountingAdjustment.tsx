@@ -10,7 +10,6 @@ import EvidenceModal from "@/modules/clients/components/wallet-tab-evidence-moda
 import { applyAccountingAdjustment } from "@/services/accountingAdjustment/accountingAdjustment";
 import { useParams } from "next/navigation";
 import { extractSingleParam } from "@/utils/utils";
-import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { MessageInstance } from "antd/es/message/interface";
 
 interface Props {
@@ -20,6 +19,7 @@ interface Props {
   setCurrentView: Dispatch<SetStateAction<string>>;
   invoiceSelected?: IInvoice[];
   messageApi: MessageInstance;
+  onClosePrincipalModal?: () => void;
 }
 interface IcurrentInvoices {
   id: number;
@@ -34,11 +34,17 @@ interface NormalizedValue {
   }[];
 }
 
+interface infoObject {
+  file: File;
+  fileList: File[];
+}
+
 export const ApplyAccountingAdjustment = ({
   type,
   selectedRows,
   setCurrentView,
   messageApi,
+  onClosePrincipalModal,
   invoiceSelected = []
 }: Props) => {
   const params = useParams();
@@ -124,15 +130,15 @@ export const ApplyAccountingAdjustment = ({
     setCommentary(e.target.value);
   };
 
-  const handleOnChangeDocument = (info: UploadChangeParam<UploadFile<any>>) => {
-    const file = info.file.originFileObj;
-    if (file) {
-      const fileSizeInMB = file.size / (1024 * 1024);
+  const handleOnChangeDocument: any = (info: infoObject) => {
+    const { file: rawFile } = info;
+    if (rawFile) {
+      const fileSizeInMB = rawFile.size / (1024 * 1024);
       if (fileSizeInMB > 30) {
         alert("El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB.");
         return;
       }
-      setSelectedEvidence(selectedEvidence ? [...selectedEvidence, file] : [file]);
+      setSelectedEvidence(selectedEvidence ? [...selectedEvidence, rawFile] : [rawFile]);
     }
   };
 
@@ -182,7 +188,8 @@ export const ApplyAccountingAdjustment = ({
           type: "success",
           content: "Ajuste contable aplicado correctamente"
         });
-        setCurrentView("select");
+        setOpenEvidenceModal(false);
+        onClosePrincipalModal && onClosePrincipalModal();
       }
     } catch (error) {
       messageApi.open({
@@ -204,13 +211,13 @@ export const ApplyAccountingAdjustment = ({
       title: "Pendiente",
       dataIndex: "current_value",
       key: "current_value",
-      render: (text) => `$${text}`
+      render: (text) => `$${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     },
     {
       title: "Saldo nuevo",
       dataIndex: "newBalance",
       key: "newBalance",
-      render: (text) => `$${text}`
+      render: (text) => `$${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     },
     {
       title: "Valor a aplicar",

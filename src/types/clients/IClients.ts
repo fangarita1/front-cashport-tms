@@ -16,19 +16,20 @@ export interface IClientFullResponse {
   message: string;
   data: IClient;
 }
-interface IPosition {
-  lat: string;
-  lon: string;
-}
 
 export interface IClientLocation {
   id: number;
-  nit: string;
   address: string;
-  position: IPosition;
-  city: number;
+  city: string;
   complement: string;
   project_id: number;
+  location_id: number;
+}
+
+export interface IClientLocationResponse {
+  data: IClientLocation[];
+  error: boolean;
+  message: string;
 }
 
 interface IDocument {
@@ -36,28 +37,32 @@ interface IDocument {
 }
 
 export interface IClient {
-  nit: number;
-  uuid: string;
-  project_id: number;
-  client_name: string;
-  business_name: string;
-  client_type: string;
-  client_type_id: number;
-  phone: string;
-  status: string;
-  risk: string;
-  email: string;
   billing_period: string;
-  radication_type: number;
+  billing_period_config: IBillingPeriodForm;
+  business_name: string;
+  client_name: string;
+  cliet_type: string;
+  client_type_id: number;
+  condition_payment: number;
+  condition_payment_id: number;
+  documents: IDocument[];
+  document_type: string;
+  email: string;
   holding_id: number;
   holding_name: string;
-  document_type: string;
-  locations: IClientLocation[];
   is_deleted: number;
-  documents: IDocument[];
-  ACTIVE: boolean;
+  key: number;
+  locations: IClientLocation[];
+  nit: number;
   payment_condition: number;
-  billing_period_config: IBillingPeriodForm;
+  phone: string;
+  project_id: number;
+  radication_type: number;
+  radication_type_name: string;
+  risk: string;
+  risk_id: number;
+  status: string;
+  uuid: string;
 }
 
 export interface Pagination {

@@ -1,8 +1,9 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import config from "@/config";
-import { getIdToken } from "@/utils/api/api";
+import { API, getIdToken } from "@/utils/api/api";
 import {
   ClientFormType,
+  IClient,
   IClientAxios,
   ICreateClient,
   IUpdateClient
@@ -10,8 +11,10 @@ import {
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 
 import { SUCCESS } from "@/utils/constants/globalConstants";
-import { MessageInstance } from "antd/es/message/interface";
 import { IAddAddressData } from "@/types/locations/ILocations";
+import { GenericResponse } from "@/types/global/IGlobal";
+import { MessageType } from "@/context/MessageContext";
+import { stringToBoolean } from "@/utils/utils";
 
 // create
 
@@ -20,13 +23,13 @@ export const createClient = async (
   rawData: ClientFormType,
   billingPeriod: IBillingPeriodForm,
   documents: any[],
-  locationResponse: IAddAddressData
+  locationResponse: IAddAddressData,
+  // eslint-disable-next-line no-unused-vars
+  showMessage: (type: MessageType, content: string) => void
 ): Promise<any> => {
   const { infoClient: data } = rawData;
 
   const formatLocations = JSON.stringify([locationResponse]);
-
-  const formatDocuments = documents.map((doc) => doc.originFileObj);
 
   const modelData: ICreateClient = {
     nit: parseInt(data.nit),
@@ -39,7 +42,7 @@ export const createClient = async (
     radication_type: data.radication_type.value,
     document_type: data.document_type.value,
     locations: formatLocations,
-    documents: formatDocuments,
+    documents: documents,
     client_type_id:
       typeof data.client_type === "number" ? data.client_type : parseInt(data.client_type),
     holding_id: data.holding_id?.value === 0 ? undefined : data.holding_id?.value,
@@ -76,9 +79,17 @@ export const createClient = async (
       }
     );
 
+    if (response.status === SUCCESS) {
+      showMessage("success", "El Cliente fue creado exitosamente.");
+      return response;
+    }
+
     return response;
   } catch (error) {
     console.warn("error creating new client: ", error);
+    if (axios.isAxiosError(error)) {
+      showMessage("error", error.response?.data?.message);
+    }
     return error as AxiosError;
   }
 };
@@ -108,8 +119,10 @@ export const updateClient = async (
   idProject: string,
   clientId: number,
   rawData: ClientFormType,
-  locationResponse: IAddAddressData | any,
+  locationResponse: any,
   hasLocationChanged: boolean,
+  // eslint-disable-next-line no-unused-vars
+  showMessage: (type: MessageType, content: string) => void,
   billingPeriod?: IBillingPeriodForm
 ): Promise<any> => {
   const { infoClient: data } = rawData;
@@ -127,11 +140,10 @@ export const updateClient = async (
     document_type: data.document_type.value,
     locations: formatLocations,
     holding_id: data.holding_id.value,
-    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag === "true",
-    day: typeof billingPeriod === "string" ? undefined : billingPeriod?.day,
-    order: typeof billingPeriod === "string" ? undefined : billingPeriod?.order?.toLowerCase(),
-    day_of_week:
-      typeof billingPeriod === "string" ? undefined : billingPeriod?.day_of_week?.toLowerCase()
+    day_flag: stringToBoolean(billingPeriod?.day_flag),
+    day: billingPeriod?.day,
+    order: billingPeriod?.order?.toLowerCase(),
+    day_of_week: billingPeriod?.day_of_week?.toLowerCase()
   };
 
   const formData = new FormData();
@@ -154,9 +166,17 @@ export const updateClient = async (
         }
       }
     );
+
+    if (response.status === SUCCESS) {
+      showMessage("success", "El Cliente fue actualizado exitosamente.");
+      return response;
+    }
     return response;
   } catch (error) {
     console.warn("error updating client: ", error);
+    if (axios.isAxiosError(error)) {
+      showMessage("error", error.response?.data?.message);
+    }
     return error as AxiosError;
   }
 };
@@ -164,7 +184,8 @@ export const updateClient = async (
 export const deleteClientById = async (
   idUser: number,
   projectId: string,
-  messageApi: MessageInstance,
+  // eslint-disable-next-line no-unused-vars
+  showMessage: (type: MessageType, content: string) => void,
   onClose: () => void
 ): Promise<IClientAxios> => {
   const token = await getIdToken();
@@ -181,16 +202,10 @@ export const deleteClientById = async (
     );
 
     if (response.status === SUCCESS) {
-      messageApi.open({
-        type: "success",
-        content: "El Cliente fue eliminado exitosamente."
-      });
+      showMessage("success", "El Cliente fue eliminado exitosamente.");
       onClose();
     } else {
-      messageApi.open({
-        type: "error",
-        content: "Oops ocurrio un error."
-      });
+      showMessage("error", "Oops ocurrio un error.");
       onClose();
     }
 
@@ -198,5 +213,62 @@ export const deleteClientById = async (
   } catch (error) {
     console.warn("error deleting client by Id: ", error);
     return error as any;
+  }
+};
+
+type PropsGetAllByProject = {
+  idProject: string;
+  city?: number[];
+  holding?: number[];
+  risk?: number[];
+  payment_condition?: number[];
+  radication_type?: number[];
+  status?: number[];
+};
+export const getAllByProject = async (props: PropsGetAllByProject): Promise<IClient[]> => {
+  const { city, holding, risk, payment_condition, radication_type, status, idProject } = props;
+  const response: GenericResponse<IClient[]> = await API.get(`/client/project/${idProject}`, {
+    params: {
+      city,
+      holding,
+      risk,
+      payment_condition,
+      radication_type,
+      status
+    }
+  });
+  return response?.data;
+};
+
+export const changeClientStatus = async (
+  clientId: string,
+  newStatus: number,
+  // eslint-disable-next-line no-unused-vars
+  showMessage: (type: MessageType, content: string) => void
+) => {
+  const token = await getIdToken();
+
+  try {
+    const response: AxiosResponse | AxiosError = await axios.put(
+      `${config.API_HOST}/client/change-status/${clientId}`,
+      { status: newStatus },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (response.status === 200) {
+      showMessage("success", "Estado del cliente cambiado exitosamente.");
+    } else {
+      showMessage("error", "Oops, ocurrió un error cambiando el estado del cliente.");
+    }
+    return response;
+  } catch (error) {
+    console.warn("Error cambiando el estado del cliente: ", error);
+    showMessage("error", "Oops, ocurrió un error cambiando el estado del cliente.");
+    return error as AxiosError;
   }
 };

@@ -41,14 +41,14 @@
     .statusContainer {
         padding: 0.25rem 0.5rem;
         border-radius: 1rem;
-        width: auto;
+        width: fit-content;
         border: 1px solid $active;
     }
 
     .statusContainerPending {
         padding: 0.25rem 0.5rem;
         border-radius: 1rem;
-        width: auto;
+        width: fit-content;
         border: 1px solid $pending;
         cursor: pointer;
     }

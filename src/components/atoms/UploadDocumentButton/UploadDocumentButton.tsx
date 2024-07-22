@@ -2,9 +2,9 @@ import { Flex, Typography } from "antd";
 import { DocumentButton } from "../DocumentButton/DocumentButton";
 const { Text } = Typography;
 import "./uploaddocumentbutton.scss";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-interface FileObject {
+export interface FileObject {
   docReference: string;
   file: File | undefined;
 }
@@ -16,10 +16,27 @@ interface DocumentProps {
   title: string;
   isMandatory: boolean;
   setFiles: Dispatch<SetStateAction<FileObject[]>>;
+  containerClassName?: string;
+  draggerClassname?: string;
+  disabled?: boolean;
+  children?: React.ReactNode;
 }
 
-export const UploadDocumentButton = ({ title, isMandatory, setFiles }: DocumentProps) => {
+export const UploadDocumentButton = ({
+  title,
+  isMandatory,
+  setFiles,
+  containerClassName,
+  draggerClassname,
+  disabled,
+  children,
+}: DocumentProps) => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (children)
+      setUploadedFile(null);
+  }, [children]);
 
   const handleOnChange: any = (info: infoObject) => {
     const { file: rawFile } = info;
@@ -95,8 +112,8 @@ export const UploadDocumentButton = ({ title, isMandatory, setFiles }: DocumentP
   };
 
   return (
-    <div className="uploaddocumentbutton">
-      <Flex vertical>
+    <div className={`uploaddocumentbutton ${containerClassName}`}>
+      <Flex vertical justify="center">
         <Text className="titleDocument">{title}</Text>
         <Text className="descriptionDocument">*{isMandatory ? "Obligatorio" : "Opcional"}</Text>
       </Flex>
@@ -107,7 +124,11 @@ export const UploadDocumentButton = ({ title, isMandatory, setFiles }: DocumentP
         handleOnDelete={handleOnDelete}
         fileName={uploadedFile?.name}
         fileSize={uploadedFile?.size}
-      />
+        disabled={disabled}
+        className={draggerClassname}
+      >
+        {children}
+      </DocumentButton>
     </div>
   );
 };

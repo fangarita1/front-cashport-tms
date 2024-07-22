@@ -1,5 +1,5 @@
 import { CaretLeft } from "phosphor-react";
-import { FC, createContext, useState } from "react";
+import { FC, createContext, useMemo, useState } from "react";
 import { WalletTab } from "@/components/organisms/Customers/WalletTab/WalletTab";
 import Dashboard from "../dashboard";
 import InvoiceActionsModal from "../invoice-actions-modal";
@@ -11,6 +11,7 @@ import { InvoiceAction } from "../../constants/invoice-actions.constants";
 import AccountingAdjustmentsTab from "../accounting-adjustments-tab";
 
 import styles from "./client-details.module.scss";
+import ContactsTab from "../contacts-tab";
 
 interface ClientDetailsProps {}
 export const ClientDetailsContext = createContext<any>({});
@@ -47,19 +48,27 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
       ) : (
         <Spin style={{ margin: "1rem auto", display: "block" }} />
       )
+    },
+    {
+      key: "4",
+      label: "Contactos",
+      children: <ContactsTab />
     }
   ];
 
+  const ClientDetailObject = useMemo(
+    () => ({
+      selectedOption,
+      setSelectedOption,
+      showInvoiceActionsModal,
+      setShowInvoiceActionsModal,
+      portfolioData
+    }),
+    [portfolioData, selectedOption, showInvoiceActionsModal]
+  );
+
   return (
-    <ClientDetailsContext.Provider
-      value={{
-        selectedOption,
-        setSelectedOption,
-        showInvoiceActionsModal,
-        setShowInvoiceActionsModal,
-        portfolioData
-      }}
-    >
+    <ClientDetailsContext.Provider value={ClientDetailObject}>
       <main className={styles.mainDetail}>
         <Flex vertical className={styles.containerDetailClient}>
           <Flex className={styles.stickyHeader} align="center" justify="space-between">

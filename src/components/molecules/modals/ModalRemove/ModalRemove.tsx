@@ -1,4 +1,5 @@
 import { Modal, Typography } from "antd";
+import "./modalRemove.scss";
 
 const { Text } = Typography;
 
@@ -13,14 +14,15 @@ export const ModalRemove = ({ isOpen, name, onClose, onRemove, isMassiveAction }
   const titleFix = isMassiveAction ? "estos" : "este";
   return (
     <Modal
+      className="modalRemove"
+      width={"60%"}
       open={isOpen}
       onCancel={onClose}
       okButtonProps={{ className: "acceptButton" }}
       okText="Aceptar"
       cancelButtonProps={{
-        className: "buttonCancel"
+        className: "cancelButton"
       }}
-      className="modalChangeStatus"
       title={`¿Estás seguro que deseas eliminar ${titleFix} ${name}?`}
       onOk={onRemove}
     >

@@ -27,13 +27,15 @@ interface Props {
       actionType: number;
     }>
   >;
+  setSelectOpen: Dispatch<SetStateAction<{ selected: number }>>;
 }
 
 export const ModalGenerateAction = ({
   isOpen,
   onClose,
   setIsPaymentAgreementOpen,
-  setShowActionDetailModal
+  setShowActionDetailModal,
+  setSelectOpen
 }: Props) => {
   const handlePaymentAgreement = () => {
     setIsPaymentAgreementOpen(true);
@@ -41,11 +43,18 @@ export const ModalGenerateAction = ({
   const handleActionDetail = (type: number) => {
     setShowActionDetailModal({ isOpen: true, actionType: type });
   };
+
+  const handleOpenModal = (type: number) => {
+    setSelectOpen({
+      selected: type
+    });
+  };
   return (
     <Modal
       className="modalGenerateAction"
       width={"40%"}
       open={isOpen}
+      centered
       title={
         <Title className="modalGenerateAction__title" level={4}>
           Generar acción
@@ -55,24 +64,55 @@ export const ModalGenerateAction = ({
       onCancel={onClose}
     >
       <p className="modalGenerateAction__description">Selecciona la acción que vas a realizar</p>
-
-      <Collapse
-        className="collapseByAction"
-        expandIconPosition="end"
-        ghost
-        accordion
-        items={actionsOptions(handleActionDetail)}
-      />
-      <ButtonGenerateAction
-        onClick={handlePaymentAgreement}
-        icon={<Handshake size={16} />}
-        title="Acuerdo de pago"
-      />
-      <ButtonGenerateAction icon={<WarningDiamond size={16} />} title="Registrar novedad" />
-      <ButtonGenerateAction icon={<ArrowsClockwise size={16} />} title="Cambio de estado" />
-      <ButtonGenerateAction icon={<NewspaperClipping size={16} />} title="Radicar factura" />
-      <ButtonGenerateAction icon={<HandTap size={16} />} title="Aplicar pagos" />
-      <ButtonGenerateAction icon={<LinkBreak size={16} />} title="Vincular orden de compra" />
+      <Flex vertical gap="0.75rem">
+        <Collapse
+          className="collapseByAction"
+          expandIconPosition="end"
+          ghost
+          accordion
+          items={actionsOptions(handleActionDetail)}
+        />
+        <ButtonGenerateAction
+          onClick={handlePaymentAgreement}
+          icon={<Handshake size={16} />}
+          title="Acuerdo de pago"
+        />
+        <ButtonGenerateAction
+          icon={<WarningDiamond size={16} />}
+          title="Registrar novedad"
+          onClick={() => {
+            handleOpenModal(1);
+          }}
+        />
+        <ButtonGenerateAction
+          icon={<ArrowsClockwise size={16} />}
+          title="Cambio de estado"
+          onClick={() => {
+            handleOpenModal(2);
+          }}
+        />
+        <ButtonGenerateAction
+          icon={<NewspaperClipping size={16} />}
+          title="Radicar factura"
+          onClick={() => {
+            handleOpenModal(3);
+          }}
+        />
+        <ButtonGenerateAction
+          icon={<HandTap size={16} />}
+          title="Aplicar pagos"
+          onClick={() => {
+            handleOpenModal(4);
+          }}
+        />
+        <ButtonGenerateAction
+          icon={<LinkBreak size={16} />}
+          title="Vincular orden de compra"
+          onClick={() => {
+            handleOpenModal(5);
+          }}
+        />
+      </Flex>
     </Modal>
   );
 };

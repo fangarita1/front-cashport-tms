@@ -1,9 +1,12 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { API, getIdToken } from "@/utils/api/api";
-import { ICreateLocation, ICities, IAddAddressToLocation } from "@/types/locations/ILocations";
-import { CREATED, SUCCESS } from "@/utils/constants/globalConstants";
-import { MessageInstance } from "antd/es/message/interface";
+import {
+  ICreateLocation,
+  ICities,
+  IResponseAddAddressToLocation
+} from "@/types/locations/ILocations";
+import { MessageType } from "@/context/MessageContext";
 
 export const fetchAllLocations = async (): Promise<ICities[]> => {
   try {
@@ -29,8 +32,9 @@ export const addAddressToLocation = async (
     complement: string;
   },
   projectId: number,
-  messageApi: MessageInstance
-): Promise<IAddAddressToLocation> => {
+  // eslint-disable-next-line no-unused-vars
+  showMessage: (type: MessageType, content: string) => void
+): Promise<IResponseAddAddressToLocation> => {
   const modelData: ICreateLocation = {
     address: data.address,
     city: data.id,
@@ -39,22 +43,20 @@ export const addAddressToLocation = async (
   };
 
   try {
-    const response: AxiosResponse = await API.post(`${config.API_HOST}/location`, modelData);
+    const response: IResponseAddAddressToLocation = await API.post(
+      `${config.API_HOST}/location`,
+      modelData
+    );
 
-    if (response.status === CREATED || SUCCESS) {
-      messageApi.open({
-        type: "success",
-        content: `Direccion creada exitosamente.`
-      });
+    if (response.success !== false) {
+      showMessage("success", "Direccion creada exitosamente.");
     } else {
-      messageApi.open({
-        type: "error",
-        content: "Oops ocurrio un error."
-      });
+      throw new Error("error");
     }
-    return response.data as IAddAddressToLocation;
+    return response;
   } catch (error) {
     console.warn("error creating new location: ", error);
+    showMessage("error", "Oops ocurrio un error creando la dirección.");
     return error as any;
   }
 };

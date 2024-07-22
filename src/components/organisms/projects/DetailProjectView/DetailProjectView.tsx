@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Flex, Result, Skeleton, Spin, Tabs, TabsProps, Typography, message } from "antd";
+import { Button, Flex, Result, Skeleton, Spin, Tabs, TabsProps, Typography } from "antd";
 
 //components
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
@@ -17,6 +17,7 @@ import { IFormProject } from "@/types/projects/IFormProject";
 import { BusinessRulesView } from "../BusinessRulesView/BusinessRulesView";
 
 import { ClientsGroupsProjectView } from "../ClientsGroupsProjectView/ClientsGroupsProjectView";
+import { useMessageApi } from "@/context/MessageContext";
 
 import "./detailproject.scss";
 
@@ -27,7 +28,7 @@ interface Props {
 }
 
 export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Props) => {
-  const [messageApi, contextHolder] = message.useMessage();
+  const { showMessage } = useMessageApi();
 
   const { loading, data } = useProject({ id: idProjectParam });
 
@@ -50,45 +51,30 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
     try {
       const response = await updateProject(finalData, idProjectParam, data.UUID);
       if (response.status === SUCCESS) {
-        messageApi.open({
-          type: "success",
-          content: "El proyecto fue editado exitosamente."
-        });
+        showMessage("success", "El proyecto fue editado exitosamente.");
       }
       setIsEditProject(false);
     } catch (error) {
-      messageApi.open({
-        type: "error",
-        content: "Oops, hubo un error por favor intenta mas tarde."
-      });
+      console.warn("error update project: ", error);
+      showMessage("error", "Oops, hubo un error por favor intenta mas tarde.");
     }
   };
   const onActiveProject = async () => {
     try {
       await activateProject(idProjectParam);
-      messageApi.open({
-        type: "success",
-        content: "El proyecto fue activado exitosamente."
-      });
+      showMessage("success", "El proyecto fue activado exitosamente.");
     } catch (error) {
-      messageApi.open({
-        type: "error",
-        content: "Oops, hubo un error por favor intenta mas tarde."
-      });
+      console.warn("error activate project: ", error);
+      showMessage("error", "Oops, hubo un error por favor intenta mas tarde.");
     }
   };
   const onDesactivateProject = async () => {
     try {
       await desactiveProject(idProjectParam);
-      messageApi.open({
-        type: "success",
-        content: "El proyecto fue desactivado exitosamente."
-      });
+      showMessage("success", "El proyecto fue desactivado exitosamente.");
     } catch (error) {
-      messageApi.open({
-        type: "error",
-        content: "Oops, hubo un error por favor intenta mas tarde."
-      });
+      console.warn("error deactivate project: ", error);
+      showMessage("error", "Oops, hubo un error por favor intenta mas tarde.");
     }
   };
 
@@ -158,7 +144,6 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
 
   return (
     <>
-      {contextHolder}
       <main className="mainDetailProject">
         <SideBar />
         <Flex vertical className="containerDetailProject">
@@ -176,11 +161,9 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
                     <Skeleton.Input size="large" />
                   </>
                 ) : (
-                  <>
-                    <Title level={1} className="titleName">
-                      {data.PROJECT_DESCRIPTION ?? ""}
-                    </Title>
-                  </>
+                  <Title level={1} className="titleName">
+                    {data.PROJECT_DESCRIPTION ?? ""}
+                  </Title>
                 )}
               </Flex>
             </Flex>
