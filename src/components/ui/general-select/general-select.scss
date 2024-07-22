@@ -66,10 +66,19 @@
     }
 
     .inputTitle {
-        position: absolute;
-        top: -1.3rem;
         font-size: 0.75rem;
         font-weight: 600;
         color: $gray;
+
+        &.-absolute {
+            position: absolute;
+            top: -1.3rem;
+        }
+    }
+
+    .textError {
+        color: $error;
+        font-size: 0.875rem;
+        font-weight: 400;
     }
 }

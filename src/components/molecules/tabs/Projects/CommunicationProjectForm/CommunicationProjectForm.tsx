@@ -1,6 +1,6 @@
 import { Button, Flex, Radio, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { CaretLeft, Minus, Plus } from "phosphor-react";
+import { CaretLeft } from "phosphor-react";
 
 import styles from "./communicationProjectForm.module.scss";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
@@ -15,6 +15,8 @@ import GeneralSearchSelect from "@/components/ui/general-search-select";
 import SelectOuterTags from "@/components/ui/select-outer-tags";
 import InputClickable from "@/components/ui/input-clickable";
 import { ModalPeriodicity } from "@/components/molecules/modals/ModalPeriodicity/ModalPeriodicity";
+import { ICommunicationForm } from "@/types/communications/ICommunications";
+import { InputExpirationNoticeDays } from "@/components/atoms/inputs/InputExpirationNoticeDays/InputExpirationNoticeDays";
 
 const { Title } = Typography;
 
@@ -27,10 +29,6 @@ interface Props {
 }
 export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
   const [radioValue, setRadioValue] = useState<any>(0);
-  const [noticeDays, setNoticeDays] = useState<{ days: number; suffix: "días" }>({
-    days: 0,
-    suffix: "días"
-  });
   const [zones, setZones] = useState([] as number[]);
   const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
     initDatSelectedBusinessRules
@@ -43,19 +41,14 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
     setRadioValue(value);
   };
 
-  const handleDecrementNotice = () => {
-    setNoticeDays((prev) => ({ ...prev, days: prev.days - 1 }));
-  };
-
-  const handleIncrementNotice = () => {
-    setNoticeDays((prev) => ({ ...prev, days: prev.days + 1 }));
-  };
-
   const {
     control,
     handleSubmit,
-    formState: { errors }
-  } = useForm<any>({});
+    formState: { errors },
+    watch,
+    setValue
+  } = useForm<ICommunicationForm>({});
+  const watchEventType = watch("trigger.settings.eventType");
 
   const handleCreateCommunication = (data: any) => {
     console.log(data);
@@ -76,17 +69,12 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
         </Button>
       </Flex>
       <div className={styles.generalInfo}>
-        <InputForm
-          titleInput="Nombre"
-          control={control}
-          nameInput="name"
-          // error={errors.name}
-        />
+        <InputForm titleInput="Nombre" control={control} nameInput="name" error={errors.name} />
         <InputForm
           titleInput="Descripción"
           control={control}
-          nameInput="description"
-          // error={errors.description}
+          nameInput="descripcion"
+          error={errors.descripcion}
         />
       </div>
 
@@ -122,34 +110,30 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
             >
               <Controller
                 disabled={radioValue !== 2}
-                name="event_type"
+                name="trigger.settings.eventType"
                 control={control}
-                rules={{ required: true }}
+                rules={{ required: radioValue === 2 }}
                 render={({ field }) => (
                   <GeneralSelect
-                    errors={errors.event_type}
+                    errors={errors.trigger?.settings?.eventType}
                     field={field}
                     title="Tipo de evento"
                     placeholder="Seleccionar tipo de evento"
                     options={mockEventTypes}
+                    titleAbsolute
                   />
                 )}
               />
             </Radio>
-            <div className={styles.noticeDays}>
-              <p className={styles.noticeDays__title}>Aviso de vencimiento</p>
-              <Button className={styles.buttonMinus} onClick={() => handleDecrementNotice()}>
-                <Minus size={14} weight="light" />
-              </Button>
-              <input
-                readOnly
-                className={styles.input}
-                value={`${noticeDays.days} ${noticeDays.suffix}`}
+            {watchEventType?.value?.startsWith("Vencimiento") && (
+              <InputExpirationNoticeDays
+                nameInput="trigger.settings.noticeDaysEvent"
+                setValue={setValue}
+                control={control}
+                error={errors.trigger?.settings?.noticeDaysEvent}
+                validationRules={{ required: true }}
               />
-              <Button className={styles.buttonPlus} onClick={() => handleIncrementNotice()}>
-                <Plus size={14} weight="light" />
-              </Button>
-            </div>
+            )}
           </div>
 
           <div className={styles.radioGroup__actions}>
@@ -162,15 +146,15 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
             >
               <Controller
                 disabled={radioValue !== 3}
-                name="action_type"
+                name="trigger.settings.values"
                 control={control}
-                rules={{ required: true }}
+                rules={{ required: radioValue === 3 }}
                 render={({ field }) => (
                   <SelectOuterTags
                     title="Tipo de acción"
                     placeholder="Seleccionar tipo de acción"
                     options={mockAttachments}
-                    errors={errors.attached}
+                    errors={errors.trigger?.settings?.values}
                     field={field}
                   />
                 )}
@@ -178,15 +162,15 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
             </Radio>
             <Controller
               disabled={radioValue !== 3}
-              name="sub_action_type"
+              name="trigger.settings.subValues"
               control={control}
-              rules={{ required: true }}
+              rules={{ required: radioValue === 3 }}
               render={({ field }) => (
                 <SelectOuterTags
                   title="Subtipo de acción"
                   placeholder="Seleccionar subtipo de acción"
                   options={mockAttachments}
-                  errors={errors.attached}
+                  errors={errors.trigger?.settings?.subValues}
                   field={field}
                 />
               )}
@@ -213,12 +197,12 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
           Plantilla comunicado
         </Title>
         <Controller
-          name="via"
+          name="template.via"
           control={control}
           rules={{ required: true }}
           render={({ field }) => (
             <GeneralSelect
-              errors={errors.via}
+              errors={errors.template?.via}
               field={field}
               title="Via"
               placeholder="Seleccionar via"
@@ -228,12 +212,12 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
           )}
         />
         <Controller
-          name="forward"
+          name="template.send_to"
           control={control}
           rules={{ required: true }}
           render={({ field }) => (
             <GeneralSearchSelect
-              errors={errors.forward}
+              errors={errors.template?.send_to}
               field={field}
               title="Para"
               placeholder="Enviar a"
@@ -242,12 +226,12 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
           )}
         />
         <Controller
-          name="forward_copy"
+          name="template.copy_to"
           control={control}
           rules={{ required: true }}
           render={({ field }) => (
             <GeneralSearchSelect
-              errors={errors.forward_copy}
+              errors={errors.template?.copy_to}
               field={field}
               title="Copia"
               placeholder="Copia a"
@@ -255,14 +239,14 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
             />
           )}
         />
-        <Flex gap={"1rem"} align="flex-end">
+        <Flex gap={"1rem"} align="flex-start">
           <Controller
-            name="tags"
+            name="template.tags"
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
               <GeneralSelect
-                errors={errors.tags}
+                errors={errors.template?.tags}
                 field={field}
                 title="Tags"
                 placeholder="Seleccionar tag"
@@ -275,12 +259,12 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
             customStyle={{ width: "75%" }}
             titleInput="Asunto"
             control={control}
-            nameInput="subject"
-            // error={errors.description}
+            nameInput="template.subject"
+            error={errors.template?.subject}
           />
         </Flex>
         <Controller
-          name="body"
+          name="template.message"
           control={control}
           render={({ field }) => (
             <div className={styles.textArea}>
@@ -288,13 +272,13 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               <textarea
                 {...field}
                 placeholder="Ingresar cuerpo del correo"
-                style={errors.comment ? { borderColor: "red" } : {}}
+                style={errors.template?.message ? { borderColor: "red" } : {}}
               />
             </div>
           )}
         />
         <Controller
-          name="attached"
+          name="template.files"
           control={control}
           rules={{ required: true }}
           render={({ field }) => (
@@ -302,7 +286,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               title="Adjunto"
               placeholder="Seleccionar adjunto"
               options={mockAttachments}
-              errors={errors.attached}
+              errors={errors.template?.files}
               field={field}
               customStyleContainer={{ marginTop: "1rem" }}
             />
@@ -338,16 +322,7 @@ const mockTags = [
 const mockAttachments = [
   { id: 1, value: 1, label: "PDF Estado de cuenta" },
   { id: 2, value: 2, label: "Excel cartera" },
-  { id: 3, value: 3, label: "PDF Factura" },
-  { id: 4, value: 4, label: "PDF Estado de cuenta" },
-  { id: 5, value: 5, label: "Excel cartera" },
-  { id: 6, value: 6, label: "PDF Factura" },
-  { id: 7, value: 7, label: "PDF Estado de cuenta" },
-  { id: 8, value: 8, label: "Excel cartera" },
-  { id: 9, value: 9, label: "PDF Factura" },
-  { id: 10, value: 10, label: "PDF Estado de cuenta" },
-  { id: 11, value: 11, label: "Excel cartera" },
-  { id: 12, value: 12, label: "PDF Factura" }
+  { id: 3, value: 3, label: "PDF Factura" }
 ];
 
 const mockForward = [
@@ -364,11 +339,11 @@ const mockForward = [
 ];
 
 const mockEventTypes = [
-  { value: 1, label: "Emisión" },
-  { value: 2, label: "Radicación" },
-  { value: 3, label: "Vencimiento de pronto pago" },
-  { value: 4, label: "Vencimiento de factura" },
-  { value: 5, label: "Vencimiento acuerdo de pago" }
+  { value: "Emisión", label: "Emisión" },
+  { value: "Radicación", label: "Radicación" },
+  { value: "Vencimiento de pronto pago", label: "Vencimiento de pronto pago" },
+  { value: "Vencimiento de factura", label: "Vencimiento de factura" },
+  { value: "Vencimiento acuerdo de pago", label: "Vencimiento acuerdo de pago" }
 ];
 
 const initDatSelectedBusinessRules: ISelectedBussinessRules = {
