@@ -50,7 +50,6 @@ export const ApplyAccountingAdjustment = ({
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
-
   const [selectTab, setSelectTab] = useState(0);
   const [currentInvoices, setCurrentInvoices] = useState<IcurrentInvoices[]>([]);
   const [currentAdjustment, setCurrentAdjustment] = useState(
@@ -104,7 +103,6 @@ export const ApplyAccountingAdjustment = ({
     if (value && value > currentAdjustment[selectTab] && previousValue <= 0) {
       value = 0;
     }
-
     if (value && value > selectedNotes[selectTab].current_value) {
       value = 0;
     }

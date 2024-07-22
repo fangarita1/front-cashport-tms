@@ -7,9 +7,8 @@ import { InfoConcilation, InvoicesConcilation } from "@/types/concilation/concil
 import "./stateConcilationTable.scss";
 import { ModalEstimatedConcilation } from "@/components/molecules/modals/ModalEstimatedConcilation/ModalEstimatedConcilation";
 import InvoiceDetailModal from "@/modules/clients/containers/invoice-detail-modal";
-import { invoiceCreateIncident } from "@/services/concilation/concilation";
-import { useRouter } from "next/navigation";
-import { useAppStore } from "@/lib/store/store";
+
+import RegisterNewsConcilation from "@/components/molecules/modals/RegisterNewsConcilation/RegisterNewsConcilation";
 
 interface Props {
   invoices: InfoConcilation | undefined;
@@ -18,13 +17,13 @@ interface Props {
 }
 
 export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props) => {
-  const { ID } = useAppStore((state) => state.selectProject);
   const [messageApi, contextHolder] = message.useMessage();
-  const router = useRouter();
+
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [_, setIsDetailInvoiceModalOpen] = useState(false);
-
+  const [isRegisterNewsOpen, setIsRegisterNewsOpen] = useState(false);
+  const [isValid, setIsValid] = useState(false);
   const [showInvoiceDetailModal, setShowInvoiceDetailModal] = useState({
     isOpen: false,
     invoiceId: 0
@@ -67,8 +66,6 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
 
   const onSubmitConcilation = async () => {
     if (!invoices) return;
-
-    // Validate that all invoices in specified categories have a motive_id
     const categoriesToValidate = ["invoices_not_found", "invoices_with_differences"];
     for (const category of categoriesToValidate) {
       const invoiceCategory = invoices[category as keyof InfoConcilation];
@@ -83,26 +80,30 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
         }
       }
     }
-
-    const invoiceList = Object.entries(invoices).flatMap(([key, category]) =>
-      category.invoices.map((invoice: { id: string; motive_id: string; difference: string }) => ({
-        invoice_id: invoice.id,
-        motive_id: invoice.motive_id,
-        difference: invoice.difference,
-        status: key
-      }))
-    );
-
-    const files: File[] = [];
-    const comments = "Entrega conciliacion masiva";
-
-    try {
-      const response = await invoiceCreateIncident(files, invoiceList, comments, clientId);
-      if (response.status == 200) {
-        router.push(`/clientes/detail/${clientId}/project/${ID}`);
-      }
-    } catch (error) {}
+    setIsRegisterNewsOpen(true);
   };
+
+
+  useEffect(() => {
+    if (!invoices) return;
+    const categoriesToValidate = ["invoices_not_found", "invoices_with_differences"];
+    let allInvoicesHaveMotive = true;
+
+    for (const category of categoriesToValidate) {
+      const invoiceCategory = invoices[category as keyof InfoConcilation]  ;
+      if (invoiceCategory) {
+        for (const invoice of invoiceCategory.invoices) {
+          if (invoice.motive_id == null) {
+            allInvoicesHaveMotive = false;
+            break;
+          }
+        }
+      }
+      if (!allInvoicesHaveMotive) break;
+    }
+
+    setIsValid(allInvoicesHaveMotive);
+  }, [invoices]);
   return (
     <div className="concilation_table">
       {contextHolder}
@@ -129,7 +130,11 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
             placeholder="Buscar por factura"
             onChange={handleSearchChange}
           />
-          <Button className="button__actions" size="large" onClick={onSubmitConcilation}>
+          <Button
+            className={`button__actions ${isValid ? "button__actions__green" : ""}`}
+            size="large"
+            onClick={onSubmitConcilation}
+          >
             Guardar
           </Button>
         </Flex>
@@ -171,6 +176,13 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
           handleisGenerateActionOpen={setIsDetailInvoiceModalOpen}
         />
       )}
+      <RegisterNewsConcilation
+        isOpen={isRegisterNewsOpen}
+        onClose={() => setIsRegisterNewsOpen(false)}
+        invoices={invoices}
+        clientId={clientId}
+        messageShow={messageApi}
+      />
     </div>
   );
 };

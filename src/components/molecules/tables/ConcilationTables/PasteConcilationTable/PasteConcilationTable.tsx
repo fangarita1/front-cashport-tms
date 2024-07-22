@@ -10,6 +10,7 @@ import { MicrosoftExcelLogo } from "phosphor-react";
 import { invoiceConciliation } from "@/services/concilation/concilation";
 import { dataConcilation, InfoConcilation } from "@/types/concilation/concilation";
 import { useAppStore } from "@/lib/store/store";
+import { ModalConcilation } from "@/components/molecules/modals/ModalConcilation/ModalConcilation";
 
 interface DataType {
   key: string;
@@ -17,6 +18,7 @@ interface DataType {
   monto: number;
   observacion: string;
 }
+
 interface Props {
   invoices?: InfoConcilation;
   setCurrentView: (view: "paste" | "state") => void;
@@ -52,9 +54,49 @@ export const PasteConcilationTable = ({
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handlePaste = useCallback(
-    (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
-      const pasteData = event.clipboardData.getData("Text");
+  // const handlePaste = useCallback(
+  //   (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+  //     const pasteData = event.clipboardData.getData("Text");
+  //     const rows = pasteData.split("\n").filter((row) => row.trim() !== "");
+  //     const validRows: { key: string; factura: string; monto: number; observacion: string }[] = [];
+  //     let hasError = false;
+
+  //     rows.forEach((row, index) => {
+  //       const columns = row.split("\t");
+  //       if (columns.length < 2) {
+  //         hasError = true;
+  //         return;
+  //       }
+  //       if (!isNaN(parseFloat(columns[1]))) {
+  //         validRows.push({
+  //           key: (dataSource.length + validRows.length + 1).toString(),
+  //           factura: columns[0].trim(),
+  //           monto: parseFloat(columns[1]),
+  //           observacion: columns[2]?.trim() || ""
+  //         });
+  //       } else {
+  //         hasError = true;
+  //         messageApi.error(`Valor inválido en la fila ${index + 1}: ${row}`);
+  //         return;
+  //       }
+  //     });
+
+  //     if (!hasError && validRows.length > 0) {
+  //       setDataSource((prevData) => [...prevData, ...validRows]);
+  //     } else {
+  //       messageApi.error("El formato de la tabla no es correcto. Por favor, verifique los datos.");
+  //       return;
+  //     }
+  //     messageApi.success(
+  //       `Se han agregado ${validRows.length} filas a la tabla. Total de filas: ${dataSource.length + validRows.length}`
+  //     );
+  //   },
+  //   [dataSource.length, messageApi]
+  // );
+
+  const handlePaste = useCallback(async () => {
+    try {
+      const pasteData = await navigator.clipboard.readText();
       const rows = pasteData.split("\n").filter((row) => row.trim() !== "");
       const validRows: { key: string; factura: string; monto: number; observacion: string }[] = [];
       let hasError = false;
@@ -88,10 +130,10 @@ export const PasteConcilationTable = ({
       messageApi.success(
         `Se han agregado ${validRows.length} filas a la tabla. Total de filas: ${dataSource.length + validRows.length}`
       );
-    },
-    [dataSource.length, messageApi]
-  );
-
+    } catch (err) {
+      console.error("Failed to read clipboard contents: ", err);
+    }
+  }, [dataSource.length, messageApi]);
   const handleSave = useCallback((row: DataType) => {
     setDataSource((prevData) =>
       prevData.map((item) => (item.key === row.key ? { ...item, ...row } : item))
@@ -161,6 +203,9 @@ export const PasteConcilationTable = ({
 
   return (
     <div className="concilation__view">
+      {dataSource.length !== 0 && (
+        <ModalConcilation total={dataSource.reduce((acc, curr) => acc + curr.monto, 0)} />
+      )}
       {contextHolder}
       <Flex vertical gap={"1rem"}>
         <Flex className="searchBar__container">
@@ -170,12 +215,7 @@ export const PasteConcilationTable = ({
               onChange={(event) => handleSearch(event.target.value)}
             />
             {/* <FiltersConcilation /> */} {/* en el diseño está, por petición lo comentamos */}
-            <Button
-              className="button__format"
-              onClick={() => {
-                textareaRef.current?.focus();
-              }}
-            >
+            <Button className="button__format" onClick={handlePaste}>
               <MicrosoftExcelLogo size={22} /> Pegar desde excel
             </Button>
           </Flex>

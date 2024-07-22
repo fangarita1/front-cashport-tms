@@ -54,7 +54,7 @@ export const ConcilationTable = ({
       align: "right",
       width: 120
     },
-    {
+    { 
       title: "Pronto pago",
       key: "earlypay_date",
       dataIndex: "earlypay_date",
@@ -64,12 +64,13 @@ export const ConcilationTable = ({
       width: 150
     },
     {
-      title: "Monto",
+      title: "Monto cp",
       key: "current_value",
       dataIndex: "current_value",
       render: (amount) => <Text className="cell -alignRight">{formatMoney(amount)}</Text>,
       showSorterTooltip: false,
-      align: "right"
+      align: "right",
+      width: 150
     },
     {
       title: "Observación",

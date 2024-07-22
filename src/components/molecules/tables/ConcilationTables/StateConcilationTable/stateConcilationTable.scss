@@ -35,21 +35,13 @@
                 &:hover {
                     border: solid 1px $dark-gray;
                 }
-            }
-
-            &__adjustments {
-                background-color: $secondary;
-                box-shadow: none;
-                color: $black;
-                display: flex;
-                align-items: center;
-                font-size: 1rem;
-                font-weight: 600;
-                height: 3rem;
-
-                &:hover {
-                    color: $white;
-                    background-color: $secondary !important;
+                &__green {
+                    background-color: #CBE71E;
+                }
+    
+                &__white {
+                    background-color: #ffff;
+                    border: solid 2px;
                 }
             }
         }

@@ -83,7 +83,7 @@ export const ModalEstimatedConcilation = ({
           </Panel>
         </Collapse>
         <Flex justify="space-between" gap="1.5rem" className="divider__conciliation">
-          <div>Total:</div>
+          <div>Total CP:</div>
           {formatMoney(invoice?.amount + notFoundInvoices?.amount + differenceInvoices?.amount)}
         </Flex>
       </div>
