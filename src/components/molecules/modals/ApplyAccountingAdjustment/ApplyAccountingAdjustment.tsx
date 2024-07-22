@@ -191,11 +191,14 @@ export const ApplyAccountingAdjustment = ({
       const normalizedData = normalizarApplyValues(applyValues);
       const adjustmentData = JSON.stringify(normalizedData);
       if (!selectedEvidence) return;
+      //  valida que si type es 1 pongas el 10 si es 2 el 9 y 3 el 11
+        const typeAjustment =  type === 1 ? 10 : type === 2 ? 9 : 11;
       const response = await applyAccountingAdjustment(
         adjustmentData,
         selectedEvidence,
         projectIdParam as string,
-        clientIdParam as string
+        clientIdParam as string,
+        typeAjustment
       );
       if (response.status === 200) {
         messageApi.open({
@@ -214,16 +217,6 @@ export const ApplyAccountingAdjustment = ({
     }
   };
 
-  useEffect(() => {
-    console.log(
-      "applyValues",
-      applyValues,
-      "currentInvoices",
-      currentInvoices,
-      "currentAdjustment",
-      currentAdjustment
-    );
-  }, [applyValues, currentInvoices, currentAdjustment]);
 
   const columns: ColumnsType<IcurrentInvoices> = [
     {

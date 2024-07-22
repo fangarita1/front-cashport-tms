@@ -23,6 +23,7 @@ interface InvoiceDetailModalProps {
   hiddenActions?: boolean;
   handleisGenerateActionOpen: Dispatch<SetStateAction<boolean>>;
   selectInvoice?: IInvoice;
+  projectId?: number;
 }
 
 const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
