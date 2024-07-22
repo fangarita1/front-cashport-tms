@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { Flex } from "antd";
-import "./ModalConcilation.scss";
+import "./modalConcilation.scss";
 import { formatMoney } from "@/utils/utils";
 
 interface Props {
