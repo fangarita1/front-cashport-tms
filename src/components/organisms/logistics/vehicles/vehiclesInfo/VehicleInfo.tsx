@@ -18,7 +18,7 @@ interface Props {
 }
 
 export const VehicleInfoView = ({ isEdit = false, idParam = "", params }: Props) => {
-  const [messageApi, contextHolder] = message.useMessage();
+  const [_messageApi, contextHolder] = message.useMessage();
 
   const fetcher = async ({ id, key }: { id: string; key: string }) => {
     return getVehicleById(id);
@@ -34,7 +34,6 @@ export const VehicleInfoView = ({ isEdit = false, idParam = "", params }: Props)
           {!isLoading ? (
             <VehicleFormTab
               statusForm={"review"}
-              messageApi={messageApi}
               data={data?.data as any}
               params={params}
             ></VehicleFormTab>
