@@ -2,24 +2,23 @@ import React from "react";
 import { Button, Flex, Modal } from "antd";
 import { CaretLeft, Plus } from "@phosphor-icons/react";
 import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
-import "./registerNews.scss";
-import { IInvoice } from "@/types/invoices/IInvoices";
+import "./registerNewsConcilation.scss";
 import { MessageInstance } from "antd/es/message/interface";
-import { InputSelect } from "@/components/atoms/inputs/InputSelect/InputSelect";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useInvoiceIncidentMotives } from "@/hooks/useInvoiceIncidentMotives";
-import { reportInvoiceIncident } from "@/services/accountingAdjustment/accountingAdjustment";
+import { invoiceCreateIncident } from "@/services/concilation/concilation";
+import { useRouter } from "next/navigation";
+import { InfoConcilation } from "@/types/concilation/concilation";
+import { useAppStore } from "@/lib/store/store";
 
 interface RegisterNewsProps {
   isOpen: boolean;
   onClose: () => void;
   clientId?: number;
   projectId?: number;
-  invoiceSelected?: IInvoice[];
+  invoices: InfoConcilation | undefined;
   messageShow: MessageInstance;
-  onCloseAllModals: () => void;
 }
 interface infoObject {
   file: File;
@@ -27,13 +26,11 @@ interface infoObject {
 }
 
 interface IFormRegisterNews {
-  motive: string;
   commentary: string;
   evidence: File[];
 }
 
 const schema = yup.object().shape({
-  motive: yup.string().required("El motivo es requerido"),
   commentary: yup.string().required("El comentario es requerido"),
   evidence: yup
     .array()
@@ -41,16 +38,13 @@ const schema = yup.object().shape({
     .required("La evidencia es requerida")
 });
 
-const RegisterNews = ({
+const RegisterNewsConcilation = ({
   isOpen,
   onClose,
   clientId,
-  invoiceSelected,
-  messageShow,
-  onCloseAllModals
+  invoices,
+  messageShow
 }: RegisterNewsProps) => {
-  const { data: motives, isLoading, isError } = useInvoiceIncidentMotives();
-
   const {
     control,
     handleSubmit,
@@ -62,11 +56,12 @@ const RegisterNews = ({
   } = useForm<IFormRegisterNews>({
     resolver: yupResolver(schema),
     defaultValues: {
-      motive: "",
       commentary: "",
       evidence: []
     }
   });
+  const router = useRouter();
+  const { ID } = useAppStore((state) => state.selectProject);
 
   const evidence = watch("evidence");
 
@@ -124,49 +119,54 @@ const RegisterNews = ({
 
   const onSubmit = async (data: IFormRegisterNews) => {
     try {
-      await reportInvoiceIncident(
-        invoiceSelected?.map((invoice) => invoice.id) || [],
-        data.commentary,
-        motives?.find((motive) => motive.name === data.motive)?.id.toString() || "",
-        data.evidence,
-        clientId?.toString() || ""
+      if (!invoices) return;
+      const invoiceList = Object.entries(invoices).flatMap(([key, category]) =>
+        category.invoices.map((invoice: { id: string; motive_id: string; difference: string }) => ({
+          invoice_id: invoice.id,
+          motive_id: invoice.motive_id,
+          difference: invoice.difference,
+          status: key
+        }))
       );
-      messageShow.success("Evidencia adjuntada con éxito");
-      reset();
-      onCloseAllModals();
+      try {
+        const response = await invoiceCreateIncident(
+          data.evidence,
+          invoiceList,
+          data.commentary,
+          clientId || 0
+        );
+        if (response.status == 200) {
+          router.push(`/clientes/detail/${clientId}/project/${ID}`);
+        }
+      } catch (error) {}
     } catch (error) {
       console.error("Error al registrar una novedad:", error);
       messageShow.error("Error al adjuntar la evidencia");
     }
   };
+
   const handleClose = () => {
     reset();
     onClose();
   };
+
   return (
-    <Modal className="contentRegisterNews" width="50%" footer={null} open={isOpen} closable={false}>
-      <button className="contentRegisterNews__header" onClick={handleClose}>
+    <Modal
+      className="contentRegisterNewsConcilation"
+      width="50%"
+      footer={null}
+      open={isOpen}
+      closable={false}
+    >
+      <button className="contentRegisterNewsConcilation__header" onClick={handleClose}>
         <CaretLeft size="1.25rem" />
-        <h4>Registrar novedad</h4>
+        <h4>Finalizar conciliación</h4>
       </button>
-      <p className="contentRegisterNews__description">
+      <p className="contentRegisterNewsConcilation__description">
         Adjunta la evidencia e ingresa un comentario
       </p>
-      <form onSubmit={handleSubmit(onSubmit)} className="contentRegisterNews__form">
-        <div className="contentRegisterNews__select">
-          <InputSelect
-            titleInput="Motivo"
-            nameInput="motive"
-            control={control}
-            error={errors.motive}
-            options={motives?.map((motive) => ({ value: motive?.name, label: motive?.name })) || []}
-            loading={isLoading}
-            isError={isError}
-            placeholder="Seleccionar motivo"
-          />
-          <div />
-        </div>
-        <div className="contentRegisterNews__evidence">
+      <form onSubmit={handleSubmit(onSubmit)} className="contentRegisterNewsConcilation__form">
+        <div className="contentRegisterNewsConcilation__evidence">
           <Flex vertical>
             <p>Evidencia</p>
             <em className="descriptionDocument">*Obligatorio</em>
@@ -236,7 +236,7 @@ const RegisterNews = ({
             className={`acceptButton ${isValid ? "acceptButton__green" : ""}`}
             htmlType="submit"
           >
-            Adjuntar evidencia
+            Finalizar conciliación
           </Button>
         </div>
       </form>
@@ -244,4 +244,4 @@ const RegisterNews = ({
   );
 };
 
-export default RegisterNews;
+export default RegisterNewsConcilation;

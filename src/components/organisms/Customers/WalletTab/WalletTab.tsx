@@ -71,6 +71,7 @@ export const WalletTab = () => {
   };
   const closeAllModal = () => {
     setIsSelectOpen({ selected: 0 });
+    setSelectedRows([]);
     handleisGenerateActionOpen();
   };
 
@@ -145,6 +146,7 @@ export const WalletTab = () => {
         setIsPaymentAgreementOpen={setIsPaymentAgreementOpen}
         setShowActionDetailModal={setShowActionDetailModal}
         setSelectOpen={setIsSelectOpen}
+        clientId={clientId}
       />
       {isPaymentAgreementOpen && (
         <PaymentAgreementModal

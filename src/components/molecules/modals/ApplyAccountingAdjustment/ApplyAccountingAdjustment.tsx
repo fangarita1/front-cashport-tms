@@ -41,7 +41,7 @@ interface infoObject {
 
 export const ApplyAccountingAdjustment = ({
   type,
-  selectedRows,
+  selectedRows: selectedNotes,
   setCurrentView,
   messageApi,
   onClosePrincipalModal,
@@ -50,11 +50,13 @@ export const ApplyAccountingAdjustment = ({
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
-
   const [selectTab, setSelectTab] = useState(0);
   const [currentInvoices, setCurrentInvoices] = useState<IcurrentInvoices[]>([]);
   const [currentAdjustment, setCurrentAdjustment] = useState(
-    selectedRows.map((row) => row.current_value)
+    selectedNotes.map((row) => row.current_value)
+  );
+  const [currentAdjustmentStatic, setCurrentAdjustmentStatic] = useState(
+    selectedNotes.map((row) => row.current_value)
   );
   const [applyValues, setApplyValues] = useState<{
     [key: string]: {
@@ -79,7 +81,7 @@ export const ApplyAccountingAdjustment = ({
   const handleValueChange = (valueApplied: number, index: number, record: IcurrentInvoices) => {
     setCurrentAdjustment((prev) => {
       const previousValue =
-        applyValues[record.id]?.find((apply) => apply.idAdjustment === selectedRows[index].id)
+        applyValues[record.id]?.find((apply) => apply.idAdjustment === selectedNotes[index].id)
           ?.balanceToApply ?? 0;
 
       let newValue: number;
@@ -94,8 +96,20 @@ export const ApplyAccountingAdjustment = ({
 
   const handleApplyValueChange = (value: number | null, record: IcurrentInvoices) => {
     const previousValue =
-      applyValues[record.id]?.find((apply) => apply.idAdjustment === selectedRows[selectTab].id)
+      applyValues[record.id]?.find((apply) => apply.idAdjustment === selectedNotes[selectTab].id)
         ?.balanceToApply ?? 0;
+    // validar que el valor no sea mayor al saldo disponible
+
+    if (value && value > currentAdjustment[selectTab] && previousValue <= 0) {
+      value = 0;
+    }
+    if (value && value > selectedNotes[selectTab].current_value) {
+      value = 0;
+    }
+    if (value && value > previousValue && value > currentAdjustment[selectTab] + previousValue) {
+      value = previousValue;
+    }
+
     // Validación para asegurarse de que el valor a aplicar no exceda el newBalance actual
     const maxApplicableValue = Math.min(value ?? 0, record.newBalance + previousValue);
 
@@ -104,10 +118,10 @@ export const ApplyAccountingAdjustment = ({
       [record.id]: [
         // Mantiene todas las aplicaciones anteriores para el mismo registro, excepto la actualmente seleccionada
         ...(prev[record.id] ?? []).filter(
-          (apply) => apply.idAdjustment !== selectedRows[selectTab].id
+          (apply) => apply.idAdjustment !== selectedNotes[selectTab].id
         ),
         // Agrega o actualiza la nueva aplicación con el valor ajustado que no excede el balance disponible
-        { balanceToApply: maxApplicableValue, idAdjustment: selectedRows[selectTab].id }
+        { balanceToApply: maxApplicableValue, idAdjustment: selectedNotes[selectTab].id }
       ]
     }));
 
@@ -200,6 +214,17 @@ export const ApplyAccountingAdjustment = ({
     }
   };
 
+  useEffect(() => {
+    console.log(
+      "applyValues",
+      applyValues,
+      "currentInvoices",
+      currentInvoices,
+      "currentAdjustment",
+      currentAdjustment
+    );
+  }, [applyValues, currentInvoices, currentAdjustment]);
+
   const columns: ColumnsType<IcurrentInvoices> = [
     {
       title: "ID Factura",
@@ -228,22 +253,15 @@ export const ApplyAccountingAdjustment = ({
           min={0}
           value={
             applyValues[record.id]?.find(
-              (apply) => apply.idAdjustment === selectedRows[selectTab].id
+              (apply) => apply.idAdjustment === selectedNotes[selectTab].id
             )?.balanceToApply
           }
+          max={currentAdjustmentStatic[selectTab] + 1}
           formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
           onBlur={(event) => {
             const rawValue = event.target.value.replace(/,/g, "");
             const parsedValue = parseFloat(rawValue);
-            if (
-              (currentAdjustment[selectTab] > 0 &&
-                parsedValue <= selectedRows[selectTab].current_value) ||
-              applyValues[record.id]?.find(
-                (apply) => apply.idAdjustment === selectedRows[selectTab].id
-              )?.balanceToApply
-            ) {
-              handleApplyValueChange(isNaN(parsedValue) ? 0 : parsedValue, record);
-            }
+            handleApplyValueChange(isNaN(parsedValue) ? 0 : parsedValue, record);
           }}
           className="button__number__adjustment"
         />
@@ -254,9 +272,9 @@ export const ApplyAccountingAdjustment = ({
   return (
     <div className="modalContentApply">
       <p className="subTitleModalApply">Define el monto a aplicar a cada factura</p>
-      {selectedRows.length > 1 && (
+      {selectedNotes.length > 1 && (
         <UiTabs
-          tabs={selectedRows.map((row) => row.id.toString())}
+          tabs={selectedNotes.map((row) => row.id.toString())}
           onTabClick={(index) => setSelectTab(index)}
           initialTabIndex={selectTab}
           className="scrollableTabs"
@@ -264,7 +282,7 @@ export const ApplyAccountingAdjustment = ({
       )}
       <ItemApplyModal
         type={type}
-        item={selectedRows.length > 1 ? selectedRows[selectTab] : selectedRows[0]}
+        item={selectedNotes.length > 1 ? selectedNotes[selectTab] : selectedNotes[0]}
         availableValue={currentAdjustment[selectTab]}
       />
       <Table dataSource={currentInvoices} columns={columns} pagination={false} />
@@ -278,7 +296,7 @@ export const ApplyAccountingAdjustment = ({
         </button>
         <button
           type="button"
-          className={`button__action__text ${selectedRows.length > 0 ? "button__action__text__green" : ""}`}
+          className={`button__action__text ${selectedNotes.length > 0 ? "button__action__text__green" : ""}`}
           onClick={() => setOpenEvidenceModal(true)}
         >
           Continuar

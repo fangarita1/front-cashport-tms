@@ -1,3 +1,4 @@
+"use client";
 import { Collapse, Flex, Modal, Typography } from "antd";
 
 import {
@@ -14,12 +15,15 @@ import {
 import "./modalgenerateaction.scss";
 import { ButtonGenerateAction } from "@/components/atoms/ButtonGenerateAction/ButtonGenerateAction";
 import { Dispatch, SetStateAction } from "react";
+import { useRouter } from "next/navigation";
 
 const { Title, Text } = Typography;
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  clientId: number;
+
   setIsPaymentAgreementOpen: Dispatch<SetStateAction<boolean>>;
   setShowActionDetailModal: Dispatch<
     SetStateAction<{
@@ -33,10 +37,12 @@ interface Props {
 export const ModalGenerateAction = ({
   isOpen,
   onClose,
+  clientId,
   setIsPaymentAgreementOpen,
   setShowActionDetailModal,
   setSelectOpen
 }: Props) => {
+  const router = useRouter();
   const handlePaymentAgreement = () => {
     setIsPaymentAgreementOpen(true);
   };
@@ -110,6 +116,13 @@ export const ModalGenerateAction = ({
           title="Vincular orden de compra"
           onClick={() => {
             handleOpenModal(5);
+          }}
+        />
+        <ButtonGenerateAction
+          icon={<LinkBreak size={16} />}
+          title="Concilación masiva"
+          onClick={() => {
+            router.push(`/conciliacion/${clientId}`);
           }}
         />
       </Flex>
