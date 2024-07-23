@@ -192,7 +192,13 @@ export const insertPeriodEveryThreeDigits = (number: number) => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 
-export function formatMoney(amount: string | number, countryCode?: CountryCode): string {
+export function formatMoney(
+  amount: string | number | undefined | null,
+  countryCode?: CountryCode
+): string {
+  if (!amount) {
+    return "";
+  }
   const { currency, id } = countryFormater(countryCode);
   const number = typeof amount === "string" ? parseFloat(amount) : amount;
   const formatter = new Intl.NumberFormat(id, {
@@ -290,4 +296,17 @@ export const formatDateAndTime = (date: string): string => {
   const period = d.getHours() >= 12 ? "PM" : "AM";
 
   return `${day}/${month}/${year} - ${hours}:${minutes} ${period}`;
+};
+
+export const formatMillionNumber = (number: number | undefined | null): string => {
+  if (!number) {
+    return "0";
+  }
+
+  const formatNumber = number / 1000000;
+
+  if (formatNumber > 1000000) {
+    return formatNumber.toFixed(2);
+  }
+  return formatNumber.toFixed();
 };

@@ -19,12 +19,16 @@ const DashboardGenericItem: FC<DashboardGenericItemProps> = ({
   return (
     <div className={styles.wrapper}>
       <div className={styles.label}>
-        {name}
+        <p className={styles.text}>{name}</p>
+
         {badgeText && <div className={styles.percentageBadge}>{badgeText}</div>}
       </div>
       <div className={styles.value}>
-        {value} {unit && <span>{unit}</span>}
-        {quantity && <div className={styles.quantity}>{quantity}</div>}
+        <p className={styles.total}>{value}</p>
+        {unit && <span>{unit}</span>}
+        {quantity !== undefined && quantity !== null && quantity !== 0 && (
+          <p className={styles.quantity}>{quantity}</p>
+        )}
       </div>
     </div>
   );

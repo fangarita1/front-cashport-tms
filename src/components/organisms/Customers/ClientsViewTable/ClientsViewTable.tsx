@@ -207,6 +207,7 @@ export const ClientsViewTable = () => {
             title={"DSO"}
             total={data?.data?.grandTotal?.dso || 0}
             icon={<Calendar />}
+            notAMoneyValue
           />
         </Col>
       </Row>

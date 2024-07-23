@@ -19,9 +19,9 @@ interface IApplicationPayments {
 
 // Define the type for invoice info
 interface IInvoiceInfo {
-  total_invoice_unreconciled: number;
-  total_invoice_reconciled: number;
-  total_balances: number;
+  total_balances: IGeneralInfo;
+  total_invoice_unreconciled: IGeneralInfo;
+  total_invoice_reconciled: IGeneralInfo;
 }
 
 // Define the type for the data wallet
@@ -43,7 +43,9 @@ export interface IDataSection {
   data_wallet: IDataWallet;
   total_wallet: number;
   info_invioce: IInvoiceInfo;
+  invoice_alerts: IInvoiceAlerts;
   dso: number;
+  invoice_ages: IInvoiceAges[];
   quota: number;
   aplication_payments: IApplicationPayments;
   history_dso: IHistoryDSO;
@@ -53,4 +55,24 @@ export interface IDataSection {
 export interface IPortfolioResponse {
   status: number;
   data: IDataSection;
+}
+
+interface IInvoiceAlerts {
+  accounting_updates: IGeneralInfo;
+  financial_discounts: {
+    discount: IGeneralInfo;
+    creditNote: IGeneralInfo;
+  };
+}
+
+interface IGeneralInfo {
+  count: number;
+  total_value: number | null;
+}
+
+interface IInvoiceAges {
+  days_range: string;
+  invoice_count: number;
+  percentage: number;
+  total: number;
 }

@@ -138,6 +138,7 @@ export const WalletTab = () => {
               children: (
                 <InvoicesTable
                   setShowInvoiceDetailModal={setShowInvoiceDetailModal}
+                  stateId={invoiceState.status_id}
                   dataSingleInvoice={invoiceState.invoices}
                   setSelectedRows={setSelectedRows}
                   selectedRows={selectedRows}

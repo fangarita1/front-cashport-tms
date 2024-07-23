@@ -9,6 +9,7 @@ import { daysLeft, formatDate, formatMoney } from "@/utils/utils";
 const { Text } = Typography;
 
 interface PropsInvoicesTable {
+  stateId: number;
   dataSingleInvoice: IInvoice[];
   setSelectedRows: Dispatch<SetStateAction<IInvoice[] | undefined>>;
   setShowInvoiceDetailModal: Dispatch<
@@ -21,6 +22,7 @@ interface PropsInvoicesTable {
 }
 
 export const InvoicesTable = ({
+  stateId,
   dataSingleInvoice: data,
   setSelectedRows,
   selectedRows,
@@ -44,9 +46,47 @@ export const InvoicesTable = ({
     setShowInvoiceDetailModal({ isOpen: true, invoiceId });
   };
 
-  const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: IInvoice[]) => {
+  const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRows: any) => {
     setSelectedRowKeys(newSelectedRowKeys);
-    setSelectedRows(newSelectedRow);
+    if (newSelectedRowKeys.length >= 1) {
+      // set the selected Rows but adding to the previous selected rows
+      setSelectedRows((prevSelectedRows) => {
+        if (prevSelectedRows) {
+          //check if the new selected rows are already in the selected rows
+          const filteredSelectedRows = newSelectedRows.filter(
+            (newSelectedRow: IInvoice) =>
+              !prevSelectedRows.some((prevSelectedRow) => prevSelectedRow.id === newSelectedRow.id)
+          );
+
+          //filters the unselected rows but only the ones that have the status_id equal to stateId
+          const unCheckedRows = prevSelectedRows?.filter(
+            (prevSelectedRow) =>
+              !newSelectedRowKeys.includes(prevSelectedRow.id) &&
+              prevSelectedRow.status_id === stateId
+          );
+          if (unCheckedRows.length > 0) {
+            // remove form the prevState the ones present in the unCheckedRows
+            const filteredPrevSelectedRows = prevSelectedRows.filter(
+              (prevSelectedRow) => !unCheckedRows.includes(prevSelectedRow)
+            );
+            return filteredPrevSelectedRows;
+          }
+
+          return [...prevSelectedRows, ...filteredSelectedRows];
+        } else {
+          return newSelectedRows;
+        }
+      });
+    }
+    if (newSelectedRowKeys.length === 0) {
+      setSelectedRows((prevSelectedRows) => {
+        if (prevSelectedRows) {
+          return prevSelectedRows.filter(
+            (prevSelectedRow) => prevSelectedRow.status_id !== stateId
+          );
+        }
+      });
+    }
   };
 
   const rowSelection = {
@@ -226,6 +266,7 @@ export const InvoicesTable = ({
         dataSource={data.map((data) => ({ ...data, key: data.id }))}
         rowSelection={rowSelection}
         rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
+        pagination={false}
       />
     </>
   );
