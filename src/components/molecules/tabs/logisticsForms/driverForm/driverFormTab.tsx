@@ -124,7 +124,7 @@ export const DriverFormTab = ({
       } else {
         const fileSelected = documentsType
           ?.filter(
-            (f) => f?.optional?.data?.includes(0) || selectedFiles?.find((f2) => f2.id === f.id)
+            (f) => !f?.optional || selectedFiles?.find((f2) => f2.id === f.id)
           )
           ?.map((f) => ({
             ...f,
