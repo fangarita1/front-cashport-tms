@@ -292,8 +292,10 @@ export const VehicleFormTab = ({
                     <Text className="textError">{"Al menos 1 imagen debe ser cargada *"}</Text>
                   )}
                 </Col>
+                </Row>
+                <Row gutter={16}>
                 {images.slice(1).map((image, index) => (
-                  <Col span={6} className="colfotomin" key={index + 1}>
+                  <Col xs={24} sm={12} lg={6} className="colfotomin" key={index + 1}>
                     <UploadImg
                       disabled={statusForm === "review"}
                       imgDefault={getValues(getImageKey(index + 1))}

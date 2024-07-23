@@ -1,5 +1,5 @@
 "use client";
-import { Flex, Typography, message, Button, Result } from "antd";
+import { Flex, Typography, message, Button, Result, Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import "../../../../../styles/_variables_logistics.css";
 import "./driverInfo.scss";
@@ -75,25 +75,8 @@ export const DriverInfoView = ({ isEdit = false, params }: Props) => {
     <>
       {contextHolder}
       <>
-        {datasource.length === 0 ? (
-          <Flex vertical>
-            <Flex align="center" gap={"2rem"}>
-              <Link href={`/logistics/providers/${params.id}/driver`} passHref>
-                <Button>Volver</Button>
-              </Link>
-              <Text>Informacion No encontrada</Text>
-            </Flex>
-            <Result
-              status="404"
-              title="404"
-              subTitle="Lo siento este conductor no existe"
-              extra={
-                <Button type="primary" href="/logistics/providers/all">
-                  Back Home
-                </Button>
-              }
-            />
-          </Flex>
+      {datasource.length === 0 ? (
+          <Spin/>
         ) : (
           <DriverFormTab
             onSubmitForm={onUpdateDriver}
@@ -101,7 +84,7 @@ export const DriverInfoView = ({ isEdit = false, params }: Props) => {
             data={datasource}
             statusForm={isEditProject ? "edit" : "review"}
             params={params}
-          ></DriverFormTab>
+          />
         )}
       </>
     </>
