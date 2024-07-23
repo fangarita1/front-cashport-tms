@@ -43,7 +43,6 @@ export const WalletTab = () => {
     isOpen: false,
     actionType: 0
   });
-  const [isPaymentAgreementOpen, setIsPaymentAgreementOpen] = useState(false);
   const [isSelectOpen, setIsSelectOpen] = useState({
     selected: 0
   });
@@ -181,7 +180,6 @@ export const WalletTab = () => {
         />
       )}
       <PaymentAgreementModal isOpen={isSelectOpen.selected === 6} onClose={onCloseModal} />
-
       <ModalActionDiscountCredit
         isOpen={showActionDetailModal?.isOpen}
         onClose={() => {

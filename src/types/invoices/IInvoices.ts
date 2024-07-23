@@ -41,5 +41,11 @@ export interface IInvoice {
   acceptance_info: {
     accept_date: null | string;
     radication_type: string;
-  };
+  } | null;
+  agreement_info: {
+    Fecha: string;
+    Monto: number;
+    Cumplido: string;
+  } | null;
+  novelty_info: {} | null;
 }

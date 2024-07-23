@@ -149,56 +149,62 @@ export const InvoicesTable = ({
       className: "logosWrapper",
       render: (_, record) => (
         <div className="logos">
-          <Tooltip
-            title={
-              <div className="toolTip -paymentAgreement">
-                <p>Acuerdo de pago</p>
-                <p>
-                  Fecha <strong>xx/xx/xxxx</strong>
-                </p>
-                <p>
-                  Monto <strong>$XXXXX</strong>
-                </p>
-              </div>
-            }
-            color={"#f7f7f7"}
-            key={`A${record.id}`}
-          >
-            <Button icon={<Handshake size={"1.2rem"} />} />
-          </Tooltip>
+          {record?.agreement_info && (
+            <Tooltip
+              title={
+                <div className="toolTip -paymentAgreement">
+                  <p>Acuerdo de pago</p>
+                  <p>
+                    Fecha <strong>{record?.agreement_info?.Fecha}</strong>
+                  </p>
+                  <p>
+                    Monto <strong>{formatMoney(record?.agreement_info?.Monto)}</strong>
+                  </p>
+                </div>
+              }
+              color={"#f7f7f7"}
+              key={`A${record.id}`}
+            >
+              <Button icon={<Handshake size={"1.2rem"} />} />
+            </Tooltip>
+          )}
+          {}
 
-          <Tooltip
-            title={
-              <div className="toolTip -priceDifference">
-                <p>Diferencia en precios</p>
-                <p>
-                  Monto <strong>$XXXXXX</strong>
-                </p>
-                <p>Producto faltante</p>
-                <p>
-                  Descuento <strong>$XXXXXX</strong>
-                </p>
-              </div>
-            }
-            color={"#f7f7f7"}
-            key={`B${record.id}`}
-          >
-            <Button icon={<Warning size={"1.2rem"} />} />
-          </Tooltip>
-
-          <Tooltip
-            title={
-              <div className="toolTip -clientAccept">
-                <p>Aceptación cliente</p>
-                <p>{record?.acceptance_info?.radication_type}</p>
-                <strong>{record?.acceptance_info?.accept_date ?? " DD-MM-YYYY"}</strong>
-              </div>
-            }
-            color={"#f7f7f7"}
-            key={`C${record.id}`}
-          >
-            <Button icon={<CheckCircle size={"1.2rem"} />} />
-          </Tooltip>
+          {record.novelty_info && (
+            <Tooltip
+              title={
+                <div className="toolTip -priceDifference">
+                  <p>Diferencia en precios</p>
+                  <p>
+                    Monto <strong>$XXXXXX</strong>
+                  </p>
+                  <p>Producto faltante</p>
+                  <p>
+                    Descuento <strong>$XXXXXX</strong>
+                  </p>
+                </div>
+              }
+              color={"#f7f7f7"}
+              key={`B${record.id}`}
+            >
+              <Button icon={<Warning size={"1.2rem"} />} />
+            </Tooltip>
+          )}
+          {record?.acceptance_info && (
+            <Tooltip
+              title={
+                <div className="toolTip -clientAccept">
+                  <p>Aceptación cliente</p>
+                  <p>{record?.acceptance_info?.radication_type}</p>
+                  <strong>{record?.acceptance_info?.accept_date ?? " DD-MM-YYYY"}</strong>
+                </div>
+              }
+              color={"#f7f7f7"}
+              key={`C${record.id}`}
+            >
+              <Button icon={<CheckCircle size={"1.2rem"} />} />
+            </Tooltip>
+          )}
 
           <Button onClick={() => openInvoiceDetail(record.id)} icon={<Eye size={"1.2rem"} />} />
         </div>
