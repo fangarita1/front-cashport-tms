@@ -10,7 +10,7 @@
         align-items: center;
 
         .text {
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: 300;
             white-space: nowrap;
             overflow: hidden;
@@ -20,7 +20,7 @@
             height: 32px;
             display: flex;
             padding: 0 8px;
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: 600;
             line-height: 24px;
             border-radius: 8px;
@@ -34,10 +34,10 @@
         column-gap: 4px;
         font-weight: 500;
         line-height: 39px;
-        align-items: center;
+        align-items: baseline;
 
         .total {
-            font-size: 26px;
+            font-size: 1.625rem;
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 120px;
@@ -45,13 +45,13 @@
         }
 
         span {
-            font-size: 20px;
+            font-size: 1.25rem;
             font-weight: 300;
             line-height: 30px;
             letter-spacing: -0.02em;
         }
         .quantity {
-            font-size: 22px;
+            font-size: 1.375rem;
             font-weight: 300;
             line-height: 33px;
             margin: 0 0 0 auto;

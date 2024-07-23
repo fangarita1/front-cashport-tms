@@ -20,6 +20,7 @@ interface DashboardProps {}
 
 const Dashboard: FC<DashboardProps> = () => {
   const { portfolioData } = useContext(ClientDetailsContext);
+  console.log("portfolioData", portfolioData);
 
   const formattedAppliedPayments = formatMillionNumber(
     portfolioData?.data_wallet?.applied_payments_ammount
@@ -30,6 +31,9 @@ const Dashboard: FC<DashboardProps> = () => {
   );
   const unappliedPayments = formatMoney(formattedUnappliedPayments.num.toFixed());
   const dsoValue = portfolioData?.dso;
+
+  const formattedQuota = formatMillionNumber(portfolioData?.quota);
+  const quota = formatMoney(formattedQuota.num.toFixed());
 
   return (
     <div className={styles.wrapper}>
@@ -60,7 +64,12 @@ const Dashboard: FC<DashboardProps> = () => {
         </div>
         <div className={styles.item}>
           <div className={styles.list}>
-            <DashboardGenericItem name="Cupo" value="$54.950" unit="M" badgeText="12%" />
+            <DashboardGenericItem
+              name="Cupo"
+              value={quota}
+              unit={formattedQuota.formatted ? "M" : ""}
+              badgeText="12%"
+            />
           </div>
         </div>
         <div className={styles.dso}>

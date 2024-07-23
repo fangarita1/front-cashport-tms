@@ -1,5 +1,5 @@
 import { getPortfolioFromClient } from "@/services/portfolios/portfolios";
-import { IDataSection } from "@/types/portfolios/portfolios";
+import { IDataSection } from "@/types/portfolios/IPortfolios";
 import { extractSingleParam } from "@/utils/utils";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";

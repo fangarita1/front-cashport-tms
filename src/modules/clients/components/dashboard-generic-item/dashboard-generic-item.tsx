@@ -26,7 +26,9 @@ const DashboardGenericItem: FC<DashboardGenericItemProps> = ({
       <div className={styles.value}>
         <p className={styles.total}>{value}</p>
         {unit && <span>{unit}</span>}
-        {quantity && <div className={styles.quantity}>{quantity}</div>}
+        {quantity !== undefined && quantity !== null && quantity !== 0 && (
+          <p className={styles.quantity}>{quantity}</p>
+        )}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { FC, useContext } from "react";
 import DashboardGenericItem from "../dashboard-generic-item";
 import styles from "./dashboard-invoice-status.module.scss";
 import { ClientDetailsContext } from "../../containers/client-details/client-details";
-import { formatMoney } from "@/utils/utils";
+import { formatMillionNumber, formatMoney } from "@/utils/utils";
 
 interface DashboardInvoiceStatusProps {
   className?: string;
@@ -11,9 +11,20 @@ interface DashboardInvoiceStatusProps {
 const DashboardInvoiceStatus: FC<DashboardInvoiceStatusProps> = ({ className }) => {
   const { portfolioData } = useContext(ClientDetailsContext);
 
-  const totalUnreconciled = formatMoney(portfolioData?.info_invioce.total_invoice_unreconciled);
-  const totalReconciled = formatMoney(portfolioData?.info_invioce.total_invoice_reconciled);
-  const totalBalance = formatMoney(portfolioData?.info_invioce.total_balances);
+  const formattedTotalUnreconciled = formatMillionNumber(
+    portfolioData?.info_invioce.total_invoice_unreconciled.total_value
+  );
+  const totalUnreconciled = formatMoney(formattedTotalUnreconciled.num.toFixed());
+
+  const formattedTotalReconciled = formatMillionNumber(
+    portfolioData?.info_invioce.total_invoice_reconciled.total_value
+  );
+  const totalReconciled = formatMoney(formattedTotalReconciled.num.toFixed());
+
+  const formattedTotalBalance = formatMillionNumber(
+    portfolioData?.info_invioce.total_balances.total_value
+  );
+  const totalBalance = formatMoney(formattedTotalBalance.num.toFixed());
 
   return (
     <div className={`${styles.wrapper} ${className}`}>
@@ -22,11 +33,21 @@ const DashboardInvoiceStatus: FC<DashboardInvoiceStatusProps> = ({ className }) 
         <DashboardGenericItem
           name="Sin conciliar"
           value={totalUnreconciled}
-          unit="M"
-          quantity={957}
+          unit={formattedTotalUnreconciled.formatted ? "M" : ""}
+          quantity={portfolioData?.info_invioce.total_invoice_unreconciled.count}
         />
-        <DashboardGenericItem name="Conciliadas" value={totalReconciled} unit="M" quantity={957} />
-        <DashboardGenericItem name="Saldos" value={totalBalance} unit="M" quantity={957} />
+        <DashboardGenericItem
+          name="Conciliadas"
+          value={totalReconciled}
+          unit={formattedTotalReconciled.formatted ? "M" : ""}
+          quantity={portfolioData?.info_invioce.total_invoice_reconciled.count}
+        />
+        <DashboardGenericItem
+          name="Saldos"
+          value={totalBalance}
+          unit={formattedTotalBalance.formatted ? "M" : ""}
+          quantity={portfolioData?.info_invioce.total_balances.count}
+        />
       </div>
     </div>
   );
