@@ -12,15 +12,11 @@ interface DashboardTotalPortfolioProps {
 const DashboardTotalPortfolio: FC<DashboardTotalPortfolioProps> = ({ className }) => {
   const { portfolioData } = useContext(ClientDetailsContext);
   const formattedTotalWallet = formatMillionNumber(portfolioData?.total_wallet);
-  const totalWallet = formatMoney(formattedTotalWallet.num.toFixed());
+  const totalWallet = formatMoney(formattedTotalWallet);
 
   return (
     <div className={`${styles.wrapper} ${className}`}>
-      <DashboardGenericItem
-        name="Total cartera"
-        value={totalWallet}
-        unit={formattedTotalWallet.formatted ? "M" : ""}
-      />
+      <DashboardGenericItem name="Total cartera" value={totalWallet} unit="M" />
       <Image src="/images/graph-1.svg" alt="Graph" className={styles.img} width={48} height={62} />
     </div>
   );

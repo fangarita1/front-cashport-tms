@@ -289,14 +289,15 @@ export const formatDateAndTime = (date: string): string => {
   return `${day}/${month}/${year} - ${hours}:${minutes} ${period}`;
 };
 
-export const formatMillionNumber = (
-  number: number | undefined | null
-): { formatted: boolean; num: number } => {
+export const formatMillionNumber = (number: number | undefined | null): string => {
   if (!number) {
-    return { formatted: false, num: 0 };
+    return "0";
   }
-  if (number >= 1000000 || number <= -1000000) {
-    return { formatted: true, num: number / 1000000 };
+
+  const formatNumber = number / 1000000;
+
+  if (formatNumber > 1000000) {
+    return formatNumber.toFixed(2);
   }
-  return { formatted: false, num: number };
+  return formatNumber.toFixed();
 };

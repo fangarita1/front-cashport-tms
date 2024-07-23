@@ -14,17 +14,15 @@ const DashboardAlerts: FC<DashboardAlertsProps> = ({ className }) => {
   const formattedOpenAlerts = formatMillionNumber(
     portfolioData?.invoice_alerts.accounting_updates.total_value
   );
-  const openAlerts = formatMoney(formattedOpenAlerts.num.toFixed());
-
+  const openAlerts = formatMoney(formattedOpenAlerts);
   const formattedDiscounts = formatMillionNumber(
     portfolioData?.invoice_alerts.financial_discounts.discount.total_value
   );
-  const discount = formatMoney(formattedDiscounts.num.toFixed());
-
+  const discount = formatMoney(formattedDiscounts);
   const formattedCreditNotes = formatMillionNumber(
     portfolioData?.invoice_alerts.financial_discounts.creditNote.total_value
   );
-  const creditNotes = formatMoney(formattedCreditNotes.num.toFixed());
+  const creditNotes = formatMoney(formattedCreditNotes);
 
   return (
     <div className={`${styles.wrapper} ${className}`}>
@@ -33,20 +31,20 @@ const DashboardAlerts: FC<DashboardAlertsProps> = ({ className }) => {
         <DashboardGenericItem
           name="Novedades abiertas"
           value={openAlerts}
-          unit={formattedOpenAlerts.formatted ? "M" : ""}
-          quantity={portfolioData?.invoice_alerts.accounting_updates.count}
+          unit="M"
+          quantity={portfolioData?.invoice_alerts?.accounting_updates?.count}
         />
         <DashboardGenericItem
           name="DPP disponibles"
           value={discount}
-          unit={formattedDiscounts.formatted ? "M" : ""}
-          quantity={portfolioData?.invoice_alerts.financial_discounts.discount.count}
+          unit="M"
+          quantity={portfolioData?.invoice_alerts?.financial_discounts.discount?.count}
         />
         <DashboardGenericItem
           name="NC disponibles"
           value={creditNotes}
-          unit={formattedCreditNotes.formatted ? "M" : ""}
-          quantity={portfolioData?.invoice_alerts.financial_discounts.creditNote.count}
+          unit="M"
+          quantity={portfolioData?.invoice_alerts?.financial_discounts.creditNote?.count}
         />
       </div>
     </div>

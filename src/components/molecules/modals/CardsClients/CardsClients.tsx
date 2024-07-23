@@ -21,13 +21,11 @@ const CardsClients = ({ total, icon, title, notAMoneyValue, customStyles }: Prop
       <Flex className="card-client-value">
         {notAMoneyValue ? (
           <p className="total">{total}</p>
-        ) : formatMillionNumber(total).formatted ? (
+        ) : (
           <>
-            <p className="total">{formatMoney(formatMillionNumber(total).num.toFixed())}</p>
+            <p className="total">{formatMoney(formatMillionNumber(total))}</p>
             <p className="millionsMark">M</p>
           </>
-        ) : (
-          <p className="total">{formatMoney(total)}</p>
         )}
       </Flex>
     </Flex>

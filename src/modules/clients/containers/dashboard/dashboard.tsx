@@ -25,15 +25,15 @@ const Dashboard: FC<DashboardProps> = () => {
   const formattedAppliedPayments = formatMillionNumber(
     portfolioData?.data_wallet?.applied_payments_ammount
   );
-  const appliedPayments = formatMoney(formattedAppliedPayments.num.toFixed());
+  const appliedPayments = formatMoney(formattedAppliedPayments);
   const formattedUnappliedPayments = formatMillionNumber(
     portfolioData?.data_wallet?.unapplied_payments_ammount
   );
-  const unappliedPayments = formatMoney(formattedUnappliedPayments.num.toFixed());
+  const unappliedPayments = formatMoney(formattedUnappliedPayments);
   const dsoValue = portfolioData?.dso;
 
   const formattedQuota = formatMillionNumber(portfolioData?.quota);
-  const quota = formatMoney(formattedQuota.num.toFixed());
+  const quota = formatMoney(formattedQuota);
 
   return (
     <div className={styles.wrapper}>
@@ -51,25 +51,20 @@ const Dashboard: FC<DashboardProps> = () => {
             <DashboardGenericItem
               name="R. aplicado"
               value={appliedPayments}
-              unit={formattedAppliedPayments.formatted ? "M" : ""}
+              unit="M"
               badgeText="12%"
             />
             <DashboardGenericItem
               name="Pagos no ap."
               value={unappliedPayments}
-              unit={formattedUnappliedPayments.formatted ? "M" : ""}
+              unit="M"
               badgeText="12%"
             />
           </div>
         </div>
         <div className={styles.item}>
           <div className={styles.list}>
-            <DashboardGenericItem
-              name="Cupo"
-              value={quota}
-              unit={formattedQuota.formatted ? "M" : ""}
-              badgeText="12%"
-            />
+            <DashboardGenericItem name="Cupo" value={quota} unit="M" badgeText="12%" />
           </div>
         </div>
         <div className={styles.dso}>

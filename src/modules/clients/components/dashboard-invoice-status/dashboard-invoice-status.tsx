@@ -14,17 +14,17 @@ const DashboardInvoiceStatus: FC<DashboardInvoiceStatusProps> = ({ className }) 
   const formattedTotalUnreconciled = formatMillionNumber(
     portfolioData?.info_invioce.total_invoice_unreconciled.total_value
   );
-  const totalUnreconciled = formatMoney(formattedTotalUnreconciled.num.toFixed());
+  const totalUnreconciled = formatMoney(formattedTotalUnreconciled);
 
   const formattedTotalReconciled = formatMillionNumber(
     portfolioData?.info_invioce.total_invoice_reconciled.total_value
   );
-  const totalReconciled = formatMoney(formattedTotalReconciled.num.toFixed());
+  const totalReconciled = formatMoney(formattedTotalReconciled);
 
   const formattedTotalBalance = formatMillionNumber(
     portfolioData?.info_invioce.total_balances.total_value
   );
-  const totalBalance = formatMoney(formattedTotalBalance.num.toFixed());
+  const totalBalance = formatMoney(formattedTotalBalance);
 
   return (
     <div className={`${styles.wrapper} ${className}`}>
@@ -33,19 +33,19 @@ const DashboardInvoiceStatus: FC<DashboardInvoiceStatusProps> = ({ className }) 
         <DashboardGenericItem
           name="Sin conciliar"
           value={totalUnreconciled}
-          unit={formattedTotalUnreconciled.formatted ? "M" : ""}
+          unit="M"
           quantity={portfolioData?.info_invioce.total_invoice_unreconciled.count}
         />
         <DashboardGenericItem
           name="Conciliadas"
           value={totalReconciled}
-          unit={formattedTotalReconciled.formatted ? "M" : ""}
+          unit="M"
           quantity={portfolioData?.info_invioce.total_invoice_reconciled.count}
         />
         <DashboardGenericItem
           name="Saldos"
           value={totalBalance}
-          unit={formattedTotalBalance.formatted ? "M" : ""}
+          unit="M"
           quantity={portfolioData?.info_invioce.total_balances.count}
         />
       </div>

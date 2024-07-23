@@ -14,15 +14,10 @@ const DashboardExpiredPortfolio: FC<DashboardExpiredPortfolioProps> = ({ classNa
   const formattedPastDuePortfolio = formatMillionNumber(
     portfolioData?.data_wallet?.past_due_ammount
   );
-  const pastDuePortfolio = formatMoney(formattedPastDuePortfolio.num.toFixed());
+  const pastDuePortfolio = formatMoney(formattedPastDuePortfolio);
   return (
     <div className={`${styles.wrapper} ${className}`}>
-      <DashboardGenericItem
-        name="C. vencida"
-        badgeText="12%"
-        value={pastDuePortfolio}
-        unit={formattedPastDuePortfolio.formatted ? "M" : ""}
-      />
+      <DashboardGenericItem name="C. vencida" badgeText="12%" value={pastDuePortfolio} unit="M" />
       <Image src="/images/graph-2.svg" alt="Graph" className={styles.img} width={78} height={48} />
     </div>
   );
