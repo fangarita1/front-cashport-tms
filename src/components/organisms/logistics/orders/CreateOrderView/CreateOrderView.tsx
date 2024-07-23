@@ -1523,7 +1523,7 @@ export const CreateOrderView = () => {
                 style={{ width: '100%' }}
                 options={[{ value: '1', label: 'Cliente 1' }]}
               />
-            </Col>   
+            </Col>
           </Row>
           <Row>
             <Col span={24}>
