@@ -62,7 +62,7 @@ export const ProviderInfoView = ({ isEdit = false, idParam = "" }: Props) => {
   }, [error]);
 
   Carrier.forEach((element) => {
-    if (element.active.data[0] === 1) {
+    if (element.active) {
       element.status = true;
     } else {
       element.status = false;

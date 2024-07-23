@@ -63,7 +63,7 @@ export const DriverInfoView = ({ isEdit = false, params }: Props) => {
   }, [error]);
 
   drivers.forEach((element) => {
-    if (element.active.data[0] === 1) {
+    if (element.active) {
       element.status = true;
     } else {
       element.status = false;

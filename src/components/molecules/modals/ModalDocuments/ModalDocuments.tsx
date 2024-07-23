@@ -69,7 +69,7 @@ export default function ModalDocuments(props: PropsModalDocuments) {
                 <Col key={file.id} style={{ width: "100%", margin: "1rem 0" }}>
                   <UploadDocumentButton
                     title={file.description}
-                    isMandatory={file.optional.data.includes(0)}
+                    isMandatory={!file.optional}
                     aditionalData={file.id}
                     setFiles={setFiles}
                   />
@@ -114,7 +114,7 @@ export default function ModalDocuments(props: PropsModalDocuments) {
                 options={documentsType?.map((document) => ({
                   label: <span>{document.description}</span>,
                   value: document.id.toString(),
-                  disabled: allOptional ? false : document.optional.data.includes(0)
+                  disabled: allOptional ? false : !document.optional
                 }))}
               />
             ) : (

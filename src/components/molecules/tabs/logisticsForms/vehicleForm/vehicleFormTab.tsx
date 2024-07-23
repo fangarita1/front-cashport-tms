@@ -459,7 +459,7 @@ export const VehicleFormTab = ({
                   <UploadDocumentButton
                     key={file.id}
                     title={file.description}
-                    isMandatory={file.optional.data.includes(0)}
+                    isMandatory={!file.optional}
                     aditionalData={file.id}
                     setFiles={() => {}}
                     files={file.file}

@@ -67,7 +67,7 @@ export const normalizeVehicleData = (data: any): any => {
       image3: images[2],
       image4: images[3],
       image5: images[4],
-      IS_ACTIVE: data.active.data[0] === 1
+      IS_ACTIVE: data.active
     },
     image1: images[0] ? [{ file: new File([images[0]], images[0].split("/").pop()) }] : undefined,
     image2: images[1] ? [{ file: new File([images[1]], images[1].split("/").pop()) }] : undefined,
@@ -75,7 +75,7 @@ export const normalizeVehicleData = (data: any): any => {
     image4: images[3] ? [{ file: new File([images[3]], images[3].split("/").pop()) }] : undefined,
     image5: images[4] ? [{ file: new File([images[4]], images[4].split("/").pop()) }] : undefined,
     files: documents,
-    IS_ACTIVE: data.active.data[0] === 1
+    IS_ACTIVE: data.active
   };
 };
 
