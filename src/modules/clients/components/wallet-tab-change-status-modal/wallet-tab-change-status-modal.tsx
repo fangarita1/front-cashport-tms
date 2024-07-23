@@ -231,7 +231,7 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
   return (
     <Modal
       className={styles.wrapper}
-      width="50%"
+      width="40%"
       open={isOpen}
       footer={
         <div className={styles.footer}>

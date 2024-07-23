@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useState } from "react";
+import { FC, useState } from "react";
 import {
   ArrowLineDown,
   CaretDoubleRight,
@@ -14,6 +14,7 @@ import InvoiceDownloadModal from "../../components/invoice-download-modal";
 import { Button } from "antd";
 import { IInvoice } from "@/types/invoices/IInvoices";
 import { formatDatePlane, formatMoney } from "@/utils/utils";
+import { useSWRConfig } from "swr";
 
 interface InvoiceDetailModalProps {
   isOpen: boolean;
@@ -21,7 +22,8 @@ interface InvoiceDetailModalProps {
   invoiceId: number;
   clientId: number;
   hiddenActions?: boolean;
-  handleisGenerateActionOpen: Dispatch<SetStateAction<boolean>>;
+  // eslint-disable-next-line no-unused-vars
+  handleActionInDetail?: (invoice: IInvoice) => void;
   selectInvoice?: IInvoice;
   projectId?: number;
 }
@@ -34,8 +36,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
   hiddenActions,
   projectId,
   selectInvoice,
-  handleisGenerateActionOpen
+  handleActionInDetail
 }) => {
+  const { mutate } = useSWRConfig();
   const { data: invoiceData } = useInvoiceDetail({ invoiceId, clientId, projectId });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,7 +76,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
     switch (item) {
       case "Generar nota de credito":
         return "Nota de crédito aplicada";
-      case "Generar nota debito":
+      case "Generar nota de debito":
         return "Nota de débito aplicada";
       case "Generar descuento":
         return "Descuento aplicado";
@@ -83,8 +86,6 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
   };
 
   console.log(invoiceData, "invoiceData", selectInvoice);
-  // haz una funcion donde  devuelve los siguientes strings Noda de debito aplicada , Nota de credito aplicada, Descuento aplicado
-  // tem.event_type_name === "Generar nota de credito" , item.event_type_name === "Generar nota debito", item.event_type_name === "Generar descuento"
 
   return (
     <aside className={`${styles.wrapper} ${isOpen ? styles.show : styles.hide}`}>
@@ -106,7 +107,10 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
               className={styles.button__actions}
               size="large"
               icon={<DotsThree size={"1.5rem"} />}
-              onClick={() => handleisGenerateActionOpen(true)}
+              onClick={() => {
+                mutate(`/invoice/${invoiceId}/client/${clientId}/project/${projectId}`);
+                handleActionInDetail?.(selectInvoice!);
+              }}
             >
               Generar acción
             </Button>
@@ -121,9 +125,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
           <div className={styles.headerBody}>
             <div className={styles.title}>Trazabilidad</div>
             <div
-              className={`${styles.status} ${statusClass(invoiceData ? invoiceData[0].status_name : "")}`}
+              className={`${styles.status} ${statusClass(invoiceData ? invoiceData?.results[0].status_name : "")}`}
             >
-              {invoiceData ? invoiceData[0].status_name : ""}
+              {invoiceData ? invoiceData?.results[0].status_name : ""}
             </div>
           </div>
           <div className={styles.content}>
@@ -131,7 +135,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
             <div className={styles.description}>
               <div className={styles.stepperContainer}>
                 <div className={styles.stepperContent}>
-                  {(invoiceData ?? []).map((item) => {
+                  {(invoiceData?.results ?? []).map((item) => {
                     return (
                       <div key={item.id} className={styles.mainStep}>
                         <div
@@ -168,7 +172,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                               </div>
                             ) : null}
                             {item.event_type_name === "Generar nota de credito" ||
-                            item.event_type_name === "Generar nota debito" ? (
+                            item.event_type_name === "Generar nota de debito" ? (
                               <div>
                                 <div className={styles.icons}>
                                   <ArrowLineDown
@@ -290,20 +294,42 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
           <div className={styles.initialValue}>
             <p className={styles.value}>Valor inicial</p>
             <p className={styles.result}>
-              {formatMoney(selectInvoice?.initial_value.toString() ?? "0")}
+              {formatMoney(selectInvoice?.initial_value.toString() ?? "")}
             </p>
           </div>
-          {}
-          <div className={styles.initialValue}>
-            <p className={styles.value}>Nota debito</p>
-            <p className={styles.result}>$XX.XXX.XXX</p>
-          </div>
+          {invoiceData?.totals?.total_creditNotes !== undefined &&
+            invoiceData?.totals?.total_creditNotes > 0 && (
+              <div className={styles.initialValue}>
+                <p className={styles.value}>Nota credito</p>
+                <p className={styles.result}>
+                  {formatMoney(invoiceData?.totals.total_creditNotes.toString() ?? "")}
+                </p>
+              </div>
+            )}
+          {invoiceData?.totals?.total_debitNotes !== undefined &&
+            invoiceData?.totals?.total_debitNotes > 0 && (
+              <div className={styles.initialValue}>
+                <p className={styles.value}>Nota debito</p>
+                <p className={styles.result}>
+                  {formatMoney(invoiceData?.totals.total_debitNotes.toString() ?? "")}
+                </p>
+              </div>
+            )}
+          {invoiceData?.totals?.total_discount !== undefined &&
+            invoiceData?.totals?.total_discount > 0 && (
+              <div className={styles.initialValue}>
+                <p className={styles.value}>Descuento</p>
+                <p className={styles.result}>
+                  {formatMoney(invoiceData?.totals.total_discount.toString() ?? "")}
+                </p>
+              </div>
+            )}
 
           <hr />
           <div className={styles.total}>
             <p className={styles.value}>Total</p>
             <p className={styles.result}>
-              {formatMoney(selectInvoice?.initial_value.toString() ?? "0")}
+              {formatMoney(invoiceData?.totals.total_general.toString() ?? "")}
             </p>
           </div>
         </div>

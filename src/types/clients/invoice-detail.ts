@@ -1,5 +1,13 @@
 export interface InvoiceDetail {
-  data: IData[];
+  data: {
+    results: IData[];
+    totals: {
+      total_general: number;
+      total_discount: number;
+      total_creditNotes: number;
+      total_debitNotes: number;
+    };
+  };
 }
 
 export interface IData {
@@ -12,7 +20,7 @@ export interface IData {
   invoice_event_type_id: number;
   user_id: number;
   is_deleted: number;
-  ammount:  number | null;
+  ammount: number | null;
   financial_discount_id: null;
   previous_status_id: null;
   incident_id: null;

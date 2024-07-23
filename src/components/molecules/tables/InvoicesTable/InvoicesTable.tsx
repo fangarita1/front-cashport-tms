@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Table, TableProps, Tooltip, Typography } from "antd";
 
 import { IInvoice } from "@/types/invoices/IInvoices";
@@ -17,20 +17,31 @@ interface PropsInvoicesTable {
       invoiceId: number;
     }>
   >;
+  selectedRows?: IInvoice[];
 }
 
 export const InvoicesTable = ({
   dataSingleInvoice: data,
   setSelectedRows,
+  selectedRows,
   setShowInvoiceDetailModal
 }: PropsInvoicesTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  useEffect(() => {
+    if (selectedRows) {
+      if (selectedRows.length > 0) {
+        const selectedKeys = selectedRows.map((row) => row.id);
+        setSelectedRowKeys(selectedKeys);
+      }
+    }
+  }, [selectedRows]);
 
   const openInvoiceDetail = (invoiceId: number) => {
     setShowInvoiceDetailModal({ isOpen: true, invoiceId });
   };
 
-  const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
+  const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: IInvoice[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
     setSelectedRows(newSelectedRow);
   };
@@ -179,8 +190,8 @@ export const InvoicesTable = ({
             title={
               <div className="toolTip -clientAccept">
                 <p>Aceptación cliente</p>
-                <p>Email</p>
-                <strong>DD-MM-YYYY</strong>
+                <p>{record?.acceptance_info?.radication_type}</p>
+                <strong>{record?.acceptance_info?.accept_date ?? " DD-MM-YYYY"}</strong>
               </div>
             }
             color={"#f7f7f7"}

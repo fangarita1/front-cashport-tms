@@ -23,8 +23,6 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   clientId: number;
-
-  setIsPaymentAgreementOpen: Dispatch<SetStateAction<boolean>>;
   setShowActionDetailModal: Dispatch<
     SetStateAction<{
       isOpen: boolean;
@@ -38,14 +36,10 @@ export const ModalGenerateAction = ({
   isOpen,
   onClose,
   clientId,
-  setIsPaymentAgreementOpen,
   setShowActionDetailModal,
   setSelectOpen
 }: Props) => {
   const router = useRouter();
-  const handlePaymentAgreement = () => {
-    setIsPaymentAgreementOpen(true);
-  };
   const handleActionDetail = (type: number) => {
     setShowActionDetailModal({ isOpen: true, actionType: type });
   };
@@ -79,7 +73,9 @@ export const ModalGenerateAction = ({
           items={actionsOptions(handleActionDetail)}
         />
         <ButtonGenerateAction
-          onClick={handlePaymentAgreement}
+          onClick={() => {
+            handleOpenModal(6);
+          }}
           icon={<Handshake size={16} />}
           title="Acuerdo de pago"
         />
