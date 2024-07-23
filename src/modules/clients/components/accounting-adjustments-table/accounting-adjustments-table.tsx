@@ -3,16 +3,13 @@ import { Button, Table, TableProps, Typography } from "antd";
 
 import { Eye } from "phosphor-react";
 import { formatDate, formatMoney } from "@/utils/utils";
-import {
-  IFinancialDiscount,
-  IStatusFinancialDiscounts
-} from "@/types/financialDiscounts/IFinancialDiscounts";
+import { IFinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
 import "./accounting-adjustments-table.scss";
 
 const { Text } = Typography;
 
 interface PropsInvoicesTable {
-  dataAdjustmentStatus: IStatusFinancialDiscounts;
+  dataAdjustmentsByStatus: IFinancialDiscount[];
   setSelectedRows: Dispatch<SetStateAction<IFinancialDiscount[] | undefined>>;
   setShowAdjustmentDetailModal: Dispatch<
     SetStateAction<{
@@ -20,12 +17,14 @@ interface PropsInvoicesTable {
       adjustmentId: number;
     }>
   >;
+  financialStatusId: number;
 }
 
 const AccountingAdjustmentsTable = ({
-  dataAdjustmentStatus: data,
+  dataAdjustmentsByStatus: data,
   setSelectedRows,
-  setShowAdjustmentDetailModal
+  setShowAdjustmentDetailModal,
+  financialStatusId
 }: PropsInvoicesTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
@@ -33,9 +32,48 @@ const AccountingAdjustmentsTable = ({
     setShowAdjustmentDetailModal({ isOpen: true, adjustmentId });
   };
 
-  const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
+  const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRows: any) => {
     setSelectedRowKeys(newSelectedRowKeys);
-    setSelectedRows(newSelectedRow);
+    if (newSelectedRowKeys.length >= 1) {
+      // set the selected Rows but adding to the previous selected rows
+      setSelectedRows((prevSelectedRows) => {
+        if (prevSelectedRows) {
+          //check if the new selected rows are already in the selected rows
+          const filteredSelectedRows = newSelectedRows.filter(
+            (newSelectedRow: IFinancialDiscount) =>
+              !prevSelectedRows.some((prevSelectedRow) => prevSelectedRow.id === newSelectedRow.id)
+          );
+
+          //filters the unselected rows but only the ones that have the status_id equal to financialStatusId
+          const unCheckedRows = prevSelectedRows?.filter(
+            (prevSelectedRow) =>
+              !newSelectedRowKeys.includes(prevSelectedRow.id) &&
+              prevSelectedRow.financial_status_id === financialStatusId
+          );
+          if (unCheckedRows.length > 0) {
+            // remove form the prevState the ones present in the unCheckedRows
+            const filteredPrevSelectedRows = prevSelectedRows.filter(
+              (prevSelectedRow) => !unCheckedRows.includes(prevSelectedRow)
+            );
+            return filteredPrevSelectedRows;
+          }
+
+          return [...prevSelectedRows, ...filteredSelectedRows];
+        } else {
+          return newSelectedRows;
+        }
+      });
+    }
+    //traverse the alreadySelectedRows and remove the ones that have the status_id of the financialStatusId
+    if (newSelectedRowKeys.length === 0) {
+      setSelectedRows((prevSelectedRows) => {
+        if (prevSelectedRows) {
+          return prevSelectedRows.filter(
+            (prevSelectedRow) => prevSelectedRow.financial_status_id !== financialStatusId
+          );
+        }
+      });
+    }
   };
 
   const rowSelection = {
@@ -113,7 +151,7 @@ const AccountingAdjustmentsTable = ({
       <Table
         className="adjustmentsTable"
         columns={columns}
-        dataSource={data.financial_discounts.map((data) => ({ ...data, key: data.id }))}
+        dataSource={data?.map((data) => ({ ...data, key: data.id }))}
         rowSelection={rowSelection}
         rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
         pagination={false}

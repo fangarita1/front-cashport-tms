@@ -4,7 +4,7 @@
         height: auto;
         max-height: 90vh;
         min-width: 30vw;
-        max-width:  32vw;
+        max-width: 32vw;
     }
 
     .ant-popover-inner {
@@ -80,8 +80,8 @@
     position: relative;
 
     .notifications {
-        width: 48px;
-        height: 48px;
+        width: 32px;
+        height: 32px;
         display: flex;
         flex: 0 0 auto;
         font-size: 24px;
@@ -101,10 +101,10 @@
             right: -4px;
             background-color: black;
             color: white;
-            font-size: 12px;
+            font-size: 1px;
             font-weight: bold;
             border-radius: 50%;
-            padding: 2px 4px;
+            padding: 2px 6px;
             display: flex;
             align-items: center;
             justify-content: center;
