@@ -31,7 +31,7 @@ export const CarrierTable = () => {
 
   useEffect(() => {
     const data = drivers?.map((element: any) => {
-      if (element.active.data[0] === 1) {
+      if (element.active) {
         element.status = true;
       } else {
         element.status = false;
