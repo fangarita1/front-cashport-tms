@@ -73,7 +73,7 @@ export const ProviderInfoView = ({ isEdit = false, idParam = "" }: Props) => {
   return (
     <>
       {contextHolder}
-      <Flex className="orderContainer">
+      <Flex className="generalTabMainContent">
           {datasource.length === 0 ? (
               <Spin/>
           ) : (

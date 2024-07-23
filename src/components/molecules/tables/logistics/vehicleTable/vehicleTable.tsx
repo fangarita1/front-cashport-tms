@@ -70,7 +70,7 @@ export const VehicleTable = ({ params: { id } }: Props) => {
     }
   ];
   return (
-    <div className="mainProjectsTable">
+    <div className="vehiclesTable">
       <Flex justify="space-between" className="mainProjectsTable_header">
         <Flex gap={"10px"}>
           <UiSearchInput

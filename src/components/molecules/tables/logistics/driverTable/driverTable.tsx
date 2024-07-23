@@ -92,7 +92,7 @@ export const DriverTable = ({ params: { id } }: Props) => {
   ];
 
   return (
-    <div className="mainProjectsTable">
+    <div className="driversTable">
       <Flex justify="space-between" className="mainProjectsTable_header">
         <Flex gap={"10px"}>
           <UiSearchInput

@@ -29,7 +29,7 @@ export const VehicleInfoView = ({ isEdit = false, idParam = "", params }: Props)
   return (
     <>
       {contextHolder}
-      <Flex className="orderContainer">
+      <Flex className="vehicleFormContainer">
         <Row style={{ width: "100%" }}>
           {!isLoading ? (
             <VehicleFormTab
