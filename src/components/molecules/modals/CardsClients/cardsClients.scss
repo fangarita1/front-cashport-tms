@@ -1,53 +1,80 @@
+@import "@styles/variables.scss";
+
 .wrapperCardsClient {
-    flex: 1;
     row-gap: 8px;
-    height: 6.5rem;
-    padding: 0 16px;
+    padding: 12px;
     border-radius: 8px;
     position: relative;
-    text-align: center;
-    margin-bottom: 10px;
     flex-direction: column;
     justify-content: center;
-    background-color: #f8f8f8;
-}
-.icon {
-    top: 16px;
-    right: 16px;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    position: absolute;
-    border-radius: 6px;
-    align-items: center;
-    justify-content: center;
-    background-color: #cbe71e;
-}
-.header {
-    .title {
-        margin: 0;
-        color: #333;
-        font-size: 1rem;
-        overflow: hidden;
-        line-height: 24px;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+    background-color: $background;
+    width: 100%;
+
+    .header {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        .title {
+            color: $black;
+            font-size: 0.938rem;
+            font-weight: 300;
+            overflow-x: hidden;
+            line-height: 24px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .icon {
+            justify-self: end;
+            width: 22px;
+            height: 22px;
+            min-width: none;
+            min-height: none;
+            display: flex;
+            border-radius: 6px;
+            align-items: center;
+            justify-content: center;
+            background-color: $secondary;
+        }
+    }
+    .card-client-value {
+        gap: 4px;
+        display: flex;
+        align-items: baseline;
+        .total {
+            font-weight: 500;
+            color: $black;
+            font-size: 1.3rem;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .millionsMark {
+            font-size: 1rem;
+            font-weight: 300;
+        }
     }
 }
-.card-client-value {
-    gap: 4px;
-    display: flex;
-    font-weight: 500;
-    color: #141414;
-    font-size: 1.625rem;
-    align-items: center;
-    .total {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
-    span {
-        font-size: 1.3rem;
-        font-weight: 300;
+
+@media screen and (min-width: 1400px) {
+    .wrapperCardsClient {
+        padding: 16px;
+        .header {
+            .title {
+                font-size: 1rem;
+            }
+            .icon {
+                width: 24px;
+                height: 24px;
+            }
+        }
+        .card-client-value {
+            .total {
+                font-size: 1.625rem;
+            }
+            .millionsMark {
+                font-size: 1.125rem;
+            }
+        }
     }
 }

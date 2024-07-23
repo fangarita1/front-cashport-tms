@@ -1,23 +1,34 @@
 import React from "react";
 import "./cardsClients.scss";
 import { Flex } from "antd";
+import { formatMillionNumber, formatMoney } from "@/utils/utils";
 
 interface Props {
   total: number;
   icon: any;
   title: string;
+  notAMoneyValue?: boolean;
+  customStyles?: React.CSSProperties;
 }
 
-const CardsClients = ({ total, icon, title }: Props) => {
+const CardsClients = ({ total, icon, title, notAMoneyValue, customStyles }: Props) => {
   return (
-    <Flex className="wrapperCardsClient">
-      <Flex className="icon">{icon}</Flex>
-      <Flex className="header">
-        <Flex className="title">{title}</Flex>
-      </Flex>
+    <Flex className="wrapperCardsClient" style={customStyles}>
+      <div className="header">
+        <h4 className="title">{title}</h4>
+        <div className="icon">{icon}</div>
+      </div>
       <Flex className="card-client-value">
-        <Flex className="total">${total.toLocaleString()}</Flex>
-        <span>M</span>
+        {notAMoneyValue ? (
+          <p className="total">{total}</p>
+        ) : formatMillionNumber(total).formatted ? (
+          <>
+            <p className="total">{formatMoney(formatMillionNumber(total).num.toFixed())}</p>
+            <p className="millionsMark">M</p>
+          </>
+        ) : (
+          <p className="total">{formatMoney(total)}</p>
+        )}
       </Flex>
     </Flex>
   );

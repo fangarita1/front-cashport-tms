@@ -9,7 +9,7 @@ import DashboardGenericItem from "../../components/dashboard-generic-item";
 import DashboardSellsVsPayments from "../../components/dashboard-sells-vs-payments";
 import DashboardHistoricDso from "../../components/dashboard-historic-dso";
 import { ClientDetailsContext } from "../client-details/client-details";
-import { formatMoney } from "@/utils/utils";
+import { formatMillionNumber, formatMoney } from "@/utils/utils";
 import styles from "./dashboard.module.scss";
 
 const DynamicPortfoliAges = dynamic(() => import("../../components/dashboard-porfolio-ages"), {
@@ -21,8 +21,14 @@ interface DashboardProps {}
 const Dashboard: FC<DashboardProps> = () => {
   const { portfolioData } = useContext(ClientDetailsContext);
 
-  const appliedPayments = formatMoney(portfolioData?.data_wallet?.applied_payments_ammount);
-  const unappliedPayments = formatMoney(portfolioData?.data_wallet?.unapplied_payments_ammount);
+  const formattedAppliedPayments = formatMillionNumber(
+    portfolioData?.data_wallet?.applied_payments_ammount
+  );
+  const appliedPayments = formatMoney(formattedAppliedPayments.num.toFixed());
+  const formattedUnappliedPayments = formatMillionNumber(
+    portfolioData?.data_wallet?.unapplied_payments_ammount
+  );
+  const unappliedPayments = formatMoney(formattedUnappliedPayments.num.toFixed());
   const dsoValue = portfolioData?.dso;
 
   return (
@@ -41,13 +47,13 @@ const Dashboard: FC<DashboardProps> = () => {
             <DashboardGenericItem
               name="R. aplicado"
               value={appliedPayments}
-              unit="M"
+              unit={formattedAppliedPayments.formatted ? "M" : ""}
               badgeText="12%"
             />
             <DashboardGenericItem
               name="Pagos no ap."
               value={unappliedPayments}
-              unit="M"
+              unit={formattedUnappliedPayments.formatted ? "M" : ""}
               badgeText="12%"
             />
           </div>

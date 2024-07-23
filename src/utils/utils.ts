@@ -282,3 +282,10 @@ export const formatDateAndTime = (date: string): string => {
 
   return `${day}/${month}/${year} - ${hours}:${minutes} ${period}`;
 };
+
+export const formatMillionNumber = (number: number): { formatted: boolean; num: number } => {
+  if (number >= 1000000) {
+    return { formatted: true, num: number / 1000000 };
+  }
+  return { formatted: false, num: number };
+};
