@@ -192,7 +192,7 @@ export const ApplyAccountingAdjustment = ({
       const adjustmentData = JSON.stringify(normalizedData);
       if (!selectedEvidence) return;
       //  valida que si type es 1 pongas el 10 si es 2 el 9 y 3 el 11
-        const typeAjustment =  type === 1 ? 10 : type === 2 ? 9 : 11;
+        const typeAjustment =  type === 2 ? 9 : type === 1 ? 10 : 11;
       const response = await applyAccountingAdjustment(
         adjustmentData,
         selectedEvidence,
@@ -246,7 +246,7 @@ export const ApplyAccountingAdjustment = ({
           min={0}
           value={
             applyValues[record.id]?.find(
-              (apply) => apply.idAdjustment === selectedNotes[selectTab].id
+              (apply) => apply.idAdjustment === selectedNotes[selectTab]?.id
             )?.balanceToApply
           }
           max={currentAdjustmentStatic[selectTab] + 1}

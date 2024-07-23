@@ -69,8 +69,22 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
         return "";
     }
   };
+  const getEventTitle = (item: string) => {
+    switch (item) {
+      case "Generar nota de credito":
+        return "Nota de crédito aplicada";
+      case "Generar nota debito":
+        return "Nota de débito aplicada";
+      case "Generar descuento":
+        return "Descuento aplicado";
+      default:
+        return item;
+    }
+  };
 
-  console.log(invoiceData);
+  console.log(invoiceData, "invoiceData", selectInvoice);
+  // haz una funcion donde  devuelve los siguientes strings Noda de debito aplicada , Nota de credito aplicada, Descuento aplicado
+  // tem.event_type_name === "Generar nota de credito" , item.event_type_name === "Generar nota debito", item.event_type_name === "Generar descuento"
 
   return (
     <aside className={`${styles.wrapper} ${isOpen ? styles.show : styles.hide}`}>
@@ -128,7 +142,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                         />
                         <div className={styles.stepLabel}>
                           <div className={styles.cardInvoiceFiling}>
-                            <h5 className={styles.title}>{item.event_type_name}</h5>
+                            <h5 className={styles.title}>{getEventTitle(item.event_type_name)}</h5>
                             <div className={styles.date}>
                               {formatDatePlane(item.create_at.toString())}
                             </div>
@@ -153,7 +167,8 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                 </div>
                               </div>
                             ) : null}
-                            {item.event_type_name === "Nota crédito aplicada por legalizar" ? (
+                            {item.event_type_name === "Generar nota de credito" ||
+                            item.event_type_name === "Generar nota debito" ? (
                               <div>
                                 <div className={styles.icons}>
                                   <ArrowLineDown
@@ -164,30 +179,18 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                <div className={styles.name}>{`Valor: ${""}`}</div>
+                                <div
+                                  className={styles.name}
+                                >{`Valor: ${formatMoney(item.ammount ?? "0")}`}</div>
                                 <div className={styles.adjustment}>
                                   ID del ajuste:
-                                  <div className={styles.idAdjustment}>{"233123"}</div>
+                                  <div className={styles.idAdjustment}>{item.id ?? "N/A"}</div>
                                 </div>
                               </div>
                             ) : (
                               ""
                             )}
-                            {item.event_type_name === "Nota débito aplicada Por legalizar" ? (
-                              <div>
-                                <div className={styles.icons}>
-                                  <ArrowLineDown size={14} onClick={() => {}} />
-                                </div>
-                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                <div className={styles.name}>{`Valor: ${""}`}</div>
-                                <div className={styles.adjustment}>
-                                  ID del ajuste:
-                                  <div className={styles.idAdjustment}>{"233123"}</div>
-                                </div>
-                              </div>
-                            ) : (
-                              ""
-                            )}
+
                             {item.event_type_name === "Emision de factura" ? (
                               <div>
                                 <div className={styles.icons}>
@@ -198,23 +201,22 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                     }}
                                   />
                                 </div>
-                                <div
-                                  className={styles.name}
-                                >{`Responsable: ${item.user_name}`}</div>
                               </div>
                             ) : (
                               ""
                             )}
-                            {item.event_type_name === "Descuento aplicado" ? (
+                            {item.event_type_name === "Generar descuento" ? (
                               <div>
                                 <div className={styles.icons}>
                                   <ArrowLineDown size={14} onClick={() => {}} />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                <div className={styles.name}>{`Valor: ${""}`}</div>
+                                <div
+                                  className={styles.name}
+                                >{`Valor: ${formatMoney(item.ammount ?? "0")}`}</div>
                                 <div className={styles.adjustment}>
                                   ID del ajuste:
-                                  <div className={styles.idAdjustment}>{"233123"}</div>
+                                  <div className={styles.idAdjustment}>{item.id}</div>
                                 </div>
                               </div>
                             ) : (
@@ -255,7 +257,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                             ) : (
                               ""
                             )}
-                            {item.event_type_name === "Cambio de estado" ? (
+                            {item.event_type_name === "Cambiar estado" ? (
                               <div>
                                 <div className={styles.icons}>
                                   <ArrowLineDown size={14} onClick={() => {}} />
@@ -291,6 +293,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
               {formatMoney(selectInvoice?.initial_value.toString() ?? "0")}
             </p>
           </div>
+          {}
           <div className={styles.initialValue}>
             <p className={styles.value}>Nota debito</p>
             <p className={styles.result}>$XX.XXX.XXX</p>

@@ -12,11 +12,11 @@ export interface IData {
   invoice_event_type_id: number;
   user_id: number;
   is_deleted: number;
-  ammount: null;
+  ammount:  number | null;
   financial_discount_id: null;
   previous_status_id: null;
   incident_id: null;
-  email_id: null;
+  email_id: string | null;
   radication_type_id: null;
   user_name: string;
   event_type_name: string;
