@@ -75,7 +75,7 @@ export const VehicleFormTab = ({
     Array(5).fill({ file: undefined, error: false })
   );
 
-  
+
   const defaultValues = statusForm === "create" ? {} : normalizeVehicleData(data as any);
   const {
     watch,
