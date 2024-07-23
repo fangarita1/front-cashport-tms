@@ -106,11 +106,10 @@
     }
 
     .colfoto .ant-upload-select {
-        width: 300px !important;
-        height: 180px !important;
-        flex-shrink: 0;
+        width: 100% !important;
+        max-width: 19rem !important;
+        height: 14rem !important;
         border-radius: 8px;
-        background: #f7f7f7;
     }
 
     .colfotomin .ant-upload-select {
