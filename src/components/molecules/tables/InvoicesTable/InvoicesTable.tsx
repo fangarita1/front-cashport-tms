@@ -30,10 +30,13 @@ export const InvoicesTable = ({
 
   useEffect(() => {
     if (selectedRows) {
-      if (selectedRows.length > 0) {
-        const selectedKeys = selectedRows.map((row) => row.id);
-        setSelectedRowKeys(selectedKeys);
-      }
+      const updatedKeys = selectedRowKeys.filter((key) =>
+        selectedRows.some((row) => row.id === key)
+      );
+      const selectedKeys = selectedRows.map((row) => row.id);
+      setSelectedRowKeys(Array.from(new Set([...updatedKeys, ...selectedKeys])));
+    } else {
+      setSelectedRowKeys([]);
     }
   }, [selectedRows]);
 
@@ -168,20 +171,17 @@ export const InvoicesTable = ({
               <Button icon={<Handshake size={"1.2rem"} />} />
             </Tooltip>
           )}
-          {}
-
           {record.novelty_info && (
             <Tooltip
               title={
                 <div className="toolTip -priceDifference">
                   <p>Diferencia en precios</p>
                   <p>
-                    Monto <strong>$XXXXXX</strong>
+                    Monto{" "}
+                    <strong>{formatMoney(record?.novelty_info?.incidentAmount ?? "0")}</strong>
                   </p>
-                  <p>Producto faltante</p>
-                  <p>
-                    Descuento <strong>$XXXXXX</strong>
-                  </p>
+                  <p>{record?.novelty_info?.incidentType}</p>
+                  <p></p>
                 </div>
               }
               color={"#f7f7f7"}
@@ -190,7 +190,7 @@ export const InvoicesTable = ({
               <Button icon={<Warning size={"1.2rem"} />} />
             </Tooltip>
           )}
-          {record?.acceptance_info && (
+          {record?.acceptance_info?.accept_date && (
             <Tooltip
               title={
                 <div className="toolTip -clientAccept">

@@ -81,9 +81,7 @@ export const WalletTab = () => {
     setSelectedRows([]);
     handleisGenerateActionOpen();
   };
-  useEffect(() => {
-    console.log(selectedRows);
-  }, [selectedRows]);
+
   return (
     <>
       {contextHolder}
@@ -167,7 +165,10 @@ export const WalletTab = () => {
       {showInvoiceDetailModal?.isOpen && (
         <InvoiceDetailModalProps
           isOpen={showInvoiceDetailModal?.isOpen || false}
-          onClose={() => setShowInvoiceDetailModal({ isOpen: false, invoiceId: 0 })}
+          onClose={() => {
+            setSelectedRows([]);
+            setShowInvoiceDetailModal({ isOpen: false, invoiceId: 0 });
+          }}
           invoiceId={showInvoiceDetailModal?.invoiceId || 0}
           clientId={clientId}
           projectId={projectId}

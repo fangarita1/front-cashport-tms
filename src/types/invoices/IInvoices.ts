@@ -47,5 +47,5 @@ export interface IInvoice {
     Monto: number;
     Cumplido: string;
   } | null;
-  novelty_info: {} | null;
+  novelty_info: { incidentAmount: number | null; incidentType: string | null } | null;
 }
