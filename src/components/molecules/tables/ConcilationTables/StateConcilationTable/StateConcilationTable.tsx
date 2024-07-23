@@ -173,7 +173,6 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
           onClose={() => setShowInvoiceDetailModal({ isOpen: false, invoiceId: 0 })}
           invoiceId={showInvoiceDetailModal?.invoiceId || 0}
           clientId={clientId}
-          handleisGenerateActionOpen={setIsDetailInvoiceModalOpen}
         />
       )}
       <RegisterNewsConcilation
