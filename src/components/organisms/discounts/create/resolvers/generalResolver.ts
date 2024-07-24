@@ -32,7 +32,7 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
   start_date: yup
     .date()
     .required("La fecha de inicio es requerida")
-    .min(yesterday(new Date() as any), "La fecha de inicio debe ser menor a hoy"),
+    .min(yesterday(new Date() as any), "La fecha de inicio debe ser mayor o igual a hoy"),
   end_date: yup
     .date()
     .optional()
@@ -123,18 +123,6 @@ export const generalResolver: ObjectSchema<DiscountSchema> = yup.object({
           return true;
         })
         .min(1, "Debe haber al menos una regla de descuento")
-        .test("test-discount", "Error test-discount", (value, context) => {
-          if (value?.length && typesWithOutMinByOrder.includes(context.parent.discount_type)) {
-            const err = findDiscountError(value.map((e) => e.discount));
-            if (err) {
-              return context.createError({
-                path: "ranges[" + err + "].discount",
-                message: "El descuento debe ser mayor a " + value[err - 1].discount
-              });
-            }
-          }
-          return true;
-        })
         .test("test-scale", "Error test-scale", (value, context) => {
           if (value?.length && typesWithOutMinByOrder.includes(context.parent.discount_type)) {
             const err = findDiscountError(value.map((e, i) => (i % 2 ? e.unitsMin : e.unitsMax)));
