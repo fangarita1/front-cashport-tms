@@ -1543,7 +1543,7 @@ export const CreateOrderView = () => {
                   setClient(value);
                 }}
               />
-            </Col>   
+            </Col>
           </Row>
           <Row>
             <Col span={24}>
