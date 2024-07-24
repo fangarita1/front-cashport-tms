@@ -98,7 +98,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
     if(transferOrder != undefined) return;
     const result = await getTransferOrderById(idOrder);
     if(result.data.data.length > 0){
-      let to:ITransferOrder = result.data.data[0];
+      const to:ITransferOrder = result.data.data[0];
       //console.log(to);
       setTransferOrder(to);
       origin.current = [to.start_location?.at(0)?.longitude, to.start_location?.at(0)?.latitude];
@@ -567,7 +567,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
                       <p>&nbsp;</p>
                       <h4>Contacto inicial</h4>
                       {transferOrder?.transfer_order_contacts?.filter(x=> x.contact_type == 1).map((contact) => (
-                      <Row style={{paddingTop:'0.5rem'}}>
+                      <Row style={{paddingTop:'0.5rem'}} key={contact.id}>
                         <Col span={12} style={{paddingLeft:'25px'}}>
                           {contact.name}
                         </Col>
@@ -579,7 +579,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
                       <p>&nbsp;</p>
                       <h4>Contacto final</h4>
                       {transferOrder?.transfer_order_contacts?.filter(x=> x.contact_type == 2).map((contact) => (
-                      <Row style={{paddingTop:'0.5rem'}}>
+                      <Row style={{paddingTop:'0.5rem'}} key={contact.id}>
                         <Col span={12} style={{paddingLeft:'25px'}}>
                           {contact.name}
                         </Col>
@@ -602,7 +602,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
                       <Row style={{paddingTop:'1rem'}}>
                         <Col span={24}>
                         {transferOrder?.transfer_order_other_requeriments?.map((req) => (
-                          <div className="selected">{req.other_requirement_desc} <small>{req.quantity}</small></div>
+                          <div className="selected" key={req.id}>{req.other_requirement_desc} <small>{req.quantity}</small></div>
                          ))}
                         </Col>
                       </Row>                      
