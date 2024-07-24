@@ -124,7 +124,7 @@ export const DriverFormTab = ({
       } else {
         const fileSelected = documentsType
           ?.filter(
-            (f) => f?.optional?.data?.includes(0) || selectedFiles?.find((f2) => f2.id === f.id)
+            (f) => !f?.optional || selectedFiles?.find((f2) => f2.id === f.id)
           )
           ?.map((f) => ({
             ...f,
@@ -204,6 +204,7 @@ export const DriverFormTab = ({
               <Button
                 className="buttons"
                 htmlType="button"
+                disabled={statusForm === "review"}  
                 onClick={(e) => {
                   e.preventDefault();
                   setIsOpenModal(true);
@@ -217,6 +218,7 @@ export const DriverFormTab = ({
               <Button
                 className="buttons -edit"
                 htmlType="button"
+                disabled={statusForm === "review"} 
                 onClick={(e) => {
                   e.preventDefault();
                   onEditProject();
@@ -279,6 +281,7 @@ export const DriverFormTab = ({
                     titleInput="Fecha de nacimiento"
                     nameInput="general.birth_date"
                     placeholder="Seleccionar fecha de nacimiento"
+                    disabled={statusForm === "review"}  
                     control={control}
                     error={undefined}
                   />
@@ -360,6 +363,7 @@ export const DriverFormTab = ({
                     nameInput="general.license_expiration"
                     placeholder="Seleccionar fecha de expiración"
                     control={control}
+                    disabled={statusForm === "review"}  
                     validationRules={{ required: true }}
                     error={errors?.general?.license_expiration}
                   />
@@ -388,6 +392,7 @@ export const DriverFormTab = ({
                       style={{ width: "50%" }}
                       placeholder="Seleccione vehiculos"
                       loading={loadingVicles}
+                      disabled={statusForm === "review"}  
                       defaultValue={getValues("general.vehicle_type")?.map((i: any) =>
                         i.id_vehicle_type?.toString()
                       )}
@@ -435,7 +440,7 @@ export const DriverFormTab = ({
                 <UploadDocumentButton
                   key={file.id}
                   title={file.description}
-                  isMandatory={file.optional.data.includes(0)}
+                  isMandatory={!file.optional}
                   aditionalData={file.id}
                   setFiles={() => {}}
                   files={file.file}

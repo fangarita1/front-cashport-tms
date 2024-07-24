@@ -67,7 +67,7 @@ export const addVehicle = async (
       uid: file?.file?.uid
     }));
 
-    const expiration = files.find(f => !f.expirationDate && f.expiry?.data.includes(1));
+    const expiration = files.find(f => !f.expirationDate && f.expiry);
     if (expiration) {
       throw new Error(`El documento ${expiration.description} debe tener una fecha de vencimiento`);
     }

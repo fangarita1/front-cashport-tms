@@ -17,11 +17,6 @@ export interface CertificateType {
   modified_by: any;
 }
 
-export interface Optional {
-  type: string;
-  data: number[];
-}
-
 export interface Active {
   type: string;
   data: number[];

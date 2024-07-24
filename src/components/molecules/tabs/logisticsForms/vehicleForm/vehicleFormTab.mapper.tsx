@@ -1,6 +1,9 @@
 import { IVehicle, VihicleDetail, IFormVehicle, ICertificates } from "@/types/logistics/schema";
 import { MessageInstance } from "antd/es/message/interface";
 import Title from "antd/es/typography/Title";
+import { SetStateAction } from "react";
+import { UseFormReset, UseFormSetValue } from "react-hook-form";
+import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 
 export interface VehicleFormTabProps {
   idVehicleForm?: string;
@@ -11,7 +14,6 @@ export interface VehicleFormTabProps {
   onActiveVehicle?: () => void;
   onDesactivateVehicle?: () => void;
   statusForm: "create" | "edit" | "review";
-  messageApi?: MessageInstance;
   params: {
     id: string;
     vehicleId: string;
@@ -65,7 +67,7 @@ export const normalizeVehicleData = (data: any): any => {
       image3: images[2],
       image4: images[3],
       image5: images[4],
-      IS_ACTIVE: data.active.data[0] === 1
+      IS_ACTIVE: data.active
     },
     image1: images[0] ? [{ file: new File([images[0]], images[0].split("/").pop()) }] : undefined,
     image2: images[1] ? [{ file: new File([images[1]], images[1].split("/").pop()) }] : undefined,
@@ -73,8 +75,29 @@ export const normalizeVehicleData = (data: any): any => {
     image4: images[3] ? [{ file: new File([images[3]], images[3].split("/").pop()) }] : undefined,
     image5: images[4] ? [{ file: new File([images[4]], images[4].split("/").pop()) }] : undefined,
     files: documents,
-    IS_ACTIVE: data.active.data[0] === 1
+    IS_ACTIVE: data.active
   };
+};
+
+export const _onSubmitVehicle = (
+  data: any,
+  setloading: (value: SetStateAction<boolean>) => void,
+  setImageError: (value: SetStateAction<boolean>) => void,
+  imageFiles: { docReference: string; file: File }[],
+  selectedFiles: DocumentCompleteType[],
+  onSubmitForm: (data: any) => void,
+  reset: UseFormReset<IFormVehicle>
+) => {
+  setloading(true);
+  try {
+    setImageError(false);
+    onSubmitForm({...data, images: imageFiles, files: selectedFiles});
+    reset(data);
+    setloading(false);
+  } catch (error) {
+    console.warn({ error });
+    setloading(false);
+  }
 };
 
 export const validationButtonText = (statusForm: "create" | "edit" | "review") => {

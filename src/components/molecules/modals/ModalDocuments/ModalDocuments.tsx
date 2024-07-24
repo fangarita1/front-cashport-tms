@@ -24,11 +24,11 @@ type PropsModalDocuments = {
   allOptional?: boolean;
 };
 
-const calculateExpirate = (expiry?: number[]) => {
-  if (expiry?.includes(1)) {
+const calculateExpirate = (expiry?: boolean) => {
+  if (expiry) {
     return true;
   }
-  if (expiry?.includes(0)) {
+  if (expiry) {
     return false;
   }
   return false;
@@ -69,7 +69,7 @@ export default function ModalDocuments(props: PropsModalDocuments) {
                 <Col key={file.id} style={{ width: "100%", margin: "1rem 0" }}>
                   <UploadDocumentButton
                     title={file.description}
-                    isMandatory={file.optional.data.includes(0)}
+                    isMandatory={!file.optional}
                     aditionalData={file.id}
                     setFiles={setFiles}
                   />
@@ -83,15 +83,15 @@ export default function ModalDocuments(props: PropsModalDocuments) {
                         size="small"
                         placeholder="dd/mm/aaaa"
                         value={file.expirationDate}
-                        disabled={!calculateExpirate(file.expiry?.data)}
-                        onChange={(value) => handleChangeExpirationDate(index, value)}
+                        disabled={!calculateExpirate(file.expiry)}
+                        onChange={(value: any) => handleChangeExpirationDate(index, value)}
                       />
                       <Switch
                         size="default"
-                        checked={calculateExpirate(file.expiry?.data)}
+                        checked={calculateExpirate(file.expiry)}
                         disabled
                       />
-                      aplica
+                      {calculateExpirate(file.expiry)? "aplica" : "no aplica"}
                     </Row>
                   )}
                 </Col>
@@ -114,7 +114,7 @@ export default function ModalDocuments(props: PropsModalDocuments) {
                 options={documentsType?.map((document) => ({
                   label: <span>{document.description}</span>,
                   value: document.id.toString(),
-                  disabled: allOptional ? false : document.optional.data.includes(0)
+                  disabled: allOptional ? false : !document.optional
                 }))}
               />
             ) : (

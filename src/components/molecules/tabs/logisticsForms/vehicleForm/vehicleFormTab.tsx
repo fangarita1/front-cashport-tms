@@ -1,8 +1,8 @@
-"use client";
 import { useEffect, useState } from "react";
 import { Button, Col, Flex, Row, Switch, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
+import { message } from "antd";
 
 // components
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
@@ -47,8 +47,8 @@ interface ImageState {
 
 export const VehicleFormTab = ({
   data,
-  messageApi,
   onEditVehicle = () => {},
+  onSubmitForm = () => {},
   statusForm = "review",
   onActiveVehicle = () => {},
   onDesactivateVehicle = () => {},
@@ -57,6 +57,10 @@ export const VehicleFormTab = ({
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [hasGPS, setHasGPS] = useState(true);
+
 
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
     "1",
@@ -70,6 +74,8 @@ export const VehicleFormTab = ({
   const [images, setImages] = useState<ImageState[]>(
     Array(5).fill({ file: undefined, error: false })
   );
+
+
   const defaultValues = statusForm === "create" ? {} : normalizeVehicleData(data as any);
   const {
     watch,
@@ -96,7 +102,6 @@ export const VehicleFormTab = ({
   }
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
-  const [mockFiles, setMockFiles] = useState<CertificateType[]>([]);
 
   useEffect(() => {
     if (Array.isArray(documentsType)) {
@@ -117,7 +122,7 @@ export const VehicleFormTab = ({
       } else {
         const fileSelected = documentsType
           ?.filter(
-            (f) => f?.optional?.data?.includes(0) || selectedFiles?.find((f2) => f2.id === f.id)
+            (f) => !f?.optional || selectedFiles?.find((f2) => f2.id === f.id)
           )
           ?.map((f) => ({
             ...f,
@@ -154,9 +159,14 @@ export const VehicleFormTab = ({
     }
   };
 
+
+
   const onSubmit = async (data: any) => {
     const hasImage = images.some((image) => image.file);
-    if (!hasImage) return;
+    if (!hasImage){
+      setImageError(true);
+      return;
+    } 
 
     const imageFiles = images
       .map((image, index) =>
@@ -172,11 +182,29 @@ export const VehicleFormTab = ({
     try {
       const response = await addVehicle(vehicleData, imageFiles, selectedFiles);
       console.log("Vehicle created successfully:", response.data);
+      if (response.status === 200) {
+        messageApi.open({
+          type: "success",
+          content: "El vehículo fue creado exitosamente."
+        });
+        push(`/logistics/providers/${params.id}/vehicle`);
+      }
       // Optionally reset the form and images after successful submission
       setImages(Array(5).fill({ file: undefined }));
+      setImageError(false);
       push(`/logistics/providers/${params.id}/vehicle`);
     } catch (error) {
-      console.log("Error creating vehicle:", error);
+      if (error instanceof Error) {
+        messageApi.open({
+          type: "error",
+          content: error.message
+        });
+      } else {
+        message.open({
+          type: "error",
+          content: "Oops, hubo un error por favor intenta más tarde."
+        });
+      }
     }
   };
 
@@ -193,9 +221,9 @@ export const VehicleFormTab = ({
 
   return (
     <>
-      <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
+      {contextHolder}
+      <form className="vehiclesFormTab" onSubmit={handleSubmit(onSubmit)}>
         <Flex component={"header"} className="headerProyectsForm">
-          <Flex gap={"1rem"}>
             <Link href={`/logistics/providers/${params.id}/vehicle`} passHref>
               <Button
                 type="text"
@@ -206,35 +234,38 @@ export const VehicleFormTab = ({
                 Ver Vehiculos
               </Button>
             </Link>
-            {(statusForm === "review" || statusForm === "edit") && (
-              <Button
-                className="buttons"
-                htmlType="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsOpenModal(true);
-                }}
-              >
-                Cambiar Estado
-                <ArrowsClockwise size={"1.2rem"} />
-              </Button>
-            )}
-            {statusForm === "review" ? (
-              <Button
-                className="buttons"
-                htmlType="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onEditVehicle();
-                }}
-              >
-                {validationButtonText(statusForm)}
-                <Pencil size={"1.2rem"} />
-              </Button>
-            ) : (
-              ""
-            )}
-          </Flex>
+              <Flex gap={"1rem"}>
+              {(statusForm === "review") && (
+                <Button
+                  className="buttons"
+                  htmlType="button"
+                  disabled={statusForm === "review"}  
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsOpenModal(true);
+                  }}
+                >
+                  Cambiar Estado
+                  <ArrowsClockwise size={"1.2rem"} />
+                </Button>
+              )}
+              {statusForm === "review" ? (
+                <Button
+                  className="buttons -edit"
+                  htmlType="button"
+                  disabled={statusForm === "review"} 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onEditVehicle();
+                  }}
+                >
+                  {validationButtonText(statusForm)}
+                  <Pencil size={"1.2rem"} />
+                </Button>
+              ) : (
+                ""
+              )}
+            </Flex>
         </Flex>
         <Flex component={"main"} flex="3" vertical>
           <Row>
@@ -248,25 +279,36 @@ export const VehicleFormTab = ({
                   <UploadImg
                     disabled={statusForm === "review"}
                     imgDefault={watch("general.image1")}
-                    setImgFile={(file) =>
+                    setImgFile={(file) => {
                       setImages((prev) =>
                         prev.map((img, index) => (index === 0 ? { ...img, file } : img))
-                      )
-                    }
+                      );
+                      if (file) {
+                        setImageError(false);
+                      }
+                    }}
                   />
+                  {imageError && (
+                    <Text className="textError">{"Al menos 1 imagen debe ser cargada *"}</Text>
+                  )}
                 </Col>
+                </Row>
+                <Row gutter={16}>
                 {images.slice(1).map((image, index) => (
-                  <Col span={6} className="colfotomin" key={index + 1}>
+                  <Col xs={24} sm={12} lg={6} className="colfotomin" key={index + 1}>
                     <UploadImg
                       disabled={statusForm === "review"}
                       imgDefault={getValues(getImageKey(index + 1))}
-                      setImgFile={(file) =>
+                      setImgFile={(file) => {
                         setImages((prev) =>
                           prev.map((img, imgIndex) =>
                             imgIndex === index + 1 ? { ...img, file } : img
                           )
-                        )
-                      }
+                        );
+                        if (file) {
+                          setImageError(false);
+                        }
+                      }}
                     />
                   </Col>
                 ))}
@@ -284,6 +326,7 @@ export const VehicleFormTab = ({
                   <Controller
                     name="general.id_vehicle_type"
                     control={control}
+                    disabled={statusForm === "review"} 
                     rules={{ required: true }}
                     render={({ field }) => (
                       <SelectVehicleType
@@ -302,30 +345,35 @@ export const VehicleFormTab = ({
                   titleInput="Placa"
                   nameInput="general.plate_number"
                   control={control}
+                  disabled={statusForm === "review"}  
                   error={errors.general?.plate_number}
                 />
                 <InputForm
                   titleInput="Marca"
                   nameInput="general.brand"
                   control={control}
+                  disabled={statusForm === "review"}  
                   error={errors?.general?.brand}
                 />
                 <InputForm
                   titleInput="Modelo"
                   nameInput="general.model"
                   control={control}
+                  disabled={statusForm === "review"}  
                   error={errors?.general?.model}
                 />
                 <InputForm
                   titleInput="Linea"
                   nameInput="general.line"
                   control={control}
+                  disabled={statusForm === "review"}  
                   error={errors.general?.line}
                 />
                 <InputForm
                   titleInput="Año"
                   nameInput="general.year"
                   control={control}
+                  disabled={statusForm === "review"}  
                   error={undefined}
                   // error={errors.general?.year}
                 />
@@ -333,12 +381,14 @@ export const VehicleFormTab = ({
                   titleInput="Color"
                   nameInput="general.color"
                   control={control}
+                  disabled={statusForm === "review"}  
                   error={errors.general?.color}
                 />
                 <InputForm
                   titleInput="Ciudad"
                   nameInput="general.country"
                   control={control}
+                  disabled={statusForm === "review"}  
                   error={errors.general?.country}
                 />
               </Flex>
@@ -348,7 +398,11 @@ export const VehicleFormTab = ({
                 justify="flex-start"
                 style={{ marginTop: "2rem" }}
               >
-                <Switch defaultChecked />{" "}
+                <Switch
+                  disabled={statusForm === 'review'}
+                  checked={hasGPS}
+                  onChange={()=>setHasGPS(!hasGPS)}
+                />
                 <h5 className="ant-typography input-form-title">&nbsp;&nbsp;Equipado por GPS</h5>
               </Flex>
               <Flex
@@ -361,19 +415,22 @@ export const VehicleFormTab = ({
                   titleInput="Usuario"
                   nameInput="general.gps_user"
                   control={control}
+                  disabled={statusForm === "review" || !hasGPS} 
                   error={errors.general?.gps_user}
                 />
                 <InputForm
                   titleInput="Contraseña"
                   nameInput="general.gps_password"
                   control={control}
-                  error={errors.general?.gps_password}
+                  disabled={statusForm === "review" || !hasGPS} 
+                  error={errors.general?.gps_password }
                 />
                 <InputForm
                   titleInput="Link"
                   nameInput="general.gps_link"
                   control={control}
-                  error={errors.general?.gps_link}
+                  disabled={statusForm === "review"|| !hasGPS} 
+                  error={errors.general?.gps_link }
                 />
               </Flex>
             </Col>
@@ -386,6 +443,7 @@ export const VehicleFormTab = ({
                 titleInput=""
                 nameInput="general.aditional_info"
                 control={control}
+                disabled={statusForm === "review"} 
                 error={errors.general?.aditional_info}
               />
             </Col>
@@ -402,7 +460,7 @@ export const VehicleFormTab = ({
                   <UploadDocumentButton
                     key={file.id}
                     title={file.description}
-                    isMandatory={file.optional.data.includes(0)}
+                    isMandatory={!file.optional}
                     aditionalData={file.id}
                     setFiles={() => {}}
                     files={file.file}

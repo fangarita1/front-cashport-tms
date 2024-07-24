@@ -1,4 +1,4 @@
-import { Flex, Typography, message, Row, Button, Result } from "antd";
+import { Flex, Typography, message, Row, Button, Result, Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import "../../../../../styles/_variables_logistics.css";
 import "./providerInfo.scss";
@@ -62,7 +62,7 @@ export const ProviderInfoView = ({ isEdit = false, idParam = "" }: Props) => {
   }, [error]);
 
   Carrier.forEach((element) => {
-    if (element.active.data[0] === 1) {
+    if (element.active) {
       element.status = true;
     } else {
       element.status = false;
@@ -73,34 +73,19 @@ export const ProviderInfoView = ({ isEdit = false, idParam = "" }: Props) => {
   return (
     <>
       {contextHolder}
-      <Flex className="orderContainer">
-        <Row style={{ width: "100%" }}>
+      <Flex className="generalTabMainContent">
           {datasource.length === 0 ? (
-            <Flex vertical>
-              <Flex align="center" gap={"2rem"}>
-                <Button href="/logistics/providers/all">Volver</Button>
-                <Text>Informacion No encontrada</Text>
-              </Flex>
-              <Result
-                status="404"
-                title="404"
-                subTitle="Lo siento este conductor no existe"
-                extra={
-                  <Button type="primary" href="/logistics/providers/all">
-                    Back Home
-                  </Button>
-                }
-              />
-            </Flex>
+              <Spin/>
           ) : (
+        <Row style={{ width: "100%" }}>
             <CarrierFormTab
               onSubmitForm={onUpdateDriver}
               onEditProject={() => setIsEditProject(true)}
               data={datasource}
               statusForm={isEditProject ? "edit" : "review"}
-            ></CarrierFormTab>
-          )}
+            />
         </Row>
+          )}
       </Flex>
     </>
   );

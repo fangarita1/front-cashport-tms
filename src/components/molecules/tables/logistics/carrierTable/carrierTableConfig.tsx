@@ -41,7 +41,7 @@ export const CarrierTable = () => {
 
 
   drivers.forEach((element) => {
-    if (element.active.data[0] === 1) {
+    if (element.active) {
       element.status = true;
     } else {
       element.status = false;

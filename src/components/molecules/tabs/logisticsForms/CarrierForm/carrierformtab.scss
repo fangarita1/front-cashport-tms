@@ -76,14 +76,10 @@
             }
         }
     }
-
-    .ant-upload-wrapper {
-        width: 50% !important;
-    }
     .ant-upload-select {
-        width: 180px !important;
-        height: 120px !important;
-        flex-shrink: 0;
+        max-width: 11rem !important;
+        width: 100% !important;
+        height: 7.5rem !important;
         border-radius: 8px;
         background: #f7f7f7;
     }

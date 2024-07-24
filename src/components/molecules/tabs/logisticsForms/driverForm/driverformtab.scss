@@ -86,17 +86,14 @@
         }
     }
 
-    .ant-upload-wrapper {
-        width: 100% !important;
-    }
     .ant-upload-select {
-        width: 280px !important;
-        height: 280px !important;
-        flex-shrink: 0;
+        max-width: 14rem !important;
+        width: 100% !important;
+        height: 14rem !important;
         border-radius: 8px;
         background: #f7f7f7;
     }
-
+    
     .buttonAction {
         color: #141414;
         display: flex;

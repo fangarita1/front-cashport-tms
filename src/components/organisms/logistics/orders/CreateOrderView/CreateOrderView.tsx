@@ -1507,7 +1507,7 @@ export const CreateOrderView = () => {
                 <UploadDocumentButton
                   key={file.id}
                   title={file.description}
-                  isMandatory={file.optional}
+                  isMandatory={!file.optional}
                   aditionalData={file.id}
                   setFiles={() => {}}
                   files={file.file}

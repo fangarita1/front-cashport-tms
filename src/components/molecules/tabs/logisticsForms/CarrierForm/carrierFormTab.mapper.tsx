@@ -1,6 +1,6 @@
 import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
-import { ICarrier, IDriver, IFormCarrier, IFormDriver } from "@/types/logistics/schema";
+import { ICarrier, ICertificates, IDriver, IFormCarrier, IFormDriver } from "@/types/logistics/schema";
 import { IFormProject } from "@/types/projects/IFormProject";
 import Title from "antd/es/typography/Title";
 import { SetStateAction } from "react";
@@ -8,7 +8,7 @@ import { UseFormReset, UseFormSetValue } from "react-hook-form";
 
 export interface CarrierFormTabProps {
   idProjectForm?: string;
-  data?: ICarrier[];
+  data?: CarrierData[];
   disabled?: boolean;
   onEditProject?: () => void;
   onSubmitForm?: (data: any) => void;
@@ -16,6 +16,8 @@ export interface CarrierFormTabProps {
   onDesactivateProject?: () => void;
   statusForm: "create" | "edit" | "review";
 }
+
+export type CarrierData = ICarrier & { documents?: ICertificates[] };
 
 export const dataToProjectFormData = (data: ICarrier): IFormCarrier => {
   return {

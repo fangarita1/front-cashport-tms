@@ -70,16 +70,16 @@
         justify-content: space-between;
     }
 
-    .orderContainer {
+    .suppliersTabsContainer {
         width: 100%;
         height: auto;
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
-        padding-top: 1.5rem;
-        padding-bottom: 1.5rem;
+        padding: 1.5rem;
         border-radius: 0.5rem;
         background-color: $white;
 
+        .ant-tabs-tab{
+            font-size: var(--font-size-base) !important;
+        }
         .ant-tabs-content,
         .ant-tabs-tabpane {
             height: 100%;
