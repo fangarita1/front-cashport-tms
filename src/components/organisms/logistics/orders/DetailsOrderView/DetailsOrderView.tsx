@@ -47,6 +47,7 @@ import TextArea from "antd/es/input/TextArea";
 import TabPane from "antd/es/tabs/TabPane";
 import { StringDecoder } from "string_decoder";
 import { getTransferOrderById } from "@/services/logistics/transfer-orders";
+import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 
 interface Props {
   idOrder: string;
@@ -544,18 +545,29 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
                 <Flex vertical className="orderContainer" style={{width: '99%', marginTop: '2rem'}}>
                   <h3>Información adicional</h3>
                   <p>&nbsp;</p>
-                  <Row className="mainUploadDocuments">
+                  <h4>Documentos</h4>
+                  <Row className="mainUploadDocuments">                    
                     {transferOrder?.transfer_order_documents?.map((file) => (
-                      // eslint-disable-next-line react/jsx-key
-                      <Col span={12} style={{padding:'15px'}} key={`file-${file.id}`}>
+                      <><Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
                         <UploadDocumentButton
                           key={file.id}
                           title={file.document_type_desc}
-                          isMandatory={false}
+                          isMandatory={!file.active}
                           aditionalData={file.id}
-                          setFiles={setFiles}
-                        />
+                          setFiles={() => { } }
+                          
+                          disabled
+                        >
+                          {file?.url_document ? (
+                            <UploadDocumentChild
+                              linkFile={file.url_document}
+                              nameFile={file.url_document.split("-").pop() || ""}
+                              onDelete={() => { } }
+                              showTrash={false} />
+                          ) : undefined}
+                        </UploadDocumentButton>
                       </Col>
+                      </>
                     ))}
                     <Col span={24} style={{paddingTop:'1rem'}}>
                       <hr style={{borderTop: '1px solid #f7f7f7'}}></hr>
@@ -626,11 +638,23 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
                   <p>&nbsp;</p>
                   <Row>
                     <Col span={24} style={{paddingTop:'1rem'}}>
+                    <h4>Materiales</h4>
                     <Table columns={columnsCarga} dataSource={dataCarga}/>
                       <hr style={{borderTop: '1px solid #f7f7f7'}}></hr>
                     </Col>
+                  </Row>
+                  <p>&nbsp;</p> 
+                  <h4>Vehículos sugeridos</h4>                  
+                  <Row>
+                    <Col span={24} style={{paddingTop:'1rem'}}>
+                      {transferOrder?.transfer_order_vehicles?.map((veh) => (
+                          <div className="selected" key={veh.id}>{veh.vehicle_type_desc} <small>{veh.quantity}</small></div>
+                      ))}
+                      
+                    </Col>
                   </Row> 
                 </Flex>
+              
               </Col>
             </Row>
           </Flex>
