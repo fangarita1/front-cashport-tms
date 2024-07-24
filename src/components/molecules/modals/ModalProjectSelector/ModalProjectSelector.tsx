@@ -5,12 +5,7 @@ import "./modalProjectSelector.scss";
 import { useEffect, useState } from "react";
 import { getUserPermissions } from "@/services/permissions/userPermissions";
 import { useAppStore } from "@/lib/store/store";
-
-type IProject = {
-  id: number;
-  name: string;
-  logo: string;
-};
+import { ISelectedProject } from "@/lib/slices/createProjectSlice";
 
 interface Props {
   isOpen: boolean;
@@ -18,7 +13,7 @@ interface Props {
 }
 export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
   const setSelectProject = useAppStore((state) => state.setSelectedProject);
-  const [projects, setProjects] = useState<IProject[]>([]);
+  const [projects, setProjects] = useState<ISelectedProject[]>([]);
 
   useEffect(() => {
     //useEffect to call userPermissions and get the projects
@@ -26,18 +21,30 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
       const response = await getUserPermissions();
       setProjects(
         response?.data?.map((project) => ({
-          id: project.project_id,
-          name: project.name,
-          logo: project.logo
+          ID: project.project_id,
+          NAME: project.name,
+          LOGO: project.logo
         }))
       );
+
+      if (response?.data?.length === 1) {
+        setSelectProject({
+          ID: response?.data[0].project_id,
+          NAME: response?.data[0].name,
+          LOGO: response?.data[0].logo
+        });
+      }
     };
     fetchProjects();
   }, []);
 
-  const handleSelectProject = (project: IProject) => {
-    console.log("Project selected", project);
-    // setSelectProject(project);
+  const handleSelectProject = (project: ISelectedProject) => {
+    const projectInfo: ISelectedProject = {
+      ID: project.ID,
+      NAME: project.NAME,
+      LOGO: project.LOGO
+    };
+    setSelectProject(projectInfo);
     onClose();
   };
 
@@ -46,16 +53,16 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
       <h2>Elegir proyecto</h2>
       <div className="modalProjectSelector__projects">
         {projects?.map((project) => (
-          <div onClick={() => handleSelectProject(project)} className="project" key={project.id}>
+          <div onClick={() => handleSelectProject(project)} className="project" key={project.ID}>
             <Image
               className="project__image"
-              src={project.logo}
+              src={project.LOGO}
               width={100}
               height={100}
               alt="Project image"
             />
             <div className="project__name">
-              <p>{project.name}</p>
+              <p>{project.NAME}</p>
             </div>
           </div>
         ))}
@@ -63,56 +70,3 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
     </Modal>
   );
 };
-
-const mockPojects = [
-  {
-    id: "1",
-    name: "Proyecto 1",
-    logo: "https://via.placeholder.com/150x250"
-  },
-  {
-    id: "2",
-    name: "Proyecto 2",
-    logo: "https://via.placeholder.com/150"
-  },
-  {
-    id: "3",
-    name: "Proyecto 3",
-    logo: "https://via.placeholder.com/150"
-  },
-  {
-    id: "4",
-    name: "Proyecto 4",
-    logo: "https://via.placeholder.com/150"
-  },
-  {
-    id: "5",
-    name: "Proyecto 5",
-    logo: "https://via.placeholder.com/150"
-  },
-  {
-    id: "6",
-    name: "Proyecto 6",
-    logo: "https://via.placeholder.com/150"
-  },
-  {
-    id: "7",
-    name: "Proyecto 7",
-    logo: "https://via.placeholder.com/150"
-  },
-  {
-    id: "8",
-    name: "Proyecto 8",
-    logo: "https://via.placeholder.com/150"
-  },
-  {
-    id: "9",
-    name: "Proyecto 9",
-    logo: "https://via.placeholder.com/150"
-  },
-  {
-    id: "10",
-    name: "Proyecto 10",
-    logo: "https://via.placeholder.com/150"
-  }
-];

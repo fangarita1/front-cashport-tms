@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Spin, TableProps, Button, Col, Flex, Row, Table, Typography } from "antd";
@@ -18,8 +19,9 @@ import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
 import { formatMoney } from "@/utils/utils";
 import { useAppStore } from "@/lib/store/store";
 import redirectModal from "@/components/molecules/modals/redirectModal/RedirectModal";
-import "./ClientsViewTable.scss";
 import useStore from "@/lib/hook/useStore";
+import { STORAGE_TOKEN } from "@/utils/constants/globalConstants";
+import "./ClientsViewTable.scss";
 
 const { Text } = Typography;
 
@@ -35,13 +37,8 @@ export const ClientsViewTable = () => {
   }, []);
 
   useEffect(() => {
-    if (!isComponentLoading && !ID) {
-      redirectModal();
-    }
-  }, [isComponentLoading, ID]);
-
-  useEffect(() => {
-    if (!isComponentLoading && !ID) {
+    const token = localStorage.getItem(STORAGE_TOKEN);
+    if (!isComponentLoading && !ID && !!token) {
       redirectModal();
     }
   }, [isComponentLoading, ID]);
