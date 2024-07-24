@@ -7,14 +7,14 @@ import { ProjectTable } from "@/components/molecules/tables/ProjectsTable/Projec
 import "./projects.scss";
 import Header from "../../header";
 import config from "@/config";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
+import { redirect } from 'next/navigation'
 
 const { Title } = Typography;
 
 export const ProjectsView = () => {
-  const router = useRouter();
   if (config.isLogistics) {
-    router.push("/logistics/providers/all");
+    redirect("/logistics/providers/all");
   }
   return (
     <main className="mainProject">
