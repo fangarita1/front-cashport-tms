@@ -247,3 +247,38 @@ export const stringToBoolean = (value: string | boolean | undefined): boolean =>
   }
   return value === "true" || value === true;
 };
+
+export const timeAgo = (date: string): string => {
+  const currentDate = new Date();
+  const dateToCompare = new Date(date);
+  const diffInMs = currentDate.getTime() - dateToCompare.getTime();
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  const diffInMonths = Math.floor(diffInDays / 30);
+
+  if (diffInMinutes < 60) {
+    return `Hace ${diffInMinutes} minutos`;
+  } else if (diffInHours < 24) {
+    return `Hace ${diffInHours} horas`;
+  } else if (diffInDays < 7) {
+    return `Hace ${diffInDays} días`;
+  } else if (diffInWeeks < 4) {
+    return `Hace ${diffInWeeks} semanas`;
+  } else {
+    return `Hace ${diffInMonths} meses`;
+  }
+};
+
+export const formatDateAndTime = (date: string): string => {
+  const d = new Date(date);
+  const day = `0${d.getDate()}`.slice(-2);
+  const month = `0${d.getMonth() + 1}`.slice(-2);
+  const year = d.getFullYear();
+  const hours = `0${d.getHours()}`.slice(-2);
+  const minutes = `0${d.getMinutes()}`.slice(-2);
+  const period = d.getHours() >= 12 ? "PM" : "AM";
+
+  return `${day}/${month}/${year} - ${hours}:${minutes} ${period}`;
+};

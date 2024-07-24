@@ -30,6 +30,13 @@ export interface ICreateLocation {
   project_id: number;
 }
 
+export interface IResponseAddAddressToLocation {
+  data: IAddAddressToLocation;
+  message: string;
+  status: number;
+  success: boolean;
+}
+
 export interface IAddAddressToLocation {
   data: IAddAddressData[];
   message: string;

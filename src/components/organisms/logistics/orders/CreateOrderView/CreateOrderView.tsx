@@ -73,13 +73,15 @@ export const CreateOrderView = () => {
   const destination = useRef<any>([]);
   const [origenIzaje, setOrigenIzaje] = useState(false);
   const [destinoIzaje, setDestinoIzaje] = useState(false);
-  const [fechaInicial, setFechaInicial] = useState<Dayjs | null>(null);
-  const [horaInicial, setHoraInicial] = useState<Dayjs | null>(null);
-  const [fechaFinal, setFechaFinal] = useState<Dayjs | null>(null);
-  const [horaFinal, setHoraFinal] = useState<Dayjs | null>(null);
+  const fechaInicial = useRef<Dayjs>();
+  const [horaInicial, setHoraInicial] = useState<Dayjs>();
+  const fechaFinal = useRef<Dayjs>();
+  const [horaFinal, setHoraFinal] = useState<Dayjs>();
   const [fechaInicialFlexible, setFechaInicialFlexible] = useState(0);
   const [fechaFinalFlexible, setFechaFinalFlexible] = useState(0);
   const [company, setCompany] = useState(1);
+  const [client, setClient] = useState(1);
+  const [observation, setObservation] = useState<any>(null);
 
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWRInmutable(
     "0",
@@ -97,7 +99,6 @@ export const CreateOrderView = () => {
   const [routeInfo, setRouteInfo] = useState([]);
   const [distance, setDistance] = useState<any>(null);
   const [timetravel, setTimeTravel] = useState<any>(null);
-  const [suggestions, setSuggestions] = useState([]);
 
   const [expand, setExpand] = useState(false);
   const initialItemCount = 4;
@@ -979,10 +980,18 @@ export const CreateOrderView = () => {
     
     const cuser = auth.currentUser;
 
-    fechaInicial?.hour(horaInicial?horaInicial.get('hour'):0);
-    fechaInicial?.minute(horaInicial?horaInicial.get('minute'):0);
-    fechaFinal?.hour(horaFinal?horaFinal.get('hour'):0);
-    fechaFinal?.minute(horaFinal?horaFinal.get('minute'):0);
+    const inihour = horaInicial?horaInicial.get('hour'):0;
+    const inimin = horaInicial?horaInicial.get('minute'):0;
+    const finhour = horaFinal?horaFinal.get('hour'):0;
+    const finmin = horaFinal?horaFinal.get('minute'):0;
+
+    fechaInicial.current = fechaInicial.current?.hour(inihour);
+    fechaInicial.current = fechaInicial.current?.minute(inimin);
+    fechaFinal.current = fechaFinal.current?.hour(finhour);
+    fechaFinal.current = fechaFinal.current?.minute(finmin);
+
+    //console.log(fechaInicial);
+    //console.log(fechaFinal);
 
     const datato: ITransferOrder = {
       id_start_location: (locationOrigin ? locationOrigin.id : 0),
@@ -990,8 +999,8 @@ export const CreateOrderView = () => {
       id: 0,
       id_user: 1,
       user: cuser?.email,
-      start_date: fechaInicial?.toDate().toISOString(),
-      end_date: fechaFinal?.toDate().toISOString(),
+      start_date: fechaInicial.current?.toDate().toISOString(),
+      end_date: fechaFinal.current?.toDate().toISOString(),
       start_freight_equipment: String(origenIzaje),
       end_freight_equipment: String(destinoIzaje),
       rotation: "0",
@@ -1002,9 +1011,13 @@ export const CreateOrderView = () => {
       active: "true",
       created_at: new Date().toISOString(),
       created_by: cuser?.email,
-      geometry: routeGeometry,
+      geometry: routeInfo,
       id_service_type: typeactive,
-      id_client: 1
+      id_client: client,
+      status: "",
+      observation: observation,
+      service_type_desc: "",
+      client_desc: ""
     }
 
     //contactos
@@ -1043,7 +1056,8 @@ export const CreateOrderView = () => {
         created_by: cuser?.email,
         modified_at: new Date(),
         modified_by: "",
-        active: ""
+        active: "",
+        product_desc: ""
       });
 
       psl.costcenters.forEach(cost=>{
@@ -1055,7 +1069,8 @@ export const CreateOrderView = () => {
           percentage: cost.percent,
           active: "",
           created_at: new Date(),
-          created_by: cuser?.email
+          created_by: cuser?.email,
+          cost_center_desc: ""
         });
       });
     });
@@ -1071,7 +1086,8 @@ export const CreateOrderView = () => {
         created_at: new Date(),
         created_by: cuser?.email,
         modified_at: new Date(),
-        modified_by: ""
+        modified_by: "",
+        vehicle_type_desc: ""
       });  
     });
 
@@ -1186,7 +1202,8 @@ export const CreateOrderView = () => {
                     onChange={(value, dateString) => {                      
                       //console.log('Selected Time: ', value);
                       //console.log('Formatted Selected Time: ', dateString);
-                      setFechaInicial(value);
+                      //setFechaInicial(value);
+                      fechaInicial.current = value;          
                     }}
                   /> 
                 </Col>
@@ -1232,7 +1249,8 @@ export const CreateOrderView = () => {
                     onChange={(value, dateString) => {
                       //console.log('Selected Time: ', value);
                       //console.log('Formatted Selected Time: ', dateString);
-                      setFechaFinal(value);
+                      //setFechaFinal(value);
+                      fechaFinal.current = value;
                     }}
                   />
                 </Col>
@@ -1518,10 +1536,12 @@ export const CreateOrderView = () => {
                 <text>Cliente final</text>
               </label>
               <Select
-                mode="multiple"
                 placeholder = 'Seleccione cliente final'
                 style={{ width: '100%' }}
                 options={[{ value: '1', label: 'Cliente 1' }]}
+                onChange={(value)=>{
+                  setClient(value);
+                }}
               />
             </Col>   
           </Row>
@@ -1544,7 +1564,9 @@ export const CreateOrderView = () => {
               <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
                 <text>Instrucciones especiales</text>
               </label>
-              <TextArea rows={4} />
+              <TextArea rows={4} onChange={(event)=>{
+                setObservation(event.target.value);
+              }} />
             </Col>   
           </Row>
           <Row>

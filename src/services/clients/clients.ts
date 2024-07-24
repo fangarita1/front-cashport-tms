@@ -14,6 +14,7 @@ import { SUCCESS } from "@/utils/constants/globalConstants";
 import { IAddAddressData } from "@/types/locations/ILocations";
 import { GenericResponse } from "@/types/global/IGlobal";
 import { MessageType } from "@/context/MessageContext";
+import { stringToBoolean } from "@/utils/utils";
 
 // create
 
@@ -118,7 +119,7 @@ export const updateClient = async (
   idProject: string,
   clientId: number,
   rawData: ClientFormType,
-  locationResponse: IAddAddressData | any,
+  locationResponse: any,
   hasLocationChanged: boolean,
   // eslint-disable-next-line no-unused-vars
   showMessage: (type: MessageType, content: string) => void,
@@ -139,11 +140,10 @@ export const updateClient = async (
     document_type: data.document_type.value,
     locations: formatLocations,
     holding_id: data.holding_id.value,
-    day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod?.day_flag === "true",
-    day: typeof billingPeriod === "string" ? undefined : billingPeriod?.day,
-    order: typeof billingPeriod === "string" ? undefined : billingPeriod?.order?.toLowerCase(),
-    day_of_week:
-      typeof billingPeriod === "string" ? undefined : billingPeriod?.day_of_week?.toLowerCase()
+    day_flag: stringToBoolean(billingPeriod?.day_flag),
+    day: billingPeriod?.day,
+    order: billingPeriod?.order?.toLowerCase(),
+    day_of_week: billingPeriod?.day_of_week?.toLowerCase()
   };
 
   const formData = new FormData();

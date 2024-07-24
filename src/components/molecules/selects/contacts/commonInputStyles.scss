@@ -18,6 +18,15 @@
             color: $dark-gray;
         }
     }
+
+    &.--readOnly {
+        background-color: $dark-gray;
+        cursor: text;
+
+        .ant-select-selector {
+            color: $darker-gray;
+        }
+    }
 }
 .selectInputError {
     width: 100%;
