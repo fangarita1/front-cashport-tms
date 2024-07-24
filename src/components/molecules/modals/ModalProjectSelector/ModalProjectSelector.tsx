@@ -4,6 +4,7 @@ import Image from "next/image";
 import "./modalProjectSelector.scss";
 import { useEffect, useState } from "react";
 import { getUserPermissions } from "@/services/permissions/userPermissions";
+import { useAppStore } from "@/lib/store/store";
 
 type IProject = {
   id: number;
@@ -16,14 +17,15 @@ interface Props {
   onClose: () => void;
 }
 export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
-  //useEffect to call userPermissions and get the projects
+  const setSelectProject = useAppStore((state) => state.setSelectedProject);
   const [projects, setProjects] = useState<IProject[]>([]);
+
   useEffect(() => {
+    //useEffect to call userPermissions and get the projects
     const fetchProjects = async () => {
       const response = await getUserPermissions();
-      console.log("RESPONSE:", response);
       setProjects(
-        response.data.map((project) => ({
+        response?.data?.map((project) => ({
           id: project.project_id,
           name: project.name,
           logo: project.logo
@@ -33,12 +35,18 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
     fetchProjects();
   }, []);
 
+  const handleSelectProject = (project: IProject) => {
+    console.log("Project selected", project);
+    // setSelectProject(project);
+    onClose();
+  };
+
   return (
     <Modal className="modalProjectSelector" open={isOpen} onCancel={onClose} footer={false}>
       <h2>Elegir proyecto</h2>
       <div className="modalProjectSelector__projects">
-        {projects.map((project) => (
-          <div className="project" key={project.id}>
+        {projects?.map((project) => (
+          <div onClick={() => handleSelectProject(project)} className="project" key={project.id}>
             <Image
               className="project__image"
               src={project.logo}
