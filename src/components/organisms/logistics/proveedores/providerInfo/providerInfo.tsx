@@ -70,6 +70,7 @@ export const ProviderInfoView = ({ isEdit = false, idParam = "" }: Props) => {
     datasource.push(element);
   });
 
+  if (idParam === "") return (<></>)
   return (
     <>
       {contextHolder}

@@ -81,15 +81,29 @@ export const VehicleFormTab = ({
     watch,
     control,
     handleSubmit,
-    reset,
+    resetField,
     getValues,
-    formState: { errors, isDirty }
+    trigger,
+    formState: { errors, isValid }
   } = useForm<IFormVehicle>({
     defaultValues,
-    disabled: statusForm === "review"
+    disabled: statusForm === "review",
+    mode: 'onChange' 
   });
-
   const { push } = useRouter();
+
+  const isFormCompleted = () => {
+    return isValid && images.some(img=>img.file)
+  }
+
+  useEffect(() => {
+    if (!hasGPS) {
+      resetField('general.gps_user', { defaultValue: undefined });
+      resetField('general.gps_password', { defaultValue: undefined });
+      resetField('general.gps_link', { defaultValue: undefined });
+    }
+    trigger(['general.gps_user', 'general.gps_password', 'general.gps_link']);
+  }, [hasGPS, resetField, trigger]);
 
   useEffect(() => {
     console.log(errors);
@@ -103,6 +117,7 @@ export const VehicleFormTab = ({
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
 
+  
   useEffect(() => {
     if (Array.isArray(documentsType)) {
       console.log(data);
@@ -443,6 +458,7 @@ export const VehicleFormTab = ({
                 titleInput=""
                 nameInput="general.aditional_info"
                 control={control}
+                validationRules={{required: false}}
                 disabled={statusForm === "review"} 
                 error={errors.general?.aditional_info}
               />
@@ -506,8 +522,8 @@ export const VehicleFormTab = ({
           <Flex className="buttonNewProject">
             {["edit", "create"].includes(statusForm) && (
               <Button
-                disabled={!isDirty}
-                className={`button ${isDirty ? "active" : ""}`}
+                disabled={!isFormCompleted()}
+                className={`button ${isFormCompleted() ? "active" : ""}`}
                 style={{ display: "flex" }}
                 htmlType={"submit"}
                 onClick={handleSubmit(onSubmit)}
