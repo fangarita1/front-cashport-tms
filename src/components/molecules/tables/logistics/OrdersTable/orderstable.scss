@@ -114,11 +114,12 @@
 		}
     .buttonNewProject {
         gap: 10px;
+		height: 3rem;
         display: flex;
         color: black;
         box-shadow: none;
         font-weight: 600;
-				padding: 12px 24px;
+		padding: 12px 24px;
         align-items: center;
         background-color: $secondary;
 
