@@ -5,7 +5,7 @@ export interface CertificateType {
   id: number;
   entity_type: number;
   description: string;
-  optional: Optional;
+  optional: boolean;
   id_location: any;
   id_material_type: any;
   expiry: any;

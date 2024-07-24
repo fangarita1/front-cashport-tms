@@ -50,3 +50,25 @@ export const addTransferOrder = async (
     }
   };
   
+  export const getTransferOrderById = async (id: string): Promise<IListData> => {
+    const token = await getIdToken();
+    try {
+      const form = new FormData();      
+      form.append("id", id);
+
+      const response: IListData = await axios.post(
+        `${config.API_HOST}/transfer-order/id`, form,
+        {
+          headers: {
+            Accept: "application/json, text/plain, */*",
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+ 
+      return response;
+    } catch (error) {
+      console.log("Error getTransferOrderById: ", error);
+      return error as any;
+    }
+  };

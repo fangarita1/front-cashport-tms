@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button, Flex } from "antd";
 
-import { ArrowLineRight, BellSimpleRinging, BellSimpleRinging, Gear, Megaphone, User, UsersThree, Truck } from "phosphor-react";
+import { ArrowLineRight, BellSimpleRinging, Gear, Megaphone, User, UsersThree, Truck } from "phosphor-react";
 import Image from "next/image";
 
 import "./sidebar.scss";

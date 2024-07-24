@@ -1079,6 +1079,7 @@ export interface ITransferOrderOtherRequirements {
   created_by: string;
   modified_at: Date;
   modified_by: string;
+  other_requirement_desc: string;  
 }
 
 export interface ITransferOrderVehicle {
@@ -1090,6 +1091,7 @@ export interface ITransferOrderVehicle {
   created_by: string | null | undefined;
   modified_at: Date;
   modified_by: string;
+  vehicle_type_desc: string;  
 }
 
 export interface ITransferOrderMaterial {
@@ -1101,6 +1103,7 @@ export interface ITransferOrderMaterial {
   created_by: string | null | undefined;
   modified_at: Date;
   modified_by: string;
+  material? : IMaterial[];
 }
 
 export interface ISubsidiary {
@@ -1127,6 +1130,7 @@ export interface IPsl {
 export interface ITransferOrder {
   id: number;
   id_service_type: string;
+  service_type_desc: string;
   id_user: number;
   user: string | null | undefined;
   id_start_location: number;
@@ -1141,11 +1145,16 @@ export interface ITransferOrder {
   id_route: string;
   id_company: number;
   id_client: number;
+  client_desc: string;  
+  status: string;
   active: string;
   created_at?: string | null | undefined;
   created_by?: string | null | undefined;
   modified_at?: string | null | undefined;
   modified_by?: string | null | undefined;
+  observation: string | null | undefined;
+  start_location?: ILocation[]| null | undefined;
+  end_location?: ILocation[]| null | undefined;
   //geometry
   geometry: any;
   //datos de contacto
@@ -1296,6 +1305,7 @@ export interface ITransferOrderCostCenter {
   id_transfer_order: number;
   id_psl: number;
   id_costcenter: number;
+  cost_center_desc: string;  
   percentage: number;
   active: string;
   created_at: Date;
@@ -1330,6 +1340,7 @@ export interface ITransferOrderDocuments {
   id: number;
   id_transfer_order: number;
   id_document_type: number;
+  document_type_desc:string;  
   url_document: string;
   status: string;
   active: string;
@@ -1410,6 +1421,7 @@ export interface ITransferOrderProducts {
   created_by: string | null | undefined;
   modified_at?: Date | null;
   modified_by?: string | null;
+  product_desc: string;  
 }
 
 /**
