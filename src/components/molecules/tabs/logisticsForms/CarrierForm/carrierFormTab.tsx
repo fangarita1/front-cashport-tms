@@ -132,6 +132,7 @@ export const CarrierFormTab = ({
                 disabled={statusForm === "review"}
                 imgDefault={watch("general.photo") || "https://cdn.icon-icons.com/icons2/1622/PNG/512/3741756-bussiness-ecommerce-marketplace-onlinestore-store-user_108907.png"}
                 setImgFile={setImageFile}
+                uploadInstructionsText="*Sube la foto del logo"
               />
               {imageError && <Text className="textError">{"foto del conductor es obligatorio *"}</Text>}
             </Col>

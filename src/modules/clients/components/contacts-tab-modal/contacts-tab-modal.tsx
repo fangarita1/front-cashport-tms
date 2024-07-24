@@ -44,6 +44,7 @@ const ContactsTabModal = ({
   clientId
 }: PropsInvoicesTable) => {
   const { showMessage } = useMessageApi();
+  const [ableToEdit, setAbleToEdit] = useState(false);
   const [contactDetails, setContactDetails] = useState<IContact>();
   const {
     control,
@@ -55,6 +56,9 @@ const ContactsTabModal = ({
   });
 
   useEffect(() => {
+    if (!showContactModal.contactId) {
+      setAbleToEdit(true);
+    }
     const fetchData = async () => {
       if (showContactModal.contactId) {
         const response = await getContact(clientId, showContactModal.contactId);
@@ -100,18 +104,26 @@ const ContactsTabModal = ({
         </div>
 
         <div className="contactModalContainer__content">
-          <InputForm titleInput="Nombres" control={control} nameInput="name" error={errors.name} />
+          <InputForm
+            titleInput="Nombres"
+            control={control}
+            nameInput="name"
+            error={errors.name}
+            readOnly={!ableToEdit}
+          />
           <InputForm
             titleInput="Apellidos"
             control={control}
             nameInput="lastname"
             error={errors.lastname}
+            readOnly={!ableToEdit}
           />
           <InputForm
             titleInput="Cargo"
             control={control}
             nameInput="position"
             error={errors.position}
+            readOnly={!ableToEdit}
           />
           <div className="inputContainer">
             <h5 className="inputContainer__title">Rol</h5>
@@ -119,7 +131,9 @@ const ContactsTabModal = ({
               name="role"
               control={control}
               rules={{ required: true }}
-              render={({ field }) => <SelectContactRole errors={errors.role} field={field} />}
+              render={({ field }) => (
+                <SelectContactRole errors={errors.role} field={field} readOnly={!ableToEdit} />
+              )}
             />
           </div>
           <div className="inputContainer">
@@ -129,7 +143,11 @@ const ContactsTabModal = ({
               control={control}
               rules={{ required: true }}
               render={({ field }) => (
-                <SelectContactIndicative errors={errors.indicative} field={field} />
+                <SelectContactIndicative
+                  errors={errors.indicative}
+                  field={field}
+                  readOnly={!ableToEdit}
+                />
               )}
             />
           </div>
@@ -138,17 +156,57 @@ const ContactsTabModal = ({
             control={control}
             nameInput="phone"
             error={errors.phone}
+            readOnly={!ableToEdit}
+            typeInput="number"
+            validationRules={{
+              pattern: {
+                value: /^\d{10}$/,
+                message: "El teléfono debe tener 10 dígitos"
+              }
+            }}
           />
-          <InputForm titleInput="Email" control={control} nameInput="email" error={errors.email} />
+          <InputForm
+            titleInput="Email"
+            control={control}
+            nameInput="email"
+            error={errors.email}
+            readOnly={!ableToEdit}
+            typeInput="email"
+            validationRules={{
+              pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: "El email no es válido"
+              }
+            }}
+          />
         </div>
 
         <div className="contactModalContainer__footer">
-          <SecondaryButton onClick={() => setShowContactModal({ isOpen: false, contactId: 0 })}>
-            Cancelar
-          </SecondaryButton>
-          <PrincipalButton disabled={!isValid} onClick={handleSubmit(onSubmitForm)}>
-            {showContactModal.contactId ? "Editar contacto" : "Crear contacto"}
-          </PrincipalButton>
+          {ableToEdit ? (
+            <>
+              <SecondaryButton
+                onClick={() => {
+                  if (!showContactModal.contactId) {
+                    setShowContactModal({ isOpen: false, contactId: 0 });
+                  } else {
+                    setAbleToEdit(false);
+                  }
+                }}
+              >
+                Cancelar
+              </SecondaryButton>
+              <PrincipalButton disabled={!isValid} onClick={handleSubmit(onSubmitForm)}>
+                {showContactModal.contactId ? "Guardar cambios" : "Crear contacto"}
+              </PrincipalButton>
+            </>
+          ) : (
+            <>
+              <SecondaryButton onClick={() => setShowContactModal({ isOpen: false, contactId: 0 })}>
+                Cancelar
+              </SecondaryButton>
+              <PrincipalButton onClick={() => setAbleToEdit(true)}>Editar</PrincipalButton>
+            </>
+          )}
         </div>
       </Flex>
     </Modal>

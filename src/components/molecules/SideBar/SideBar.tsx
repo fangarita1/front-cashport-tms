@@ -10,6 +10,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { logOut } from "../../../../firebase-utils";
 import Link from "next/link";
 import { useAppStore } from "@/lib/store/store";
+import useStore from "@/lib/hook/useStore";
 import config from "@/config";
 
 const { isLogistics } = config;
@@ -18,7 +19,8 @@ export const SideBar = () => {
   const [isSideBarLarge, setIsSideBarLarge] = useState(false);
   const router = useRouter();
   const path = usePathname();
-  const { LOGO } = useAppStore((state) => state.selectProject);
+  const project = useStore(useAppStore, (state) => state.selectProject);
+  const LOGO = project?.LOGO;
 
   return (
     <div className={isSideBarLarge ? "mainLarge" : "main"}>
@@ -59,16 +61,34 @@ export const SideBar = () => {
         </Link>
         )}
         {!isLogistics && (
-        <Link href="/comercio" passHref legacyBehavior>
-          <Button
-            type="primary"
-            size="large"
-            icon={<Megaphone size={26} />}
-            className={path.startsWith("/comercio") ? "buttonIcon" : "buttonIconActive"}
-          >
-            {isSideBarLarge && "Descuentos"}
-          </Button>
-        </Link>
+        <><Link href="/notificaciones" passHref legacyBehavior>
+            <Button
+              type="primary"
+              size="large"
+              icon={<BellSimpleRinging size={26} />}
+              className={path.startsWith("/notificaciones") ? "buttonIcon" : "buttonIconActive"}
+            >
+              {isSideBarLarge && "Notificaciones"}
+            </Button>
+          </Link><Link href="/comercio" passHref legacyBehavior>
+              <Button
+                type="primary"
+                size="large"
+                icon={<Megaphone size={26} />}
+                className={path.startsWith("/comercio") ? "buttonIcon" : "buttonIconActive"}
+              >
+                {isSideBarLarge && "Descuentos"}
+              </Button>
+            </Link><Link href="/comercio" passHref legacyBehavior>
+              <Button
+                type="primary"
+                size="large"
+                icon={<Megaphone size={26} />}
+                className={path.startsWith("/comercio") ? "buttonIcon" : "buttonIconActive"}
+              >
+                {isSideBarLarge && "Descuentos"}
+              </Button>
+            </Link></>
         )}
         <Link href="/logistics/orders" passHref legacyBehavior>
           <Button

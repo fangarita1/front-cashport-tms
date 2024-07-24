@@ -11,6 +11,7 @@ body {
   --font-causten-round: "Causten Round";
 
   /* font sizes */
+  --font-size-xsm: 12px;
   --font-size-sm: 14px;
   --font-size-base: 16px;
   --font-size-xl: 20px;

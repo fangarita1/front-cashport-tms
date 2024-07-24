@@ -222,7 +222,7 @@ export const VehicleFormTab = ({
   return (
     <>
       {contextHolder}
-      <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
+      <form className="vehiclesFormTab" onSubmit={handleSubmit(onSubmit)}>
         <Flex component={"header"} className="headerProyectsForm">
             <Link href={`/logistics/providers/${params.id}/vehicle`} passHref>
               <Button

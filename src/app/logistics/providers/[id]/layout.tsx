@@ -66,7 +66,7 @@ const ProviderInfoView = ({ children, params }: Props) => {
           </Flex>
         </Flex>
         {/* ------------Main Info Order-------------- */}
-        <Flex className="orderContainer">
+        <Flex className="suppliersTabsContainer">
           <Row style={{ width: "100%" }}>
             <Col span={24}>
               <Tabs defaultActiveKey={getDefaultValue()} items={items} onChange={onChange}></Tabs>

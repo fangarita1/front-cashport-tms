@@ -1,5 +1,4 @@
 import { UserByTokenResponse } from "@/types/users/IUserByToken";
-import { StateCreator } from "zustand";
 
 export interface UserSlice {
   user: UserByTokenResponse;
@@ -7,7 +6,7 @@ export interface UserSlice {
   setUser: (u: any) => void;
 }
 
-export const createUserSlice: StateCreator<UserSlice> = (set) => ({
+export const createUserSlice = (set: any): UserSlice => ({
   user: {} as any,
   setUser: (u: any) => set(() => ({ user: u }))
 });

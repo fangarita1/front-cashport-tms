@@ -169,7 +169,7 @@ const columns: TableProps<ITransferOrderList>["columns"] = [
     width: "54px",
     dataIndex: "",
     render: (_, { id }) => (
-      <Button href={`/orders/details/${id}`} className="icon-detail" icon={<Eye size={20} />} />
+      <Button href={`/logistics/orders/details/${id}`} className="icon-detail" icon={<Eye size={20} />} />
     )
   }
 ];

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, ColorPicker, Flex, Input, Select, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, CaretRight, Pencil } from "phosphor-react";
+import Link from "next/link";
 
 // components
 import { SelectCountries } from "@/components/molecules/selects/SelectCountries/SelectCountries";
@@ -74,15 +75,16 @@ export const ProjectFormTab = ({
     <>
       <form className="mainProyectsForm" onSubmit={handleSubmit(onSubmit)}>
         <Flex component={"header"} className="headerProyectsForm">
-          <Button
-            type="text"
-            size="large"
-            href="/"
-            className="buttonGoBack"
-            icon={<CaretLeft size={"1.45rem"} />}
-          >
-            Ver Proyectos
-          </Button>
+          <Link href="/">
+            <Button
+              type="text"
+              size="large"
+              className="buttonGoBack"
+              icon={<CaretLeft size={"1.45rem"} />}
+            >
+              Ver Proyectos
+            </Button>
+          </Link>
           <Flex gap={"1rem"}>
             {(statusForm === "review" || statusForm === "edit") && (
               <Button

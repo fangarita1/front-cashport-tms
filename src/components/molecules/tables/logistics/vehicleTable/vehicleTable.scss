@@ -14,11 +14,9 @@
 	display: flex;
 	align-items: center;
 }
-.mainProjectsTable {
+.vehiclesTable {
 	width: 100%;
 	height: 95%;
-	margin-top: 0.5rem;
-	padding: 1rem;
 	border-radius: 15px;
 	
 	.next {
@@ -112,12 +110,14 @@
 		}
     .buttonNewProject {
         gap: 10px;
+		height: 3rem;
         display: flex;
         color: black;
         box-shadow: none;
         font-weight: 600;
 				padding: 12px 24px;
         align-items: center;
+		height: 3rem;
         background-color: $secondary !important;
 
         &:hover {
