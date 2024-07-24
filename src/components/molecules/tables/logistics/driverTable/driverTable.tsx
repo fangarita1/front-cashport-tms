@@ -21,7 +21,6 @@ export const DriverTable = ({ params: { id } }: Props) => {
   const { data: drivers, isLoading } = useSWR({ providerId: id }, getAllDrivers, {
     onError: (error: any) => {
       console.error(error);
-      message.error(error.message);
     },
     refreshInterval: 30000
   });
