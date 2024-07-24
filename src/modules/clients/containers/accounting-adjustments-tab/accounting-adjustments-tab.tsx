@@ -71,9 +71,17 @@ const AccountingAdjustmentsTab = () => {
               ),
               children: (
                 <AccountingAdjustmentsTable
-                  dataAdjustmentStatus={financialState}
+                  dataAdjustmentsByStatus={financialState.financial_discounts.map(
+                    (financialDiscount) => {
+                      return {
+                        ...financialDiscount,
+                        financial_status_id: financialState.status_id
+                      };
+                    }
+                  )}
                   setSelectedRows={setSelectedRows}
                   setShowAdjustmentDetailModal={setShowAdjustmentDetailModal}
+                  financialStatusId={financialState.status_id}
                 />
               )
             }))}

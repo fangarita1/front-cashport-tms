@@ -124,9 +124,9 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     },
     {
       title: "Clientes",
-      dataIndex: "CLIENTS",
-      key: "CLIENTS",
-      render: (text) => <Text>{text}clientes</Text>
+      dataIndex: "clients_count",
+      key: "clients_count",
+      render: (clients, row) => <Text>{row?.clients?.length}</Text>
     },
     {
       title: "Suscritos",

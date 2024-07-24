@@ -56,7 +56,7 @@ export default function FeatByOrder({ discountType, form, statusForm }: FeatByOr
     } else {
       return {
         unitsFrom: "Minimo de SKU's",
-        unitsTo: "Mínimo de unidades por canal"
+        unitsTo: "Mínimo de unidades por SKU"
       };
     }
   };

@@ -36,7 +36,7 @@ export interface IProject {
 
 export interface Currency {
   id: number;
-  CURRENCY_NAME: string;
+  currency_name: string;
 }
 
 export interface Pagination {

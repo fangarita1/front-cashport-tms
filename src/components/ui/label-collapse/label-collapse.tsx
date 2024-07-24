@@ -45,7 +45,7 @@ const LabelCollapse = ({
           <h5 className={styles.labelCollapse__total__title}>{formatMoney(total)}</h5>
         </Flex>
       )}
-      {quantity && (
+      {!!quantity && (
         <Flex className={styles.labelCollapse__quantity}>
           {removeIcons ? null : (
             <Files size={16} className={styles.labelCollapse__quantity__icon} />
