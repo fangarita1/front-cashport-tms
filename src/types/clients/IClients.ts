@@ -16,19 +16,20 @@ export interface IClientFullResponse {
   message: string;
   data: IClient;
 }
-interface IPosition {
-  lat: string;
-  lon: string;
-}
 
 export interface IClientLocation {
   id: number;
-  nit: string;
   address: string;
-  position: IPosition;
   city: string;
   complement: string;
   project_id: number;
+  location_id: number;
+}
+
+export interface IClientLocationResponse {
+  data: IClientLocation[];
+  error: boolean;
+  message: string;
 }
 
 export interface IClientLocationResponse {
@@ -46,7 +47,7 @@ export interface IClient {
   billing_period_config: IBillingPeriodForm;
   business_name: string;
   client_name: string;
-  client_type: string;
+  cliet_type: string;
   client_type_id: number;
   condition_payment: number;
   condition_payment_id: number;
