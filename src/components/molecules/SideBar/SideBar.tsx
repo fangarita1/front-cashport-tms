@@ -1,9 +1,16 @@
 "use client";
-import { useState } from "react";
-import { Button, Flex } from "antd";
-
-import { ArrowLineRight, BellSimpleRinging, Gear, Megaphone, User } from "phosphor-react";
+import { useEffect, useState } from "react";
+import { Avatar, Button, Flex } from "antd";
 import Image from "next/image";
+
+import {
+  ArrowLineRight,
+  BellSimpleRinging,
+  Gear,
+  Megaphone,
+  User,
+  Clipboard
+} from "phosphor-react";
 
 import "./sidebar.scss";
 import { usePathname, useRouter } from "next/navigation";
@@ -16,24 +23,39 @@ import { ModalProjectSelector } from "../modals/ModalProjectSelector/ModalProjec
 export const SideBar = () => {
   const [isSideBarLarge, setIsSideBarLarge] = useState(false);
   const [modalProjectSelectorOpen, setModalProjectSelectorOpen] = useState(false);
+  const [isComponentLoading, setIsComponentLoading] = useState(true);
   const router = useRouter();
   const path = usePathname();
   const project = useStore(useAppStore, (state) => state.selectProject);
   const LOGO = project?.LOGO;
 
+  useEffect(() => {
+    setIsComponentLoading(false);
+  }, []);
+
+  useEffect(() => {
+    //to check if there is a project selected
+    //if not it should open the modal to select one
+    if (!isComponentLoading && !project?.ID) {
+      setModalProjectSelectorOpen(true);
+    }
+  }, [isComponentLoading, project]);
+
   return (
     <div className={isSideBarLarge ? "mainLarge" : "main"}>
       <Flex vertical className="containerButtons">
-        {LOGO && (
-          <button className="logoContainer" onClick={() => setModalProjectSelectorOpen(true)}>
+        <button className="logoContainer" onClick={() => setModalProjectSelectorOpen(true)}>
+          {LOGO ? (
             <Image
               width={isSideBarLarge ? 75 : 50}
               height={isSideBarLarge ? 75 : 50}
               alt="logo company"
               src={LOGO.trim()}
             />
-          </button>
-        )}
+          ) : (
+            <Avatar shape="square" className="imageWithoutImage" size={50} icon={<Clipboard />} />
+          )}
+        </button>
 
         <Link href="/clientes/all">
           <Button

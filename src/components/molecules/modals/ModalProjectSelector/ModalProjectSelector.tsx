@@ -1,5 +1,6 @@
-import { Modal } from "antd";
+import { Avatar, Modal } from "antd";
 import Image from "next/image";
+import { Clipboard } from "phosphor-react";
 
 import "./modalProjectSelector.scss";
 import { useEffect, useState } from "react";
@@ -14,6 +15,7 @@ interface Props {
 export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
   const setSelectProject = useAppStore((state) => state.setSelectedProject);
   const [projects, setProjects] = useState<ISelectedProject[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<number>();
 
   useEffect(() => {
     //useEffect to call userPermissions and get the projects
@@ -23,7 +25,7 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
         response?.data?.map((project) => ({
           ID: project.project_id,
           NAME: project.name,
-          LOGO: project.logo
+          LOGO: project.logo ? project.logo : ""
         }))
       );
 
@@ -31,8 +33,9 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
         setSelectProject({
           ID: response?.data[0].project_id,
           NAME: response?.data[0].name,
-          LOGO: response?.data[0].logo
+          LOGO: response?.data[0].logo ? response?.data[0].logo : ""
         });
+        setSelectedProjectId(response?.data[0].project_id);
       }
     };
     fetchProjects();
@@ -45,23 +48,36 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
       LOGO: project.LOGO
     };
     setSelectProject(projectInfo);
+    setSelectedProjectId(project.ID);
+
     onClose();
   };
 
   return (
-    <Modal className="modalProjectSelector" open={isOpen} onCancel={onClose} footer={false}>
-      <h2>Elegir proyecto</h2>
+    <Modal
+      className="modalProjectSelector"
+      open={isOpen}
+      onCancel={onClose}
+      footer={false}
+      width={"60%"}
+    >
+      <h2 className="modalProjectSelector__title">Elegir proyecto</h2>
       <div className="modalProjectSelector__projects">
         {projects?.map((project) => (
           <div onClick={() => handleSelectProject(project)} className="project" key={project.ID}>
-            <Image
-              className="project__image"
-              src={project.LOGO}
-              width={100}
-              height={100}
-              alt="Project image"
-            />
-            <div className="project__name">
+            {project.LOGO ? (
+              <Image
+                className="project__image"
+                src={project.LOGO}
+                width={100}
+                height={100}
+                alt="Project image"
+              />
+            ) : (
+              <Avatar shape="square" className="imageWithoutImage" size={65} icon={<Clipboard />} />
+            )}
+
+            <div className={`project__name ${project.ID === selectedProjectId && "-selected"}`}>
               <p>{project.NAME}</p>
             </div>
           </div>

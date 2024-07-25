@@ -1,13 +1,25 @@
 @import "@styles/variables.scss";
 
 .modalProjectSelector {
-    width: fit-content;
+    .ant-modal-content {
+        padding: 1.2rem 0 !important;
+    }
 
+    &__title {
+        margin-left: 2rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
     &__projects {
+        padding: 0.5rem 2rem;
         display: flex;
         flex-wrap: wrap;
+        justify-content: center;
         gap: 1rem;
         margin-top: 1rem;
+        max-height: 480px;
+        overflow-y: auto;
+        scrollbar-width: none;
 
         .project {
             border-radius: 8px;
@@ -35,6 +47,14 @@
                 font-weight: 400;
                 text-align: center;
                 width: 100%;
+
+                &.-selected {
+                    background-color: $secondary;
+                }
+            }
+
+            .imageWithoutImage {
+                background-color: $secondary !important;
             }
         }
     }

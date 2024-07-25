@@ -8,7 +8,7 @@ interface IPermissionData {
   project_id: number;
   rol_id: number;
   name: string;
-  logo: string;
+  logo: string | null;
   views_permissions: IViewPermission[];
   action_permissions: string[];
   is_super_admin: boolean;

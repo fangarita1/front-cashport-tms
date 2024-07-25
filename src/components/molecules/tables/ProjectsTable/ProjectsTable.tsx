@@ -84,7 +84,7 @@ export const ProjectTable = () => {
         pagination={{
           pageSize: 25,
           showSizeChanger: false,
-          total: data.pagination.totalRows,
+          total: data?.pagination?.totalRows,
           onChange: onChangePage,
           itemRender: (page, type, originalElement) => {
             if (type === "prev") {
