@@ -54,7 +54,7 @@ export const ConcilationTable = ({
       align: "right",
       width: 120
     },
-    { 
+    {
       title: "Pronto pago",
       key: "earlypay_date",
       dataIndex: "earlypay_date",
@@ -85,9 +85,7 @@ export const ConcilationTable = ({
       title: "Diferencia",
       key: "difference_amount",
       dataIndex: "difference_amount",
-      render: (amount) => (
-        <p className="text__red__concilation">{amount > 0 ? formatMoney(amount) : ""}</p>
-      ),
+      render: (amount) => <p className="text__red__concilation">{formatMoney(amount)}</p>,
       sorter: (a, b) => a.current_value - b.current_value,
       showSorterTooltip: false,
       align: "right"

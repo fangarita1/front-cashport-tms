@@ -40,6 +40,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
 }) => {
   const { mutate } = useSWRConfig();
   const { data: invoiceData } = useInvoiceDetail({ invoiceId, clientId, projectId });
+  const [urlStep, setUrlStep] = useState<string | undefined>(undefined);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(0);
@@ -80,16 +81,34 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
         return "Nota de débito aplicada";
       case "Generar descuento":
         return "Descuento aplicado";
+      case "Radicar factura":
+        return "Radicación";
+      case "Registrar novedad":
+        return "Novedad";
       default:
         return item;
     }
   };
 
-  console.log(invoiceData, "invoiceData", selectInvoice);
+  const handleDocumentClick = (documentUrl: string) => {
+    const fileExtension = documentUrl?.split(".").pop()?.toLowerCase() ?? "";
+    if (fileExtension === "pdf") {
+      window.open(documentUrl, "_blank");
+    } else if (["png", "jpg", "jpeg"].includes(fileExtension)) {
+      setUrlStep(documentUrl);
+      if (isModalOpen === false) setIsModalOpen(true);
+    } else {
+      alert("Formato de archivo no soportado");
+    }
+  };
 
   return (
     <aside className={`${styles.wrapper} ${isOpen ? styles.show : styles.hide}`}>
-      <InvoiceDownloadModal isModalOpen={isModalOpen} handleCloseModal={setIsModalOpen} />
+      <InvoiceDownloadModal
+        isModalOpen={isModalOpen}
+        handleCloseModal={setIsModalOpen}
+        url={urlStep}
+      />
       <div>
         <div className={styles.modalTopSide}>
           <button type="button" className={styles.back} onClick={onClose}>
@@ -116,10 +135,10 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
             </Button>
           )}
         </div>
-        <div className={styles.idOrder}>
+        {/* <div className={styles.idOrder}>
           ID orden de compra
           <div className={styles.id}>XXXXX</div>
-        </div>
+        </div> */}
 
         <div className={styles.body}>
           <div className={styles.headerBody}>
@@ -135,11 +154,11 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
             <div className={styles.description}>
               <div className={styles.stepperContainer}>
                 <div className={styles.stepperContent}>
-                  {(invoiceData?.results ?? []).map((item) => {
+                  {(invoiceData?.results ?? []).map((item, index, arr) => {
                     return (
                       <div key={item.id} className={styles.mainStep}>
                         <div
-                          className={`${styles.stepLine} ${item.status_name && styles.active}`}
+                          className={`${styles.stepLine} ${item.status_name && (index === arr.length - 1 ? styles.inactive : styles.active)}`}
                         />
                         <div
                           className={`${styles.stepCircle} ${item.status_name && styles.active}`}
@@ -174,7 +193,12 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                             {item.event_type_name === "Generar nota de credito" ||
                             item.event_type_name === "Generar nota de debito" ? (
                               <div>
-                                <div className={styles.icons}>
+                                <div
+                                  className={styles.icons}
+                                  onClick={() => {
+                                    handleDocumentClick(item.files[0] || "");
+                                  }}
+                                >
                                   <ArrowLineDown
                                     size={14}
                                     onClick={() => {
@@ -197,7 +221,12 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
 
                             {item.event_type_name === "Emision de factura" ? (
                               <div>
-                                <div className={styles.icons}>
+                                 <div
+                                  className={styles.icons}
+                                  onClick={() => {
+                                    handleDocumentClick(item.files[0] || "");
+                                  }}
+                                >
                                   <ArrowLineDown
                                     size={14}
                                     onClick={() => {
@@ -211,7 +240,12 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                             )}
                             {item.event_type_name === "Generar descuento" ? (
                               <div>
-                                <div className={styles.icons}>
+                                   <div
+                                  className={styles.icons}
+                                  onClick={() => {
+                                    handleDocumentClick(item.files[0] || "");
+                                  }}
+                                >
                                   <ArrowLineDown size={14} onClick={() => {}} />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
@@ -232,8 +266,10 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   <Envelope size={14} onClick={() => {}} />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                <div className={styles.name}>{`Valor: ${""}`}</div>
-                                <div className={styles.name}>{`Fecha de pago acordada: ${""}`}</div>
+                                <div className={styles.name}>{`Valor: ${item.ammount}`}</div>
+                                <div
+                                  className={styles.name}
+                                >{`Fecha de pago acordada: ${item.event_date}`}</div>
                               </div>
                             ) : (
                               ""
@@ -249,9 +285,14 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                             ) : (
                               ""
                             )}
-                            {item.event_type_name === "Radicación" ? (
+                            {item.event_type_name === "Radicar factura" ? (
                               <div>
-                                <div className={styles.icons}>
+                                <div
+                                  className={styles.icons}
+                                  onClick={() => {
+                                    handleDocumentClick(item.files[0] || "");
+                                  }}
+                                >
                                   <ArrowLineDown size={14} onClick={() => {}} />
                                 </div>
                                 <div
@@ -263,7 +304,12 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                             )}
                             {item.event_type_name === "Cambiar estado" ? (
                               <div>
-                                <div className={styles.icons}>
+                                <div
+                                  className={styles.icons}
+                                  onClick={() => {
+                                    handleDocumentClick(item.files[0] || "");
+                                  }}
+                                >
                                   <ArrowLineDown size={14} onClick={() => {}} />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
@@ -273,6 +319,23 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                 <div
                                   className={styles.name}
                                 >{`Estado final: ${item.status_name}`}</div>
+                              </div>
+                            ) : (
+                              ""
+                            )}
+                             {item.event_type_name === "Registrar novedad" ? (
+                              <div>
+                                <div
+                                  className={styles.icons}
+                                  onClick={() => {
+                                    handleDocumentClick(item.files[0] || "");
+                                  }}
+                                >
+                                  <ArrowLineDown size={14} onClick={() => {}} />
+                                </div>
+                                <div
+                                  className={styles.name}
+                                >{`Responsable: ${item.user_name}`}</div>
                               </div>
                             ) : (
                               ""

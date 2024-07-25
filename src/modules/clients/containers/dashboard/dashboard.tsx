@@ -20,7 +20,6 @@ interface DashboardProps {}
 
 const Dashboard: FC<DashboardProps> = () => {
   const { portfolioData } = useContext(ClientDetailsContext);
-  console.log("portfolioData", portfolioData);
 
   const formattedAppliedPayments = formatMillionNumber(
     portfolioData?.data_wallet?.applied_payments_ammount

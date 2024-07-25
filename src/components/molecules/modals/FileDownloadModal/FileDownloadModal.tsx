@@ -34,7 +34,7 @@ export const FileDownloadModal: React.FC<InvoiceDownloadModalProps> = ({
           type="button"
           className="buttonCheck"
           onClick={() => {
-            console.log("Entendido");
+            onCloseModal(false);
           }}
         >
           Entendido
