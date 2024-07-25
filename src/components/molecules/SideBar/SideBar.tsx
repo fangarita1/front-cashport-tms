@@ -136,7 +136,6 @@ export const SideBar = () => {
           </Button>
         </Link>
         )}
-        {!isLogistics && ( // TODO: remove this condition
         <Link href="/map" passHref legacyBehavior>
           <Button
             type="primary"
@@ -147,7 +146,6 @@ export const SideBar = () => {
             {isSideBarLarge && "Ajustes"}
           </Button>
         </Link>
-        )}
       </Flex>
       <Flex className="exit">
         <Button
