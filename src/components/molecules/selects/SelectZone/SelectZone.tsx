@@ -15,7 +15,7 @@ interface Props {
 }
 
 export const SelectZone = ({ zones, setZones, disabled }: Props) => {
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
   const { data, isLoading } = useSWR<IZones>(`/zone/project/${ID}`, fetcher, {});
 
   const activateZone = (zoneId: number) => {

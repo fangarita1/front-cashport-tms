@@ -6,7 +6,7 @@ import { MessageInstance } from "antd/es/message/interface";
 import useSWR from "swr";
 
 export const useClientTypes = () => {
-  const { ID: projetId } = useAppStore((state) => state.selectProject);
+  const { ID: projetId } = useAppStore((state) => state.selectedProject);
   const { data, isLoading, mutate } = useSWR<IClientTypes>(
     `/client/types/project/${projetId}`,
     API

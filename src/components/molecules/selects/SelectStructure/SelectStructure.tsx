@@ -18,7 +18,7 @@ export const SelectStructure = ({
   selectedBusinessRules,
   setSelectedBusinessRules
 }: Props) => {
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
   const { data: response, isLoading } = useSWR<IBRE>(`/bussines-rule/project/${ID}`, fetcher, {});
 
   return (
@@ -29,19 +29,21 @@ export const SelectStructure = ({
           <Spin />
         ) : (
           <>
-            {(response && typeof response.data !== 'string') && response.data?.map(({ CHANNEL_ID, CHANNEL_NAME, CHANNEL_LINES }) => {
-              return (
-                <SelectChips
-                  key={CHANNEL_ID}
-                  lines={CHANNEL_LINES}
-                  channelId={CHANNEL_ID}
-                  selectedBusinessRules={selectedBusinessRules}
-                  setSelectedBusinessRules={setSelectedBusinessRules}
-                  channelName={CHANNEL_NAME}
-                  disabled={disabled}
-                />
-              );
-            })}
+            {response &&
+              typeof response.data !== "string" &&
+              response.data?.map(({ CHANNEL_ID, CHANNEL_NAME, CHANNEL_LINES }) => {
+                return (
+                  <SelectChips
+                    key={CHANNEL_ID}
+                    lines={CHANNEL_LINES}
+                    channelId={CHANNEL_ID}
+                    selectedBusinessRules={selectedBusinessRules}
+                    setSelectedBusinessRules={setSelectedBusinessRules}
+                    channelName={CHANNEL_NAME}
+                    disabled={disabled}
+                  />
+                );
+              })}
           </>
         )}
       </Flex>

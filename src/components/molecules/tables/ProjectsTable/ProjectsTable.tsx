@@ -31,7 +31,7 @@ export const ProjectTable = () => {
   });
 
   const projects = useAppStore((state) => state.projects);
-  const setProjects = useAppStore((state) => state.getProjects);
+  const setProjects = useAppStore((state) => state.setProjects);
 
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);

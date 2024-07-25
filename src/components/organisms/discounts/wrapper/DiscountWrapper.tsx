@@ -9,7 +9,7 @@ import { useEffect } from "react";
 const { Title } = Typography;
 
 export default function DiscountWrapper({ children }: { children: React.ReactNode }) {
-  const { ID } = useAppStore((projects) => projects.selectProject);
+  const { ID } = useAppStore((projects) => projects.selectedProject);
   useEffect(() => {
     if (!ID) redirectModal();
   }, []);

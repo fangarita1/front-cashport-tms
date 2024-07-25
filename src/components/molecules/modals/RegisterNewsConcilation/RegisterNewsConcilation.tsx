@@ -61,7 +61,7 @@ const RegisterNewsConcilation = ({
     }
   });
   const router = useRouter();
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
 
   const evidence = watch("evidence");
 

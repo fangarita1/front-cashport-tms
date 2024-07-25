@@ -29,7 +29,7 @@ export const ClientsViewTable = () => {
   const [page, setPage] = useState(1);
   const [isComponentLoading, setIsComponentLoading] = useState(true);
 
-  const project = useStore(useAppStore, (projects) => projects.selectProject);
+  const project = useStore(useAppStore, (projects) => projects.selectedProject);
   const ID = project?.ID;
 
   useEffect(() => {

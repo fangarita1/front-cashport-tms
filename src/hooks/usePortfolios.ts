@@ -7,7 +7,7 @@ interface Props {
   page?: number;
 }
 export const usePortfolios = ({ page }: Props) => {
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
   const limit = 250;
   const pathKey = `/portfolio/client/project/${ID}?page=${page}&limit=${limit}`;
   const { data, isLoading } = useSWR<IViewClientsTable>(pathKey, fetcher);

@@ -7,16 +7,21 @@ export type ISelectedProject = {
 };
 export interface ProjectSlice {
   projects: IProject[];
-  selectProject: ISelectedProject;
+  selectedProject: ISelectedProject;
+  projectsBasicInfo: ISelectedProject[];
   // eslint-disable-next-line no-unused-vars
-  getProjects: (by: IProject[]) => void;
+  setProjects: (by: IProject[]) => void;
   // eslint-disable-next-line no-unused-vars
   setSelectedProject: (by: ISelectedProject) => void;
+  // eslint-disable-next-line no-unused-vars
+  setProjectsBasicInfo: (by: ISelectedProject[]) => void;
 }
 
 export const createProjectSlice = (set: any): ProjectSlice => ({
   projects: [],
-  selectProject: {} as ISelectedProject,
-  getProjects: (by: IProject[]) => set({ projects: by }),
-  setSelectedProject: (by: ISelectedProject) => set({ selectProject: by })
+  selectedProject: {} as ISelectedProject,
+  projectsBasicInfo: [],
+  setProjects: (by: IProject[]) => set({ projects: by }),
+  setSelectedProject: (by: ISelectedProject) => set({ selectedProject: by }),
+  setProjectsBasicInfo: (by: ISelectedProject[]) => set({ projectsBasicInfo: by })
 });

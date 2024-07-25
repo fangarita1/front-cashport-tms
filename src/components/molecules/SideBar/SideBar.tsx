@@ -26,7 +26,7 @@ export const SideBar = () => {
   const [isComponentLoading, setIsComponentLoading] = useState(true);
   const router = useRouter();
   const path = usePathname();
-  const project = useStore(useAppStore, (state) => state.selectProject);
+  const project = useStore(useAppStore, (state) => state.selectedProject);
   const LOGO = project?.LOGO;
 
   useEffect(() => {

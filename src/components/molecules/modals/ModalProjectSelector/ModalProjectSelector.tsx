@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Clipboard } from "phosphor-react";
 
 import "./modalProjectSelector.scss";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getUserPermissions } from "@/services/permissions/userPermissions";
 import { useAppStore } from "@/lib/store/store";
 import { ISelectedProject } from "@/lib/slices/createProjectSlice";
@@ -13,15 +13,16 @@ interface Props {
   onClose: () => void;
 }
 export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
-  const setSelectProject = useAppStore((state) => state.setSelectedProject);
-  const [projects, setProjects] = useState<ISelectedProject[]>([]);
-  const [selectedProjectId, setSelectedProjectId] = useState<number>();
+  const selectedProject = useAppStore((state) => state.selectedProject);
+  const setSelectedProject = useAppStore((state) => state.setSelectedProject);
+  const projects = useAppStore((state) => state.projectsBasicInfo);
+  const setProjectsBasicInfo = useAppStore((state) => state.setProjectsBasicInfo);
 
   useEffect(() => {
     //useEffect to call userPermissions and get the projects
     const fetchProjects = async () => {
       const response = await getUserPermissions();
-      setProjects(
+      setProjectsBasicInfo(
         response?.data?.map((project) => ({
           ID: project.project_id,
           NAME: project.name,
@@ -30,15 +31,17 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
       );
 
       if (response?.data?.length === 1) {
-        setSelectProject({
+        setSelectedProject({
           ID: response?.data[0].project_id,
           NAME: response?.data[0].name,
           LOGO: response?.data[0].logo ? response?.data[0].logo : ""
         });
-        setSelectedProjectId(response?.data[0].project_id);
       }
     };
-    fetchProjects();
+
+    if (projects.length === 0) {
+      fetchProjects();
+    }
   }, []);
 
   const handleSelectProject = (project: ISelectedProject) => {
@@ -47,8 +50,7 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
       NAME: project.NAME,
       LOGO: project.LOGO
     };
-    setSelectProject(projectInfo);
-    setSelectedProjectId(project.ID);
+    setSelectedProject(projectInfo);
 
     onClose();
   };
@@ -77,7 +79,7 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
               <Avatar shape="square" className="imageWithoutImage" size={65} icon={<Clipboard />} />
             )}
 
-            <div className={`project__name ${project.ID === selectedProjectId && "-selected"}`}>
+            <div className={`project__name ${project.ID === selectedProject.ID && "-selected"}`}>
               <p>{project.NAME}</p>
             </div>
           </div>
