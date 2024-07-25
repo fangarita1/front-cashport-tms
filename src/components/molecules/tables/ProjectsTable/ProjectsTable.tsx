@@ -31,7 +31,7 @@ export const ProjectTable = () => {
   });
 
   const projects = useAppStore((state) => state.projects);
-  const setProjects = useAppStore((state) => state.getProjects);
+  const setProjects = useAppStore((state) => state.setProjects);
 
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);
@@ -84,7 +84,7 @@ export const ProjectTable = () => {
         pagination={{
           pageSize: 25,
           showSizeChanger: false,
-          total: data.pagination.totalRows,
+          total: data?.pagination?.totalRows,
           onChange: onChangePage,
           itemRender: (page, type, originalElement) => {
             if (type === "prev") {

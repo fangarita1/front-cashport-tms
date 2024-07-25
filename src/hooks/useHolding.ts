@@ -7,7 +7,7 @@ import { addHolding, removeHoldingById } from "@/services/holding/holding";
 import { useAppStore } from "@/lib/store/store";
 
 export const useHolding = () => {
-  const { ID: projectId } = useAppStore((state) => state.selectProject);
+  const { ID: projectId } = useAppStore((state) => state.selectedProject);
   const { data, isLoading, mutate } = useSWR<IHolding>(`/holding/project/${projectId}`, API, {});
 
   const createHolding = async (name: string, messageApi: MessageInstance) => {

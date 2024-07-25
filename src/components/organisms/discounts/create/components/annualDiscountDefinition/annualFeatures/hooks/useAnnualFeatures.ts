@@ -11,7 +11,7 @@ type AnnualFeaturesProps = {
 };
 
 export default function useAnnualFeatures({ form }: AnnualFeaturesProps) {
-  const { ID: projectId } = useAppStore((project) => project.selectProject);
+  const { ID: projectId } = useAppStore((project) => project.selectedProject);
   const [options, setOptions] = useState<
     {
       label: string;
