@@ -60,8 +60,7 @@ export const VehicleFormTab = ({
   const [imageError, setImageError] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [hasGPS, setHasGPS] = useState(true);
-
-
+  
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
     "1",
     getDocumentsByEntityType
@@ -95,6 +94,7 @@ export const VehicleFormTab = ({
   const isFormCompleted = () => {
     return isValid && images.some(img=>img.file)
   }
+  const isSubmitButtonEnabled = isFormCompleted() && !loading
 
   useEffect(() => {
     if (!hasGPS) {
@@ -195,6 +195,7 @@ export const VehicleFormTab = ({
     };
 
     try {
+      setLoading(true)
       const response = await addVehicle(vehicleData, imageFiles, selectedFiles);
       console.log("Vehicle created successfully:", response.data);
       if (response.status === 200) {
@@ -220,6 +221,8 @@ export const VehicleFormTab = ({
           content: "Oops, hubo un error por favor intenta más tarde."
         });
       }
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -522,8 +525,8 @@ export const VehicleFormTab = ({
           <Flex className="buttonNewProject">
             {["edit", "create"].includes(statusForm) && (
               <Button
-                disabled={!isFormCompleted()}
-                className={`button ${isFormCompleted() ? "active" : ""}`}
+                disabled={!isSubmitButtonEnabled}
+                className={`button ${isSubmitButtonEnabled ? "active" : ""}`}
                 style={{ display: "flex" }}
                 htmlType={"submit"}
                 onClick={handleSubmit(onSubmit)}
