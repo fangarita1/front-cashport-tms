@@ -13,11 +13,9 @@ export const invoiceConciliation = async (
   projectId: number
 ): Promise<dataConcilation> => {
   const token = await getIdToken();
- console.log("entra aqui 3");
- 
+
   const formData = new FormData();
-  console.log(files);
-  
+
   files.forEach((file) => {
     formData.append("files", file);
   });

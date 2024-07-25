@@ -90,8 +90,6 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
     }
   };
 
-  console.log(invoiceData, "invoiceData", selectInvoice);
-
   const handleDocumentClick = (documentUrl: string) => {
     const fileExtension = documentUrl?.split(".").pop()?.toLowerCase() ?? "";
     if (fileExtension === "pdf") {
