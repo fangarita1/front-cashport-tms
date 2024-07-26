@@ -1,4 +1,4 @@
-import { Divider, Flex, Image, Typography } from "antd";
+import { Divider, Flex, Typography } from "antd";
 
 import { LoginForm } from "../../forms/LoginForm/LoginForm";
 
@@ -11,13 +11,7 @@ export const LoginView = () => {
     <main className={styles.home}>
       <Flex align="center" className={styles.container}>
         <Flex className={styles.companySection}>
-          <Image
-            className={styles.imageLogo}
-            src="/images/login/01-example-login-logo.png"
-            alt="Logo Company"
-            preview={false}
-            width={"70%"}
-          />
+        <h1 className={styles.main_title}>CashPort</h1>
           <div className={styles.textCompanyContainer}>
             <Divider />
             <Title level={1} style={{ fontSize: "1.6rem", fontWeight: 500, color: "white" }}>
