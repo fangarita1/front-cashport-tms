@@ -8,10 +8,17 @@ interface PropsInputClickable {
   title?: string;
   error?: FieldError | undefined | boolean;
   disabled?: boolean;
+  value?: string;
   callBackFunction: () => void;
 }
 
-const InputClickable = ({ title, error, disabled, callBackFunction }: PropsInputClickable) => {
+const InputClickable = ({
+  title,
+  error,
+  disabled,
+  callBackFunction,
+  value
+}: PropsInputClickable) => {
   const [className, setClassName] = useState("clickableInput");
 
   useEffect(() => {
@@ -43,6 +50,7 @@ const InputClickable = ({ title, error, disabled, callBackFunction }: PropsInput
         placeholder="Seleccionar frecuencia"
         onClick={handleOnClick}
         data-tool-tip="TEST"
+        value={value}
       />
     </div>
   );

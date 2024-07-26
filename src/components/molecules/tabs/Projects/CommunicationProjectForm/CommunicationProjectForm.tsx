@@ -1,5 +1,5 @@
 import { Button, Flex, Radio, Typography } from "antd";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, ControllerRenderProps, FieldError, useForm } from "react-hook-form";
 import { CaretLeft } from "phosphor-react";
 
 import styles from "./communicationProjectForm.module.scss";
@@ -28,7 +28,7 @@ interface Props {
   onGoBackTable: () => void;
 }
 export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
-  const [radioValue, setRadioValue] = useState<any>(0);
+  const [radioValue, setRadioValue] = useState<any>();
   const [zones, setZones] = useState([] as number[]);
   const [selectedPeriodicity, setSelectedPeriodicity] = useState<IPeriodicityModalForm>(
     {} as IPeriodicityModalForm
@@ -40,14 +40,18 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
   const [assignedGroups, setAssignedGroups] = useState([] as any[]);
   const [isFrequencyModalOpen, setIsFrequencyModalOpen] = useState(false);
 
-  const handleChangeRadio = (value: any) => {
+  const handleChangeRadio = (
+    value: any,
+    field: ControllerRenderProps<ICommunicationForm, "trigger.type">
+  ) => {
     setRadioValue(value);
+    field.onChange(value);
   };
 
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     watch,
     setValue
   } = useForm<ICommunicationForm>({});
@@ -82,105 +86,127 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
         />
       </div>
 
-      <div className={styles.forwardType}>
+      <div
+        className={styles.forwardType}
+        style={errors.trigger?.type && { border: "1px dotted red" }}
+      >
         <Title className={styles.forwardType__title} level={5}>
           Tipo de envio
         </Title>
 
-        <div className={styles.radioGroup}>
-          <div className={styles.radioGroup__frequency}>
-            <Radio
-              checked={radioValue === 1}
-              onChange={() => handleChangeRadio(1)}
-              className={styles.radioGroup__frequency__radio}
-              value={1}
-            >
-              <InputClickable
-                title="Frecuencia"
-                error={frequencyError}
-                disabled={radioValue !== 1}
-                callBackFunction={() => setIsFrequencyModalOpen(true)}
-              />
-            </Radio>
-          </div>
+        <Controller
+          name="trigger.type"
+          control={control}
+          rules={{
+            validate: (value) => {
+              if (!value) {
+                return "Seleccione al menos 1 tipo de envio *";
+              }
+              return true;
+            }
+          }}
+          render={({ field }) => (
+            <div className={styles.radioGroup}>
+              <div className={styles.radioGroup__frequency}>
+                <Radio
+                  checked={radioValue === "frecuencia"}
+                  onChange={() => handleChangeRadio("frecuencia", field)}
+                  className={styles.radioGroup__frequency__radio}
+                  value={"frecuencia"}
+                >
+                  <InputClickable
+                    title="Frecuencia"
+                    error={frequencyError}
+                    disabled={radioValue !== "frecuencia"}
+                    callBackFunction={() => setIsFrequencyModalOpen(true)}
+                    value={selectedPeriodicity?.frequency?.label}
+                  />
+                </Radio>
+              </div>
 
-          <div className={styles.radioGroup__event}>
-            <Radio
-              checked={radioValue === 2}
-              onChange={() => handleChangeRadio(2)}
-              name="test"
-              className={styles.radioGroup__event__radio}
-              value={2}
-            >
-              <Controller
-                disabled={radioValue !== 2}
-                name="trigger.settings.eventType"
-                control={control}
-                rules={{ required: radioValue === 2 }}
-                render={({ field }) => (
-                  <GeneralSelect
-                    errors={errors.trigger?.settings?.eventType}
-                    field={field}
-                    title="Tipo de evento"
-                    placeholder="Seleccionar tipo de evento"
-                    options={mockEventTypes}
-                    titleAbsolute
+              <div className={styles.radioGroup__event}>
+                <Radio
+                  checked={radioValue === "evento"}
+                  onChange={() => handleChangeRadio("evento", field)}
+                  name="test"
+                  className={styles.radioGroup__event__radio}
+                  value={"evento"}
+                >
+                  <Controller
+                    disabled={radioValue !== "evento"}
+                    name="trigger.settings.eventType"
+                    control={control}
+                    rules={{ required: radioValue === "evento" }}
+                    render={({ field }) => (
+                      <GeneralSelect
+                        errors={errors.trigger?.settings?.eventType}
+                        field={field}
+                        title="Tipo de evento"
+                        placeholder="Seleccionar tipo de evento"
+                        options={mockEventTypes}
+                        titleAbsolute
+                      />
+                    )}
+                  />
+                </Radio>
+                {watchEventType?.value?.startsWith("Vencimiento") && (
+                  <InputExpirationNoticeDays
+                    nameInput="trigger.settings.noticeDaysEvent"
+                    setValue={setValue}
+                    control={control}
+                    error={errors.trigger?.settings?.noticeDaysEvent}
+                    validationRules={{ required: true }}
                   />
                 )}
-              />
-            </Radio>
-            {watchEventType?.value?.startsWith("Vencimiento") && (
-              <InputExpirationNoticeDays
-                nameInput="trigger.settings.noticeDaysEvent"
-                setValue={setValue}
-                control={control}
-                error={errors.trigger?.settings?.noticeDaysEvent}
-                validationRules={{ required: true }}
-              />
-            )}
-          </div>
+              </div>
 
-          <div className={styles.radioGroup__actions}>
-            <Radio
-              className={styles.radioGroup__actions__radio}
-              checked={radioValue === 3}
-              onChange={() => handleChangeRadio(3)}
-              name="test"
-              value={3}
-            >
-              <Controller
-                disabled={radioValue !== 3}
-                name="trigger.settings.values"
-                control={control}
-                rules={{ required: radioValue === 3 }}
-                render={({ field }) => (
-                  <SelectOuterTags
-                    title="Tipo de acción"
-                    placeholder="Seleccionar tipo de acción"
-                    options={mockAttachments}
-                    errors={errors.trigger?.settings?.values}
-                    field={field}
+              <div className={styles.radioGroup__actions}>
+                <Radio
+                  className={styles.radioGroup__actions__radio}
+                  checked={radioValue === "accion"}
+                  onChange={() => handleChangeRadio("accion", field)}
+                  value={"accion"}
+                >
+                  <Controller
+                    disabled={radioValue !== "accion"}
+                    name="trigger.settings.values"
+                    control={control}
+                    rules={{ required: radioValue === "accion" }}
+                    render={({ field }) => (
+                      <SelectOuterTags
+                        title="Tipo de acción"
+                        placeholder="Seleccionar tipo de acción"
+                        options={mockAttachments}
+                        errors={errors.trigger?.settings?.values}
+                        field={field}
+                      />
+                    )}
                   />
-                )}
-              />
-            </Radio>
-            <Controller
-              disabled={radioValue !== 3}
-              name="trigger.settings.subValues"
-              control={control}
-              rules={{ required: radioValue === 3 }}
-              render={({ field }) => (
-                <SelectOuterTags
-                  title="Subtipo de acción"
-                  placeholder="Seleccionar subtipo de acción"
-                  options={mockAttachments}
-                  errors={errors.trigger?.settings?.subValues}
-                  field={field}
+                </Radio>
+                <Controller
+                  disabled={radioValue !== "accion"}
+                  name="trigger.settings.subValues"
+                  control={control}
+                  rules={{ required: radioValue === "accion" }}
+                  render={({ field }) => (
+                    <SelectOuterTags
+                      title="Subtipo de acción"
+                      placeholder="Seleccionar subtipo de acción"
+                      options={mockAttachments}
+                      errors={errors.trigger?.settings?.subValues}
+                      field={field}
+                    />
+                  )}
                 />
+              </div>
+              {errors.trigger?.type && (
+                <p className={styles.radioGroup__error}>
+                  {(errors.trigger.type as FieldError).message}
+                </p>
               )}
-            />
-          </div>
-        </div>
+            </div>
+          )}
+        />
       </div>
 
       <div className={styles.businessRules}>
@@ -299,7 +325,10 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
       </div>
 
       <Flex justify="end">
-        <PrincipalButton onClick={handleSubmit(handleCreateCommunication)}>
+        <PrincipalButton
+          // disabled={!isValid}
+          onClick={handleSubmit(handleCreateCommunication)}
+        >
           Crear comunicación
         </PrincipalButton>
       </Flex>

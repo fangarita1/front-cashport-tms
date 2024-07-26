@@ -9,12 +9,14 @@ type SelecDayProps = {
   value: Option[];
   // eslint-disable-next-line no-unused-vars
   onChange: (options: Option[]) => void;
+  disabled?: boolean;
 };
 
-export const SelectDay = ({ value, onChange }: SelecDayProps) => {
+export const SelectDay = ({ value, onChange, disabled }: SelecDayProps) => {
   const [selectedOptions, setSelectedOptions] = useState<Option[]>(value);
 
   const handleSelected = (option: Option) => {
+    if (disabled) return;
     if (selectedOptions?.includes(option)) {
       setSelectedOptions(selectedOptions?.filter((selected) => selected !== option));
       return;
@@ -26,11 +28,16 @@ export const SelectDay = ({ value, onChange }: SelecDayProps) => {
     onChange(selectedOptions);
   }, [selectedOptions]);
 
+  useEffect(() => {
+    setSelectedOptions([]);
+    onChange([]);
+  }, [disabled]);
+
   return (
-    <div className="selectDayContainer">
+    <div className={`selectDayContainer`}>
       {options.map((option) => (
         <div
-          className={`selectDayContainer__day ${selectedOptions?.includes(option) && "-selected"}`}
+          className={`selectDayContainer__day ${selectedOptions?.includes(option) && "-selected"} ${disabled && "-disabled"}`}
           onClick={() => handleSelected(option)}
           key={option.value}
         >

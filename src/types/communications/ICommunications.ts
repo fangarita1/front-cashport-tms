@@ -2,7 +2,7 @@ interface TriggerSettingsForm {
   init_date?: string;
   end_date?: string | null;
   frequency?: string;
-  days?: string[];
+  days?: string[] | number;
   values?: ISelectStringType[];
   subValues?: ISelectStringType[];
   eventType?: ISelectStringType;
@@ -10,7 +10,7 @@ interface TriggerSettingsForm {
 }
 
 interface TriggerForm {
-  type: "accion" | "frecuencia";
+  type: "accion" | "frecuencia" | "evento";
   settings: TriggerSettingsForm;
 }
 
@@ -41,7 +41,7 @@ interface ISelectStringType {
 export interface IPeriodicityModalForm {
   init_date: Date;
   frequency_number: number;
-  frequency: string;
-  days: string[] | any;
+  frequency: ISelectStringType;
+  days: ISelectStringType[];
   end_date: Date;
 }

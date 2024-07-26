@@ -21,6 +21,7 @@ interface PropsGeneralSelect<T extends FieldValues> {
   loading?: boolean;
   customStyleContainer?: React.CSSProperties;
   titleAbsolute?: boolean;
+  errorSmall?: boolean;
 }
 
 const GeneralSelect = <T extends FieldValues>({
@@ -31,7 +32,8 @@ const GeneralSelect = <T extends FieldValues>({
   options,
   loading,
   customStyleContainer,
-  titleAbsolute
+  titleAbsolute,
+  errorSmall
 }: PropsGeneralSelect<T>) => {
   const usedOptions = options?.map((option) => {
     return {
@@ -55,7 +57,11 @@ const GeneralSelect = <T extends FieldValues>({
         options={usedOptions}
         labelInValue
       />
-      {errors && <Typography.Text className="textError">{title} es obligatoria *</Typography.Text>}
+      {errors && (
+        <Typography.Text className={`textError ${errorSmall && "-smallFont"}`}>
+          {title} es obligatoria *
+        </Typography.Text>
+      )}
     </Flex>
   );
 };

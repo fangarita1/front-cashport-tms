@@ -44,9 +44,11 @@
     }
 
     .dateInputFormError {
+        background-color: $background;
+        padding: 0.71rem;
+        border: 1px dashed red;
         .ant-picker {
-            border: 1px dashed red;
-            background-color: $background;
+            background-color: $background !important;
             padding: 0.7rem;
             font-size: 1rem;
             border-radius: 0.25rem;
@@ -54,6 +56,9 @@
             &::placeholder {
                 color: $secondary-gray;
             }
+        }
+        &:hover {
+            background-color: $background;
         }
     }
 
