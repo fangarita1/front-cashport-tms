@@ -1,25 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./selectDay.scss";
 
 type Option = {
   value: string;
   label: string;
 };
-export const SelectDay = () => {
-  const [selected, setSelected] = useState<Option>({
-    value: "",
-    label: ""
-  });
+type SelecDayProps = {
+  value: Option[];
+  // eslint-disable-next-line no-unused-vars
+  onChange: (options: Option[]) => void;
+};
+
+export const SelectDay = ({ value, onChange }: SelecDayProps) => {
+  const [selectedOptions, setSelectedOptions] = useState<Option[]>(value);
 
   const handleSelected = (option: Option) => {
-    setSelected(option);
+    if (selectedOptions?.includes(option)) {
+      setSelectedOptions(selectedOptions?.filter((selected) => selected !== option));
+      return;
+    }
+    setSelectedOptions([...selectedOptions, option]);
   };
+
+  useEffect(() => {
+    onChange(selectedOptions);
+  }, [selectedOptions]);
 
   return (
     <div className="selectDayContainer">
       {options.map((option) => (
         <div
-          className={`selectDayContainer__day ${option.label === selected.label && "-selected"}`}
+          className={`selectDayContainer__day ${selectedOptions?.includes(option) && "-selected"}`}
           onClick={() => handleSelected(option)}
           key={option.value}
         >

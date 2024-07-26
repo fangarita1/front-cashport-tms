@@ -37,3 +37,11 @@ interface ISelectStringType {
   value: string;
   label: string;
 }
+
+export interface IPeriodicityModalForm {
+  init_date: Date;
+  frequency_number: number;
+  frequency: string;
+  days: string[] | any;
+  end_date: Date;
+}

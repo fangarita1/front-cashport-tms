@@ -6,18 +6,33 @@ import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm
 import { Controller, useForm } from "react-hook-form";
 import GeneralSelect from "@/components/ui/general-select";
 import { SelectDay } from "@/components/atoms/SelectDay/SelectDay";
+import { IPeriodicityModalForm } from "@/types/communications/ICommunications";
+import dayjs from "dayjs";
+import { Dispatch, SetStateAction } from "react";
 
 interface Props {
   isOpen: boolean;
-  name?: string;
   onClose: () => void;
+  setSelectedPeriodicity: Dispatch<SetStateAction<IPeriodicityModalForm>>;
 }
-export const ModalPeriodicity = ({ isOpen, onClose }: Props) => {
+export const ModalPeriodicity = ({ isOpen, onClose, setSelectedPeriodicity }: Props) => {
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors, isValid }
-  } = useForm<any>({});
+  } = useForm<IPeriodicityModalForm>({
+    defaultValues: {
+      days: []
+    }
+  });
+
+  const watchInitDate = watch("init_date");
+
+  const handleOnSave = (data: IPeriodicityModalForm) => {
+    console.log(data);
+    setSelectedPeriodicity(data);
+  };
 
   return (
     <Modal
@@ -31,23 +46,37 @@ export const ModalPeriodicity = ({ isOpen, onClose }: Props) => {
       <div className="modalPeriodicity__inputs">
         <p className="modalPeriodicity__inputs__name">Inicio</p>
         <InputDateForm
+          titleInput=""
           customStyleContainer={{ maxWidth: "fit-content" }}
           hiddenIcon
           nameInput="init_date"
           placeholder="Seleccionar fecha"
           control={control}
           error={errors.init_date}
+          minDate={dayjs(new Date().toLocaleDateString())}
         />
         <p className="modalPeriodicity__inputs__name">Repetir cada</p>
         <div className="modalPeriodicity__inputs__repeat">
-          <input type="number" className="inputNumber" />
           <Controller
-            name="event_type"
+            name="frequency_number"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <input
+                type="number"
+                className="inputNumber"
+                name={field.name}
+                onChange={field.onChange}
+              />
+            )}
+          />
+          <Controller
+            name="frequency"
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
               <GeneralSelect
-                errors={errors.event_type}
+                errors={errors.frequency}
                 field={field}
                 placeholder="Semanal"
                 options={repeatOptions}
@@ -55,11 +84,20 @@ export const ModalPeriodicity = ({ isOpen, onClose }: Props) => {
             )}
           />
         </div>
-        <p className="modalPeriodicity__inputs__days">
-          <SelectDay />
-        </p>
+        <div className="modalPeriodicity__inputs__days">
+          <Controller
+            name="days"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <SelectDay {...field} onChange={(options) => field.onChange(options)} />
+            )}
+          />
+        </div>
         <p className="modalPeriodicity__inputs__name">Fin</p>
         <InputDateForm
+          disabled={!watchInitDate}
+          titleInput=""
           customStyleContainer={{ maxWidth: "fit-content" }}
           hiddenTitle
           hiddenIcon
@@ -67,14 +105,18 @@ export const ModalPeriodicity = ({ isOpen, onClose }: Props) => {
           placeholder="Seleccionar fecha"
           control={control}
           error={errors.end_date}
+          minDate={dayjs(watchInitDate, "YYYY-MM-DD", true).add(1, "day")}
         />
       </div>
       <p className="modalPeriodicity__inputs__name">
-        Se produce cada Miercoles empezando el 03/07/2024
+        Se produce cada Miercoles empezando el
+        {watchInitDate && ` ${dayjs(watchInitDate, "YYYY-MM-DD").format("DD/MM/YYYY")}`}
       </p>
       <div className="modalPeriodicity__footer">
         <SecondaryButton>Cancelar</SecondaryButton>
-        <PrincipalButton onClick={onClose}>Guardar</PrincipalButton>
+        <PrincipalButton disabled={!isValid} onClick={handleSubmit(handleOnSave)}>
+          Guardar
+        </PrincipalButton>
       </div>
     </Modal>
   );

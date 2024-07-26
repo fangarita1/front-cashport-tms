@@ -15,7 +15,7 @@ import GeneralSearchSelect from "@/components/ui/general-search-select";
 import SelectOuterTags from "@/components/ui/select-outer-tags";
 import InputClickable from "@/components/ui/input-clickable";
 import { ModalPeriodicity } from "@/components/molecules/modals/ModalPeriodicity/ModalPeriodicity";
-import { ICommunicationForm } from "@/types/communications/ICommunications";
+import { ICommunicationForm, IPeriodicityModalForm } from "@/types/communications/ICommunications";
 import { InputExpirationNoticeDays } from "@/components/atoms/inputs/InputExpirationNoticeDays/InputExpirationNoticeDays";
 
 const { Title } = Typography;
@@ -30,6 +30,9 @@ interface Props {
 export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
   const [radioValue, setRadioValue] = useState<any>(0);
   const [zones, setZones] = useState([] as number[]);
+  const [selectedPeriodicity, setSelectedPeriodicity] = useState<IPeriodicityModalForm>(
+    {} as IPeriodicityModalForm
+  );
   const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
     initDatSelectedBusinessRules
   );
@@ -53,6 +56,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
   const handleCreateCommunication = (data: any) => {
     console.log(data);
     console.log("zonas:", zones, selectedBusinessRules, "grupos:", assignedGroups);
+    console.log("periodicidad:", selectedPeriodicity);
   };
 
   return (
@@ -302,6 +306,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
       <ModalPeriodicity
         isOpen={isFrequencyModalOpen}
         onClose={() => setIsFrequencyModalOpen(false)}
+        setSelectedPeriodicity={setSelectedPeriodicity}
       />
     </main>
   );
