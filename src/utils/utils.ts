@@ -151,29 +151,27 @@ export function extractSingleParam(value: string | string[] | undefined): string
   }
   return value;
 }
-
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
+  const utcDay = String(date.getUTCDate()).padStart(2, "0");
+  const utcMonth = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const utcYear = date.getUTCFullYear();
 
-  return `${day}/${month}/${year}`;
+  return `${utcDay}/${utcMonth}/${utcYear}`;
 }
-export const formatDateBars = (date: string): string => {
-  const d = new Date(date);
-  const year = d.getFullYear();
-  const month = `0${d.getMonth() + 1}`.slice(-2);
-  const day = `0${d.getDate()}`.slice(-2);
-  return `${year}-${month}-${day}`;
+export const formatDateBars = (dateString: string): string => {
+  const date = new Date(dateString);
+  const utcDay = String(date.getUTCDate()).padStart(2, "0");
+  const utcMonth = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const utcYear = date.getUTCFullYear();
+  return `${utcYear}-${utcMonth}-${utcDay}`;
 };
 
 export const formatDatePlane = (date: string): string => {
-  //18 octubre, 2023 en español
   const d = new Date(date);
-  const year = d.getFullYear();
-  const month = d.toLocaleString("es-ES", { month: "long" });
-  const day = d.getDate();
+  const year = d.getUTCFullYear();
+  const month = new Intl.DateTimeFormat('es-ES', { month: 'long', timeZone: 'UTC' }).format(d);
+  const day = d.getUTCDate();
 
   return `${day} ${month}, ${year}`;
 };
