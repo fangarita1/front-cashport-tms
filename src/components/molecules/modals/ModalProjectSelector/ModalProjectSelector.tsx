@@ -1,5 +1,4 @@
 import { Avatar, Modal } from "antd";
-import Image from "next/image";
 import { Clipboard } from "phosphor-react";
 
 import "./modalProjectSelector.scss";
@@ -68,13 +67,8 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
         {projects?.map((project) => (
           <div onClick={() => handleSelectProject(project)} className="project" key={project.ID}>
             {project.LOGO ? (
-              <Image
-                className="project__image"
-                src={project.LOGO}
-                width={100}
-                height={100}
-                alt="Project image"
-              />
+              // eslint-disable-next-line @next/next/no-img-element
+              <img className="project__image" src={project.LOGO} alt="Project image" />
             ) : (
               <Avatar shape="square" className="imageWithoutImage" size={65} icon={<Clipboard />} />
             )}
