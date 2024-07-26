@@ -19,6 +19,7 @@ import RadicationInvoice from "@/components/molecules/modals/Radication/Radicati
 import RegisterNews from "@/components/molecules/modals/RegisterNews/RegisterNews";
 import { useSWRConfig } from "swr";
 import "./wallettab.scss";
+import MoldalNoveltyDetail from "@/components/molecules/modals/MoldalNoveltyDetail/MoldalNoveltyDetail";
 
 export const WalletTab = () => {
   const [invoices, setInvoices] = useState<InvoicesData[] | undefined>([]);
@@ -219,6 +220,7 @@ export const WalletTab = () => {
         messageShow={messageShow}
         onCloseAllModals={closeAllModal}
       />
+      <MoldalNoveltyDetail />
     </>
   );
 };

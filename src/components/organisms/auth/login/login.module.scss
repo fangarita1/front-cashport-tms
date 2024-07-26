@@ -10,6 +10,15 @@ $layout-breakpoint-small: 960px;
     
     }
 }
+.main_title{
+    font-size: 3rem;
+    color: white !important;
+    margin-top: 3rem;
+    @media (max-width: $layout-breakpoint-small) {
+        font-size: 2rem;
+        margin-top: 1rem;
+    }
+}
 .container{
     height: 100%;
     max-width: 1400px;

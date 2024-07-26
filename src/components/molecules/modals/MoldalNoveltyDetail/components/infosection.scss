@@ -1,0 +1,45 @@
+.info-section {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 8px;
+    padding: 12px;
+    align-items: start;
+
+    .info-row {
+        display: contents;
+
+        p {
+            margin: 0;
+        }
+    }
+
+    .approved {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .approved-tags {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+
+            .ant-tag {
+                display: flex !important;
+                align-items: center !important;
+                gap: 6px;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                color: #666;
+                margin: none !important;
+                margin-inline-end : none !important;
+
+                .icon {
+                    display: flex;
+                    align-items: center;
+                    color: #666;
+                }
+            }
+        }
+    }
+}
