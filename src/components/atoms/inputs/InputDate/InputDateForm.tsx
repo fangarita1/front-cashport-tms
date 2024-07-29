@@ -4,7 +4,6 @@ import { Control, Controller, FieldError, RegisterOptions } from "react-hook-for
 import { Calendar } from "phosphor-react";
 
 import "./inputDateFormStyle.scss";
-import dayjs from "dayjs";
 
 interface InputDateFormProps {
   titleInput: string;
@@ -42,15 +41,15 @@ export const InputDateForm = ({
               onChange={(date) => field.onChange(date)}
               size="large"
               disabled={disabled}
-              placeholder={placeholder || `Select ${titleInput.toLowerCase()}`}
+              placeholder={placeholder || `Selecciona una fecha`}
               suffixIcon={<Calendar className="dateInputForm__icon" />}
-              className={!error ? "dateInputForm" : "dateInputFormError"}
+              className={error ?  "dateInputFormError" : "dateInputForm"}
             />
           )}
         />
         {error && (
-          <Typography.Text className="textError">
-            {error.message || `${titleInput} is required`}
+          <Typography.Text className="textError" type="danger">
+            {error?.message || `${titleInput} es obligatorio *`}
           </Typography.Text>
         )}
       </Flex>
