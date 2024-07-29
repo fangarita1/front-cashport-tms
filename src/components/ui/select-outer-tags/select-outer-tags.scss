@@ -5,14 +5,16 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 4px;
 
     .inputTitle {
-        position: absolute;
-        top: -1.3rem;
         font-size: 0.75rem;
         font-weight: 600;
         color: $gray;
+
+        &.-absolute {
+            position: absolute;
+            top: -1.3rem;
+        }
     }
 
     .inputRegular {
@@ -74,11 +76,16 @@
         position: absolute;
         top: 50%;
         left: 0.7rem;
-        top: 0.8rem;
+        top: 2.15rem;
         color: $dark-gray;
         font-size: 1rem;
         pointer-events: none;
         z-index: 1;
+
+        &.-absolute {
+            left: 0.7rem;
+            top: 0.7rem;
+        }
     }
 
     .selectDrop {
@@ -98,6 +105,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: 4px;
+        padding: 4px 0px;
 
         &__tag {
             width: fit-content;

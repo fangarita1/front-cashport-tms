@@ -17,6 +17,7 @@ import InputClickable from "@/components/ui/input-clickable";
 import { ModalPeriodicity } from "@/components/molecules/modals/ModalPeriodicity/ModalPeriodicity";
 import { ICommunicationForm, IPeriodicityModalForm } from "@/types/communications/ICommunications";
 import { InputExpirationNoticeDays } from "@/components/atoms/inputs/InputExpirationNoticeDays/InputExpirationNoticeDays";
+import { OptionType } from "@/components/ui/select-outer-tags/select-outer-tags";
 
 const { Title } = Typography;
 
@@ -53,9 +54,27 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
     handleSubmit,
     formState: { errors, isValid },
     watch,
-    setValue
+    setValue,
+    getValues
   } = useForm<ICommunicationForm>({});
   const watchEventType = watch("trigger.settings.eventType");
+  const valueBody = watch("template.message");
+  console.log("valueBody", valueBody);
+
+  const handleAddTagToBody = (value: OptionType[], deletedValue: OptionType[]) => {
+    const valueBody = getValues("template.message");
+
+    if (deletedValue.length > 0) {
+      const deletedTag = deletedValue[0].label;
+      const regex = new RegExp(deletedTag, "g");
+      setValue("template.message", valueBody.replace(regex, ""));
+      return;
+    }
+
+    const lastAddedTag = value.length > 0 ? value[value.length - 1] : undefined;
+
+    setValue("template.message", `${valueBody} ${lastAddedTag?.label}`);
+  };
 
   const handleCreateCommunication = (data: any) => {
     console.log(data);
@@ -179,6 +198,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
                         options={mockAttachments}
                         errors={errors.trigger?.settings?.values}
                         field={field}
+                        titleAbsolute
                       />
                     )}
                   />
@@ -195,6 +215,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
                       options={mockAttachments}
                       errors={errors.trigger?.settings?.subValues}
                       field={field}
+                      titleAbsolute
                     />
                   )}
                 />
@@ -269,19 +290,24 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
             />
           )}
         />
+
+        {/* WIP */}
+
         <Flex gap={"1rem"} align="flex-start">
           <Controller
             name="template.tags"
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
-              <GeneralSelect
-                errors={errors.template?.tags}
-                field={field}
+              <SelectOuterTags
                 title="Tags"
                 placeholder="Seleccionar tag"
                 options={mockTags}
+                errors={errors.template?.tags}
+                field={field}
                 customStyleContainer={{ width: "25%" }}
+                hiddenTags
+                addedOnchangeBehaviour={handleAddTagToBody}
               />
             )}
           />
@@ -307,6 +333,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
             </div>
           )}
         />
+
         <Controller
           name="template.files"
           control={control}
@@ -319,6 +346,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               errors={errors.template?.files}
               field={field}
               customStyleContainer={{ marginTop: "1rem" }}
+              titleAbsolute
             />
           )}
         />

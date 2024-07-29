@@ -14,7 +14,7 @@ interface TriggerForm {
   settings: TriggerSettingsForm;
 }
 
-interface TemplateForm {
+interface ITemplateForm {
   via: ISelectStringType;
   send_to: string[];
   copy_to: string[];
@@ -30,7 +30,7 @@ export interface ICommunicationForm {
   name: string;
   descripcion: string;
   trigger: TriggerForm;
-  template: TemplateForm;
+  template: ITemplateForm;
 }
 
 interface ISelectStringType {

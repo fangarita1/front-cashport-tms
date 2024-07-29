@@ -10,7 +10,7 @@ import {
 import { X } from "phosphor-react";
 import "./select-outer-tags.scss";
 
-interface OptionType {
+export interface OptionType {
   value: number;
   label: string;
 }
@@ -27,6 +27,10 @@ interface PropsGeneralSelect<T extends FieldValues> {
   options: { value: number; label: string }[] | undefined;
   loading?: boolean;
   customStyleContainer?: React.CSSProperties;
+  hiddenTags?: boolean;
+  titleAbsolute?: boolean;
+  // eslint-disable-next-line no-unused-vars
+  addedOnchangeBehaviour?: (value: OptionType[], deletedValue: OptionType[]) => void;
 }
 
 const SelectOuterTags = <T extends FieldValues>({
@@ -36,13 +40,22 @@ const SelectOuterTags = <T extends FieldValues>({
   placeholder,
   options,
   loading = false,
-  customStyleContainer
+  customStyleContainer,
+  hiddenTags,
+  titleAbsolute,
+  addedOnchangeBehaviour
 }: PropsGeneralSelect<T>) => {
   const [selectedOptions, setSelectedOptions] = useState<OptionType[]>([]);
 
   const handleChange = (value: OptionType[]) => {
+    const deletedValue = selectedOptions.filter(
+      (prevOption) => !value.some((option) => option.value === prevOption.value)
+    );
+
     setSelectedOptions(value);
     field.onChange(value);
+
+    if (addedOnchangeBehaviour) addedOnchangeBehaviour(value, deletedValue);
   };
 
   const usedOptions = options?.map((option) => {
@@ -63,7 +76,7 @@ const SelectOuterTags = <T extends FieldValues>({
 
   return (
     <div className="selectOuterTags" style={customStyleContainer}>
-      <h4 className="inputTitle">{title}</h4>
+      <h4 className={`inputTitle ${titleAbsolute && "-absolute"}`}>{title}</h4>
       <Select
         {...field}
         variant="borderless"
@@ -80,16 +93,20 @@ const SelectOuterTags = <T extends FieldValues>({
         options={usedOptions}
         labelInValue
       />
-      {selectedOptions.length > 0 && <div className="selectPlaceholder">{placeholder}</div>}
+      {selectedOptions.length > 0 && (
+        <div className={`selectPlaceholder ${titleAbsolute && "-absolute"}`}>{placeholder}</div>
+      )}
       {errors && <Typography.Text className="textError">{title} es obligatorio *</Typography.Text>}
-      <div className="selectedOptions">
-        {selectedOptions.map((option) => (
-          <div className="selectedOptions__tag" key={option.value}>
-            <p key={option.value}>{option.label}</p>
-            <X className="deleteTag" onClick={() => handleDeleteSelected(option)} size={14} />
-          </div>
-        ))}
-      </div>
+      {!hiddenTags ? (
+        <div className="selectedOptions">
+          {selectedOptions.map((option) => (
+            <div className="selectedOptions__tag" key={option.value}>
+              <p key={option.value}>{option.label}</p>
+              <X className="deleteTag" onClick={() => handleDeleteSelected(option)} size={14} />
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 };
