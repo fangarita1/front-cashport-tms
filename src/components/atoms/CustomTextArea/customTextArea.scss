@@ -1,0 +1,45 @@
+@import "@styles/variables.scss";
+
+.container {
+    position: relative;
+    width: 100%;
+    background-color: $background;
+    border-radius: 0.25rem;
+}
+.container__textarea {
+    background: transparent;
+    position: relative;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.875rem 1rem;
+    width: 100%;
+    min-height: 18rem;
+    resize: none;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 300;
+    color: transparent;
+    caret-color: $black;
+
+    &::placeholder {
+        color: $dark-gray;
+    }
+}
+.container__mirror {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    line-height: 1rem;
+}
+
+.container__mark {
+    background: $secondary;
+    border-radius: 4px;
+    text-align: center;
+    width: fit-content;
+    display: inline-block;
+    box-sizing: border-box;
+}

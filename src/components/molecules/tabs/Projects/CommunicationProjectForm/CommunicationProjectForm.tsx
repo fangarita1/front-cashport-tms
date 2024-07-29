@@ -5,7 +5,7 @@ import { CaretLeft } from "phosphor-react";
 import styles from "./communicationProjectForm.module.scss";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 import { SelectZone } from "@/components/molecules/selects/SelectZone/SelectZone";
 import { SelectStructure } from "@/components/molecules/selects/SelectStructure/SelectStructure";
@@ -18,6 +18,7 @@ import { ModalPeriodicity } from "@/components/molecules/modals/ModalPeriodicity
 import { ICommunicationForm, IPeriodicityModalForm } from "@/types/communications/ICommunications";
 import { InputExpirationNoticeDays } from "@/components/atoms/inputs/InputExpirationNoticeDays/InputExpirationNoticeDays";
 import { OptionType } from "@/components/ui/select-outer-tags/select-outer-tags";
+import { CustomTextArea } from "@/components/atoms/CustomTextArea/CustomTextArea";
 
 const { Title } = Typography;
 
@@ -58,22 +59,21 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
     getValues
   } = useForm<ICommunicationForm>({});
   const watchEventType = watch("trigger.settings.eventType");
-  const valueBody = watch("template.message");
-  console.log("valueBody", valueBody);
+  const watchTemplateTagsLabels = watch("template.tags")?.map((tag) => tag.label);
 
   const handleAddTagToBody = (value: OptionType[], deletedValue: OptionType[]) => {
     const valueBody = getValues("template.message");
+    console.log("valueBody", valueBody);
 
     if (deletedValue.length > 0) {
       const deletedTag = deletedValue[0].label;
-      const regex = new RegExp(deletedTag, "g");
-      setValue("template.message", valueBody.replace(regex, ""));
+      setValue("template.message", valueBody.replace(`[${deletedTag}]`, ""));
       return;
     }
 
     const lastAddedTag = value.length > 0 ? value[value.length - 1] : undefined;
 
-    setValue("template.message", `${valueBody} ${lastAddedTag?.label}`);
+    setValue("template.message", `${valueBody ? valueBody : ""}[${lastAddedTag?.label}]`);
   };
 
   const handleCreateCommunication = (data: any) => {
@@ -322,18 +322,21 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
         <Controller
           name="template.message"
           control={control}
+          rules={{ required: true }}
           render={({ field }) => (
             <div className={styles.textArea}>
               <p className={styles.textArea__label}>Cuerpo</p>
-              <textarea
+              <CustomTextArea
                 {...field}
+                onChange={field.onChange}
                 placeholder="Ingresar cuerpo del correo"
-                style={errors.template?.message ? { borderColor: "red" } : {}}
+                customStyles={errors.template?.message ? { borderColor: "red" } : {}}
+                value={field.value}
+                highlightWords={watchTemplateTagsLabels}
               />
             </div>
           )}
         />
-
         <Controller
           name="template.files"
           control={control}
