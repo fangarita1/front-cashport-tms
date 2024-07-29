@@ -103,9 +103,9 @@ export const UserProjectForm = ({
       setZones(zonesFinalData);
 
       setSelectedBusinessRules({
-        channels: finalData.USER_CHANNELS.map((channel) => channel.ID),
-        lines: finalData.USER_LINES.map((line) => line.ID),
-        sublines: finalData.USER_SUBLINES.map((subline) => subline.ID)
+        channels: finalData.USER_CHANNELS?.map((channel) => channel.ID),
+        lines: finalData.USER_LINES?.map((line) => line.ID),
+        sublines: finalData.USER_SUBLINES?.map((subline) => subline.ID)
       });
 
       const groupsByUserResponse = await getGroupsByUser(isViewDetailsUser?.id, ID);
