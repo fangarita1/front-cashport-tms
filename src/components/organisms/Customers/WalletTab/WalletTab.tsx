@@ -220,7 +220,7 @@ export const WalletTab = () => {
         messageShow={messageShow}
         onCloseAllModals={closeAllModal}
       />
-      <MoldalNoveltyDetail />
+      <MoldalNoveltyDetail isOpen={true} onClose={onCloseModal} noveltyId={0} />
     </>
   );
 };

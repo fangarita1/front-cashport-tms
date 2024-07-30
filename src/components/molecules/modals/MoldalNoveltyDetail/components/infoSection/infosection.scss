@@ -22,6 +22,7 @@
             display: flex;
             align-items: center;
             flex-wrap: wrap;
+            gap:  0.5rem;
 
             .ant-tag {
                 display: flex !important;
@@ -31,8 +32,7 @@
                 border-radius: 4px;
                 font-size: 12px;
                 color: #666;
-                margin: none !important;
-                margin-inline-end : none !important;
+                margin: 0 !important;
 
                 .icon {
                     display: flex;
