@@ -1,0 +1,24 @@
+.submitButton {
+    height: 2.8125rem !important; /* 45px */
+    width: 12.5rem !important; /* 200px */
+    font-size: 0.875rem; /* 14px */
+    font-weight: bold !important;
+    text-align: center;
+    border: none !important;
+    border-radius: 0.25rem; /* 4px */
+    padding: 1.5rem 0.75rem;
+    cursor: pointer;
+    display: inline-block;
+    line-height: 2.8125rem; /* 45px para centrar el texto verticalmente */
+    transition: background-color 0.3s, color 0.3s; /* Transiciones suaves */
+}
+  /* Estado activo */
+.submitButton:enabled {
+    background-color: #CBE71E !important;
+    color: #141414 !important;
+}
+/* Estado deshabilitado */
+.submitButton:disabled {
+    background-color: #DDDDDD !important;
+    color: #FFFFFF !important;
+}

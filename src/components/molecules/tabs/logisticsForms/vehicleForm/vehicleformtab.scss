@@ -3,6 +3,7 @@
 .vehiclesFormTab {
     width: 100%;
     height: 100%;
+    padding-right: 1rem;
     display: flex;
     overflow-y: scroll;
     flex-direction: column;
@@ -244,4 +245,14 @@
     margin-bottom: 8px;
     background: none !important;
     cursor: pointer;
+}
+
+.selectButton {
+    .title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        font-style: normal;
+        line-height: normal;
+        color:#909090
+    }
 }

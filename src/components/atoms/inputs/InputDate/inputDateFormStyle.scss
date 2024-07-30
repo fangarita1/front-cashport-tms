@@ -18,7 +18,12 @@
         border: none !important;
         padding: 0.71rem !important;
         font-size: 1rem;
-
+        box-shadow: none;
+        &:hover,
+        &:focus,
+        &:focus-within  {
+            background-color: #F7F7F7 !important;
+        }
         .ant-picker-input {
             border-radius: 0.25rem;
             width: 100%;
@@ -31,6 +36,10 @@
                 background-color: #909090;
                 color: $dark-gray !important;
             }
+            &:focus {
+                box-shadow: none
+            }
+       
         }
 
         &__icon {
@@ -40,17 +49,18 @@
     }
 
     .dateInputFormError {
-        .ant-picker {
-            border: 1px dashed red;
-            background-color: $background;
+            border: 1px dashed red !important;
+            background-color: $background !important;
             padding: 0.7rem;
             font-size: 1rem;
             border-radius: 0.25rem;
-
+            box-shadow: none;
             &::placeholder {
                 color: $secondary-gray;
             }
-        }
+            &:focus {
+                box-shadow: none
+            }
     }
 
     .textError {
