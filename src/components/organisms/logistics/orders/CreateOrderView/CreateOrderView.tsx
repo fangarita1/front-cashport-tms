@@ -462,7 +462,7 @@ export const CreateOrderView = () => {
       key: 'name',
     },
     {
-      title: 'Telefono',
+      title: 'Teléfono',
       dataIndex: 'phone',
       key: 'phone',
     },
@@ -596,7 +596,7 @@ export const CreateOrderView = () => {
   /* Vehiculos sugeridos */
   const columnsCargaVehiculo: TableProps<IVehicleType>['columns'] = [
     {
-      title: 'Vehiculo',
+      title: 'Vehículo',
       dataIndex: 'description',
       key: 'description',
     },
@@ -722,6 +722,7 @@ export const CreateOrderView = () => {
     }
 
     setOptionsPSL(result); 
+    await addPsl();
   };
 
   useEffect(() => {
@@ -1340,10 +1341,14 @@ export const CreateOrderView = () => {
                       <br/><label className="textError">* Campo obligatorio</label><br/>
                     </>
                   }
-                <Switch checked={origenIzaje} onChange={event =>{
-                  setOrigenIzaje(event)
-                }}/>
-                <label>&nbsp;&nbsp; Requiere Izaje</label>
+                { typeactive != "3" &&
+                  <>
+                  <Switch checked={origenIzaje} onChange={event =>{
+                    setOrigenIzaje(event)
+                  }}/>
+                  <label>&nbsp;&nbsp; Requiere Izaje</label>
+                  </>
+                }
               </Row>
               { typeactive != "2" &&
               <Row style={{marginTop:'1rem'}}>
@@ -1368,10 +1373,14 @@ export const CreateOrderView = () => {
                       <br/><label className="textError">* Campo obligatorio</label><br/>
                     </>
                   }
-                <Switch checked={destinoIzaje} onChange={event =>{
-                  setDestinoIzaje(event)
-                }}/>
-                <label>&nbsp;&nbsp; Requiere Izaje</label>
+                { typeactive != "3" &&
+                  <>
+                  <Switch checked={destinoIzaje} onChange={event =>{
+                    setDestinoIzaje(event)
+                  }}/>
+                  <label>&nbsp;&nbsp; Requiere Izaje</label>
+                  </>
+                }
               </Row>
               }
               <Row style={{marginTop:'1.5rem'}}>
