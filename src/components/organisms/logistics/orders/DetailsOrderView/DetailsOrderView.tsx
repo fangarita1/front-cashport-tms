@@ -193,16 +193,24 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
           },
         });
       }
-      // Get the route bounds
-      const bounds = routeGeometry.coordinates.reduce(
-        (bounds:any, coord:any) => bounds.extend(coord),
-        new mapboxgl.LngLatBounds()
-      );
+      
+      if( transferOrder?.id_service_type == "2")
+      {
+        map.setCenter(origin.current);
+        map.setZoom(14)
 
-      // Zoom out to fit the route within the map view
-      map.fitBounds(bounds, {
-        padding: 50,
-      });
+      }else{
+        // Get the route bounds
+        const bounds = routeGeometry.coordinates.reduce(
+          (bounds:any, coord:any) => bounds.extend(coord),
+          new mapboxgl.LngLatBounds()
+        );
+
+        // Zoom out to fit the route within the map view
+        map.fitBounds(bounds, {
+          padding: 50,
+        });
+      }
       
     });
 

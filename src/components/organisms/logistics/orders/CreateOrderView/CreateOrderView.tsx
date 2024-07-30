@@ -59,6 +59,7 @@ import { DocumentCompleteType } from "@/types/logistics/certificate/certificate"
 import { FileText } from "phosphor-react";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
+import { RangePickerProps } from "antd/es/date-picker";
 
 const { Title, Text } = Typography;
 
@@ -96,6 +97,11 @@ export const CreateOrderView = () => {
   
   const [clientValid,setClientValid] = useState(true);
   const [companyValid,setCompanyValid] = useState(true);
+
+  const disabledDate: RangePickerProps['disabledDate'] = (current:any) => {
+    // Can not select days before today and today
+    return current && current < dayjs().endOf('day');
+  };
 
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWRInmutable(
     "0",
@@ -1273,26 +1279,26 @@ export const CreateOrderView = () => {
 
     console.log("DATA PARA POST: ", data);
     
-    // try {
-    //   const response = await addTransferOrder(
-    //     datato,
-    //     data?.files || [] as DocumentCompleteType[]
-    //   );      
-    //   if (response.status === SUCCESS) {
-    //     console.log(response);
-    //     messageApi.open({
-    //       type: "success",
-    //       content: "El viaje fue creado exitosamente."
-    //     });
-    //     push("/logistics/orders");
-    //   }
-    // } catch (error) {
-    //   if (error instanceof Error) {
-    //     messageApi.error(error.message);
-    //   } else {
-    //     messageApi.error("Oops, hubo un error por favor intenta mas tarde.");
-    //   }
-    // }
+    try {
+      const response = await addTransferOrder(
+        datato,
+        data?.files || [] as DocumentCompleteType[]
+      );      
+      if (response.status === SUCCESS) {
+        //console.log(response);
+        messageApi.open({
+          type: "success",
+          content: "El viaje fue creado exitosamente."
+        });
+        push("/logistics/orders/details/"+ response.data.data.id);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        messageApi.error(error.message);
+      } else {
+        messageApi.error("Oops, hubo un error por favor intenta mas tarde.");
+      }
+    }
   };
 
   /* acoordion */
@@ -1376,7 +1382,8 @@ export const CreateOrderView = () => {
                 </Col>
                 <Col span={8}>
                   <DatePicker style={{width:'90%'}}
-                    placeholder="Seleccione fecha"                    
+                    placeholder="Seleccione fecha"
+                    disabledDate={disabledDate}
                     onChange={(value, dateString) => {                      
                       //console.log('Selected Time: ', value);
                       //console.log('Formatted Selected Time: ', dateString);
@@ -1443,7 +1450,8 @@ export const CreateOrderView = () => {
                 </Col>
                 <Col span={8}>
                   <DatePicker style={{width:'90%'}}
-                    placeholder="Seleccione fecha"                    
+                    placeholder="Seleccione fecha"
+                    disabledDate={disabledDate}
                     onChange={(value, dateString) => {
                       //console.log('Selected Time: ', value);
                       //console.log('Formatted Selected Time: ', dateString);
@@ -1563,6 +1571,9 @@ export const CreateOrderView = () => {
                   filterOption={(input, option) =>                    
                     option!.value!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
+                  onChange={()=>{
+
+                  }}
                 >
                   { optionsMaterial.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
                 </Select>
