@@ -497,7 +497,7 @@ export const CreateOrderView = () => {
                           <span>
                               {item.type_description} - {item.description}
                               <br></br>
-                              Volumen {item.kg_weight} m3 - Peso {item.m3_volume} Kg
+                              Volumen {item.m3_volume} m3 - Peso {item.kg_weight} Kg
                           </span>
                           <span>
                             <button className="btnagregar active" onClick={() => addMaterial(item)}>Agregar</button>
