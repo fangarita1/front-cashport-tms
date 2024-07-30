@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Hourglass } from "phosphor-react";
-import { Typography, Avatar, Steps } from "antd";
+import { Typography, Avatar, Steps, Button } from "antd";
 import "./eventsection.scss";
 import { IconLabel } from "@/components/atoms/IconLabel/IconLabel";
+import { addIncidentComment } from "@/services/resolveNovelty/resolveNovelty";
+import { MessageInstance } from "antd/es/message/interface";
 
 const { Text } = Typography;
 const { Step } = Steps;
@@ -17,10 +19,19 @@ interface Event {
 
 interface EventSectionProps {
   events: Event[];
+  incidentId?: string;
   currentUserAvatar: string;
+  messageApi: MessageInstance;
 }
+export const EventSection: React.FC<EventSectionProps> = ({
+  events,
+  currentUserAvatar,
+  incidentId,
+  messageApi
+}) => {
+  const [comment, setComment] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-export const EventSection: React.FC<EventSectionProps> = ({ events, currentUserAvatar }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString();
@@ -34,6 +45,26 @@ export const EventSection: React.FC<EventSectionProps> = ({ events, currentUserA
     if (event.approved_by) return "Aprobado";
     if (event.rejected_by) return "Rechazado";
     return "Acción desconocida";
+  };
+
+  const handleCommentSubmit = async () => {
+    if (!comment.trim()) {
+      messageApi.error("Por favor, ingrese un comentario");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await addIncidentComment(incidentId || "1", { comments: comment });
+      messageApi.success("Comentario agregado exitosamente");
+      setComment("");
+      // You might want to refresh the events list here
+    } catch (error) {
+      messageApi.error("Error al agregar el comentario");
+      console.error("Error adding comment:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -61,7 +92,25 @@ export const EventSection: React.FC<EventSectionProps> = ({ events, currentUserA
         <Step
           status="wait"
           icon={<Avatar src={currentUserAvatar} />}
-          title={<Text className="add-comment">Agrega un comentario</Text>}
+          title={
+            <div className="comment-input-container">
+              <input
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Agrega un comentario"
+                className="add-comment"
+                type="text"
+              />
+              <Button
+                type="primary"
+                onClick={handleCommentSubmit}
+                loading={isSubmitting}
+                disabled={!comment.trim()}
+              >
+                Enviar
+              </Button>
+            </div>
+          }
         />
       </Steps>
     </div>

@@ -8,12 +8,10 @@ import { IIncidentDetail } from "@/hooks/useNoveltyDetail";
 import { SelectNoveltyNode } from "../SelectNoveltyNote/SelectNoveltyNode";
 import { MessageInstance } from "antd/es/message/interface";
 import { ApplyNoveltyModal } from "../ApplyNoveltyModal/ApplyNoveltyModal";
-import { ISelectedAccountingAdjustment } from "../ModalActionDiscountCredit/ModalActionDiscountCredit";
-
 interface ResolveNoveltyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onResolve: (data: { file?: File; comment: string; isAccountingAdjustment: boolean }) => void;
+  onResolve: (data: { file?: File; comment: string }) => void;
   isResolving: boolean;
   novelty: IIncidentDetail;
   messageApi: MessageInstance;
@@ -63,8 +61,7 @@ const ResolveNoveltyModal: React.FC<ResolveNoveltyModalProps> = ({
     } else {
       onResolve({
         file: file || undefined,
-        comment,
-        isAccountingAdjustment
+        comment
       });
       onClose();
     }
@@ -85,10 +82,6 @@ const ResolveNoveltyModal: React.FC<ResolveNoveltyModalProps> = ({
   const handleAdjustmentTypeSelect = (type: string) => {
     setAdjustmentType(type);
     setCurrentView("selectNote");
-  };
-
-  const handleNoteSelection = () => {
-    onClose();
   };
 
   const getModalHeader = () => {
@@ -134,11 +127,19 @@ const ResolveNoveltyModal: React.FC<ResolveNoveltyModalProps> = ({
     }
   }, [currentView]);
 
+  const onCloseAll = () => {
+    console.log("onCloseAll");
+    setSelectedNotes([]);
+    setCurrentView("info");
+    setFile(null);
+    onClose();
+  };
+
   return (
     <Modal
       title={getModalHeader()}
       open={isOpen}
-      onCancel={onClose}
+      onCancel={onCloseAll}
       footer={null}
       width={"40%"}
       bodyStyle={{
@@ -183,8 +184,8 @@ const ResolveNoveltyModal: React.FC<ResolveNoveltyModalProps> = ({
             </Checkbox>
           )}
           <div className="footer">
-            <Button onClick={onClose}>Cancelar</Button>
-            <Button type="primary" onClick={handleResolve}>
+            <Button onClick={onCloseAll}>Cancelar</Button>
+            <Button type="primary" disabled={file === null} onClick={handleResolve}>
               {isResolving ? "Resolver" : "Rechazar"}
             </Button>
           </div>
@@ -224,11 +225,14 @@ const ResolveNoveltyModal: React.FC<ResolveNoveltyModalProps> = ({
         <ApplyNoveltyModal
           type={Number(adjustmentType)}
           selectedRows={selectedNotes}
-          setSelectedRows={setSelectedNotes}
           setCurrentView={setCurrentView}
           invoiceSelected={[novelty]}
           messageApi={messageApi}
-          onClosePrincipalModal={onClose}
+          onClosePrincipalModal={() => {
+            onCloseAll();
+          }}
+          selectedEvidence={file}
+          onResolve={onResolve}
         />
       )}
     </Modal>

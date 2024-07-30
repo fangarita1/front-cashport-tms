@@ -1,12 +1,10 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import "./applynoveltymodal.scss";
 import { ISelectedAccountingAdjustment } from "../ModalActionDiscountCredit/ModalActionDiscountCredit";
-import { IInvoice } from "@/types/invoices/IInvoices";
 import UiTabs from "@/components/ui/ui-tabs";
 import ItemApplyModal from "@/components/atoms/ItemsApplyModal/ItemsApplyModal";
 import Table, { ColumnsType } from "antd/es/table";
-import { Flex, InputNumber, Modal } from "antd";
-import EvidenceModal from "@/modules/clients/components/wallet-tab-evidence-modal/wallet-tab-evidence-modal";
+import { Flex, InputNumber, Spin } from "antd";
 import { applyAccountingAdjustment } from "@/services/accountingAdjustment/accountingAdjustment";
 import { useParams } from "next/navigation";
 import { extractSingleParam } from "@/utils/utils";
@@ -16,11 +14,13 @@ import { IIncidentDetail } from "@/hooks/useNoveltyDetail";
 interface Props {
   type: number;
   selectedRows: ISelectedAccountingAdjustment[];
-  setSelectedRows: Dispatch<SetStateAction<ISelectedAccountingAdjustment[]>>;
   setCurrentView: Dispatch<SetStateAction<string>>;
   invoiceSelected?: IIncidentDetail[];
   messageApi: MessageInstance;
   onClosePrincipalModal?: () => void;
+  selectedEvidence: File | null;
+  onResolve: (data: { file?: File; comment: string }) => void;
+  comment?: string;
 }
 interface IcurrentInvoices {
   id: number;
@@ -35,23 +35,22 @@ interface NormalizedValue {
   }[];
 }
 
-interface infoObject {
-  file: File;
-  fileList: File[];
-}
-
 export const ApplyNoveltyModal = ({
   type,
   selectedRows: selectedNotes,
   setCurrentView,
   messageApi,
   onClosePrincipalModal,
+  selectedEvidence,
+  onResolve,
+  comment,
   invoiceSelected = []
 }: Props) => {
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
   const [selectTab, setSelectTab] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const [currentInvoices, setCurrentInvoices] = useState<IcurrentInvoices[]>([]);
   const [currentAdjustment, setCurrentAdjustment] = useState(
     selectedNotes.map((row) => row.current_value)
@@ -65,9 +64,6 @@ export const ApplyNoveltyModal = ({
       idAdjustment: number;
     }[];
   }>({});
-  const [openEvidenceModal, setOpenEvidenceModal] = useState(false);
-  const [selectedEvidence, setSelectedEvidence] = useState<File[]>([]);
-  const [commentary, setCommentary] = useState<string | undefined>();
 
   useEffect(() => {
     setCurrentInvoices(
@@ -135,40 +131,6 @@ export const ApplyNoveltyModal = ({
     handleValueChange(value ?? 0, selectTab, record);
   };
 
-  const handleOnChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setCommentary(e.target.value);
-  };
-
-  const handleOnChangeDocument: any = (info: infoObject) => {
-    const { file: rawFile } = info;
-    if (rawFile) {
-      const fileSizeInMB = rawFile.size / (1024 * 1024);
-      if (fileSizeInMB > 30) {
-        alert("El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB.");
-        return;
-      }
-      setSelectedEvidence(selectedEvidence ? [...selectedEvidence, rawFile] : [rawFile]);
-    }
-  };
-
-  const handleOnDeleteDocument = (fileName: string) => {
-    const updatedFiles = selectedEvidence?.filter((file) => file.name !== fileName);
-    setSelectedEvidence(updatedFiles);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const file = files[0];
-      const fileSizeInMB = file.size / (1024 * 1024);
-      if (fileSizeInMB > 30) {
-        alert("El archivo es demasiado grande. Por favor, sube un archivo dse menos de 30 MB.");
-        return;
-      }
-      setSelectedEvidence(selectedEvidence ? [...selectedEvidence, file] : [file]);
-    }
-  };
-
   const normalizarApplyValues = (applyValues: {
     [key: string]: { balanceToApply: number; idAdjustment: number }[];
   }): NormalizedValue[] => {
@@ -182,14 +144,22 @@ export const ApplyNoveltyModal = ({
   };
 
   const handleAttachEvidence = async () => {
+    setIsLoading(true);
     try {
       const normalizedData = normalizarApplyValues(applyValues);
       const adjustmentData = JSON.stringify(normalizedData);
-      if (!selectedEvidence) return;
+      onResolve({
+        file: selectedEvidence || undefined,
+        comment: comment || ""
+      });
+      if (!selectedEvidence) {
+        setIsLoading(false);
+        return;
+      }
       const typeAjustment = type === 2 ? 9 : type === 1 ? 10 : 11;
       const response = await applyAccountingAdjustment(
         adjustmentData,
-        selectedEvidence,
+        [selectedEvidence],
         projectIdParam as string,
         clientIdParam as string,
         typeAjustment
@@ -199,7 +169,6 @@ export const ApplyNoveltyModal = ({
           type: "success",
           content: "Ajuste contable aplicado correctamente"
         });
-        setOpenEvidenceModal(false);
         onClosePrincipalModal && onClosePrincipalModal();
       }
     } catch (error) {
@@ -208,6 +177,8 @@ export const ApplyNoveltyModal = ({
         content: "Error al aplicar el ajuste contable"
       });
       console.error("Error applying accounting adjustment:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -283,29 +254,12 @@ export const ApplyNoveltyModal = ({
         <button
           type="button"
           className={`button__action__text ${selectedNotes.length > 0 ? "button__action__text__green" : ""}`}
-          onClick={() => setOpenEvidenceModal(true)}
+          onClick={() => handleAttachEvidence()}
+          disabled={Object.keys(applyValues).length === 0}
         >
-          Continuar
+          {isLoading ? <Spin size="small" /> : "Continuar"}
         </button>
       </Flex>
-      <Modal
-        width={"50%"}
-        open={openEvidenceModal}
-        onCancel={() => setOpenEvidenceModal(false)}
-        footer
-      >
-        <EvidenceModal
-          selectedEvidence={selectedEvidence}
-          handleOnChangeDocument={handleOnChangeDocument}
-          handleOnDeleteDocument={handleOnDeleteDocument}
-          handleFileChange={handleFileChange}
-          handleAttachEvidence={handleAttachEvidence}
-          handleOnChangeTextArea={handleOnChangeTextArea}
-          commentary={commentary}
-          setIsSecondView={setOpenEvidenceModal}
-          noComment
-        />
-      </Modal>
     </div>
   );
 };

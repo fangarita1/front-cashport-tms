@@ -138,7 +138,7 @@ export const InvoicesTable = ({
               <p>Fecha de vencimiento</p>
               <strong>{formatDate(text)}</strong>
               <p>
-                Condición de pago <strong>X días</strong>
+                Condición de pago <strong> {daysLeft(text)} días</strong>
               </p>
             </div>
           }

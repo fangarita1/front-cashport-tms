@@ -31,7 +31,7 @@
 
           background-color: transparent !important;
           border-radius: 0 !important;
-          border-left: 1px dashed #cbe71e !important; 
+          border-left: 1px dashed #cbe71e !important;
         }
       }
 
@@ -95,8 +95,23 @@
       }
     }
 
+    .comment-input-container {
+      display: flex;
+      width: 100%;
+      gap: 8px;
+    }
+
     .add-comment {
+      flex-grow: 1;
+      min-width: 0; // This allows the input to shrink below its default minimum width
       color: #8c8c8c;
+      border: 1px solid #e8e8e8;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .ant-steps-item-title {
+      width: 100%;
     }
   }
 }

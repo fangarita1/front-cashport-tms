@@ -68,3 +68,27 @@ export const rejectIncident = async (
 
   return response;
 };
+
+interface AddCommentData {
+  comments: string;
+}
+
+export const addIncidentComment = async (
+  incidentId: string,
+  commentData: AddCommentData
+): Promise<AxiosResponse<any>> => {
+  const token = await getIdToken();
+
+  const response: AxiosResponse<any> = await axios.post(
+    `${config.API_HOST}/api/invoice/incident-comments/${incidentId}`,
+    commentData,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+
+  return response;
+};

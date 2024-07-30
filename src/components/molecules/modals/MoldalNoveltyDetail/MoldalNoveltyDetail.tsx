@@ -9,6 +9,7 @@ import { EventSection } from "./components/EventSection/EventSection";
 import { IIncidentDetail, useIncidentDetail } from "@/hooks/useNoveltyDetail";
 import ResolveNoveltyModal from "../ResolveNoveltyModal/ResolveNoveltyModal";
 import { approveIncident, rejectIncident } from "@/services/resolveNovelty/resolveNovelty";
+import { mutate } from "swr";
 
 const { Title } = Typography;
 
@@ -23,7 +24,7 @@ const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({
   onClose,
   noveltyId
 }) => {
-  const { data, isLoading } = useIncidentDetail({ incidentId: 64910 });
+  const { data, isLoading } = useIncidentDetail({ incidentId: 169170 }); // TODO CAMBIAR ESTO
   const [incidentData, setIncidentData] = useState<IIncidentDetail | null>(null);
   const [openResolveModal, setOpenResolveModal] = useState(false);
   const [isResolving, setIsResolving] = useState(true);
@@ -40,11 +41,7 @@ const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({
     setOpenResolveModal(true);
   };
 
-  const handleResolveNovelty = async (data: {
-    file?: File;
-    comment: string;
-    isAccountingAdjustment: boolean;
-  }) => {
+  const handleResolveNovelty = async (data: { file?: File; comment: string }) => {
     if (!incidentData) return;
 
     const actionData = {
@@ -54,13 +51,14 @@ const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({
 
     try {
       if (isResolving) {
-        await approveIncident(incidentData.invoice_id, 64910, actionData);
+        await approveIncident(incidentData.invoice_id, 169170, actionData); // TODO CAMBIAR ESTO
         messageShow.success("Incidente aprobado exitosamente");
       } else {
-        await rejectIncident(incidentData.invoice_id, 64910, actionData);
+        await rejectIncident(incidentData.invoice_id, 169170, actionData); // TODO CAMBIAR ESTO
         messageShow.success("Incidente rechazado exitosamente");
       }
       setOpenResolveModal(false);
+      mutate(`/invoice/incident-detail/${incidentData.invoice_id}`);
       onClose(); // Cierra el modal principal después de resolver/rechazar
     } catch (error) {
       console.error("Error al procesar el incidente:", error);
@@ -121,6 +119,8 @@ const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({
       />
       <EventSection
         events={incidentData.events}
+        incidentId={incidentData.incident_id.toString()}
+        messageApi={messageShow}
         currentUserAvatar="/path/to/current/user/avatar.jpg"
       />
       <ResolveNoveltyModal
