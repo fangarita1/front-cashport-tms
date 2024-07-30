@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Flex, Row, Switch, Typography } from "antd";
+import { Button, Col, Flex, Row, Switch, Typography, message } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
-import { message } from "antd";
 
 // components
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
@@ -17,7 +16,6 @@ import {
   VehicleData,
   VehicleFormTabProps
 } from "./vehicleFormTab.mapper";
-
 import "./vehicleformtab.scss";
 import { IFormVehicle, VehicleType } from "@/types/logistics/schema";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
@@ -32,6 +30,9 @@ import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDo
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import dayjs from "dayjs";
+import SubmitFormButton from "@/components/atoms/SubmitFormButton/SubmitFormButton";
+import LoadDocumentsButton from "@/components/atoms/LoadDocumentsButton/LoadDocumentsButton";
+import { SelectInputForm } from "@/components/molecules/logistics/SelectInputForm/SelectInputForm";
 
 const { Title, Text } = Typography;
 
@@ -232,8 +233,8 @@ export const VehicleFormTab = ({
 
   const convertToSelectOptions = (vehicleTypes: VehicleType[]) => {
     return vehicleTypes?.map((vehicleType) => ({
-      label: vehicleType.description,
-      value: vehicleType.id.toString()
+      value: vehicleType.description,
+      id: vehicleType.id,
     }));
   };
 
@@ -286,8 +287,8 @@ export const VehicleFormTab = ({
             </Flex>
         </Flex>
         <Flex component={"main"} flex="3" vertical>
-          <Row>
-            <Col span={6}>
+          <Row gutter={[16,16]}>
+            <Col span={6}>  {/* Columna Fotos del Vehiculo */}
               <Title className="title" level={4}>
                 Fotos de vehículo
               </Title>
@@ -332,12 +333,12 @@ export const VehicleFormTab = ({
                 ))}
               </Row>
             </Col>
-            <Col span={18}>
+            <Col span={18} >  {/* Columna Informacion general */}
               <Title className="title" level={4}>
                 Informacion General
               </Title>
-              <Flex component={"section"} className="generalProject" justify="flex-start">
-                <Flex vertical className="containerInput">
+              <Row gutter={[16,16]}>
+                <Col span={8}  className="selectButton">
                   <Title className="title" level={5}>
                     Tipo de Vehiculo
                   </Title>
@@ -347,74 +348,87 @@ export const VehicleFormTab = ({
                     disabled={statusForm === "review"} 
                     rules={{ required: true }}
                     render={({ field }) => (
-                      <SelectVehicleType
-                        errors={errors}
-                        field={field}
-                        options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
-                        loading={loadingVicles}
+                      <SelectInputForm
+                      placeholder="Selecciona tipo de vehículo"
+                      error={errors?.general?.id_vehicle_type}
+                      field={field}
+                      loading={loadingVicles}
+                      options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
                       />
                     )}
                   />
-                  <Text className="textError">
-                    {errors?.general?.vehicle_type && "Tipo es obligatorio *"}
-                  </Text>
-                </Flex>
-                <InputForm
-                  titleInput="Placa"
-                  nameInput="general.plate_number"
-                  control={control}
-                  disabled={statusForm === "review"}  
-                  error={errors.general?.plate_number}
-                />
-                <InputForm
-                  titleInput="Marca"
-                  nameInput="general.brand"
-                  control={control}
-                  disabled={statusForm === "review"}  
-                  error={errors?.general?.brand}
-                />
-                <InputForm
-                  titleInput="Modelo"
-                  nameInput="general.model"
-                  control={control}
-                  disabled={statusForm === "review"}  
-                  error={errors?.general?.model}
-                />
-                <InputForm
-                  titleInput="Linea"
-                  nameInput="general.line"
-                  control={control}
-                  disabled={statusForm === "review"}  
-                  error={errors.general?.line}
-                />
-                <InputForm
-                  titleInput="Año"
-                  nameInput="general.year"
-                  control={control}
-                  disabled={statusForm === "review"}  
-                  error={undefined}
-                  // error={errors.general?.year}
-                />
-                <InputForm
-                  titleInput="Color"
-                  nameInput="general.color"
-                  control={control}
-                  disabled={statusForm === "review"}  
-                  error={errors.general?.color}
-                />
-                <InputForm
-                  titleInput="Ciudad"
-                  nameInput="general.country"
-                  control={control}
-                  disabled={statusForm === "review"}  
-                  error={errors.general?.country}
-                />
-              </Flex>
+                </Col>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Placa"
+                    nameInput="general.plate_number"
+                    control={control}
+                    disabled={statusForm === "review"}  
+                    error={errors.general?.plate_number}
+                  />
+                </Col>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Marca"
+                    nameInput="general.brand"
+                    control={control}
+                    disabled={statusForm === "review"}  
+                    error={errors?.general?.brand}
+                  />
+                </Col>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Modelo"
+                    nameInput="general.model"
+                    control={control}
+                    disabled={statusForm === "review"}  
+                    error={errors?.general?.model}
+                  />
+                </Col>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Linea"
+                    nameInput="general.line"
+                    control={control}
+                    disabled={statusForm === "review"}  
+                    error={errors.general?.line}
+                  />
+                </Col>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Año"
+                    nameInput="general.year"
+                    control={control}
+                    disabled={statusForm === "review"}  
+                    error={undefined}
+                    // error={errors.general?.year}
+                  />
+                </Col>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Color"
+                    nameInput="general.color"
+                    control={control}
+                    disabled={statusForm === "review"}  
+                    error={errors.general?.color}
+                  />
+                </Col>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Ciudad"
+                    nameInput="general.country"
+                    control={control}
+                    disabled={statusForm === "review"}  
+                    error={errors.general?.country}
+                  />
+                </Col>
+              </Row>
               <Flex
                 component={"section"}
                 className="generalProject"
                 justify="flex-start"
-                style={{ marginTop: "2rem" }}
+                align="center"
+                style={{ marginTop: "2rem", marginBottom: "2rem" }}
               >
                 <Switch
                   disabled={statusForm === 'review'}
@@ -423,35 +437,38 @@ export const VehicleFormTab = ({
                 />
                 <h5 className="ant-typography input-form-title">&nbsp;&nbsp;Equipado por GPS</h5>
               </Flex>
-              <Flex
-                component={"section"}
-                className="generalProject"
-                justify="flex-start"
-                style={{ marginTop: "2rem" }}
-              >
-                <InputForm
-                  titleInput="Usuario"
-                  nameInput="general.gps_user"
-                  control={control}
-                  disabled={statusForm === "review" || !hasGPS} 
-                  error={errors.general?.gps_user}
-                />
-                <InputForm
-                  titleInput="Contraseña"
-                  nameInput="general.gps_password"
-                  control={control}
-                  disabled={statusForm === "review" || !hasGPS} 
-                  error={errors.general?.gps_password }
-                />
-                <InputForm
-                  titleInput="Link"
-                  nameInput="general.gps_link"
-                  control={control}
-                  disabled={statusForm === "review"|| !hasGPS} 
-                  error={errors.general?.gps_link }
-                />
-              </Flex>
+              <Row gutter={16}>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Usuario"
+                    nameInput="general.gps_user"
+                    control={control}
+                    disabled={statusForm === "review" || !hasGPS} 
+                    error={errors.general?.gps_user}
+                  />
+                </Col>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Contraseña"
+                    nameInput="general.gps_password"
+                    control={control}
+                    disabled={statusForm === "review" || !hasGPS} 
+                    error={errors.general?.gps_password }
+                  />
+                </Col>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Link"
+                    nameInput="general.gps_link"
+                    control={control}
+                    disabled={statusForm === "review"|| !hasGPS} 
+                    error={errors.general?.gps_link }
+                  />
+                </Col>
+              </Row>
             </Col>
+          </Row>  
+          <Row gutter={[16,16]}> {/* Fila Informacion Adicional */}
             <Col span={24}>
               <Title className="title" level={4}>
                 Informacion Adicional
@@ -466,16 +483,23 @@ export const VehicleFormTab = ({
                 error={errors.general?.aditional_info}
               />
             </Col>
-            <Col span={24}>
-            <label className="locationLabels" style={{ display: "flex", marginTop: "2rem" }}>
-              <text>Documentos</text>
-            </label>
-            </Col>
-            <Col span={24}>
-            <Row className="mainUploadDocuments">
-              {selectedFiles.map((file) => (
-                // eslint-disable-next-line react/jsx-key
-                <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
+          </Row>
+          <Row style={{marginTop: "2rem", marginBottom: "2rem"}}> {/* Fila Documentos */}
+              <Col span={8}>
+                <Title className="title" level={4}>
+                  Documentos
+                </Title>
+              </Col>
+              <Col span={8} offset={8} style={{display: "flex", justifyContent: "flex-end"}}>
+                {statusForm === "create" && (
+                  <LoadDocumentsButton 
+                    text="Cargar documentos" 
+                    onClick={() => setIsOpenModalDocuments(true)}/>
+                )}
+              </Col>
+            <Row style={{marginTop: "1rem", width: "100%"}} >
+              {selectedFiles.map((file, index) => (
+                <Col span={12} key={`file-${file.id}`}  style={{ marginBottom: "16px", paddingRight: index % 2 === 0 ? "16px" : "0"  }}>
                   <UploadDocumentButton
                     key={file.id}
                     title={file.description}
@@ -488,7 +512,7 @@ export const VehicleFormTab = ({
                     {file?.link ? (
                       <UploadDocumentChild
                         linkFile={file.link}
-                        nameFile={file.link.split("-").pop() || ""}
+                        nameFile={file.link.split("-").pop() ?? ""}
                         onDelete={() => {}}
                         showTrash={false}
                       />
@@ -497,44 +521,16 @@ export const VehicleFormTab = ({
                 </Col>
               ))}
             </Row>
-            </Col>
-            <Col span={24} className="text-right">
-              <ModalDocuments
-                  isOpen={isOpenModalDocuments}
-                  mockFiles={selectedFiles}
-                  setFiles={setFiles}
-                  documentsType={documentsType}
-                  isLoadingDocuments={isLoadingDocuments}
-                  onClose={() => setIsOpenModalDocuments(false)}
-                  handleChange={handleChange}
-                  handleChangeExpirationDate={handleChangeExpirationDate}
-                />
-              <Row>
-                {statusForm === "create" && (
-                    <Flex justify="flex-end" style={{ width: "100%", margin: "1rem" }}>
-                      <Button type="text" onClick={() => setIsOpenModalDocuments(true)}>
-                        <Plus />
-                        &nbsp;<Text>Cargar documentos</Text>
-                      </Button>
-                    </Flex>
-                  )}
-              </Row>
-            </Col>
           </Row>
-          {/* -----------------------------------Project Config----------------------------------- */}
-          <Flex className="buttonNewProject">
             {["edit", "create"].includes(statusForm) && (
-              <Button
-                disabled={!isSubmitButtonEnabled}
-                className={`button ${isSubmitButtonEnabled ? "active" : ""}`}
-                style={{ display: "flex" }}
-                htmlType={"submit"}
-                onClick={handleSubmit(onSubmit)}
-              >
-                {validationButtonText(statusForm)}
-              </Button>
-            )}
-          </Flex>
+              <Row justify={"end"}>
+                <SubmitFormButton
+                    text={validationButtonText(statusForm)}
+                    disabled={!isSubmitButtonEnabled}
+                    onClick={handleSubmit(onSubmit)}
+                />
+              </Row>
+            )}    
         </Flex>
       </form>
       <ModalChangeStatus
@@ -543,6 +539,16 @@ export const VehicleFormTab = ({
         onClose={() => setIsOpenModal(false)}
         onActive={onActiveVehicle}
         onDesactivate={onDesactivateVehicle}
+      />
+      <ModalDocuments
+        isOpen={isOpenModalDocuments}
+        mockFiles={selectedFiles}
+        setFiles={setFiles}
+        documentsType={documentsType}
+        isLoadingDocuments={isLoadingDocuments}
+        onClose={() => setIsOpenModalDocuments(false)}
+        handleChange={handleChange}
+        handleChangeExpirationDate={handleChangeExpirationDate}
       />
     </>
   );

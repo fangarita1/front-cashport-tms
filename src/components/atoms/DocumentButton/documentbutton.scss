@@ -5,10 +5,15 @@
     height: 4.75rem;
     border-radius: 0.5rem;
     padding: 1.5rem 1.4rem;
-
+    .ant-upload{
+        width: 100%;
+    }
     .nameFile {
         font-size: 1rem;
         margin-left: 0.5rem;
+        text-align: left;
+        overflow: hidden;
+        white-space: nowrap;
     }
 
     .sizeFile {
