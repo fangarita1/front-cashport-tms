@@ -480,6 +480,7 @@ export const CreateOrderView = () => {
   
   const [optionsMaterial, setOptionsMaterial] = useState<any>([]);//useState<SelectProps<object>['options']>([]);
   const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
+  const [selectedMaterial, setSelectedMaterial] = useState(null);
   let cargaIdx = 0;
 
   const searchResultMaterial = async (query: string) => {
@@ -553,8 +554,10 @@ export const CreateOrderView = () => {
     value.key = cargaIdx;
 
     const newvalue : IMaterial = value;
-    console.log(newvalue);
+    //console.log(newvalue);
     await setDataCarga(dataCarga => [...dataCarga, newvalue]);
+
+    setSelectedMaterial(null);
   };
 
   const handleSearchMaterial = async (value: string) => {
@@ -626,6 +629,7 @@ export const CreateOrderView = () => {
 
   const [optionsVehicles, setOptionsVehicles] = useState<any>([]);//useState<SelectProps<object>['options']>([]);
   const [dataVehicles, setDataVehicles] = useState<IVehicleType[]>([]);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
   let vehiclesIdx = 0;
 
   const loadSuggestedVehicles = async () => {
@@ -674,6 +678,8 @@ export const CreateOrderView = () => {
     const newvalue : IVehicleType = value;
     console.log(newvalue);
     await setDataVehicles(dataVehicles => [...dataVehicles, newvalue]);
+
+    setSelectedMaterial(null);
   };
 
   const handleDeleteVehicle = (key: React.Key) => {
@@ -827,6 +833,7 @@ export const CreateOrderView = () => {
 
   const [optionsRequirements, setOptionsRequirements] = useState<SelectProps<object>['options']>([]);
   const [dataRequirements, setDataRequirements] = useState<ITransferOrderOtherRequirements[]>([]);
+  const [selectedRequirement, setSelectedRequirement] = useState(null);
   let requirementsIdx = 0;
 
   const loadRequirements = async () => {
@@ -869,8 +876,10 @@ export const CreateOrderView = () => {
     value.key = requirementsIdx;
 
     const newvalue : ITransferOrderOtherRequirements = value;
-    console.log(newvalue);
+    //console.log(newvalue);
     await setDataRequirements(dataRequirements => [...dataRequirements, newvalue]);
+
+    setSelectedRequirement(null);
   };
 
   const handleDeleteRequirement = (key: React.Key) => {
@@ -1573,16 +1582,15 @@ export const CreateOrderView = () => {
               </label><p>&nbsp;</p>
               <Select
                   showSearch
+                  allowClear
                   placeholder="Buscar material"                  
                   className="certain-category-search-dropdown"
                   style={{ width:'400px' }}
                   optionFilterProp="children"
+                  value={selectedMaterial}
                   filterOption={(input, option) =>                    
                     option!.value!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
-                  onChange={()=>{
-
-                  }}
                 >
                   { optionsMaterial.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
                 </Select>
@@ -1615,6 +1623,7 @@ export const CreateOrderView = () => {
                   className="certain-category-search-dropdown"
                   style={{ width:'400px' }}
                   optionFilterProp="children"
+                  value={selectedVehicle}
                   filterOption={(input, option) =>                    
                     option!.value!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
@@ -1809,6 +1818,7 @@ export const CreateOrderView = () => {
                   style={{ width: '50%' }}
                   options={optionsRequirements}
                   allowClear={true}
+                  value={selectedRequirement}
               />
               <Table columns={columnsRequerimientosAdicionales} dataSource={dataRequirements} />
             </Col>   
@@ -1835,7 +1845,7 @@ export const CreateOrderView = () => {
                   </label>
                   {dataContacts.filter(f => f.contact_type == 1).map((contact)=>(
                   <>
-                  <Row>
+                  <Row key={contact.key}>
                     <Col span={12} style={{paddingRight:'15px'}}>
                       <Input placeholder="Nombre del contacto" key={contact.key} value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
                     </Col>
