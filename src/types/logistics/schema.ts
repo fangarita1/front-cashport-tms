@@ -1153,8 +1153,8 @@ export interface ITransferOrder {
   modified_at?: string | null | undefined;
   modified_by?: string | null | undefined;
   observation: string | null | undefined;
-  start_location?: ILocation[]| null | undefined;
-  end_location?: ILocation[]| null | undefined;
+  start_location?: ILocation| null | undefined;
+  end_location?: ILocation| null | undefined;
   //geometry
   geometry: any;
   //datos de contacto

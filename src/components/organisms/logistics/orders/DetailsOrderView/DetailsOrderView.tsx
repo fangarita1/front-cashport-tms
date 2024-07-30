@@ -102,8 +102,8 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
       const to:ITransferOrder = result.data.data[0];
       //console.log(to);
       setTransferOrder(to);
-      origin.current = [to.start_location?.at(0)?.longitude, to.start_location?.at(0)?.latitude];
-      destination.current = [to.end_location?.at(0)?.longitude, to.end_location?.at(0)?.latitude];
+      origin.current = [to.start_location?.longitude, to.start_location?.latitude];
+      destination.current = [to.end_location?.longitude, to.end_location?.latitude];
       const routes = to.geometry;
       setRouteInfo(routes);
       // Check if any routes are returned
@@ -438,7 +438,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
                         </p>
                       }
                       <p style={{paddingTop:'0.5rem'}}>
-                        <label><b>{transferOrder?.start_location?.at(0)?.description}</b></label>
+                        <label><b>{transferOrder?.start_location?.description}</b></label>
                       </p>
                     </Col>
                     <Col span={24} style={{paddingTop:'1rem'}}>
@@ -458,7 +458,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
                         </p>
                       }
                       <p style={{paddingTop:'0.5rem'}}>
-                        <label><b>{transferOrder?.end_location?.at(0)?.description}</b></label>
+                        <label><b>{transferOrder?.end_location?.description}</b></label>
                       </p>
                     </Col>
                     <Col span={24} style={{paddingTop:'1rem'}}>
