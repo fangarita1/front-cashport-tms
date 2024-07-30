@@ -60,8 +60,7 @@ export const VehicleFormTab = ({
   const [imageError, setImageError] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [hasGPS, setHasGPS] = useState(true);
-
-
+  
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
     "1",
     getDocumentsByEntityType
@@ -81,15 +80,30 @@ export const VehicleFormTab = ({
     watch,
     control,
     handleSubmit,
-    reset,
+    resetField,
     getValues,
-    formState: { errors, isDirty }
+    trigger,
+    formState: { errors, isValid }
   } = useForm<IFormVehicle>({
     defaultValues,
-    disabled: statusForm === "review"
+    disabled: statusForm === "review",
+    mode: 'onChange' 
   });
-
   const { push } = useRouter();
+
+  const isFormCompleted = () => {
+    return isValid && images.some(img=>img.file)
+  }
+  const isSubmitButtonEnabled = isFormCompleted() && !loading
+
+  useEffect(() => {
+    if (!hasGPS) {
+      resetField('general.gps_user', { defaultValue: undefined });
+      resetField('general.gps_password', { defaultValue: undefined });
+      resetField('general.gps_link', { defaultValue: undefined });
+    }
+    trigger(['general.gps_user', 'general.gps_password', 'general.gps_link']);
+  }, [hasGPS, resetField, trigger]);
 
   useEffect(() => {
     console.log(errors);
@@ -103,6 +117,7 @@ export const VehicleFormTab = ({
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
 
+  
   useEffect(() => {
     if (Array.isArray(documentsType)) {
       console.log(data);
@@ -180,6 +195,7 @@ export const VehicleFormTab = ({
     };
 
     try {
+      setLoading(true)
       const response = await addVehicle(vehicleData, imageFiles, selectedFiles);
       console.log("Vehicle created successfully:", response.data);
       if (response.status === 200) {
@@ -205,6 +221,8 @@ export const VehicleFormTab = ({
           content: "Oops, hubo un error por favor intenta más tarde."
         });
       }
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -443,6 +461,7 @@ export const VehicleFormTab = ({
                 titleInput=""
                 nameInput="general.aditional_info"
                 control={control}
+                validationRules={{required: false}}
                 disabled={statusForm === "review"} 
                 error={errors.general?.aditional_info}
               />
@@ -506,8 +525,8 @@ export const VehicleFormTab = ({
           <Flex className="buttonNewProject">
             {["edit", "create"].includes(statusForm) && (
               <Button
-                disabled={!isDirty}
-                className={`button ${isDirty ? "active" : ""}`}
+                disabled={!isSubmitButtonEnabled}
+                className={`button ${isSubmitButtonEnabled ? "active" : ""}`}
                 style={{ display: "flex" }}
                 htmlType={"submit"}
                 onClick={handleSubmit(onSubmit)}

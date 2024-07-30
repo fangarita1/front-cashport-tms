@@ -50,7 +50,8 @@ export default function ModalDocuments(props: PropsModalDocuments) {
   return (
     <Modal
       title="Cargar documentos adicionales"
-      styles={{ body: { minHeight: 500 } }}
+      styles={{ body: { maxHeight: "30rem", overflowY: "auto", paddingRight: "0.5rem" } }}
+      centered
       open={isOpen}
       onOk={onClose}
       onClose={() => onClose()}

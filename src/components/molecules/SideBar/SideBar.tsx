@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button, Flex } from "antd";
 
-import { ArrowLineRight, BellSimpleRinging, Gear, Megaphone, User, UsersThree, Truck } from "phosphor-react";
+import { ArrowLineRight, BellSimpleRinging, Gear, Megaphone, User, UsersThree, Truck, MapPin } from "phosphor-react";
 import Image from "next/image";
 
 import "./sidebar.scss";
@@ -90,6 +90,7 @@ export const SideBar = () => {
               </Button>
             </Link></>
         )}
+        {!isLogistics && ( // TODO: remove this condition
         <Link href="/logistics/orders" passHref legacyBehavior>
           <Button
             type="primary"
@@ -100,6 +101,7 @@ export const SideBar = () => {
             {isSideBarLarge && "Solicitudes"}
           </Button>
         </Link>
+        )}
         <Link href="/logistics/providers/all" passHref legacyBehavior>
           <Button
             type="primary"
@@ -122,13 +124,24 @@ export const SideBar = () => {
           </Button>
         </Link>
         )}
-
+        {!isLogistics && ( // TODO: remove this condition
         <Link href="/logistics/configuration" passHref legacyBehavior>
           <Button
             type="primary"
             size="large"
             icon={<Gear size={26} />}
             className={path.startsWith("/logistics/configuration") ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Ajustes"}
+          </Button>
+        </Link>
+        )}
+        <Link href="/map" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<MapPin size={26} />}
+            className={path.startsWith("/map") ? "buttonIcon" : "buttonIconActive"}
           >
             {isSideBarLarge && "Ajustes"}
           </Button>

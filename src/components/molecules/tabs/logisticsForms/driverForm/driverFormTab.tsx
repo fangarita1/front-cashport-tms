@@ -243,6 +243,7 @@ export const DriverFormTab = ({
                   "https://cdn.icon-icons.com/icons2/1622/PNG/512/3741756-bussiness-ecommerce-marketplace-onlinestore-store-user_108907.png"
                 }
                 setImgFile={setImageFile}
+                uploadInstructionsText={"*Sube la foto del conductor"}
               />
               {imageError && (
                 <Text className="textError">{"foto del conductor es obligatorio *"}</Text>
