@@ -5,6 +5,7 @@ import { Eye, Warning } from "phosphor-react";
 import { Button, Flex, Table, TableProps, Typography } from "antd";
 import { ProvidersInfo } from "@/types/providers/providers";
 import { Radioactive } from "@phosphor-icons/react";
+import Link from "next/link";
 
 const { Text } = Typography;
 
@@ -34,7 +35,14 @@ export default function ProvidersTable({
       title: "TR",
       dataIndex: "id",
       key: "id",
-      render: (invoiceId) => <Text style={{color: "blue", textDecorationLine: "underline"}}>{invoiceId}</Text>,
+      render: (invoiceId) => (
+        <Link
+          href={`/proveedores/${invoiceId}`}
+          style={{ color: "blue", textDecorationLine: "underline" }}
+        >
+          {invoiceId}
+        </Link>
+      ),
       sorter: (a, b) => a.id - b.id,
       showSorterTooltip: false
     },
@@ -112,10 +120,16 @@ export default function ProvidersTable({
       width: 64,
       dataIndex: "",
       render: (text, record) => (
-        <Flex style={{gap: "6px", justifyContent: "flex-end"}}>
-          {record.radioactiveIcon && <Button style={{backgroundColor: "#F7F7F7"}} icon={<Radioactive size={"1.3rem"} />} />}
-          {record.eyeIcon && <Button style={{backgroundColor: "#F7F7F7"}} icon={<Eye size={"1.3rem"} />} />}
-          {record.dangerIcon && <Button style={{backgroundColor: "#F7F7F7"}} icon={<Warning size={"1.3rem"} />} />}
+        <Flex style={{ gap: "6px", justifyContent: "flex-end" }}>
+          {record.radioactiveIcon && (
+            <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Radioactive size={"1.3rem"} />} />
+          )}
+          {record.eyeIcon && (
+            <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Eye size={"1.3rem"} />} />
+          )}
+          {record.dangerIcon && (
+            <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Warning size={"1.3rem"} />} />
+          )}
         </Flex>
       )
     }

@@ -1,10 +1,10 @@
 "use client";
-import styles from "./ProvidersView.module.scss";
-import { Collapse, Flex } from "antd";
 import React, { useState } from "react";
+import { Collapse, Flex } from "antd";
 import LabelCollapse from "@/components/ui/label-collapse";
 import ProvidersTable from "@/components/molecules/tables/ProvidersTable/ProvidersTable";
 import { Providers, ProvidersList } from "@/types/providers/providers";
+import styles from "./ProvidersView.module.scss";
 
 interface ProvidersViewProps {
   type: keyof Providers,

@@ -1,14 +1,13 @@
 "use client";
-import styles from "./Providers.module.scss";
 import { Flex, Tabs } from "antd";
 import UiSearchInput from "@/components/ui/search-input/search-input";
 import FiltersProviders from "@/components/atoms/Filters/FiltersProviders/FiltersProviders";
+import ProvidersView from "./view/ProvidersView/ProvidersView";
 import { Providers } from "@/types/providers/providers";
-import ProvidersView from "./view/ProvidersView";
 import { mockProviders } from "./mockdata";
+import styles from "./Providers.module.scss";
 
 const ListPanel = [
-  { key: "dashboard", value: "Dashboard" },
   { key: "requested", value: "Solicitudes" },
   { key: "onTrack", value: "En curso" },
   { key: "closed", value: "Finalizados" }

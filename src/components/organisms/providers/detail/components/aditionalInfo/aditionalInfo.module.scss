@@ -1,0 +1,8 @@
+@import "@styles/variables.scss";
+
+.wrapper {
+  border: 1px solid $dark-gray;
+  border-radius: 1px;
+  padding: 18px;
+  flex-direction: column;
+}
