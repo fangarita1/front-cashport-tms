@@ -83,7 +83,7 @@ export const ClientProjectForm = ({
         city:
           data?.locations && data.locations.length > 0
             ? {
-                value: data.locations[0].id,
+                value: data.locations[0].location_id,
                 label: data.locations[0].city
               }
             : {
