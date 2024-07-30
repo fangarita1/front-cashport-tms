@@ -72,3 +72,23 @@ export const addTransferOrder = async (
       return error as any;
     }
   };
+
+  
+  export const getAllUserSearch = async (term:string): Promise<IListData> => {
+    const token = await getIdToken();
+    try {
+      const form = new FormData();
+      form.append("term", term);
+      const response: IListData = await axios.post(`${config.API_HOST}/transfer-order/all/users/search`,form, {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`
+        }
+      });
+      return response;
+    } catch (error) {
+      console.log("Error get all getAllUserSearch: ", error);
+      return error as any;
+    }
+  };

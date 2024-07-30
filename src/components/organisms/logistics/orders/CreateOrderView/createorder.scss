@@ -231,3 +231,21 @@
     background: none !important;
     cursor: pointer;
 }
+
+.dateInputFormError {
+    border: 1px dashed red !important;
+    background-color: $background !important;
+    font-size: 1rem !important;
+    border-radius: 0.25rem !important;
+
+    &::placeholder {
+        color: $secondary-gray !important;
+    }    
+}
+
+.textError {
+    padding-left: 0.5rem;
+    color: red;
+    font-size: 0.875em; // 14px
+    margin-top: 4px;
+}

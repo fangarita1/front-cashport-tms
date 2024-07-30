@@ -1,5 +1,6 @@
 import { Flex, Tabs, TabsProps, Typography, message, Collapse, Row, Col, Select, Switch, DatePicker, DatePickerProps, GetProps, TimePicker, Table, TableProps,AutoComplete, Input, ConfigProvider, InputNumber, Button, SelectProps, Popconfirm, Modal } from "antd";
 import React, { useRef, useEffect, useState, useContext } from "react";
+import { runes } from 'runes2';
 
 // dayjs locale
 import dayjs, { Dayjs } from 'dayjs';
@@ -17,7 +18,7 @@ import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 
 //schemas
-import { IAditionalByMaterial, ICreateRegister, IFormTransferOrder, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ITransferOrder, ITransferOrderContacts, ITransferOrderDocuments, ITransferOrderOtherRequirements, IVehicleType, TransferOrderDocumentType } from "@/types/logistics/schema";
+import { IAditionalByMaterial, ICreateRegister, IFormTransferOrder, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ITransferOrder, ITransferOrderContacts, ITransferOrderDocuments, ITransferOrderOtherRequirements, ITransferOrderPersons, IVehicleType, TransferOrderDocumentType } from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
@@ -57,6 +58,7 @@ import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDo
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 import { FileText } from "phosphor-react";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
+import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 
 const { Title, Text } = Typography;
 
@@ -77,11 +79,23 @@ export const CreateOrderView = () => {
   const [horaInicial, setHoraInicial] = useState<Dayjs>();
   const fechaFinal = useRef<Dayjs>();
   const [horaFinal, setHoraFinal] = useState<Dayjs>();
-  const [fechaInicialFlexible, setFechaInicialFlexible] = useState(0);
-  const [fechaFinalFlexible, setFechaFinalFlexible] = useState(0);
-  const [company, setCompany] = useState(1);
-  const [client, setClient] = useState(1);
+  const [fechaInicialFlexible, setFechaInicialFlexible] = useState(-1);
+  const [fechaFinalFlexible, setFechaFinalFlexible] = useState(-1);
+  const [company, setCompany] = useState(-1);
+  const [client, setClient] = useState(-1);
   const [observation, setObservation] = useState<any>(null);
+
+  const [originValid,setOriginValid] = useState(true);
+  const [destinationValid,setdestinationValid] = useState(true);
+  const [fechaInicialValid,setFechaInicialValid] = useState(true);
+  const [horaInicialValid,setHoraInicialValid] = useState(true);
+  const [fechaFinalValid,setFechaFinalValid] = useState(true);
+  const [horaFinalValid,setHoraFinalValid] = useState(true);
+  const [fechaInicialFlexibleValid,setFechaInicialFlexibleValid] = useState(true);
+  const [fechaFinalFlexibleValid,setFechaFinalFlexibleValid] = useState(true);
+  
+  const [clientValid,setClientValid] = useState(true);
+  const [companyValid,setCompanyValid] = useState(true);
 
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWRInmutable(
     "0",
@@ -167,12 +181,18 @@ export const CreateOrderView = () => {
 
   // Cambia origen 
   const onChangeOrigin = (value:any) =>{
-    console.log('origen:'+value);
+    //console.log('origen:'+value);
     locations.forEach(async (item, index) => {
       if(item.id == value){
-        console.log(item);
+        //console.log(item);
         setLocationOrigin(item);
         origin.current = [item.longitude, item.latitude];
+        setOriginValid(true);
+        if(typeactive == '2'){
+          setLocationDestination(item);
+          destination.current = [item.longitude, item.latitude];
+          setdestinationValid(true);
+        }
         calcRouteDirection();
       }
     });
@@ -183,9 +203,10 @@ export const CreateOrderView = () => {
     console.log('destino:'+value);
     locations.forEach(async (item, index) => {
       if(item.id == value){
-        console.log(item);
+        //console.log(item);
         setLocationDestination(item);
         destination.current = [item.longitude, item.latitude];
+        setdestinationValid(true);
         calcRouteDirection();
       }
     });
@@ -253,17 +274,24 @@ export const CreateOrderView = () => {
           },
         });
       }
-      // Get the route bounds
-      const bounds = routeGeometry.coordinates.reduce(
-        (bounds:any, coord:any) => bounds.extend(coord),
-        new mapboxgl.LngLatBounds()
-      );
 
-      // Zoom out to fit the route within the map view
-      map.fitBounds(bounds, {
-        padding: 50,
-      });
-      
+      if(locationOrigin?.id == locationDestination?.id)
+      {
+        map.setCenter(origin.current);
+        map.setZoom(14)
+
+      }else{
+        // Get the route bounds
+        const bounds = routeGeometry.coordinates.reduce(
+          (bounds:any, coord:any) => bounds.extend(coord),
+          new mapboxgl.LngLatBounds()
+        );
+
+        // Zoom out to fit the route within the map view
+        map.fitBounds(bounds, {
+          padding: 50,
+        });
+      }
     });
 
     // return () => {
@@ -277,8 +305,8 @@ export const CreateOrderView = () => {
     if (origin.current.length == 0 || destination.current.length == 0) return;
 
     try {
-      console.log(origin);        
-      console.log(destination);
+      //console.log(origin);        
+      //console.log(destination);
 
       const response = await axios.get(
         `https://api.mapbox.com/directions/v5/mapbox/driving/${origin.current[0]},${origin.current[1]};${
@@ -329,6 +357,7 @@ export const CreateOrderView = () => {
 
   /* Tipo de viaje */
   const handleTypeClick = (event:any) => {
+    //console.log(event);
     setTypeActive(event.target.id);
     origin.current = [];
     destination.current = [];
@@ -371,26 +400,41 @@ export const CreateOrderView = () => {
       title: 'Volumen',
       dataIndex: 'm3_volume',
       key: 'm3_volume',
+      render: (_, record) =>{
+        return record.m3_volume + ' m3';
+      }
     },
     {
       title: 'Alto',
       dataIndex: 'mt_height',
       key: 'mt_height',
+      render: (_, record) =>{
+        return record.mt_height + ' m';
+      }
     },
     {
       title: 'Ancho',
       dataIndex: 'mt_width',
       key: 'mt_width',
+      render: (_, record) =>{
+        return record.mt_width + ' m';
+      }
     },
     {
       title: 'Largo',
       dataIndex: 'mt_length',
       key: 'mt_length',
+      render: (_, record) =>{
+        return record.mt_length + ' m';
+      }
     },
     {
       title: 'Peso',
       dataIndex: 'kg_weight',
       key: 'kg_weight',
+      render: (_, record) =>{
+        return record.kg_weight + ' kg';
+      }
     },
     {
       title: '',
@@ -721,8 +765,6 @@ export const CreateOrderView = () => {
     setDataPsl(newData);
   };
 
-
-
   const handleChangeExpirationDate = (index: number, value: any) => {
     setSelectedFiles((prevState: any[]) => {
       const updatedFiles = [...prevState];
@@ -899,7 +941,7 @@ export const CreateOrderView = () => {
     newcontacname.current = '';
     newcontactphone.current = '';
 
-    Modal.info({
+    Modal.confirm({
       title: 'Agregar otro contacto',
       content: (
         <Flex style={{width:'100%'}}>          
@@ -927,7 +969,18 @@ export const CreateOrderView = () => {
               </label>
               <Input placeholder="Escribir teléfono" onChange={(e)=>{ 
                 newcontactphone.current = (e.target.value);
-              }} />
+              }}
+              onKeyPress={(event) => {
+                if (!/[0-9]/.test(event.key)) {
+                  event.preventDefault();
+                }
+              }} 
+              count={{
+                show: true,
+                max: 10,
+                strategy: (txt) => runes(txt).length,
+                exceedFormatter: (txt, { max }) => runes(txt).slice(0, max).join(''),              
+              }}/>
             </Col>   
           </Row>
         </Flex>
@@ -975,9 +1028,122 @@ export const CreateOrderView = () => {
     setDataContacts(newData);
   };
 
+
+  /* Datos de personas */
+  const [dataPersons, setDataPersons] = useState<ITransferOrderPersons[]>([]);
+
+
   /* Form Event Handlers */
   const onCreateOrder = async () => {
     
+    //validate fields
+    let isformvalid = true;
+    //carga - izaje - personas
+    if(typeactive == '1' || typeactive == '2'  || typeactive == '3'){
+
+      if(origin.current.length == 0){
+        setOriginValid(false);
+        isformvalid = false;
+        messageApi.error("Punto Origen es obligatorio");
+      }
+      if(typeactive == '1'){
+        if(destination.current.length == 0){
+          setdestinationValid(false);
+          isformvalid = false;
+          messageApi.error("Punto Destino es obligatorio");
+        }
+      }
+      if(fechaInicial.current == undefined || fechaInicial.current == null){
+        setFechaInicialValid(false);
+        isformvalid = false;
+        messageApi.error("Fecha Inicial es obligatorio");
+      }
+      if(horaInicial == undefined || horaInicial == null){
+        setHoraInicialValid(false);
+        isformvalid = false;
+        messageApi.error("Hora Inicial es obligatorio")
+      }
+      if(fechaFinal.current == undefined || fechaFinal.current == null){
+        setFechaFinalValid(false);
+        isformvalid = false;
+        messageApi.error("Fecha Final es obligatorio");
+      }
+      if(horaFinal == undefined || horaFinal == null){
+        setHoraFinalValid(false);
+        isformvalid = false;
+        messageApi.error("Hora Final es obligatorio")
+      }
+      if(fechaInicialFlexible == -1){
+        setFechaInicialFlexibleValid(false);
+        isformvalid = false;
+        messageApi.error("Fecha Inicial Flexible es obligatorio")
+      }else{
+        setFechaInicialFlexibleValid(true);
+      }
+      if(fechaFinalFlexible == -1){
+        setFechaFinalFlexibleValid(false);
+        isformvalid = false;
+        messageApi.error("Fecha Final Flexible es obligatorio")
+      }else{
+        setFechaFinalFlexibleValid(true);
+      }
+
+      if(company == -1){
+        setCompanyValid(false);
+        isformvalid = false;
+        messageApi.error("Company code es obligatorio")
+      }else{
+        setCompanyValid(true);
+      }
+
+      if(client == -1){
+        setClientValid(false);
+        isformvalid = false;
+        messageApi.error("Cliente final es obligatorio")
+      }else{
+        setClientValid(true);
+      }
+
+      //validacion grids
+      //personal
+      if(typeactive == '3'){
+        if(dataPersons.length==0){
+          isformvalid = false;
+          messageApi.error("Debe agregar por lo menos una persona")
+        }  
+      }else{
+        if(dataCarga.length==0){
+          isformvalid = false;
+          messageApi.error("Debe agregar por lo menos un material")
+        }  
+      }
+      if(dataVehicles.length==0){
+        isformvalid = false;
+        messageApi.error("Debe agregar por lo menos un vehículo sugerido")
+      }
+      if(dataPsl.length==0){
+        isformvalid = false;
+        messageApi.error("Debe agregar por lo menos un PSL")
+      }
+
+      //datos de contacto
+      dataContacts.forEach((contact)=>{
+        //console.log(contact)
+        if((contact.contact_number == "" || contact.name == "") && contact.contact_type == 1){
+          isformvalid = false;
+          messageApi.error("Debe registrar información del contacto de origen")
+        }
+        if((contact.contact_number == "" || contact.name == "") && contact.contact_type == 2){
+          isformvalid = false;
+          messageApi.error("Debe registrar información del contacto de destino")
+        }
+      })
+    }
+
+    if(isformvalid == false){
+      return;
+    }
+
     const cuser = auth.currentUser;
 
     const inihour = horaInicial?horaInicial.get('hour'):0;
@@ -1001,8 +1167,8 @@ export const CreateOrderView = () => {
       user: cuser?.email,
       start_date: fechaInicial.current?.toDate().toISOString(),
       end_date: fechaFinal.current?.toDate().toISOString(),
-      start_freight_equipment: String(origenIzaje),
-      end_freight_equipment: String(destinoIzaje),
+      start_freight_equipment: String(origenIzaje?1:0),
+      end_freight_equipment: String(destinoIzaje?1:0),
       rotation: "0",
       start_date_flexible: fechaInicialFlexible,
       end_date_flexible: fechaFinalFlexible,
@@ -1106,25 +1272,27 @@ export const CreateOrderView = () => {
     };
 
     console.log("DATA PARA POST: ", data);
-    try {
-      const response = await addTransferOrder(
-        datato,
-        data?.files || [] as DocumentCompleteType[]
-      );      
-      if (response.status === SUCCESS) {
-        messageApi.open({
-          type: "success",
-          content: "El viaje fue creado exitosamente."
-        });
-        push("/logistics/orders");
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        messageApi.error(error.message);
-      } else {
-        messageApi.error("Oops, hubo un error por favor intenta mas tarde.");
-      }
-    }
+    
+    // try {
+    //   const response = await addTransferOrder(
+    //     datato,
+    //     data?.files || [] as DocumentCompleteType[]
+    //   );      
+    //   if (response.status === SUCCESS) {
+    //     console.log(response);
+    //     messageApi.open({
+    //       type: "success",
+    //       content: "El viaje fue creado exitosamente."
+    //     });
+    //     push("/logistics/orders");
+    //   }
+    // } catch (error) {
+    //   if (error instanceof Error) {
+    //     messageApi.error(error.message);
+    //   } else {
+    //     messageApi.error("Oops, hubo un error por favor intenta mas tarde.");
+    //   }
+    // }
   };
 
   /* acoordion */
@@ -1151,16 +1319,21 @@ export const CreateOrderView = () => {
                 <Select
                   showSearch
                   placeholder="Buscar dirección inicial"                  
-                  className="puntoOrigen"
+                  className={originValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
                   style={{ width:'100%' }}
                   onChange={onChangeOrigin}
                   optionFilterProp="children"
                   filterOption={(input, option) =>
                     option!.children!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }
+                  }                  
                 >
                   { locationOptions.map(((option: { value: React.Key | null | undefined; label: string  | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
                 </Select>
+                {(!originValid) &&
+                    <>
+                      <br/><label className="textError">* Campo obligatorio</label><br/>
+                    </>
+                  }
                 <Switch checked={origenIzaje} onChange={event =>{
                   setOrigenIzaje(event)
                 }}/>
@@ -1174,7 +1347,7 @@ export const CreateOrderView = () => {
                 <Select
                   showSearch
                   placeholder="Buscar dirección final"                  
-                  className="puntoOrigen"
+                  className={destinationValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
                   style={{ width:'100%' }}
                   onChange={onChangeDestino}
                   optionFilterProp="children"
@@ -1184,6 +1357,11 @@ export const CreateOrderView = () => {
                 >
                   { locationOptions.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
                 </Select>
+                {(!destinationValid) &&
+                    <>
+                      <br/><label className="textError">* Campo obligatorio</label><br/>
+                    </>
+                  }
                 <Switch checked={destinoIzaje} onChange={event =>{
                   setDestinoIzaje(event)
                 }}/>
@@ -1197,18 +1375,25 @@ export const CreateOrderView = () => {
                   </label>
                 </Col>
                 <Col span={8}>
-                  <DatePicker                    
+                  <DatePicker style={{width:'90%'}}
                     placeholder="Seleccione fecha"                    
                     onChange={(value, dateString) => {                      
                       //console.log('Selected Time: ', value);
                       //console.log('Formatted Selected Time: ', dateString);
                       //setFechaInicial(value);
-                      fechaInicial.current = value;          
+                      fechaInicial.current = value;
+                      setFechaInicialValid(true);
                     }}
+                    className={fechaInicialValid ? "dateInputForm" : "dateInputFormError"}
                   /> 
-                </Col>
+                  {(!fechaInicialValid) &&
+                    <>
+                      <br/><label className="textError">* Campo obligatorio</label>
+                    </>
+                  }
+                </Col>                
                 <Col span={8}>
-                  <TimePicker 
+                  <TimePicker style={{width:'90%'}}
                     placeholder="Seleccione hora"
                     format={'HH:mm'}
                     minuteStep={15} 
@@ -1217,13 +1402,20 @@ export const CreateOrderView = () => {
                     onChange={(value) => {
                       //console.log(value)
                       setHoraInicial(value);
+                      setHoraInicialValid(true);
                     }}
+                    className={horaInicialValid ? "dateInputForm" : "dateInputFormError"}
                   />
+                  {(!horaInicialValid) &&
+                    <>
+                      <br/><label className="textError">* Campo obligatorio</label>
+                    </>
+                  }                  
                 </Col>
                 <Col span={8}>
                 <Select
                     placeholder="Seleccione"                  
-                    className="puntoOrigen"
+                    className={fechaInicialFlexibleValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
                     style={{ width:'100%' }}
                     options={[
                       { value: '0', label: 'Exacto' },
@@ -1233,8 +1425,14 @@ export const CreateOrderView = () => {
                     ]}
                     onChange={(value)=>{
                       setFechaInicialFlexible(value);
+                      setFechaInicialFlexibleValid(false);
                     }}
                   />
+                  {(!fechaInicialFlexibleValid) &&
+                    <>
+                      <br/><label className="textError">* Campo obligatorio</label><br/>
+                    </>
+                  }                  
                 </Col>
               </Row>
               <Row style={{marginTop:'1.5rem'}}>
@@ -1244,18 +1442,26 @@ export const CreateOrderView = () => {
                   </label>
                 </Col>
                 <Col span={8}>
-                  <DatePicker
+                  <DatePicker style={{width:'90%'}}
                     placeholder="Seleccione fecha"                    
                     onChange={(value, dateString) => {
                       //console.log('Selected Time: ', value);
                       //console.log('Formatted Selected Time: ', dateString);
                       //setFechaFinal(value);
                       fechaFinal.current = value;
+                      setFechaFinalValid(true);
                     }}
+                    className={fechaFinalValid ? "dateInputForm" : "dateInputFormError"}
                   />
+                  {(!fechaFinalValid) &&
+                    <>
+                      <br/><label className="textError">* Campo obligatorio</label>
+                    </>
+                  }
                 </Col>
                 <Col span={8}>
-                  <TimePicker placeholder="Seleccione hora"  
+                  <TimePicker style={{width:'90%'}}
+                  placeholder="Seleccione hora"   
                   format={'HH:mm'}
                   minuteStep={15} 
                   hourStep={1}
@@ -1263,12 +1469,20 @@ export const CreateOrderView = () => {
                   onChange={(value) => {
                     //console.log(value);
                     setHoraFinal(value);
-                  }} />
+                    setHoraFinalValid(true);
+                  }} 
+                  className={horaFinalValid ? "dateInputForm" : "dateInputFormError"}
+                  />
+                  {(!horaFinalValid) &&
+                    <>
+                      <br/><label className="textError">* Campo obligatorio</label>
+                    </>
+                  } 
                 </Col>
                 <Col span={8}>
                 <Select
                     placeholder="Seleccione"                  
-                    className="puntoOrigen"
+                    className={fechaFinalFlexibleValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
                     style={{ width:'100%' }}
                     options={[
                       { value: '0', label: 'Exacto' },
@@ -1278,8 +1492,14 @@ export const CreateOrderView = () => {
                     ]}
                     onChange={(value)=>{
                       setFechaFinalFlexible(value);
+                      setFechaFinalFlexibleValid(true);
                     }}
                   />
+                  {(!fechaFinalFlexibleValid) &&
+                    <>
+                      <br/><label className="textError">* Campo obligatorio</label><br/>
+                    </>
+                  }   
                 </Col>
               </Row>
               { routeGeometry &&
@@ -1404,11 +1624,18 @@ export const CreateOrderView = () => {
           </label>
           <Select
             style={{ width: '350px' }}
+            className={companyValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
             options={[{ value: '1', label: 'Halliburton' },{ value: '2', label: 'Halliburton zona franca' }]}
             onChange={(value)=>{
               setCompany(value);
+              setCompanyValid(true);
             }}
           />
+          {(!companyValid) &&
+            <>
+              <br/><label className="textError">* Campo obligatorio</label><br/>
+            </>
+          }
           {dataPsl.map((psl) => (
             <>
             <div className="divdistance">
@@ -1538,11 +1765,18 @@ export const CreateOrderView = () => {
               <Select
                 placeholder = 'Seleccione cliente final'
                 style={{ width: '100%' }}
-                options={[{ value: '1', label: 'Cliente 1' }]}
+                className={clientValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
+                options={[{ value: 1, label: 'Cliente 1' }]}
                 onChange={(value)=>{
                   setClient(value);
+                  setClientValid(true);
                 }}
               />
+              {(!clientValid) &&
+                <>
+                  <br/><label className="textError">* Campo obligatorio</label><br/>
+                </>
+              }              
             </Col>   
           </Row>
           <Row>
@@ -1586,7 +1820,18 @@ export const CreateOrderView = () => {
                       <Input placeholder="Nombre del contacto" key={contact.key} value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
                     </Col>
                     <Col span={12} style={{paddingLeft:'15px'}}>
-                      <Input placeholder="Teléfono: 000 000 0000 " key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}/>
+                      <Input placeholder="Teléfono: 000 000 0000 " key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}
+                      onKeyPress={(event) => {
+                        if (!/[0-9]/.test(event.key)) {
+                          event.preventDefault();
+                        }
+                      }}
+                      count={{
+                        show: true,
+                        max: 10,
+                        strategy: (txt) => runes(txt).length,
+                        exceedFormatter: (txt, { max }) => runes(txt).slice(0, max).join(''),              
+                      }}/>
                     </Col>                  
                   </Row>
                   </>
@@ -1604,7 +1849,18 @@ export const CreateOrderView = () => {
                       <Input placeholder="Nombre del contacto"  key={contact.key}  value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
                     </Col>
                     <Col span={12} style={{paddingLeft:'15px'}}>
-                      <Input placeholder="Teléfono: 000 000 0000 "  key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}/>
+                      <Input placeholder="Teléfono: 000 000 0000 "  key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}
+                      onKeyPress={(event) => {
+                        if (!/[0-9]/.test(event.key)) {
+                          event.preventDefault();
+                        }
+                      }}
+                      count={{
+                        show: true,
+                        max: 10,
+                        strategy: (txt) => runes(txt).length,
+                        exceedFormatter: (txt, { max }) => runes(txt).slice(0, max).join(''),              
+                      }}/>
                     </Col>                  
                   </Row>
                   </>
@@ -1645,21 +1901,21 @@ export const CreateOrderView = () => {
               <Col span={24} style={{marginBottom:'1.5rem'}}>
                 <Flex gap="middle">
                   <button type="button" id={"1"} className={["tripTypes", (typeactive === "1" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
-                    <div className="tripTypeIcons">
-                      <img className="icon" loading="lazy" alt="" src="/images/logistics/truck.svg"/>
-                      <div className="text">Carga</div>
+                    <div className="tripTypeIcons" >
+                      <img className="icon" loading="lazy" alt="" src="/images/logistics/truck.svg" id={"1"} onClick={handleTypeClick}/>
+                      <div className="text" id={"1"} onClick={handleTypeClick}>Carga</div>
                     </div>
                   </button>
                   <button type="button" id={"2"} className={["tripTypes", (typeactive === "2" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
                     <div className="tripTypeIcons">
-                      <img className="icon" loading="lazy" alt="" src="/images/logistics/izaje.svg"/>
-                      <div className="text">Izaje</div>
+                      <img className="icon" loading="lazy" alt="" src="/images/logistics/izaje.svg" id={"2"} onClick={handleTypeClick}/>
+                      <div className="text" id={"2"} onClick={handleTypeClick}>Izaje</div>
                     </div>
                   </button>
                   <button type="button" id={"3"} className={["tripTypes", (typeactive === "3" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
                     <div className="tripTypeIcons">
-                      <img className="icon" loading="lazy" alt="" src="/images/logistics/users.svg"/>
-                      <div className="text">Personal</div>
+                      <img className="icon" loading="lazy" alt="" src="/images/logistics/users.svg" id={"3"} onClick={handleTypeClick}/>
+                      <div className="text" id={"3"} onClick={handleTypeClick}>Personal</div>
                     </div>
                   </button>
                 </Flex>

@@ -548,7 +548,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
                   <h4>Documentos</h4>
                   <Row className="mainUploadDocuments">                    
                     {transferOrder?.transfer_order_documents?.map((file) => (
-                      <><Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
+                      <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
                         <UploadDocumentButton
                           key={file.id}
                           title={file.document_type_desc}
@@ -567,7 +567,6 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
                           ) : undefined}
                         </UploadDocumentButton>
                       </Col>
-                      </>
                     ))}
                     <Col span={24} style={{paddingTop:'1rem'}}>
                       <hr style={{borderTop: '1px solid #f7f7f7'}}></hr>
