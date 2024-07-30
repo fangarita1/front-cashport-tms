@@ -10,7 +10,6 @@ import EvidenceModal from "@/modules/clients/components/wallet-tab-evidence-moda
 import { applyAccountingAdjustment } from "@/services/accountingAdjustment/accountingAdjustment";
 import { useParams } from "next/navigation";
 import { extractSingleParam } from "@/utils/utils";
-import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { MessageInstance } from "antd/es/message/interface";
 
 interface Props {
@@ -20,6 +19,7 @@ interface Props {
   setCurrentView: Dispatch<SetStateAction<string>>;
   invoiceSelected?: IInvoice[];
   messageApi: MessageInstance;
+  onClosePrincipalModal?: () => void;
 }
 interface IcurrentInvoices {
   id: number;
@@ -34,21 +34,29 @@ interface NormalizedValue {
   }[];
 }
 
+interface infoObject {
+  file: File;
+  fileList: File[];
+}
+
 export const ApplyAccountingAdjustment = ({
   type,
-  selectedRows,
+  selectedRows: selectedNotes,
   setCurrentView,
   messageApi,
+  onClosePrincipalModal,
   invoiceSelected = []
 }: Props) => {
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
-
   const [selectTab, setSelectTab] = useState(0);
   const [currentInvoices, setCurrentInvoices] = useState<IcurrentInvoices[]>([]);
   const [currentAdjustment, setCurrentAdjustment] = useState(
-    selectedRows.map((row) => row.current_value)
+    selectedNotes.map((row) => row.current_value)
+  );
+  const [currentAdjustmentStatic, setCurrentAdjustmentStatic] = useState(
+    selectedNotes.map((row) => row.current_value)
   );
   const [applyValues, setApplyValues] = useState<{
     [key: string]: {
@@ -73,7 +81,7 @@ export const ApplyAccountingAdjustment = ({
   const handleValueChange = (valueApplied: number, index: number, record: IcurrentInvoices) => {
     setCurrentAdjustment((prev) => {
       const previousValue =
-        applyValues[record.id]?.find((apply) => apply.idAdjustment === selectedRows[index].id)
+        applyValues[record.id]?.find((apply) => apply.idAdjustment === selectedNotes[index].id)
           ?.balanceToApply ?? 0;
 
       let newValue: number;
@@ -88,8 +96,20 @@ export const ApplyAccountingAdjustment = ({
 
   const handleApplyValueChange = (value: number | null, record: IcurrentInvoices) => {
     const previousValue =
-      applyValues[record.id]?.find((apply) => apply.idAdjustment === selectedRows[selectTab].id)
+      applyValues[record.id]?.find((apply) => apply.idAdjustment === selectedNotes[selectTab].id)
         ?.balanceToApply ?? 0;
+    // validar que el valor no sea mayor al saldo disponible
+
+    if (value && value > currentAdjustment[selectTab] && previousValue <= 0) {
+      value = 0;
+    }
+    if (value && value > selectedNotes[selectTab].current_value) {
+      value = 0;
+    }
+    if (value && value > previousValue && value > currentAdjustment[selectTab] + previousValue) {
+      value = previousValue;
+    }
+
     // Validación para asegurarse de que el valor a aplicar no exceda el newBalance actual
     const maxApplicableValue = Math.min(value ?? 0, record.newBalance + previousValue);
 
@@ -98,10 +118,10 @@ export const ApplyAccountingAdjustment = ({
       [record.id]: [
         // Mantiene todas las aplicaciones anteriores para el mismo registro, excepto la actualmente seleccionada
         ...(prev[record.id] ?? []).filter(
-          (apply) => apply.idAdjustment !== selectedRows[selectTab].id
+          (apply) => apply.idAdjustment !== selectedNotes[selectTab].id
         ),
         // Agrega o actualiza la nueva aplicación con el valor ajustado que no excede el balance disponible
-        { balanceToApply: maxApplicableValue, idAdjustment: selectedRows[selectTab].id }
+        { balanceToApply: maxApplicableValue, idAdjustment: selectedNotes[selectTab].id }
       ]
     }));
 
@@ -124,15 +144,15 @@ export const ApplyAccountingAdjustment = ({
     setCommentary(e.target.value);
   };
 
-  const handleOnChangeDocument = (info: UploadChangeParam<UploadFile<any>>) => {
-    const file = info.file.originFileObj;
-    if (file) {
-      const fileSizeInMB = file.size / (1024 * 1024);
+  const handleOnChangeDocument: any = (info: infoObject) => {
+    const { file: rawFile } = info;
+    if (rawFile) {
+      const fileSizeInMB = rawFile.size / (1024 * 1024);
       if (fileSizeInMB > 30) {
         alert("El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB.");
         return;
       }
-      setSelectedEvidence(selectedEvidence ? [...selectedEvidence, file] : [file]);
+      setSelectedEvidence(selectedEvidence ? [...selectedEvidence, rawFile] : [rawFile]);
     }
   };
 
@@ -171,18 +191,22 @@ export const ApplyAccountingAdjustment = ({
       const normalizedData = normalizarApplyValues(applyValues);
       const adjustmentData = JSON.stringify(normalizedData);
       if (!selectedEvidence) return;
+      //  valida que si type es 1 pongas el 10 si es 2 el 9 y 3 el 11
+      const typeAjustment = type === 2 ? 9 : type === 1 ? 10 : 11;
       const response = await applyAccountingAdjustment(
         adjustmentData,
         selectedEvidence,
         projectIdParam as string,
-        clientIdParam as string
+        clientIdParam as string,
+        typeAjustment
       );
       if (response.status === 200) {
         messageApi.open({
           type: "success",
           content: "Ajuste contable aplicado correctamente"
         });
-        setCurrentView("select");
+        setOpenEvidenceModal(false);
+        onClosePrincipalModal && onClosePrincipalModal();
       }
     } catch (error) {
       messageApi.open({
@@ -204,13 +228,13 @@ export const ApplyAccountingAdjustment = ({
       title: "Pendiente",
       dataIndex: "current_value",
       key: "current_value",
-      render: (text) => `$${text}`
+      render: (text) => `$${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     },
     {
       title: "Saldo nuevo",
       dataIndex: "newBalance",
       key: "newBalance",
-      render: (text) => `$${text}`
+      render: (text) => `$${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     },
     {
       title: "Valor a aplicar",
@@ -221,22 +245,15 @@ export const ApplyAccountingAdjustment = ({
           min={0}
           value={
             applyValues[record.id]?.find(
-              (apply) => apply.idAdjustment === selectedRows[selectTab].id
+              (apply) => apply.idAdjustment === selectedNotes[selectTab]?.id
             )?.balanceToApply
           }
+          max={currentAdjustmentStatic[selectTab] + 1}
           formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
           onBlur={(event) => {
             const rawValue = event.target.value.replace(/,/g, "");
             const parsedValue = parseFloat(rawValue);
-            if (
-              (currentAdjustment[selectTab] > 0 &&
-                parsedValue <= selectedRows[selectTab].current_value) ||
-              applyValues[record.id]?.find(
-                (apply) => apply.idAdjustment === selectedRows[selectTab].id
-              )?.balanceToApply
-            ) {
-              handleApplyValueChange(isNaN(parsedValue) ? 0 : parsedValue, record);
-            }
+            handleApplyValueChange(isNaN(parsedValue) ? 0 : parsedValue, record);
           }}
           className="button__number__adjustment"
         />
@@ -247,9 +264,9 @@ export const ApplyAccountingAdjustment = ({
   return (
     <div className="modalContentApply">
       <p className="subTitleModalApply">Define el monto a aplicar a cada factura</p>
-      {selectedRows.length > 1 && (
+      {selectedNotes.length > 1 && (
         <UiTabs
-          tabs={selectedRows.map((row) => row.id.toString())}
+          tabs={selectedNotes.map((row) => row.id.toString())}
           onTabClick={(index) => setSelectTab(index)}
           initialTabIndex={selectTab}
           className="scrollableTabs"
@@ -257,7 +274,7 @@ export const ApplyAccountingAdjustment = ({
       )}
       <ItemApplyModal
         type={type}
-        item={selectedRows.length > 1 ? selectedRows[selectTab] : selectedRows[0]}
+        item={selectedNotes.length > 1 ? selectedNotes[selectTab] : selectedNotes[0]}
         availableValue={currentAdjustment[selectTab]}
       />
       <Table dataSource={currentInvoices} columns={columns} pagination={false} />
@@ -271,7 +288,7 @@ export const ApplyAccountingAdjustment = ({
         </button>
         <button
           type="button"
-          className={`button__action__text ${selectedRows.length > 0 ? "button__action__text__green" : ""}`}
+          className={`button__action__text ${selectedNotes.length > 0 ? "button__action__text__green" : ""}`}
           onClick={() => setOpenEvidenceModal(true)}
         >
           Continuar
@@ -292,6 +309,7 @@ export const ApplyAccountingAdjustment = ({
           handleOnChangeTextArea={handleOnChangeTextArea}
           commentary={commentary}
           setIsSecondView={setOpenEvidenceModal}
+          noComment
         />
       </Modal>
     </div>

@@ -1,14 +1,15 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Table, TableProps, Tooltip, Typography } from "antd";
 
 import { IInvoice } from "@/types/invoices/IInvoices";
 import { CheckCircle, Eye, Handshake, Warning, WarningCircle } from "phosphor-react";
 import "./invoicestable.scss";
-import { daysLeft, formatDate, insertPeriodEveryThreeDigits } from "@/utils/utils";
+import { daysLeft, formatDate, formatMoney } from "@/utils/utils";
 
 const { Text } = Typography;
 
 interface PropsInvoicesTable {
+  stateId: number;
   dataSingleInvoice: IInvoice[];
   setSelectedRows: Dispatch<SetStateAction<IInvoice[] | undefined>>;
   setShowInvoiceDetailModal: Dispatch<
@@ -17,22 +18,75 @@ interface PropsInvoicesTable {
       invoiceId: number;
     }>
   >;
+  selectedRows?: IInvoice[];
 }
 
 export const InvoicesTable = ({
+  stateId,
   dataSingleInvoice: data,
   setSelectedRows,
+  selectedRows,
   setShowInvoiceDetailModal
 }: PropsInvoicesTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  useEffect(() => {
+    if (selectedRows) {
+      const updatedKeys = selectedRowKeys.filter((key) =>
+        selectedRows.some((row) => row.id === key)
+      );
+      const selectedKeys = selectedRows.map((row) => row.id);
+      setSelectedRowKeys(Array.from(new Set([...updatedKeys, ...selectedKeys])));
+    } else {
+      setSelectedRowKeys([]);
+    }
+  }, [selectedRows]);
 
   const openInvoiceDetail = (invoiceId: number) => {
     setShowInvoiceDetailModal({ isOpen: true, invoiceId });
   };
 
-  const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
+  const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRows: any) => {
     setSelectedRowKeys(newSelectedRowKeys);
-    setSelectedRows(newSelectedRow);
+    if (newSelectedRowKeys.length >= 1) {
+      // set the selected Rows but adding to the previous selected rows
+      setSelectedRows((prevSelectedRows) => {
+        if (prevSelectedRows) {
+          //check if the new selected rows are already in the selected rows
+          const filteredSelectedRows = newSelectedRows.filter(
+            (newSelectedRow: IInvoice) =>
+              !prevSelectedRows.some((prevSelectedRow) => prevSelectedRow.id === newSelectedRow.id)
+          );
+
+          //filters the unselected rows but only the ones that have the status_id equal to stateId
+          const unCheckedRows = prevSelectedRows?.filter(
+            (prevSelectedRow) =>
+              !newSelectedRowKeys.includes(prevSelectedRow.id) &&
+              prevSelectedRow.status_id === stateId
+          );
+          if (unCheckedRows.length > 0) {
+            // remove form the prevState the ones present in the unCheckedRows
+            const filteredPrevSelectedRows = prevSelectedRows.filter(
+              (prevSelectedRow) => !unCheckedRows.includes(prevSelectedRow)
+            );
+            return filteredPrevSelectedRows;
+          }
+
+          return [...prevSelectedRows, ...filteredSelectedRows];
+        } else {
+          return newSelectedRows;
+        }
+      });
+    }
+    if (newSelectedRowKeys.length === 0) {
+      setSelectedRows((prevSelectedRows) => {
+        if (prevSelectedRows) {
+          return prevSelectedRows.filter(
+            (prevSelectedRow) => prevSelectedRow.status_id !== stateId
+          );
+        }
+      });
+    }
   };
 
   const rowSelection = {
@@ -105,9 +159,7 @@ export const InvoicesTable = ({
       title: "Monto inicial",
       key: "initial_value",
       dataIndex: "initial_value",
-      render: (amount) => (
-        <Text className="cell -alignRight">${insertPeriodEveryThreeDigits(amount)}</Text>
-      ),
+      render: (amount) => <Text className="cell -alignRight">{formatMoney(amount)}</Text>,
       sorter: (a, b) => a.initial_value - b.initial_value,
       showSorterTooltip: false,
       align: "right"
@@ -118,11 +170,9 @@ export const InvoicesTable = ({
       dataIndex: "ajust_value",
       render: (amount) =>
         amount === 0 ? null : amount > 0 ? (
-          <Text className="cell -alignRight">${insertPeriodEveryThreeDigits(amount)}</Text>
+          <Text className="cell -alignRight">{formatMoney(amount)}</Text>
         ) : (
-          <Text className="negativeAdjustment cell -alignRight">
-            ${insertPeriodEveryThreeDigits(amount)}
-          </Text>
+          <Text className="negativeAdjustment cell -alignRight">{formatMoney(amount)}</Text>
         ),
       sorter: (a, b) => a.ajust_value - b.ajust_value,
       showSorterTooltip: false,
@@ -132,9 +182,7 @@ export const InvoicesTable = ({
       title: "Pendiente",
       key: "current_value",
       dataIndex: "current_value",
-      render: (amount) => (
-        <Text className="cell -alignRight">${insertPeriodEveryThreeDigits(amount)}</Text>
-      ),
+      render: (amount) => <Text className="cell -alignRight">{formatMoney(amount)}</Text>,
       sorter: (a, b) => a.current_value - b.current_value,
       showSorterTooltip: false,
       align: "right"
@@ -144,56 +192,59 @@ export const InvoicesTable = ({
       className: "logosWrapper",
       render: (_, record) => (
         <div className="logos">
-          <Tooltip
-            title={
-              <div className="toolTip -paymentAgreement">
-                <p>Acuerdo de pago</p>
-                <p>
-                  Fecha <strong>xx/xx/xxxx</strong>
-                </p>
-                <p>
-                  Monto <strong>$XXXXX</strong>
-                </p>
-              </div>
-            }
-            color={"#f7f7f7"}
-            key={`A${record.id}`}
-          >
-            <Button icon={<Handshake size={"1.2rem"} />} />
-          </Tooltip>
-
-          <Tooltip
-            title={
-              <div className="toolTip -priceDifference">
-                <p>Diferencia en precios</p>
-                <p>
-                  Monto <strong>$XXXXXX</strong>
-                </p>
-                <p>Producto faltante</p>
-                <p>
-                  Descuento <strong>$XXXXXX</strong>
-                </p>
-              </div>
-            }
-            color={"#f7f7f7"}
-            key={`B${record.id}`}
-          >
-            <Button icon={<Warning size={"1.2rem"} />} />
-          </Tooltip>
-
-          <Tooltip
-            title={
-              <div className="toolTip -clientAccept">
-                <p>Aceptación cliente</p>
-                <p>Email</p>
-                <strong>DD-MM-YYYY</strong>
-              </div>
-            }
-            color={"#f7f7f7"}
-            key={`C${record.id}`}
-          >
-            <Button icon={<CheckCircle size={"1.2rem"} />} />
-          </Tooltip>
+          {record?.agreement_info && (
+            <Tooltip
+              title={
+                <div className="toolTip -paymentAgreement">
+                  <p>Acuerdo de pago</p>
+                  <p>
+                    Fecha <strong>{record?.agreement_info?.Fecha}</strong>
+                  </p>
+                  <p>
+                    Monto <strong>{formatMoney(record?.agreement_info?.Monto)}</strong>
+                  </p>
+                </div>
+              }
+              color={"#f7f7f7"}
+              key={`A${record.id}`}
+            >
+              <Button icon={<Handshake size={"1.2rem"} />} />
+            </Tooltip>
+          )}
+          {record.novelty_info && (
+            <Tooltip
+              title={
+                <div className="toolTip -priceDifference">
+                  <p>Diferencia en precios</p>
+                  <p>
+                    Monto{" "}
+                    <strong>{formatMoney(record?.novelty_info?.incidentAmount ?? "0")}</strong>
+                  </p>
+                  <p>{record?.novelty_info?.incidentType}</p>
+                  <p></p>
+                </div>
+              }
+              color={"#f7f7f7"}
+              key={`B${record.id}`}
+            >
+              <Button icon={<Warning size={"1.2rem"} />} />
+            </Tooltip>
+          )}
+          {record?.acceptance_info?.accept_date && (
+            <Tooltip
+              title={
+                <div className="toolTip -clientAccept">
+                  <p>Aceptación cliente</p>
+                  <p>{record?.acceptance_info?.radication_type}</p>
+                  <strong>{record?.acceptance_info?.accept_date ?? " DD-MM-YYYY"}</strong>
+                </div>
+              }
+              color={"#f7f7f7"}
+              key={`C${record.id}`}
+            >
+              <Button icon={<CheckCircle size={"1.2rem"} />} />
+            </Tooltip>
+          )}
 
           <Button onClick={() => openInvoiceDetail(record.id)} icon={<Eye size={"1.2rem"} />} />
         </div>
@@ -215,6 +266,7 @@ export const InvoicesTable = ({
         dataSource={data.map((data) => ({ ...data, key: data.id }))}
         rowSelection={rowSelection}
         rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
+        pagination={false}
       />
     </>
   );

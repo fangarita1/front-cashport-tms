@@ -33,7 +33,7 @@ interface Props {
 }
 
 export const FilterUsers = ({ idProject, setSelectedUsers }: Props) => {
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
 
   const [zones, setZones] = useState<any>([]);
   const [roles, setRoles] = useState<any>([]);

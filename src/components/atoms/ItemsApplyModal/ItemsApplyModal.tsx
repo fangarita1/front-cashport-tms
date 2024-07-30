@@ -24,17 +24,17 @@ const ItemApplyModal: FC<ItemsApplyModalProps> = ({ item, type, availableValue }
           <div className={"mainText"}>
             <strong className={"name"}>
               {titleMap[type]}
-              <span>{item.id}</span>
+              <span>{item?.id}</span>
             </strong>
           </div>
-          <div className={"label"}>{item.motive_name ?? "Volumen"}</div>
+          <div className={"label"}>{item?.motive_name ?? "Volumen"}</div>
         </div>
         <div className={"mainValues"}>
           <div className={"value"}>{formatMoney(availableValue?.toString() ?? "")}</div>
           <div className={"subValue"}>
-            {item.percentage
-              ? `${item.percentage}%`
-              : formatMoney(item.intialAmount?.toString() ?? "")}
+            {item?.percentage
+              ? `${item?.percentage}%`
+              : formatMoney(item?.intialAmount?.toString() ?? "")}
           </div>
         </div>
       </div>

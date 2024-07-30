@@ -1,7 +1,7 @@
 import useSWR from "swr";
 
 import { API } from "@/utils/api/api";
-import { IAddAddressData, ILocation } from "@/types/locations/ILocations";
+import { ILocation } from "@/types/locations/ILocations";
 
 import { useAppStore } from "@/lib/store/store";
 import { addAddressToLocation, getOneLocation } from "@/services/locations/locations";
@@ -9,7 +9,7 @@ import { useCallback } from "react";
 import { MessageType } from "@/context/MessageContext";
 
 export const useLocations = () => {
-  const { ID: projectId } = useAppStore((state) => state.selectProject);
+  const { ID: projectId } = useAppStore((state) => state.selectedProject);
   const { data, isLoading, error } = useSWR<ILocation[]>(`/location/project/${projectId}`, API, {});
 
   const createLocation = async (
@@ -22,7 +22,7 @@ export const useLocations = () => {
     showMessage: (type: MessageType, content: string) => void
   ) => {
     const response = await addAddressToLocation(newAddressData, projectId, showMessage);
-    return response.data as IAddAddressData[];
+    return response;
   };
 
   const getLocation = useCallback(

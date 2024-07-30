@@ -151,23 +151,30 @@ export function extractSingleParam(value: string | string[] | undefined): string
   }
   return value;
 }
-
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
+  const utcDay = String(date.getUTCDate()).padStart(2, "0");
+  const utcMonth = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const utcYear = date.getUTCFullYear();
 
-  return `${day}/${month}/${year}`;
+  return `${utcDay}/${utcMonth}/${utcYear}`;
 }
-export const formatDateBars = (date: string): string => {
-  const d = new Date(date);
-  const year = d.getFullYear();
-  const month = `0${d.getMonth() + 1}`.slice(-2);
-  const day = `0${d.getDate()}`.slice(-2);
-  return `${year}-${month}-${day}`;
+export const formatDateBars = (dateString: string): string => {
+  const date = new Date(dateString);
+  const utcDay = String(date.getUTCDate()).padStart(2, "0");
+  const utcMonth = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const utcYear = date.getUTCFullYear();
+  return `${utcYear}-${utcMonth}-${utcDay}`;
 };
 
+export const formatDatePlane = (date: string): string => {
+  const d = new Date(date);
+  const year = d.getUTCFullYear();
+  const month = new Intl.DateTimeFormat('es-ES', { month: 'long', timeZone: 'UTC' }).format(d);
+  const day = d.getUTCDate();
+
+  return `${day} ${month}, ${year}`;
+};
 export function daysLeft(dateString: string): number {
   const today = new Date();
   const expirationDate = new Date(dateString);
@@ -183,9 +190,15 @@ export const insertPeriodEveryThreeDigits = (number: number) => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 
-export function formatMoney(text: string, countryCode?: CountryCode): string {
+export function formatMoney(
+  amount: string | number | undefined | null,
+  countryCode?: CountryCode
+): string {
+  if (!amount) {
+    return "";
+  }
   const { currency, id } = countryFormater(countryCode);
-  const number = parseFloat(text);
+  const number = typeof amount === "string" ? parseFloat(amount) : amount;
   const formatter = new Intl.NumberFormat(id, {
     style: "currency",
     currency,
@@ -246,4 +259,52 @@ export const stringToBoolean = (value: string | boolean | undefined): boolean =>
     return false;
   }
   return value === "true" || value === true;
+};
+
+export const timeAgo = (date: string): string => {
+  const currentDate = new Date();
+  const dateToCompare = new Date(date);
+  const diffInMs = currentDate.getTime() - dateToCompare.getTime();
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  const diffInMonths = Math.floor(diffInDays / 30);
+
+  if (diffInMinutes < 60) {
+    return `Hace ${diffInMinutes} minutos`;
+  } else if (diffInHours < 24) {
+    return `Hace ${diffInHours} horas`;
+  } else if (diffInDays < 7) {
+    return `Hace ${diffInDays} días`;
+  } else if (diffInWeeks < 4) {
+    return `Hace ${diffInWeeks} semanas`;
+  } else {
+    return `Hace ${diffInMonths} meses`;
+  }
+};
+
+export const formatDateAndTime = (date: string): string => {
+  const d = new Date(date);
+  const day = `0${d.getDate()}`.slice(-2);
+  const month = `0${d.getMonth() + 1}`.slice(-2);
+  const year = d.getFullYear();
+  const hours = `0${d.getHours()}`.slice(-2);
+  const minutes = `0${d.getMinutes()}`.slice(-2);
+  const period = d.getHours() >= 12 ? "PM" : "AM";
+
+  return `${day}/${month}/${year} - ${hours}:${minutes} ${period}`;
+};
+
+export const formatMillionNumber = (number: number | undefined | null): string => {
+  if (!number) {
+    return "0";
+  }
+
+  const formatNumber = number / 1000000;
+
+  if (formatNumber > 1000000) {
+    return formatNumber.toFixed(2);
+  }
+  return formatNumber.toFixed();
 };

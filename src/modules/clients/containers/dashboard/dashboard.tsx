@@ -9,7 +9,7 @@ import DashboardGenericItem from "../../components/dashboard-generic-item";
 import DashboardSellsVsPayments from "../../components/dashboard-sells-vs-payments";
 import DashboardHistoricDso from "../../components/dashboard-historic-dso";
 import { ClientDetailsContext } from "../client-details/client-details";
-import { formatMoney } from "@/utils/utils";
+import { formatMillionNumber, formatMoney } from "@/utils/utils";
 import styles from "./dashboard.module.scss";
 
 const DynamicPortfoliAges = dynamic(() => import("../../components/dashboard-porfolio-ages"), {
@@ -21,9 +21,18 @@ interface DashboardProps {}
 const Dashboard: FC<DashboardProps> = () => {
   const { portfolioData } = useContext(ClientDetailsContext);
 
-  const appliedPayments = formatMoney(portfolioData?.data_wallet?.applied_payments_ammount);
-  const unappliedPayments = formatMoney(portfolioData?.data_wallet?.unapplied_payments_ammount);
+  const formattedAppliedPayments = formatMillionNumber(
+    portfolioData?.data_wallet?.applied_payments_ammount
+  );
+  const appliedPayments = formatMoney(formattedAppliedPayments);
+  const formattedUnappliedPayments = formatMillionNumber(
+    portfolioData?.data_wallet?.unapplied_payments_ammount
+  );
+  const unappliedPayments = formatMoney(formattedUnappliedPayments);
   const dsoValue = portfolioData?.dso;
+
+  const formattedQuota = formatMillionNumber(portfolioData?.quota);
+  const quota = formatMoney(formattedQuota);
 
   return (
     <div className={styles.wrapper}>
@@ -54,7 +63,7 @@ const Dashboard: FC<DashboardProps> = () => {
         </div>
         <div className={styles.item}>
           <div className={styles.list}>
-            <DashboardGenericItem name="Cupo" value="$54.950" unit="M" badgeText="12%" />
+            <DashboardGenericItem name="Cupo" value={quota} unit="M" badgeText="12%" />
           </div>
         </div>
         <div className={styles.dso}>

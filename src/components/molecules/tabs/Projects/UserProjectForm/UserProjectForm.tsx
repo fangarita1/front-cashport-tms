@@ -66,7 +66,7 @@ export const UserProjectForm = ({
     disabled: !isEditAvailable,
     values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as IUserForm)
   });
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
 
   const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
     initDatSelectedBusinessRules
@@ -273,7 +273,6 @@ export const UserProjectForm = ({
                 <Flex vertical style={{ width: "30%" }}>
                   <SelectClientsGroup
                     userID={dataUser?.data?.ID}
-                    projectID={ID}
                     disabled={!isEditAvailable}
                     assignedGroups={assignedGroups}
                     setAssignedGroups={setAssignedGroups}

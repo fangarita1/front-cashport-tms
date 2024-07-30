@@ -3,11 +3,12 @@ import { Flex, message, Modal, Typography } from "antd";
 import { useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { ClientsProjectTable } from "@/components/molecules/tables/ClientsProjectTable/ClientsProjectTable";
-import { createGroup, updateGroup } from "@/services/groupClients/groupClients";
+import { createGroup } from "@/services/groupClients/groupClients";
 
 import "./modalClientsGroup.scss";
 import { IClient } from "@/types/clients/IClients";
 import { useAppStore } from "@/lib/store/store";
+import { groupInfo } from "@/components/organisms/projects/ClientsGroupsProjectView/ClientsGroupsProjectView";
 
 const { Text } = Typography;
 
@@ -15,16 +16,25 @@ interface CreateGroupProps {
   isOpen: boolean;
   isEditGroup?: boolean;
   setIsOpenModal: Dispatch<SetStateAction<boolean>>;
+  selectedGroupInfo?: groupInfo;
+  // eslint-disable-next-line no-unused-vars
+  updateClientsGroup?: (clients: string[]) => Promise<void>;
 }
 
 export type NameType = {
   name: string;
 };
 
-export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: CreateGroupProps) => {
+export const ModalClientsGroup = ({
+  isOpen,
+  setIsOpenModal,
+  isEditGroup,
+  selectedGroupInfo,
+  updateClientsGroup
+}: CreateGroupProps) => {
   const [groupName, setGroupName] = useState("");
-  const { ID } = useAppStore((state) => state.selectProject);
-  const [selectedRows, setSelectedRows] = useState<any>([]);
+  const { ID } = useAppStore((state) => state.selectedProject);
+  const [selectedRows, setSelectedRows] = useState<IClient[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
   const {
     control,
@@ -66,17 +76,8 @@ export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: Creat
   };
 
   const onUpdateGroup = () => {
-    if (selectedRows.length > 0) {
-      try {
-        const group = {
-          group_id: 3,
-          clients: selectedRows.map((client: IClient) => client.nit)
-        };
-        updateGroup(group);
-      } catch (error) {
-        console.warn(error);
-      }
-    }
+    if (!updateClientsGroup) return;
+    updateClientsGroup(selectedRows.map((client: IClient) => client.nit.toString()));
 
     setIsOpenModal(false);
     setGroupName("");
@@ -126,7 +127,7 @@ export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: Creat
       ) : (
         <Modal
           width={900}
-          title={isEditGroup ? "Nombre grupo a editar" : groupName}
+          title={isEditGroup ? selectedGroupInfo?.groupName : groupName}
           open={isOpen}
           onCancel={onCancel}
           okButtonProps={{
@@ -151,7 +152,7 @@ export const ModalClientsGroup = ({ isOpen, setIsOpenModal, isEditGroup }: Creat
             <ClientsProjectTable
               placedIn="modal"
               setSelectedRows={setSelectedRows}
-              selectedClientsKeys={["0347623472-5643", "4347623472-5643"]}
+              selectedClientsKeys={selectedGroupInfo?.clientsIds}
             />
           </Flex>
         </Modal>

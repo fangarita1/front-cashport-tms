@@ -1,16 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import "./createDiscount.scss";
 import { FieldError, useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import * as yup from "yup";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
-import { useFinancialDiscountMotives } from "@/hooks/useMotives";
+import { useFinancialDiscountMotives } from "@/hooks/useFinancialDiscountMotives";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createAccountingAdjustment } from "@/services/accountingAdjustment/accountingAdjustment";
 import { InputSelect } from "@/components/atoms/inputs/InputSelect/InputSelect";
 import { formatDateBars } from "@/utils/utils";
 import { InputDateRange } from "@/components/atoms/inputs/InputDateRange/InputDateRange";
 import { MessageInstance } from "antd/es/message/interface";
+import { InputFormMoney } from "@/components/atoms/inputs/InputFormMoney/InputFormMoney";
 
 interface IformDiscount {
   motive: string;
@@ -57,8 +58,10 @@ export const CreateDiscount = ({ onClose, messageApi, projectIdParam, clientIdPa
     resolver: yupResolver(schema)
   });
   const { data: motives, isLoading, isError } = useFinancialDiscountMotives();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmitForm = async (data: IformDiscount) => {
+    setIsSubmitting(true);
     try {
       await createAccountingAdjustment({
         type: 3,
@@ -85,6 +88,8 @@ export const CreateDiscount = ({ onClose, messageApi, projectIdParam, clientIdPa
         type: "error",
         content: "Oops ocurrio un error creando Descuento. Por favor, intente nuevamente."
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -104,7 +109,7 @@ export const CreateDiscount = ({ onClose, messageApi, projectIdParam, clientIdPa
             placeholder="Seleccionar motivo"
           />
           <div />
-          <InputForm
+          <InputFormMoney
             titleInput="Cupo total"
             nameInput="amount"
             control={control}
@@ -145,8 +150,9 @@ export const CreateDiscount = ({ onClose, messageApi, projectIdParam, clientIdPa
           <button
             type="submit"
             className={`button__action__text ${isValid ? "button__action__text__green" : ""}`}
+            disabled={!isValid || isSubmitting}
           >
-            Crear descuento
+            {isSubmitting ? "Creando..." : "Crear descuento"}
           </button>
         </div>
       </form>

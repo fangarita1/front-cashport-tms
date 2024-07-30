@@ -2,6 +2,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } f
 import { auth } from "./firebase";
 import { STORAGE_TOKEN } from "@/utils/constants/globalConstants";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { useAppStore } from "@/lib/store/store";
 
 const getAuth = async (
   email: string,
@@ -53,8 +54,10 @@ const getAuth = async (
   }
 };
 const logOut = (router: AppRouterInstance) => {
+  router.push("/auth/login");
   signOut(auth);
   localStorage.removeItem(STORAGE_TOKEN);
-  router.replace("auth/login");
+  const { resetStore } = useAppStore.getState();
+  resetStore();
 };
 export { getAuth, logOut };

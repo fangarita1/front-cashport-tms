@@ -4,28 +4,31 @@ import { Button, Flex, Popconfirm, Table, TableProps, Typography, Spin, MenuProp
 import { Eye, Plus, Triangle } from "phosphor-react";
 import { ModalClientsGroup } from "@/components/molecules/modals/ModalClientsGroup/ModalClientsGroup";
 import { useClientsGroups } from "@/hooks/useClientsGroups";
-import { IClientsGroups } from "@/types/clientsGroups/IClientsGroups";
-
-import { useParams } from "next/navigation";
+import { IClientsGroup } from "@/types/clientsGroups/IClientsGroups";
 
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 
 import "./ClientsGroupsTable.scss";
+import { ModalChangeStatus } from "../../modals/ModalChangeStatus/ModalChangeStatus";
 
 const { Text, Link } = Typography;
 
 interface PropsClientsGroupsTable {
-  setShowGroupDetails: Dispatch<SetStateAction<boolean>>;
+  setShowGroupDetails: Dispatch<
+    SetStateAction<{
+      groupId: number;
+      showDetails: boolean;
+    }>
+  >;
 }
 
 export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTable) => {
-  const { id: idProject } = useParams<{ id: string }>();
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isOpenModalStatus, setIsOpenModalStatus] = useState(false);
   const [height, setHeight] = useState<number>(window.innerHeight);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<any>([]);
   const [page, setPage] = useState(1);
-
 
   useEffect(() => {
     const handleResize = () => {
@@ -47,16 +50,15 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     status: "all" as "all" | "active" | "inactive"
   };
 
-  const { data, loading } = useClientsGroups({
+  const { data, loading, deleteSelectedGroups, changeGroupsState } = useClientsGroups({
     page,
-    idProject,
     clients: selectedFilters.clients,
     subscribers: selectedFilters.subscribers,
     activeUsers: selectedFilters.status
   });
 
-  function handleSeeGroupDetails() {
-    setShowGroupDetails(true);
+  function handleSeeGroupDetails(groupId: number) {
+    setShowGroupDetails({ groupId, showDetails: true });
   }
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
@@ -65,12 +67,13 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
   };
 
   const rowSelection = {
+    columnWidth: 40,
     selectedRowKeys,
     onChange: onSelectChange
   };
 
-  const changeGroupsState = () => {
-    console.log("change groups state for ", selectedRows);
+  const handleOpenChangeGroupsState = () => {
+    setIsOpenModalStatus(true);
   };
 
   const onChangePage = (pagePagination: number) => {
@@ -78,14 +81,22 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
   };
 
   const deleteGroups = () => {
-    console.log("delete groups ", selectedRows);
+    deleteSelectedGroups(selectedRows.map((group: IClientsGroup) => group.id));
+  };
+
+  const handleChangeGroupsState = (selectedStatusState: boolean) => {
+    const groups_id = selectedRows.map((group: IClientsGroup) => group.id);
+    const status = selectedStatusState ? 1 : 0;
+
+    changeGroupsState(groups_id, status);
+    setIsOpenModalStatus(false);
   };
 
   const items: MenuProps["items"] = [
     {
       key: "1",
       label: (
-        <Button className="buttonOutlined" onClick={changeGroupsState}>
+        <Button className="buttonOutlined" onClick={handleOpenChangeGroupsState}>
           Cambiar de estado
         </Button>
       )
@@ -94,24 +105,28 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
       key: "2",
       label: (
         <Button className="buttonOutlined" onClick={deleteGroups}>
-          Eliminar grupo
+          Eliminar
         </Button>
       )
     }
   ];
 
-  const columns: TableProps<IClientsGroups>["columns"] = [
+  const columns: TableProps<IClientsGroup>["columns"] = [
     {
       title: "Nombre Grupo",
       dataIndex: "group_name",
       key: "group_name",
-      render: (text) => <Link underline>{text}</Link>
+      render: (text, row) => (
+        <Link onClick={() => handleSeeGroupDetails(row.id)} underline>
+          {text}
+        </Link>
+      )
     },
     {
       title: "Clientes",
-      dataIndex: "CLIENTS",
-      key: "CLIENTS",
-      render: (text) => <Text>{text}clientes</Text>
+      dataIndex: "clients_count",
+      key: "clients_count",
+      render: (clients, row) => <Text>{row?.clients?.length}</Text>
     },
     {
       title: "Suscritos",
@@ -129,7 +144,6 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
       title: "Estado",
       key: "active",
       dataIndex: "active",
-      width: "150px",
       render: (_, { active }) => (
         <>
           {active ? (
@@ -160,9 +174,11 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     {
       title: "",
       key: "seeProject",
-      width: "40px",
+      width: 110,
       dataIndex: "",
-      render: () => <Button onClick={handleSeeGroupDetails} icon={<Eye size={"1.3rem"} />} />
+      render: (_, row) => (
+        <Button onClick={() => handleSeeGroupDetails(row.id)} icon={<Eye size={"1.3rem"} />} />
+      )
     }
   ];
 
@@ -197,6 +213,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
             virtual
             scroll={{ y: height - 400, x: 100 }}
             pagination={{
+              current: page,
               pageSize: 25,
               showSizeChanger: false,
               position: ["none", "bottomRight"],
@@ -217,6 +234,12 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
         </div>
       )}
       <ModalClientsGroup isOpen={isOpenModal} setIsOpenModal={setIsOpenModal} />
+      <ModalChangeStatus
+        isActiveStatus={true}
+        isOpen={isOpenModalStatus}
+        onClose={() => setIsOpenModalStatus(false)}
+        customOnOk={handleChangeGroupsState}
+      />
     </main>
   );
 };

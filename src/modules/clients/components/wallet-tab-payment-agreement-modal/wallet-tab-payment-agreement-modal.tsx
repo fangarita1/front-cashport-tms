@@ -6,7 +6,7 @@ import EvidenceModal from "../wallet-tab-evidence-modal";
 
 interface Props {
   isOpen: boolean;
-  setIsPaymentAgreementOpen: Dispatch<SetStateAction<boolean>>;
+  onClose: () => void;
 }
 
 interface FileFromDragger {
@@ -25,13 +25,13 @@ interface FileObjectFromButton {
   fileList: FileFromDragger[];
 }
 
-const PaymentAgreementModal: React.FC<Props> = ({ isOpen, setIsPaymentAgreementOpen }) => {
+const PaymentAgreementModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [selectedEvidence, setSelectedEvidence] = useState<File[]>([]);
   const [commentary, setCommentary] = useState<string | undefined>();
   const [isSecondView, setIsSecondView] = useState(false);
 
   const onCloseModal = () => {
-    setIsPaymentAgreementOpen(false);
+    onClose();
   };
 
   const handleOnChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

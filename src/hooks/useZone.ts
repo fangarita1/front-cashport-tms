@@ -7,7 +7,7 @@ import { addZone, removeZoneById } from "@/services/zone/zones";
 import { MessageInstance } from "antd/es/message/interface";
 
 export const useZone = () => {
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
 
   const { data, isLoading, mutate } = useSWR<IZones>(`/zone/project/${ID}`, fetcher, {});
 

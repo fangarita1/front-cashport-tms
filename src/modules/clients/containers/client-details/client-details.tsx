@@ -1,5 +1,5 @@
 import { CaretLeft } from "phosphor-react";
-import { FC, createContext, useMemo, useState } from "react";
+import { Dispatch, FC, SetStateAction, createContext, useMemo, useState } from "react";
 import { WalletTab } from "@/components/organisms/Customers/WalletTab/WalletTab";
 import Dashboard from "../dashboard";
 import InvoiceActionsModal from "../invoice-actions-modal";
@@ -11,13 +11,24 @@ import { InvoiceAction } from "../../constants/invoice-actions.constants";
 import AccountingAdjustmentsTab from "../accounting-adjustments-tab";
 
 import styles from "./client-details.module.scss";
+import ContactsTab from "../contacts-tab";
+import { IDataSection } from "@/types/portfolios/IPortfolios";
 
+type ClientDetailsContextType = {
+  selectedOption: InvoiceAction;
+  setSelectedOption: Dispatch<SetStateAction<InvoiceAction>>;
+  showInvoiceActionsModal: boolean;
+  setShowInvoiceActionsModal: Dispatch<SetStateAction<boolean>>;
+  portfolioData: IDataSection | undefined;
+};
 interface ClientDetailsProps {}
-export const ClientDetailsContext = createContext<any>({});
+export const ClientDetailsContext = createContext<ClientDetailsContextType>(
+  {} as ClientDetailsContextType
+);
 
 export const ClientDetails: FC<ClientDetailsProps> = () => {
   const { portfolioData } = useClientDetails();
-  const [showInvoiceActionsModal, setShowInvoiceActionsModal] = useState(false);
+  const [showInvoiceActionsModal, setShowInvoiceActionsModal] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<InvoiceAction>(InvoiceAction.GenerateAction);
 
   const items = [
@@ -47,10 +58,15 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
       ) : (
         <Spin style={{ margin: "1rem auto", display: "block" }} />
       )
+    },
+    {
+      key: "4",
+      label: "Contactos",
+      children: <ContactsTab />
     }
   ];
 
-  const ClientDetailObject = useMemo(
+  const ClientDetailObject: ClientDetailsContextType = useMemo(
     () => ({
       selectedOption,
       setSelectedOption,
@@ -60,7 +76,6 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
     }),
     [portfolioData, selectedOption, showInvoiceActionsModal]
   );
-
 
   return (
     <ClientDetailsContext.Provider value={ClientDetailObject}>

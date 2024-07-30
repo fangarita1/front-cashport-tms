@@ -1,8 +1,10 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import { Poppins } from "@next/font/google";
 import ReactApexChart from "react-apexcharts";
 import styles from "./dashboard-porfolio-ages.module.scss";
 import { ApexOptions } from "apexcharts";
+import { ClientDetailsContext } from "../../containers/client-details/client-details";
+import { formatMoney } from "@/utils/utils";
 const poppins = Poppins({ weight: "400", style: "normal", subsets: ["latin"] });
 
 interface DashboardPortfolioAgesProps {
@@ -10,32 +12,13 @@ interface DashboardPortfolioAgesProps {
 }
 
 const DashboardPortfolioAges: FC<DashboardPortfolioAgesProps> = ({ className }) => {
-  const series = [
-    {
-      name: "+120 días",
-      data: [16.6]
-    },
-    {
-      name: "120 días",
-      data: [16.6]
-    },
-    {
-      name: "90 días",
-      data: [16.6]
-    },
-    {
-      name: "60 días",
-      data: [16.6]
-    },
-    {
-      name: "30 días",
-      data: [16.6]
-    },
-    {
-      name: "Corriente",
-      data: [16.6]
-    }
-  ];
+  const { portfolioData } = useContext(ClientDetailsContext);
+  const invoiceAges = portfolioData?.invoice_ages
+    .map((item) => ({
+      name: item.days_range,
+      data: [item.total]
+    }))
+    .reverse();
 
   const options: ApexOptions = {
     chart: {
@@ -77,7 +60,7 @@ const DashboardPortfolioAges: FC<DashboardPortfolioAgesProps> = ({ className }) 
     tooltip: {
       y: {
         formatter: (val) => {
-          return val + "%";
+          return formatMoney(val);
         }
       }
     },
@@ -96,13 +79,19 @@ const DashboardPortfolioAges: FC<DashboardPortfolioAgesProps> = ({ className }) 
     <div className={`${styles.wrapper} ${className}`}>
       <div className={styles.name}>Edades de la cartera</div>
       <div className={styles.chart}>
-        <ReactApexChart className="" options={options} series={series} type="bar" height={210} />
+        <ReactApexChart
+          className=""
+          options={options}
+          series={invoiceAges}
+          type="bar"
+          height={210}
+        />
       </div>
 
       <div className={styles.legends}>
         <div className={styles.legend}>
           <div className={styles.circle} style={{ backgroundColor: "#eafa88" }}></div>
-          Corriente
+          Actual
         </div>
         <div className={styles.legend}>
           <div className={styles.circle} style={{ backgroundColor: "#daf04d" }}></div>

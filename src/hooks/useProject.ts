@@ -4,6 +4,7 @@ import { fetcher } from "@/utils/api/api";
 import { IProjectById } from "@/types/projects/IProject";
 import { useEffect } from "react";
 import { useAppStore } from "@/lib/store/store";
+import { ISelectedProject } from "@/lib/slices/createProjectSlice";
 
 interface Props {
   id: string;
@@ -15,7 +16,12 @@ export const useProject = ({ id }: Props) => {
 
   useEffect(() => {
     if (!data?.data[0]) return;
-    setSelectProject(data?.data[0]);
+    const projectInfo: ISelectedProject = {
+      ID: data?.data[0].ID,
+      NAME: data?.data[0].NAME,
+      LOGO: data?.data[0].LOGO
+    };
+    setSelectProject(projectInfo);
   }, [data, setSelectProject]);
 
   return {

@@ -1,16 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import "./createCreditNote.scss";
 import { FieldError, useForm } from "react-hook-form";
-import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import * as yup from "yup";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
-import { useFinancialDiscountMotives } from "@/hooks/useMotives";
+import { useFinancialDiscountMotives } from "@/hooks/useFinancialDiscountMotives";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createAccountingAdjustment } from "@/services/accountingAdjustment/accountingAdjustment";
 import { InputSelect } from "@/components/atoms/inputs/InputSelect/InputSelect";
 import { formatDateBars } from "@/utils/utils";
 import { InputDateRange } from "@/components/atoms/inputs/InputDateRange/InputDateRange";
 import { MessageInstance } from "antd/es/message/interface";
+import { InputFormMoney } from "@/components/atoms/inputs/InputFormMoney/InputFormMoney";
 interface IformDiscount {
   motive: string;
   amount: number;
@@ -51,8 +51,10 @@ export const CreateCreditNote = ({ onClose, messageApi, projectIdParam, clientId
     resolver: yupResolver(schema)
   });
   const { data: motives, isLoading, isError } = useFinancialDiscountMotives();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmitForm = async (data: IformDiscount) => {
+    setIsSubmitting(true);
     try {
       await createAccountingAdjustment({
         type: 2,
@@ -80,6 +82,8 @@ export const CreateCreditNote = ({ onClose, messageApi, projectIdParam, clientId
         type: "error",
         content: "Oops ocurrio un error creando nota credito. Por favor, intente nuevamente."
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -98,7 +102,7 @@ export const CreateCreditNote = ({ onClose, messageApi, projectIdParam, clientId
             isError={isError}
             placeholder="Seleccionar motivo"
           />
-          <InputForm
+          <InputFormMoney
             titleInput="Cupo total"
             nameInput="amount"
             control={control}
@@ -130,8 +134,9 @@ export const CreateCreditNote = ({ onClose, messageApi, projectIdParam, clientId
           <button
             type="submit"
             className={`button__action__text ${isValid ? "button__action__text__green" : ""}`}
+            disabled={!isValid || isSubmitting}
           >
-            Crear descuento
+            {isSubmitting ? "Creando..." : "      Crear Nota Crédito"}
           </button>
         </div>
       </form>

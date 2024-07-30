@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { Button, Collapse, Flex, Spin } from "antd";
+import { Button, Flex, Spin } from "antd";
 import { CaretDoubleRight } from "phosphor-react";
 import LabelCollapse from "@/components/ui/label-collapse";
 import UiSearchInput from "@/components/ui/search-input";
 import AccountingAdjustmentsTable from "@/modules/clients/components/accounting-adjustments-table";
+import Collapse from "@/components/ui/collapse";
 import { useFinancialDiscounts } from "@/hooks/useFinancialDiscounts";
 import { extractSingleParam } from "@/utils/utils";
 import { IFinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
@@ -63,9 +64,6 @@ const AccountingAdjustmentsTab = () => {
           </Flex>
 
           <Collapse
-            className="accountingAdjustmentsTab__collapseByStatus"
-            ghost
-            accordion
             items={data?.map((financialState) => ({
               key: financialState.status_id,
               label: (
@@ -73,9 +71,17 @@ const AccountingAdjustmentsTab = () => {
               ),
               children: (
                 <AccountingAdjustmentsTable
-                  dataAdjustmentStatus={financialState}
+                  dataAdjustmentsByStatus={financialState.financial_discounts.map(
+                    (financialDiscount) => {
+                      return {
+                        ...financialDiscount,
+                        financial_status_id: financialState.status_id
+                      };
+                    }
+                  )}
                   setSelectedRows={setSelectedRows}
                   setShowAdjustmentDetailModal={setShowAdjustmentDetailModal}
+                  financialStatusId={financialState.status_id}
                 />
               )
             }))}

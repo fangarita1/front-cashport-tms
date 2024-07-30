@@ -1,16 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import "./createDebitNote.scss";
 import { FieldError, useForm } from "react-hook-form";
-import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import * as yup from "yup";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
-import { useFinancialDiscountMotives } from "@/hooks/useMotives";
+import { useFinancialDiscountMotives } from "@/hooks/useFinancialDiscountMotives";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createAccountingAdjustment } from "@/services/accountingAdjustment/accountingAdjustment";
 import { InputSelect } from "@/components/atoms/inputs/InputSelect/InputSelect";
-import {  formatDateBars } from "@/utils/utils";
+import { formatDateBars } from "@/utils/utils";
 import { InputDateRange } from "@/components/atoms/inputs/InputDateRange/InputDateRange";
 import { MessageInstance } from "antd/es/message/interface";
+import { InputFormMoney } from "@/components/atoms/inputs/InputFormMoney/InputFormMoney";
 
 interface IformDiscount {
   motive: string;
@@ -50,7 +50,9 @@ export const CreateDebitNote = ({ onClose, messageApi, projectIdParam, clientIdP
     resolver: yupResolver(schema)
   });
   const { data: motives, isLoading, isError } = useFinancialDiscountMotives();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const handleSubmitForm = async (data: IformDiscount) => {
+    setIsSubmitting(true);
     try {
       await createAccountingAdjustment({
         type: 1,
@@ -65,7 +67,7 @@ export const CreateDebitNote = ({ onClose, messageApi, projectIdParam, clientIdP
         },
         users_aproved: [142, 146], // TODO: users_aproved esta mal escrito ya que el back lo pide asi
         project_id: projectIdParam || "19",
-        client_id: clientIdParam ?? "98765232"
+        client_id: clientIdParam || "98765232"
       });
 
       messageApi.open({
@@ -78,6 +80,8 @@ export const CreateDebitNote = ({ onClose, messageApi, projectIdParam, clientIdP
         type: "error",
         content: "Oops ocurrio un error creando nota débito. Por favor, intente nuevamente."
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -96,7 +100,7 @@ export const CreateDebitNote = ({ onClose, messageApi, projectIdParam, clientIdP
             isError={isError}
             placeholder="Seleccionar motivo"
           />
-          <InputForm
+          <InputFormMoney
             titleInput="Valor del ajuste"
             nameInput="amount"
             control={control}
@@ -128,8 +132,9 @@ export const CreateDebitNote = ({ onClose, messageApi, projectIdParam, clientIdP
           <button
             type="submit"
             className={`button__action__text ${isValid ? "button__action__text__green" : ""}`}
+            disabled={!isValid || isSubmitting}
           >
-            Crear descuento
+            {isSubmitting ? "Creando..." : "  Crear Nota Débito"}
           </button>
         </div>
       </form>

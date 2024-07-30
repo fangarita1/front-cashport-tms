@@ -2,7 +2,7 @@ import { Flex, Typography } from "antd";
 import { DocumentButton } from "../DocumentButton/DocumentButton";
 const { Text } = Typography;
 import "./uploaddocumentbutton.scss";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 export interface FileObject {
   docReference: string;
@@ -17,15 +17,26 @@ interface DocumentProps {
   isMandatory: boolean;
   setFiles: Dispatch<SetStateAction<FileObject[]>>;
   containerClassName?: string;
+  draggerClassname?: string;
+  disabled?: boolean;
+  children?: React.ReactNode;
 }
 
 export const UploadDocumentButton = ({
   title,
   isMandatory,
   setFiles,
-  containerClassName
+  containerClassName,
+  draggerClassname,
+  disabled,
+  children,
 }: DocumentProps) => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (children)
+      setUploadedFile(null);
+  }, [children]);
 
   const handleOnChange: any = (info: infoObject) => {
     const { file: rawFile } = info;
@@ -113,7 +124,11 @@ export const UploadDocumentButton = ({
         handleOnDelete={handleOnDelete}
         fileName={uploadedFile?.name}
         fileSize={uploadedFile?.size}
-      />
+        disabled={disabled}
+        className={draggerClassname}
+      >
+        {children}
+      </DocumentButton>
     </div>
   );
 };

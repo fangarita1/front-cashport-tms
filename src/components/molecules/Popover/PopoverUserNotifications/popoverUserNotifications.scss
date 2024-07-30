@@ -1,0 +1,113 @@
+.notificationsPopover {
+    .ant-popover-content {
+        border-radius: 8px;
+        height: auto;
+        max-height: 90vh;
+        min-width: 30vw;
+        max-width: 32vw;
+    }
+
+    .ant-popover-inner {
+        border-radius: 8px;
+        background-color: #FFFFFF !important;
+    }
+
+    .ant-popover-inner-content {
+        padding: 0;
+    }
+
+    .ant-popover-arrow {
+        display: none;
+    }
+
+    .modalTitle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: row;
+
+        .title__text {
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 30px;
+        }
+    }
+
+    .notificationsPopoverContent {
+        max-height: calc(90vh - 80px);
+        overflow-y: auto;
+        scrollbar-width: thin;
+        background-color: #FFFFFF;
+        padding: 16px;
+
+        .ant-list-item-meta-avatar {
+            min-width: 48px;
+        }
+
+        .eyeIcon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4px;
+            border-radius: 4px;
+            background-color: #DDDDDD;
+        }
+
+        .item__title {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 24px;
+        }
+
+        .item__name {
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 24px;
+        }
+
+        .item__date {
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 24px;
+            color: #0085FF;
+        }
+    }
+
+
+}
+
+.notificationsWrapper {
+    position: relative;
+
+    .notifications {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        flex: 0 0 auto;
+        font-size: 24px;
+        cursor: pointer;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        background-color: #FFFFFF;
+
+        &.notifications_active {
+            background-color: #CBE71E;
+        }
+
+        .notificationsLength {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background-color: black;
+            color: white;
+            font-size: 1px;
+            font-weight: bold;
+            border-radius: 50%;
+            padding: 2px 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+}

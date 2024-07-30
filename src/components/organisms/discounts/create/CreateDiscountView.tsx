@@ -27,7 +27,8 @@ export function CreateDiscountView({ params }: Props) {
     statusForm,
     setFiles,
     handleChangeStatusForm,
-    contextHolder
+    contextHolder,
+    handleUpdateContract
   } = useCreateDiscountView({ params });
 
   return (
@@ -57,6 +58,7 @@ export function CreateDiscountView({ params }: Props) {
             statusForm={statusForm}
             handleChangeStatusForm={handleChangeStatusForm}
             loadingMain={loading}
+            handleUpdateContract={handleUpdateContract}
           />
         )}
         <Flex gap={20} justify="space-between">
@@ -68,14 +70,15 @@ export function CreateDiscountView({ params }: Props) {
               Volver a la lista
             </Button>
           </Link>
-          <PrincipalButton
-            className={styles.button}
-            onClick={handleExecCallback}
-            loading={loading}
-            disabled={statusForm === "review"}
-          >
-            {discountId ? "Editar Descuento" : "Crear Descuento"}
-          </PrincipalButton>
+          {statusForm !== "review" && (
+            <PrincipalButton
+              className={styles.button}
+              onClick={handleExecCallback}
+              loading={loading}
+            >
+              {discountId ? "Guardar Descuento" : "Crear Descuento"}
+            </PrincipalButton>
+          )}
         </Flex>
       </Flex>
     </>

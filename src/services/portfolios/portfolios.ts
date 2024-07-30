@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { getIdToken } from "@/utils/api/api";
-import { IDataSection } from "@/types/portfolios/portfolios";
+import { IDataSection } from "@/types/portfolios/IPortfolios";
 
 export const getPortfolioFromClient = async (
   projectId: number | undefined,

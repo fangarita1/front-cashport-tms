@@ -1,3 +1,5 @@
+import { IBillingPeriodForm } from "../billingPeriod/IBillingPeriod";
+
 export interface IProjects {
   status: number;
   message: string;
@@ -6,30 +8,35 @@ export interface IProjects {
 }
 
 export interface IProject {
-  ID: number;
-  UUID: string;
-  PROJECT_DESCRIPTION: string;
-  RGB_CONFIG: string;
-  LOGO: string;
-  NIT: string;
-  CONTACT: string;
-  PHONE: string;
-  ADDRESS: string;
-  COUNTRY_ID: number;
-  IS_DELETED: number;
-  CURRENCY: Currency[];
-  EMAIL: string;
-  IS_ACTIVE: boolean;
-  NUMBER_USERS: number;
-  DSO_CURRENTLY_YEAR: number;
-  DSO_DAYS: number;
   ACCEPT_DATE: number;
+  ADDRESS: string;
+  BILLING_PERIOD_CONFIG: IBillingPeriodForm;
+  ADDRESS_FORMAT: string;
+  BILLING_PERIOD: string;
+  CONTACT: string;
+  COUNTRY_ID: number;
+  COUNTRY_NAME: string;
+  CURRENCY: Currency[];
+  DSO_CURRENLY_YEAR: number;
+  DSO_DAYS: number;
+  EMAIL: string;
+  ID: number;
+  IS_ACTIVE: boolean;
+  LOGO: string;
+  NAME: string;
+  NIT: string;
+  NUMBER_USERS: number;
+  PHONE: string;
+  PROJECT_DESCRIPTION: string;
+  POSITION_CONTACT: string;
+  RGB_CONFIG: string;
+  UUID: string;
+  is_deleted: number;
 }
 
 export interface Currency {
   id: number;
-  CURRENCY_NAME?: string;
-  currency_name?: string;
+  currency_name: string;
 }
 
 export interface Pagination {
