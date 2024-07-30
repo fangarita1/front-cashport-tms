@@ -42,7 +42,7 @@ import SubmitFormButton from "@/components/atoms/SubmitFormButton/SubmitFormButt
 import LoadDocumentsButton from "@/components/atoms/LoadDocumentsButton/LoadDocumentsButton";
 import { SelectInputForm } from "@/components/molecules/logistics/SelectInputForm/SelectInputForm";
 import { bloodTypesOptions, documentTypesOptions, glassesOptions, licencesOptions } from "../formSelectOptions";
-import SelectOuterTagsLogistics from "@/components/ui/select-outer-tags-logistics/select-outer-tags-logistics";
+import MultiSelectTags from "@/components/ui/multi-select-tags/MultiSelectTags";
 
 const { Title, Text } = Typography;
 
@@ -420,7 +420,7 @@ export const DriverFormTab = ({
                   control={control}
                   rules={{ required: true }}
                   render={({ field }) => 
-                    <SelectOuterTagsLogistics
+                    <MultiSelectTags
                       field={field}
                       placeholder="Seleccione vehiculos"
                       title="Vehículos que está autorizados a manejar"
