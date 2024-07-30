@@ -90,7 +90,6 @@ export const SideBar = () => {
               </Button>
             </Link></>
         )}
-        {!isLogistics && ( // TODO: remove this condition
         <Link href="/logistics/orders" passHref legacyBehavior>
           <Button
             type="primary"
@@ -101,7 +100,6 @@ export const SideBar = () => {
             {isSideBarLarge && "Solicitudes"}
           </Button>
         </Link>
-        )}
         <Link href="/logistics/providers/all" passHref legacyBehavior>
           <Button
             type="primary"
