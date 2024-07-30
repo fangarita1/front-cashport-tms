@@ -1,14 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { Button, Col, ColorPicker, Flex, Form, Input, message, Modal, Row, Select, Typography } from "antd";
-import { Controller, useForm } from "react-hook-form";
-import { ArrowsClockwise, CaretLeft, CaretRight, Pencil, PlusCircle } from "phosphor-react";
+import { useEffect, useState } from "react";
+import { Button, Col, Flex, Form, Row, Select, Typography } from "antd";
+import { useForm } from "react-hook-form";
+import { CaretLeft} from "phosphor-react";
 
-// component
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
 import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
-
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-
 import "./carrierformtab.scss";
 import {
   _onSubmit,
@@ -16,19 +13,17 @@ import {
   validationButtonText,
   CarrierFormTabProps
 } from "./carrierFormTab.mapper";
-import { ICarrier, IFormCarrier, IFormDriver } from "@/types/logistics/schema";
-import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
-import { SelectDocument } from "@/components/molecules/logistics/SelectDocument/SelectDocument";
-import { bloodTypes, SelectRh } from "@/components/molecules/logistics/SelectRh/SelectRh";
-import { glasses, SelectGlasses } from "@/components/molecules/logistics/SelectGlasses/SelectGlasses";
+import { IFormCarrier } from "@/types/logistics/schema";
+import { bloodTypes } from "@/components/molecules/logistics/SelectRh/SelectRh";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
-import { licences, SelectLCategory } from "@/components/molecules/logistics/SelectLicenceCategory/SelectLicenceCategory";
+import { licences } from "@/components/molecules/logistics/SelectLicenceCategory/SelectLicenceCategory";
 import useSWR from "swr";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
-import { CertificateType, DocumentCompleteType } from "@/types/logistics/certificate/certificate";
-import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
+import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 import dayjs from "dayjs";
+import SubmitFormButton from "@/components/atoms/SubmitFormButton/SubmitFormButton";
+import LoadDocumentsButton from "@/components/atoms/LoadDocumentsButton/LoadDocumentsButton";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -64,14 +59,12 @@ export const CarrierFormTab = ({
     defaultValues,
     disabled: statusForm === "review"
   });
-
    /*archivos*/
    interface FileObject {
     docReference: string;
     file: File | undefined;
   }
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
-
   useEffect(() => {
     if (Array.isArray(documentsType)) {
       if (data[0]?.documents?.length) {
@@ -95,7 +88,6 @@ export const CarrierFormTab = ({
   useEffect(()=>{
     console.log(files)
   }, [files])
-  
 
   const onSubmit = (data: any) => {
     data.general.license_categorie = licences.data.find((item) => item.id === data.general.license_category)?.value;
@@ -112,7 +104,7 @@ export const CarrierFormTab = ({
   };
   return (
     <>
-      <Form className="mainProyectsForm">
+      <Form className="carrierForm">
         <Flex component={"header"} className="headerProyectsForm">
           <Button
             type="text"
@@ -124,136 +116,152 @@ export const CarrierFormTab = ({
             Ver Proveedores
           </Button>
         </Flex>
-        <Flex component={"main"} flex="1" vertical>
-          <Row>
-            <Col span={5}>
-              {/* ------------Photo Driver-------------- */}
+        <Flex component={"main"} flex="1" vertical style={{paddingRight: "1rem"}}>
+          <Row gutter={16}>
+            <Col span={5}>  {/* Columna Logo */}
+              <Title className="title" level={4}>
+                Logo
+              </Title>
               <UploadImg
                 disabled={statusForm === "review"}
-                imgDefault={watch("general.photo") || "https://cdn.icon-icons.com/icons2/1622/PNG/512/3741756-bussiness-ecommerce-marketplace-onlinestore-store-user_108907.png"}
+                imgDefault={watch("general.photo") ?? "https://cdn.icon-icons.com/icons2/1622/PNG/512/3741756-bussiness-ecommerce-marketplace-onlinestore-store-user_108907.png"}
                 setImgFile={setImageFile}
                 uploadInstructionsText="*Sube la foto del logo"
               />
               {imageError && <Text className="textError">{"foto del conductor es obligatorio *"}</Text>}
             </Col>
-            <Col span={19}>
+            <Col span={19}> {/* Columna Informacion General */}
               <Title className="title" level={4}>
                 Informacion General
               </Title>
-              <Flex component={"section"} className="generalProject" justify="flex-start">
-                <InputForm
-                  titleInput="Nit"
-                  nameInput="general.nit"
-                  control={control}
-                  error={undefined}
-                />
-                <InputForm
-                  titleInput="Nombre"
-                  nameInput="general.description"
-                  control={control}
-                  error={undefined}
-                />
-                <InputForm
-                  titleInput="Tipo de proveedor"
-                  nameInput="general.carrier_type"
-                  control={control}
-                  error={undefined}
-                />
-                 <InputForm
-                  titleInput="Razon social"
-                  nameInput="general.description"
-                  control={control}
-                  error={undefined}
-                />
-                <InputForm
-                  titleInput="Correo de facturacion"
-                  nameInput="general.description"
-                  control={control}
-                  error={undefined}
-                />
-                <InputForm
-                  titleInput="Correo de Comunicacion"
-                  nameInput="general.carrier_type"
-                  control={control}
-                  error={undefined}
-                />
-                </Flex>
+              <Row gutter={[16,16]}>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Nit"
+                    nameInput="general.nit"
+                    control={control}
+                    error={undefined}
+                  />
+                  </Col>
+                <Col span={8}>  
+                  <InputForm
+                    titleInput="Nombre"
+                    nameInput="general.description"
+                    control={control}
+                    error={undefined}
+                  />
+                  </Col>
+                <Col span={8}>  
+                  <InputForm
+                    titleInput="Tipo de proveedor"
+                    nameInput="general.carrier_type"
+                    control={control}
+                    error={undefined}
+                  />
+                </Col>
+                <Col span={8}>  
+                  <InputForm
+                    titleInput="Razon social"
+                    nameInput="general.description"
+                    control={control}
+                    error={undefined}
+                  />
+                </Col>
+                <Col span={8}>  
+                  <InputForm
+                    titleInput="Correo de facturacion"
+                    nameInput="general.description"
+                    control={control}
+                    error={undefined}
+                  />
+                </Col>
+                <Col span={8}>  
+                  <InputForm
+                    titleInput="Correo de comunicacion"
+                    nameInput="general.carrier_type"
+                    control={control}
+                    error={undefined}
+                  />
+                </Col>
+              </Row>
+              <Title className="title" level={4} style={{marginTop: "1rem"}}>
+                Datos de Contacto
+              </Title>
+              <Row gutter={[16,16]}>  {/* Fila Datos de contacto*/}
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Nombres y apellidos"
+                    nameInput="general.description"
+                    control={control}
+                    error={errors?.general?.description}
+                  />
+                </Col>
+                <Col span={8}>
+                  <InputForm
+                    typeInput="tel"
+                    titleInput="Telefono"
+                    nameInput="general.description"
+                    control={control}
+                    error={errors?.general?.description}
+                    validationRules={{
+                    pattern: {
+                      value: /^\+?\d+$/,
+                      message: "Solo se permiten números y un signo '+' al comienzo"
+                    }
+                    }}
+                  />
+                </Col>
+              </Row>
             </Col>
           </Row>
-          <Row>
-            <Col span={5}>
-            </Col>
-          </Row>
-          {/* -----------------------------------General--------------------------------------- */}
-
-          {/* -----------------------------------Contact----------------------------------- */}
-          <Title className="title" level={4}>
-            Datos de Contacto
-          </Title>
-          <Flex component={"section"} className="generalProject" justify="flex-start">
-            <InputForm
-              titleInput="Nombres y apellidos"
-              nameInput="general.description"
-              control={control}
-              error={errors?.general?.description}
-            />
-            <InputForm
-              typeInput="tel"
-              titleInput="Telefono"
-              nameInput="general.description"
-              control={control}
-              error={errors?.general?.description}
-              validationRules={{
-                pattern: {
-                  value: /^\+?\d+$/,
-                  message: "Solo se permiten números y un signo '+' al comienzo"
-                }
-              }}
-            />
-          </Flex>
-          <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-            <text>Documentos</text>
-          </label>
-          <Row className="mainUploadDocuments">
-            {selectedFiles.map((file) => (
-              // eslint-disable-next-line react/jsx-key
-              <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
-                <UploadDocumentButton
-                  key={file.id}
-                  title={file.description}
-                  isMandatory={!file.optional}
-                  aditionalData={file.id}
-                  setFiles={() => {}}
-                  files={file.file}
-                  disabled
-                >
-                  {file?.link ? (
-                    <UploadDocumentChild
-                      linkFile={file.link}
-                      nameFile={file.link.split("-").pop() || ""}
-                      onDelete={() => {}}
-                      showTrash={false}
-                    />
-                  ) : undefined}
-                </UploadDocumentButton>
+          <Row style={{marginTop: "2rem", marginBottom: "2rem"}}> {/* Fila Documentos */}
+              <Col span={8}>
+                <Title className="title" level={4}>
+                  Documentos
+                </Title>
               </Col>
-            ))}
+              <Col span={8} offset={8} style={{display: "flex", justifyContent: "flex-end"}}>
+                {statusForm === "create" && (
+                  <LoadDocumentsButton 
+                    text="Cargar documentos" 
+                    onClick={() => {}}
+                  />
+                )}
+              </Col>
+            <Row style={{marginTop: "1rem", width: "100%"}} >
+              {selectedFiles.map((file, index) => (
+                <Col span={12} key={`file-${file.id}`}  style={{ marginBottom: "16px", paddingRight: index % 2 === 0 ? "16px" : "0"  }}>
+                  <UploadDocumentButton
+                    key={file.id}
+                    title={file.description}
+                    isMandatory={!file.optional}
+                    aditionalData={file.id}
+                    setFiles={() => {}}
+                    files={file.file}
+                    disabled
+                  >
+                    {file?.link ? (
+                      <UploadDocumentChild
+                        linkFile={file.link}
+                        nameFile={file.link.split("-").pop() ?? ""}
+                        onDelete={() => {}}
+                        showTrash={false}
+                      />
+                    ) : undefined}
+                  </UploadDocumentButton>
+                </Col>
+              ))}
+            </Row>
           </Row>
-          {/* -----------------------------------Project Config----------------------------------- */}
-
-          <Flex className="buttonNewProject">
-            {["edit", "create"].includes(statusForm) && (
-              <Button
-                disabled={!isDirty}
-                className={`button ${isDirty ? "active" : ""}`}
-                style={{ display: "flex" }}
-                htmlType={"submit"}
-                onClick={handleSubmit(onSubmit)}
-              >
-                {validationButtonText(statusForm)}
-              </Button>
-            )}
-          </Flex>
+          {["edit", "create"].includes(statusForm) && (
+            <Row justify={"end"}>
+              <SubmitFormButton
+                  text={validationButtonText(statusForm)}
+                  disabled={!isDirty}
+                  onClick={handleSubmit(onSubmit)}
+              />
+            </Row>
+          )}
         </Flex>
       </Form>
       <ModalChangeStatus

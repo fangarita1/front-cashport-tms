@@ -1,31 +1,23 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   Col,
-  ColorPicker,
   Flex,
   Form,
-  Input,
-  message,
-  Modal,
   Row,
   Select,
   Typography
 } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowsClockwise, CaretLeft, CaretRight, Pencil, Plus, PlusCircle } from "phosphor-react";
+import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 
 // components
-import { SelectCountries } from "@/components/molecules/selects/SelectCountries/SelectCountries";
-import { SelectCurrencies } from "@/components/molecules/selects/SelectCurrencies/SelectCurrencies";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
-import { IFormProject } from "@/types/projects/IFormProject";
 import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
 
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import "./driverformtab.scss";
-import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import {
   _onSubmit,
   dataToProjectFormData,
@@ -33,27 +25,24 @@ import {
   DriverFormTabProps,
   DriverData
 } from "./driverFormTab.mapper";
-import { IDriver, IFormDriver, VehicleType } from "@/types/logistics/schema";
+import {  IFormDriver, VehicleType } from "@/types/logistics/schema";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
-import { SelectDocument } from "@/components/molecules/logistics/SelectDocument/SelectDocument";
-import { bloodTypes, SelectRh } from "@/components/molecules/logistics/SelectRh/SelectRh";
-import {
-  glasses,
-  SelectGlasses
-} from "@/components/molecules/logistics/SelectGlasses/SelectGlasses";
+
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
-import {
-  licences,
-  SelectLCategory
-} from "@/components/molecules/logistics/SelectLicenceCategory/SelectLicenceCategory";
+
 import useSWR from "swr";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
-import { CertificateType, DocumentCompleteType } from "@/types/logistics/certificate/certificate";
+import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
 import { getVehicleType } from "@/services/logistics/vehicle";
 import Link from "next/link";
 import dayjs from "dayjs";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
+import SubmitFormButton from "@/components/atoms/SubmitFormButton/SubmitFormButton";
+import LoadDocumentsButton from "@/components/atoms/LoadDocumentsButton/LoadDocumentsButton";
+import { SelectInputForm } from "@/components/molecules/logistics/SelectInputForm/SelectInputForm";
+import { bloodTypesOptions, documentTypesOptions, glassesOptions, licencesOptions } from "../formSelectOptions";
+import MultiSelectTags from "@/components/ui/multi-select-tags/MultiSelectTags";
 
 const { Title, Text } = Typography;
 
@@ -79,7 +68,7 @@ export const DriverFormTab = ({
   );
 
   const [imageFile, setImageFile] = useState<any | undefined>(undefined);
-  const [loading, setloading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
@@ -92,12 +81,15 @@ export const DriverFormTab = ({
     control,
     handleSubmit,
     reset,
-    formState: { errors, isDirty }
+    formState: { errors, isValid}
   } = useForm<IFormDriver>({
     defaultValues,
     disabled: statusForm === "review"
   });
-
+  const isFormCompleted = () => {
+    return isValid && imageFile
+  }
+  const isSubmitButtonEnabled = isFormCompleted() && !loading
   /*archivos*/
   interface FileObject {
     docReference: string;
@@ -145,7 +137,7 @@ export const DriverFormTab = ({
     if (!Array.isArray(vehicleTypes)) return [];
     return vehicleTypes?.map((vehicleType) => ({
       label: vehicleType.description,
-      value: vehicleType.id.toString()
+      value: vehicleType.id
     }));
   };
 
@@ -171,13 +163,14 @@ export const DriverFormTab = ({
   };
 
   const onSubmit = (data: any) => {
-    data.general.license_categorie = licences.data.find(
+    data.general.license_categorie = licencesOptions.find(
       (item) => item.id === data.general.license_category
     )?.value;
-    data.general.rhval = bloodTypes.data.find((item) => item.id === data.general.rh)?.value;
+    data.general.rhval = bloodTypesOptions.find((item) => item.id === data.general.rh)?.value;
+    data.general.vehicle_type = data.general.vehicle_type.map((v:any)=>v.value)
     _onSubmit(
       data,
-      setloading,
+      setLoading,
       setImageError,
       imageFile ? [{ docReference: "imagen", file: imageFile }] : undefined,
       selectedFiles,
@@ -185,9 +178,10 @@ export const DriverFormTab = ({
       reset
     );
   };
+
   return (
     <>
-      <Form className="mainProyectsForm">
+      <Form className="driverForm">
         <Flex component={"header"} className="headerProyectsForm">
           <Link href={`/logistics/providers/${params.id}/driver`} passHref>
             <Button
@@ -232,272 +226,295 @@ export const DriverFormTab = ({
             )}
           </Flex>
         </Flex>
-        <Flex component={"main"} flex="1" vertical>
-          <Row>
-            <Col span={5}>
-              {/* ------------Photo Driver-------------- */}
+        <Flex component={"main"} flex="1" vertical style={{paddingRight: "1rem"}}>
+          <Row gutter={16}> 
+            <Col span={5}> {/* Columna Foto de conductor*/}
+              <Title className="title" level={4}>
+                  Foto de conductor
+              </Title>
               <UploadImg
                 disabled={statusForm === "review"}
                 imgDefault={
-                  watch("general.photo") ||
+                  watch("general.photo") ??
                   "https://cdn.icon-icons.com/icons2/1622/PNG/512/3741756-bussiness-ecommerce-marketplace-onlinestore-store-user_108907.png"
                 }
                 setImgFile={setImageFile}
-                uploadInstructionsText={"*Sube la foto del conductor"}
+                uploadInstructionsText="*Sube la foto del conductor"
               />
               {imageError && (
                 <Text className="textError">{"foto del conductor es obligatorio *"}</Text>
               )}
             </Col>
-            <Col span={19}>
+            <Col span={19}> {/* Columna Informacion general*/}
               <Title className="title" level={4}>
-                Informacion General
+                  Información General
               </Title>
-              <Flex component={"section"} className="generalProject" justify="flex-start">
-                <InputForm
-                  titleInput="Nombres"
-                  nameInput="general.name"
-                  control={control}
-                  error={undefined}
-                />
-                <InputForm
-                  titleInput="Apellidos"
-                  nameInput="general.last_name"
-                  control={control}
-                  error={undefined}
-                />
-                <Flex vertical className="containerInput">
-                  <Title className="title" level={5}>
-                    Tipo de Sangre
-                  </Title>
-                  <Controller
-                    name="general.rh"
+              <Row gutter={[16,16]}> {/* Fila campos info gral*/}
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Nombres"
+                    nameInput="general.name"
                     control={control}
-                    rules={{ required: true }}
-                    render={({ field }) => <SelectRh errors={errors} field={field} />}
+                    error={errors?.general?.name}
                   />
-                </Flex>
-                <Flex vertical className="containerInput">
-                  <InputDateForm
-                    titleInput="Fecha de nacimiento"
-                    nameInput="general.birth_date"
-                    placeholder="Seleccionar fecha de nacimiento"
-                    disabled={statusForm === "review"}  
+                </Col>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Apellidos"
+                    nameInput="general.last_name"
                     control={control}
-                    error={undefined}
+                    error={errors?.general?.last_name}
                   />
-                </Flex>
-                <Flex vertical className="containerInput">
-                  <Title className="title" level={5}>
-                    Tipo de documento
-                  </Title>
-                  <Controller
-                    name="general.document_type"
+                </Col>
+                <Col span={8}>
+                  <Flex vertical className="selectButton">
+                    <Title className="title" level={5}>
+                      Tipo de Sangre
+                    </Title>
+                    <Controller
+                      name="general.rh"
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field }) => 
+                        <SelectInputForm
+                        placeholder="Selecciona Tipo de Sangre"
+                        error={errors?.general?.rh}
+                        field={field}
+                        options={bloodTypesOptions}
+                        />
+                      }
+                    />
+                  </Flex>
+                </Col>
+                <Col span={8}>
+                  <Flex vertical className="selectButton">
+                    <InputDateForm
+                      titleInput="Fecha de nacimiento"
+                      nameInput="general.birth_date"
+                      placeholder="Seleccionar fecha de nacimiento"
+                      disabled={statusForm === "review"}  
+                      control={control}
+                      error={errors?.general?.birth_date}
+                    />
+                  </Flex>
+                </Col>
+                <Col span={8}>
+                  <Flex vertical className="selectButton">
+                    <Title className="title" level={5}>
+                      Tipo de documento
+                    </Title>
+                    <Controller
+                      name="general.document_type"
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field }) =>              
+                      <SelectInputForm
+                        placeholder="Selecciona Tipo de documento"
+                        error={errors?.general?.document_type}
+                        field={field}
+                        options={documentTypesOptions}
+                      />}
+                    />
+                  </Flex>
+                </Col>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Numero de documento"
+                    nameInput="general.document"
                     control={control}
-                    rules={{ required: true }}
-                    render={({ field }) => <SelectDocument errors={errors} field={field} />}
+                    error={errors?.general?.document}
                   />
-                </Flex>
-                <InputForm
-                  titleInput="Numero de documento"
-                  nameInput="general.document"
-                  control={control}
-                  error={undefined}
-                />
-                <InputForm
-                  titleInput="Telefono"
-                  nameInput="general.phone"
-                  control={control}
-                  error={errors?.general?.phone}
-                />
-                <InputForm
-                  titleInput="Correo"
-                  nameInput="general.email"
-                  control={control}
-                  error={errors?.general?.email}
-                />
-                <Flex vertical className="containerInput">
-                  <Title className="title" level={5}>
-                    Usas lentes
-                  </Title>
-                  <Controller
-                    name="general.glasses"
+                </Col>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Telefono"
+                    nameInput="general.phone"
                     control={control}
-                    rules={{ required: true }}
-                    render={({ field }) => (
-                      <SelectGlasses errors={errors.general?.glasses} field={field} />
-                    )}
+                    error={errors?.general?.phone}
                   />
-                </Flex>
-              </Flex>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={5}></Col>
-            <Col span={19}>
-              <Title className="title" level={4}>
+                </Col>
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Correo"
+                    nameInput="general.email"
+                    control={control}
+                    error={errors?.general?.email}
+                  />
+                </Col>
+                <Col span={8}>
+                  <Flex vertical className="selectButton">
+                    <Title className="title" level={5}>
+                      Usas lentes
+                    </Title>
+                    <Controller
+                      name="general.glasses"
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field }) => (
+                        <SelectInputForm
+                          placeholder="Selecciona"
+                          error={errors?.general?.glasses}
+                          field={field}
+                          options={glassesOptions}
+                        />
+                      )}
+                    />
+                  </Flex>
+                </Col>
+              </Row>
+              <Title className="title" level={4} style={{marginTop: "1rem"}}>
                 Datos de la licencia
               </Title>
-              <Flex component={"section"} className="generalProject" justify="flex-start">
-                <InputForm
-                  titleInput="Licencia"
-                  nameInput="general.license"
-                  control={control}
-                  error={errors?.general?.license}
-                />
-                <Flex vertical className="containerInput">
-                  <Title className="title" level={5}>
-                    Categoria
-                  </Title>
-                  <Controller
-                    name="general.license_category"
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field }) => (
-                      <SelectLCategory errors={errors?.general?.license_category} field={field} />
-                    )}
-                  />
-                </Flex>
-                <Flex vertical className="containerInput">
-                  <InputDateForm
-                    titleInput="Fecha de expiración"
-                    nameInput="general.license_expiration"
-                    placeholder="Seleccionar fecha de expiración"
-                    control={control}
-                    disabled={statusForm === "review"}  
-                    validationRules={{ required: true }}
-                    error={errors?.general?.license_expiration}
-                  />
-                </Flex>
-              </Flex>
-            </Col>
-          </Row>
-          {/* -----------------------------------General--------------------------------------- */}
-
-          <Title className="title" level={4}>
-            Vehiculos
-          </Title>
-          <Row style={{ width: "100%" }}>
-            <Col span={24}>
-              <Flex component={"section"} className="containerInput" style={{ width: "100%" }}>
-                <Row style={{ width: "100%" }}>
+              <Row gutter={[16,16]}>  {/* Fila Datos de la licencia*/}
                   <Col span={8}>
-                    <label className="input-form-title">
-                      Vehículos que está autorizados a manejar
-                    </label>
-                  </Col>
-                  <Col span={16}>
-                    <Select
-                      mode="multiple"
-                      allowClear
-                      style={{ width: "50%" }}
-                      placeholder="Seleccione vehiculos"
-                      loading={loadingVicles}
-                      disabled={statusForm === "review"}  
-                      defaultValue={getValues("general.vehicle_type")?.map((i: any) =>
-                        i.id_vehicle_type?.toString()
-                      )}
-                      onChange={(value) => setValue("general.vehicle_type", value.map(Number))}
-                      options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
+                      <InputForm
+                      titleInput="Licencia"
+                      nameInput="general.license"
+                      control={control}
+                      error={errors?.general?.license}
                     />
                   </Col>
-                </Row>
-              </Flex>
-            </Col>
-          </Row>
-
-          {/* -----------------------------------Contact----------------------------------- */}
-          <Title className="title" level={4}>
-            Datos de Contacto
-          </Title>
-          <Flex component={"section"} className="generalProject" justify="flex-start">
-            <InputForm
-              titleInput="Nombres y apellidos"
-              nameInput="general.emergency_contact"
-              control={control}
-              error={errors?.general?.emergency_contact}
-            />
-            <InputForm
-              typeInput="tel"
-              titleInput="Telefono"
-              nameInput="general.emergency_number"
-              control={control}
-              error={errors?.general?.emergency_number}
-              validationRules={{
-                pattern: {
-                  value: /^\+?\d+$/,
-                  message: "Solo se permiten números y un signo '+' al comienzo"
-                }
-              }}
-            />
-          </Flex>
-          <label className="locationLabels" style={{ display: "flex", marginTop: "2rem" }}>
-            <text>Documentos</text>
-          </label>
-          <Row className="mainUploadDocuments">
-            {selectedFiles.map((file) => (
-              // eslint-disable-next-line react/jsx-key
-              <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
-                <UploadDocumentButton
-                  key={file.id}
-                  title={file.description}
-                  isMandatory={!file.optional}
-                  aditionalData={file.id}
-                  setFiles={() => {}}
-                  files={file.file}
-                  disabled
-                >
-                  {file?.link ? (
-                    <UploadDocumentChild
-                      linkFile={file.link}
-                      nameFile={file.link.split("-").pop() || ""}
-                      onDelete={() => {}}
-                      showTrash={false}
-                    />
-                  ) : undefined}
-                </UploadDocumentButton>
-              </Col>
-            ))}
-          </Row>
-          <Row>
-            <Col span={24} className="text-right">
-              <ModalDocuments
-                isOpen={isOpenModalDocuments}
-                mockFiles={selectedFiles}
-                setFiles={setFiles}
-                documentsType={documentsType}
-                isLoadingDocuments={isLoadingDocuments}
-                onClose={() => setIsOpenModalDocuments(false)}
-                handleChange={handleChange}
-                handleChangeExpirationDate={handleChangeExpirationDate}
-              />
-              <Row>
-                {statusForm === "create" && (
-                  <Flex justify="flex-end" style={{ width: "100%", margin: "1rem" }}>
-                    <Button type="text" onClick={() => setIsOpenModalDocuments(true)}>
-                      <Plus />
-                      &nbsp;<Text>Cargar documentos</Text>
-                    </Button>
-                  </Flex>
-                )}
+                  <Col span={8}>
+                    <Flex vertical className="selectButton">
+                      <Title className="title" level={5}>
+                        Categoria
+                      </Title>
+                      <Controller
+                        name="general.license_category"
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field }) => (
+                          <SelectInputForm
+                            placeholder="Selecciona categoria de la licencia"
+                            error={errors?.general?.license_category}
+                            field={field}
+                            options={licencesOptions}
+                          />
+                        )}
+                      />
+                    </Flex>
+                  </Col>
+                  <Col span={8}>
+                    <Flex vertical className="selectButton">
+                      <InputDateForm
+                        titleInput="Fecha de expiración"
+                        nameInput="general.license_expiration"
+                        placeholder="Seleccionar fecha de expiración"
+                        disabled={statusForm === "review"}  
+                        control={control}
+                        validationRules={{ required: true }}
+                        error={errors?.general?.license_expiration}
+                      />
+                    </Flex>
+                  </Col>
               </Row>
             </Col>
           </Row>
-
-          {/* -----------------------------------Project Config----------------------------------- */}
-
-          <Flex className="buttonNewProject">
-            {["edit", "create"].includes(statusForm) && (
-              <Button
-                className={`button ${true ? "active" : ""}`}
-                style={{ display: "flex" }}
-                htmlType={"submit"}
-                onClick={handleSubmit(onSubmit)}
-              >
-                {validationButtonText(statusForm)}
-              </Button>
-            )}
-          </Flex>
+          {/* ----------------------------------Vehiculos--------------------------------- */}
+          <Row style={{ width: "100%", marginTop: "2rem" }}>
+              <Title className="title" level={4}>
+                    Vehículos
+              </Title>
+              <Controller
+                  name="general.vehicle_type"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => 
+                    <MultiSelectTags
+                      field={field}
+                      placeholder="Seleccione vehiculos"
+                      title="Vehículos que está autorizados a manejar"
+                      errors={errors?.general?.vehicle_type}
+                      options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
+                      defaultValue={getValues("general.vehicle_type")?.map((i: any) =>
+                        i.id_vehicle_type?.toString()
+                      )}
+                      disabled={statusForm === "review"} 
+                    />
+                  }
+                />
+              </Row>
+          {/* -----------------------------------Contact----------------------------------- */}
+          <Row style={{ width: "100%", marginTop: "2rem" }}>
+            <Col span={24}>
+              <Title className="title" level={4}>
+                Datos de Contacto
+              </Title>
+              <Row gutter={[16,16]}> 
+                <Col span={6}>
+                  <InputForm
+                    titleInput="Nombres y apellidos"
+                    nameInput="general.emergency_contact"
+                    control={control}
+                    error={errors?.general?.emergency_contact}
+                  />
+                </Col>
+                <Col span={6}>
+                  <InputForm
+                    typeInput="tel"
+                    titleInput="Telefono"
+                    nameInput="general.emergency_number"
+                    control={control}
+                    error={errors?.general?.emergency_number}
+                    validationRules={{
+                      pattern: {
+                        value: /^\+?\d+$/,
+                        message: "Solo se permiten números y un signo '+' al comienzo"
+                      }
+                    }}
+                  />
+                </Col>
+              </Row>   
+            </Col>
+          </Row>
+          <Row style={{marginTop: "2rem", marginBottom: "2rem"}}> {/* Fila Documentos */}
+              <Col span={8}>
+                <Title className="title" level={4}>
+                  Documentos
+                </Title>
+              </Col>
+              <Col span={8} offset={8} style={{display: "flex", justifyContent: "flex-end"}}>
+                {statusForm === "create" && (
+                  <LoadDocumentsButton 
+                    text="Cargar documentos" 
+                    onClick={() => setIsOpenModalDocuments(true)}
+                  />
+                )}
+              </Col>
+            <Row style={{marginTop: "1rem", width: "100%"}} >
+              {selectedFiles.map((file, index) => (
+                <Col span={12} key={`file-${file.id}`}  style={{ marginBottom: "16px", paddingRight: index % 2 === 0 ? "16px" : "0"  }}>
+                  <UploadDocumentButton
+                    key={file.id}
+                    title={file.description}
+                    isMandatory={!file.optional}
+                    aditionalData={file.id}
+                    setFiles={() => {}}
+                    files={file.file}
+                    disabled
+                  >
+                    {file?.link ? (
+                      <UploadDocumentChild
+                        linkFile={file.link}
+                        nameFile={file.link.split("-").pop() ?? ""}
+                        onDelete={() => {}}
+                        showTrash={false}
+                      />
+                    ) : undefined}
+                  </UploadDocumentButton>
+                </Col>
+              ))}
+            </Row>
+          </Row>
+          {["edit", "create"].includes(statusForm) && (
+            <Row justify={"end"} >
+              <SubmitFormButton
+                  text={validationButtonText(statusForm)}
+                  disabled={!isSubmitButtonEnabled}
+                  onClick={handleSubmit(onSubmit)}
+                />
+            </Row>
+          )} 
         </Flex>
       </Form>
       <ModalChangeStatus
@@ -506,6 +523,16 @@ export const DriverFormTab = ({
         onClose={() => setIsOpenModal(false)}
         onActive={onActiveProject}
         onDesactivate={onDesactivateProject}
+      />
+      <ModalDocuments
+        isOpen={isOpenModalDocuments}
+        mockFiles={selectedFiles}
+        setFiles={setFiles}
+        documentsType={documentsType}
+        isLoadingDocuments={isLoadingDocuments}
+        onClose={() => setIsOpenModalDocuments(false)}
+        handleChange={handleChange}
+        handleChangeExpirationDate={handleChangeExpirationDate}
       />
     </>
   );
