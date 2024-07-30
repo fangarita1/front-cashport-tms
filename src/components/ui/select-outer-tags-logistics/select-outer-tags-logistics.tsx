@@ -1,5 +1,5 @@
-import { Select, Typography } from "antd";
-import { useState } from "react";
+import { Col, Row, Select, Tag, Typography } from "antd";
+import { useEffect, useState } from "react";
 import {
   ControllerRenderProps,
   FieldErrorsImpl,
@@ -7,7 +7,6 @@ import {
   Merge,
   FieldError as OriginalFieldError
 } from "react-hook-form";
-import { X } from "phosphor-react";
 import "./select-outer-tags-logistics.scss";
 
 interface OptionType {
@@ -27,6 +26,8 @@ interface PropsGeneralSelect<T extends FieldValues> {
   options: { value: number; label: string }[] | undefined;
   loading?: boolean;
   customStyleContainer?: React.CSSProperties;
+  defaultValue?: OptionType[] | null 
+  disabled?: boolean
 }
 
 const SelectOuterTagsLogistics = <T extends FieldValues>({
@@ -36,9 +37,22 @@ const SelectOuterTagsLogistics = <T extends FieldValues>({
   placeholder,
   options,
   loading = false,
-  customStyleContainer
+  customStyleContainer,
+  defaultValue, 
+  disabled = false
 }: PropsGeneralSelect<T>) => {
   const [selectedOptions, setSelectedOptions] = useState<OptionType[]>([]);
+
+  useEffect(() => {
+    if (field.value) {
+      if(selectedOptions.length===0){
+        const newSelectedOptions = options?.filter(option =>
+          field.value.some((selected: any) => selected.id_vehicle_type === option.value)
+        ) || [];
+        setSelectedOptions(newSelectedOptions);
+      }
+    }
+  }, [field.value, options]);
 
   const handleChange = (value: OptionType[]) => {
     setSelectedOptions(value);
@@ -61,36 +75,45 @@ const SelectOuterTagsLogistics = <T extends FieldValues>({
     field.onChange(newSelectedOptions);
   };
 
-  return (
-    <div className="selectOuterTagsLogistics" style={customStyleContainer}>
-      <h4 className="inputTitle">{title}</h4>
-      <Select
-        {...field}
-        variant="borderless"
-        mode="multiple"
-        tagRender={(props) => <div> {props.disabled} </div>}
-        placeholder={placeholder}
-        showSearch={false}
-        className={errors ? "inputError" : "inputRegular"}
-        popupClassName="selectDrop"
-        loading={loading}
-        optionLabelProp="label"
-        value={selectedOptions}
-        onChange={handleChange}
-        options={usedOptions}
-        labelInValue
-      />
-      {selectedOptions.length > 0 && <div className="selectPlaceholder">{placeholder}</div>}
-      {errors && <Typography.Text className="textError">{title} es obligatorio *</Typography.Text>}
-      <div className="selectedOptions">
-        {selectedOptions.map((option) => (
-          <div className="selectedOptions__tag" key={option.value}>
-            <p key={option.value}>{option.label}</p>
-            <X className="deleteTag" onClick={() => handleDeleteSelected(option)} size={14} />
-          </div>
-        ))}
-      </div>
-    </div>
+return (
+    <Row gutter={16} style={{ width: '100%' }}>
+      <Col span={6}>
+        <label className="textTitle">{title}</label>
+        <Select
+          {...field}
+          variant="borderless"
+          mode="multiple"
+          tagRender={(props) => <div> {props.disabled} </div>}
+          placeholder={placeholder}
+          showSearch={false}
+          className={errors ? "inputError" : "inputRegular"}
+          style={{ width: '100%' }}
+          popupClassName="selectDrop"
+          loading={loading}
+          optionLabelProp="label"
+          value={selectedOptions}
+          onChange={handleChange}
+          options={usedOptions}
+          defaultValue={defaultValue}
+          labelInValue
+        >
+        </Select>
+        {errors && <Typography.Text className="textError">{title} es obligatorio *</Typography.Text>}
+      </Col>
+      <Col span={18} style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: "flex-end" }}>
+          {selectedOptions.map((option) => (
+            <Tag
+              key={option.value}
+              closable={!disabled}
+              color="#3D3D3D"
+              onClose={() => handleDeleteSelected(option)}
+              style={{paddingLeft: 12, paddingRight: 12, paddingTop: 6, paddingBottom: 6, borderRadius: 8}}
+            >
+              {option.label}
+            </Tag>
+          ))}
+      </Col>
+    </Row>
   );
 };
 

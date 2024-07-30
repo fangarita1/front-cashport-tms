@@ -1,4 +1,4 @@
-@import "@styles/variables.scss";
+@import "@styles/_variables.scss";
 
 .selectOuterTagsLogistics {
     width: 100%;
@@ -13,55 +13,6 @@
         font-size: 0.75rem;
         font-weight: 600;
         color: $gray;
-    }
-
-    .inputRegular {
-        height: 3rem !important;
-        background-color: $background;
-        border-radius: 0.25rem;
-        width: 100% !important;
-
-        .ant-select-selector {
-            font-size: 1rem !important;
-
-            .ant-select-selection-item {
-                font-weight: 300;
-            }
-
-            .ant-select-selection-placeholder {
-                color: $dark-gray;
-            }
-        }
-
-        &.ant-select-disabled {
-            background-color: $dark-gray !important;
-
-            color: $black !important;
-            .ant-select-selection-placeholder {
-                color: $black;
-                font-weight: 300;
-            }
-
-            &::placeholder {
-                color: $black !important;
-            }
-        }
-    }
-    .inputError {
-        border: 1px dashed $error;
-        height: 3rem !important;
-        margin-bottom: 0.2rem;
-        background-color: $background;
-        padding: 0.45rem;
-        border-radius: 0.25rem;
-        font-weight: 300;
-
-        .ant-select-selector {
-            .ant-select-selection-placeholder {
-                color: $dark-gray;
-                font-size: 1rem;
-            }
-        }
     }
 
     .textError {
@@ -123,4 +74,72 @@
             }
         }
     }
+}
+
+.inputRegular {
+    height: 3rem !important;
+    background-color: $background;
+    border-radius: 0.25rem;
+    width: 100% !important;
+
+    .ant-select-selector {
+        font-size: 1rem !important;
+
+        .ant-select-selection-item {
+            font-weight: 300;
+        }
+
+        .ant-select-selection-placeholder {
+            color: $dark-gray;
+        }
+    }
+
+    &.ant-select-disabled {
+        background-color: $dark-gray !important;
+
+        color: $black !important;
+        .ant-select-selection-placeholder {
+            color: $black;
+            font-weight: 300;
+        }
+
+        &::placeholder {
+            color: $black !important;
+        }
+    }
+}
+
+.inputError {
+    border: 1px dashed $error;
+    height: 3rem !important;
+    margin-bottom: 0.2rem;
+    background-color: $background;
+    padding: 0.45rem;
+    border-radius: 0.25rem;
+    font-weight: 300;
+
+    .ant-select-selector {
+        .ant-select-selection-placeholder {
+            color: $dark-gray;
+            font-size: 1rem;
+        }
+    }
+}
+
+.selectPlaceholder {
+    position: absolute;
+    top: 32%;
+    left: 8%;
+    color: $dark-gray;
+    font-size: 1rem;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.textTitle {
+    color: #909090;
+    font-size: 0.75rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
 }

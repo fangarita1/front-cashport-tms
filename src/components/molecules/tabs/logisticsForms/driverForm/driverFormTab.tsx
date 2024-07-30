@@ -42,6 +42,7 @@ import SubmitFormButton from "@/components/atoms/SubmitFormButton/SubmitFormButt
 import LoadDocumentsButton from "@/components/atoms/LoadDocumentsButton/LoadDocumentsButton";
 import { SelectInputForm } from "@/components/molecules/logistics/SelectInputForm/SelectInputForm";
 import { bloodTypesOptions, documentTypesOptions, glassesOptions, licencesOptions } from "../formSelectOptions";
+import SelectOuterTagsLogistics from "@/components/ui/select-outer-tags-logistics/select-outer-tags-logistics";
 
 const { Title, Text } = Typography;
 
@@ -67,7 +68,7 @@ export const DriverFormTab = ({
   );
 
   const [imageFile, setImageFile] = useState<any | undefined>(undefined);
-  const [loading, setloading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
@@ -80,12 +81,15 @@ export const DriverFormTab = ({
     control,
     handleSubmit,
     reset,
-    formState: { errors, isDirty }
+    formState: { errors, isValid}
   } = useForm<IFormDriver>({
     defaultValues,
     disabled: statusForm === "review"
   });
-
+  const isFormCompleted = () => {
+    return isValid && imageFile
+  }
+  const isSubmitButtonEnabled = isFormCompleted() && !loading
   /*archivos*/
   interface FileObject {
     docReference: string;
@@ -133,7 +137,7 @@ export const DriverFormTab = ({
     if (!Array.isArray(vehicleTypes)) return [];
     return vehicleTypes?.map((vehicleType) => ({
       label: vehicleType.description,
-      value: vehicleType.id.toString()
+      value: vehicleType.id
     }));
   };
 
@@ -163,9 +167,10 @@ export const DriverFormTab = ({
       (item) => item.id === data.general.license_category
     )?.value;
     data.general.rhval = bloodTypesOptions.find((item) => item.id === data.general.rh)?.value;
+    data.general.vehicle_type = data.general.vehicle_type.map((v:any)=>v.value)
     _onSubmit(
       data,
-      setloading,
+      setLoading,
       setImageError,
       imageFile ? [{ docReference: "imagen", file: imageFile }] : undefined,
       selectedFiles,
@@ -250,7 +255,7 @@ export const DriverFormTab = ({
                     titleInput="Nombres"
                     nameInput="general.name"
                     control={control}
-                    error={undefined}
+                    error={errors?.general?.name}
                   />
                 </Col>
                 <Col span={8}>
@@ -258,7 +263,7 @@ export const DriverFormTab = ({
                     titleInput="Apellidos"
                     nameInput="general.last_name"
                     control={control}
-                    error={undefined}
+                    error={errors?.general?.last_name}
                   />
                 </Col>
                 <Col span={8}>
@@ -289,7 +294,7 @@ export const DriverFormTab = ({
                       placeholder="Seleccionar fecha de nacimiento"
                       disabled={statusForm === "review"}  
                       control={control}
-                      error={undefined}
+                      error={errors?.general?.birth_date}
                     />
                   </Flex>
                 </Col>
@@ -317,7 +322,7 @@ export const DriverFormTab = ({
                     titleInput="Numero de documento"
                     nameInput="general.document"
                     control={control}
-                    error={undefined}
+                    error={errors?.general?.document}
                   />
                 </Col>
                 <Col span={8}>
@@ -407,36 +412,28 @@ export const DriverFormTab = ({
           </Row>
           {/* ----------------------------------Vehiculos--------------------------------- */}
           <Row style={{ width: "100%", marginTop: "2rem" }}>
-            <Title className="title" level={4}>
-                  Vehículos
-            </Title>
-            <Col span={24}>
-              <Flex component={"section"} className="containerInput" style={{ width: "100%" }}>
-                <Row style={{ width: "100%" }}>
-                  <Col span={8}>
-                    <label className="input-form-title">
-                      Vehículos que está autorizados a manejar
-                    </label>
-                  </Col>
-                  <Col span={16}>
-                    <Select
-                      mode="multiple"
-                      allowClear
-                      style={{ width: "50%" }}
+              <Title className="title" level={4}>
+                    Vehículos
+              </Title>
+              <Controller
+                  name="general.vehicle_type"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => 
+                    <SelectOuterTagsLogistics
+                      field={field}
                       placeholder="Seleccione vehiculos"
-                      loading={loadingVicles}
-                      disabled={statusForm === "review"}  
+                      title="Vehículos que está autorizados a manejar"
+                      errors={errors?.general?.vehicle_type}
+                      options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
                       defaultValue={getValues("general.vehicle_type")?.map((i: any) =>
                         i.id_vehicle_type?.toString()
                       )}
-                      onChange={(value) => setValue("general.vehicle_type", value.map(Number))}
-                      options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
+                      disabled={statusForm === "review"} 
                     />
-                  </Col>
-                </Row>
-              </Flex>
-            </Col>
-          </Row>
+                  }
+                />
+              </Row>
           {/* -----------------------------------Contact----------------------------------- */}
           <Row style={{ width: "100%", marginTop: "2rem" }}>
             <Col span={24}>
@@ -513,7 +510,7 @@ export const DriverFormTab = ({
             <Row justify={"end"} >
               <SubmitFormButton
                   text={validationButtonText(statusForm)}
-                  disabled={false}
+                  disabled={!isSubmitButtonEnabled}
                   onClick={handleSubmit(onSubmit)}
                 />
             </Row>
