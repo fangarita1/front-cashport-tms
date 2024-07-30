@@ -6,6 +6,7 @@ const { Dragger } = Upload;
 
 import "./documentbutton.scss";
 import { UploadChangeParam } from "antd/es/upload";
+import { shortenFileName } from "@/utils/utils";
 
 const { Text } = Typography;
 
@@ -66,14 +67,12 @@ export const DocumentButton = ({
       {...props}
       openFileDialogOnClick={fileName === "Seleccionar archivo"}
     >
-      {children ? (
-        children
-      ) : (
+      {children || (
         <Flex justify="space-between" align="center">
           <Flex align="left" vertical>
             <Flex>
               <FileArrowUp size={"25px"} />
-              <Text className="nameFile">{fileName}</Text>
+              <Text className="nameFile">{shortenFileName(fileName, 22)}</Text>
             </Flex>
             <Text className="sizeFile">{fileSize}</Text>
           </Flex>

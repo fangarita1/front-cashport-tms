@@ -310,3 +310,22 @@ export const formatMillionNumber = (number: number | undefined | null): string =
   }
   return formatNumber.toFixed();
 };
+export const shortenFileName = (fileName: string, maxChars: number = 10): string => {
+
+  const dotIndex = fileName.lastIndexOf('.');
+
+  if (dotIndex === -1) {
+    return fileName.length <= maxChars ? fileName : fileName.substring(0, maxChars);
+  }
+
+  const baseName = fileName.substring(0, dotIndex);
+  const extension = fileName.substring(dotIndex);
+
+  const maxBaseNameLength = maxChars - extension.length;
+
+  if (baseName.length > maxBaseNameLength) {
+    return baseName.substring(0, maxBaseNameLength) +  extension;
+  }
+  return fileName;
+};
+
