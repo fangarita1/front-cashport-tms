@@ -19,11 +19,7 @@ interface MoldalNoveltyDetailProps {
   noveltyId: number;
 }
 
-const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({
-  isOpen = true,
-  onClose,
-  noveltyId
-}) => {
+const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({ isOpen, onClose, noveltyId }) => {
   const { data, isLoading } = useIncidentDetail({ incidentId: 169170 }); // TODO CAMBIAR ESTO
   const [incidentData, setIncidentData] = useState<IIncidentDetail | null>(null);
   const [openResolveModal, setOpenResolveModal] = useState(false);
