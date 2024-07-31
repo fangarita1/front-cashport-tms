@@ -121,7 +121,7 @@ export type ClientFormType = {
     nit: string;
     client_name: string;
     business_name: string;
-    client_type: string | number;
+    client_type: ISelectType;
     holding_id: ISelectType;
     phone: string;
     email: string;

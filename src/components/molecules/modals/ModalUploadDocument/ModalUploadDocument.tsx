@@ -4,12 +4,14 @@ import { Flex, Modal, Typography } from "antd";
 import "./modaluploaddocument.scss";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import useModalUploadDocument from "@/hooks/useModalUploadDocument";
+import { ISelectType } from "@/types/clients/IClients";
 
 interface Props {
   isOpen: boolean;
-  clientTypeId?: string | number;
+  clientTypeId?: ISelectType;
   setIsOpenUpload: Dispatch<SetStateAction<boolean>>;
   setClientDocuments: Dispatch<SetStateAction<File[]>>;
+  editing?: boolean;
 }
 
 interface FileObject {
@@ -23,12 +25,13 @@ export const ModalUploadDocument = ({
   isOpen,
   clientTypeId,
   setIsOpenUpload,
-  setClientDocuments
+  setClientDocuments,
+  editing
 }: Props) => {
   // Hay un estado de files en el modal para poder dejar la posibilidad de verificacion
   // El estado de clientDocuments ya deberia contener todos los documentos necesarios
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
-  const { data } = useModalUploadDocument(clientTypeId);
+  const { data } = useModalUploadDocument(clientTypeId?.value);
   const handleOnSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
 
@@ -53,15 +56,17 @@ export const ModalUploadDocument = ({
       cancelButtonProps={{
         className: "buttonCancel"
       }}
-      okText="Adjuntar documentos"
+      okText={editing ? "Reemplazar documentos" : "Adjuntar documentos"}
       cancelText="Cancelar"
-      title={<Title level={4}>Cargar Documentos</Title>}
+      title={<Title level={4}>{editing ? "Editar documentos" : "Cargar Documentos"}</Title>}
       className="modaluploaddocument"
       onCancel={handleOnCancel}
       onOk={handleOnSubmit}
     >
       <Text className="description">
-        Haz clic en cada casilla para adjuntar los documentos requeridos
+        {editing
+          ? "Los documentos seleccionados reemplezarán los actuales"
+          : "Haz clic en cada casilla para adjuntar los documentos requeridos"}
       </Text>
       <Flex vertical className="mainUploadDocuments">
         {_data &&
