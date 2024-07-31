@@ -8,6 +8,7 @@ import {
   FieldError as OriginalFieldError
 } from "react-hook-form";
 import { X } from "phosphor-react";
+import { useEffect, useState } from "react";
 
 type TagRender = SelectProps["tagRender"];
 
@@ -20,7 +21,7 @@ interface PropsGeneralSelect<T extends FieldValues> {
   field: ControllerRenderProps<T, any>;
   title: string;
   placeholder: string;
-  options: { value: number; label: string }[] | undefined;
+  options: { value: number; label: string }[] | string[] | undefined;
   loading?: boolean;
   customStyleContainer?: React.CSSProperties;
 }
@@ -34,12 +35,39 @@ const GeneralSearchSelect = <T extends FieldValues>({
   loading = false,
   customStyleContainer
 }: PropsGeneralSelect<T>) => {
-  const usedOptions = options?.map((option) => {
-    return {
-      value: option.value,
-      label: option.label
-    };
-  });
+  const [usedOptions, setUsedOptions] = useState<
+    {
+      value: number | string;
+      label: string;
+    }[]
+  >();
+
+  useEffect(() => {
+    if (!options) setUsedOptions(undefined);
+    if (Array.isArray(options)) {
+      const formattedOptions = options?.map((option) => {
+        if (typeof option === "string") {
+          return {
+            value: option,
+            label: option
+          };
+        }
+        return {
+          value: option.value,
+          label: option.label
+        };
+      });
+
+      setUsedOptions(formattedOptions);
+    }
+  }, [options]);
+
+  // const usedOptions = options?.map((option) => {
+  //   return {
+  //     value: option.value,
+  //     label: option.label
+  //   };
+  // });
 
   const tagRender: TagRender = (props) => {
     const { label, onClose, closable } = props;

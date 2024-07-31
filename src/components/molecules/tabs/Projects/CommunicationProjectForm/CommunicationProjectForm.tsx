@@ -5,7 +5,7 @@ import { CaretLeft } from "phosphor-react";
 import styles from "./communicationProjectForm.module.scss";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 import { SelectZone } from "@/components/molecules/selects/SelectZone/SelectZone";
 import { SelectStructure } from "@/components/molecules/selects/SelectStructure/SelectStructure";
@@ -19,6 +19,11 @@ import { ICommunicationForm, IPeriodicityModalForm } from "@/types/communication
 import { InputExpirationNoticeDays } from "@/components/atoms/inputs/InputExpirationNoticeDays/InputExpirationNoticeDays";
 import { OptionType } from "@/components/ui/select-outer-tags/select-outer-tags";
 import { CustomTextArea } from "@/components/atoms/CustomTextArea/CustomTextArea";
+import {
+  getForwardEvents,
+  getForwardToEmails,
+  getTemplateTags
+} from "@/services/communications/communications";
 
 const { Title } = Typography;
 
@@ -41,6 +46,9 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
   const [frequencyError, setFrequencyError] = useState(false);
   const [assignedGroups, setAssignedGroups] = useState([] as any[]);
   const [isFrequencyModalOpen, setIsFrequencyModalOpen] = useState(false);
+  const [events, setEvents] = useState<string[]>([]);
+  const [templateTags, setTemplateTags] = useState<string[]>([]);
+  const [forwardToEmails, setForwardToEmails] = useState<string[]>([]);
 
   const handleChangeRadio = (
     value: any,
@@ -60,6 +68,24 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
   } = useForm<ICommunicationForm>({});
   const watchEventType = watch("trigger.settings.eventType");
   const watchTemplateTagsLabels = watch("template.tags")?.map((tag) => `\[${tag.label}\]`);
+
+  useEffect(() => {
+    const fecthEvents = async () => {
+      const events = await getForwardEvents();
+      setEvents(events);
+    };
+    fecthEvents();
+    const fetchTemplateTags = async () => {
+      const tags = await getTemplateTags();
+      setTemplateTags(tags);
+    };
+    fetchTemplateTags();
+    const fetchEmails = async () => {
+      const emails = await getForwardToEmails();
+      setForwardToEmails(emails);
+    };
+    fetchEmails();
+  }, []);
 
   const handleAddTagToBody = (value: OptionType[], deletedValue: OptionType[]) => {
     const valueBody = getValues("template.message");
@@ -161,7 +187,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
                         field={field}
                         title="Tipo de evento"
                         placeholder="Seleccionar tipo de evento"
-                        options={mockEventTypes}
+                        options={events}
                         titleAbsolute
                       />
                     )}
@@ -271,7 +297,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               field={field}
               title="Para"
               placeholder="Enviar a"
-              options={mockForward}
+              options={forwardToEmails}
             />
           )}
         />
@@ -285,12 +311,10 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               field={field}
               title="Copia"
               placeholder="Copia a"
-              options={mockForward}
+              options={forwardToEmails}
             />
           )}
         />
-
-        {/* WIP */}
 
         <Flex gap={"1rem"} align="flex-start">
           <Controller
@@ -301,7 +325,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               <SelectOuterTags
                 title="Tags"
                 placeholder="Seleccionar tag"
-                options={mockTags}
+                options={templateTags}
                 errors={errors.template?.tags}
                 field={field}
                 customStyleContainer={{ width: "25%" }}
@@ -377,12 +401,6 @@ const mockVias = [
   { id: 3, value: 3, label: "WhatsApp" }
 ];
 
-const mockTags = [
-  { id: 1, value: 1, label: "Nombre_Cliente" },
-  { id: 2, value: 2, label: "Nombre_Usuario" },
-  { id: 3, value: 3, label: "Nombre_KAM" }
-];
-
 const mockAttachments = [
   { id: 1, value: 1, label: "PDF Estado de cuenta" },
   { id: 2, value: 2, label: "Excel cartera" },
@@ -400,14 +418,6 @@ const mockForward = [
   { value: 8, label: "Laura Martinez" },
   { value: 9, label: "Sara Perez" },
   { value: 10, label: "Camila Sanchez" }
-];
-
-const mockEventTypes = [
-  { value: "Emisión", label: "Emisión" },
-  { value: "Radicación", label: "Radicación" },
-  { value: "Vencimiento de pronto pago", label: "Vencimiento de pronto pago" },
-  { value: "Vencimiento de factura", label: "Vencimiento de factura" },
-  { value: "Vencimiento acuerdo de pago", label: "Vencimiento acuerdo de pago" }
 ];
 
 const initDatSelectedBusinessRules: ISelectedBussinessRules = {

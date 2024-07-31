@@ -7,6 +7,7 @@ import {
   Merge,
   FieldError as OriginalFieldError
 } from "react-hook-form";
+import { useEffect, useState } from "react";
 
 type ExtendedFieldError =
   | OriginalFieldError
@@ -17,7 +18,7 @@ interface PropsGeneralSelect<T extends FieldValues> {
   field: ControllerRenderProps<T, any>;
   title?: string;
   placeholder: string;
-  options: { value: number | string; label: string }[] | undefined;
+  options: { value: number | string; label: string }[] | undefined | string[];
   loading?: boolean;
   customStyleContainer?: React.CSSProperties;
   titleAbsolute?: boolean;
@@ -35,13 +36,35 @@ const GeneralSelect = <T extends FieldValues>({
   titleAbsolute,
   errorSmall
 }: PropsGeneralSelect<T>) => {
-  const usedOptions = options?.map((option) => {
-    return {
-      value: option.value,
-      label: option.label,
-      className: "selectOptions"
-    };
-  });
+  const [usedOptions, setUsedOptions] = useState<
+    {
+      value: number | string;
+      label: string;
+      className: string;
+    }[]
+  >();
+
+  useEffect(() => {
+    if (!options) setUsedOptions(undefined);
+    if (Array.isArray(options)) {
+      const formattedOptions = options?.map((option) => {
+        if (typeof option === "string") {
+          return {
+            value: option,
+            label: option,
+            className: "selectOptions"
+          };
+        }
+        return {
+          value: option.value,
+          label: option.label,
+          className: "selectOptions"
+        };
+      });
+
+      setUsedOptions(formattedOptions);
+    }
+  }, [options]);
 
   return (
     <Flex vertical style={customStyleContainer} className="generalSelectContainer">

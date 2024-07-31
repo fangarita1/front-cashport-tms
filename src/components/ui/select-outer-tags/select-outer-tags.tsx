@@ -1,5 +1,5 @@
 import { Select, Typography } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ControllerRenderProps,
   FieldErrorsImpl,
@@ -24,7 +24,7 @@ interface PropsGeneralSelect<T extends FieldValues> {
   field: ControllerRenderProps<T, any>;
   title: string;
   placeholder: string;
-  options: { value: number; label: string }[] | undefined;
+  options: OptionType[] | string[] | undefined;
   loading?: boolean;
   customStyleContainer?: React.CSSProperties;
   hiddenTags?: boolean;
@@ -46,6 +46,13 @@ const SelectOuterTags = <T extends FieldValues>({
   addedOnchangeBehaviour
 }: PropsGeneralSelect<T>) => {
   const [selectedOptions, setSelectedOptions] = useState<OptionType[]>([]);
+  const [usedOptions, setUsedOptions] = useState<
+    {
+      value: number | string;
+      label: string;
+      className: string;
+    }[]
+  >();
 
   const handleChange = (value: OptionType[]) => {
     const deletedValue = selectedOptions.filter(
@@ -58,13 +65,27 @@ const SelectOuterTags = <T extends FieldValues>({
     if (addedOnchangeBehaviour) addedOnchangeBehaviour(value, deletedValue);
   };
 
-  const usedOptions = options?.map((option) => {
-    return {
-      value: option.value,
-      label: option.label,
-      className: "selectOptions"
-    };
-  });
+  useEffect(() => {
+    if (!options) setUsedOptions(undefined);
+    if (Array.isArray(options)) {
+      const formattedOptions = options?.map((option) => {
+        if (typeof option === "string") {
+          return {
+            value: option,
+            label: option,
+            className: "selectOptions"
+          };
+        }
+        return {
+          value: option.value,
+          label: option.label,
+          className: "selectOptions"
+        };
+      });
+
+      setUsedOptions(formattedOptions);
+    }
+  }, [options]);
 
   const handleDeleteSelected = (option: OptionType) => {
     const newSelectedOptions = selectedOptions.filter(
