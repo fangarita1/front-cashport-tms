@@ -5,7 +5,7 @@ import { CaretLeft } from "phosphor-react";
 import styles from "./communicationProjectForm.module.scss";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 import { SelectZone } from "@/components/molecules/selects/SelectZone/SelectZone";
 import { SelectStructure } from "@/components/molecules/selects/SelectStructure/SelectStructure";
@@ -59,11 +59,10 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
     getValues
   } = useForm<ICommunicationForm>({});
   const watchEventType = watch("trigger.settings.eventType");
-  const watchTemplateTagsLabels = watch("template.tags")?.map((tag) => tag.label);
+  const watchTemplateTagsLabels = watch("template.tags")?.map((tag) => `\[${tag.label}\]`);
 
   const handleAddTagToBody = (value: OptionType[], deletedValue: OptionType[]) => {
     const valueBody = getValues("template.message");
-    console.log("valueBody", valueBody);
 
     if (deletedValue.length > 0) {
       const deletedTag = deletedValue[0].label;

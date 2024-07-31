@@ -31,7 +31,6 @@ export const CustomTextArea = ({
     if (textarea && mirror) {
       // Set up styles and event listeners
       const textareaStyles = window.getComputedStyle(textarea);
-      // ... existing code for setting up styles
       [
         "border",
         "boxSizing",
@@ -77,20 +76,14 @@ export const CustomTextArea = ({
 
       if (highlightWords) {
         const highlight = () => {
-          const regexp = new RegExp(highlightWords.join("|"), "gi");
-          mirror.innerHTML = value
-            ? value?.replace(regexp, '<span class="container__mark">$&</span>')
-            : "";
+          let html = value || "";
+          highlightWords.forEach((word) => {
+            html = html.split(word).join(`<span class="container__mark">${word}</span>`);
+          });
+          mirror.innerHTML = html;
         };
         highlight();
       }
-      //   const highlight = () => {
-      //     const regexp = new RegExp(KEYWORD, "gi");
-      //     mirror.innerHTML = value
-      //       ? value?.replace(regexp, '<span class="container__mark">$&</span>')
-      //       : "";
-      //   };
-      //   highlight();
     }
   }, [value]);
 
