@@ -100,6 +100,7 @@ export const SideBar = () => {
             {isSideBarLarge && "Solicitudes"}
           </Button>
         </Link>
+        
         <Link href="/logistics/providers/all" passHref legacyBehavior>
           <Button
             type="primary"
