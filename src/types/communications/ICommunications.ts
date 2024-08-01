@@ -33,7 +33,7 @@ export interface ICommunicationForm {
   template: ITemplateForm;
 }
 
-interface ISelectStringType {
+export interface ISelectStringType {
   value: string;
   label: string;
 }

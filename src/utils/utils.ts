@@ -1,4 +1,5 @@
 import { IChanel } from "@/types/bre/IBRE";
+import { ISelectStringType } from "@/types/communications/ICommunications";
 import { CountryCode } from "@/types/global/IGlobal";
 
 interface Subline {
@@ -281,4 +282,8 @@ export const formatDateAndTime = (date: string): string => {
   const period = d.getHours() >= 12 ? "PM" : "AM";
 
   return `${day}/${month}/${year} - ${hours}:${minutes} ${period}`;
+};
+
+export const stringFromArrayOfSelect = (array: ISelectStringType[]): string => {
+  return array.map((item) => item.value).join(", ");
 };

@@ -2,7 +2,7 @@ import { Input } from "antd";
 import { CaretRight } from "phosphor-react";
 import { FieldError } from "react-hook-form";
 import "./input-clickable.scss";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface PropsInputClickable {
   title?: string;
@@ -10,6 +10,7 @@ interface PropsInputClickable {
   disabled?: boolean;
   value?: string;
   callBackFunction: () => void;
+  customStyles?: React.CSSProperties;
 }
 
 const InputClickable = ({
@@ -17,7 +18,8 @@ const InputClickable = ({
   error,
   disabled,
   callBackFunction,
-  value
+  value,
+  customStyles
 }: PropsInputClickable) => {
   const [className, setClassName] = useState("clickableInput");
 
@@ -40,7 +42,7 @@ const InputClickable = ({
   };
 
   return (
-    <div className="inputClickableContainer">
+    <div className="inputClickableContainer" style={customStyles}>
       <p className="title">{title}</p>
       <Input
         readOnly

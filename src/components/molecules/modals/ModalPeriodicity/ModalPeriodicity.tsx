@@ -13,7 +13,7 @@ import { Dispatch, SetStateAction } from "react";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  setSelectedPeriodicity: Dispatch<SetStateAction<IPeriodicityModalForm>>;
+  setSelectedPeriodicity: Dispatch<SetStateAction<IPeriodicityModalForm | undefined>>;
 }
 export const ModalPeriodicity = ({ isOpen, onClose, setSelectedPeriodicity }: Props) => {
   const {
@@ -33,7 +33,7 @@ export const ModalPeriodicity = ({ isOpen, onClose, setSelectedPeriodicity }: Pr
 
   const handleOnSave = (data: IPeriodicityModalForm) => {
     setSelectedPeriodicity(data);
-    console.log(data);
+    onClose();
   };
 
   return (

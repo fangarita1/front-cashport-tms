@@ -26,6 +26,7 @@ import {
   getTemplateTags
 } from "@/services/communications/communications";
 import { useAppStore } from "@/lib/store/store";
+import { stringFromArrayOfSelect } from "@/utils/utils";
 
 const { Title } = Typography;
 
@@ -40,16 +41,14 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
   const [loadingRequest, setLoadingRequest] = useState(false);
   const [radioValue, setRadioValue] = useState<any>();
   const [zones, setZones] = useState([] as number[]);
-  const [selectedPeriodicity, setSelectedPeriodicity] = useState<IPeriodicityModalForm>(
-    {} as IPeriodicityModalForm
-  );
+  const [selectedPeriodicity, setSelectedPeriodicity] = useState<IPeriodicityModalForm>();
   const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
     initDatSelectedBusinessRules
   );
-  const [frequencyError, setFrequencyError] = useState(false);
   const [customFieldsError, setCustomFieldsError] = useState({
     zone: false,
-    channel: false
+    channel: false,
+    frequency: false
   });
   const [assignedGroups, setAssignedGroups] = useState<number[]>([]);
   const [isFrequencyModalOpen, setIsFrequencyModalOpen] = useState(false);
@@ -69,7 +68,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
     watch,
     setValue,
     getValues
@@ -111,17 +110,23 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
 
   const handleCreateCommunication = async (data: any) => {
     setLoadingRequest(true);
-    if (zones.length === 0 || selectedBusinessRules?.channels.length === 0) {
+    if (
+      zones.length === 0 ||
+      selectedBusinessRules?.channels.length === 0 ||
+      selectedPeriodicity?.frequency === undefined
+    ) {
       setCustomFieldsError({
         zone: zones.length === 0,
-        channel: selectedBusinessRules?.channels.length === 0
+        channel: selectedBusinessRules?.channels.length === 0,
+        frequency: selectedPeriodicity?.frequency === undefined
       });
       setLoadingRequest(false);
       return;
     }
     setCustomFieldsError({
       zone: false,
-      channel: false
+      channel: false,
+      frequency: false
     });
 
     await createCommunication({
@@ -161,7 +166,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
 
       <div
         className={styles.forwardType}
-        style={errors.trigger?.type && { border: "1px dotted red" }}
+        style={errors.trigger?.type && { border: "1px dashed red" }}
       >
         <Title className={styles.forwardType__title} level={5}>
           Tipo de envio
@@ -189,11 +194,21 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
                 >
                   <InputClickable
                     title="Frecuencia"
-                    error={frequencyError}
+                    error={customFieldsError.frequency}
                     disabled={radioValue !== "frecuencia"}
                     callBackFunction={() => setIsFrequencyModalOpen(true)}
-                    value={selectedPeriodicity?.frequency?.label}
+                    customStyles={
+                      customFieldsError.frequency ? { border: "1px dashed red" } : undefined
+                    }
+                    value={
+                      selectedPeriodicity
+                        ? `${selectedPeriodicity.frequency.value === "Mensual" ? selectedPeriodicity.frequency.value : `Cada ${stringFromArrayOfSelect(selectedPeriodicity.days)}, ${selectedPeriodicity.frequency.value}`}`
+                        : ""
+                    }
                   />
+                  <p className={styles.textError}>
+                    {customFieldsError.frequency && `La Frecuencia es obligatoria *`}
+                  </p>
                 </Radio>
               </div>
 
@@ -288,11 +303,23 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
         <Title className={styles.businessRules__title} level={5}>
           Reglas de negocio
         </Title>
-        <Flex vertical>
+        <Flex
+          vertical
+          style={
+            customFieldsError.zone ? { border: "1px dashed red", borderRadius: "4px" } : undefined
+          }
+        >
           <SelectZone zones={zones} setZones={setZones} />
           <p className={styles.textError}>{customFieldsError.zone && `La Zona es obligatoria *`}</p>
         </Flex>
-        <Flex vertical>
+        <Flex
+          vertical
+          style={
+            customFieldsError.channel
+              ? { border: "1px dashed red", borderRadius: "4px" }
+              : undefined
+          }
+        >
           <SelectStructure
             selectedBusinessRules={selectedBusinessRules}
             setSelectedBusinessRules={setSelectedBusinessRules}

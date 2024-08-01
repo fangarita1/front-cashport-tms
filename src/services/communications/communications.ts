@@ -24,7 +24,7 @@ export const getForwardToEmails = async (): Promise<string[]> => {
 
 interface ICreateCommunicationProps {
   data: ICommunicationForm;
-  selectedPeriodicity: IPeriodicityModalForm;
+  selectedPeriodicity: IPeriodicityModalForm | undefined;
   zones: number[];
   selectedBusinessRules: ISelectedBussinessRules;
   assignedGroups: number[];
@@ -41,7 +41,6 @@ export const createCommunication = async ({
 }: ICreateCommunicationProps) => {
   const now = new Date();
   const timeString = now.toLocaleString("es-CO");
-  console.log(timeString);
   const modelData: ICreateCommunication = {
     // De donde sale el invoice id?
     invoice_id: 1,
@@ -79,18 +78,17 @@ export const createCommunication = async ({
         // TIME ? DE DONDE SALE?
         time: timeString,
         message: data.template.message,
+        // TITLE ? DE DONDE SALE?
         title: data.template?.title || "",
         subject: data.template.subject,
         files: data.template.files.map((file) => file.value)
       }
     }
   };
-  console.log("data para POST:", modelData);
 
   try {
     const response = await API.post(`${config.API_HOST}/comunication/create`, modelData);
 
-    console.log("responseCreate Communication", response);
     return response;
   } catch (error) {
     return Promise.reject(error);
