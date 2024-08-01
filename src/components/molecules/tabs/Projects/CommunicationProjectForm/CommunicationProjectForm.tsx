@@ -20,10 +20,12 @@ import { InputExpirationNoticeDays } from "@/components/atoms/inputs/InputExpira
 import { OptionType } from "@/components/ui/select-outer-tags/select-outer-tags";
 import { CustomTextArea } from "@/components/atoms/CustomTextArea/CustomTextArea";
 import {
+  createCommunication,
   getForwardEvents,
   getForwardToEmails,
   getTemplateTags
 } from "@/services/communications/communications";
+import { useAppStore } from "@/lib/store/store";
 
 const { Title } = Typography;
 
@@ -35,6 +37,7 @@ interface Props {
   onGoBackTable: () => void;
 }
 export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
+  const [loadingRequest, setLoadingRequest] = useState(false);
   const [radioValue, setRadioValue] = useState<any>();
   const [zones, setZones] = useState([] as number[]);
   const [selectedPeriodicity, setSelectedPeriodicity] = useState<IPeriodicityModalForm>(
@@ -44,11 +47,16 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
     initDatSelectedBusinessRules
   );
   const [frequencyError, setFrequencyError] = useState(false);
-  const [assignedGroups, setAssignedGroups] = useState([] as any[]);
+  const [customFieldsError, setCustomFieldsError] = useState({
+    zone: false,
+    channel: false
+  });
+  const [assignedGroups, setAssignedGroups] = useState<number[]>([]);
   const [isFrequencyModalOpen, setIsFrequencyModalOpen] = useState(false);
   const [events, setEvents] = useState<string[]>([]);
   const [templateTags, setTemplateTags] = useState<string[]>([]);
   const [forwardToEmails, setForwardToEmails] = useState<string[]>([]);
+  const { ID: projectId } = useAppStore((state) => state.selectProject);
 
   const handleChangeRadio = (
     value: any,
@@ -66,7 +74,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
     setValue,
     getValues
   } = useForm<ICommunicationForm>({});
-  const watchEventType = watch("trigger.settings.eventType");
+  const watchEventType = watch("trigger.settings.event_type");
   const watchTemplateTagsLabels = watch("template.tags")?.map((tag) => `\[${tag.label}\]`);
 
   useEffect(() => {
@@ -101,10 +109,31 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
     setValue("template.message", `${valueBody ? valueBody : ""}[${lastAddedTag?.label}]`);
   };
 
-  const handleCreateCommunication = (data: any) => {
-    console.log(data);
-    console.log("zonas:", zones, selectedBusinessRules, "grupos:", assignedGroups);
-    console.log("periodicidad:", selectedPeriodicity);
+  const handleCreateCommunication = async (data: any) => {
+    setLoadingRequest(true);
+    if (zones.length === 0 || selectedBusinessRules?.channels.length === 0) {
+      setCustomFieldsError({
+        zone: zones.length === 0,
+        channel: selectedBusinessRules?.channels.length === 0
+      });
+      setLoadingRequest(false);
+      return;
+    }
+    setCustomFieldsError({
+      zone: false,
+      channel: false
+    });
+
+    await createCommunication({
+      data,
+      selectedPeriodicity,
+      zones,
+      selectedBusinessRules,
+      assignedGroups,
+      projectId
+    });
+
+    setLoadingRequest(false);
   };
 
   return (
@@ -125,8 +154,8 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
         <InputForm
           titleInput="Descripción"
           control={control}
-          nameInput="descripcion"
-          error={errors.descripcion}
+          nameInput="description"
+          error={errors.description}
         />
       </div>
 
@@ -178,12 +207,12 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
                 >
                   <Controller
                     disabled={radioValue !== "evento"}
-                    name="trigger.settings.eventType"
+                    name="trigger.settings.event_type"
                     control={control}
                     rules={{ required: radioValue === "evento" }}
                     render={({ field }) => (
                       <GeneralSelect
-                        errors={errors.trigger?.settings?.eventType}
+                        errors={errors.trigger?.settings?.event_type}
                         field={field}
                         title="Tipo de evento"
                         placeholder="Seleccionar tipo de evento"
@@ -220,7 +249,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
                       <SelectOuterTags
                         title="Tipo de acción"
                         placeholder="Seleccionar tipo de acción"
-                        options={mockAttachments}
+                        options={actionsOptions}
                         errors={errors.trigger?.settings?.values}
                         field={field}
                         titleAbsolute
@@ -237,7 +266,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
                     <SelectOuterTags
                       title="Subtipo de acción"
                       placeholder="Seleccionar subtipo de acción"
-                      options={mockAttachments}
+                      options={subActionsOptions}
                       errors={errors.trigger?.settings?.subValues}
                       field={field}
                       titleAbsolute
@@ -259,12 +288,20 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
         <Title className={styles.businessRules__title} level={5}>
           Reglas de negocio
         </Title>
-        <SelectZone zones={zones} setZones={setZones} />
-        <SelectStructure
-          selectedBusinessRules={selectedBusinessRules}
-          setSelectedBusinessRules={setSelectedBusinessRules}
-          disabled={false}
-        />
+        <Flex vertical>
+          <SelectZone zones={zones} setZones={setZones} />
+          <p className={styles.textError}>{customFieldsError.zone && `La Zona es obligatoria *`}</p>
+        </Flex>
+        <Flex vertical>
+          <SelectStructure
+            selectedBusinessRules={selectedBusinessRules}
+            setSelectedBusinessRules={setSelectedBusinessRules}
+            disabled={false}
+          />
+          <p className={styles.textError}>
+            {customFieldsError.channel && `Las Reglas de negocio  son obligatorias *`}
+          </p>
+        </Flex>
         <SelectClientsGroup assignedGroups={assignedGroups} setAssignedGroups={setAssignedGroups} />
       </div>
 
@@ -282,7 +319,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               field={field}
               title="Via"
               placeholder="Seleccionar via"
-              options={mockVias}
+              options={viasSelectOption}
               customStyleContainer={{ width: "25%", paddingRight: "0.25rem" }}
             />
           )}
@@ -380,6 +417,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
 
       <Flex justify="end">
         <PrincipalButton
+          loading={loadingRequest}
           // disabled={!isValid}
           onClick={handleSubmit(handleCreateCommunication)}
         >
@@ -395,30 +433,22 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
   );
 };
 
-const mockVias = [
-  { id: 1, value: 1, label: "Email" },
-  { id: 2, value: 2, label: "SMS" },
-  { id: 3, value: 3, label: "WhatsApp" }
+const actionsOptions = [
+  "Novedad",
+  "Aplicación de pago",
+  "Generación nota crédito",
+  "Cambio estado de factura"
 ];
 
-const mockAttachments = [
-  { id: 1, value: 1, label: "PDF Estado de cuenta" },
-  { id: 2, value: 2, label: "Excel cartera" },
-  { id: 3, value: 3, label: "PDF Factura" }
+const subActionsOptions = [
+  "Error en facturación",
+  "Diferencia en precios",
+  "Devolución",
+  "No radicado"
 ];
+const viasSelectOption = ["Email", "SMS", "WhatsApp"];
 
-const mockForward = [
-  { value: 1, label: "Santiago Pachon" },
-  { value: 2, label: "Miguel Martinez" },
-  { value: 3, label: "Felipe Angarita" },
-  { value: 4, label: "Juan Perez" },
-  { value: 5, label: "Carlos Sanchez" },
-  { value: 6, label: "Jhon Doe" },
-  { value: 7, label: "Maria Perez" },
-  { value: 8, label: "Laura Martinez" },
-  { value: 9, label: "Sara Perez" },
-  { value: 10, label: "Camila Sanchez" }
-];
+const mockAttachments = ["PDF Estado de cuenta", "Excel cartera", "PDF Factura"];
 
 const initDatSelectedBusinessRules: ISelectedBussinessRules = {
   channels: [],

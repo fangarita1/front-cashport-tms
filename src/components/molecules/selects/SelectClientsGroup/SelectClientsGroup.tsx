@@ -7,7 +7,7 @@ import "./selectClientsGroup.scss";
 interface Props {
   disabled?: boolean;
   assignedGroups: number[];
-  setAssignedGroups: Dispatch<SetStateAction<any>>;
+  setAssignedGroups: Dispatch<SetStateAction<number[]>>;
 }
 
 export const SelectClientsGroup = ({ disabled, assignedGroups, setAssignedGroups }: Props) => {
