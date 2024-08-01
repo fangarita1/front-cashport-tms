@@ -1,0 +1,61 @@
+@import "@styles/variables.scss";
+
+.modalProjectSelector {
+    .ant-modal-content {
+        padding: 1.2rem 0 !important;
+    }
+
+    &__title {
+        margin-left: 2rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+    &__projects {
+        padding: 0.5rem 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+        max-height: 480px;
+        overflow-y: auto;
+        scrollbar-width: none;
+
+        .project {
+            border-radius: 8px;
+            box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.15);
+            width: 104px;
+            height: 104px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+
+            &__image {
+                width: 100%;
+                height: 60%;
+                object-fit: contain;
+            }
+
+            &__name {
+                background-color: $background;
+                border-radius: 4px;
+                padding: 0 auto;
+                font-size: 0.625rem;
+                font-weight: 400;
+                text-align: center;
+                width: 100%;
+
+                &.-selected {
+                    background-color: $secondary;
+                }
+            }
+
+            .imageWithoutImage {
+                background-color: $secondary !important;
+            }
+        }
+    }
+}

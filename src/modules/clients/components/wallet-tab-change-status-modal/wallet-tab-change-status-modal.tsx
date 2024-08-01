@@ -22,7 +22,6 @@ interface infoObject {
   fileList: File[];
 }
 
-
 const WalletTabChangeStatusModal: React.FC<Props> = ({
   isOpen,
   onClose,
@@ -54,7 +53,7 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
 
   const handleAttachEvidence = async () => {
     try {
-      await changeStatusInvoice(
+      const response = await changeStatusInvoice(
         selectedState as string,
         invoiceSelected?.map((invoice) => invoice.id) as number[],
         commentary as string,
@@ -64,7 +63,9 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
       );
       messageShow.open({
         type: "success",
-        content: "La factura ha cambiado de estado correctamente a"
+        content: response?.data?.message
+          ? response?.data?.message
+          : "La factura ha cambiado de estado correctamente a"
       });
       onCloseAllModals();
       handlegoBackToFirstView();
@@ -231,7 +232,7 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
   return (
     <Modal
       className={styles.wrapper}
-      width="50%"
+      width="40%"
       open={isOpen}
       footer={
         <div className={styles.footer}>
@@ -240,25 +241,23 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
       }
       closable={false}
       bodyStyle={{
-        height: !isSecondView ? "calc(80vh - 20px)" : "auto",
-        maxHeight: "calc(80vh - 20px)",
+        height: !isSecondView ? "calc(60vh - 20px)" : "auto",
         padding: 0,
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
         overflowY: "auto"
       }}
-      style={{ top: "10px" }}
     >
-      <div className={styles.content} style={{ height: "100%" }}>
-        <Button
-          onClick={isSecondView ? handlegoBackToFirstView : onClose}
-          className={styles.content__header}
-        >
-          <CaretLeft size="1.25rem" />
-          <span>{isSecondView ? secondViewModal.title : firstViewModal.title}</span>
-        </Button>
+      <Button
+        onClick={isSecondView ? handlegoBackToFirstView : onClose}
+        className={styles.content__header}
+      >
+        <CaretLeft size="1.25rem" />
+        <span>{isSecondView ? secondViewModal.title : firstViewModal.title}</span>
+      </Button>
 
+      <div className={styles.content} style={{ height: "90%" }}>
         <p className={styles.content__description}>
           {isSecondView ? secondViewModal.description : firstViewModal.description}
         </p>
@@ -277,7 +276,5 @@ const invoiceStates = [
   "Glosado",
   "Devolucion",
   "Anulada",
-  "Vencida",
   "Saldo",
-  "Novedad"
 ];

@@ -6,7 +6,7 @@ import { MessageProvider } from "@/context/MessageContext";
 function ReviewProjectPage({ params }: { params: { id: string } }) {
   return (
     <MessageProvider>
-      <DetailsProjectView idProjectParam={params.id} />;
+      <DetailsProjectView idProjectParam={params.id} />
     </MessageProvider>
   );
 }

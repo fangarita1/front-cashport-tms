@@ -43,7 +43,6 @@ export const WalletTab = () => {
     isOpen: false,
     actionType: 0
   });
-  const [isPaymentAgreementOpen, setIsPaymentAgreementOpen] = useState(false);
   const [isSelectOpen, setIsSelectOpen] = useState({
     selected: 0
   });
@@ -66,11 +65,20 @@ export const WalletTab = () => {
     setisGenerateActionOpen(!isGenerateActionOpen);
     mutate(`/invoice/client/${clientId}/project/${projectId}`);
   };
+
+  const handleActionInDetail = (invoice: IInvoice) => {
+    setisGenerateActionOpen(!isGenerateActionOpen);
+    setSelectedRows([invoice]);
+    mutate(`/invoice/client/${clientId}/project/${projectId}`);
+  };
+
   const onCloseModal = () => {
+    setisGenerateActionOpen(!isGenerateActionOpen);
     setIsSelectOpen({ selected: 0 });
   };
   const closeAllModal = () => {
     setIsSelectOpen({ selected: 0 });
+    setSelectedRows([]);
     handleisGenerateActionOpen();
   };
 
@@ -129,9 +137,11 @@ export const WalletTab = () => {
               ),
               children: (
                 <InvoicesTable
+                  setShowInvoiceDetailModal={setShowInvoiceDetailModal}
+                  stateId={invoiceState.status_id}
                   dataSingleInvoice={invoiceState.invoices}
                   setSelectedRows={setSelectedRows}
-                  setShowInvoiceDetailModal={setShowInvoiceDetailModal}
+                  selectedRows={selectedRows}
                 />
               )
             }))}
@@ -140,31 +150,51 @@ export const WalletTab = () => {
       )}
 
       <ModalGenerateAction
+        clientId={clientId}
         isOpen={isGenerateActionOpen}
+        setSelectOpen={(e) => {
+          setisGenerateActionOpen(!isGenerateActionOpen);
+          setIsSelectOpen(e);
+        }}
         onClose={handleisGenerateActionOpen}
-        setIsPaymentAgreementOpen={setIsPaymentAgreementOpen}
-        setShowActionDetailModal={setShowActionDetailModal}
-        setSelectOpen={setIsSelectOpen}
+        setShowActionDetailModal={(e) => {
+          setisGenerateActionOpen(!isGenerateActionOpen);
+          setShowActionDetailModal(e);
+        }}
       />
-      {isPaymentAgreementOpen && (
-        <PaymentAgreementModal
-          isOpen={isPaymentAgreementOpen}
-          setIsPaymentAgreementOpen={setIsPaymentAgreementOpen}
-        />
-      )}
+
       {showInvoiceDetailModal?.isOpen && (
         <InvoiceDetailModalProps
           isOpen={showInvoiceDetailModal?.isOpen || false}
-          onClose={() => setShowInvoiceDetailModal({ isOpen: false, invoiceId: 0 })}
+          onClose={() => {
+            setSelectedRows([]);
+            setShowInvoiceDetailModal({ isOpen: false, invoiceId: 0 });
+          }}
           invoiceId={showInvoiceDetailModal?.invoiceId || 0}
           clientId={clientId}
-          handleisGenerateActionOpen={handleisGenerateActionOpen}
+          projectId={projectId}
+          selectInvoice={
+            invoices
+              ?.flatMap((invoiceState) => invoiceState.invoices)
+              .find((invoice) => invoice.id === showInvoiceDetailModal?.invoiceId) || undefined
+          }
+          handleActionInDetail={handleActionInDetail}
         />
       )}
-
+      <PaymentAgreementModal
+        invoiceSelected={selectedRows}
+        isOpen={isSelectOpen.selected === 6}
+        onClose={onCloseModal}
+        clientId={clientId}
+        projectId={projectId}
+        messageShow={messageShow}
+      />
       <ModalActionDiscountCredit
         isOpen={showActionDetailModal?.isOpen}
-        onClose={() => setShowActionDetailModal({ isOpen: false, actionType: 0 })}
+        onClose={() => {
+          setisGenerateActionOpen(!isGenerateActionOpen);
+          setShowActionDetailModal({ isOpen: false, actionType: 0 });
+        }}
         showActionDetailModal={showActionDetailModal}
         setShowActionDetailModal={setShowActionDetailModal}
         invoiceSelected={selectedRows}

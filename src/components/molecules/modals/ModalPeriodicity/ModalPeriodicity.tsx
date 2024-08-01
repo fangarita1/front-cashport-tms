@@ -140,7 +140,6 @@ export const ModalPeriodicity = ({
               const initDate = dayjs(watchInitDate, "YYYY-MM-DD", true);
               const inputDate = dayjs(value, "YYYY-MM-DD", true);
               if (inputDate.diff(initDate, "days") <= 0) {
-                console.log("diferencia: ", inputDate.diff(initDate, "days"));
                 return "La fecha debe ser mínimo un día más que la fecha inicial";
               }
               return true;

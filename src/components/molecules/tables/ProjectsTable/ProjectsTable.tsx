@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Avatar, Button, Flex, Table, Typography, Image, message } from "antd";
+import { Avatar, Button, Flex, Table, Typography, message } from "antd";
 import type { TableProps } from "antd";
 import { Clipboard, Eye, Plus, Triangle } from "phosphor-react";
 
@@ -31,7 +31,7 @@ export const ProjectTable = () => {
   });
 
   const projects = useAppStore((state) => state.projects);
-  const setProjects = useAppStore((state) => state.getProjects);
+  const setProjects = useAppStore((state) => state.setProjects);
 
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);
@@ -84,7 +84,7 @@ export const ProjectTable = () => {
         pagination={{
           pageSize: 25,
           showSizeChanger: false,
-          total: data.pagination.totalRows,
+          total: data?.pagination?.totalRows,
           onChange: onChangePage,
           itemRender: (page, type, originalElement) => {
             if (type === "prev") {
@@ -173,8 +173,8 @@ const columns: TableProps<IProject>["columns"] = [
     render: (_, { CURRENCY }) => {
       return (
         <>
-          {CURRENCY.map(({ CURRENCY_NAME = "", id }) => {
-            const currencyName = CURRENCY_NAME ?? CURRENCY_NAME;
+          {CURRENCY.map(({ currency_name = "", id }) => {
+            const currencyName = currency_name ?? currency_name;
             return <Text key={`${id}-${currencyName}`}>{currencyName.toUpperCase() + " "}</Text>;
           })}
         </>

@@ -1,79 +1,106 @@
-
 $layout-breakpoint-small: 960px;
 
-.home{
+.home {
     background-color: #09131D;
     height: 100vh;
     width: 100%;
+
     @media (max-width: $layout-breakpoint-small) {
         background-color: #121E2C;
-    
+
     }
 }
-.container{
+
+.main_title {
+    font-size: 4.2rem;
+    color: white !important;
+    font-weight: 500;
+    margin-top: 3rem;
+    display: flex;
+    align-items: center;
+    gap : 1.5rem;
+
+    @media (max-width: $layout-breakpoint-small) {
+        font-size: 2rem;
+        margin-top: 1rem;
+    }
+}
+
+.container {
     height: 100%;
     max-width: 1400px;
-     margin: 0 auto;
-     @media (max-width: $layout-breakpoint-small) {
+    margin: 0 auto;
+
+    @media (max-width: $layout-breakpoint-small) {
         flex-direction: column;
     }
 }
-.textCompanyContainer{
+
+.textCompanyContainer {
     @media (max-width: $layout-breakpoint-small) {
-    display: none;
+        display: none;
     }
 }
-.text{
+
+.text {
     font-size: 2rem;
-    color:white;
+    color: white;
 }
-.companySection{
-    width:60%;
+
+.companySection {
+    width: 60%;
     height: 80%;
     flex-direction: column;
     padding-top: 10rem;
     padding-right: 3rem;
+
     @media (max-width: $layout-breakpoint-small) {
-        width:100%;
+        width: 100%;
         height: auto;
         flex-direction: column;
         padding-top: 0;
         padding-right: 0;
         display: flex;
         align-items: center;
-    
+
     }
-      
+
 }
-.loginSection{
-    width:40%;
+
+.loginSection {
+    width: 40%;
     height: 80%;
+
     @media (max-width: $layout-breakpoint-small) {
-        width:100%;
+        width: 100%;
         height: auto;
     }
 }
-.login{
+
+.login {
     width: 75%;
     height: auto;
     padding: 3rem 0;
     border-radius: 12px;
     background-color: #121E2C;
+
     @media (max-width: $layout-breakpoint-small) {
         width: 100%;
-    
+
     }
 }
-.title{
+
+.title {
     text-align: center;
     color: white;
 }
 
-.imageLogo{
+.imageLogo {
     width: 10rem;
     margin: 2rem 0;
+
     @media (max-width: $layout-breakpoint-small) {
-        width: 100% ;
+        width: 100%;
         margin: 0;
         padding: 1rem;
         margin-top: 3rem;

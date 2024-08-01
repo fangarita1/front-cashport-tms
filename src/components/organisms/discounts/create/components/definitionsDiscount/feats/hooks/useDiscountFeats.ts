@@ -11,7 +11,7 @@ type UseDiscountFeatsProps = {
   setValue: UseFormSetValue<DiscountSchema>;
 };
 export default function useDiscountFeats({ setValue }: UseDiscountFeatsProps) {
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
   const { data: products, isLoading } = useSWR(
     {
       id: ID

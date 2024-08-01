@@ -1,5 +1,5 @@
 "use client";
-import { FC, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import { CaretDown, User } from "phosphor-react";
 import styles from "./header.module.scss";
 import { Avatar, Button, Popover } from "antd";
@@ -14,6 +14,10 @@ interface HeaderProps {
 const Header: FC<HeaderProps> = ({ title }) => {
   const router = useRouter();
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const handleLogOut = useCallback(() => {
+    logOut(router);
+  }, [router]);
 
   return (
     <header className={styles.wrapper}>
@@ -30,7 +34,7 @@ const Header: FC<HeaderProps> = ({ title }) => {
             trigger="click"
             content={
               <>
-                <Button onClick={() => logOut(router)}>Cerrar Sesion</Button>
+                <Button onClick={handleLogOut}>Cerrar Sesion</Button>
               </>
             }
           >

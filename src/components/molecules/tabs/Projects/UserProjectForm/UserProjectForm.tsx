@@ -66,7 +66,7 @@ export const UserProjectForm = ({
     disabled: !isEditAvailable,
     values: isViewDetailsUser?.active ? dataToDataForm(dataUser.data) : ({} as IUserForm)
   });
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
 
   const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
     initDatSelectedBusinessRules
@@ -103,9 +103,9 @@ export const UserProjectForm = ({
       setZones(zonesFinalData);
 
       setSelectedBusinessRules({
-        channels: finalData.USER_CHANNELS.map((channel) => channel.ID),
-        lines: finalData.USER_LINES.map((line) => line.ID),
-        sublines: finalData.USER_SUBLINES.map((subline) => subline.ID)
+        channels: finalData.USER_CHANNELS?.map((channel) => channel.ID),
+        lines: finalData.USER_LINES?.map((line) => line.ID),
+        sublines: finalData.USER_SUBLINES?.map((subline) => subline.ID)
       });
 
       const groupsByUserResponse = await getGroupsByUser(isViewDetailsUser?.id, ID);
@@ -121,7 +121,8 @@ export const UserProjectForm = ({
       zone: zones.length === 0,
       channel: selectedBusinessRules?.channels.length === 0
     });
-    if (zones.length === 0 || selectedBusinessRules?.channels.length === 0) return;
+    if (zones.length === 0 || selectedBusinessRules?.channels.length === 0)
+      return setLoading(false);
 
     const response = isViewDetailsUser?.id
       ? await updateUser(
@@ -286,6 +287,7 @@ export const UserProjectForm = ({
         {isEditAvailable && (
           <Flex gap={"1rem"} justify="flex-end">
             <Button
+              loading={loading}
               type="primary"
               className="buttonNewProject"
               htmlType="submit"
@@ -293,13 +295,7 @@ export const UserProjectForm = ({
               size="large"
               icon={loading ? null : <Plus weight="bold" size={15} />}
             >
-              {loading ? (
-                <Spin />
-              ) : isViewDetailsUser?.id ? (
-                "Actualizar usuario"
-              ) : (
-                "Registrar usuario"
-              )}
+              {isViewDetailsUser?.id ? "Actualizar usuario" : "Registrar usuario"}
             </Button>
           </Flex>
         )}

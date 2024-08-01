@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Spin, TableProps, Button, Col, Flex, Row, Table, Typography } from "antd";
@@ -12,22 +13,23 @@ import {
   XCircle,
   MagnifyingGlassMinus
 } from "phosphor-react";
-import { useProjects } from "@/hooks/useProjects";
 import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
 import { formatMoney } from "@/utils/utils";
 import { useAppStore } from "@/lib/store/store";
 import redirectModal from "@/components/molecules/modals/redirectModal/RedirectModal";
-import "./ClientsViewTable.scss";
 import useStore from "@/lib/hook/useStore";
+import { STORAGE_TOKEN } from "@/utils/constants/globalConstants";
+import "./ClientsViewTable.scss";
 
 const { Text } = Typography;
 
 export const ClientsViewTable = () => {
+  const [page, setPage] = useState(1);
   const [isComponentLoading, setIsComponentLoading] = useState(true);
 
-  const project = useStore(useAppStore, (projects) => projects.selectProject);
+  const project = useStore(useAppStore, (projects) => projects.selectedProject);
   const ID = project?.ID;
 
   useEffect(() => {
@@ -35,24 +37,17 @@ export const ClientsViewTable = () => {
   }, []);
 
   useEffect(() => {
-    if (!isComponentLoading && !ID) {
+    const token = localStorage.getItem(STORAGE_TOKEN);
+    if (!isComponentLoading && !ID && !!token) {
       redirectModal();
     }
   }, [isComponentLoading, ID]);
 
-  const { data: clients } = usePortfolios();
+  const { data, loading } = usePortfolios({ page: page });
 
-  const [selectFilters] = useState({
-    country: [] as string[],
-    currency: [] as string[]
-  });
-  const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const { loading, data } = useProjects({
-    page: selectFilters.country.length !== 0 || selectFilters.currency.length !== 0 ? 1 : page,
-    currencyId: selectFilters.currency,
-    countryId: selectFilters.country,
-    searchQuery: ""
+  const [loadingOpenPortfolio, setLoadingOpenPortfolio] = useState({
+    isLoading: false,
+    loadingId: 0
   });
 
   const onChangePage = (pagePagination: number) => {
@@ -134,9 +129,16 @@ export const ClientsViewTable = () => {
       render: (_, row: IClientsPortfolio) => (
         <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
           <Button
-            onClick={() => setIsLoading(true)}
+            key={row.client_id}
+            onClick={() => setLoadingOpenPortfolio({ isLoading: true, loadingId: row.client_id })}
             className="buttonSeeProject"
-            icon={isLoading ? <Spin /> : <Eye size={"1.3rem"} />}
+            icon={
+              loadingOpenPortfolio.loadingId === row.client_id && loadingOpenPortfolio.isLoading ? (
+                <Spin />
+              ) : (
+                <Eye size={"1.3rem"} />
+              )
+            }
           />
         </Link>
       )
@@ -156,49 +158,54 @@ export const ClientsViewTable = () => {
             <Col span={4}>
               <CardsClients
                 title={"Total cartera"}
-                total={clients?.grandTotal.total_wallet || 0}
+                total={data?.data?.grandTotal?.total_wallet || 0}
                 icon={<Money />}
               />
             </Col>
             <Col span={4}>
               <CardsClients
                 title={"C. vencida"}
-                total={clients?.grandTotal.total_past_due || 0}
+                total={data?.data?.grandTotal?.total_past_due || 0}
                 icon={<CalendarX />}
               />
             </Col>
             <Col span={4}>
               <CardsClients
                 title={"Presupuesto"}
-                total={clients?.grandTotal.total_budget || 0}
+                total={data?.data?.grandTotal?.total_budget || 0}
                 icon={<CalendarBlank />}
               />
             </Col>
             <Col span={4}>
               <CardsClients
                 title={"R. aplicado"}
-                total={clients?.grandTotal.applied_payments_ammount || 0}
+                total={data?.data?.grandTotal?.applied_payments_ammount || 0}
                 icon={<Receipt />}
               />
             </Col>
             <Col span={4}>
               <CardsClients
                 title={"Pagos no ap."}
-                total={clients?.grandTotal.unapplied_payments_ammount || 0}
+                total={data?.data?.grandTotal?.unapplied_payments_ammount || 0}
                 icon={<XCircle />}
               />
             </Col>
             <Col span={4}>
               <CardsClients
                 title={"Pagos no id."}
-                total={clients?.grandTotal.unidentified_payment_ammount || 0}
+                total={data?.data?.grandTotal?.unidentified_payment_ammount || 0}
                 icon={<MagnifyingGlassMinus />}
               />
             </Col>
           </Row>
         </Col>
         <Col span={3}>
-          <CardsClients title={"DSO"} total={clients?.grandTotal.dso || 0} icon={<Calendar />} />
+          <CardsClients
+            title={"DSO"}
+            total={data?.data?.grandTotal?.dso || 0}
+            icon={<Calendar />}
+            notAMoneyValue
+          />
         </Col>
       </Row>
       <Table
@@ -206,11 +213,13 @@ export const ClientsViewTable = () => {
         scroll={{ y: "61dvh", x: undefined }}
         columns={columns as TableProps<any>["columns"]}
         pagination={{
-          pageSize: 25,
-          total: data.pagination.totalRows,
-          onChange: onChangePage
+          current: page,
+          pageSize: data?.pagination.rowsperpage,
+          total: data?.pagination?.totalRows,
+          onChange: onChangePage,
+          showSizeChanger: false
         }}
-        dataSource={clients?.clientsPortfolio.map((data) => ({ ...data, key: data.client_id }))}
+        dataSource={data?.data?.clientsPortfolio.map((data) => ({ ...data, key: data.client_id }))}
       />
     </main>
   );

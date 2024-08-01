@@ -38,4 +38,14 @@ export interface IInvoice {
   financial_status: string;
   ajust_value: number;
   expiration_days: number;
+  acceptance_info: {
+    accept_date: null | string;
+    radication_type: string;
+  } | null;
+  agreement_info: {
+    Fecha: string;
+    Monto: number;
+    Cumplido: string;
+  } | null;
+  novelty_info: { incidentAmount: number | null; incidentType: string | null } | null;
 }
