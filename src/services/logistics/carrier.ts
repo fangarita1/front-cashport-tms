@@ -1,6 +1,6 @@
 import axios from "axios";
 import config from "@/config";
-import { IListData } from "@/types/logistics/schema";
+import { IAPIDriver, IListData } from "@/types/logistics/schema";
 import { API } from "@/utils/api/api";
 import { GenericResponse } from "@/types/global/IGlobal";
 
@@ -20,6 +20,19 @@ export const getCarrierById = async (id: string): Promise<IListData> => {
     return response;
   } catch (error) {
     console.log("Error get Driver: ", error);
+    return error as any;
+  }
+};
+export const updateCarrier = async (data: IAPIDriver): Promise<IListData> => {
+  try {
+    const response: IListData = await axios.put(`${config.API_HOST}/driver/update`, data, {
+      headers: {
+        Accept: "application/json, text/plain, */*"
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error get carrier: ", error);
     return error as any;
   }
 };

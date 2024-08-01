@@ -4,7 +4,7 @@ import "../../../../../styles/_variables_logistics.css";
 import "./providerInfo.scss";
 import { updateDriver } from "@/services/logistics/drivers";
 import { ICarrier, IFormDriver } from "@/types/logistics/schema";
-import { getCarrierById } from "@/services/logistics/carrier";
+import { getCarrierById, updateCarrier } from "@/services/logistics/carrier";
 import { CarrierFormTab } from "@/components/molecules/tabs/logisticsForms/CarrierForm/carrierFormTab";
 
 interface Props {
@@ -23,9 +23,9 @@ export const ProviderInfoView = ({ isEdit = false, idParam = "" }: Props) => {
   const [isEditProject, setIsEditProject] = useState(isEdit);
 
 
-  const onUpdateDriver = async (finalData: IFormDriver) => {
+  const onUpdateCarrier = async (finalData: any) => {
     try {
-      const response = await updateDriver(finalData.general);
+      const response = await updateCarrier(finalData.general);
       if (response.status === 200) {
         messageApi.open({
           type: "success",
@@ -80,7 +80,7 @@ export const ProviderInfoView = ({ isEdit = false, idParam = "" }: Props) => {
           ) : (
         <Row style={{ width: "100%" }}>
             <CarrierFormTab
-              onSubmitForm={onUpdateDriver}
+              onSubmitForm={onUpdateCarrier}
               onEditProject={() => setIsEditProject(true)}
               data={datasource}
               statusForm={isEditProject ? "edit" : "review"}

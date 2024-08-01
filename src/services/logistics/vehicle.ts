@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
-import { IVehicle, IListDataVehiche, IListDataVehicheDetail } from "@/types/logistics/schema";
+import { IVehicle, IListDataVehiche, IListDataVehicheDetail, CustomFile } from "@/types/logistics/schema";
 import { API } from "@/utils/api/api";
 import { GenericResponse } from "@/types/global/IGlobal";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
@@ -40,58 +40,65 @@ export const getVehicleById = async (id: string): Promise<IListDataVehicheDetail
         }
       }
     );
-    console.log(response.data);
-
     return response.data;
   } catch (error) {
     console.log("Error get vehicle vehicles: ", error);
     return error as any;
   }
 };
+export const createVehicleForm =( 
+  data: IVehicle,
+  files: DocumentCompleteType[],
+  formImages: CustomFile[]
+) => {
+  const form = new FormData();
+  const body: any = { ...data };
+  const hasImage = formImages.length > 0
+  if (!hasImage) {
+    throw new Error("At least one image file is required.");
+  }
+
+  body.images = formImages?.map((file: any, index) => ({
+    docReference: file.docReference || `image${index + 1}`,
+    uid: file?.uid,
+    url_archive: file?.url_archive,
+  }));
+
+  const expiration = files.find(f => !f.expirationDate && f.expiry);
+  if (expiration) {
+    throw new Error(`El documento ${expiration.description} debe tener una fecha de vencimiento`);
+  }
+
+  body.files = files;
+
+  form.append("body", JSON.stringify(body));
+
+  formImages.forEach((file: CustomFile, index: number) => {
+    if (file?.uid) {
+      form.append(`image${index + 1}`, file);
+    } else {
+      console.warn(`Image ${index + 1} is undefined.`);
+    }
+  });
+
+  files.forEach((file) => {
+    if (file.file) {
+      form.append(`file-for-${file.id}`, file.file);
+    } else {
+      console.warn(`File with id ${file.id} is undefined.`);
+    }
+  });
+
+  return form
+}
 
 export const addVehicle = async (
   data: IVehicle,
-  imageFiles: FileObject[],
-  files: DocumentCompleteType[]
+  files: DocumentCompleteType[],
+  formImages: CustomFile[]
 ): Promise<AxiosResponse<any, any>> => {
   try {
-    const form = new FormData();
-    const body: any = { ...data };
-
-    if (!imageFiles.some((file) => file.file)) {
-      throw new Error("At least one image file is required.");
-    }
-
-    body.images = imageFiles.map((file: any, index) => ({
-      docReference: file.docReference || `imagen${index + 1}`,
-      uid: file?.file?.uid
-    }));
-
-    const expiration = files.find(f => !f.expirationDate && f.expiry);
-    if (expiration) {
-      throw new Error(`El documento ${expiration.description} debe tener una fecha de vencimiento`);
-    }
-
-    body.files = files;
-
-    form.append("body", JSON.stringify(body));
-
-    imageFiles.forEach((file: FileObject, index: number) => {
-      if (file.file) {
-        form.append(`image${index + 1}`, file.file);
-      } else {
-        console.warn(`Image ${index + 1} is undefined.`);
-      }
-    });
-
-    files.forEach((file) => {
-      if (file.file) {
-        form.append(`file-for-${file.id}`, file.file);
-      } else {
-        console.warn(`File with id ${file.id} is undefined.`);
-      }
-    });
-
+   const form = createVehicleForm(data, files, formImages)
     const response = await axios.post(`${config.API_HOST}/vehicle/create`, form, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -101,6 +108,25 @@ export const addVehicle = async (
     return response;
   } catch (error) {
     console.log("Error creating vehicle: ", error);
+    throw error as any;
+  }
+};
+export const updateVehicle = async (
+  data: IVehicle,
+  files: DocumentCompleteType[],
+  formImages: CustomFile[]
+): Promise<AxiosResponse<any, any>> => {
+  try {
+    const form = createVehicleForm(data, files, formImages)
+    const response = await axios.put(`${config.API_HOST}/vehicle/update`, form, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Accept: "application/json, text/plain, */*"
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error updating vehicle: ", error);
     throw error as any;
   }
 };
