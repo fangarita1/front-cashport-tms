@@ -1,7 +1,4 @@
 interface TriggerSettingsForm {
-  init_date?: string;
-  end_date?: string | null;
-  frequency?: string;
   days?: string[];
   values?: ISelectStringType[];
   subValues?: ISelectStringType[];

@@ -13,18 +13,27 @@ import { Dispatch, SetStateAction } from "react";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  selectedPeriodicity: IPeriodicityModalForm | undefined;
   setSelectedPeriodicity: Dispatch<SetStateAction<IPeriodicityModalForm | undefined>>;
 }
-export const ModalPeriodicity = ({ isOpen, onClose, setSelectedPeriodicity }: Props) => {
+export const ModalPeriodicity = ({
+  isOpen,
+  onClose,
+  selectedPeriodicity,
+  setSelectedPeriodicity
+}: Props) => {
   const {
     control,
     handleSubmit,
     watch,
     formState: { errors, isValid }
   } = useForm<IPeriodicityModalForm>({
-    defaultValues: {
-      days: []
-    }
+    defaultValues: selectedPeriodicity
+      ? {
+          ...selectedPeriodicity,
+          days: selectedPeriodicity.days
+        }
+      : { days: [] }
   });
 
   const watchInitDate = watch("init_date");
@@ -76,6 +85,7 @@ export const ModalPeriodicity = ({ isOpen, onClose, setSelectedPeriodicity }: Pr
                   className="input"
                   name={field.name}
                   onChange={field.onChange}
+                  value={field.value}
                 />
                 {errors.frequency_number && (
                   <p className="error">{errors.frequency_number.message}</p>
@@ -108,6 +118,7 @@ export const ModalPeriodicity = ({ isOpen, onClose, setSelectedPeriodicity }: Pr
                 {...field}
                 onChange={(options) => field.onChange(options)}
                 disabled={watchFrequency?.value === "Mensual"}
+                value={field.value}
               />
             )}
           />
@@ -128,8 +139,9 @@ export const ModalPeriodicity = ({ isOpen, onClose, setSelectedPeriodicity }: Pr
             validate: (value) => {
               const initDate = dayjs(watchInitDate, "YYYY-MM-DD", true);
               const inputDate = dayjs(value, "YYYY-MM-DD", true);
-              if (inputDate.diff(initDate, "days") !== 1) {
-                return "La fecha debe ser un día más que la fecha inicial";
+              if (inputDate.diff(initDate, "days") <= 0) {
+                console.log("diferencia: ", inputDate.diff(initDate, "days"));
+                return "La fecha debe ser mínimo un día más que la fecha inicial";
               }
               return true;
             }
@@ -141,7 +153,7 @@ export const ModalPeriodicity = ({ isOpen, onClose, setSelectedPeriodicity }: Pr
         {watchInitDate && ` ${dayjs(watchInitDate, "YYYY-MM-DD").format("DD/MM/YYYY")}`}
       </p>
       <div className="modalPeriodicity__footer">
-        <SecondaryButton>Cancelar</SecondaryButton>
+        <SecondaryButton onClick={() => onClose()}>Cancelar</SecondaryButton>
         <PrincipalButton disabled={!isValid} onClick={handleSubmit(handleOnSave)}>
           Guardar
         </PrincipalButton>

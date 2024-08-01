@@ -17,7 +17,7 @@ export const SelectDay = ({ value, onChange, disabled }: SelecDayProps) => {
 
   const handleSelected = (option: Option) => {
     if (disabled) return;
-    if (selectedOptions?.includes(option)) {
+    if (selectedOptions?.some((selected) => selected.value === option.value)) {
       setSelectedOptions(selectedOptions?.filter((selected) => selected !== option));
       return;
     }
@@ -29,15 +29,17 @@ export const SelectDay = ({ value, onChange, disabled }: SelecDayProps) => {
   }, [selectedOptions]);
 
   useEffect(() => {
-    setSelectedOptions([]);
-    onChange([]);
+    if (disabled) {
+      setSelectedOptions([]);
+      onChange([]);
+    }
   }, [disabled]);
 
   return (
     <div className={`selectDayContainer`}>
       {options.map((option) => (
         <div
-          className={`selectDayContainer__day ${selectedOptions?.includes(option) && "-selected"} ${disabled && "-disabled"}`}
+          className={`selectDayContainer__day ${selectedOptions.some((selected) => selected.value === option.value) ? "-selected" : ""} ${disabled ? "-disabled" : ""}`.trim()}
           onClick={() => handleSelected(option)}
           key={option.value}
         >

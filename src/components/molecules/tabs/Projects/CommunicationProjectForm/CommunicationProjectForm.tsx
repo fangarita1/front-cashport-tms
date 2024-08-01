@@ -27,6 +27,7 @@ import {
 } from "@/services/communications/communications";
 import { useAppStore } from "@/lib/store/store";
 import { stringFromArrayOfSelect } from "@/utils/utils";
+import { useMessageApi } from "@/context/MessageContext";
 
 const { Title } = Typography;
 
@@ -56,6 +57,8 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
   const [templateTags, setTemplateTags] = useState<string[]>([]);
   const [forwardToEmails, setForwardToEmails] = useState<string[]>([]);
   const { ID: projectId } = useAppStore((state) => state.selectProject);
+
+  const { showMessage } = useMessageApi();
 
   const handleChangeRadio = (
     value: any,
@@ -113,12 +116,12 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
     if (
       zones.length === 0 ||
       selectedBusinessRules?.channels.length === 0 ||
-      selectedPeriodicity?.frequency === undefined
+      (selectedPeriodicity?.frequency === undefined && radioValue === "frecuencia")
     ) {
       setCustomFieldsError({
         zone: zones.length === 0,
         channel: selectedBusinessRules?.channels.length === 0,
-        frequency: selectedPeriodicity?.frequency === undefined
+        frequency: selectedPeriodicity?.frequency === undefined && radioValue === "frecuencia"
       });
       setLoadingRequest(false);
       return;
@@ -135,11 +138,34 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
       zones,
       selectedBusinessRules,
       assignedGroups,
-      projectId
+      projectId,
+      showMessage
     });
 
     setLoadingRequest(false);
   };
+
+  useEffect(() => {
+    //useEffect to clean values from otherRadioButtons when clicked
+    if (radioValue === "frecuencia") {
+      setValue("trigger.settings.days", undefined);
+      setValue("trigger.settings.values", undefined);
+      setValue("trigger.settings.subValues", undefined);
+      setValue("trigger.settings.event_type", undefined);
+      setValue("trigger.settings.noticeDaysEvent", undefined);
+    } else if (radioValue === "evento") {
+      setValue("trigger.settings.days", undefined);
+      setValue("trigger.settings.values", undefined);
+      setValue("trigger.settings.subValues", undefined);
+      setValue("trigger.settings.noticeDaysEvent", undefined);
+      setSelectedPeriodicity(undefined);
+    } else if (radioValue === "accion") {
+      setValue("trigger.settings.days", undefined);
+      setValue("trigger.settings.event_type", undefined);
+      setValue("trigger.settings.noticeDaysEvent", undefined);
+      setSelectedPeriodicity(undefined);
+    }
+  }, [radioValue]);
 
   return (
     <main className={styles.communicationProjectForm}>
@@ -443,17 +469,14 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
       </div>
 
       <Flex justify="end">
-        <PrincipalButton
-          loading={loadingRequest}
-          // disabled={!isValid}
-          onClick={handleSubmit(handleCreateCommunication)}
-        >
+        <PrincipalButton loading={loadingRequest} onClick={handleSubmit(handleCreateCommunication)}>
           Crear comunicación
         </PrincipalButton>
       </Flex>
       <ModalPeriodicity
         isOpen={isFrequencyModalOpen}
         onClose={() => setIsFrequencyModalOpen(false)}
+        selectedPeriodicity={selectedPeriodicity}
         setSelectedPeriodicity={setSelectedPeriodicity}
       />
     </main>

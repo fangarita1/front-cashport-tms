@@ -1,4 +1,5 @@
 import config from "@/config";
+import { MessageType } from "@/context/MessageContext";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 import {
   ICommunicationForm,
@@ -29,6 +30,8 @@ interface ICreateCommunicationProps {
   selectedBusinessRules: ISelectedBussinessRules;
   assignedGroups: number[];
   projectId: number;
+  // eslint-disable-next-line no-unused-vars
+  showMessage: (type: MessageType, content: string) => void;
 }
 
 export const createCommunication = async ({
@@ -37,12 +40,13 @@ export const createCommunication = async ({
   zones,
   selectedBusinessRules,
   assignedGroups,
-  projectId
+  projectId,
+  showMessage
 }: ICreateCommunicationProps) => {
   const now = new Date();
   const timeString = now.toLocaleString("es-CO");
   const modelData: ICreateCommunication = {
-    // De donde sale el invoice id?
+    // Where does invoice should come from?
     invoice_id: 1,
     project_id: projectId,
     data: {
@@ -75,10 +79,9 @@ export const createCommunication = async ({
         send_to: data.template.send_to.map((mail) => mail.value),
         copy_to: data.template.copy_to.map((mail) => mail.value),
         tags: data.template.tags.map((tag) => tag.value),
-        // TIME ? DE DONDE SALE?
         time: timeString,
         message: data.template.message,
-        // TITLE ? DE DONDE SALE?
+        // Where does title should come from?
         title: data.template?.title || "",
         subject: data.template.subject,
         files: data.template.files.map((file) => file.value)
@@ -87,10 +90,12 @@ export const createCommunication = async ({
   };
 
   try {
-    const response = await API.post(`${config.API_HOST}/comunication/create`, modelData);
+    const response: string = await API.post(`${config.API_HOST}/comunication/create`, modelData);
+    showMessage("success", response);
 
     return response;
   } catch (error) {
+    showMessage("error", "Ocurrió un error al crear la comunicación");
     return Promise.reject(error);
   }
 };
