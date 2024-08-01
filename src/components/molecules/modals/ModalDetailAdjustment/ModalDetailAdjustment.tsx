@@ -1,10 +1,12 @@
 import { FC, useState } from "react";
-import { ArrowLineDown, CaretDoubleRight, Receipt } from "phosphor-react";
+import { ArrowLineDown, CaretDoubleRight, DotsThree, Receipt } from "phosphor-react";
 import styles from "./modalDetailAdjustment.module.scss";
 import { formatDatePlane, formatMoney } from "@/utils/utils";
 import { FileDownloadModal } from "../FileDownloadModal/FileDownloadModal";
 import { IFinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
 import { useFinancialDiscountDetail } from "@/hooks/useDetailAdjustment";
+import { ModalActionAdjusment } from "../modalActionAdjusment/ModalActionAdjusment";
+import { Button } from "antd";
 
 interface ModalDetailAdjustmentProps {
   isOpen: boolean;
@@ -28,7 +30,7 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
     clientId
   });
   const [urlStep, setUrlStep] = useState<string | undefined>(undefined);
-
+  const [isModalSelectOpen, setIsModalSelectOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const statusClass = (status: string): string => {
@@ -104,10 +106,16 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
         </div>
         <div className={styles.header}>
           <h4 className={styles.numberInvoice}> {selectAdjusment?.id}</h4>
-          <div className={styles.viewInvoice}>
-            <Receipt size={20} />
-            Ver factura
-          </div>
+          <Button
+            className={styles.button__actions}
+            size="large"
+            icon={<DotsThree size={"1.5rem"} />}
+            onClick={() => {
+              setIsModalSelectOpen(true);
+            }}
+          >
+            Generar acción
+          </Button>
         </div>
 
         <div className={styles.body}>
@@ -232,6 +240,13 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
           </div> */}
         </div>
       </div>
+      <ModalActionAdjusment
+        isOpen={isModalSelectOpen}
+        onClose={() => {
+          setIsModalSelectOpen(false);
+        }}
+        clientId={clientId.toString()}
+      />
     </aside>
   );
 };
