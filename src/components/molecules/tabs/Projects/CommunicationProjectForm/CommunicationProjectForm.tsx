@@ -56,7 +56,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
   const [events, setEvents] = useState<string[]>([]);
   const [templateTags, setTemplateTags] = useState<string[]>([]);
   const [forwardToEmails, setForwardToEmails] = useState<string[]>([]);
-  const { ID: projectId } = useAppStore((state) => state.selectProject);
+  const { ID: projectId } = useAppStore((state) => state.selectedProject);
 
   const { showMessage } = useMessageApi();
 
