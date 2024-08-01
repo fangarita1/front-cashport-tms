@@ -1,0 +1,48 @@
+@import "@styles/variables.scss";
+
+.wrapper {
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid $dark-gray;
+  border-radius: 1px;
+  .title {
+    font-size: 24px;
+    margin: 4px 0;
+  }
+  .container {
+    flex-direction: column;
+    .selector {
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0;
+      .selectorButton {
+        width: 35%;
+        height: 100%;
+        padding: 10px 16px;
+        border: 1px solid #DDDFE8;
+        border-radius: 4px;
+      }
+      .driverButton {
+        border: 0;
+        background-color: $white;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+    }
+    .documentsTop {
+      justify-content: space-between;
+      align-items: center;
+      .button {
+        border: 0;
+        background-color: $white;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+    }
+  }
+}

@@ -149,7 +149,7 @@ export const SideBar = () => {
             type="primary"
             size="large"
             icon={<Truck size={26} />}
-            className={path.startsWith("/proveedores") ? "buttonIcon" : "buttonIconActive"}
+            className={path.startsWith("/logistics/requests") ? "buttonIcon" : "buttonIconActive"}
           >
             {isSideBarLarge && "Proveedores"}
           </Button>
