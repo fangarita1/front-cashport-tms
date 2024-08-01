@@ -17,12 +17,13 @@
     overflow-y: auto;
     scrollbar-width: thin;
     margin-right: 0.5rem;
+    transform: translateX(100%); // Start off-screen
 
-    &._show {
+    .wrapper__new_show {
         transform: translateX(0);
     }
 
-    &._whide {
+    .wrapper__new_hide {
         transform: translateX(100%);
     }
 
