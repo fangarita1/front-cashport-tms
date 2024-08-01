@@ -110,6 +110,7 @@
             border-radius: 0.25rem;
             font-size: 1rem;
             max-height: 2.75rem;
+            font-weight: 300;
 
             &::placeholder {
                 color: $dark-gray !important;
@@ -163,12 +164,22 @@
 
     .clientDocuments {
         width: 100%;
+        width: 100%;
+        padding-right: 24px;
+        margin-bottom: 2rem;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
     }
 }
 
 @media screen and (max-width: 1250px) {
     .newClientProjectForm {
         .generalProject {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .clientDocuments {
             grid-template-columns: repeat(3, 1fr);
         }
     }

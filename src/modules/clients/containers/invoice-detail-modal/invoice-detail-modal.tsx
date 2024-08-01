@@ -221,7 +221,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
 
                             {item.event_type_name === "Emision de factura" ? (
                               <div>
-                                 <div
+                                <div
                                   className={styles.icons}
                                   onClick={() => {
                                     handleDocumentClick(item.files[0] || "");
@@ -240,7 +240,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                             )}
                             {item.event_type_name === "Generar descuento" ? (
                               <div>
-                                   <div
+                                <div
                                   className={styles.icons}
                                   onClick={() => {
                                     handleDocumentClick(item.files[0] || "");
@@ -266,10 +266,12 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   <Envelope size={14} onClick={() => {}} />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                <div className={styles.name}>{`Valor: ${item.ammount}`}</div>
                                 <div
                                   className={styles.name}
-                                >{`Fecha de pago acordada: ${item.event_date}`}</div>
+                                >{`Valor: ${formatMoney(item.ammount)}`}</div>
+                                <div
+                                  className={styles.name}
+                                >{`Fecha de pago acordada: ${formatDatePlane(item.event_date.toString())}`}</div>
                               </div>
                             ) : (
                               ""
@@ -323,7 +325,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                             ) : (
                               ""
                             )}
-                             {item.event_type_name === "Registrar novedad" ? (
+                            {item.event_type_name === "Registrar novedad" ? (
                               <div>
                                 <div
                                   className={styles.icons}

@@ -1,7 +1,7 @@
 @import "@/styles/variables";
 
-.wrapper {
-    .content {
+.wrapper_payment {
+    .content_payment {
         display: flex;
         flex-direction: column;
         gap: 1rem;
@@ -45,6 +45,7 @@
                 border-radius: 0.5rem;
                 padding: 0.875rem 1rem;
                 font-size: 1rem;
+
                 span {
                     padding: 0 !important;
                 }
@@ -140,5 +141,51 @@
                 }
             }
         }
+    }
+
+
+}
+
+
+.ant-picker {
+    border-radius: 0.5rem !important;
+    background-color: $background !important;
+    border: none !important;
+    padding: 0.5rem 1rem !important;
+}
+
+
+.number__input {
+    background-color: $background !important;
+    border-radius: 0 !important;
+    border-radius: 0.25rem !important;
+    width: 80% !important;
+
+    .ant-input-number-handler-wrap {
+        display: none !important;
+    }
+
+
+    input {
+        &::placeholder {
+            color: $dark-gray !important;
+        }
+
+        &::-webkit-input-placeholder {
+            color: $dark-gray !important;
+        }
+
+        &:-moz-placeholder {
+            color: $dark-gray !important;
+        }
+
+        &::-moz-placeholder {
+            color: $dark-gray !important;
+        }
+
+        &:-ms-input-placeholder {
+            color: $dark-gray !important;
+        }
+
     }
 }

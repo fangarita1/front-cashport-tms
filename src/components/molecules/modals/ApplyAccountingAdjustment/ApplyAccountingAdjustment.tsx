@@ -228,13 +228,13 @@ export const ApplyAccountingAdjustment = ({
       title: "Pendiente",
       dataIndex: "current_value",
       key: "current_value",
-      render: (text) => `$${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      render: (text) => `$${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
     },
     {
       title: "Saldo nuevo",
       dataIndex: "newBalance",
       key: "newBalance",
-      render: (text) => `$${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      render: (text) => `$${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
     },
     {
       title: "Valor a aplicar",

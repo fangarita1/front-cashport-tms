@@ -182,7 +182,14 @@ export const WalletTab = () => {
           handleActionInDetail={handleActionInDetail}
         />
       )}
-      <PaymentAgreementModal isOpen={isSelectOpen.selected === 6} onClose={onCloseModal} />
+      <PaymentAgreementModal
+        invoiceSelected={selectedRows}
+        isOpen={isSelectOpen.selected === 6}
+        onClose={onCloseModal}
+        clientId={clientId}
+        projectId={projectId}
+        messageShow={messageShow}
+      />
       <ModalActionDiscountCredit
         isOpen={showActionDetailModal?.isOpen}
         onClose={() => {
