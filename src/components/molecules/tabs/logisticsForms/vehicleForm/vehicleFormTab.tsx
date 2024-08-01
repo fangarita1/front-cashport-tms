@@ -96,7 +96,6 @@ export const VehicleFormTab = ({
   const { push } = useRouter();
   const formImages = watch("images")
 
-  console.log("formImages", formImages)
   const hasImages = () => {
     return (images.some(img=>img.file) || (formImages && formImages.length > 0))
   }
@@ -104,7 +103,6 @@ export const VehicleFormTab = ({
     return isValid && hasImages()
   }
   const isSubmitButtonEnabled = isFormCompleted() && !loading
-  console.log("hasGPS", hasGPS)
 
   useEffect(() => {
     if (!hasGPS) {
