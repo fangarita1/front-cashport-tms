@@ -33,6 +33,8 @@
         height: 100%;
         padding: 3rem;
         padding-top: 2rem;
+        overflow-y: scroll;
+        scrollbar-width: none;
 
         .titleName {
             margin: auto;
@@ -66,7 +68,9 @@
         width: 100%;
         padding-left: 1.5rem;
         border-radius: 0.5rem;
+        height: 100%;
         background-color: $white;
+        scrollbar-width: none;
         .ant-tabs-content,
         .ant-tabs-tabpane {
             height: 100%;

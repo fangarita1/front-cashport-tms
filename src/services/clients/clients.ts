@@ -43,8 +43,7 @@ export const createClient = async (
     document_type: data.document_type.value,
     locations: formatLocations,
     documents: documents,
-    client_type_id:
-      typeof data.client_type === "number" ? data.client_type : parseInt(data.client_type),
+    client_type_id: data.client_type.value,
     holding_id: data.holding_id?.value === 0 ? undefined : data.holding_id?.value,
     day_flag: typeof billingPeriod === "string" ? undefined : billingPeriod.day_flag === "true",
     day: typeof billingPeriod === "string" ? undefined : billingPeriod.day,
@@ -131,7 +130,7 @@ export const updateClient = async (
     ? JSON.stringify([locationResponse])
     : JSON.stringify(locationResponse);
 
-  const modelData: IUpdateClient = {
+  const modelData: IUpdateClient & Record<string, any> = {
     business_name: data.business_name,
     phone: data.phone,
     condition_payment: data.condition_payment.value,
@@ -269,6 +268,54 @@ export const changeClientStatus = async (
   } catch (error) {
     console.warn("Error cambiando el estado del cliente: ", error);
     showMessage("error", "Oops, ocurrió un error cambiando el estado del cliente.");
+    return error as AxiosError;
+  }
+};
+
+type PropsEditClientDocument = {
+  clientId: number;
+  documentId: number;
+  file: File;
+  // eslint-disable-next-line no-unused-vars
+  showMessage: (type: MessageType, content: string) => void;
+};
+export const editClientDocument = async ({
+  clientId,
+  documentId,
+  file,
+  showMessage
+}: PropsEditClientDocument) => {
+  const token = await getIdToken();
+
+  const modelData: { [key: string]: any } = {
+    client_id: clientId,
+    project_id: "1",
+    document_id: documentId,
+    file: file
+  };
+
+  const formData = new FormData();
+
+  Object.keys(modelData).forEach((key) => {
+    formData.append(key, modelData[key]);
+  });
+
+  try {
+    const response = await axios.put(`${config.API_HOST}/client/change-documents`, formData, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (response.status === SUCCESS) {
+      showMessage("success", "Documento actualizado exitosamente.");
+      return response;
+    }
+  } catch (error) {
+    console.warn("Error editando documentos cliente: ", error);
+    showMessage("error", "Oops, ocurrió un error editando el documento del cliente.");
+    alert("error");
     return error as AxiosError;
   }
 };
