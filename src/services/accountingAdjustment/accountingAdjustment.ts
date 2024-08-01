@@ -9,6 +9,12 @@ interface RadicationData {
   accept_date: string;
   comments: string;
 }
+interface AdjustmentData {
+  invoice_id: number;
+  date_agreement: string;
+  amount: number;
+  comment: string;
+}
 
 export const createAccountingAdjustment = async (
   requestBody: DiscountRequestBody
@@ -156,6 +162,36 @@ export const radicateInvoice = async (
 
   const response: AxiosResponse<any> = await axios.post(
     `${config.API_HOST}/invoice/radication/client/${clientId}`,
+    formData,
+    {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+
+  return response.data;
+};
+
+export const createPaymentAgreement = async (
+  projectId: number,
+  clientId: string,
+  adjustmentData: AdjustmentData[],
+  file: File | null
+): Promise<AxiosResponse<any>> => {
+  const token = await getIdToken();
+
+  const formData = new FormData();
+  formData.append("adjustment_data", JSON.stringify(adjustmentData));
+
+  if (file) {
+    formData.append("file", file);
+  }
+
+  const response: AxiosResponse<any> = await axios.post(
+    `${config.API_HOST}/invoice/paymentAgreement/project/${projectId}/client/${clientId}`,
     formData,
     {
       headers: {

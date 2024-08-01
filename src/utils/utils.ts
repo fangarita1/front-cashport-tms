@@ -170,7 +170,7 @@ export const formatDateBars = (dateString: string): string => {
 export const formatDatePlane = (date: string): string => {
   const d = new Date(date);
   const year = d.getUTCFullYear();
-  const month = new Intl.DateTimeFormat('es-ES', { month: 'long', timeZone: 'UTC' }).format(d);
+  const month = new Intl.DateTimeFormat("es-ES", { month: "long", timeZone: "UTC" }).format(d);
   const day = d.getUTCDate();
 
   return `${day} ${month}, ${year}`;
@@ -307,4 +307,13 @@ export const formatMillionNumber = (number: number | undefined | null): string =
     return formatNumber.toFixed(2);
   }
   return formatNumber.toFixed();
+};
+
+export const formatCurrencyMoney = (value: number): string => {
+  if (typeof value !== "number") {
+    return "$0,00";
+  }
+  const [intPart, decPart] = value.toFixed(2).split(".");
+  const formattedIntPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return `$${formattedIntPart},${decPart}`;
 };
