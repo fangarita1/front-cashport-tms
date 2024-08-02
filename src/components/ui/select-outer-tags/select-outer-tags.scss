@@ -1,8 +1,23 @@
 @import "@styles/variables.scss";
 
-.generalSelectContainer {
+.selectOuterTags {
+    width: 100%;
     position: relative;
-    .selectInputCustom {
+    display: flex;
+    flex-direction: column;
+
+    .inputTitle {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: $gray;
+
+        &.-absolute {
+            position: absolute;
+            top: -1.3rem;
+        }
+    }
+
+    .inputRegular {
         height: 3rem !important;
         background-color: $background;
         border-radius: 0.25rem;
@@ -34,9 +49,8 @@
             }
         }
     }
-    .selectInputError {
-        width: 100%;
-        border: 1px dashed red;
+    .inputError {
+        border: 1px dashed $error;
         height: 3rem !important;
         margin-bottom: 0.2rem;
         background-color: $background;
@@ -49,6 +63,28 @@
                 color: $dark-gray;
                 font-size: 1rem;
             }
+        }
+    }
+
+    .textError {
+        color: $error;
+        font-size: 0.875rem;
+        font-weight: 400;
+    }
+
+    .selectPlaceholder {
+        position: absolute;
+        top: 50%;
+        left: 0.7rem;
+        top: 2.15rem;
+        color: $dark-gray;
+        font-size: 1rem;
+        pointer-events: none;
+        z-index: 1;
+
+        &.-absolute {
+            left: 0.7rem;
+            top: 0.7rem;
         }
     }
 
@@ -65,24 +101,34 @@
         }
     }
 
-    .inputTitle {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: $gray;
+    .selectedOptions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 4px 0px;
 
-        &.-absolute {
-            position: absolute;
-            top: -1.3rem;
-        }
-    }
+        &__tag {
+            width: fit-content;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            background-color: $gray;
+            border-radius: 6px;
+            color: $white;
+            padding: 4px 8px;
 
-    .textError {
-        color: $error;
-        font-size: 0.875rem;
-        font-weight: 400;
+            p {
+                white-space: nowrap;
+            }
 
-        &.-smallFont {
-            font-size: 0.75rem;
+            .deleteTag {
+                border-radius: 50%;
+                cursor: pointer;
+
+                &:hover {
+                    opacity: 0.7;
+                }
+            }
         }
     }
 }

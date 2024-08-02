@@ -14,7 +14,7 @@
     }
 
     .dateInputForm {
-        background-color: #F7F7F7;
+        background-color: $background;
         border: none !important;
         padding: 0.71rem !important;
         font-size: 1rem;
@@ -23,7 +23,7 @@
             border-radius: 0.25rem;
             width: 100%;
 
-            >input::placeholder {
+            > input::placeholder {
                 color: #dddddd !important;
             }
 
@@ -37,12 +37,18 @@
             font-size: 20px;
             color: black;
         }
+
+        &:hover {
+            background-color: $background;
+        }
     }
 
     .dateInputFormError {
+        background-color: $background;
+        padding: 0.71rem;
+        border: 1px dashed red;
         .ant-picker {
-            border: 1px dashed red;
-            background-color: $background;
+            background-color: $background !important;
             padding: 0.7rem;
             font-size: 1rem;
             border-radius: 0.25rem;
@@ -50,6 +56,9 @@
             &::placeholder {
                 color: $secondary-gray;
             }
+        }
+        &:hover {
+            background-color: $background;
         }
     }
 
