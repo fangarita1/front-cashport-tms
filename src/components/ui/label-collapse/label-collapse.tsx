@@ -1,6 +1,6 @@
 import { Flex } from "antd";
 import { Files, Money } from "phosphor-react";
-import { formatMoney, insertPeriodEveryThreeDigits } from "@/utils/utils";
+import { formatMoney } from "@/utils/utils";
 import styles from "./label-collapse.module.scss";
 
 interface PropsLabelCollapseInvoice {
