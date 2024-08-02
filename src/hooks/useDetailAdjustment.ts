@@ -25,7 +25,7 @@ interface FinancialDiscountData {
   details: FinancialDiscountEvent[];
   initial_amount: number;
   current_amount: number;
-  avaliable_amount: number;
+  appliedamount: number;
 }
 
 interface FinancialDiscountResponse {

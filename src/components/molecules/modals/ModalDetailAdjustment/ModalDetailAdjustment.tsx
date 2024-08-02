@@ -146,23 +146,23 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                           <div className={styles.cardInvoiceFiling}>
                             <h5 className={styles.title}>{getEventTitle(item.event_name)}</h5>
                             <div className={styles.date}>
-                              {formatDatePlane(item.event_date.toString())}
+                              {formatDatePlane(item?.event_date?.toString())}
                             </div>
                             {item.username && (
-                              <div className={styles.name}>{`Responsable: ${item.username}`}</div>
+                              <div className={styles.name}>{`Responsable: ${item?.username}`}</div>
                             )}
-                            {item.event_name === "Creacion de ajuste" && item.comments ? (
+                            {item?.event_name === "Creacion de ajuste" && item?.comments ? (
                               <div>
                                 <div className={styles.date}>comentarios</div>
-                                <div className={styles.date}>{item.comments}</div>{" "}
+                                <div className={styles.date}>{item?.comments}</div>{" "}
                               </div>
                             ) : null}
-                            {item.event_name === "Facturas aplicadas" ? (
+                            {item?.event_name === "Facturas aplicadas" ? (
                               <div>
                                 <div
                                   className={styles.icons}
                                   onClick={() => {
-                                    handleDocumentClick((item.files as string[])[0] || "");
+                                    handleDocumentClick((item?.files as string[])[0] || "");
                                   }}
                                 >
                                   <ArrowLineDown
@@ -174,9 +174,9 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                                 </div>
                                 <div
                                   className={styles.name}
-                                >{`Valor: ${formatMoney(item.ammount ?? "0")}`}</div>
+                                >{`Valor: ${formatMoney(item?.ammount ?? "0")}`}</div>
                                 <div className={styles.adjustment}>
-                                  {item.invoices?.map((invoice) => {
+                                  {item?.invoices?.map((invoice) => {
                                     return (
                                       <div key={invoice} className={styles.idAdjustment}>
                                         {invoice},
@@ -210,19 +210,17 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
               </p>
             </div>
           )}
-          {adjusmentData?.current_amount !== undefined && adjusmentData?.current_amount > 0 && (
+          {adjusmentData?.appliedamount !== undefined && adjusmentData?.appliedamount > 0 && (
             <div className={styles.initialValue}>
               <p className={styles.value}>Monto aplicado</p>
-              <p className={styles.result}>
-                {formatMoney(adjusmentData?.current_amount ?? "")}
-              </p>
+              <p className={styles.result}>{formatMoney(adjusmentData?.appliedamount ?? "")}</p>
             </div>
           )}
           <hr />
           <div className={styles.total}>
             <p className={styles.value}>Valor disponibles</p>
             <p className={styles.result}>
-              {formatMoney(adjusmentData?.avaliable_amount.toString() ?? "")}
+              {formatMoney(adjusmentData?.current_amount.toString() ?? "")}
             </p>
           </div>
         </div>
@@ -234,7 +232,7 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
         }}
         clientId={clientId.toString()}
         adjustment={{
-          type: adjusmentData?.details[0].event_name,
+          type: adjusmentData?.details[0].financial_type,
           id: selectAdjusment?.id.toString() ?? "",
           amount: adjusmentData?.initial_amount.toString() ?? ""
         }}
