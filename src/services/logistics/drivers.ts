@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { API } from "@/utils/api/api";
-import { IDriver, IListData } from "@/types/logistics/schema";
+import { IFormGeneralDriver, IListData } from "@/types/logistics/schema";
 import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { GenericResponse } from "@/types/global/IGlobal";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
@@ -14,7 +14,7 @@ export const getAllDrivers = async ({ providerId }: { providerId: number }): Pro
 
 export const getDriverById = async (id: string): Promise<IListData> => {
   try {
-    const response: IListData = await axios.get(`${config.API_HOST}/driver/driver/${id}`, {
+    const response: IListData = await axios.get(`${config.API_HOST}/driver/${id}`, {
       headers: {
         Accept: "application/json, text/plain, */*"
       }
@@ -25,44 +25,65 @@ export const getDriverById = async (id: string): Promise<IListData> => {
     return error as any;
   }
 };
+export const createDriverForm = (
+  generalData: IFormGeneralDriver,
+  logo: FileObject[],
+  files: DocumentCompleteType[]
+) => {
+  const form = new FormData();
+  const body: any = generalData;
+ 
+  body.logo = logo ? logo.map((file: any) => ({
+    docReference: file.docReference,
+    uid: file?.file?.uid,
+  })): undefined
 
-export const updateDriver = async (data: IDriver): Promise<IListData> => {
+  const expiration = files.find(f=>!f.expirationDate && f.expiry);
+
+  if(expiration){
+    throw new Error(`El documento ${expiration.description} debe tener una fecha de vencimiento`);
+  }
+
+  body.files = files
+  form.append("body", JSON.stringify({...body, rh: body.rhval as any}));
+  form.append("logo", logo[0].file as unknown as File);
+
+  files.forEach((file) => {
+    if (file.file) {
+      form.append(`file-for-${file.id}`, file.file);
+    } else {
+      console.warn(`File with id ${file.id} is undefined.`);
+    }
+  });
+  return form
+}
+
+export const updateDriver = async (
+  generalData: IFormGeneralDriver,
+  logo: FileObject[],
+  files: DocumentCompleteType[]
+): Promise<AxiosResponse<any, any>> => {
   try {
-    const response: IListData = await axios.put(`${config.API_HOST}/driver/update`, data, {
+    const form = createDriverForm(generalData, logo, files)
+    const response = await axios.put(`${config.API_HOST}/driver/update`, form, {
       headers: {
         Accept: "application/json, text/plain, */*"
       }
     });
     return response;
   } catch (error) {
-    console.log("Error get Driver: ", error);
+    console.log("Error update Driver: ", error);
     return error as any;
   }
 };
 
 export const addDriver = async (
-  data: IDriver,
+  generalData: IFormGeneralDriver,
   logo: FileObject[],
   files: DocumentCompleteType[]
 ): Promise<AxiosResponse<any, any>> => {
   try {
-    const form = new FormData();
-    const body: any = data;
-    body.logo = logo.map((file: any) => ({
-      docReference: file.docReference,
-      uid: file?.file?.uid
-    }));
-    const expiration = files.find(f=>!f.expirationDate && f.expiry);
-    if(expiration){
-      throw new Error(`El documento ${expiration.description} debe tener una fecha de vencimiento`);
-    }
-    body.files = files
-    form.append("body", JSON.stringify({...body, rh: body.rhval as any}));
-    form.append("logo", logo[0].file as unknown as File);
-    files.forEach((file) => {
-      if (!file.file) throw new Error(`No se puedo cargar el archivo ${file.description}`);
-      form.append(`file-for-${file.id}`, file.file);
-    });
+    const form = createDriverForm(generalData, logo, files)
     const response = await axios.post(`${config.API_HOST}/driver/create`, form, {
       headers: {
         "content-type": "multipart/form-data",
@@ -71,7 +92,7 @@ export const addDriver = async (
     });
     return response;
   } catch (error) {
-    console.log("Error get Driver: ", error);
+    console.log("Error create Driver: ", error);
     throw error as any;
   }
 };

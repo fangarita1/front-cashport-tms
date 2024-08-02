@@ -1,3 +1,4 @@
+import { shortenFileName } from "@/utils/utils";
 import { Button, Flex, Typography } from "antd";
 import { FileArrowDown, Trash } from "phosphor-react";
 
@@ -16,7 +17,7 @@ export default function UploadDocumentChild(props: Props) {
     <Flex gap={20} align="center">
       <Button type="text" href={linkFile} target="_blank" style={{ padding: 0 }}>
         <FileArrowDown size={"25px"} />
-        <Text className="nameFile">{nameFile}</Text>
+        <Text className="nameFile">{shortenFileName(nameFile, 22)}</Text>
       </Button>
       {showTrash && (
         <Button

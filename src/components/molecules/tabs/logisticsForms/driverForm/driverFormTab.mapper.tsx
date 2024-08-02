@@ -1,16 +1,17 @@
 import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
-import { ICertificates, IDriver, IFormDriver } from "@/types/logistics/schema";
+import { IAPIDriver, ICertificates, IFormDriver, VehicleType } from "@/types/logistics/schema";
 import { IFormProject } from "@/types/projects/IFormProject";
 import Title from "antd/es/typography/Title";
 import dayjs from "dayjs";
 import { SetStateAction } from "react";
-import { UseFormReset, UseFormSetValue } from "react-hook-form";
+import { UseFormSetValue } from "react-hook-form";
 
+export type StatusForm = "review" | "create" | "edit"
 export interface DriverFormTabProps {
   idProjectForm?: string;
-  data?: DriverData[];
+  data?: DriverData;
   disabled?: boolean;
   onEditProject?: () => void;
   onSubmitForm?: (data: any) => void;
@@ -21,12 +22,30 @@ export interface DriverFormTabProps {
     id: string;
     driverId: string;
   };
+  handleFormState?: (newFormState: StatusForm) => void
 }
 
-export type DriverData = IDriver & { licence?: string } & { documents?: ICertificates[] };
+export type DriverData = IAPIDriver & { licence?: string } & { documents?: ICertificates[] };
 
-export const dataToProjectFormData = (data: DriverData ): IFormDriver => {
+export type ApiVehicleType = { id_vehicle_type:number }
+
+
+export const dataToProjectFormData = (data: any, vehiclesTypesData: VehicleType[] | undefined ): IFormDriver => {
+
+  function createVehicleTypeArray(dataVehicleTypes: ApiVehicleType[], vehiclesTypesData: VehicleType[]  | undefined) {
+    if (!vehiclesTypesData) return []
+    return dataVehicleTypes.map(vehicle => {
+      const vehicleType = vehiclesTypesData.find(type => type.id === vehicle.id_vehicle_type);
+      return {
+        label: vehicleType ? vehicleType.description : 'Unknown',
+        value: vehicle.id_vehicle_type
+      };
+    });
+  }
+  
+  const vehicleTypeArray = createVehicleTypeArray(data.vehicle_type, vehiclesTypesData);
   return {
+    
     general: {
       id: data.id,
       phone: data.phone,
@@ -48,29 +67,27 @@ export const dataToProjectFormData = (data: DriverData ): IFormDriver => {
       glasses: data.glasses,
       birth_date: dayjs(data?.birth_date) as any,
       photo: data.photo,
-      vehicle_type: data.vehicle_type
+      vehicle_type: vehicleTypeArray
     }
   };
 };
 
 export const _onSubmit = (
   data: any,
-  setloading: (value: SetStateAction<boolean>) => void,
-  setImageError: (value: SetStateAction<boolean>) => void,
-  imageFile: FileObject[] | undefined,
   files: DocumentCompleteType[],
+  imageFile: FileObject[] | undefined,
+  setImageError: (value: SetStateAction<boolean>) => void,
+  setloading: (value: SetStateAction<boolean>) => void,
   onSubmitForm: (data: any) => void,
-  reset: UseFormReset<IFormDriver>
 ) => {
   setloading(true);
   try {
-    if (!imageFile) return setImageError(true);
-    setImageError(false);
+    const hasImage = imageFile || data.general.photo;
+    if (!hasImage) return setImageError(true);
     onSubmitForm({ ...data, logo: imageFile, files });
-    reset(data);
-    setloading(false);
   } catch (error) {
     console.warn({ error });
+  } finally{
     setloading(false);
   }
 };
