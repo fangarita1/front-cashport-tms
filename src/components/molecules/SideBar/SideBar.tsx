@@ -9,7 +9,8 @@ import {
   Gear,
   Megaphone,
   User,
-  Clipboard
+  Clipboard,
+  Bank
 } from "phosphor-react";
 
 import "./sidebar.scss";
@@ -94,7 +95,17 @@ export const SideBar = () => {
             icon={<Megaphone size={26} />}
             className={path.startsWith("/comercio") ? "buttonIcon" : "buttonIconActive"}
           >
-            {isSideBarLarge && "Descuentos"}
+            {isSideBarLarge && "Comercio"}
+          </Button>
+        </Link>
+        <Link href="/banco" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<Bank size={26} />}
+            className={path === "/banco" ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Bancos"}
           </Button>
         </Link>
         <Link href="/" passHref legacyBehavior>
