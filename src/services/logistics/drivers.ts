@@ -46,7 +46,7 @@ export const createDriverForm = (
 
   body.files = files
   form.append("body", JSON.stringify({...body, rh: body.rhval as any}));
-  form.append("logo", logo[0].file as unknown as File);
+  logo && form.append("logo", logo[0].file as unknown as File);
 
   files.forEach((file) => {
     if (file.file) {
