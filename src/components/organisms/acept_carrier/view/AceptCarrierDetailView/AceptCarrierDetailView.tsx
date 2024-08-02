@@ -32,9 +32,11 @@ export default function AceptCarrierDetailView({ params }: AceptCarrierDetailPro
   }, []);
 
   const loadTransferOrders = async () => {
-    const result = await getTransferRequestById("3");
+    const result = await getTransferRequestById("6");
     setCarrier(result.data.data);
   };
+
+  console.log(carrier);
 
   const handleNext = () => {
     if (view === "detail") setView("asignation");

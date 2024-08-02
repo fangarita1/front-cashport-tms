@@ -24,7 +24,10 @@ export const getAllTransferRequestList = async (): Promise<IListData> => {
   export const getTransferRequestById = async (id: string): Promise<IListData> => {
     const token = await getIdToken();
     try {
-      const response: IListData = await axios.get(`${config.API_HOST}/carrier/${id}`,
+      const form = new FormData();      
+      form.append("id", id);
+      
+      const response: IListData = await axios.post(`${config.API_HOST}/transfer-request/id`, form,
         {
           headers: {
             Accept: "application/json, text/plain, */*",
