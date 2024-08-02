@@ -16,13 +16,22 @@ interface FinancialDiscountEvent {
   is_deleted: number;
   ammount: number;
   status: number;
+  username: string | null;
   event_name: string;
+  financial_type: string;
+}
+
+interface FinancialDiscountData {
+  details: FinancialDiscountEvent[];
+  initial_amount: number;
+  current_amount: number;
+  avaliable_amount: number;
 }
 
 interface FinancialDiscountResponse {
   status: number;
   message: string;
-  data: FinancialDiscountEvent[];
+  data: FinancialDiscountData;
 }
 
 interface UseFinancialDiscountProps {

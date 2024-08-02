@@ -105,7 +105,10 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
           </button>
         </div>
         <div className={styles.header}>
-          <h4 className={styles.numberInvoice}> {selectAdjusment?.id}</h4>
+          <h4 className={styles.numberInvoice}>
+            {adjusmentData?.details[0].financial_type} {"  "}
+            {selectAdjusment?.id}
+          </h4>
           <Button
             className={styles.button__actions}
             size="large"
@@ -132,7 +135,7 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
             <div className={styles.description}>
               <div className={styles.stepperContainer}>
                 <div className={styles.stepperContent}>
-                  {(adjusmentData ?? []).map((item, index, arr) => {
+                  {(adjusmentData?.details ?? []).map((item, index, arr) => {
                     return (
                       <div key={item.id} className={styles.mainStep}>
                         <div
@@ -145,6 +148,9 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                             <div className={styles.date}>
                               {formatDatePlane(item.event_date.toString())}
                             </div>
+                            {item.username && (
+                              <div className={styles.name}>{`Responsable: ${item.username}`}</div>
+                            )}
                             {item.event_name === "Creacion de ajuste" && item.comments ? (
                               <div>
                                 <div className={styles.date}>comentarios</div>
@@ -166,7 +172,6 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                                     }}
                                   />
                                 </div>
-                                {/* <div className={styles.name}>{`Acción: ${item.user_name}`}</div> */}
                                 <div
                                   className={styles.name}
                                 >{`Valor: ${formatMoney(item.ammount ?? "0")}`}</div>
@@ -197,47 +202,29 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
       <div className={styles.footer}>
         <h4 className={styles.resume}>Resumen</h4>
         <div className={styles.bodyContent}>
-          <div className={styles.initialValue}>
-            <p className={styles.value}>Valor inicial</p>
-            <p className={styles.result}>
-              {formatMoney(selectAdjusment?.initial_value.toString() ?? "")}
-            </p>
-          </div>
-          {/* {adjusmentData?.totals?.total_creditNotes !== undefined &&
-            adjusmentData?.totals?.total_creditNotes > 0 && (
-              <div className={styles.initialValue}>
-                <p className={styles.value}>Nota credito</p>
-                <p className={styles.result}>
-                  {formatMoney(adjusmentData?.totals.total_creditNotes.toString() ?? "")}
-                </p>
-              </div>
-            )}
-          {adjusmentData?.totals?.total_debitNotes !== undefined &&
-            adjusmentData?.totals?.total_debitNotes > 0 && (
-              <div className={styles.initialValue}>
-                <p className={styles.value}>Nota debito</p>
-                <p className={styles.result}>
-                  {formatMoney(adjusmentData?.totals.total_debitNotes.toString() ?? "")}
-                </p>
-              </div>
-            )}
-          {adjusmentData?.totals?.total_discount !== undefined &&
-            adjusmentData?.totals?.total_discount > 0 && (
-              <div className={styles.initialValue}>
-                <p className={styles.value}>Descuento</p>
-                <p className={styles.result}>
-                  {formatMoney(adjusmentData?.totals.total_discount.toString() ?? "")}
-                </p>
-              </div>
-            )}
-
+          {adjusmentData?.initial_amount !== undefined && adjusmentData?.initial_amount > 0 && (
+            <div className={styles.initialValue}>
+              <p className={styles.value}>Monto inicial</p>
+              <p className={styles.result}>
+                {formatMoney(adjusmentData?.initial_amount.toString() ?? "")}
+              </p>
+            </div>
+          )}
+          {adjusmentData?.current_amount !== undefined && adjusmentData?.current_amount > 0 && (
+            <div className={styles.initialValue}>
+              <p className={styles.value}>Monto aplicado</p>
+              <p className={styles.result}>
+                {formatMoney(adjusmentData?.current_amount ?? "")}
+              </p>
+            </div>
+          )}
           <hr />
           <div className={styles.total}>
-            <p className={styles.value}>Total</p>
+            <p className={styles.value}>Valor disponibles</p>
             <p className={styles.result}>
-              {formatMoney(adjusmentData?.totals.total_general.toString() ?? "")}
+              {formatMoney(adjusmentData?.avaliable_amount.toString() ?? "")}
             </p>
-          </div> */}
+          </div>
         </div>
       </div>
       <ModalActionAdjusment
@@ -246,6 +233,11 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
           setIsModalSelectOpen(false);
         }}
         clientId={clientId.toString()}
+        adjustment={{
+          type: adjusmentData?.details[0].event_name,
+          id: selectAdjusment?.id.toString() ?? "",
+          amount: adjusmentData?.initial_amount.toString() ?? ""
+        }}
       />
     </aside>
   );
