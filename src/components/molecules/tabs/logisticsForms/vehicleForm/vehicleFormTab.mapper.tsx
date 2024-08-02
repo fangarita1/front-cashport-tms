@@ -5,12 +5,15 @@ import { SetStateAction } from "react";
 import { UseFormReset, UseFormSetValue } from "react-hook-form";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 
+export type StatusForm = "review" | "create" | "edit"
+
 export interface VehicleFormTabProps {
   idVehicleForm?: string;
   data?: VehicleData;
   disabled?: boolean;
   onEditVehicle?: () => void;
   onSubmitForm?: (data: any) => void;
+  handleFormState?: (newFormState: StatusForm) => void
   onActiveVehicle?: () => void;
   onDesactivateVehicle?: () => void;
   statusForm: "create" | "edit" | "review";
@@ -19,8 +22,14 @@ export interface VehicleFormTabProps {
     vehicleId: string;
   };
 }
+export interface VehicleImage {
+  id: number,
+  entity_type: number,
+  url_archive?: string,
+  file?: FileObject
+}
 
-export type VehicleData = IVehicle & { licence?: string } & { documents?: ICertificates[] };
+export type VehicleData = IVehicle & { licence?: string } & { documents?: ICertificates[] } & {images?: VehicleImage};
 
 export interface FileObject {
   file: File;
@@ -28,16 +37,23 @@ export interface FileObject {
 }
 
 export const normalizeVehicleData = (data: any): any => {
-  console.log(data);
+
   if (!data) return {};
-  // Extract images and documents
-  const images = data.images.map((image: any) => image.url_archive);
+
   const documents = data.documents.map((doc: any) => ({
     file: {
       name: doc.url_archive.split("/").pop(),
       url: doc.url_archive
     }
   }));
+
+  const images = data.images.map((image: any) => {
+    const fileData = image.data;
+    const fileName = image.url_archive.split("/").pop();
+    const file = new File([fileData], fileName);
+    (file as any).url_archive = image.url_archive;
+    return file;
+  });
 
   return {
     general: {
@@ -62,18 +78,9 @@ export const normalizeVehicleData = (data: any): any => {
       modified_at: new Date(data.modified_at),
       modified_by: data.modified_by,
       company: "", // Add logic to fetch company name if necessary
-      image1: images[0],
-      image2: images[1],
-      image3: images[2],
-      image4: images[3],
-      image5: images[4],
       IS_ACTIVE: data.active
     },
-    image1: images[0] ? [{ file: new File([images[0]], images[0].split("/").pop()) }] : undefined,
-    image2: images[1] ? [{ file: new File([images[1]], images[1].split("/").pop()) }] : undefined,
-    image3: images[2] ? [{ file: new File([images[2]], images[2].split("/").pop()) }] : undefined,
-    image4: images[3] ? [{ file: new File([images[3]], images[3].split("/").pop()) }] : undefined,
-    image5: images[4] ? [{ file: new File([images[4]], images[4].split("/").pop()) }] : undefined,
+    images: images,
     files: documents,
     IS_ACTIVE: data.active
   };
@@ -81,22 +88,21 @@ export const normalizeVehicleData = (data: any): any => {
 
 export const _onSubmitVehicle = (
   data: any,
+  selectedFiles: DocumentCompleteType[],
+  imageFiles: { docReference: string; file: File }[],
   setloading: (value: SetStateAction<boolean>) => void,
   setImageError: (value: SetStateAction<boolean>) => void,
-  imageFiles: { docReference: string; file: File }[],
-  selectedFiles: DocumentCompleteType[],
   onSubmitForm: (data: any) => void,
-  reset: UseFormReset<IFormVehicle>
 ) => {
   setloading(true);
   try {
     setImageError(false);
     onSubmitForm({...data, images: imageFiles, files: selectedFiles});
-    reset(data);
-    setloading(false);
   } catch (error) {
     console.warn({ error });
+  } finally {
     setloading(false);
+
   }
 };
 

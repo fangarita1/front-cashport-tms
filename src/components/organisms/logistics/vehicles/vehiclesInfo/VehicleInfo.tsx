@@ -1,12 +1,13 @@
 "use client";
 import { Flex, message, Row, Skeleton } from "antd";
-
 import "../../../../../styles/_variables_logistics.css";
-
 import "./vehicleInfo.scss";
 import { VehicleFormTab } from "@/components/molecules/tabs/logisticsForms/vehicleForm/vehicleFormTab";
-import { getVehicleById } from "@/services/logistics/vehicle";
+import { getVehicleById, updateVehicle } from "@/services/logistics/vehicle";
 import useSWR from "swr";
+import { useCallback, useState } from "react";
+import { StatusForm } from "@/components/molecules/tabs/logisticsForms/vehicleForm/vehicleFormTab.mapper";
+import { useRouter } from "next/navigation";
 
 interface Props {
   isEdit?: boolean;
@@ -18,13 +19,51 @@ interface Props {
 }
 
 export const VehicleInfoView = ({ isEdit = false, idParam = "", params }: Props) => {
-  const [_messageApi, contextHolder] = message.useMessage();
-
+  const [messageApi, contextHolder] = message.useMessage();
+  const [statusForm, setStatusForm]= useState<StatusForm>("review")
+  const { push } = useRouter();
   const fetcher = async ({ id, key }: { id: string; key: string }) => {
     return getVehicleById(id);
   };
 
-  const { data, isLoading } = useSWR({ id: idParam, key: "1" }, fetcher);
+  const handleFormState = useCallback((newFormState:StatusForm) => {
+    setStatusForm(newFormState);
+  }, []);
+
+  const { data, isLoading } = useSWR({ id: idParam, key: "1" }, fetcher,     
+    { revalidateIfStale:false,
+    revalidateOnFocus:false,
+    revalidateOnReconnect:false
+  });
+
+  const handleSubmit = async (data: any) => {
+    try {
+        const response = await updateVehicle(
+          {...data}, 
+          data.files, 
+          data.images
+        );
+      if (response && response.status === 200) {
+        messageApi.open({
+          type: "success",
+          content: `El vehículo fue editado exitosamente.`
+        });
+        push(`/logistics/providers/${params.id}/vehicle`);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        messageApi.open({
+          type: "error",
+          content: error.message
+        });
+      } else {
+        message.open({
+          type: "error",
+          content: "Oops, hubo un error por favor intenta más tarde."
+        });
+      }
+    } 
+  };
 
   return (
     <>
@@ -33,10 +72,12 @@ export const VehicleInfoView = ({ isEdit = false, idParam = "", params }: Props)
         <Row style={{ width: "100%" }}>
           {!isLoading ? (
             <VehicleFormTab
-              statusForm={"review"}
+              statusForm={statusForm}
+              handleFormState={handleFormState}
               data={data?.data as any}
               params={params}
-            ></VehicleFormTab>
+              onSubmitForm={handleSubmit}
+            />
           ) : (
             <Skeleton />
           )}
