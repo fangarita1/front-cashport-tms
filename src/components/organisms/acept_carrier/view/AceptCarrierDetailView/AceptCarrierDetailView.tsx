@@ -10,6 +10,8 @@ import { formatMoney } from "@/utils/utils";
 import { useEffect, useState } from "react";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import styles from "./AceptCarrierDetailView.module.scss";
+import { getTransferRequestById } from "@/services/logistics/transfer-requests";
+import { ICarrierRequestDetail } from "@/types/logistics/schema";
 
 interface AceptCarrierDetailProps {
   params: { id: string };
@@ -17,12 +19,22 @@ interface AceptCarrierDetailProps {
 
 export default function AceptCarrierDetailView({ params }: AceptCarrierDetailProps) {
   const [view, setView] = useState<"detail" | "asignation" | "confirmation">("detail");
+  const [carrier, setCarrier] = useState<ICarrierRequestDetail | any>();
 
   useEffect(() => {
     return () => {
       setView("detail");
     };
   }, []);
+
+  useEffect(() => {
+    loadTransferOrders();
+  }, []);
+
+  const loadTransferOrders = async () => {
+    const result = await getTransferRequestById("3");
+    setCarrier(result.data.data);
+  };
 
   const handleNext = () => {
     if (view === "detail") setView("asignation");
@@ -44,7 +56,7 @@ export default function AceptCarrierDetailView({ params }: AceptCarrierDetailPro
 
   return (
     <Flex className={styles.wrapper}>
-      <Link href="/aceptacion_de_proveedores" className={styles.link}>
+      <Link href="/logistics/requests" className={styles.link}>
         <CaretLeft size={20} />
         <div>Detalle de TR {params.id}</div>
       </Link>
@@ -56,7 +68,6 @@ export default function AceptCarrierDetailView({ params }: AceptCarrierDetailPro
               const isCompletedStep = index < currentStepIndex;
               const stepColor = isCurrentStep ? "#141414" : isCompletedStep ? "#CBE71E" : "#969696";
               const fontWeight = isCurrentStep ? "bold" : "normal";
-
               return (
                 <>
                   <Flex>{index > 0 && <span style={{ margin: "0 8px", width: "" }}>-</span>}</Flex>

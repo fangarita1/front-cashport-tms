@@ -503,6 +503,43 @@ export interface ICarriersWithDefaults {
  * Exposes all fields present in certificates as a typescript
  * interface.
  */
+export interface ICarriersRequestList {
+  color: string
+  created_at: string
+  created_by: string
+  end_date: string
+  end_location: string
+  id: number
+  id_end_location: number
+  id_service_type: number
+  id_start_location: number
+  service_type: string
+  start_date: string
+  start_location: string
+  status: string
+  statusdesc: string
+}
+/**
+ * Exposes all fields present in certificates as a typescript
+ * interface.
+ */
+export interface ICarrierRequestDetail {
+  id: number,
+  description: string,
+  nit: string,
+  icon: string,
+  active: boolean,
+  created_at: string,
+  created_by: string,
+  modified_at: string,
+  modified_by: string,
+  id_carrier_type: null,
+  documents: []
+}
+/**
+ * Exposes all fields present in certificates as a typescript
+ * interface.
+ */
 export interface ICertificates {
   id: number;
   entity_type: number;

@@ -5,35 +5,33 @@ import LabelCollapse from "@/components/ui/label-collapse";
 import CarrierTable from "@/components/molecules/tables/CarrierTable/CarrierTable";
 import { Providers, ProvidersList } from "@/types/acept_carrier/acept_carrier";
 import styles from "./AceptCarrierView.module.scss";
+import { ICarriersRequestList } from "@/types/logistics/schema";
 
 interface AceptCarrierViewProps {
-  type: keyof Providers,
-  providers: Providers
+  carriers: ICarriersRequestList[];
 }
 
-export default function AceptCarrierView({type, providers}: AceptCarrierViewProps) {
+export default function AceptCarrierView({ carriers }: AceptCarrierViewProps) {
   const [selectedRows, setSelectedRows] = useState<any[] | undefined>();
-  
-  const currentProviders = providers[type];
 
   return (
     <Flex className={styles.wrapper}>
       <Collapse
         className={styles.collapses}
-        items={currentProviders?.map((providersList: ProvidersList) => ({
-          key: providersList.status_id,
+        items={carriers?.map((carriersList: ICarriersRequestList) => ({
+          key: carriersList.id,
           label: (
             <LabelCollapse
-              status={providersList.status}
-              quantity={providersList.providersDetail.length}
-              color={providersList.color}
+              status={carriersList.statusdesc}
+              quantity={carriers.length}
+              color={carriersList.color}
               quantityText="TR"
               removeIcons
             />
           ),
           children: (
             <CarrierTable
-              providerData={providersList.providersDetail}
+              carrierData={carriers}
               setSelectedRows={setSelectedRows}
             />
           )

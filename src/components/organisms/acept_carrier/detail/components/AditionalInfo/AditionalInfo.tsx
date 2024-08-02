@@ -18,11 +18,10 @@ export default function AditionalInfo({ aditionalInfo }: AditionalInfoProps) {
         <Col span={24}>
           <Flex
             vertical
-            className={styles.documentsWrapper}
             style={{ width: "99%", marginTop: "2rem" }}
           >
             <h4>Documentos</h4>
-            <Row className={styles.documents}>
+            <Row>
               {aditionalInfo?.documents?.map((file) => (
                 <>
                   <Col span={12} style={{ padding: "15px", borderRight: "1px solid #f7f7f7" }} key={`file-${file.id}`}>
@@ -91,14 +90,14 @@ export default function AditionalInfo({ aditionalInfo }: AditionalInfoProps) {
                 <Row style={{ paddingTop: "1rem" }}>
                   <Col span={24}>
                     {aditionalInfo?.aditionalRequirements?.map((req) => (
-                      <div className="selected" key={req.quantity}>
+                      <div className={styles.selected} key={req.quantity}>
                         {req.type} <small>{req.quantity}</small>
                       </div>
                     ))}
                   </Col>
                 </Row>
               </Col>
-              <Col span={12} className={styles.bottomText}>
+              <Col span={12}>
                 <h3>Instrucciones especiales</h3>
                 <p>&nbsp;</p>
                 <p>{aditionalInfo?.especialIntruction.observation}</p>

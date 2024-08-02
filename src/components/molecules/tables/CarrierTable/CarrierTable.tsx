@@ -3,21 +3,18 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { formatMoney } from "@/utils/utils";
 import { Eye, Warning } from "phosphor-react";
 import { Button, Flex, Table, TableProps, Typography } from "antd";
-import { ProvidersInfo } from "@/types/acept_carrier/acept_carrier";
 import { Radioactive } from "@phosphor-icons/react";
+import { ICarriersRequestList } from "@/types/logistics/schema";
 import Link from "next/link";
 
 const { Text } = Typography;
 
 interface PropsCarrierTable {
-  providerData: ProvidersInfo[];
+  carrierData: ICarriersRequestList[];
   setSelectedRows: Dispatch<SetStateAction<any[] | undefined>>;
 }
 
-export default function CarrierTable({
-  providerData: data,
-  setSelectedRows
-}: PropsCarrierTable) {
+export default function CarrierTable({ carrierData: data, setSelectedRows }: PropsCarrierTable) {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
@@ -30,17 +27,17 @@ export default function CarrierTable({
     onChange: onSelectChange
   };
 
-  const columns: TableProps<any>["columns"] = [
+  const columns: TableProps<ICarriersRequestList>["columns"] = [
     {
       title: "TR",
       dataIndex: "id",
       key: "id",
-      render: (invoiceId) => (
+      render: (id) => (
         <Link
-          href={`/logistics/requests/${invoiceId}`}
+          href={`/logistics/requests/${id}`}
           style={{ color: "blue", textDecorationLine: "underline" }}
         >
-          {invoiceId}
+          {id}
         </Link>
       ),
       sorter: (a, b) => a.id - b.id,
@@ -48,69 +45,77 @@ export default function CarrierTable({
     },
     {
       title: "Origen y destino",
-      dataIndex: ["departure", "arrival"],
+      dataIndex: ["start_location", "end_location"],
       key: "departureArrival",
       render: (text, record) => (
         <Text>
           <div>
-            <strong>Origen</strong> {record.departure}
+            <strong>Origen</strong> {record.start_location}
           </div>
           <div>
-            <strong>Destino</strong> {record.arrival}
+            <strong>Destino</strong> {record.end_location}
           </div>
         </Text>
       ),
-      sorter: (a, b) => a.departure.localeCompare(b.departure),
+      sorter: (a, b) => a.start_location.localeCompare(b.start_location),
       showSorterTooltip: false
     },
     {
       title: "Fechas",
       key: "startEndDate",
-      dataIndex: ["startDate", "endDate"],
+      dataIndex: ["start_date", "end_date"],
       render: (text, record) => (
         <Text>
-          {`${new Date(record.startDate).toLocaleDateString()} - ${record.startTime}`} <br />{" "}
-          {`${new Date(record.endDate).toLocaleDateString()} - ${record.endTime}`}
+          {record.start_date} <br />{" "}
+          {record.end_date}
         </Text>
       ),
       sorter: (a, b) => {
-        if (new Date(a.startDate).getTime() === new Date(b.startDate).getTime()) {
-          return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
+        if (new Date(a.start_date).getTime() === new Date(b.start_date).getTime()) {
+          return new Date(a.end_date).getTime() - new Date(b.end_date).getTime();
         }
-        return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+        return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
       },
       showSorterTooltip: false
     },
     {
       title: "Tipo de viaje",
       key: "travelType",
-      dataIndex: "travelType",
+      dataIndex: "service_type",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => a.travelType.localeCompare(b.travelType),
+      sorter: (a, b) => a.service_type.localeCompare(b.service_type),
       showSorterTooltip: false
     },
     {
       title: "Vehículo(s)",
       key: "vehicle",
-      dataIndex: "vehicle",
+      dataIndex: "service_type",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => a.travelType.localeCompare(b.travelType),
+      sorter: (a, b) => a.service_type.localeCompare(b.service_type),
       showSorterTooltip: false
     },
     {
       title: "Tiempo transcurido",
       key: "timeTraveled",
-      dataIndex: "timeTraveled",
-      render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => a.timeTraveled.localeCompare(b.timeTraveled),
+      dataIndex: ["start_date", "end_date"],
+      render: (text, record) => (
+        <Text>
+          {(
+            new Date(record.start_date.split("/").reverse().join("-") + "T05:30:00").getTime() -
+            new Date(record.end_date.split("/").reverse().join("-") + "T05:30:00").getTime() /
+              (1000 * 60)
+          ).toLocaleString()}
+        </Text>
+      ),
+      sorter: (a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime(),
       showSorterTooltip: false
     },
     {
       title: "Valor",
       key: "value",
       dataIndex: "value",
-      render: (amount) => <Text>{formatMoney(amount)}</Text>,
-      sorter: (a, b) => a.value - b.value,
+      render: (amount) => <Text>{formatMoney(6000000)}</Text>,
+      sorter: (a, b) => a.id_end_location - b.id_end_location,
       showSorterTooltip: false,
       align: "right"
     },
@@ -121,15 +126,18 @@ export default function CarrierTable({
       dataIndex: "id",
       render: (text, record, invoiceId) => (
         <Flex style={{ gap: "6px", justifyContent: "flex-end" }}>
-          {record.radioactiveIcon && (
+          {/*{record.radioactiveIcon && (
             <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Radioactive size={"1.3rem"} />} />
-          )}
-          {record.dangerIcon && (
+          )}*/}
+          {/*{record.dangerIcon && (
             <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Warning size={"1.3rem"} />} />
-          )}
-          {record.eyeIcon && (
+          )}*/}
+          {/*{record.eyeIcon && (
             <Link href={`/aceptacion_de_proveedores/${invoiceId}`}><Button style={{ backgroundColor: "#F7F7F7" }} icon={<Eye size={"1.3rem"} />} /></Link>
-          )}
+          )}*/}
+          <Link href={`/logistics/requests/${invoiceId}`}>
+            <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Eye size={"1.3rem"} />} />
+          </Link>
         </Flex>
       )
     }

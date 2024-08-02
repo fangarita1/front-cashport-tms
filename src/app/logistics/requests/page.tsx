@@ -1,7 +1,7 @@
-import AceptCarrierPage from "@/components/organisms/acept_carrier/AceptCarrier";
+import AceptCarrier from "@/components/organisms/acept_carrier/AceptCarrier";
 
 function Page() {
-  return <AceptCarrierPage />
+  return <AceptCarrier />
 }
 
 export default Page;

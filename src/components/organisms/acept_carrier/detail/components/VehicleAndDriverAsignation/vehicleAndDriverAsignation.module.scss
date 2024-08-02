@@ -1,6 +1,7 @@
 @import "@styles/variables.scss";
 
 .wrapper {
+  display: flex;
   flex-direction: column;
   gap: 12px;
   padding: 18px;
@@ -11,8 +12,28 @@
     margin: 4px 0;
   }
   .container {
+    display: flex;
     flex-direction: column;
+    .dropdown {
+      width: 35%;
+      height: 100%;
+      padding: 10px 16px;
+      border: 1px solid #DDDFE8;
+      border-radius: 4px;
+      .dropdownSelect {
+        width: 100%;
+        height: auto;
+        padding: 10px 16px;
+        border: 1px solid #DDDFE8;
+        border-radius: 4px;
+        .left {
+          display: flex;
+          gap: 8px;
+        }
+      }
+    }
     .selector {
+      display: flex;
       justify-content: space-between;
       align-items: center;
       margin: 8px 0;
@@ -33,6 +54,7 @@
       }
     }
     .documentsTop {
+      display: flex;
       justify-content: space-between;
       align-items: center;
       .button {

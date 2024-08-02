@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Flex, Row, Col } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/es-us";
@@ -7,6 +7,7 @@ dayjs.locale("es");
 import { ProviderDetailTravelData } from "@/types/acept_carrier/acept_carrier";
 import styles from "./travelData.module.scss";
 import { formatDatePlane } from "@/utils/utils";
+import mapboxgl from "mapbox-gl";
 
 interface TravelDataProps {
   travelData: ProviderDetailTravelData;
@@ -14,6 +15,94 @@ interface TravelDataProps {
 
 export default function TravelData({ travelData }: TravelDataProps) {
   const mapContainerRef = useRef(null);
+  const destination = useRef<any>([]);
+  const origin = useRef<any>([]);
+  const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/streets-v12");   
+  const [routeGeometry, setRouteGeometry] = useState<any>(null);
+
+  /* MAPBOX */
+  const mapsAccessToken = 'pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA';
+
+  useEffect(() => {
+    if(!mapContainerRef.current) return;
+    
+    mapboxgl.accessToken = mapsAccessToken;
+    const map = new mapboxgl.Map({
+      container: mapContainerRef.current,
+      style: mapStyle,
+      center: {lon:-74.07231699675322, lat:4.66336863727521}, // longitude and latitude
+      zoom: 12,
+      attributionControl: false,
+    });
+    
+    map.on("style.load", () => {
+      // Add the compass control
+      const compassControl = new mapboxgl.NavigationControl({
+        showCompass: true,
+      });
+      map.addControl(compassControl, "top-right");
+
+      // Create a marker at the starting position
+      if(origin){
+        const startMarker = new mapboxgl.Marker()
+          .setLngLat(origin.current)
+          .addTo(map);
+      }
+
+      // Create a marker at the finish position
+      if(destination){
+        const finalMarker = new mapboxgl.Marker()      
+          .setLngLat(destination.current)
+          .addTo(map);
+      }
+
+      if (routeGeometry) {
+        
+        const datajson: GeoJSON.Feature = {
+            type: 'Feature',
+            geometry: routeGeometry,
+            properties: {},
+        };
+
+        map.addSource("route", {
+          type: "geojson",
+          data: datajson
+        });
+
+        map.addLayer({
+          id: "route",
+          type: "line",
+          source: "route",
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-color": "#3FB1CE",
+            "line-width": 6,
+          },
+        });
+      }
+
+      else{
+        // Get the route bounds
+        const bounds = routeGeometry.coordinates.reduce(
+          (bounds:any, coord:any) => bounds.extend(coord),
+          new mapboxgl.LngLatBounds()
+        );
+
+        // Zoom out to fit the route within the map view
+        map.fitBounds(bounds, {
+          padding: 50,
+        });
+      }
+      
+    });
+
+    // return () => {
+    //   map.remove();
+    // };
+  }, [mapStyle, routeGeometry, origin, destination]);
 
   return (
     <Flex vertical className={styles.wrapper}>
