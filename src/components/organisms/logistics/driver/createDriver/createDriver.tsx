@@ -19,6 +19,7 @@ type Props = {
 export const CreateDriverView = ({ params }: Props) => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
+
   const onCreateDriver = async (data: IFormDriver) => {
     data.general.company_id = params.id;
     try {
@@ -57,7 +58,7 @@ export const CreateDriverView = ({ params }: Props) => {
         onSubmitForm={onCreateDriver}
         statusForm={"create"}
         params={params}
-      ></DriverFormTab>
+      />
     </>
   );
 };

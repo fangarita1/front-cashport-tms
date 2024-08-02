@@ -5,8 +5,6 @@ import "../../../../../styles/_variables_logistics.css";
 import "./createVehicle.scss";
 import { VehicleFormTab } from "@/components/molecules/tabs/logisticsForms/vehicleForm/vehicleFormTab";
 import { addVehicle } from "@/services/logistics/vehicle";
-import { IFormVehicle } from "@/types/logistics/schema";
-import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 
 type Props = {
   params: {
@@ -19,25 +17,17 @@ export const CreateVehicleView = ({ params }: Props) => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
 
-  const onCreateVehicle = async (data: IFormVehicle) => {
+  const handleSubmit = async (data: any) => {
     try {
-      console.log(data.general);
-      const response = await addVehicle(
-        data.general,
-        [
-          ...(data.image1 || []),
-          ...(data.image2 || []),
-          ...(data.image3 || []),
-          ...(data.image4 || []),
-          ...(data.image5 || [])
-        ],
-        data.files as DocumentCompleteType[]
-      );
-      console.log(response);
-      if (response.status === 200) {
+        const response = await addVehicle(
+          {...data}, 
+          data.files, 
+          data.images
+        );  
+      if (response && response.status === 200) {
         messageApi.open({
           type: "success",
-          content: "El vehículo fue creado exitosamente."
+          content: `El vehículo fue creado exitosamente.`
         });
         push(`/logistics/providers/${params.id}/vehicle`);
       }
@@ -53,17 +43,16 @@ export const CreateVehicleView = ({ params }: Props) => {
           content: "Oops, hubo un error por favor intenta más tarde."
         });
       }
-    }
+    } 
   };
-
   return (
     <>
       {contextHolder}
       <VehicleFormTab
-        onSubmitForm={onCreateVehicle}
+        onSubmitForm={handleSubmit}
         statusForm={"create"}
         params={params}
-      ></VehicleFormTab>
+      />
     </>
   );
 };

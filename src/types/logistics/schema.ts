@@ -1,5 +1,6 @@
 import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { DocumentCompleteType } from "./certificate/certificate";
+import { ApiVehicleType } from "@/components/molecules/tabs/logisticsForms/driverForm/driverFormTab.mapper";
 
 export interface IListData {
   id: any;
@@ -868,12 +869,41 @@ export interface ILocation {
  * Exposes all fields present in driver as a typescript
  * interface.
  */
-export interface IDriver {
+export interface IAPIDriver {
   id: number;
   phone: number;
   email: string;
   document_type: number;
-  vehicle_type: number[];
+  vehicle_type: ApiVehicleType[];
+  document: string;
+  license: string;
+  license_category: string;
+  licence_category?: string;
+  license_expiration: Date;
+  name: string;
+  last_name: string;
+  emergency_number: number;
+  emergency_contact: string;
+  firebaseguid?: string;
+  active: any;
+  status?: any;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  company: string;
+  rh: string;
+  glasses: any;
+  birth_date: Date;
+  photo?: string;
+  company_id?: string;
+}
+export interface IFormGeneralDriver {
+  id: number;
+  phone: number;
+  email: string;
+  document_type: number;
+  vehicle_type: {label: string, value: number}[];
   document: string;
   license: string;
   license_category: string;
@@ -924,12 +954,9 @@ export interface IVehicle {
   modified_at: Date;
   modified_by: string;
   company: string;
-  image1?: string;
-  image2?: string;
-  image3?: string;
-  image4?: string;
-  image5?: string;
+  images: CustomFile[];
   IS_ACTIVE: boolean;
+  has_gps: boolean
 }
 /**
  * Exposes all fields present in carrier as a typescript
@@ -2137,18 +2164,18 @@ export interface IVehiclesWithDefaults {
 }
 
 export interface IFormDriver {
-  general: IDriver;
+  general: IFormGeneralDriver;
   logo?: FileObject[];
   files?: DocumentCompleteType[];
 }
+export interface CustomFile extends File {
+  url_archive: string;
+  uid?: string
+}
 export interface IFormVehicle {
   general: IVehicle;
-  image1?: FileObject[];
-  image2?: FileObject[];
-  image3?: FileObject[];
-  image4?: FileObject[];
-  image5?: FileObject[];
   files?:  DocumentCompleteType[];
+  images: CustomFile[];
   IS_ACTIVE: boolean;
 }
 export interface IFormCarrier {

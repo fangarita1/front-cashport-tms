@@ -1,6 +1,6 @@
 import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
-import { ICarrier, ICertificates, IDriver, IFormCarrier, IFormDriver } from "@/types/logistics/schema";
+import { ICarrier, ICertificates, IFormCarrier } from "@/types/logistics/schema";
 import { IFormProject } from "@/types/projects/IFormProject";
 import Title from "antd/es/typography/Title";
 import { SetStateAction } from "react";

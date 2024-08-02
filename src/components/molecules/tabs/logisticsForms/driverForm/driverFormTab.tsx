@@ -5,7 +5,6 @@ import {
   Flex,
   Form,
   Row,
-  Select,
   Typography
 } from "antd";
 import { Controller, useForm } from "react-hook-form";
@@ -23,7 +22,6 @@ import {
   dataToProjectFormData,
   validationButtonText,
   DriverFormTabProps,
-  DriverData
 } from "./driverFormTab.mapper";
 import {  IFormDriver, VehicleType } from "@/types/logistics/schema";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
@@ -50,10 +48,11 @@ export const DriverFormTab = ({
   onEditProject = () => {},
   onSubmitForm = () => {},
   statusForm = "review",
-  data = [] as DriverData[],
+  data,
   onActiveProject = () => {},
   onDesactivateProject = () => {},
-  params
+  params,
+  handleFormState = () => {},
 }: DriverFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
@@ -73,10 +72,9 @@ export const DriverFormTab = ({
 
   const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
 
-  const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data[0]);
+  const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data, (vehiclesTypesData?.data as any) || []);
   const {
     watch,
-    setValue,
     getValues,
     control,
     handleSubmit,
@@ -86,8 +84,9 @@ export const DriverFormTab = ({
     defaultValues,
     disabled: statusForm === "review"
   });
+
   const isFormCompleted = () => {
-    return isValid && imageFile
+    return isValid && (imageFile || getValues("general.photo"))
   }
   const isSubmitButtonEnabled = isFormCompleted() && !loading
   /*archivos*/
@@ -99,39 +98,60 @@ export const DriverFormTab = ({
 
   useEffect(() => {
     if (Array.isArray(documentsType)) {
-      if (data[0]?.documents?.length) {
-        const fileSelected =
+      const isFirstLoad = data?.documents?.length && selectedFiles.length === 0 
+      if (isFirstLoad) {
+
+        const docsWithLink =
           documentsType
-            ?.filter((f) => data[0].documents?.find((d) => d.id_document_type === f.id))
+            ?.filter((f) => data.documents?.find((d) => d.id_document_type === f.id))
             .map((f) => ({
               ...f,
-              file: undefined,
-              link: data[0].documents?.find((d) => d.id_document_type === f.id)?.url_archive,
+              file:  undefined,
+              link: data.documents?.find((d) => d.id_document_type === f.id)?.url_archive,
               expirationDate: dayjs(
-                data[0].documents?.find((d) => d.id_document_type === f.id)?.expiration_date
+                data.documents?.find((d) => d.id_document_type === f.id)?.expiration_date
               )
             })) || [];
-        console.log(fileSelected);
-        setSelectedFiles(fileSelected);
+        setSelectedFiles(docsWithLink);
       } else {
-        const fileSelected = documentsType
-          ?.filter(
-            (f) => !f?.optional || selectedFiles?.find((f2) => f2.id === f.id)
-          )
-          ?.map((f) => ({
-            ...f,
-            file: files.find((f2) => f2.aditionalData === f.id)?.file,
-            expirationDate: selectedFiles.find((f2) => f2.id === f.id)?.expirationDate
-          }));
-        console.log(fileSelected);
-        if (fileSelected?.length) {
-          setSelectedFiles([...fileSelected]);
+        
+        const documentsFiltered = documentsType?.filter((f) => !f?.optional || selectedFiles?.find((f2) => f2.id === f.id))
+        const docsWithFile =  documentsFiltered.map((f) => {
+            const prevFile = selectedFiles.find((f2) => f2.id === f.id);
+            return {
+              ...f,
+              link: prevFile?.link || undefined,
+              file: prevFile?.link ? undefined : files.find((f2) => f2.aditionalData === f.id)?.file,
+              expirationDate: prevFile?.expirationDate
+            };
+          });
+        if (docsWithFile?.length) {
+          setSelectedFiles([...docsWithFile]);
         } else {
           setSelectedFiles([]);
         }
       }
     }
   }, [files, documentsType]);
+
+  useEffect(() => {
+    if (statusForm === "review"){
+      if (Array.isArray(documentsType)) {
+          const docsWithLink =
+            documentsType
+              ?.filter((f) => data?.documents?.find((d) => d.id_document_type === f.id))
+              .map((f) => ({
+                ...f,
+                file:  undefined,
+                link: data?.documents?.find((d) => d.id_document_type === f.id)?.url_archive,
+                expirationDate: dayjs(
+                  data?.documents?.find((d) => d.id_document_type === f.id)?.expiration_date
+                )
+              })) || [];
+          setSelectedFiles(docsWithLink);
+      }
+    }
+  }, [statusForm]);
 
   const convertToSelectOptions = (vehicleTypes: VehicleType[]) => {
     if (!Array.isArray(vehicleTypes)) return [];
@@ -153,12 +173,17 @@ export const DriverFormTab = ({
     const sf = documentsType?.filter((file) => value.includes(file.id.toString()));
     if (sf) {
       setSelectedFiles((prevState) => {
-        return sf.map((file) => ({
-          ...file,
-          file: prevState.find((f) => f.id === file.id)?.file,
-          expirationDate: prevState.find((f) => f.id === file.id)?.expirationDate
-        }));
+        return sf.map((file) => {
+          const prevFile = prevState.find((f) => f.id === file.id);
+          return {
+            ...file,
+            file: prevFile?.link ? undefined : prevFile?.file,
+            link: prevFile?.link || undefined,
+            expirationDate: prevFile?.expirationDate
+          };
+        });
       });
+      
     }
   };
 
@@ -170,12 +195,11 @@ export const DriverFormTab = ({
     data.general.vehicle_type = data.general.vehicle_type.map((v:any)=>v.value)
     _onSubmit(
       data,
-      setLoading,
-      setImageError,
-      imageFile ? [{ docReference: "imagen", file: imageFile }] : undefined,
       selectedFiles,
+      imageFile ? [{ docReference: "imagen", file: imageFile }] : undefined,
+      setImageError,
+      setLoading,
       onSubmitForm,
-      reset
     );
   };
 
@@ -208,22 +232,36 @@ export const DriverFormTab = ({
                 <ArrowsClockwise size={"1.2rem"} />
               </Button>
             )}
-            {statusForm === "review" ? (
-              <Button
-                className="buttons -edit"
-                htmlType="button"
-                disabled={statusForm === "review"} 
-                onClick={(e) => {
-                  e.preventDefault();
-                  onEditProject();
-                }}
-              >
-                {validationButtonText(statusForm)}
-                <Pencil size={"1.2rem"} />
-              </Button>
-            ) : (
-              ""
-            )}
+              {statusForm === "review" ? (
+                <Button
+                  className="buttons -edit"
+                  htmlType="button"
+                  onClick={(e) => {
+                    handleFormState("edit")
+                    e.preventDefault();
+                  }}
+                >
+                  {validationButtonText(statusForm)}
+                  <Pencil size={"1.2rem"} />
+                </Button>
+              ) : (
+                ""
+              )}
+              {statusForm === "edit" ? (
+                <Button
+                  className="buttons -edit"
+                  htmlType="button"
+                  onClick={(e) => {
+                    handleFormState("review")
+                    e.preventDefault();
+                    reset()
+                  }}
+                >
+                  {"Cancelar edición"}
+                </Button>
+              ) : (
+                ""
+              )}
           </Flex>
         </Flex>
         <Flex component={"main"} flex="1" vertical style={{paddingRight: "1rem"}}>
@@ -426,9 +464,6 @@ export const DriverFormTab = ({
                       title="Vehículos que está autorizados a manejar"
                       errors={errors?.general?.vehicle_type}
                       options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
-                      defaultValue={getValues("general.vehicle_type")?.map((i: any) =>
-                        i.id_vehicle_type?.toString()
-                      )}
                       disabled={statusForm === "review"} 
                     />
                   }
@@ -474,7 +509,7 @@ export const DriverFormTab = ({
                 </Title>
               </Col>
               <Col span={8} offset={8} style={{display: "flex", justifyContent: "flex-end"}}>
-                {statusForm === "create" && (
+                {(statusForm === "create" || statusForm === "edit" ) && (
                   <LoadDocumentsButton 
                     text="Cargar documentos" 
                     onClick={() => setIsOpenModalDocuments(true)}
@@ -533,6 +568,7 @@ export const DriverFormTab = ({
         onClose={() => setIsOpenModalDocuments(false)}
         handleChange={handleChange}
         handleChangeExpirationDate={handleChangeExpirationDate}
+        setSelectedFiles={setSelectedFiles}
       />
     </>
   );

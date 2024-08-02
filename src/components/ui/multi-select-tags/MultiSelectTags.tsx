@@ -45,13 +45,12 @@ const MultiSelectTags = <T extends FieldValues>({
 
   useEffect(() => {
     if (field.value) {
-      if(selectedOptions.length===0){
         const newSelectedOptions = options?.filter(option =>
-          field.value.some((selected: any) => selected.id_vehicle_type === option.value)
+          field.value.some((selected: any) => selected.value === option.value)
         ) || [];
         setSelectedOptions(newSelectedOptions);
       }
-    }
+    
   }, [field.value, options]);
 
   const handleChange = (value: OptionType[]) => {

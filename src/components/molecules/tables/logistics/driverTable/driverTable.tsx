@@ -6,7 +6,7 @@ import { DotsThree, Eye, Plus, Triangle } from "phosphor-react";
 
 import "./driverTable.scss";
 import UiSearchInput from "@/components/ui/search-input";
-import { IDriver } from "@/types/logistics/schema";
+import { IDrivers } from "@/types/logistics/schema";
 import { getAllDrivers } from "@/services/logistics/drivers";
 import Link from "next/link";
 import useSWR from "swr";
@@ -33,7 +33,7 @@ export const DriverTable = ({ params: { id } }: Props) => {
     setPage(pagePagination);
   };
 
-  const columns: TableProps<IDriver>["columns"] = [
+  const columns: TableProps<IDrivers>["columns"] = [
     {
       title: "Empresa",
       dataIndex: "company",

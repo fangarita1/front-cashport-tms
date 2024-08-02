@@ -3,14 +3,15 @@ import {
   FileObject,
   UploadDocumentButton
 } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
-import { CertificateType } from "@/types/logistics/certificate/certificate";
+import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
+import { CertificateType, DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 import { Col, DatePicker, Flex, Modal, Row, Select, Spin, Switch, Typography } from "antd";
 import { X } from "phosphor-react";
 
 const { Title } = Typography;
 
 type PropsModalDocuments = {
-  mockFiles: (CertificateType & { expirationDate: any })[];
+  mockFiles: DocumentCompleteType[];
   setFiles: React.Dispatch<React.SetStateAction<any[] | FileObject[]>>;
   documentsType?: CertificateType[];
   isLoadingDocuments: boolean;
@@ -22,6 +23,7 @@ type PropsModalDocuments = {
   handleChangeExpirationDate: (index: number, value: any) => void;
   showExpiry?: boolean;
   allOptional?: boolean;
+  setSelectedFiles?: React.Dispatch<React.SetStateAction<DocumentCompleteType[]>>
 };
 
 const calculateExpirate = (expiry?: boolean) => {
@@ -37,6 +39,7 @@ const calculateExpirate = (expiry?: boolean) => {
 export default function ModalDocuments(props: PropsModalDocuments) {
   const {
     mockFiles,
+    setSelectedFiles,
     setFiles,
     documentsType,
     isLoadingDocuments,
@@ -47,6 +50,7 @@ export default function ModalDocuments(props: PropsModalDocuments) {
     showExpiry = true,
     allOptional = false
   } = props;
+
   return (
     <Modal
       title="Cargar documentos adicionales"
@@ -66,14 +70,41 @@ export default function ModalDocuments(props: PropsModalDocuments) {
         <Row style={{ width: "100%" }} justify="space-between">
           <Col span={24}>
             <Row style={{ width: "100%", marginBottom: "1rem" }}>
-              {mockFiles.map((file, index) => (
+              {mockFiles.map((file, index) =>{
+                return(
                 <Col key={file.id} style={{ width: "100%", margin: "1rem 0" }}>
-                  <UploadDocumentButton
-                    title={file.description}
-                    isMandatory={!file.optional}
-                    aditionalData={file.id}
-                    setFiles={setFiles}
-                  />
+                  {file.link ?
+                    <UploadDocumentButton
+                      key={file.id}
+                      title={file.description}
+                      isMandatory={!file.optional}
+                      aditionalData={file.id}
+                      setFiles={() => {}}
+                      files={file.file}
+                      disabled
+                    >
+                      <UploadDocumentChild
+                        linkFile={file.link}
+                        nameFile={file.link.split("-").pop() ?? ""}
+                        showTrash={true}
+                        onDelete={() => {
+                          setSelectedFiles && setSelectedFiles((currentFiles) => {
+                            return currentFiles.map((cf) =>
+                              cf.id === file.id ? { ...cf,  link:undefined } : cf
+                            );
+                          })
+                        }}
+                      />
+                    </UploadDocumentButton>
+                    :
+                    <UploadDocumentButton
+                      key={file.id}
+                      title={file.description}
+                      isMandatory={!file.optional}
+                      aditionalData={file.id}
+                      setFiles={setFiles}
+                    />
+                  }
                   {showExpiry && (
                     <Row justify="end" align="middle" style={{ gap: "10px" }}>
                       <p style={{ fontSize: "12px" }}>
@@ -96,7 +127,7 @@ export default function ModalDocuments(props: PropsModalDocuments) {
                     </Row>
                   )}
                 </Col>
-              ))}
+              )})}
             </Row>
           </Col>
           <Col span={24}>

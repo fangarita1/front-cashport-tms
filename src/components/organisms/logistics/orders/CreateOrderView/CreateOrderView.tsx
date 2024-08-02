@@ -488,7 +488,7 @@ export const CreateOrderView = () => {
     const result:any = [];
     //console.log (res);
     if(res.data.data.length > 0){
-      res.data.data.forEach((item) => {
+      res.data.data.forEach((item) => {        
         const strlabel = <div
                           style={{
                             display: 'flex',
@@ -549,13 +549,31 @@ export const CreateOrderView = () => {
 
   const addMaterial = async (value:any) =>{
     cargaIdx = cargaIdx + 1;
+    console.log(cargaIdx);
     
     value.quantity = 1;
     value.key = cargaIdx;
 
     const newvalue : IMaterial = value;
-    //console.log(newvalue);
-    await setDataCarga(dataCarga => [...dataCarga, newvalue]);
+    //busca si ya se selecciono previamente
+    let newData:IMaterial[] = [];
+    setDataCarga((prevdata)=>{
+      newData =[...prevdata];
+      return prevdata;
+    })
+    let found = false;
+    newData.forEach(item => {
+      if(item.id === newvalue.id){
+        item.quantity = item.quantity + 1;
+        found = true;
+      }
+    });    
+
+    if(found){
+      setDataCarga(newData);
+    }else{
+      setDataCarga(dataCarga => [...dataCarga, newvalue]);
+    }
 
     setSelectedMaterial(null);
   };
@@ -1586,6 +1604,7 @@ export const CreateOrderView = () => {
                   placeholder="Buscar material"                  
                   className="certain-category-search-dropdown"
                   style={{ width:'400px' }}
+                  dropdownStyle={{ width:'600px'}}
                   optionFilterProp="children"
                   value={selectedMaterial}
                   filterOption={(input, option) =>                    
@@ -1594,7 +1613,7 @@ export const CreateOrderView = () => {
                 >
                   { optionsMaterial.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
                 </Select>
-              <Table columns={columnsCarga} dataSource={dataCarga} />
+              <Table columns={columnsCarga} dataSource={dataCarga} rowKey={'id'}/>
               </>
             }
             { typeactive == "3" &&
