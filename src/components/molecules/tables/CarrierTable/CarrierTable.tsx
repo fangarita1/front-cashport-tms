@@ -6,15 +6,17 @@ import { Button, Flex, Table, TableProps, Typography } from "antd";
 import { Radioactive } from "@phosphor-icons/react";
 import { ICarriersRequestList } from "@/types/logistics/schema";
 import Link from "next/link";
+import { useProjects } from "@/hooks/useProjects";
 
 const { Text } = Typography;
 
 interface PropsCarrierTable {
   carrierData: ICarriersRequestList[];
   setSelectedRows: Dispatch<SetStateAction<any[] | undefined>>;
+  loading: boolean;
 }
 
-export default function CarrierTable({ carrierData: data, setSelectedRows }: PropsCarrierTable) {
+export default function CarrierTable({ carrierData: data, setSelectedRows, loading }: PropsCarrierTable) {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
@@ -34,7 +36,7 @@ export default function CarrierTable({ carrierData: data, setSelectedRows }: Pro
       key: "id",
       render: (id) => (
         <Link
-          href={`/logistics/requests/${id}`}
+          href={`/logistics/acept_carrier/${id}`}
           style={{ color: "blue", textDecorationLine: "underline" }}
         >
           {id}
@@ -89,33 +91,27 @@ export default function CarrierTable({ carrierData: data, setSelectedRows }: Pro
     {
       title: "Vehículo(s)",
       key: "vehicle",
-      dataIndex: "service_type",
+      dataIndex: "vehicles",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => a.service_type.localeCompare(b.service_type),
+      sorter: (a, b) => a.vehicles.localeCompare(b.vehicles),
       showSorterTooltip: false
     },
     {
       title: "Tiempo transcurido",
       key: "timeTraveled",
-      dataIndex: ["start_date", "end_date"],
-      render: (text, record) => (
-        <Text>
-          {(
-            new Date(record.start_date.split("/").reverse().join("-") + "T05:30:00").getTime() -
-            new Date(record.end_date.split("/").reverse().join("-") + "T05:30:00").getTime() /
-              (1000 * 60)
-          ).toLocaleString()}
-        </Text>
+      dataIndex: "elapsedTime",
+      render: (text) => (
+        <Text>{text}</Text>
       ),
-      sorter: (a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime(),
+      sorter: (a, b) => a.elapsedtime - b.elapsedtime,
       showSorterTooltip: false
     },
     {
       title: "Valor",
       key: "value",
-      dataIndex: "value",
-      render: (amount) => <Text>{formatMoney(6000000)}</Text>,
-      sorter: (a, b) => a.id_end_location - b.id_end_location,
+      dataIndex: "amount",
+      render: (amount) => <Text>{formatMoney(amount)}</Text>,
+      sorter: (a, b) => a.amount - b.amount,
       showSorterTooltip: false,
       align: "right"
     },
@@ -135,7 +131,7 @@ export default function CarrierTable({ carrierData: data, setSelectedRows }: Pro
           {/*{record.eyeIcon && (
             <Link href={`/aceptacion_de_proveedores/${invoiceId}`}><Button style={{ backgroundColor: "#F7F7F7" }} icon={<Eye size={"1.3rem"} />} /></Link>
           )}*/}
-          <Link href={`/logistics/requests/${invoiceId}`}>
+          <Link href={`/logistics/acept_carrier/${invoiceId}`}>
             <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Eye size={"1.3rem"} />} />
           </Link>
         </Flex>
@@ -152,6 +148,7 @@ export default function CarrierTable({ carrierData: data, setSelectedRows }: Pro
         rowSelection={rowSelection}
         rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
         pagination={false}
+        loading={loading}
       />
     </>
   );

@@ -6,62 +6,94 @@ import "dayjs/locale/es-us";
 dayjs.locale("es");
 import { ProviderDetailTravelData } from "@/types/acept_carrier/acept_carrier";
 import styles from "./travelData.module.scss";
-import { formatDatePlane } from "@/utils/utils";
 import mapboxgl from "mapbox-gl";
+import { IMaterial, ITransferRequestDetail } from "@/types/logistics/schema";
+import { formatDatePlaneWithoutComma } from "@/utils/utils";
 
 interface TravelDataProps {
-  travelData: ProviderDetailTravelData;
+  travelData: ITransferRequestDetail | undefined;
 }
 
 export default function TravelData({ travelData }: TravelDataProps) {
-  const mapContainerRef = useRef(null);
-  const destination = useRef<any>([]);
+  /* Agendamiento */
   const origin = useRef<any>([]);
-  const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/streets-v12");   
-  const [routeGeometry, setRouteGeometry] = useState<any>(null);
+  const destination = useRef<any>([]);
 
   /* MAPBOX */
-  const mapsAccessToken = 'pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA';
+  const [routeGeometry, setRouteGeometry] = useState<any>(null);
+  const [routeInfo, setRouteInfo] = useState([]);
+  const [distance, setDistance] = useState<any>(null);
+  const [timetravel, setTimeTravel] = useState<any>(null);
+  const mapContainerRef = useRef(null);
+  const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/streets-v12");
+
+  /* MAPBOX */
+  const mapsAccessToken =
+    "pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA";
 
   useEffect(() => {
-    if(!mapContainerRef.current) return;
-    
+    loadTravelData();
+  }, [])
+
+  const loadTravelData = async () => {
+    if (travelData !== undefined) {
+      origin.current = [
+        travelData?.start_location?.longitude,
+        travelData?.start_location?.latitude
+      ];
+      destination.current = [
+        travelData?.end_location?.longitude,
+        travelData?.end_location?.latitude
+      ];
+      const routes = travelData?.geometry;
+      setRouteInfo(routes);
+      // Check if any routes are returned
+      if (routes != undefined) {
+        const { distance, duration, geometry } = routes[0];
+        setRouteGeometry(geometry); // Set the route geometry
+        setDistance(parseFloat((distance / 1000).toFixed(2)) + " Km");
+        var date = new Date();
+        date.setSeconds(duration);
+        var hrs = date.toISOString().substr(11, 5);
+        setTimeTravel(hrs);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!mapContainerRef.current) return;
+
     mapboxgl.accessToken = mapsAccessToken;
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: mapStyle,
-      center: {lon:-74.07231699675322, lat:4.66336863727521}, // longitude and latitude
+      center: { lon: -74.07231699675322, lat: 4.66336863727521 }, // longitude and latitude
       zoom: 12,
-      attributionControl: false,
+      attributionControl: false
     });
-    
+
     map.on("style.load", () => {
       // Add the compass control
       const compassControl = new mapboxgl.NavigationControl({
-        showCompass: true,
+        showCompass: true
       });
       map.addControl(compassControl, "top-right");
 
       // Create a marker at the starting position
-      if(origin){
-        const startMarker = new mapboxgl.Marker()
-          .setLngLat(origin.current)
-          .addTo(map);
+      if (origin) {
+        const startMarker = new mapboxgl.Marker().setLngLat(origin.current).addTo(map);
       }
 
       // Create a marker at the finish position
-      if(destination){
-        const finalMarker = new mapboxgl.Marker()      
-          .setLngLat(destination.current)
-          .addTo(map);
+      if (destination) {
+        const finalMarker = new mapboxgl.Marker().setLngLat(destination.current).addTo(map);
       }
 
       if (routeGeometry) {
-        
         const datajson: GeoJSON.Feature = {
-            type: 'Feature',
-            geometry: routeGeometry,
-            properties: {},
+          type: "Feature",
+          geometry: routeGeometry,
+          properties: {}
         };
 
         map.addSource("route", {
@@ -75,28 +107,25 @@ export default function TravelData({ travelData }: TravelDataProps) {
           source: "route",
           layout: {
             "line-join": "round",
-            "line-cap": "round",
+            "line-cap": "round"
           },
           paint: {
             "line-color": "#3FB1CE",
-            "line-width": 6,
-          },
+            "line-width": 6
+          }
         });
-      }
-
-      else{
+      } else {
         // Get the route bounds
         const bounds = routeGeometry.coordinates.reduce(
-          (bounds:any, coord:any) => bounds.extend(coord),
+          (bounds: any, coord: any) => bounds.extend(coord),
           new mapboxgl.LngLatBounds()
         );
 
         // Zoom out to fit the route within the map view
         map.fitBounds(bounds, {
-          padding: 50,
+          padding: 50
         });
       }
-      
     });
 
     // return () => {
@@ -104,10 +133,12 @@ export default function TravelData({ travelData }: TravelDataProps) {
     // };
   }, [mapStyle, routeGeometry, origin, destination]);
 
+  console.log("distance:", distance, "timeTravel:", timetravel);
+
   return (
     <Flex vertical className={styles.wrapper}>
       <Flex className={styles.top}>
-        <Flex style={{marginBottom: "28px"}}>
+        <Flex style={{ marginBottom: "28px" }}>
           <h3>Datos del viaje</h3>
         </Flex>
       </Flex>
@@ -132,16 +163,16 @@ export default function TravelData({ travelData }: TravelDataProps) {
                 </Col>
                 <Col span={12} className={styles.values}>
                   <p>
-                    <label>{travelData.totalDistance} km</label>
+                    <label>{distance} km</label>
                   </p>
                   <p>
-                    <label>{travelData.estimatedTime} h</label>
+                    <label>{timetravel} h</label>
                   </p>
                   <p>
-                    <label>{travelData.volume}</label>
+                    <label>00</label>
                   </p>
                   <p>
-                    <label>{travelData.weight}</label>
+                    <label>00</label>
                   </p>
                 </Col>
               </Row>
@@ -156,7 +187,7 @@ export default function TravelData({ travelData }: TravelDataProps) {
                 <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                   <p style={{ paddingTop: "1rem" }}>
                     <label>
-                      <b>{travelData.travelType}</b>
+                      <b>{travelData?.service_type}</b>
                     </label>
                   </p>
                 </Col>
@@ -167,15 +198,13 @@ export default function TravelData({ travelData }: TravelDataProps) {
               <Row>
                 <Col span={12} style={{ paddingTop: "0.5rem" }}>
                   <p style={{ paddingTop: "1rem" }}>
-                    <label>
                       <b>Punto Origen</b>
-                    </label>
                   </p>
                 </Col>
                 <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                   <p style={{ paddingTop: "0.5rem" }}>
                     <label>
-                      <b>{travelData.startPoint}</b>
+                      <b>{travelData?.start_location?.description}</b>
                     </label>
                   </p>
                 </Col>
@@ -194,7 +223,7 @@ export default function TravelData({ travelData }: TravelDataProps) {
                 <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                   <p style={{ paddingTop: "0.5rem" }}>
                     <label>
-                      <b>{travelData.endPoint}</b>
+                      <b>{travelData?.end_location?.description}</b>
                     </label>
                   </p>
                 </Col>
@@ -213,13 +242,15 @@ export default function TravelData({ travelData }: TravelDataProps) {
                 <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                   <p style={{ paddingTop: "1rem" }}>
                     <label>
-                      <b>{travelData.initialTime} h</b>
+                      <b>{travelData?.start_date?.split(" ")[1]}</b>
                     </label>
                   </p>
                   <p style={{ paddingTop: "0.5rem" }}>
-                    <label>
-                      <b>{formatDatePlane(new Date(travelData.initialDate).toLocaleString())}</b>
-                    </label>
+                      {travelData?.start_date ? (
+                        <b>{formatDatePlaneWithoutComma(travelData?.start_date?.split(" ")[0])}</b>
+                      ) : (
+                        <p>No date</p>
+                      )}
                   </p>
                 </Col>
                 <Col span={24} style={{ paddingTop: "1rem" }}>
@@ -229,21 +260,19 @@ export default function TravelData({ travelData }: TravelDataProps) {
               <Row>
                 <Col span={12} style={{ paddingTop: "0.5rem" }}>
                   <p style={{ paddingTop: "1rem" }}>
-                    <label>
-                      <b>Fecha y hora final</b>
-                    </label>
+                      <label><b>Fecha y hora final</b></label>
                   </p>
                 </Col>
                 <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                   <p style={{ paddingTop: "1rem" }}>
-                    <label>
-                      <b>{travelData.endTime} h</b>
-                    </label>
+                      <label><b>{travelData?.end_date?.split(" ")[1]} h</b></label>
                   </p>
                   <p style={{ paddingTop: "0.5rem" }}>
-                    <label>
-                      <b>{formatDatePlane(new Date(travelData.endDate).toLocaleString())}</b>
-                    </label>
+                      {travelData?.end_date ? (
+                        <b>{formatDatePlaneWithoutComma(travelData?.end_date?.split(" ")[0])}</b>
+                      ) : (
+                        <p>No date</p>
+                      )}
                   </p>
                 </Col>
               </Row>

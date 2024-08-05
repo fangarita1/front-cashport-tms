@@ -177,6 +177,17 @@ export const formatDatePlane = (date: string): string => {
 
   return `${day} ${month}, ${year}`;
 };
+
+export const formatDatePlaneWithoutComma = (date: string): string => {
+  const [day, month, year] = date.split('/');
+  const formattedDate = new Date(`${year}-${month}-${day}`);
+  const formattedYear = formattedDate.getFullYear();
+  const formattedMonth = formattedDate.toLocaleString("es-ES", { month: "long" });
+  const formattedDay = formattedDate.getDate();
+
+  return `${formattedDay} ${formattedMonth}, ${formattedYear}`;
+};
+
 export function daysLeft(dateString: string): number {
   const today = new Date();
   const expirationDate = new Date(dateString);

@@ -233,6 +233,35 @@ export interface ICarrierByGroupWithDefaults {
   modified_by?: string | null;
 }
 /**
+ * Exposes all fields present in carrier_driver as a typescript
+ * interface.
+ */
+export interface ICarrierDriver {
+  id: number;
+  phone: number;
+  email: string;
+  document_type: number;
+  document: string;
+  license: string;
+  license_categorie: string;
+  license_expiration: Date;
+  name: string;
+  last_name: string;
+  emergency_number: number;
+  emergency_contact: string;
+  firebaseguid?: string;
+  active: boolean;
+  rh: string;
+  glasses: boolean;
+  birth_date: Date;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+  vehicle_type: number[];
+  company_id?: number;
+}
+/**
  * Exposes all fields present in carrier_drivers as a typescript
  * interface.
  */
@@ -416,6 +445,28 @@ export interface ICarrierRequestWithDefaults {
   modified_at?: Date | null;
   modified_by?: string | null;
 }
+export interface ICarrierVehicleDetail {
+  active: boolean;
+  aditional_info: string;
+  brand: string;
+  color: string;
+  country: string;
+  created_at: string;
+  created_by: string;
+  gps_link: string;
+  gps_password: string;
+  gps_user: string;
+  has_gps: boolean;
+  id: number;
+  id_carrier: number;
+  id_vehicle_type: number;
+  line: string;
+  model: string;
+  modified_at: string;
+  modified_by: string;
+  plate_number: string;
+  year: number;
+}
 /**
  * Exposes all fields present in carrier_vehicles_contracts as a typescript
  * interface.
@@ -505,37 +556,23 @@ export interface ICarriersWithDefaults {
  * interface.
  */
 export interface ICarriersRequestList {
-  color: string
-  created_at: string
-  created_by: string
-  end_date: string
-  end_location: string
-  id: number
-  id_end_location: number
-  id_service_type: number
-  id_start_location: number
-  service_type: string
-  start_date: string
-  start_location: string
-  status: string
-  statusdesc: string
-}
-/**
- * Exposes all fields present in certificates as a typescript
- * interface.
- */
-export interface ICarrierRequestDetail {
-  id: number,
-  description: string,
-  nit: string,
-  icon: string,
-  active: boolean,
-  created_at: string,
-  created_by: string,
-  modified_at: string,
-  modified_by: string,
-  id_carrier_type: null,
-  documents: []
+  color: string;
+  created_at: string;
+  created_by: string;
+  end_date: string;
+  end_location: string;
+  id: number;
+  id_end_location: number;
+  id_service_type: number;
+  id_start_location: number;
+  service_type: string;
+  start_date: string;
+  start_location: string;
+  status: string;
+  statusdesc: string;
+  vehicles: string;
+  elapsedtime: number;
+  amount: number;
 }
 /**
  * Exposes all fields present in certificates as a typescript
@@ -700,14 +737,16 @@ export interface IContractsTypesWithDefaults {
  */
 export interface IDriverByCarrierRequest {
   id: number;
+  id_transfer_request: number;
   id_driver: number;
   id_vehicle: number;
   created_at: Date;
   created_by: string;
   modified_at?: Date | null;
   modified_by?: string | null;
+  driver: ICarrierDriver;
+  vehicle: ICarrierVehicleDetail;
 }
-
 /**
  * Exposes the same fields as DriverByCarrierRequest,
  * but makes every field containing a DEFAULT value optional.
@@ -903,7 +942,7 @@ export interface IFormGeneralDriver {
   phone: number;
   email: string;
   document_type: number;
-  vehicle_type: {label: string, value: number}[];
+  vehicle_type: { label: string; value: number }[];
   document: string;
   license: string;
   license_category: string;
@@ -956,7 +995,7 @@ export interface IVehicle {
   company: string;
   images: CustomFile[];
   IS_ACTIVE: boolean;
-  has_gps: boolean
+  has_gps: boolean;
 }
 /**
  * Exposes all fields present in carrier as a typescript
@@ -1037,6 +1076,7 @@ export interface ILocationByGrouplocationWithDefaults {
  * interface.
  */
 export interface IMaterial {
+  concat(material: IMaterial[] | undefined): IMaterial;
   key: number;
   id: number;
   description: string;
@@ -1044,7 +1084,7 @@ export interface IMaterial {
   kg_weight: number;
   mt_height: number;
   mt_width: number;
-  mt_length?: number | null;
+  mt_length: number;
   m3_volume: number;
   rotation: string;
   can_stack: string;
@@ -1143,7 +1183,7 @@ export interface ITransferOrderOtherRequirements {
   created_by: string;
   modified_at: Date;
   modified_by: string;
-  other_requirement_desc: string;  
+  other_requirement_desc: string;
 }
 
 export interface ITransferOrderVehicle {
@@ -1155,7 +1195,7 @@ export interface ITransferOrderVehicle {
   created_by: string | null | undefined;
   modified_at: Date;
   modified_by: string;
-  vehicle_type_desc: string;  
+  vehicle_type_desc: string;
 }
 
 export interface ITransferOrderMaterial {
@@ -1167,7 +1207,7 @@ export interface ITransferOrderMaterial {
   created_by: string | null | undefined;
   modified_at: Date;
   modified_by: string;
-  material? : IMaterial[];
+  material?: IMaterial[];
 }
 
 export interface ISubsidiary {
@@ -1209,7 +1249,7 @@ export interface ITransferOrder {
   id_route: string;
   id_company: number;
   id_client: number;
-  client_desc: string;  
+  client_desc: string;
   status: string;
   active: string;
   created_at?: string | null | undefined;
@@ -1217,8 +1257,8 @@ export interface ITransferOrder {
   modified_at?: string | null | undefined;
   modified_by?: string | null | undefined;
   observation: string | null | undefined;
-  start_location?: ILocation| null | undefined;
-  end_location?: ILocation| null | undefined;
+  start_location?: ILocation | null | undefined;
+  end_location?: ILocation | null | undefined;
   //geometry
   geometry: any;
   //datos de contacto
@@ -1256,9 +1296,9 @@ export interface ITransferOrderList {
   end_location: string;
   status: string;
   created_at: string;
-  created_by: string;  
-  time: string;  
-  amount: string;  
+  created_by: string;
+  time: string;
+  amount: string;
 }
 
 /**
@@ -1369,7 +1409,7 @@ export interface ITransferOrderCostCenter {
   id_transfer_order: number;
   id_psl: number;
   id_costcenter: number;
-  cost_center_desc: string;  
+  cost_center_desc: string;
   percentage: number;
   active: string;
   created_at: Date;
@@ -1404,7 +1444,7 @@ export interface ITransferOrderDocuments {
   id: number;
   id_transfer_order: number;
   id_document_type: number;
-  document_type_desc:string;  
+  document_type_desc: string;
   url_document: string;
   status: string;
   active: string;
@@ -1414,7 +1454,9 @@ export interface ITransferOrderDocuments {
   modified_by?: string | null;
 }
 
-export type TransferOrderDocumentType = ITransferOrderDocuments & { file: File | undefined } & { expirationDate: any } & { link?: string } & { description: any };
+export type TransferOrderDocumentType = ITransferOrderDocuments & { file: File | undefined } & {
+  expirationDate: any;
+} & { link?: string } & { description: any };
 
 /**
  * Exposes the same fields as TransferOrderDocuments,
@@ -1485,7 +1527,7 @@ export interface ITransferOrderProducts {
   created_by: string | null | undefined;
   modified_at?: Date | null;
   modified_by?: string | null;
-  product_desc: string;  
+  product_desc: string;
 }
 
 /**
@@ -1528,6 +1570,61 @@ export interface ITransferRequest {
   modified_at?: Date | null;
   modified_by?: string | null;
   id_user: number;
+}
+/**
+ * Exposes all fields present in transfer_request_detail as a typescript
+ * interface.
+ */
+export interface ITransferRequestDetail {
+  id: number;
+  id_service_type: string;
+  service_type: string;
+  id_user: number;
+  user: string | null | undefined;
+  id_start_location: number;
+  id_end_location: number;
+  start_date?: string;
+  end_date?: string;
+  start_freight_equipment: string;
+  end_freight_equipment: string;
+  rotation: string;
+  start_date_flexible: number;
+  end_date_flexible: number;
+  id_route: string;
+  id_company: number;
+  id_client: number;
+  client_desc: string;
+  status: string;
+  active: string;
+  vehicles: string;
+  amount: string;
+  created_at?: string | null | undefined;
+  created_by?: string | null | undefined;
+  modified_at?: string | null | undefined;
+  modified_by?: string | null | undefined;
+  observation: string | null | undefined;
+  start_location?: ILocation | null | undefined;
+  end_location?: ILocation | null | undefined;
+  //geometry
+  geometry: any;
+  //datos de conductores
+  driver_by_carrier_request?: IDriverByCarrierRequest[] | null;
+  //datos de contacto
+  transfer_request_contacts?: ITransferRequestContacts[] | null;
+  //centros de costo
+  transfer_request_cost_center?: ITransferRequestCostCenter[] | null;
+  //documentos
+  transfer_request_documents?: ITransferRequestDocuments[] | null;
+  //material
+  transfer_request_material?: ITransferRequestMaterial[] | null;
+  //requerimientos adicionales
+  transfer_request_other_requeriments?: ITransferRequestOtherRequirements[] | null;
+  //personas -- aplica para viaje tipo persona
+  transfer_request_persons?: ITransferRequestPersons[] | null;
+  //productos
+  transfer_request_products?: ITransferRequestProducts[] | null;
+  //vehiculo sugerido
+  transfer_request_vehicles_sugest?: ITransferRequestVehicle[] | null;
 }
 
 /**
@@ -1646,6 +1743,39 @@ export interface ITransferRequestDocuments {
   modified_at?: Date | null;
   modified_by?: string | null;
   id_transfer_request: number;
+  document_type_desc: string;
+}
+/**
+ * Exposes all fields present in transfer_request_material as a typescript
+ * interface.
+ */
+export interface ITransferRequestMaterial {
+  concat: any;
+  id: number;
+  id_transfer_order: number;
+  id_material: number;
+  quantity: number;
+  created_at: Date;
+  created_by: string | null | undefined;
+  modified_at: Date;
+  modified_by: string;
+  material?: IMaterial[];
+}
+/**
+ * Exposes all fields present in transfer_request_other_requirements as a typescript
+ * interface.
+ */
+export interface ITransferRequestOtherRequirements {
+  key: number;
+  id: number;
+  id_transfer_order: number;
+  id_other_requeriments: number;
+  quantity: number;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+  other_requirement_desc: string;
 }
 
 /**
@@ -1722,7 +1852,43 @@ export interface ITransferRequestProducts {
   modified_by?: string | null;
   id_transfer_request: number;
 }
-
+/**
+ * Exposes all fields present in transfer_request_materials as a typescript
+ * interface.
+ */
+export interface ITransferRequestMaterials {
+  active: boolean;
+  aditional_info: string;
+  can_stack: boolean;
+  created_at: string;
+  created_by: string;
+  description: string;
+  icon: string;
+  id: number;
+  id_type_material: number;
+  image: string;
+  kg_weight: number;
+  m3_volume: number;
+  modified_at: null;
+  modified_by: null;
+  mt_height: number;
+  mt_length: number;
+  mt_width: number;
+  restriction: boolean;
+  rotation: boolean;
+}
+/**
+ * Exposes all fields present in transfer_request_vehicle as a typescript
+ * interface.
+ */
+export interface ITransferRequestVehicle {
+  id: number;
+  id_transfer_order: number;
+  id_transfer_request: number;
+  id_vehicle_type: number;
+  units: number;
+  vehicle_type: IVehicleType;
+}
 /**
  * Exposes the same fields as TransferRequestProducts,
  * but makes every field containing a DEFAULT value optional.
@@ -2078,6 +2244,7 @@ export interface IVehicleType {
   icon: string;
   image: string;
   quantity: number;
+  plate_number: number;
 }
 
 /**
@@ -2170,11 +2337,11 @@ export interface IFormDriver {
 }
 export interface CustomFile extends File {
   url_archive: string;
-  uid?: string
+  uid?: string;
 }
 export interface IFormVehicle {
   general: IVehicle;
-  files?:  DocumentCompleteType[];
+  files?: DocumentCompleteType[];
   images: CustomFile[];
   IS_ACTIVE: boolean;
 }
@@ -2264,7 +2431,3 @@ export interface VihicleDetail {
   documents: any[];
   images: any[];
 }
-
-
-
-

@@ -2,17 +2,20 @@
 import { Button, Col, Flex, Row, Table, TableProps, Typography } from "antd";
 import { ProviderDetailMaterials } from "@/types/acept_carrier/acept_carrier";
 import { Radioactive, Warning } from "@phosphor-icons/react";
+import { IMaterial, ITransferRequestDetail } from "@/types/logistics/schema";
 import styles from "./materials.module.scss";
+import { useEffect, useState } from "react";
 
 interface MaterialsDataProps {
-  materials: ProviderDetailMaterials[];
+  materials: IMaterial[];
 }
 
 const { Text } = Typography;
 
 export default function Materials({ materials }: MaterialsDataProps) {
+  //console.log("materials:", materials);
 
-  const columns: TableProps<any>["columns"] = [
+  const columns: TableProps<IMaterial>["columns"] = [
     {
       title: "Cantidad",
       dataIndex: "quantity",
@@ -23,58 +26,58 @@ export default function Materials({ materials }: MaterialsDataProps) {
     },
     {
       title: "SKU",
-      dataIndex: "SKU",
+      dataIndex: "sku",
       key: "SKU",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => a.SKU.localeCompare(b.SKU),
+      sorter: (a, b) => a.id - b.id,
       showSorterTooltip: false
     },
     {
       title: "Nombre",
       key: "name",
-      dataIndex: "name",
+      dataIndex: "description",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      sorter: (a, b) => a.description.localeCompare(b.description),
       showSorterTooltip: false
     },
     {
       title: "Volumen",
       key: "volume",
-      dataIndex: "volume",
+      dataIndex: "m3_volume",
       render: (amount) => <Text>{amount}</Text>,
-      sorter: (a, b) => a.volume - b.volume,
+      sorter: (a, b) => a.m3_volume - b.m3_volume,
       showSorterTooltip: false
     },
     {
       title: "Alto",
       key: "height",
-      dataIndex: "height",
+      dataIndex: "mt_height",
       render: (amount) => <Text>{amount} m</Text>,
-      sorter: (a, b) => a.height - b.height,
+      sorter: (a, b) => a.mt_height - b.mt_height,
       showSorterTooltip: false
     },
     {
       title: "Ancho",
       key: "broad",
-      dataIndex: "broad",
+      dataIndex: "mt_length",
       render: (amount) => <Text>{amount} m</Text>,
-      sorter: (a, b) => a.broad - b.broad,
+      sorter: (a, b) => a.mt_length - b.mt_length,
       showSorterTooltip: false
     },
     {
       title: "Largo",
       key: "width",
-      dataIndex: "width",
+      dataIndex: "mt_width",
       render: (amount) => <Text>{amount} m</Text>,
-      sorter: (a, b) => a.width - b.width,
+      sorter: (a, b) => a.mt_width - b.mt_width,
       showSorterTooltip: false
     },
     {
       title: "Peso",
       key: "weight",
-      dataIndex: "weight",
+      dataIndex: "kg_weight",
       render: (amount) => <Text>{amount} kg</Text>,
-      sorter: (a, b) => a.weight - b.weight,
+      sorter: (a, b) => a.kg_weight - b.kg_weight,
       showSorterTooltip: false
     },
     {
@@ -84,12 +87,8 @@ export default function Materials({ materials }: MaterialsDataProps) {
       dataIndex: "",
       render: (text, record) => (
         <Flex style={{ gap: "6px", justifyContent: "flex-end" }}>
-          {record.radioactiveIcon && (
-            <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Radioactive size={"1.3rem"} />} />
-          )}
-          {record.dangerIcon && (
-            <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Warning size={"1.3rem"} />} />
-          )}
+          <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Radioactive size={"1.3rem"} />} />
+          <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Warning size={"1.3rem"} />} />
         </Flex>
       )
     }
@@ -106,7 +105,7 @@ export default function Materials({ materials }: MaterialsDataProps) {
                 <Table
                   style={{ width: "100%" }}
                   columns={columns}
-                  dataSource={materials.map((data) => ({ ...data, key: data.id }))}
+                  dataSource={materials}
                   pagination={false}
                 />
                 <hr style={{ borderTop: "1px solid #f7f7f7" }}></hr>

@@ -144,12 +144,12 @@ export const SideBar = () => {
             {isSideBarLarge && "Ajustes"}
           </Button>
         </Link>
-        <Link href="/logistics/requests" passHref legacyBehavior>
+        <Link href="/logistics/acept_carrier" passHref legacyBehavior>
           <Button
             type="primary"
             size="large"
             icon={<CurrencyCircleDollar size={26} />}
-            className={path.startsWith("/logistics/requests") ? "buttonIcon" : "buttonIconActive"}
+            className={path.startsWith("/logistics/acept_carrier") ? "buttonIcon" : "buttonIconActive"}
           >
             {isSideBarLarge && "Proveedores"}
           </Button>

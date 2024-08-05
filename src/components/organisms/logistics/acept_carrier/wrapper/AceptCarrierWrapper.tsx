@@ -1,5 +1,5 @@
 "use client"
-import Wrapper from "../../wrapper/Wrapper";
+import Wrapper from "../../../wrapper/Wrapper";
 import { Flex, Typography } from "antd";
 import styles from "./AceptCarrierWrapper.module.scss";
 

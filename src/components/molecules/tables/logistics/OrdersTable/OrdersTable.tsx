@@ -12,6 +12,7 @@ import UiSearchInput from "@/components/ui/search-input";
 import { countries } from "@/utils/countries";
 import { ITransferOrderList } from "@/types/logistics/schema";
 import { getAllTransferOrderList } from "@/services/logistics/transfer-orders";
+import Link from "next/link";
 
 const { Text } = Typography;
 
@@ -79,12 +80,10 @@ export const OrdersTable = () => {
     if (transferOrderList.length > 0) return;
     const result = await getAllTransferOrderList();
     if (result.data.data.length > 0) {
-      //console.log(result.data.data);
 
       setTransferOrderList(result.data.data);
     }
   };
-  console.log("transferOrderList:", transferOrderList);
 
   return (
     <main className="mainProjectsTable">
@@ -173,8 +172,10 @@ const columns: TableProps<ITransferOrderList>["columns"] = [
     className: "tableTitle",
     key: "id",
     width: "54px",
-    render: (text) => (
-      <Text style={{ color: "blue", textDecorationLine: "underline" }}>{text}</Text>
+    render: (text, {id}) => (
+      <Link href={`/logistics/orders/details/${id}`}>
+        <Text style={{ color: "blue", textDecorationLine: "underline" }}>{text}</Text>
+      </Link>
     ),
     sorter: (a, b) => a.id - b.id
   },

@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import AceptCarrierWrapper from "@/components/organisms/acept_carrier/wrapper/AceptCarrierWrapper";
+import AceptCarrierWrapper from "@/components/organisms/logistics/acept_carrier/wrapper/AceptCarrierWrapper";
 
 export const metadata: Metadata = {
   title: "Ordenes de transferencia",
