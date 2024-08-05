@@ -5,6 +5,7 @@ import "./modalActionAdjusment.scss";
 import { Gavel } from "@phosphor-icons/react";
 import ItemsModalLegalize from "@/components/atoms/ItemsModalLegalize/ItemsModalLegalize";
 import { ISelectedAccountingAdjustment } from "../ModalActionDiscountCredit/ModalActionDiscountCredit";
+import { formatMoney } from "@/utils/utils";
 
 interface Props {
   isOpen: boolean;
@@ -18,9 +19,9 @@ interface Props {
 }
 
 const extractType = (type: string | undefined) => {
-  if (type === "Nota débito") {
+  if (type === "Nota debito") {
     return 1;
-  } else if (type === "Nota crédito") {
+  } else if (type === "Nota credito") {
     return 2;
   } else if (type === "Descuento") {
     return 3;
@@ -225,8 +226,11 @@ export const ModalActionAdjusment = ({ isOpen, onClose, adjustment }: Props) => 
       }
       title={
         currentView === "legalizeAccountingAdjustment" ? (
-          <div>
-            `${adjustment.type} por legalizar NC ${adjustment.id} $${adjustment.amount}`
+          <div className="title_modal_adjusment">
+            <div> {adjustment.type} por legalizar</div>
+            <div>
+              NC{adjustment.id} {formatMoney(adjustment.amount)}
+            </div>
           </div>
         ) : (
           "Selecciona la acción que vas a realizar"
