@@ -11,7 +11,7 @@ export default function AceptCarrierWrapper({children}: {children: React.ReactNo
       <Flex vertical gap={"1.5rem"} className={styles.wrapper}>
         <Flex gap={"2rem"} justify="space-between" wrap="wrap">
           <Title level={2} className={styles.title}>
-            Ordenes de transferencia
+            Aceptación de solicitudes
           </Title>
         </Flex>
         {children}

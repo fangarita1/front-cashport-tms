@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Collapse, Flex } from "antd";
 import LabelCollapse from "@/components/ui/label-collapse";
 import CarrierTable from "@/components/molecules/tables/CarrierTable/CarrierTable";
@@ -22,10 +22,13 @@ export default function AceptCarrierView({ carriers, loading }: AceptCarrierView
     return acc;
   }, {} as Record<string, ICarriersRequestList[]>);
 
+  console.log("filter:", carriers.map(a => a.status))
+
   return (
     <Flex className={styles.wrapper}>
       <Collapse
         className={styles.collapses}
+        defaultActiveKey={"guid"}
         items={Object.entries(groupedData).map(([status, statusData]) => ({
           key: status,
           label: (

@@ -100,9 +100,6 @@ export default function AceptCarrierDetailView({ params }: AceptCarrierDetailPro
     { title: "Confirmar servicio" }
   ];
 
-  console.log("carrier:", carrier);
-  console.log("vehicle:", vehicleSelected, "drivers:", driversSelected, "isNextStepActive?", isNextStepActive);
-
   return (
     <>
       {contextHolder}
