@@ -33,7 +33,7 @@ export default function AceptCarrierView({ carriers, loading }: AceptCarrierView
               status={statusData[0].statusdesc}
               quantity={statusData.length}
               color={statusData[0].color}
-              quantityText="TR"
+              quantityText="CR"
               removeIcons
             />
           ),

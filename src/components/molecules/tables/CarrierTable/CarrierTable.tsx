@@ -29,9 +29,20 @@ export default function CarrierTable({ carrierData: data, setSelectedRows, loadi
     onChange: onSelectChange
   };
 
+  const calculateMinutesDifference = (dateString: string) => {
+    console.log(dateString)
+    const date = new Date(dateString);
+    const now = new Date();
+
+    const diffInMilliseconds = now.getTime() - date.getTime();
+    const diffInMinutes = Math.floor(diffInMilliseconds / (1000 * 60));
+
+    return diffInMinutes;
+  };
+
   const columns: TableProps<ICarriersRequestList>["columns"] = [
     {
-      title: "TR",
+      title: "CR",
       dataIndex: "id",
       key: "id",
       render: (id) => (
@@ -99,9 +110,9 @@ export default function CarrierTable({ carrierData: data, setSelectedRows, loadi
     {
       title: "Tiempo transcurido",
       key: "timeTraveled",
-      dataIndex: "elapsedTime",
+      dataIndex: "elapsedtime",
       render: (text) => (
-        <Text>{text}</Text>
+        <Text>{calculateMinutesDifference(text)} min</Text>
       ),
       sorter: (a, b) => a.elapsedtime - b.elapsedtime,
       showSorterTooltip: false
@@ -120,7 +131,7 @@ export default function CarrierTable({ carrierData: data, setSelectedRows, loadi
       key: "buttonSee",
       width: 64,
       dataIndex: "id",
-      render: (text, record, invoiceId) => (
+      render: (id) => (
         <Flex style={{ gap: "6px", justifyContent: "flex-end" }}>
           {/*{record.radioactiveIcon && (
             <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Radioactive size={"1.3rem"} />} />
@@ -129,9 +140,9 @@ export default function CarrierTable({ carrierData: data, setSelectedRows, loadi
             <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Warning size={"1.3rem"} />} />
           )}*/}
           {/*{record.eyeIcon && (
-            <Link href={`/aceptacion_de_proveedores/${invoiceId}`}><Button style={{ backgroundColor: "#F7F7F7" }} icon={<Eye size={"1.3rem"} />} /></Link>
+            <Link href={`/aceptacion_de_proveedores/${id}`}><Button style={{ backgroundColor: "#F7F7F7" }} icon={<Eye size={"1.3rem"} />} /></Link>
           )}*/}
-          <Link href={`/logistics/acept_carrier/${invoiceId}`}>
+          <Link href={`/logistics/acept_carrier/${id}`}>
             <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Eye size={"1.3rem"} />} />
           </Link>
         </Flex>

@@ -21,6 +21,26 @@ export const getAllTransferRequestList = async (): Promise<IListData> => {
   }
 };
 
+export const getAceptCarrierRequestList = async (id: string): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const form = new FormData();
+    form.append("id", id);
+
+    const response: IListData = await axios.post(`${config.API_HOST}/carrier/all/request/list`, form, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.log("Error get all getAllTransferRequestList: ", error);
+    return error as any;
+  }
+};
+
 export const getAllTransferRequest = async (): Promise<IListData> => {
   const token = await getIdToken();
   try {

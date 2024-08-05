@@ -8,7 +8,7 @@ import VehicleAndDriverAsignation from "../../detail/components/VehicleAndDriver
 import { formatMoney } from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
 import styles from "./AceptCarrierDetailView.module.scss";
-import { getTransferRequestById } from "@/services/logistics/transfer-requests";
+import { getTransferRequestById } from "@/services/logistics/acept_carrier";
 import { IMaterial, ITransferRequestDetail } from "@/types/logistics/schema";
 
 interface AceptCarrierDetailProps {
