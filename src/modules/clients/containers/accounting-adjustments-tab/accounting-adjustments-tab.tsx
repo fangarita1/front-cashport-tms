@@ -13,6 +13,7 @@ import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 import UiFilterDropdown from "@/components/ui/ui-filter-dropdown";
 
 import "./accounting-adjustments-tab.scss";
+import ModalDetailAdjustment from "@/components/molecules/modals/ModalDetailAdjustment/ModalDetailAdjustment";
 
 const AccountingAdjustmentsTab = () => {
   const [selectedRows, setSelectedRows] = useState<IFinancialDiscount[] | undefined>(undefined);
@@ -88,6 +89,18 @@ const AccountingAdjustmentsTab = () => {
           />
         </div>
       )}
+
+      <ModalDetailAdjustment
+        isOpen={showAdjustmentDetailModal.isOpen}
+        selectAdjusment={data
+          ?.flatMap((financialState) => financialState.financial_discounts)
+          .find(
+            (financialDiscount) => financialDiscount.id === showAdjustmentDetailModal.adjustmentId
+          )}
+        onClose={() => setShowAdjustmentDetailModal({ isOpen: false, adjustmentId: 0 })}
+        clientId={clientId}
+        projectId={projectId}
+      />
     </>
   );
 };

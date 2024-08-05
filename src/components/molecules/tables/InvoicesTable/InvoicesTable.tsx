@@ -109,10 +109,10 @@ export const InvoicesTable = ({
     },
     {
       title: "Emisión",
-      dataIndex: "create_at",
-      key: "create_at",
+      dataIndex: "financial_record_date",
+      key: "financial_record_date",
       render: (text) => <Text className="cell -alignRight">{formatDate(text)}</Text>,
-      sorter: (a, b) => Date.parse(a.create_at) - Date.parse(b.create_at),
+      sorter: (a, b) => Date.parse(a.financial_record_date) - Date.parse(b.financial_record_date),
       showSorterTooltip: false,
       align: "right",
       width: 120

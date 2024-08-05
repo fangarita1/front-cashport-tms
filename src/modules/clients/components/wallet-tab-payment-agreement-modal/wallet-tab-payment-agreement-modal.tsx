@@ -5,7 +5,7 @@ import { CaretLeft } from "phosphor-react";
 import EvidenceModal from "../wallet-tab-evidence-modal";
 import { IInvoice } from "@/types/invoices/IInvoices";
 import dayjs from "dayjs";
-import { formatCurrencyMoney } from "@/utils/utils";
+import { formatCurrencyMoney, formatDate } from "@/utils/utils";
 
 import { createPaymentAgreement } from "@/services/accountingAdjustment/accountingAdjustment";
 import { MessageInstance } from "antd/es/message/interface";
@@ -149,7 +149,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
       dataIndex: "emission",
       key: "emission",
       render: (text) => {
-        return <span>{dayjs(text).format("DD/MM/YYYY")}</span>;
+        return <span>{formatDate(text)}</span>;
       }
     },
     {
@@ -184,14 +184,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
       render: (text: string, _, index: number) => (
         <DatePicker
           value={text ? text : null}
-          onChange={(date, dateString) =>
-            handleCellChange(
-              "newDate",
-              index,
-              date
-              // dateString ? (typeof dateString === "string" ? dateString : dateString[0]) : ""
-            )
-          }
+          onChange={(date) => handleCellChange("newDate", index, date)}
           className="date__piker_input "
         />
       ),
@@ -204,7 +197,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
       setTableData(
         invoiceSelected.map((invoice) => ({
           id: invoice.id,
-          emission: invoice.create_at,
+          emission: invoice.financial_record_date,
           pending: invoice.current_value,
           agreedValue: "",
           newDate: ""

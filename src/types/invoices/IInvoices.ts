@@ -23,6 +23,7 @@ export interface IInvoice {
   initial_value: number;
   current_value: number;
   expiration_date: string;
+  financial_record_date: string;
   comments: string;
   invoice_url: string;
   files: any | null; // Ver cómo llega esto cuando está lleno

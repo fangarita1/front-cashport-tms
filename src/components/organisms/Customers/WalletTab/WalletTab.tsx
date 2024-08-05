@@ -135,7 +135,7 @@ export const WalletTab = () => {
                   color={invoiceState.color}
                 />
               ),
-              children: (
+              children: ( 
                 <InvoicesTable
                   setShowInvoiceDetailModal={setShowInvoiceDetailModal}
                   stateId={invoiceState.status_id}
@@ -227,5 +227,5 @@ export const WalletTab = () => {
         onCloseAllModals={closeAllModal}
       />
     </>
-  );
+  );{}
 };
