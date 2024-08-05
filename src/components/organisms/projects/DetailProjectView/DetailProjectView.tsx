@@ -20,6 +20,7 @@ import { ClientsGroupsProjectView } from "../ClientsGroupsProjectView/ClientsGro
 import { useMessageApi } from "@/context/MessageContext";
 
 import "./detailproject.scss";
+import { CommunicationsProjectView } from "../CommunicationsProjectView/CommunicationsProjectView";
 
 const { Title, Text } = Typography;
 interface Props {
@@ -139,6 +140,11 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
       key: "6",
       label: "Grupos de clientes",
       children: <ClientsGroupsProjectView />
+    },
+    {
+      key: "7",
+      label: "Comunicaciones",
+      children: <CommunicationsProjectView />
     }
   ];
 

@@ -2,6 +2,7 @@ import React from "react";
 import { DatePicker, Flex, Typography } from "antd";
 import { Control, Controller, FieldError, RegisterOptions } from "react-hook-form";
 import { Calendar } from "phosphor-react";
+import dayjs from "dayjs";
 
 import "./inputDateFormStyle.scss";
 
@@ -15,6 +16,9 @@ interface InputDateFormProps {
   disabled?: boolean;
   validationRules?: RegisterOptions;
   className?: string;
+  customStyleContainer?: React.CSSProperties;
+  hiddenIcon?: boolean;
+  minDate?: dayjs.Dayjs | undefined;
 }
 
 export const InputDateForm = ({
@@ -26,10 +30,13 @@ export const InputDateForm = ({
   placeholder = "",
   disabled,
   validationRules,
-  className
+  className,
+  customStyleContainer,
+  hiddenIcon,
+  minDate
 }: InputDateFormProps) => {
   return (
-    <Flex vertical className={`datePickerContainer ${className}`}>
+    <Flex vertical className={`datePickerContainer ${className}`} style={customStyleContainer}>
       {!hiddenTitle && <p className="input-date-custom-title">{titleInput}</p>}
       <Controller
         name={nameInput}
@@ -43,14 +50,17 @@ export const InputDateForm = ({
             size="large"
             disabled={disabled}
             placeholder={placeholder || `Select ${titleInput.toLowerCase()}`}
-            suffixIcon={<Calendar className="dateInputForm__icon" />}
+            suffixIcon={
+              !hiddenIcon ? <Calendar weight="light" className="dateInputForm__icon" /> : false
+            }
             className={!error ? "dateInputForm" : "dateInputFormError"}
+            minDate={minDate}
           />
         )}
       />
       {error && (
         <Typography.Text className="textError">
-          {error.message || `${titleInput} is required`}
+          {error.message || `${titleInput} es obligatorio *`}
         </Typography.Text>
       )}
     </Flex>

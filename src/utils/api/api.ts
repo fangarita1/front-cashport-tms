@@ -64,6 +64,7 @@ API.interceptors.request.use(async (request) => {
 
 API.interceptors.response.use(
   function (response) {
+    if (typeof response.data === "string") return response.data;
     response.data.success = true;
     return response.data;
   },

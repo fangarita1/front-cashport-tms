@@ -1,0 +1,53 @@
+@import "@styles/variables.scss";
+
+.noticeDaysContainer {
+    position: relative;
+    &__error {
+        position: absolute;
+        color: $error;
+        font-size: 0.875rem;
+        font-weight: 400;
+        margin-top: 0.2rem;
+    }
+}
+.noticeDays {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    &__title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: $gray;
+        margin-right: 0.5rem;
+    }
+    .buttonMinus,
+    .buttonPlus {
+        background-color: $background;
+        border: none;
+        padding: 0;
+        width: 24px;
+        height: 100%;
+        box-shadow: none;
+    }
+
+    .input {
+        height: 100%;
+        background-color: $background;
+        border: none;
+        width: fit-content;
+        max-width: 100px;
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 400;
+        border-radius: 4px;
+        font-family: inherit;
+        color: $red;
+
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    }
+}

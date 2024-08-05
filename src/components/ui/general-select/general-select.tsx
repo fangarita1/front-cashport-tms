@@ -7,19 +7,22 @@ import {
   Merge,
   FieldError as OriginalFieldError
 } from "react-hook-form";
+import { useEffect, useState } from "react";
 
 type ExtendedFieldError =
   | OriginalFieldError
-  | Merge<OriginalFieldError, FieldErrorsImpl<{ value: number; label: string }>>;
+  | Merge<OriginalFieldError, FieldErrorsImpl<{ value: number | string; label: string }>>;
 
 interface PropsGeneralSelect<T extends FieldValues> {
   errors: ExtendedFieldError | undefined;
   field: ControllerRenderProps<T, any>;
-  title: string;
+  title?: string;
   placeholder: string;
-  options: { value: number; label: string }[] | undefined;
+  options: { value: number | string; label: string }[] | undefined | string[];
   loading?: boolean;
   customStyleContainer?: React.CSSProperties;
+  titleAbsolute?: boolean;
+  errorSmall?: boolean;
 }
 
 const GeneralSelect = <T extends FieldValues>({
@@ -28,20 +31,44 @@ const GeneralSelect = <T extends FieldValues>({
   title,
   placeholder,
   options,
-  loading = false,
-  customStyleContainer
+  loading,
+  customStyleContainer,
+  titleAbsolute,
+  errorSmall
 }: PropsGeneralSelect<T>) => {
-  const usedOptions = options?.map((option) => {
-    return {
-      value: option.value,
-      label: option.label,
-      className: "selectOptions"
-    };
-  });
+  const [usedOptions, setUsedOptions] = useState<
+    {
+      value: number | string;
+      label: string;
+      className: string;
+    }[]
+  >();
+
+  useEffect(() => {
+    if (!options) setUsedOptions(undefined);
+    if (Array.isArray(options)) {
+      const formattedOptions = options?.map((option) => {
+        if (typeof option === "string") {
+          return {
+            value: option,
+            label: option,
+            className: "selectOptions"
+          };
+        }
+        return {
+          value: option.value,
+          label: option.label,
+          className: "selectOptions"
+        };
+      });
+
+      setUsedOptions(formattedOptions);
+    }
+  }, [options]);
 
   return (
-    <Flex vertical style={customStyleContainer}>
-      <h4 className="inputTitle">{title}</h4>
+    <Flex vertical style={customStyleContainer} className="generalSelectContainer">
+      {title && <h4 className={`inputTitle ${titleAbsolute && "-absolute"}`}>{title}</h4>}
       <Select
         placeholder={placeholder}
         className={errors ? "selectInputError" : "selectInputCustom"}
@@ -54,7 +81,9 @@ const GeneralSelect = <T extends FieldValues>({
         labelInValue
       />
       {errors && (
-        <Typography.Text className="textError">La ciudad es obligatoria *</Typography.Text>
+        <Typography.Text className={`textError ${errorSmall && "-smallFont"}`}>
+          {title} es obligatoria *
+        </Typography.Text>
       )}
     </Flex>
   );

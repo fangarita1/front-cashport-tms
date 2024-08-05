@@ -1,4 +1,5 @@
 import { IChanel } from "@/types/bre/IBRE";
+import { ISelectStringType } from "@/types/communications/ICommunications";
 import { CountryCode } from "@/types/global/IGlobal";
 
 interface Subline {
@@ -316,4 +317,8 @@ export const formatCurrencyMoney = (value: number): string => {
   const [intPart, decPart] = value.toFixed(2).split(".");
   const formattedIntPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   return `$${formattedIntPart},${decPart}`;
+};
+
+export const stringFromArrayOfSelect = (array: ISelectStringType[]): string => {
+  return array.map((item) => item.value).join(", ");
 };
