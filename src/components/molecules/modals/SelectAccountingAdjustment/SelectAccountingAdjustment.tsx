@@ -65,44 +65,48 @@ export const SelectAccountingAdjustment = ({
   return (
     <div className="modalContent">
       <p className="subTitleModalAction">{subtitleMap[type || 1]}</p>
-      <div className="modalContentScroll">
-        {isLoading ? (
-          <Spin size="large" style={{ margin: "auto" }} />
-        ) : (
-          dateSelect.map((item, index) => (
-            <ItemsActionsModal
-              key={index}
-              item={item}
-              type={type || 1}
-              onHeaderClick={() => handleCheckClick(item)}
-            />
-          ))
-        )}
-      </div>
-      <button
-        type="button"
-        className="button__create__action"
-        onClick={() => setCurrentView("create")}
-      >
-        <Plus /> Crear {typeMap[type || 1]}
-      </button>
-      <Flex gap="8px">
-        <button
-          type="button"
-          className="button__action__text button__action__text__white"
-          onClick={() => onClose()}
-        >
-          Cancelar
-        </button>
-        <button
-          type="button"
-          className={`button__action__text ${selectedRows.length > 0 ? "button__action__text__green" : ""}`}
-          onClick={() => {
-            selectedRows.length > 0 && setCurrentView("apply");
-          }}
-        >
-          Continuar
-        </button>
+      <Flex vertical className="conten_modal_select_ajust">
+        <div className="modalContentScroll">
+          {isLoading ? (
+            <Spin size="large" style={{ margin: "auto" }} />
+          ) : (
+            dateSelect.map((item, index) => (
+              <ItemsActionsModal
+                key={index}
+                item={item}
+                type={type || 1}
+                onHeaderClick={() => handleCheckClick(item)}
+              />
+            ))
+          )}
+        </div>
+        <Flex vertical>
+          <button
+            type="button"
+            className="button__create__action"
+            onClick={() => setCurrentView("create")}
+          >
+            <Plus /> Crear {typeMap[type || 1]}
+          </button>
+          <Flex gap="8px">
+            <button
+              type="button"
+              className="button__action__text button__action__text__white"
+              onClick={() => onClose()}
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              className={`button__action__text ${selectedRows.length > 0 ? "button__action__text__green" : ""}`}
+              onClick={() => {
+                selectedRows.length > 0 && setCurrentView("apply");
+              }}
+            >
+              Continuar
+            </button>
+          </Flex>
+        </Flex>
       </Flex>
     </div>
   );

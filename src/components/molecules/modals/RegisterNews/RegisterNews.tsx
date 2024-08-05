@@ -1,8 +1,7 @@
 import React from "react";
-import { Button, Flex, Modal, UploadFile } from "antd";
+import { Button, Flex, Modal } from "antd";
 import { CaretLeft, Plus } from "@phosphor-icons/react";
 import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
-import { UploadChangeParam } from "antd/es/upload";
 import "./registerNews.scss";
 import { IInvoice } from "@/types/invoices/IInvoices";
 import { MessageInstance } from "antd/es/message/interface";
@@ -94,7 +93,7 @@ const RegisterNews = ({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    
+
     if (files && files.length > 0) {
       const file = files[0];
       const fileSizeInMB = file.size / (1024 * 1024);

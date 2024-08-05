@@ -10,6 +10,7 @@ export interface ProjectFormTabProps {
   data?: IProject;
   disabled?: boolean;
   onEditProject?: () => void;
+  // eslint-disable-next-line no-unused-vars
   onSubmitForm?: (data: any) => void;
   onActiveProject?: () => void;
   onDesactivateProject?: () => void;
@@ -36,7 +37,7 @@ export const newBillingPeriod = (config: IBillingPeriodForm): string => {
 export const dataToProjectFormData = (data: IProject): IFormProject => {
   const currenciesFormated = data?.CURRENCY?.map((currency) => ({
     value: currency.id,
-    label: currency.CURRENCY_NAME
+    label: currency.currency_name
   }));
   return {
     logo: data.LOGO,
@@ -66,9 +67,12 @@ export const dataToProjectFormData = (data: IProject): IFormProject => {
 
 export const _onSubmit = (
   data: any,
+  // eslint-disable-next-line no-unused-vars
   setloading: (value: SetStateAction<boolean>) => void,
+  // eslint-disable-next-line no-unused-vars
   setImageError: (value: SetStateAction<boolean>) => void,
   imageFile: string,
+  // eslint-disable-next-line no-unused-vars
   onSubmitForm: (data: any) => void,
   reset: UseFormReset<IFormProject>
 ) => {

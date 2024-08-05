@@ -10,10 +10,11 @@ interface ItemCollapse {
 
 interface CollapseProps {
   items: ItemCollapse[] | undefined;
+  accordion?: boolean;
 }
 
-const GenericCollapse: FC<CollapseProps> = ({ items }) => {
-  return <Collapse className="genericCollapse" ghost accordion items={items} />;
+const GenericCollapse: FC<CollapseProps> = ({ items, accordion }) => {
+  return <Collapse className="genericCollapse" ghost items={items} accordion={accordion} />;
 };
 
 export default GenericCollapse;

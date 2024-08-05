@@ -15,6 +15,7 @@ type EvidenceModalProps = {
   handleAttachEvidence: () => void;
   commentary?: string;
   setIsSecondView: React.Dispatch<React.SetStateAction<boolean>>;
+  noComment?: boolean;
 };
 
 const EvidenceModal = ({
@@ -25,8 +26,14 @@ const EvidenceModal = ({
   handleOnChangeTextArea,
   handleAttachEvidence,
   commentary,
-  setIsSecondView
+  setIsSecondView,
+  noComment = false
 }: EvidenceModalProps) => {
+  
+  const isAttachButtonDisabled = !noComment
+    ? !(commentary && selectedEvidence.length > 0)
+    : selectedEvidence.length === 0;
+
   return (
     <div className={styles.content}>
       <button className={styles.content__header} onClick={() => setIsSecondView(false)}>
@@ -93,7 +100,7 @@ const EvidenceModal = ({
         </Button>
         <Button
           onClick={handleAttachEvidence}
-          disabled={commentary && selectedEvidence.length > 0 ? false : true}
+          disabled={isAttachButtonDisabled}
           className={styles.acceptButton}
         >
           Adjuntar evidencia
