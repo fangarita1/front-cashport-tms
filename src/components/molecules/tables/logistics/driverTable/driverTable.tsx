@@ -1,9 +1,8 @@
 "use client";
-import { useState } from "react";
-import { Button, Flex, message, Table, Typography } from "antd";
+import { useEffect, useState } from "react";
+import { Button, Flex, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import { DotsThree, Eye, Plus, Triangle } from "phosphor-react";
-
 import "./driverTable.scss";
 import UiSearchInput from "@/components/ui/search-input";
 import { IDrivers } from "@/types/logistics/schema";
@@ -26,12 +25,28 @@ export const DriverTable = ({ params: { id } }: Props) => {
   });
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [datasource, setDatasource] = useState<any[]>([]);
 
   const { Text } = Typography;
 
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);
   };
+
+  useEffect(() => {
+    const data = drivers
+      ?.filter((element: any) => {
+        if (!search) return true;
+        return (
+          element.name.toLowerCase().includes(search.toLowerCase()) ||
+          element.last_name.toLowerCase().includes(search.toLowerCase()) ||
+          element.document.toLowerCase().includes(search.toLowerCase()) 
+        );
+      })
+      .map((element: any) => ({...element
+      })) || [];
+    setDatasource(data);
+  }, [drivers, search]);
 
   const columns: TableProps<IDrivers>["columns"] = [
     {
@@ -42,7 +57,8 @@ export const DriverTable = ({ params: { id } }: Props) => {
     {
       title: "Nombre",
       dataIndex: "name",
-      key: "name"
+      key: "name",
+      render: (_, { name, last_name}) => (<Text>{name + " " + (last_name || "")}</Text>)
     },
     {
       title: "Documento",
@@ -131,7 +147,7 @@ export const DriverTable = ({ params: { id } }: Props) => {
             return originalElement;
           }
         }}
-        dataSource={drivers}
+        dataSource={datasource}
       />
     </div>
   );

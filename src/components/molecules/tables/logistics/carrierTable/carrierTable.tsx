@@ -15,7 +15,7 @@ export const CarrierTable = () => {
   const [search, setSearch] = useState("");
   const [datasource, setDatasource] = useState<any[]>([]);
 
-  const { data: drivers, isLoading } = useSWR({}, getAllCarriers, {
+  const { data: carriers, isLoading } = useSWR({}, getAllCarriers, {
     onError: (error: any) => {
       console.error(error);
       message.error(error.message);
@@ -28,7 +28,7 @@ export const CarrierTable = () => {
   };
 
   useEffect(() => {
-    const data = drivers
+    const data = carriers
       ?.filter((element: any) => {
         if (!search) return true;
         return (
@@ -46,7 +46,7 @@ export const CarrierTable = () => {
         status: element.active,
       })) || [];
     setDatasource(data);
-  }, [drivers, search]);
+  }, [carriers, search]);
 
   const columns: TableProps<ICarrier>["columns"] = [
     {
