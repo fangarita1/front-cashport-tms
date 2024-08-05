@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Button, Flex, message, Table, Typography } from "antd";
+import { Button, Flex, message, Table } from "antd";
 import type { TableProps } from "antd";
 import { DotsThree, Eye, Plus, Triangle } from "phosphor-react";
 import Link from "next/link";
@@ -18,18 +18,35 @@ type Props = {
 export const VehicleTable = ({ params: { id } }: Props) => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [datasource, setDatasource] = useState<any[]>([]);
 
-  const onChangePage = (pagePagination: number) => {
-    setPage(pagePagination);
-  };
-
-  const { data: vihicles, error } = useSWR({ id }, ({ id }) => getAllVehicles({ id }), {
+  const { data: vehicles, error } = useSWR({ id }, ({ id }) => getAllVehicles({ id }), {
     onError: (error) => {
       message.error(error?.message);
     }
   });
 
-  console.log(vihicles);
+  const onChangePage = (pagePagination: number) => {
+    setPage(pagePagination);
+  };
+  useEffect(() => {
+    const data = vehicles
+      ?.filter((element: any) => {
+        if (!search) return true;
+        return (
+          element.plate_number.toLowerCase().includes(search.toLowerCase()) ||
+          element.brand.toLowerCase().includes(search.toLowerCase()) ||
+          element.vehicle_type.toLowerCase().includes(search.toLowerCase()) ||
+          element.model.toLowerCase().includes(search.toLowerCase()) 
+        );
+      })
+      .map((e: any) => ({...e,
+        type: e.vehicle_type,
+        mark: e.brand,
+        plate: e.plate_number,
+      })) || [];
+    setDatasource(data);
+  }, [vehicles, search]);
 
   const columns: TableProps<IVehicle>["columns"] = [
     {
@@ -109,16 +126,7 @@ export const VehicleTable = ({ params: { id } }: Props) => {
             return originalElement;
           }
         }}
-        dataSource={
-          vihicles?.map((e) => ({
-            company: e.company,
-            type: e.vehicle_type,
-            mark: e.brand,
-            plate: e.plate_number,
-            model: e.model,
-            id: e.id
-          })) || []
-        }
+        dataSource={datasource}
       />
     </div>
   );
