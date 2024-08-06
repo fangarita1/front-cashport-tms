@@ -1,8 +1,9 @@
+"use client";
 import { ConfigProvider } from "antd";
 import theme from "@/theme/themeConfig";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { Poppins } from "@next/font/google";
-
+import { ModalProvider } from "@/context/ModalContext";
 import "../styles/globals.scss";
 
 const poppins = Poppins({
@@ -14,7 +15,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <ConfigProvider theme={theme}>
       <html lang="es" className={poppins.className}>
         <body>
-          <AntdRegistry>{children}</AntdRegistry>
+          <AntdRegistry>
+            <ModalProvider>{children}</ModalProvider>
+          </AntdRegistry>
         </body>
       </html>
     </ConfigProvider>
