@@ -80,7 +80,7 @@ export const addIncidentComment = async (
   const token = await getIdToken();
 
   const response: AxiosResponse<any> = await axios.post(
-    `${config.API_HOST}/api/invoice/incident-comments/${incidentId}`,
+    `${config.API_HOST}/invoice/incident-comments/${incidentId}`,
     commentData,
     {
       headers: {

@@ -17,7 +17,6 @@
     overflow-y: auto;
     scrollbar-width: thin;
     margin-right: 0.5rem;
-    transform: translateX(100%); // Start off-screen
 
     .wrapper__new_show {
         transform: translateX(0);

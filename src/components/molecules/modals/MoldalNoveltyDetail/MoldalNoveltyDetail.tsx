@@ -71,7 +71,7 @@ const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({ isOpen, onClose, no
   }
 
   return (
-    <aside className={`wrapper__new ${isOpen ? "wrapper__new_show" : "wrapper__new_hide"}`}>
+    <aside className={`wrapper__new  wrapper__new_hide`}>
       {contextHolder}
       <div>
         <div className="modalTopSide">
