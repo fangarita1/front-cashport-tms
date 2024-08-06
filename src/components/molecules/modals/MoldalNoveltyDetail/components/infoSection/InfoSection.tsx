@@ -3,6 +3,7 @@ import { User, Calendar, ShoppingBag, Users, Check, Info } from "phosphor-react"
 import { Tag } from "antd";
 import "./infosection.scss";
 import { IconLabel } from "@/components/atoms/IconLabel/IconLabel";
+import { formatDatePlane } from "@/utils/utils";
 
 interface InfoSectionProps {
   responsable: string;
@@ -25,7 +26,7 @@ export const InfoSection: React.FC<InfoSectionProps> = ({
       </div>
       <div className="info-row">
         <IconLabel icon={<Calendar size={20} />} text={`Fecha: `} />
-        <p>{fecha}</p>
+        <p>{formatDatePlane(fecha)}</p>
       </div>
       <div className="info-row">
         <IconLabel icon={<ShoppingBag size={20} />} text={`Cliente: `} />
