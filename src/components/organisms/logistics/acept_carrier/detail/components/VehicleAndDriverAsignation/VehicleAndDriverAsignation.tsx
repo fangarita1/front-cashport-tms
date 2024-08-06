@@ -131,6 +131,8 @@ export default function VehicleAndDriverAsignation({
               {(Number(selectedDrivers) === item.id) ? <CheckCircle size={26}/> : <Circle size={26} />}
               <>
                 <Text>{item.name}</Text>
+                &nbsp;
+                <Text>{item.last_name}</Text>
                 <p color="black">•</p>
                 <Text>{item.phone}</Text>
               </>

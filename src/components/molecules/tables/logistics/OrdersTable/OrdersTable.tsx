@@ -124,7 +124,7 @@ export const OrdersTable = () => {
                 loading={loading}
                 columns={columns as TableProps<any>["columns"]}
                 pagination={false}
-                dataSource={ordersByStatus.upcoming}
+                dataSource={transferOrderList}
               />
             )
           },
@@ -136,7 +136,7 @@ export const OrdersTable = () => {
                 loading={loading}
                 columns={columns as TableProps<any>["columns"]}
                 pagination={false}
-                dataSource={ordersByStatus.ongoing}
+                dataSource={[]}
               />
             )
           },
@@ -148,7 +148,7 @@ export const OrdersTable = () => {
                 loading={loading}
                 columns={columns as TableProps<any>["columns"]}
                 pagination={false}
-                dataSource={ordersByStatus.finalized}
+                dataSource={[]}
               />
             )
           }
