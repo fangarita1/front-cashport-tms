@@ -1,0 +1,19 @@
+@import "@styles/variables.scss";
+
+.wrapper {
+  height: 100%;
+  width: 100%;
+  margin: 0 0 auto 0;
+  background-color: $white;
+  padding: 2rem;
+  padding-left: 2.5rem;
+  overflow-y: auto;
+  border-radius: 1rem;
+  border: 1px solid $dark-gray;
+  .filters {
+    display: flex;
+    align-items: center;
+    margin: 12px 0 24px 0;
+    height: 48px;
+  }
+}

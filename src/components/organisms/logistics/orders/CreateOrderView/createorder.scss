@@ -115,7 +115,7 @@
         margin: -0.3rem 0.1rem 0.1rem 0.1rem;
 
         &-box {
-            padding: 0.3rem 1rem 0 1rem !important;
+            padding: 0 !important;
         }
     }
 
@@ -187,14 +187,14 @@
     font-size: var(--font-size-base) !important;
     color: var(--black) !important;
     font-family: var(--font-poppins) !important;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.5rem !important;
  }
  .puntoOrigen{
     align-self: stretch;
     position: relative;
     letter-spacing: -1px;
     line-height: 32px !important;
-    margin-bottom: 0.5rem !important;
+    //margin-bottom: 0.5rem !important;
 }
 
 .ant-picker-dropdown .ant-picker-panel-container {
@@ -202,13 +202,13 @@
 }
 
 .divdistance{
-    margin-top: 10px;
     background: #f7f7f7 !important;
     padding: 15px;
+    border-radius: 8px;
 }
 
 .divdistance p{
-    padding: 5px;
+    padding: 1rem;
 }
 
 .text-right{
@@ -226,13 +226,14 @@
     padding: 8px;
     border: none;
     border-radius: 5px;
-    margin-top: 8px;
-    margin-bottom: 8px;
     background: none !important;
     cursor: pointer;
+    font-weight: bold;
+    font-family: inherit;
 }
 
 .dateInputFormError {
+    height: 2.5rem !important;
     border: 1px dashed red !important;
     background-color: $background !important;
     font-size: 1rem !important;
@@ -243,9 +244,27 @@
     }    
 }
 
+.dateInputForm {
+    height: 2.5rem !important;
+    width: 100% !important;
+}
+
 .textError {
     padding-left: 0.5rem;
     color: red;
     font-size: 0.875em; // 14px
     margin-top: 4px;
 }
+
+.text-footer-table {
+    font-weight: 600;
+}
+
+.ant-table-footer {
+    padding: 0px !important;
+}
+
+.mapboxgl-ctrl-logo {
+    display: none !important;
+}
+
