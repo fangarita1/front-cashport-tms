@@ -1,18 +1,21 @@
-import { FC, useContext, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Flex, Radio, RadioChangeEvent } from "antd";
 import { CaretLeft } from "phosphor-react";
 import { OrderViewContext } from "../../containers/create-order/create-order";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, set, useForm } from "react-hook-form";
 import { ISelectType } from "@/types/clients/IClients";
 import styles from "./create-order-checkout.module.scss";
 import GeneralSelect from "@/components/ui/general-select";
 import AlternativeBlackButton from "@/components/atoms/buttons/alternativeBlackButton/alternativeBlackButton";
+import { getAdresses } from "@/services/commerce/commerce";
+import { useAppStore } from "@/lib/store/store";
+import { ICommerceAdresses } from "@/types/commerce/ICommerce";
 
 interface IShippingInfoForm {
-  addresses?: ISelectType[];
+  addresses?: ISelectType;
   city?: string;
   address?: string;
   email?: string;
@@ -21,25 +24,46 @@ interface IShippingInfoForm {
 }
 
 const CreateOrderCheckout: FC = ({}) => {
-  const { setCheckingOut } = useContext(OrderViewContext);
+  const { setCheckingOut, client } = useContext(OrderViewContext);
   const [radioValue, setRadioValue] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [addresses, setAddresses] = useState<ICommerceAdresses[]>([]);
   const router = useRouter();
 
   const {
     control,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isValid }
   } = useForm<IShippingInfoForm>({
     mode: "onChange",
     defaultValues: {
-      addresses: [],
       city: "Bogota quemado",
       address: "Calle quemad",
       email: "quemad@gmail.com",
       phone: ""
     }
   });
+  const watchSelectAddress = watch("addresses");
+
+  useEffect(() => {
+    const selectedAddress =
+      watchSelectAddress &&
+      addresses.find((address) => address.address === watchSelectAddress.label);
+    setValue("city", selectedAddress?.city);
+    setValue("address", selectedAddress?.address);
+    setValue("email", selectedAddress?.email);
+  }, [watchSelectAddress]);
+
+  useEffect(() => {
+    const fetchAdresses = async () => {
+      const response = await getAdresses(client.id);
+      console.log("Direcciones: ", response.data);
+      setAddresses(response.data);
+    };
+    fetchAdresses();
+  }, []);
 
   const handleGoBack = () => {
     setCheckingOut(false);
@@ -54,14 +78,14 @@ const CreateOrderCheckout: FC = ({}) => {
   };
 
   const onSubmitFinishOrder = (data: IShippingInfoForm) => {
-    console.info("Finalizar orden: ", data);
+    console.info("Finalizar ordenn: ", data);
 
-    setLoading(true);
-    setTimeout(() => {
-      const orderId = 45666;
-      router.push(`/comercio/pedidoConfirmado/${orderId}`);
-      setLoading(false);
-    }, 1000);
+    // setLoading(true);
+    // setTimeout(() => {
+    //   const orderId = 45666;
+    //   router.push(`/comercio/pedidoConfirmado/${orderId}`);
+    //   setLoading(false);
+    // }, 1000);
   };
 
   return (
@@ -89,7 +113,7 @@ const CreateOrderCheckout: FC = ({}) => {
                 field={field}
                 title="Direcciones"
                 placeholder="Seleccione una dirección"
-                options={mockAddresses}
+                options={addresses.map((address) => address.address)}
                 customStyleContainer={{ gridColumn: "1 / span 2" }}
               />
             )}

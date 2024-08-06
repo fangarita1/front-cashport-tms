@@ -1,6 +1,7 @@
 import { GenericResponse } from "@/types/global/IGlobal";
 import { API } from "@/utils/api/api";
 import {
+  ICommerceAdresses,
   IConfirmOrderData,
   ICreateOrderData,
   IEcommerceClient,
@@ -22,8 +23,8 @@ export const getProductsByClient = async (projectId: number, clientId: number) =
   return response;
 };
 
-export const getAdresses = async (projectId: number, clientId: number) => {
-  const response: GenericResponse<any> = await API.get(
+export const getAdresses = async (clientId: number) => {
+  const response: GenericResponse<ICommerceAdresses[]> = await API.get(
     `/marketplace/clients/${clientId}/other-addresses`
   );
   return response;

@@ -81,3 +81,10 @@ export interface ICreateOrderData {
   };
   order_summary: IOrderConfirmedResponse;
 }
+
+export interface ICommerceAdresses {
+  address: string;
+  city: string;
+  email: string;
+  id: number;
+}
