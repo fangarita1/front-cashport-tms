@@ -4,6 +4,7 @@ import CreateOrderMarket from "../../components/create-order-market";
 import CreateOrderCart from "../../components/create-order-cart";
 import styles from "./create-order.module.scss";
 import CreateOrderCheckout from "../../components/create-order-checkout";
+import { IOrderConfirmedResponse } from "@/types/commerce/ICommerce";
 
 export interface ISelectedProduct {
   id: number;
@@ -14,9 +15,10 @@ export interface ISelectedProduct {
   quantity: number;
   image: string;
   category_id: number;
+  SKU: string;
 }
 
-export interface ISelectedProducts {
+export interface ISelectedCategories {
   category_id: number;
   category: string;
   products: ISelectedProduct[];
@@ -31,28 +33,33 @@ interface IOrderViewContext {
     name: string;
     id: number;
   }>;
-  selectedProducts: ISelectedProducts[];
-  setSelectedProducts: Dispatch<ISelectedProducts[]>;
+  selectedCategories: ISelectedCategories[];
+  setSelectedCategories: Dispatch<ISelectedCategories[]>;
   checkingOut: boolean;
   setCheckingOut: Dispatch<boolean>;
+  confirmOrderData: IOrderConfirmedResponse;
+  setConfirmOrderData: Dispatch<IOrderConfirmedResponse>;
 }
 
 export const OrderViewContext = createContext<IOrderViewContext>({} as IOrderViewContext);
 
 export const CreateOrderView: FC = () => {
   const [client, setClient] = useState({} as IOrderViewContext["client"]);
-  const [selectedProducts, setSelectedProducts] = useState<ISelectedProducts[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<ISelectedCategories[]>([]);
   const [checkingOut, setCheckingOut] = useState(false);
+  const [confirmOrderData, setConfirmOrderData] = useState({} as IOrderConfirmedResponse);
 
   return (
     <OrderViewContext.Provider
       value={{
         client,
         setClient,
-        selectedProducts,
-        setSelectedProducts,
+        selectedCategories,
+        setSelectedCategories,
         checkingOut,
-        setCheckingOut
+        setCheckingOut,
+        confirmOrderData,
+        setConfirmOrderData
       }}
     >
       <div className={styles.ordersView}>

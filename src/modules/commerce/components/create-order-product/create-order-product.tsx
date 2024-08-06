@@ -9,18 +9,10 @@ import PrincipalButton from "@/components/atoms/buttons/principalButton/Principa
 import styles from "./create-order-product.module.scss";
 import { useHandleProductsItems } from "../../hooks/create-order/handle-products-items.hook";
 import { Flex } from "antd";
+import { ISelectedProduct } from "@/types/commerce/ICommerce";
 
 export interface CreateOrderProductProps {
-  product: {
-    id: number;
-    name: string;
-    price: number;
-    discount: number | undefined;
-    discount_percentage: number | undefined;
-    image: string;
-    category_id: number;
-    SKU: string;
-  };
+  product: ISelectedProduct;
   categoryName: string;
 }
 

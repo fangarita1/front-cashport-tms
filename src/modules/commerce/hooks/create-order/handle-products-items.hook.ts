@@ -1,20 +1,11 @@
 import { useCallback, useContext } from "react";
 import { ISelectedProduct, OrderViewContext } from "../../containers/create-order/create-order";
 
-interface IProductProps {
-  id: number;
-  name: string;
-  price: number;
-  discount: number | undefined;
-  discount_percentage: number | undefined;
-  image: string;
-  category_id: number;
-}
-export const useHandleProductsItems = (product: IProductProps, categoryName: string) => {
-  const { selectedProducts, setSelectedProducts } = useContext(OrderViewContext);
+export const useHandleProductsItems = (product: ISelectedProduct, categoryName: string) => {
+  const { selectedCategories, setSelectedCategories } = useContext(OrderViewContext);
 
   const alreadySelectedProduct: ISelectedProduct | null =
-    selectedProducts.reduce<ISelectedProduct | null>((acc, category) => {
+    selectedCategories.reduce<ISelectedProduct | null>((acc, category) => {
       if (category.category_id === product.category_id) {
         const foundProduct = category.products.find((p) => p.id === product.id);
         if (foundProduct) return foundProduct;
@@ -22,9 +13,11 @@ export const useHandleProductsItems = (product: IProductProps, categoryName: str
       return acc;
     }, null);
 
-  const handleAddToCart = (product: IProductProps) => {
-    const newState = [...selectedProducts];
-    const categoryIndex = selectedProducts.findIndex((c) => c.category_id === product.category_id);
+  const handleAddToCart = (product: ISelectedProduct) => {
+    const newState = [...selectedCategories];
+    const categoryIndex = selectedCategories.findIndex(
+      (c) => c.category_id === product.category_id
+    );
 
     const productToAdd = {
       id: product.id,
@@ -34,7 +27,8 @@ export const useHandleProductsItems = (product: IProductProps, categoryName: str
       discount_percentage: product.discount_percentage,
       quantity: 1,
       image: product.image,
-      category_id: product.category_id
+      category_id: product.category_id,
+      SKU: product.SKU
     };
 
     if (categoryIndex === -1) {
@@ -49,13 +43,13 @@ export const useHandleProductsItems = (product: IProductProps, categoryName: str
       const existingProducts = newState[categoryIndex].products;
       existingProducts.push(productToAdd);
     }
-    setSelectedProducts(newState);
+    setSelectedCategories(newState);
   };
 
   const handleDecrementQuantity = useCallback(
     (productId: number) => {
-      const newState = [...selectedProducts];
-      const categoryIndex = selectedProducts.findIndex((c) =>
+      const newState = [...selectedCategories];
+      const categoryIndex = selectedCategories.findIndex((c) =>
         c.products.find((p) => p.id === productId)
       );
 
@@ -63,7 +57,7 @@ export const useHandleProductsItems = (product: IProductProps, categoryName: str
 
       const updatedProduct = {
         ...newState[categoryIndex].products[productIndex],
-        quantity: selectedProducts[categoryIndex].products[productIndex].quantity - 1
+        quantity: selectedCategories[categoryIndex].products[productIndex].quantity - 1
       };
 
       if (updatedProduct.quantity === 0) {
@@ -77,15 +71,15 @@ export const useHandleProductsItems = (product: IProductProps, categoryName: str
         newState.splice(categoryIndex, 1);
       }
 
-      setSelectedProducts(newState);
+      setSelectedCategories(newState);
     },
-    [selectedProducts, setSelectedProducts]
+    [selectedCategories, setSelectedCategories]
   );
 
   const handleIncrementQuantity = useCallback(
     (productId: number) => {
-      const newState = [...selectedProducts];
-      const categoryIndex = selectedProducts.findIndex((c) =>
+      const newState = [...selectedCategories];
+      const categoryIndex = selectedCategories.findIndex((c) =>
         c.products.find((p) => p.id === productId)
       );
 
@@ -100,16 +94,16 @@ export const useHandleProductsItems = (product: IProductProps, categoryName: str
       newState[categoryIndex].products[productIndex] = updatedProduct;
 
       // Set the updated state array
-      setSelectedProducts(newState);
+      setSelectedCategories(newState);
     },
-    [selectedProducts, setSelectedProducts]
+    [selectedCategories, setSelectedCategories]
   );
 
   const handleChangeQuantity = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>, productId: number, categoryId: number) => {
-      const newState = [...selectedProducts];
+      const newState = [...selectedCategories];
       const newQuantity = parseInt(event.target.value);
-      const categoryIndex = selectedProducts.findIndex((c) =>
+      const categoryIndex = selectedCategories.findIndex((c) =>
         c.products.find((p) => p.id === productId)
       );
       const productIndex = newState[categoryIndex].products.findIndex((p) => p.id === productId);
@@ -123,7 +117,7 @@ export const useHandleProductsItems = (product: IProductProps, categoryName: str
           newState.splice(categoryIndex, 1);
         }
 
-        setSelectedProducts(newState);
+        setSelectedCategories(newState);
         return;
       }
 
@@ -144,9 +138,9 @@ export const useHandleProductsItems = (product: IProductProps, categoryName: str
         return category;
       });
 
-      setSelectedProducts(updatedCategories); // Update state with the newly formed categories array
+      setSelectedCategories(updatedCategories); // Update state with the newly formed categories array
     },
-    [selectedProducts, setSelectedProducts]
+    [selectedCategories, setSelectedCategories]
   );
 
   return {

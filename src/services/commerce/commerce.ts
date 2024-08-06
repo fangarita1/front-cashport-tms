@@ -34,17 +34,21 @@ export const confirmOrder = async (
   clientId: number,
   data: IConfirmOrderData
 ) => {
-  const response: GenericResponse<IOrderConfirmedResponse> = await API.post(
-    `/marketplace/projects/${projectId}/clients/${clientId}/order-confirmation`,
-    { data }
-  );
-  return response;
+  try {
+    const response: GenericResponse<IOrderConfirmedResponse> = await API.post(
+      `/marketplace/projects/${projectId}/clients/${clientId}/order-confirmation`,
+      data
+    );
+    return response;
+  } catch (error) {
+    return error;
+  }
 };
 
 export const createOrder = async (projectId: number, clientId: number, data: ICreateOrderData) => {
   const response: GenericResponse<[]> = await API.post(
     `/marketplace/projects/${projectId}/clients/${clientId}/create-order`,
-    { data }
+    data
   );
   return response;
 };
