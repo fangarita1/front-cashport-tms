@@ -314,9 +314,9 @@ export const formatCurrencyMoney = (value: number): string => {
   if (typeof value !== "number") {
     return "$0,00";
   }
-  const [intPart, decPart] = value.toFixed(2).split(".");
+  const [intPart] = value.toFixed(2).split(".");
   const formattedIntPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  return `$${formattedIntPart},${decPart}`;
+  return `$${formattedIntPart}`;
 };
 
 export const stringFromArrayOfSelect = (array: ISelectStringType[]): string => {

@@ -1,7 +1,6 @@
 import { Flex, Input, InputNumber, Typography } from "antd";
 import { Control, Controller, FieldError, RegisterOptions } from "react-hook-form";
 import "./inputFormMoney.scss";
-import { formatMoney } from "@/utils/utils";
 
 interface Props {
   titleInput?: string;
@@ -34,6 +33,16 @@ export const InputFormMoney = ({
   readOnly,
   changeInterceptor
 }: Props) => {
+  const formatNumber = (value: string): string => {
+    if (!value) return "";
+    const numStr = value.replace(/\D/g, "");
+    return numStr.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
+  const parseNumber = (value: string): string => {
+    return value.replace(/\./g, "");
+  };
+
   return (
     <Flex vertical className={`containerInput__format ${className}`} style={customStyle}>
       {!hiddenTitle && (
@@ -43,20 +52,20 @@ export const InputFormMoney = ({
       )}
       <Controller
         name={nameInput}
-        rules={{ required: true, maxLength: 123, ...validationRules }}
+        rules={{ required: true, ...validationRules }}
         control={control}
         disabled={disabled}
         render={({ field: { onChange, value, ...field } }) => (
-          <InputNumber
+          <Input
             readOnly={readOnly}
-            type="text"
-            className={!error ? `inputForm ${readOnly && "-readOnly"}` : "inputFormError"}
-            variant="borderless"
-            formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+            className={!error ? `inputForm ${readOnly ? "-readOnly" : ""}` : "inputFormError"}
             placeholder={placeholder?.length > 0 ? placeholder : titleInput}
+            value={formatNumber(value)}
             onChange={(e) => {
-              onChange(e);
-              changeInterceptor?.(e);
+              const formattedValue = formatNumber(e.target.value);
+              const numericValue = parseNumber(formattedValue);
+              onChange(numericValue);
+              changeInterceptor?.(numericValue);
             }}
             {...field}
           />

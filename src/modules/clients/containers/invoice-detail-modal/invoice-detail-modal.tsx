@@ -269,7 +269,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                 <div className={styles.name}>{`Valor: ${item.ammount}`}</div>
                                 <div
                                   className={styles.name}
-                                >{`Fecha de pago acordada: ${item.event_date}`}</div>
+                                >{`Fecha de pago acordada: ${formatDatePlane(item.event_date?.toString())}`}</div>
                               </div>
                             ) : (
                               ""

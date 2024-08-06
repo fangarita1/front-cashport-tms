@@ -79,7 +79,7 @@ export const WalletTab = () => {
   const closeAllModal = () => {
     setIsSelectOpen({ selected: 0 });
     setSelectedRows([]);
-    handleisGenerateActionOpen();
+    mutate(`/invoice/client/${clientId}/project/${projectId}`);
   };
 
   return (
@@ -135,7 +135,7 @@ export const WalletTab = () => {
                   color={invoiceState.color}
                 />
               ),
-              children: ( 
+              children: (
                 <InvoicesTable
                   setShowInvoiceDetailModal={setShowInvoiceDetailModal}
                   stateId={invoiceState.status_id}
@@ -188,6 +188,9 @@ export const WalletTab = () => {
         clientId={clientId}
         projectId={projectId}
         messageShow={messageShow}
+        onCloseAllModals={() => {
+          closeAllModal();
+        }}
       />
       <ModalActionDiscountCredit
         isOpen={showActionDetailModal?.isOpen}
@@ -227,5 +230,7 @@ export const WalletTab = () => {
         onCloseAllModals={closeAllModal}
       />
     </>
-  );{}
+  );
+  {
+  }
 };
