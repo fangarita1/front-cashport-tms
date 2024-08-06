@@ -167,7 +167,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                           <div className={styles.cardInvoiceFiling}>
                             <h5 className={styles.title}>{getEventTitle(item.event_type_name)}</h5>
                             <div className={styles.date}>
-                              {formatDatePlane(item.event_date.toString())}
+                              {item.event_type_name === "Acuerdo de pago"
+                                ? formatDatePlane(item.create_at?.toString())
+                                : formatDatePlane(item.event_date.toString())}
                             </div>
                             {item.event_type_name === "Aviso de vencimiento" ? (
                               <div className={styles.quantity}>
