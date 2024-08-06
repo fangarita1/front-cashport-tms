@@ -1,4 +1,4 @@
-import { Flex, Tabs, TabsProps, Typography, message, Collapse, Row, Col, Select, Switch, DatePicker, DatePickerProps, GetProps, TimePicker, Table, TableProps,AutoComplete, Input, ConfigProvider, InputNumber, Button, SelectProps, Popconfirm, Modal } from "antd";
+import { Flex, Tabs, TabsProps, Typography, message, Collapse, Row, Col, Select, Switch, DatePicker, DatePickerProps, GetProps, TimePicker, Table, TableProps,AutoComplete, Input, ConfigProvider, InputNumber, Button, SelectProps, Popconfirm, Modal, Divider, Space } from "antd";
 import React, { useRef, useEffect, useState, useContext } from "react";
 import { runes } from 'runes2';
 
@@ -56,10 +56,12 @@ import useSWRInmutable from "swr/immutable";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
 import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
-import { FileText } from "phosphor-react";
+import { FileText, UserPlus, Warning } from "phosphor-react";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 import { RangePickerProps } from "antd/es/date-picker";
+import { DividerCustom } from "@/components/atoms/DividerCustom/DividerCustom";
+import ModalAddContact from "@/components/molecules/modals/ModalAddContact/ModalAddContact";
 
 const { Title, Text } = Typography;
 
@@ -107,6 +109,8 @@ export const CreateOrderView = () => {
     "0",
     getDocumentsByEntityType);
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
+  const [isOpenModalContacts, setIsOpenModalContacts] = useState(false);
+
   const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
 
@@ -387,9 +391,9 @@ export const CreateOrderView = () => {
       key: 'quantity',
       render: (_, record) =>
         dataCarga.length >= 1 ? (
-          <>
-          <CaretLeft onClick={() => handleQuantityMaterial(record.key,'-')}/>&nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;<CaretRight onClick={() => handleQuantityMaterial(record.key,'+')}/>
-          </>
+          <Flex align="center">
+            <CaretLeft onClick={() => handleQuantityMaterial(record.key,'-')}/>&nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;<CaretRight onClick={() => handleQuantityMaterial(record.key,'+')}/>
+          </Flex>
         ) : null,
     },
     {
@@ -448,8 +452,10 @@ export const CreateOrderView = () => {
       key: 'alerts',
       render: (_, record) =>
         dataCarga.length >= 1 ? (
-          <Popconfirm title="Esta seguro de eliminar?" onConfirm={() => handleDeleteMaterial(record.key)}>
-            <Trash/>
+          <Popconfirm title="Esta seguro de eliminar?" onConfirm={() => handleDeleteMaterial(record.key)} >
+            <div style={{ display:"flex", justifyContent:"center",alignItems:"center", height:32, width: 32}}>
+              <Trash size={24}/>
+            </div>
           </Popconfirm>
         ) : null,
     },
@@ -560,17 +566,6 @@ export const CreateOrderView = () => {
     setSelectedMaterial(null);
   };
 
-  const handleSearchMaterial = async (value: string) => {
-    if(value.length > 3){
-      const result =  await searchResultMaterial(value);
-      setOptionsMaterial(result);
-    }
-  };
-
-  const onSelectMaterial = (value: string) => {
-    console.log('onSelect', value);
-  };
-
   const handleDeleteMaterial = (key: React.Key) => {
     console.log(key)
     cargaIdx = cargaIdx - 1;
@@ -609,9 +604,9 @@ export const CreateOrderView = () => {
       key: 'quantity',
       render: (_, record) =>
         dataVehicles.length >= 1 ? (
-          <>
-          <CaretLeft onClick={() => handleQuantityVehicle(record.key,'-')}/>&nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;<CaretRight onClick={() => handleQuantityVehicle(record.key,'+')}/>
-          </>
+          <Flex align="center">
+            <CaretLeft onClick={() => handleQuantityVehicle(record.key,'-')}/>&nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;<CaretRight onClick={() => handleQuantityVehicle(record.key,'+')}/>
+          </Flex>
         ) : null,
     },
     {
@@ -621,7 +616,9 @@ export const CreateOrderView = () => {
       render: (_, record) =>
         dataVehicles.length >= 1 ? (
           <Popconfirm title="Esta seguro de eliminar?" onConfirm={() => handleDeleteVehicle(record.key)}>
-            <Trash/>
+            <div style={{ display:"flex", justifyContent:"center",alignItems:"center", height:32, width: 32}}>
+              <Trash size={24}/>
+            </div>
           </Popconfirm>
         ) : null,
     },
@@ -761,6 +758,7 @@ export const CreateOrderView = () => {
     console.log(key)
     const newData = [...dataPsl];
     newData.forEach(item => {
+      console.log("item.key",item.key)
       if(item.key === key){
         //last costcenter
         const lastitem = item.costcenters.at(-1);
@@ -813,9 +811,9 @@ export const CreateOrderView = () => {
       key: 'quantity',
       render: (_, record) =>
         dataRequirements.length >= 1 ? (
-          <>
-          <CaretLeft onClick={() => handleQuantityRequirement(record.key,'-')}/>&nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;<CaretRight onClick={() => handleQuantityRequirement(record.key,'+')}/>
-          </>
+          <Flex align="center">
+            <CaretLeft onClick={() => handleQuantityRequirement(record.key,'-')}/>&nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;<CaretRight onClick={() => handleQuantityRequirement(record.key,'+')}/>
+          </Flex>
         ) : null,
     },
     {
@@ -825,7 +823,9 @@ export const CreateOrderView = () => {
       render: (_, record) =>
         dataRequirements.length >= 1 ? (
           <Popconfirm title="Esta seguro de eliminar?" onConfirm={() => handleDeleteRequirement(record.key)}>
-            <Trash/>
+            <div style={{ display:"flex", justifyContent:"center",alignItems:"center", height:32, width: 32}}>
+              <Trash size={24}/>
+            </div>
           </Popconfirm>
         ) : null,
     },
@@ -868,6 +868,10 @@ export const CreateOrderView = () => {
   useEffect(() => {
     loadRequirements();
   }, []);
+
+  const handleChangeSelectedRequirements=()=>{
+    
+  }
 
   const addRequeriment = async (value:any) =>{
     requirementsIdx = requirementsIdx + 1;
@@ -947,85 +951,6 @@ export const CreateOrderView = () => {
   useEffect(() => {
     loadContacts();
   }, []);
-
-  const newcontacttype = useRef<number>(0);
-  const newcontacname = useRef<string>('');
-  const newcontactphone = useRef<string>('');
-
-  const AddContactModal = ()=> {
-    newcontacttype.current = 0;
-    newcontacname.current = '';
-    newcontactphone.current = '';
-
-    Modal.confirm({
-      title: 'Agregar otro contacto',
-      content: (
-        <Flex style={{width:'100%'}}>          
-          <Row style={{width:'100%'}}>
-            <Col span={24}>
-              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                <text>Punto del contacto</text>
-              </label>
-              <Select
-                placeholder = 'Seleccione origen o destino'
-                style={{ width: '100%' }}
-                options={[{ value: 1, label: 'Origen' },{ value: 2, label: 'Destino' }]}
-                onChange={(e)=>{ 
-                  newcontacttype.current = (e);
-                }}
-              />
-              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                <text>Nombre</text>
-              </label>
-              <Input placeholder="Escribir nombre" onChange={(e)=>{ 
-                newcontacname.current = (e.target.value);
-              }} />
-              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                <text>Teléfono</text>
-              </label>
-              <Input placeholder="Escribir teléfono" onChange={(e)=>{ 
-                newcontactphone.current = (e.target.value);
-              }}
-              onKeyPress={(event) => {
-                if (!/[0-9]/.test(event.key)) {
-                  event.preventDefault();
-                }
-              }} 
-              count={{
-                show: true,
-                max: 10,
-                strategy: (txt) => runes(txt).length,
-                exceedFormatter: (txt, { max }) => runes(txt).slice(0, max).join(''),              
-              }}/>
-            </Col>   
-          </Row>
-        </Flex>
-      ),
-      onOk: ()=>{
-        if(newcontacname.current.length <= 0){
-          message.error('Debe digitar un nombre de contacto');
-        }else{
-          const lastitem = dataContacts.filter(f => f.contact_type == newcontacttype.current).at(-1);
-                    
-          const newcontact : ITransferOrderContacts ={
-            key: (lastitem!=undefined ? lastitem.key +1 : 1),
-            contact_type: newcontacttype.current,
-            id: 0,
-            id_transfer_order: 0,
-            id_contact: 0,
-            name: newcontacname.current,
-            contact_number: newcontactphone.current,
-            active: "",
-            created_at: new Date(),
-            created_by: ""
-          }
-          
-          setDataContacts(dataContacts => [...dataContacts, newcontact]);
-
-        }
-      },
-    });
-  }
 
   const UpdateContact = (key: React.Key, field: string, ndata: string) => {
     //console.log(key)
@@ -1310,7 +1235,7 @@ export const CreateOrderView = () => {
       }
     }
   };
-
+console.log("typeactive", typeactive)
   /* acoordion */
   const actionsOptions = [
     {
@@ -1324,14 +1249,12 @@ export const CreateOrderView = () => {
         </div>
       ),
       children: (
-        <>
-          <Row>
-            <Col span={12} style={{ padding:'25px'}}>
+          <Row >
+            <Col span={12} style={{ padding:'1.5rem'}}>
               <Row>
-                <label className="locationLabels">
+                <Text className="locationLabels">
                   Punto Origen
-                </label><br></br>
-
+                </Text>
                 <Select
                   showSearch
                   placeholder="Buscar dirección inicial"                  
@@ -1351,12 +1274,12 @@ export const CreateOrderView = () => {
                     </>
                   }
                 { typeactive != "3" &&
-                  <>
-                  <Switch checked={origenIzaje} onChange={event =>{
-                    setOrigenIzaje(event)
-                  }}/>
-                  <label>&nbsp;&nbsp; Requiere Izaje</label>
-                  </>
+                  <Flex style={{marginTop:"0.5rem", justifyContent: "space-between", gap: "0.5rem"}}>
+                    <Switch disabled={typeactive === "2"}  checked={origenIzaje} onChange={event =>{
+                      setOrigenIzaje(event)
+                    }} />
+                    <Text>Requiere Izaje</Text>
+                  </Flex>
                 }
               </Row>
               { typeactive != "2" &&
@@ -1383,149 +1306,152 @@ export const CreateOrderView = () => {
                     </>
                   }
                 { typeactive != "3" &&
-                  <>
-                  <Switch checked={destinoIzaje} onChange={event =>{
-                    setDestinoIzaje(event)
-                  }}/>
-                  <label>&nbsp;&nbsp; Requiere Izaje</label>
-                  </>
+                <Flex style={{marginTop:"0.5rem", justifyContent: "space-between", gap: "0.5rem"}}>
+                    <Switch checked={destinoIzaje}  onChange={event =>{
+                      setDestinoIzaje(event)
+                    }}/>
+                  <Text>Requiere Izaje</Text>
+                </Flex>
                 }
               </Row>
               }
-              <Row style={{marginTop:'1.5rem'}}>
+              <Row style={{marginTop:'1rem'}}>
                 <Col span={24}>
                   <label className="locationLabels">
                     Fecha y hora inicial
                   </label>
-                </Col>
-                <Col span={8}>
-                  <DatePicker style={{width:'90%'}}
-                    placeholder="Seleccione fecha"
-                    disabledDate={disabledDate}
-                    onChange={(value, dateString) => {                      
-                      //console.log('Selected Time: ', value);
-                      //console.log('Formatted Selected Time: ', dateString);
-                      //setFechaInicial(value);
-                      fechaInicial.current = value;
-                      setFechaInicialValid(true);
-                    }}
-                    className={fechaInicialValid ? "dateInputForm" : "dateInputFormError"}
-                  /> 
-                  {(!fechaInicialValid) &&
-                    <>
-                      <br/><label className="textError">* Campo obligatorio</label>
-                    </>
-                  }
-                </Col>                
-                <Col span={8}>
-                  <TimePicker style={{width:'90%'}}
-                    placeholder="Seleccione hora"
-                    format={'HH:mm'}
-                    minuteStep={15} 
-                    hourStep={1}
-                    type={'time'} 
-                    onChange={(value) => {
-                      //console.log(value)
-                      setHoraInicial(value);
-                      setHoraInicialValid(true);
-                    }}
-                    className={horaInicialValid ? "dateInputForm" : "dateInputFormError"}
-                  />
-                  {(!horaInicialValid) &&
-                    <>
-                      <br/><label className="textError">* Campo obligatorio</label>
-                    </>
-                  }                  
-                </Col>
-                <Col span={8}>
-                <Select
-                    placeholder="Seleccione"                  
-                    className={fechaInicialFlexibleValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
-                    style={{ width:'100%' }}
-                    options={[
-                      { value: '0', label: 'Exacto' },
-                      { value: '1', label: '+/- 1 día' },
-                      { value: '2', label: '+/- 2 días' },
-                      { value: '3', label: '+/- 3 días' },
-                    ]}
-                    onChange={(value)=>{
-                      setFechaInicialFlexible(value);
-                      setFechaInicialFlexibleValid(false);
-                    }}
-                  />
-                  {(!fechaInicialFlexibleValid) &&
-                    <>
-                      <br/><label className="textError">* Campo obligatorio</label><br/>
-                    </>
-                  }                  
+                  <Row gutter={[16,16]} style={{marginTop: "0.5rem"}}>
+                    <Col span={8}>
+                      <DatePicker 
+                        placeholder="Seleccione fecha"
+                        disabledDate={disabledDate}
+                        onChange={(value, dateString) => {                      
+                          //console.log('Selected Time: ', value);
+                          //console.log('Formatted Selected Time: ', dateString);
+                          //setFechaInicial(value);
+                          fechaInicial.current = value;
+                          setFechaInicialValid(true);
+                        }}
+                        className={fechaInicialValid ? "dateInputForm" : "dateInputFormError"}
+                      /> 
+                      {(!fechaInicialValid) &&
+                        <>
+                          <br/><label className="textError">* Campo obligatorio</label>
+                        </>
+                      }
+                    </Col>                
+                    <Col span={8}>
+                      <TimePicker 
+                        placeholder="Seleccione hora"
+                        format={'HH:mm'}
+                        minuteStep={15} 
+                        hourStep={1}
+                        type={'time'} 
+                        onChange={(value) => {
+                          //console.log(value)
+                          setHoraInicial(value);
+                          setHoraInicialValid(true);
+                        }}
+                        className={horaInicialValid ? "dateInputForm" : "dateInputFormError"}
+                      />
+                      {(!horaInicialValid) &&
+                        <>
+                          <br/><label className="textError">* Campo obligatorio</label>
+                        </>
+                      }                  
+                    </Col>
+                    <Col span={8}>
+                    <Select
+                        placeholder="Seleccione"                  
+                        className={fechaInicialFlexibleValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
+                        options={[
+                          { value: '0', label: 'Exacto' },
+                          { value: '1', label: '+/- 1 día' },
+                          { value: '2', label: '+/- 2 días' },
+                          { value: '3', label: '+/- 3 días' },
+                        ]}
+                        onChange={(value)=>{
+                          setFechaInicialFlexible(value);
+                          setFechaInicialFlexibleValid(false);
+                        }}
+                      />
+                      {(!fechaInicialFlexibleValid) &&
+                        <>
+                          <br/><label className="textError">* Campo obligatorio</label><br/>
+                        </>
+                      }                  
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
-              <Row style={{marginTop:'1.5rem'}}>
+              <Row style={{marginTop:'1rem'}}>
                 <Col span={24}>
-                  <label className="locationLabels">
+                  <Text className="locationLabels">
                     Fecha y hora final
-                  </label>
-                </Col>
-                <Col span={8}>
-                  <DatePicker style={{width:'90%'}}
-                    placeholder="Seleccione fecha"
-                    disabledDate={disabledDate}
-                    onChange={(value, dateString) => {
-                      //console.log('Selected Time: ', value);
-                      //console.log('Formatted Selected Time: ', dateString);
-                      //setFechaFinal(value);
-                      fechaFinal.current = value;
-                      setFechaFinalValid(true);
-                    }}
-                    className={fechaFinalValid ? "dateInputForm" : "dateInputFormError"}
-                  />
-                  {(!fechaFinalValid) &&
-                    <>
-                      <br/><label className="textError">* Campo obligatorio</label>
-                    </>
-                  }
-                </Col>
-                <Col span={8}>
-                  <TimePicker style={{width:'90%'}}
-                  placeholder="Seleccione hora"   
-                  format={'HH:mm'}
-                  minuteStep={15} 
-                  hourStep={1}
-                  type={'time'} 
-                  onChange={(value) => {
-                    //console.log(value);
-                    setHoraFinal(value);
-                    setHoraFinalValid(true);
-                  }} 
-                  className={horaFinalValid ? "dateInputForm" : "dateInputFormError"}
-                  />
-                  {(!horaFinalValid) &&
-                    <>
-                      <br/><label className="textError">* Campo obligatorio</label>
-                    </>
-                  } 
-                </Col>
-                <Col span={8}>
-                <Select
-                    placeholder="Seleccione"                  
-                    className={fechaFinalFlexibleValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
-                    style={{ width:'100%' }}
-                    options={[
-                      { value: '0', label: 'Exacto' },
-                      { value: '1', label: '+/- 1 día' },
-                      { value: '2', label: '+/- 2 días' },
-                      { value: '3', label: '+/- 3 días' },
-                    ]}
-                    onChange={(value)=>{
-                      setFechaFinalFlexible(value);
-                      setFechaFinalFlexibleValid(true);
-                    }}
-                  />
-                  {(!fechaFinalFlexibleValid) &&
-                    <>
-                      <br/><label className="textError">* Campo obligatorio</label><br/>
-                    </>
-                  }   
+                  </Text>
+                  <Row gutter={[16,16]} style={{marginTop: "0.5rem"}}>
+                    <Col span={8}>
+                      <DatePicker
+                        placeholder="Seleccione fecha"
+                        disabledDate={disabledDate}
+                        onChange={(value, dateString) => {
+                          //console.log('Selected Time: ', value);
+                          //console.log('Formatted Selected Time: ', dateString);
+                          //setFechaFinal(value);
+                          fechaFinal.current = value;
+                          setFechaFinalValid(true);
+                        }}
+                        className={fechaFinalValid ? "dateInputForm" : "dateInputFormError"}
+                      />
+                      {(!fechaFinalValid) &&
+                        <>
+                          <br/><label className="textError">* Campo obligatorio</label>
+                        </>
+                      }
+                    </Col>
+                    <Col span={8}>
+                      <TimePicker 
+                      placeholder="Seleccione hora"   
+                      format={'HH:mm'}
+                      minuteStep={15} 
+                      hourStep={1}
+                      type={'time'} 
+                      onChange={(value) => {
+                        //console.log(value);
+                        setHoraFinal(value);
+                        setHoraFinalValid(true);
+                      }} 
+                      className={horaFinalValid ? "dateInputForm" : "dateInputFormError"}
+                      />
+                      {(!horaFinalValid) &&
+                        <>
+                          <br/><label className="textError">* Campo obligatorio</label>
+                        </>
+                      } 
+                    </Col>
+                    <Col span={8}>
+                      <Select
+                          placeholder="Seleccione"                  
+                          className={fechaFinalFlexibleValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
+                          options={[
+                            { value: '0', label: 'Exacto' },
+                            { value: '1', label: '+/- 1 día' },
+                            { value: '2', label: '+/- 2 días' },
+                            { value: '3', label: '+/- 3 días' },
+                          ]}
+                          onChange={(value)=>{
+                            setFechaFinalFlexible(value);
+                            setFechaFinalFlexibleValid(true);
+                          }}
+                        />
+                        {(!fechaFinalFlexibleValid) &&
+                          <>
+                            <br/><label className="textError">* Campo obligatorio</label><br/>
+                          </>
+                        }   
+                    </Col>
+
+                  </Row>
                 </Col>
               </Row>
               { routeGeometry &&
@@ -1549,18 +1475,17 @@ export const CreateOrderView = () => {
               </Row>
               }
             </Col>
-            <Col span={12}>
+            <Col span={12}  style={{ padding:'1.5rem'}}>
               <div
                 ref={mapContainerRef}
                 style={{
                   width: "100%",
-                  height: "48vh",
+                  height: "100%",
                   border: "1px #F7F7F7 solid",
                 }}
               />
-            </Col>
+            </Col> 
           </Row>
-        </>
       )
     },
     {
@@ -1574,65 +1499,120 @@ export const CreateOrderView = () => {
         </div>
       ),
       children: (
-        <div>          
-            { (typeactive == "1" || typeactive == "2") &&
-              <>
-              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                Material
-              </label><p>&nbsp;</p>
-              <Select
-                  showSearch
-                  allowClear
-                  placeholder="Buscar material"                  
-                  className="certain-category-search-dropdown"
-                  style={{ width:'400px' }}
-                  optionFilterProp="children"
-                  value={selectedMaterial}
-                  filterOption={(input, option) =>                    
-                    option!.value!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }
-                >
-                  { optionsMaterial.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
-                </Select>
-              <Table columns={columnsCarga} dataSource={dataCarga} />
-              </>
+        <Row>
+          <Col span={24}  style={{ padding:'1.5rem'}}>
+            {(typeactive == "1" || typeactive == "2") &&
+              <Row style={{marginBottom: "2rem"}}>
+                <Col span={24}>
+                  <Col span={12}>
+                  <Text className="locationLabels" style={{ display: 'flex' }}>
+                    Material
+                  </Text>
+                  <Select
+                      showSearch
+                      allowClear
+                      placeholder="Buscar material"                  
+                      className="certain-category-search-dropdown"
+                      style={{ width:'100%', height: "2.5rem" }}
+                      optionFilterProp="children"
+                      value={selectedMaterial}
+                      filterOption={(input, option) =>                    
+                        option!.value!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
+                    >
+                      { optionsMaterial.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
+                    </Select>
+                  </Col>
+                  <Col span={12}/>
+                  <Col span={24}>
+                    <Table columns={columnsCarga} dataSource={dataCarga} pagination={false} footer={() => {
+                    return (
+                      <Flex align="center" justify="flex-end" >
+                        <Row style={{width: "100%"}} >
+                          <Col span={16}/>
+                          <Col span={8} style={{background: "#F7F7F7", padding: 16}}>
+                            <Flex align="center" justify="space-around">
+                              <Flex>
+                                <Space>
+                                  <Text >
+                                    Volumen total
+                                  </Text>
+                                  <Text className="text-footer-table">
+                                    {dataCarga.reduce((sum, material) => sum + material.m3_volume, 0)} m3
+                                  </Text>
+                                </Space>
+                              </Flex>
+                              <Divider type="vertical" style={{border: '1px solid #DDDDDD', fontSize:24}}/>
+                              <Flex>
+                                <Space>
+                                  <Text >
+                                    Peso total
+                                  </Text>
+                                  <Text className="text-footer-table">
+                                    {dataCarga.reduce((sum, material) => sum + material.kg_weight, 0)} kg
+                                  </Text>
+                                </Space>
+                              </Flex>
+                            </Flex>
+                          </Col>
+                        </Row>
+                      </Flex>
+                    )
+                    }}/>
+                  </Col>
+                </Col>
+              </Row>
             }
-            { typeactive == "3" &&
-              <>
-              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                Personas
-              </label><p>&nbsp;</p>
-              <AutoComplete
-                popupClassName="certain-category-search-dropdown"
-                popupMatchSelectWidth={500}
-                style={{ width: 250 }}
-                size="large"
-              >
-                <Input.Search size="large" placeholder="Buscar persona" />
-              </AutoComplete>
-              <Table columns={columnsCargaPersonas} />
-              </>
+            {typeactive == "3" &&        
+              <Row style={{marginBottom: "2rem"}}>
+                <Col span={24}>
+                  <Col span={12}>
+                    <Text className="locationLabels" style={{ display: 'flex' }}>
+                      Personas
+                    </Text>
+                    <AutoComplete
+                      popupClassName="certain-category-search-dropdown"
+                      popupMatchSelectWidth={500}
+                      style={{ width:'100%', height: "2.5rem" }}
+                      size="large"
+                      placeholder="Buscar persona"
+                    />  
+                  </Col>
+                  <Col span={12}/>
+                  <Col span={24}>
+                    <Table columns={columnsCargaPersonas} />
+                  </Col>
+                </Col>
+              </Row>
             }            
-              <>
-              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                Vehículo Sugerido
-              </label><p>&nbsp;</p>
-              <Select
-                  showSearch
-                  placeholder="Agregar vehículo"                  
-                  className="certain-category-search-dropdown"
-                  style={{ width:'400px' }}
-                  optionFilterProp="children"
-                  value={selectedVehicle}
-                  filterOption={(input, option) =>                    
-                    option!.value!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }
-                >
-                  { optionsVehicles.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
-                </Select>
-              <Table columns={columnsCargaVehiculo} dataSource={dataVehicles} />
-              </>
-        </div>
+              <Row >
+                <Col span={24}>
+                  <Col span={12}>
+                    <Text className="locationLabels" style={{ display: 'flex' }}>
+                      Vehículo Sugerido
+                    </Text>
+                    <Select
+                        showSearch
+                        placeholder="Agregar vehículo"                  
+                        className="certain-category-search-dropdown"
+                        style={{ width:"100%", height: "2.5rem" }}
+                        optionFilterProp="children"
+                        value={selectedVehicle}
+                        filterOption={(input, option) =>                    
+                          option!.value!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                        { optionsVehicles.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
+                      </Select>
+                  </Col>
+                  <Col span={12}/>
+                  <Col span={24}>
+                    <Table columns={columnsCargaVehiculo} dataSource={dataVehicles} />
+                  </Col>
+                </Col>
+              </Row>
+          </Col>          
+        </Row>
         
       )
     },
@@ -1647,98 +1627,106 @@ export const CreateOrderView = () => {
         </div>
       ),
       children: (
-        <>
-          <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-            <text>Company Code</text>
-          </label>
-          <Select
-            style={{ width: '350px' }}
-            className={companyValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
-            options={[{ value: '1', label: 'Halliburton' },{ value: '2', label: 'Halliburton zona franca' }]}
-            onChange={(value)=>{
-              setCompany(value);
-              setCompanyValid(true);
-            }}
-          />
-          {(!companyValid) &&
-            <>
-              <br/><label className="textError">* Campo obligatorio</label><br/>
-            </>
-          }
-          {dataPsl.map((psl) => (
-            <>
-            <div className="divdistance">
-              <Row>
-                <Col span={10}>
-                  <label className="locationLabels" style={{ display: 'flex', marginTop: '1rem' }}>
-                    <text>Product Service Line (PSL)</text>
-                  </label>
-                  <Select
-                      style={{ width: '100%' }}
-                      options={[{ value: 1, label: 'PSL 1' }]}
-                      defaultValue={{ key: psl.idpsl}}
-                  />
-                </Col>
-                <Col span={8} style={{paddingLeft:'30px'}}>
-                  <label className="locationLabels" style={{ display: 'flex', marginTop: '1rem' }}>
-                    <text>Porcentaje PSL</text>
-                  </label>
-                  <InputNumber<number>
-                    style={{ width: '100%' }}
-                    defaultValue={psl.percent}
-                    min={0}
-                    max={100}
-                    formatter={(value) => `${value}%`}
-                    parser={(value) => value?.replace('%', '') as unknown as number}
-                    value={psl.percent}
-                  />
-                </Col>
-              </Row>
-              {psl.costcenters.map((cc) => (
+        <Row>
+          <Col span={24} style={{ padding:'1.5rem'}}>
+            <Row style={{marginBottom: "1.5rem"}}>
+              <Col span={12}>
+                <Text className="locationLabels" style={{ display: 'flex' }}>
+                  Company Code
+                </Text>
+                <Select
+                  className={companyValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
+                  options={[{ value: '1', label: 'Halliburton' },{ value: '2', label: 'Halliburton zona franca' }]}
+                  onChange={(value)=>{
+                    setCompany(value);
+                    setCompanyValid(true);
+                  }}
+                />
+              {(!companyValid) &&
                 <>
+                  <br/><label className="textError">* Campo obligatorio</label><br/>
+                </>
+              }
+              </Col>
+              <Col span={12}/>
+            </Row>
+            {dataPsl.map((psl) => (
+              <div className="divdistance" key={psl.key}>
                 <Row>
-                  <Col span={10} style={{paddingLeft:'30px'}}>
-                    <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                      <text>Centro de costos</text>
-                    </label>
+                  <Col span={10}>
+                    <Text className="locationLabels" style={{ display: 'flex' }}>
+                      Product Service Line (PSL)
+                    </Text>
                     <Select
-                        style={{ width: '100%' }}
-                        options={[{ value: 1, label: 'Centro de costos 1' }]}
-                        defaultValue={{ key: cc.idpslcostcenter}}
+                        options={[{ value: 1, label: 'PSL 1' }]}
+                        defaultValue={{ key: psl.idpsl}}
+                        className="puntoOrigen dateInputForm" 
                     />
                   </Col>
-                  <Col span={8} style={{paddingLeft:'30px'}}>
-                    <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                      <text>Porcentaje CC</text>
-                    </label>
+                  <Col span={6} style={{paddingLeft:'30px'}}>
+                    <Text className="locationLabels" style={{ display: 'flex' }}>
+                      Porcentaje PSL
+                    </Text>
                     <InputNumber<number>
-                      style={{ width: '100%' }}
-                      defaultValue={cc.percent}
+                      className="puntoOrigen dateInputForm" 
+                      defaultValue={psl.percent}
                       min={0}
                       max={100}
                       formatter={(value) => `${value}%`}
                       parser={(value) => value?.replace('%', '') as unknown as number}
+                      value={psl.percent}
                     />
-                  </Col>                  
+                  </Col>
+                  <Col span={8}/>
                 </Row>
-                </>
-              ))}
-              <Row>
-                <Col span={18}>
-                </Col>
-                <Col span={6} style={{textAlign:'center'}}>
-                    <button onClick={() => addPslCostCenter(psl.key)} className="btnagregarpsl"><PlusCircle></PlusCircle>&nbsp;&nbsp;<text>Agregar centro de costos</text></button>
-                </Col>
-              </Row>
-            </div>
-            </>
-          ))}
-          <Row>
-            <Col span={24} className="text-right">
-              <button onClick={() => addPsl()} className="btnagregarpsl"><PlusCircle></PlusCircle>&nbsp;&nbsp;<text>Agregar PSL</text></button>
-            </Col>
-          </Row>
-        </>
+                {psl.costcenters.map((cc, index) => (
+                  <Row key={cc.key}>
+                    <Col span={10} style={{paddingLeft:'30px'}}>
+                      <Text className="locationLabels" style={{ display: 'flex', marginTop: '0.5rem' }}>
+                        Centro de costos
+                      </Text>
+                      <Select
+                          className="puntoOrigen dateInputForm" 
+                          options={[{ value: 1, label: 'Centro de costos 1' }]}
+                          defaultValue={{ key: cc.idpslcostcenter}}
+                      />
+                    </Col>  
+                    <Col span={6} style={{paddingLeft:'30px'}}>
+                      <Text className="locationLabels" style={{ display: 'flex', marginTop: '0.5rem' }}>
+                        Porcentaje CC
+                      </Text>
+                      <InputNumber<number>
+                        className="puntoOrigen dateInputForm" 
+                        defaultValue={cc.percent}
+                        min={0}
+                        max={100}
+                        formatter={(value) => `${value}%`}
+                        parser={(value) => value?.replace('%', '') as unknown as number}
+                      />
+                    </Col>  
+                    <Col span={8} style={{display:"flex", justifyContent: "center", alignItems:"flex-end"}}>
+                      {index+1 === psl.costcenters.length && 
+                      <Flex align="center" justify="center">
+                        <PlusCircle size={24}/>
+                        <button onClick={() => addPslCostCenter(psl.key)} className="btnagregarpsl">
+                          Agregar centro de costos
+                        </button>
+                      </Flex>}
+                    </Col>                
+                  </Row>
+                ))}
+              </div>
+            ))}
+            <Row style={{marginTop: "2rem"}}>
+              <Col span={24} style={{display:"flex", justifyContent: "flex-end"}}>
+                <Flex align="center" justify="center">
+                  <PlusCircle size={24}/>
+                  <button onClick={() => addPsl()} className="btnagregarpsl">Agregar PSL</button>
+                </Flex>
+              </Col>
+            </Row>
+          </Col>
+        </Row >
       )
     },
     {
@@ -1752,13 +1740,13 @@ export const CreateOrderView = () => {
         </div>
       ),
       children: (
-        <>
-          <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-            <text>Documentos</text>
-          </label>
+        <Row>
+          <Col span={24} style={{ padding:'1.5rem'}}>
+          <Text className="locationLabels" style={{ display: 'flex' }}> 
+            Documentos
+          </Text>
           <Row className="mainUploadDocuments">
             {selectedFiles.map((file) => (
-              // eslint-disable-next-line react/jsx-key
               <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
                 <UploadDocumentButton
                   key={file.id}
@@ -1781,16 +1769,16 @@ export const CreateOrderView = () => {
               </Col>
             ))}
           </Row>
-          <Row>
+          <Row >
             <Col span={24} className="text-right">
-              <Button type="text" onClick={() => setIsOpenModalDocuments(true)} icon={<FileText size={15}/>} > <Text style={{fontWeight:'bold'}}>Agregar otro documento</Text></Button>
+              <Button type="text" onClick={() => setIsOpenModalDocuments(true)} icon={<FileText size={24}/>} > <Text style={{fontWeight:'bold'}}>Agregar otro documento</Text></Button>
             </Col>
           </Row>
-          <Row>
+          <Row style={{marginBottom: "1rem"}}         >
             <Col span={12}>
-              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                <text>Cliente final</text>
-              </label>
+              <Text className="locationLabels" style={{ display: 'flex'}}>
+                Cliente final
+              </Text>
               <Select
                 placeholder = 'Seleccione cliente final'
                 style={{ width: '100%' }}
@@ -1807,50 +1795,55 @@ export const CreateOrderView = () => {
                 </>
               }              
             </Col>   
+            <Col span={12}/>
           </Row>
-          <Row>
-            <Col span={24}>
-              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                <text>Requerimientos adicionales</text>
-              </label>
+          <Row style={{marginBottom: "1rem"}}>
+            <Col span={12}>
+              <Text className="locationLabels" style={{ display: 'flex' }}>
+                Requerimientos adicionales
+              </Text>
               <Select
                   placeholder = 'Seleccione requerimiento adicional'
-                  style={{ width: '50%' }}
                   options={optionsRequirements}
                   allowClear={true}
                   value={selectedRequirement}
+                  className={"puntoOrigen dateInputForm"}
               />
+              <Col span={12}/>
+            </Col>   
+          </Row>
+          <Row style={{marginBottom: "1rem"}}>
+            <Col span={24}>
               <Table columns={columnsRequerimientosAdicionales} dataSource={dataRequirements} />
-            </Col>   
+            </Col>
           </Row>
-          <Row>
+          <Row style={{marginBottom: "1rem"}}>
             <Col span={24}>
-              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                <text>Instrucciones especiales</text>
-              </label>
-              <TextArea rows={4} onChange={(event)=>{
+              <Text className="locationLabels" style={{ display: 'flex'}}>
+                Instrucciones especiales
+              </Text>
+              <TextArea placeholder="Escribir las instrucciones" rows={4} onChange={(event)=>{
                 setObservation(event.target.value);
-              }} />
+              }}/>
             </Col>   
           </Row>
-          <Row>
+          <Row style={{marginBottom: "1rem"}}>
             <Col span={24}>
-              <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                <text>Datos de Contacto</text>
-              </label>
-              <Row style={{paddingLeft:'30px'}}>
+              <Text className="locationLabels" style={{ display: 'flex'}}>
+                Datos de Contacto
+              </Text>
+              <Row style={{rowGap: "1rem"}}>
                 <Col span={24}>
-                  <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                    <text>Contacto punto origen</text>
-                  </label>
+                  <Text className="locationLabels" style={{ display: 'flex'}}>
+                    Contacto punto origen
+                  </Text>
                   {dataContacts.filter(f => f.contact_type == 1).map((contact)=>(
-                  <>
-                  <Row key={contact.key}>
-                    <Col span={12} style={{paddingRight:'15px'}}>
-                      <Input placeholder="Nombre del contacto" key={contact.key} value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
+                  <Row key={contact.key} gutter={24}>
+                    <Col span={12} >
+                      <Input placeholder="Nombre del contacto" className="dateInputForm" key={contact.key} value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
                     </Col>
-                    <Col span={12} style={{paddingLeft:'15px'}}>
-                      <Input placeholder="Teléfono: 000 000 0000 " key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}
+                    <Col span={12} >
+                      <Input placeholder="Teléfono: 000 000 0000" className="dateInputForm" key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}
                       onKeyPress={(event) => {
                         if (!/[0-9]/.test(event.key)) {
                           event.preventDefault();
@@ -1864,22 +1857,19 @@ export const CreateOrderView = () => {
                       }}/>
                     </Col>                  
                   </Row>
-                  </>
                   ))}
-
                 </Col>
                 <Col span={24}>
-                  <label className="locationLabels" style={{ display: 'flex', marginTop: '2rem' }}>
-                    <text>Contacto punto destino</text>
-                  </label>
-                  {dataContacts.filter(f => f.contact_type == 2).map((contact)=>(
-                  <>
-                  <Row>
-                    <Col span={12} style={{paddingRight:'15px'}}>
-                      <Input placeholder="Nombre del contacto"  key={contact.key}  value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
+                  <Text className="locationLabels" style={{ display: 'flex'}}>
+                    Contacto punto destino
+                  </Text>
+                  {dataContacts.filter((f) => f.contact_type == 2).map((contact,index)=>(
+                  <Row key={`contacto-${index}-${contact.key}`} gutter={16}>
+                    <Col span={12}>
+                      <Input placeholder="Nombre del contacto" className="dateInputForm"  key={contact.key}  value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
                     </Col>
-                    <Col span={12} style={{paddingLeft:'15px'}}>
-                      <Input placeholder="Teléfono: 000 000 0000 "  key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}
+                    <Col span={12}>
+                      <Input placeholder="Teléfono: 000 000 0000" className="dateInputForm"  key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}
                       onKeyPress={(event) => {
                         if (!/[0-9]/.test(event.key)) {
                           event.preventDefault();
@@ -1893,18 +1883,23 @@ export const CreateOrderView = () => {
                       }}/>
                     </Col>                  
                   </Row>
-                  </>
                   ))}
                 </Col>
               </Row>
-              <Row style={{marginTop:'2rem'}}>
-                <Col span={24} className="text-right">
-                  <button onClick={() =>AddContactModal()} className="btnagregarpsl"><PlusCircle></PlusCircle>&nbsp;&nbsp;<text>Agregar otro contacto</text></button>
+              <Row style={{marginTop:'1rem'}}>
+                <Col span={24} style={{display:"flex", justifyContent: "flex-end", alignItems:"flex-end"}}>
+                <Flex align="center" justify="center">
+                  <UserPlus size={24}/>
+                  <button onClick={() =>setIsOpenModalContacts(true)} className="btnagregarpsl">
+                    Agregar otro contacto
+                  </button>
+                </Flex>
                 </Col>
               </Row>
             </Col>   
           </Row>                         
-        </>
+          </Col>
+        </Row>
       )
     },
   ];
@@ -1950,7 +1945,6 @@ export const CreateOrderView = () => {
                   </button>
                 </Flex>
               </Col>
-
               <Col span={24}>
                 <Collapse
                 className="collapseByAction"
@@ -1961,12 +1955,12 @@ export const CreateOrderView = () => {
                 defaultActiveKey={['2']}
                 />            
               </Col>
-              <Col span={6} offset={18} className="text-right" style={{marginTop:'2rem', marginBottom:'2rem'}}>
+              <Col span={24} style={{marginTop:'1.5rem', marginBottom:'1.5rem', display:"flex", justifyContent:"flex-end"}}>
                 <Flex gap="middle" align="flex-end">
-                  <Button type="primary" onClick={() => onCreateOrder()}>
+                  <Button onClick={() => onCreateOrder()} style={{fontWeight:"bold"}}>
                     Guardar como draft
                   </Button>
-                  <Button disabled={isButtonDisabled} className="active" onClick={()=>{ onCreateOrder()}} >
+                  <Button disabled={isButtonDisabled} className="active" style={{fontWeight:"bold"}}  onClick={()=>{onCreateOrder()}} >
                     Siguiente
                   </Button>
                 </Flex>
@@ -1986,6 +1980,11 @@ export const CreateOrderView = () => {
         handleChangeExpirationDate={handleChangeExpirationDate}
         showExpiry={false}
         allOptional={true}
+      />
+      <ModalAddContact
+        isOpen={isOpenModalContacts}
+        onClose={() => setIsOpenModalContacts(false)}
+        setDataContacts={setDataContacts}
       />
     </>
   );

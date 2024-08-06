@@ -40,7 +40,8 @@ const theme: ThemeConfig = {
       headerColor: "#141414",
       headerSplitColor: "transparent",
       rowSelectedBg: "transparent",
-      rowSelectedHoverBg: "transparent"
+      rowSelectedHoverBg: "transparent",
+      footerBg: "#FFFFFF"
     },
     DatePicker: {
       colorBgElevated: "#FFFFFF",
