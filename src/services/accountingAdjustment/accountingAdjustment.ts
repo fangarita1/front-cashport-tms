@@ -35,11 +35,13 @@ export const applyAccountingAdjustment = async (
   adjustmentData: string,
   docFiles: File[] | null,
   projectId: string,
-  clientId: string
+  clientId: string,
+  type: number
 ): Promise<AxiosResponse<any>> => {
   const token = await getIdToken();
   const formData = new FormData();
   formData.append("adjustment_data", adjustmentData);
+  formData.append("type", type.toString());
   if (docFiles) {
     docFiles.forEach((file) => {
       formData.append("doc", file);
@@ -67,7 +69,12 @@ export const changeStatusInvoice = async (
   docFiles: File[] | null,
   projectId: number,
   clientId: number
-): Promise<AxiosResponse<any>> => {
+): Promise<
+  AxiosResponse<{
+    message: string;
+    data: any;
+  }>
+> => {
   const token = await getIdToken();
   const formData = new FormData();
   formData.append("status_name", statusName);
@@ -79,7 +86,10 @@ export const changeStatusInvoice = async (
     });
   }
 
-  const response: AxiosResponse<any> = await axios.post(
+  const response: AxiosResponse<{
+    message: string;
+    data: any;
+  }> = await axios.post(
     `${config.API_HOST}/invoice/project/${projectId}/client/${clientId}/update_status`,
     formData,
     {
@@ -90,7 +100,7 @@ export const changeStatusInvoice = async (
       }
     }
   );
-  return response.data;
+  return response;
 };
 
 export const reportInvoiceIncident = async (

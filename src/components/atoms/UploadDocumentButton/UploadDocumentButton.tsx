@@ -23,6 +23,7 @@ interface DocumentProps {
   children?: React.ReactNode;
   aditionalData?: any;
   files?: File;
+  column?: boolean;
 }
 
 export const UploadDocumentButton = ({
@@ -35,6 +36,7 @@ export const UploadDocumentButton = ({
   children,
   aditionalData,
   files,
+  column
 }: DocumentProps) => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(files || null);
 
@@ -119,8 +121,11 @@ export const UploadDocumentButton = ({
     });
   };
 
+  const displayFlex = column ? "flex" : "";
+  const columnDirection = column ? "column" : "column-reverse";
+
   return (
-    <div className={`uploaddocumentbutton ${containerClassName}`}>
+    <div className={`uploaddocumentbutton ${containerClassName}`} style={{display: displayFlex, flexDirection: columnDirection}}>
       <Flex vertical justify="center">
         <Text className="titleDocument">{title}</Text>
         <Text className="descriptionDocument">*{isMandatory ? "Obligatorio" : "Opcional"}</Text>

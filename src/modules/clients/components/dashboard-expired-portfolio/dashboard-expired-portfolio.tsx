@@ -3,7 +3,7 @@ import Image from "next/image";
 import styles from "./dashboard-expired-portfolio.module.scss";
 import DashboardGenericItem from "../dashboard-generic-item";
 import { ClientDetailsContext } from "../../containers/client-details/client-details";
-import { formatMoney } from "@/utils/utils";
+import { formatMillionNumber, formatMoney } from "@/utils/utils";
 
 interface DashboardExpiredPortfolioProps {
   className?: string;
@@ -11,8 +11,10 @@ interface DashboardExpiredPortfolioProps {
 
 const DashboardExpiredPortfolio: FC<DashboardExpiredPortfolioProps> = ({ className }) => {
   const { portfolioData } = useContext(ClientDetailsContext);
-  const pastDuePortfolio = formatMoney(portfolioData?.data_wallet?.past_due_ammount);
-
+  const formattedPastDuePortfolio = formatMillionNumber(
+    portfolioData?.data_wallet?.past_due_ammount
+  );
+  const pastDuePortfolio = formatMoney(formattedPastDuePortfolio);
   return (
     <div className={`${styles.wrapper} ${className}`}>
       <DashboardGenericItem name="C. vencida" badgeText="12%" value={pastDuePortfolio} unit="M" />

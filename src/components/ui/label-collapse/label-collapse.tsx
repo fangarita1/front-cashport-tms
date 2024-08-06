@@ -9,6 +9,7 @@ interface PropsLabelCollapseInvoice {
   quantity?: number;
   color?: string;
   removeIcons?: boolean;
+  quantityText?: string;
 }
 
 const randomColors = [
@@ -27,7 +28,8 @@ const LabelCollapse = ({
   total,
   quantity,
   color,
-  removeIcons
+  removeIcons,
+  quantityText
 }: PropsLabelCollapseInvoice) => {
   const randomColor = randomColors[Math.floor(Math.random() * randomColors.length)];
 
@@ -45,10 +47,13 @@ const LabelCollapse = ({
           <h5 className={styles.labelCollapse__total__title}>{formatMoney(total)}</h5>
         </Flex>
       )}
-      {quantity && (
+      {!!quantity && (
         <Flex className={styles.labelCollapse__quantity}>
           {removeIcons ? null : (
             <Files size={16} className={styles.labelCollapse__quantity__icon} />
+          )}
+          {!quantityText ? null : (
+            <Flex>{quantityText}</Flex>
           )}
           <h5 className={styles.labelCollapse__quantity__title}>{quantity}</h5>
         </Flex>
