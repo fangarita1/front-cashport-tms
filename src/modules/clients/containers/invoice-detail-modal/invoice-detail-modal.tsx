@@ -198,7 +198,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                 <div
                                   className={styles.icons}
                                   onClick={() => {
-                                    handleDocumentClick(item.files[0] || "");
+                                    handleDocumentClick(item?.files[0] || "");
                                   }}
                                 >
                                   <ArrowLineDown
@@ -319,7 +319,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
                                 <div
                                   className={styles.name}
-                                >{`Estado inicial: ${item.previous_status_id ?? "N/A"}`}</div>
+                                >{`Estado inicial: ${item.previous_status ?? "N/A"}`}</div>
                                 <div
                                   className={styles.name}
                                 >{`Estado final: ${item.status_name}`}</div>
