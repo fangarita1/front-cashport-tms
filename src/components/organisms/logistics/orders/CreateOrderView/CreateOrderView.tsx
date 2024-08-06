@@ -495,21 +495,18 @@ export const CreateOrderView = () => {
     //console.log (res);
     if(res.data.data.length > 0){
       res.data.data.forEach((item) => {
-        const strlabel = <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                          }}
-                        >
-                          <span>
-                              {item.type_description} - {item.description}
-                              <br></br>
-                              Volumen {item.m3_volume} m3 - Peso {item.kg_weight} Kg
-                          </span>
-                          <span>
-                            <button className="btnagregar active" onClick={() => addMaterial(item)}>Agregar</button>
-                          </span>
-                        </div>;
+        const strlabel = <div style={{ display: 'flex', alignItems: "center"}}>
+                            <Col span={20}>
+                              <Text>
+                                  {item.type_description} - {item.description}
+                                  <br></br>
+                                  Volumen {item.m3_volume} m3 - Peso {item.kg_weight} Kg
+                              </Text>
+                            </Col>
+                            <Col span={4} style={{ display: 'flex', justifyContent: "flex-end"}}>
+                              <button className="btnagregar active" onClick={() => addMaterial(item)}>Agregar</button>
+                            </Col>
+                          </div>;
 
         result.push({value:item.description, label: strlabel})
       });      
@@ -526,21 +523,18 @@ export const CreateOrderView = () => {
     //console.log (res);
     if(res.data.data.length > 0){
       res.data.data.forEach((item) => {
-        const strlabel = <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                          }}
-                        >
-                          <span>
-                              {item.type_description} - {item.description}
-                              <br></br>
-                              Volumen {item.kg_weight} m3 - Peso {item.m3_volume} Kg
-                          </span>
-                          <span>
-                            <button className="btnagregar active" onClick={() => addMaterial(item)}>Agregar</button>
-                          </span>
-                        </div>;
+        const strlabel = <div style={{ display: 'flex', alignItems: "center"}}>
+                            <Col span={20}>
+                              <Text>
+                                  {item.type_description} - {item.description}
+                                  <br></br>
+                                  Volumen {item.m3_volume} m3 - Peso {item.kg_weight} Kg
+                              </Text>
+                            </Col>
+                            <Col span={4} style={{ display: 'flex', justifyContent: "flex-end"}}>
+                              <button className="btnagregar active" onClick={() => addMaterial(item)}>Agregar</button>
+                            </Col>
+                          </div>;
 
         result.push({label: strlabel,value:item.description })
       });      
@@ -637,22 +631,18 @@ export const CreateOrderView = () => {
     //console.log (res);
     if(res.data.data.length > 0){
       res.data.data.forEach((item) => {
-        const strlabel = <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                          }}
-                        >
-                          <span>
-                              <b>{item.description}</b>
-                              <br></br>
-                              Largo {item.length}m - Ancho {item.width}m - Alto {item.height}m - Máximo {item.kg_capacity}Tn
-                              <br></br>
-                              Cantidad disponibles: {item.available}
-                          </span>
-                          <span>
-                            <button className="btnagregar active" onClick={() => addVehicle(item)}>Agregar</button>
-                          </span>
+        const strlabel = <div style={{ display: 'flex', alignItems: "center"}}>
+                            <Col span={20}>
+                                <Text><b>{item.description}</b>
+                                <br/>
+                                Largo {item.length}m - Ancho {item.width}m - Alto {item.height}m - Máximo {item.kg_capacity}Tn
+                                <br/>
+                                Cantidad disponibles: {item.available}
+                                </Text>
+                            </Col>
+                            <Col span={4} style={{ display: 'flex', justifyContent: "flex-end"}}>
+                              <button className="btnagregar active" onClick={() => addVehicle(item)}>Agregar</button>
+                            </Col>
                         </div>;
 
         result.push({value:item.description, label: strlabel})
@@ -844,20 +834,16 @@ export const CreateOrderView = () => {
     //console.log (res);
     if(res.data.data.length > 0){
       res.data.data.forEach((item) => {
-        const strlabel = <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                          }}
-                        >
-                          <span>
-                              <b>{item.description}</b>
-                          </span>
-                          <span>
+        const strlabel = <div style={{ display: 'flex', alignItems: "center"}}>
+                          <Col span={20}>
+                              <Text>
+                                  <b>{item.description}</b>
+                              </Text>
+                          </Col>
+                          <Col span={4} style={{ display: 'flex', justifyContent: "flex-end"}}>
                             <button className="btnagregar active" onClick={() => addRequeriment(item)}>Agregar</button>
-                          </span>
+                          </Col>
                         </div>;
-
         result.push({value:item.description, label: strlabel})
       });      
     }
@@ -1454,28 +1440,20 @@ console.log("typeactive", typeactive)
                   </Row>
                 </Col>
               </Row>
-              { routeGeometry &&
-              <Row className="divdistance">
-                <Col span={12}>
-                  <p>
-                    <label>Distancia Total</label>
-                  </p>
-                  <p>
-                    <label>Tiempo Estimado</label>
-                  </p>
+              {routeGeometry &&
+              <Row className="divdistance" style={{ marginTop: "1rem" }}>
+                <Col span={12} style={{display: "flex", flexDirection:"column", gap:"0.75rem"}}>
+                    <Text>Distancia Total</Text>
+                    <Text>Tiempo Estimado</Text>
                 </Col>
-                <Col span={12} className="text-right">
-                  <p>
-                    <label>{distance}</label>
-                  </p>
-                  <p>
-                    <label>{timetravel}</label>
-                  </p>                  
+                <Col span={12} style={{display: "flex", flexDirection:"column", gap:"0.75rem", alignItems:"flex-end"}}>
+                    <Text>{distance}</Text>
+                    <Text>{timetravel}</Text>         
                 </Col>
               </Row>
               }
             </Col>
-            <Col span={12}  style={{ padding:'1.5rem'}}>
+            <Col span={12} style={{ padding:'1.5rem'}}>
               <div
                 ref={mapContainerRef}
                 style={{
@@ -1511,8 +1489,7 @@ console.log("typeactive", typeactive)
                   <Select
                       showSearch
                       allowClear
-                      placeholder="Buscar material"                  
-                      className="certain-category-search-dropdown"
+                      placeholder="Buscar material"                 
                       style={{ width:'100%', height: "2.5rem" }}
                       optionFilterProp="children"
                       value={selectedMaterial}
@@ -1571,7 +1548,7 @@ console.log("typeactive", typeactive)
                       Personas
                     </Text>
                     <AutoComplete
-                      popupClassName="certain-category-search-dropdown"
+                      className="puntoOrigen dateInputForm"
                       popupMatchSelectWidth={500}
                       style={{ width:'100%', height: "2.5rem" }}
                       size="large"
@@ -1594,7 +1571,6 @@ console.log("typeactive", typeactive)
                     <Select
                         showSearch
                         placeholder="Agregar vehículo"                  
-                        className="certain-category-search-dropdown"
                         style={{ width:"100%", height: "2.5rem" }}
                         optionFilterProp="children"
                         value={selectedVehicle}
@@ -1650,8 +1626,8 @@ console.log("typeactive", typeactive)
               </Col>
               <Col span={12}/>
             </Row>
-            {dataPsl.map((psl) => (
-              <div className="divdistance" key={psl.key}>
+            {dataPsl.map((psl, index) => (
+              <div className="divdistance" style={{marginBottom: index+1 === dataPsl.length ? 0 : "1rem"}} key={psl.key}>
                 <Row>
                   <Col span={10}>
                     <Text className="locationLabels" style={{ display: 'flex' }}>
@@ -1822,7 +1798,7 @@ console.log("typeactive", typeactive)
               <Text className="locationLabels" style={{ display: 'flex'}}>
                 Instrucciones especiales
               </Text>
-              <TextArea placeholder="Escribir las instrucciones" rows={4} onChange={(event)=>{
+              <TextArea placeholder="Escribir las instrucciones" rows={4} className="custom-textarea" autoSize={{ minRows: 2, maxRows: 6 }} onChange={(event)=>{
                 setObservation(event.target.value);
               }}/>
             </Col>   
@@ -1840,10 +1816,10 @@ console.log("typeactive", typeactive)
                   {dataContacts.filter(f => f.contact_type == 1).map((contact)=>(
                   <Row key={contact.key} gutter={24}>
                     <Col span={12} >
-                      <Input placeholder="Nombre del contacto" className="dateInputForm" key={contact.key} value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
+                      <Input placeholder="Nombre del contacto" className="puntoOrigen dateInputForm" key={contact.key} value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
                     </Col>
                     <Col span={12} >
-                      <Input placeholder="Teléfono: 000 000 0000" className="dateInputForm" key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}
+                      <Input placeholder="Teléfono: 000 000 0000" className="puntoOrigen dateInputForm" key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}
                       onKeyPress={(event) => {
                         if (!/[0-9]/.test(event.key)) {
                           event.preventDefault();
@@ -1866,10 +1842,10 @@ console.log("typeactive", typeactive)
                   {dataContacts.filter((f) => f.contact_type == 2).map((contact,index)=>(
                   <Row key={`contacto-${index}-${contact.key}`} gutter={16}>
                     <Col span={12}>
-                      <Input placeholder="Nombre del contacto" className="dateInputForm"  key={contact.key}  value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
+                      <Input placeholder="Nombre del contacto" className="puntoOrigen dateInputForm"  key={contact.key}  value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
                     </Col>
                     <Col span={12}>
-                      <Input placeholder="Teléfono: 000 000 0000" className="dateInputForm"  key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}
+                      <Input placeholder="Teléfono: 000 000 0000" className="puntoOrigen dateInputForm"  key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}
                       onKeyPress={(event) => {
                         if (!/[0-9]/.test(event.key)) {
                           event.preventDefault();
