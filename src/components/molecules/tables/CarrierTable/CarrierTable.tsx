@@ -4,14 +4,14 @@ import { formatMoney } from "@/utils/utils";
 import { Eye, Warning } from "phosphor-react";
 import { Button, Flex, Table, TableProps, Typography } from "antd";
 import { Radioactive } from "@phosphor-icons/react";
-import { ICarriersRequestList } from "@/types/logistics/schema";
+import { ICarrierRequestsListDetail } from "@/types/logistics/schema";
 import Link from "next/link";
 import { useProjects } from "@/hooks/useProjects";
 
 const { Text } = Typography;
 
 interface PropsCarrierTable {
-  carrierData: ICarriersRequestList[];
+  carrierData: ICarrierRequestsListDetail[];
   setSelectedRows: Dispatch<SetStateAction<any[] | undefined>>;
   loading: boolean;
 }
@@ -30,7 +30,6 @@ export default function CarrierTable({ carrierData: data, setSelectedRows, loadi
   };
 
   const calculateMinutesDifference = (dateString: string) => {
-    console.log(dateString)
     const date = new Date(dateString);
     const now = new Date();
 
@@ -40,7 +39,7 @@ export default function CarrierTable({ carrierData: data, setSelectedRows, loadi
     return diffInMinutes;
   };
 
-  const columns: TableProps<ICarriersRequestList>["columns"] = [
+  const columns: TableProps<ICarrierRequestsListDetail>["columns"] = [
     {
       title: "CR",
       dataIndex: "id",
@@ -114,7 +113,7 @@ export default function CarrierTable({ carrierData: data, setSelectedRows, loadi
       render: (text) => (
         <Text>{calculateMinutesDifference(text)} min</Text>
       ),
-      sorter: (a, b) => a.elapsedtime - b.elapsedtime,
+      sorter: (a, b) => Number(a.elapsedtime) - Number(b.elapsedtime),
       showSorterTooltip: false
     },
     {

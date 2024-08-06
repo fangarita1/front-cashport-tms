@@ -1,5 +1,6 @@
 "use client";
 import { Col, Flex, message } from "antd";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Buttons from "../../detail/components/Buttons/Buttons";
 import { CaretLeft } from "@phosphor-icons/react";
@@ -8,8 +9,9 @@ import VehicleAndDriverAsignation from "../../detail/components/VehicleAndDriver
 import { formatMoney } from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
 import styles from "./AceptCarrierDetailView.module.scss";
-import { getTransferRequestById } from "@/services/logistics/acept_carrier";
-import { IMaterial, ITransferRequestDetail } from "@/types/logistics/schema";
+import { getAceptCarrierRequestById, getDriverByCarrierId, getVehiclesByCarrierId, postCarrierReject, postCarrierRequest } from "@/services/logistics/acept_carrier";
+import { ICarrierRequestDetail, IMaterial } from "@/types/logistics/schema";
+import { Confirmation } from "../../detail/components/Confirmation/Confirmation";
 
 interface AceptCarrierDetailProps {
   params: { id: string };
@@ -20,8 +22,12 @@ export default function AceptCarrierDetailView({ params }: AceptCarrierDetailPro
   const [isNextStepActive, setIsNextStepActive] = useState<boolean>(true);
   const [vehicleSelected, setVehicleSelected] = useState<number>(0);
   const [driversSelected, setDriverSelected] = useState<number[]>([0]);
+  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [drivers, setDrivers] = useState<any[]>([]);
+  const [observation, setObservation] = useState<any>(null);
+  const router = useRouter();
 
-  const [carrier, setCarrier] = useState<ITransferRequestDetail>();
+  const [carrier, setCarrier] = useState<ICarrierRequestDetail>();
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -45,19 +51,34 @@ export default function AceptCarrierDetailView({ params }: AceptCarrierDetailPro
 
   useEffect(() => {
     loadTransferRequests();
+    //loadDrivers();
+    //loadVehicles();
   }, []);
 
+  {/*const loadVehicles = async () => {
+    const result = await getVehiclesByCarrierId(String(carrier?.id_carrier));
+    setVehicles(result.data.data);
+  }
+
+  const loadDrivers = async () => {
+    const result = await getDriverByCarrierId(String(carrier?.id_carrier));
+    setDrivers(result.data.data);
+  };*/}
+ 
   const loadTransferRequests = async () => {
     if (carrier != undefined) return;
     //when there is more Id to consult, erase the "6" directly ID and leave the params
     // cont result = await getTransferRequestId(params.id);
-    const result = await getTransferRequestById("6");
+    const result = await getAceptCarrierRequestById("4");
     if (result.data.data.length > 0) {
-      const to: ITransferRequestDetail = result.data.data[0];
-      //console.log(to);
+      const to: ICarrierRequestDetail = result.data.data[0];
+      const driversResult = await getDriverByCarrierId(to?.id_carrier);
+      setDrivers(driversResult.data.data);
+      const vehiclesResult = await getVehiclesByCarrierId(to?.id_carrier);
+      setVehicles(vehiclesResult.data.data);
       setCarrier(to);
-      origin.current = [to.start_location?.longitude, to.start_location?.latitude];
-      destination.current = [to.end_location?.longitude, to.end_location?.latitude];
+      //origin.current = [to.start_location?.longitude, to.start_location?.latitude];
+      //destination.current = [to.end_location?.longitude, to.end_location?.latitude];
       const routes = to.geometry;
       setRouteInfo(routes);
       // Check if any routes are returned
@@ -71,25 +92,40 @@ export default function AceptCarrierDetailView({ params }: AceptCarrierDetailPro
         setTimeTravel(hrs + " Hrs");
       }
 
-      to.transfer_request_material?.forEach(async (mat) => {
+      to.carrier_request_material_by_trip?.forEach(async (mat) => {
         mat?.material?.forEach(async (m) => {
           const newvalue: IMaterial = m;
-          newvalue.quantity = mat.quantity;
-          //console.log("newValue:", newvalue);
-          await setDataCarga((dataCarga) => [...dataCarga, newvalue]);
+          setDataCarga((dataCarga) => [...dataCarga, newvalue]);
         });
       });
     }
   };
 
-  const handleNext = () => {
-    if (view === "detail") setView("asignation");
-    else if (view === "asignation") setView("confirmation");
+  const handleNext = async () => {
+    if (view === "detail") {
+      setView("asignation");
+    } else if (view === "asignation") {
+      setView("confirmation")
+    } else {
+      await postCarrierRequest(String(carrier?.id_carrier), String(carrier?.id), String(vehicleSelected), driversSelected.map(String), "1", observation)
+      messageApi.open({
+        content: "Aceptado"
+      });
+      router.push("/logistics/acept_carrier");
+    }
   };
 
   const handleBack = () => {
     if (view === "confirmation") setView("asignation");
     else if (view === "asignation") setView("detail");
+  };
+  
+  const handleReject = async () => {
+    await postCarrierReject(String(carrier?.id_carrier), String(carrier?.id))
+    messageApi.open({
+      content: "Rechazado"
+    });
+    router.push("/logistics/acept_carrier")
   };
 
   const currentStepIndex = view === "detail" ? 0 : view === "asignation" ? 1 : 2;
@@ -157,8 +193,8 @@ export default function AceptCarrierDetailView({ params }: AceptCarrierDetailPro
               <b>{carrier?.vehicles}</b>
             </div>
             <div>
-              Origen: <b>{carrier?.start_location?.description}</b> - Destino:{" "}
-              <b>{carrier?.end_location?.description}</b>
+              Origen: <b>{carrier?.start_location}</b> - Destino:{" "}
+              <b>{carrier?.end_location}</b>
             </div>
           </Flex>
           <hr style={{ borderTop: "1px solid #DDDDDD" }} />
@@ -177,20 +213,23 @@ export default function AceptCarrierDetailView({ params }: AceptCarrierDetailPro
             providerDetail={carrier}
             dataCarga={dataCarga}
             setIsNextStepActive={setIsNextStepActive}
+            service_type={carrier?.service_type}
           />
         ) : view === "asignation" ? (
           <VehicleAndDriverAsignation
             setIsNextStepActive={setIsNextStepActive}
-            drivers={carrier?.driver_by_carrier_request}
-            vehicles={carrier?.transfer_request_vehicles_sugest}
+            drivers={drivers}
+            vehicles={vehicles}
             setDriver={setDriverSelected}
             setVehicle={setVehicleSelected}
           />
         ) : (
-          <SolicitationDetail
-            providerDetail={carrier}
-            dataCarga={dataCarga}
+          <Confirmation
             setIsNextStepActive={setIsNextStepActive}
+            driverSelected={drivers.find(a => a.id === driversSelected[0])}
+            vehicleSelected={vehicles.find(a => a.id === vehicleSelected)}
+            setObservation={setObservation}
+            isNextStepActive={isNextStepActive}
           />
         )}
 
@@ -199,6 +238,7 @@ export default function AceptCarrierDetailView({ params }: AceptCarrierDetailPro
           isLeftButtonActive={view !== "detail"}
           handleNext={handleNext}
           handleBack={handleBack}
+          handleReject={handleReject}
         />
       </Flex>
     </>

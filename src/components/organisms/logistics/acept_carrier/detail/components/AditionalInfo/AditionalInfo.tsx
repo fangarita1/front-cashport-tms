@@ -3,18 +3,18 @@ import { Col, Flex, Row } from "antd";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 import styles from "./aditionalInfo.module.scss";
-import { ITransferRequestDetail } from "@/types/logistics/schema";
+import { ICarrierRequestDetail } from "@/types/logistics/schema";
 import { Dispatch, SetStateAction, useEffect } from "react";
 
 interface AditionalInfoProps {
-  aditionalInfo: ITransferRequestDetail | undefined;
+  aditionalInfo: ICarrierRequestDetail | undefined;
   setIsNextStepActive: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function AditionalInfo({ aditionalInfo, setIsNextStepActive }: AditionalInfoProps) {
 
   useEffect(() => {
-    aditionalInfo?.transfer_request_documents?.length !== undefined && setIsNextStepActive(true)
+    aditionalInfo?.carrier_request_documents?.length !== undefined && setIsNextStepActive(true)
   }, []);
   
   return (
@@ -26,7 +26,7 @@ export default function AditionalInfo({ aditionalInfo, setIsNextStepActive }: Ad
           <Flex vertical style={{ width: "99%", marginTop: "2rem" }}>
             <h4>Documentos</h4>
             <Row>
-              {aditionalInfo?.transfer_request_documents?.map((file) => (
+              {aditionalInfo?.carrier_request_documents?.map((file) => (
                 <>
                   <Col
                     span={12}
@@ -62,7 +62,7 @@ export default function AditionalInfo({ aditionalInfo, setIsNextStepActive }: Ad
                 <h3>Datos de contacto</h3>
                 <p>&nbsp;</p>
                 <h4>Contacto inicial</h4>
-                {aditionalInfo?.transfer_request_contacts
+                {aditionalInfo?.carrier_request_contacts
                   ?.filter((x: any) => x.contact_type == 1)
                   .map((contact: any) => (
                     <Row style={{ paddingTop: "0.5rem" }} key={contact.number}>
@@ -76,7 +76,7 @@ export default function AditionalInfo({ aditionalInfo, setIsNextStepActive }: Ad
                   ))}
                 <p>&nbsp;</p>
                 <h4>Contacto final</h4>
-                {aditionalInfo?.transfer_request_contacts
+                {aditionalInfo?.carrier_request_contacts
                   ?.filter((x: any) => x.contact_type == 2)
                   .map((contact: any) => (
                     <Row style={{ paddingTop: "0.5rem" }} key={contact.number}>
@@ -94,25 +94,25 @@ export default function AditionalInfo({ aditionalInfo, setIsNextStepActive }: Ad
                     <h4>Cliente final</h4>
                   </Col>
                   <Col span={8} style={{ textAlign: "right" }}>
-                    {aditionalInfo?.client_desc}
+                    
                   </Col>
                 </Row>
                 <p>&nbsp;</p>
                 <h4>Requerimientos adicionales</h4>
                 <Row style={{ paddingTop: "1rem" }}>
                   <Col span={24}>
-                    {aditionalInfo?.transfer_request_other_requeriments?.map((req: any) => (
+                    {/*{aditionalInfo?.transfer_request_other_requeriments?.map((req: any) => (
                       <div className={styles.selected} key={req.quantity}>
                         {req.type} <small>{req.quantity}</small>
                       </div>
-                    ))}
+                    ))}*/}
                   </Col>
                 </Row>
               </Col>
               <Col span={12}>
                 <h3>Instrucciones especiales</h3>
                 <p>&nbsp;</p>
-                <p>{aditionalInfo?.observation}</p>
+                <p>{/*aditionalInfo?.observation*/}</p>
                 <Flex style={{ marginTop: "24px" }}>
                   <UploadDocumentButton
                     key={1}

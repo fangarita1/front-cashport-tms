@@ -13,7 +13,6 @@ interface MaterialsDataProps {
 const { Text } = Typography;
 
 export default function Materials({ materials }: MaterialsDataProps) {
-  //console.log("materials:", materials);
 
   const columns: TableProps<IMaterial>["columns"] = [
     {

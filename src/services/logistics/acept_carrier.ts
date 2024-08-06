@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { getIdToken } from "@/utils/api/api";
+import { API, getIdToken } from "@/utils/api/api";
 import config from "@/config";
 import { IListData } from "@/types/logistics/schema";
 
@@ -28,6 +28,60 @@ export const getAceptCarrierRequestList = async (id: string): Promise<IListData>
     form.append("id", id);
 
     const response: IListData = await axios.post(`${config.API_HOST}/carrier/all/request/list`, form, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.log("Error get all getAllTransferRequestList: ", error);
+    return error as any;
+  }
+};
+
+export const getAceptCarrierRequestById = async (id: string): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const form = new FormData();
+    form.append("id", id);
+
+    const response: IListData = await axios.post(`${config.API_HOST}/carrier/request/id`, form, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.log("Error get all getAllTransferRequestList: ", error);
+    return error as any;
+  }
+};
+
+export const getVehiclesByCarrierId = async (id: number): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const response: IListData = await axios.get(`${config.API_HOST}/vehicle/provider/${id}`, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.log("Error get all getAllTransferRequestList: ", error);
+    return error as any;
+  }
+};
+
+export const getDriverByCarrierId = async (id: number): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const response: IListData = await axios.get(`${config.API_HOST}/driver/provider/${id}`, {
       headers: {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "multipart/form-data",
@@ -111,6 +165,40 @@ export const getTransferRequestById = async (id: string): Promise<IListData> => 
         Authorization: `Bearer ${token}`
       }
     });
+    return response;
+  } catch (error) {
+    console.log("Error get getTransferRequestById: ", error);
+    return error as any;
+  }
+};
+
+export const postCarrierRequest = async (id_carrier: string, id_carrier_request: string, id_vehicle: string, id_drivers: string[], accept_conditions: string, observation: string): Promise<IListData> => {
+  try {
+    const body = {
+      id_carrier: id_carrier,
+      id_carrier_request: id_carrier_request,
+      id_vehicle: id_vehicle,
+      id_drivers: id_drivers,
+      accept_conditions: accept_conditions,
+      observation: observation
+    }
+
+    const response: IListData = await API.post(`/carrier/request/accept`, body);
+    return response;
+  } catch (error) {
+    console.log("Error get getTransferRequestById: ", error);
+    return error as any;
+  }
+};
+
+export const postCarrierReject = async (id_carrier: string, id_carrier_request: string): Promise<IListData> => {
+  try {
+    const body = {
+      id_carrier: id_carrier,
+      id_carrier_request: id_carrier_request,
+    }
+
+    const response: IListData = await API.post(`/carrier/request/reject`, body);
     return response;
   } catch (error) {
     console.log("Error get getTransferRequestById: ", error);
