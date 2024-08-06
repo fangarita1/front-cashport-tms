@@ -5,6 +5,7 @@ import { IInvoice } from "@/types/invoices/IInvoices";
 import { IFinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
 import InvoiceDetailModal from "@/modules/clients/containers/invoice-detail-modal";
 import ModalDetailAdjustment from "@/components/molecules/modals/ModalDetailAdjustment/ModalDetailAdjustment";
+import MoldalNoveltyDetail from "@/components/molecules/modals/MoldalNoveltyDetail/MoldalNoveltyDetail";
 
 type ModalType = "invoice" | "novelty" | "adjustment" | null;
 
@@ -60,13 +61,13 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
           {...(modalProps as InvoiceModalProps)}
         />
       )}
-      {/* {modalType === 'novelty' && modalProps && (
+      {modalType === "novelty" && modalProps && (
         <MoldalNoveltyDetail
           isOpen={true}
           onClose={closeModal}
-          {...modalProps as NoveltyModalProps}
+          {...(modalProps as NoveltyModalProps)}
         />
-      )} */}
+      )}
       {modalType === "adjustment" && modalProps && (
         <ModalDetailAdjustment
           isOpen={true}

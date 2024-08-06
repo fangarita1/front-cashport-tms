@@ -18,7 +18,6 @@ import RadicationInvoice from "@/components/molecules/modals/Radication/Radicati
 import RegisterNews from "@/components/molecules/modals/RegisterNews/RegisterNews";
 import { useSWRConfig } from "swr";
 import "./wallettab.scss";
-import InvoiceDetailModal from "@/modules/clients/containers/invoice-detail-modal";
 import { useModalDetail } from "@/context/ModalContext";
 
 export const WalletTab = () => {
