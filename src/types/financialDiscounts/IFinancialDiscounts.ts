@@ -11,6 +11,7 @@ interface UserApproved {
 }
 
 export interface IFinancialDiscount {
+  financial_status_id: number;
   id: number;
   client_id: number;
   project_id: number;

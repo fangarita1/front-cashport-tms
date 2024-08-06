@@ -134,8 +134,9 @@ export const ModalActionDiscountCredit = ({
             onClosePrincipalModal={
               onCloseAllModals
                 ? () => {
-                    onCloseAllModals();
                     onClose();
+                    setCurrentView("select");
+                    onCloseAllModals();
                   }
                 : onClose
             }

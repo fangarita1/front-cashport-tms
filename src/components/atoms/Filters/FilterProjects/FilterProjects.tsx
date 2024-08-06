@@ -16,8 +16,9 @@ interface Option {
 
 interface Props {
   setSelecetedProjects: Dispatch<SetStateAction<{ country: string[]; currency: string[] }>>;
+  height?: string;
 }
-export const FilterProjects = ({ setSelecetedProjects }: Props) => {
+export const FilterProjects = ({ setSelecetedProjects, height }: Props) => {
   const [countries, setCountries] = useState<any>([]);
   const [currencies, setCurrencies] = useState<any>([]);
 
@@ -73,7 +74,7 @@ export const FilterProjects = ({ setSelecetedProjects }: Props) => {
   return (
     <Cascader
       className="filterCascader"
-      style={{ width: "130px" }}
+      style={{ width: "130px", height: `${height}px` }}
       multiple
       size="large"
       removeIcon

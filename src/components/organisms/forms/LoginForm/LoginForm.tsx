@@ -45,12 +45,14 @@ export const LoginForm = () => {
       description: <Text type="secondary">Error: Email o contrraseñas incorrectas </Text>,
       placement
     });
+    setIsLoading(false);
   };
 
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmitHandler = async ({ email, password }: IAuthLogin) => {
     setIsLoading(true);
+
     await getAuth(email.trim(), password, router, false, () => openNotification("topRight"));
     reset();
   };

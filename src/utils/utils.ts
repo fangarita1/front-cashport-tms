@@ -168,6 +168,26 @@ export const formatDateBars = (date: string): string => {
   return `${year}-${month}-${day}`;
 };
 
+export const formatDatePlane = (date: string): string => {
+  //18 octubre, 2023 en español
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = d.toLocaleString("es-ES", { month: "long" });
+  const day = d.getDate();
+
+  return `${day} ${month}, ${year}`;
+};
+
+export const formatDatePlaneWithoutComma = (date: string): string => {
+  const [day, month, year] = date.split('/');
+  const formattedDate = new Date(`${year}-${month}-${day}`);
+  const formattedYear = formattedDate.getFullYear();
+  const formattedMonth = formattedDate.toLocaleString("es-ES", { month: "long" });
+  const formattedDay = formattedDate.getDate();
+
+  return `${formattedDay} ${formattedMonth}, ${formattedYear}`;
+};
+
 export function daysLeft(dateString: string): number {
   const today = new Date();
   const expirationDate = new Date(dateString);
@@ -183,7 +203,13 @@ export const insertPeriodEveryThreeDigits = (number: number) => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 
-export function formatMoney(amount: string | number, countryCode?: CountryCode): string {
+export function formatMoney(
+  amount: string | number | undefined | null,
+  countryCode?: CountryCode
+): string {
+  if (!amount) {
+    return "";
+  }
   const { currency, id } = countryFormater(countryCode);
   const number = typeof amount === "string" ? parseFloat(amount) : amount;
   const formatter = new Intl.NumberFormat(id, {
@@ -283,6 +309,18 @@ export const formatDateAndTime = (date: string): string => {
   return `${day}/${month}/${year} - ${hours}:${minutes} ${period}`;
 };
 
+export const formatMillionNumber = (number: number | undefined | null): string => {
+  if (!number) {
+    return "0";
+  }
+
+  const formatNumber = number / 1000000;
+
+  if (formatNumber > 1000000) {
+    return formatNumber.toFixed(2);
+  }
+  return formatNumber.toFixed();
+};
 export const shortenFileName = (fileName: string, maxChars: number = 10): string => {
 
   const dotIndex = fileName.lastIndexOf('.');
