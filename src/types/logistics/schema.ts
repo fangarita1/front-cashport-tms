@@ -419,7 +419,179 @@ export interface ICarrierRequest {
   modified_at?: Date | null;
   modified_by?: string | null;
 }
-
+/**
+ * Exposes all fields present in carrier_request_detail as a typescript
+ * interface.
+ */
+export interface ICarrierRequestDetail {
+  id: number;
+  id_service_type: number;
+  id_carrier: number;
+  service_type: string;
+  start_date: string;
+  end_date: string;
+  id_start_location: number;
+  start_location: string;
+  id_end_location: number;
+  end_location: string;
+  status: string;
+  created_at: string;
+  created_by: string;
+  statusdesc: string;
+  color: string;
+  vehicles: string;
+  elapsedtime: string;
+  amount: number;
+  id_transfer_request: number;
+  id_journey: number;
+  id_trip: number;
+  start_latitude: number,
+  start_longitude: number,
+  end_latitude: number,
+  end_longitude: number,
+  volume: number,
+  weight: number,
+  //geometry
+  geometry: any;
+  //datos de contacto!
+  carrier_request_contacts?: ICarrierRequestContacts[] | null;
+  //documentos!
+  carrier_request_documents?: ICarrierRequestDocuments[] | null;
+  //material!
+  carrier_request_material_by_trip?: ICarrierRequestMaterialByTrip[] | null;
+  //personas -- aplica para viaje tipo persona!
+  carrier_request_persons?: ICarrierRequestPersons[] | null;
+}
+/**
+ * Exposes all fields present in carrier_request_contacts as a typescript
+ * interface.
+ */
+export interface ICarrierRequestContacts {
+  id: number;
+  id_transfer_order: number;
+  id_contact: number;
+  contact_type: number;
+  name: string;
+  contact_number: number;
+  id_psl: number;
+  id_cost_center: number | null;
+  active: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string;
+  modified_by: string;
+  id_transfer_request: number;
+}
+/**
+ * Exposes all fields present in carrier_request_documents as a typescript
+ * interface.
+ */
+export interface ICarrierRequestDocuments {
+  id: number;
+  id_transfer_order: number;
+  id_document_type: number;
+  url_document: string;
+  status: string;
+  active: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string;
+  modified_by: string;
+  id_transfer_request: number;
+  document_type_desc: string;
+}
+/**
+ * Exposes all fields present in carrier_request_material_by_trip as a typescript
+ * interface.
+ */
+export interface ICarrierRequestMaterialByTrip {
+  id: number;
+  id_transfer_request: number;
+  id_transfer_order: number;
+  id_trip: number;
+  id_material: number;
+  units: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string | null;
+  modified_by: string | null;
+  material: IMaterial[];
+}
+/**
+ * Exposes all fields present in carrier_request_material_by_persons as a typescript
+ * interface.
+ */
+export interface ICarrierRequestPersons {
+  id: number;
+  id_transfer_order: number;
+  id_user: number;
+  id_user_line: number;
+  id_user_subline: number;
+  active: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string | null;
+  modified_by: string | null;
+  id_transfer_request: number;
+  id_trip: number;
+}
+/**
+ * Exposes all fields present in carrier_request_drivers as a typescript
+ * interface.
+ */
+export interface ICarrierRequestDrivers {
+  active: boolean;
+  birth_date: string;
+  company: string;
+  company_id: number;
+  created_at: string;
+  created_by: string;
+  document: string;
+  document_type: number;
+  email: string;
+  emergency_contact: string;
+  emergency_number: number;
+  firebaseguid: string;
+  glasses: number;
+  id: number;
+  last_name: string;
+  licence: string;
+  licence_category: string;
+  licence_expiration: string;
+  modified_at: string;
+  modified_by: string;
+  name: string;
+  phone: string;
+  rh: string;
+}
+/**
+ * Exposes all fields present in carrier_request_vehicles as a typescript
+ * interface.
+ */
+export interface ICarrierRequestVehicles {
+  active: boolean;
+  aditional_info: string;
+  brand: string;
+  color: string;
+  company: string;
+  country: string;
+  created_at: string;
+  created_by: string;
+  gps_link: string;
+  gps_password: string;
+  gps_user: string;
+  has_gps: boolean
+  id: number;
+  id_carrier: number;
+  id_vehicle_type: number;
+  line: string;
+  model: string;
+  modified_at: string;
+  modified_by: string;
+  plate_number: string;
+  vehicle_type: string;
+  year: number;
+}
 /**
  * Exposes the same fields as CarrierRequest,
  * but makes every field containing a DEFAULT value optional.
@@ -556,23 +728,25 @@ export interface ICarriersWithDefaults {
  * interface.
  */
 export interface ICarriersRequestList {
-  color: string;
-  created_at: string;
-  created_by: string;
-  end_date: string;
-  end_location: string;
-  id: number;
-  id_end_location: number;
-  id_service_type: number;
-  id_start_location: number;
-  service_type: string;
-  start_date: string;
-  start_location: string;
-  status: string;
-  statusdesc: string;
-  vehicles: string;
-  elapsedtime: number;
-  amount: number;
+  statusid: string,
+  description: string,
+  color: string,
+  carrierrequests: ICarrierRequestsListDetail[]
+}
+/**
+ * Exposes all fields present in certificates as a typescript
+ * interface.
+ */
+export interface ICarrierRequestsListDetail {
+  id: number,
+      service_type: string,
+      start_date: string,
+      end_date: string,
+      start_location: string,
+      end_location: string,
+      vehicles: string,
+      elapsedtime: string,
+      amount: number
 }
 /**
  * Exposes all fields present in certificates as a typescript

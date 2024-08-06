@@ -3,23 +3,23 @@ import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Dropdown, Menu, Typography, Flex, Button } from "antd";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
-import { IDriverByCarrierRequest, ITransferRequestVehicle } from "@/types/logistics/schema";
-import { CaretDown, Check, Circle, Plus, PlusCircle } from "@phosphor-icons/react";
+import { ICarrierRequestDrivers, ICarrierRequestVehicles } from "@/types/logistics/schema";
+import { CaretDown, Check, Circle, Plus, PlusCircle, CheckCircle } from "@phosphor-icons/react";
 import styles from "./vehicleAndDriverAsignation.module.scss";
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 interface VehicleAndDriverAsignationProps {
   setIsNextStepActive: Dispatch<SetStateAction<boolean>>;
   setVehicle: (vehicle: number) => void;
   setDriver: (drivers: number[]) => void;
-  drivers: IDriverByCarrierRequest[] | null | undefined;
-  vehicles: ITransferRequestVehicle[] | null | undefined;
+  drivers: ICarrierRequestDrivers[] | null | undefined;
+  vehicles: ICarrierRequestVehicles[] | null | undefined;
 }
 
 interface FormValues {
-  vehicle: string;
-  drivers: string[];
+  vehicleForm: string;
+  driverForm: string[];
 }
 
 export default function VehicleAndDriverAsignation({
@@ -31,12 +31,13 @@ export default function VehicleAndDriverAsignation({
 }: VehicleAndDriverAsignationProps) {
   const { control, watch } = useForm<FormValues>({
     defaultValues: {
-      vehicle: "",
-      drivers: []
+      vehicleForm: "",
+      driverForm: []
     }
   });
 
   const [driverSections, setDriverSections] = useState<number[]>([0]);
+  console.log("driversPage:", drivers)
 
   useEffect(() => {
     setIsNextStepActive(false)
@@ -47,29 +48,40 @@ export default function VehicleAndDriverAsignation({
   };
 
   const vehiclesSelectionMenu = (
-    items: ITransferRequestVehicle[] | null | undefined,
+    items: ICarrierRequestVehicles[] | null | undefined,
     field: any
   ) => (
     <Menu
       onClick={({ key }) => field.onChange(key)}
       style={{
         height: "100%",
-        padding: "2px 2px",
+        padding: "0 2px",
         backgroundColor: "#ffffff",
         border: "1px solid #DDDFE8",
         borderRadius: "4px"
       }}
     >
-      {items?.map((item) => (
+      {items?.map((item, index) => (
+        <>
+        {index !== 0 && <hr style={{ borderTop: "1px solid #f7f7f7" }}></hr>}
         <Menu.Item key={item.id} className={styles.dropdownSelect}>
-          <Flex align="center" justify="space-between" style={{ padding: "8px 4px" }}>
+          <Flex align="center" justify="space-between" style={{ padding: "0 4px" }}>
             <Flex align="center" gap={8}>
-              <Circle size={26} />
-              <>
-                <Text>{item.vehicle_type.description}</Text>
-                <p color="black">•</p>
-                <Text>{item.vehicle_type.aditional_info}</Text>
-              </>
+              {(Number(selectedVehicle) === item.id) ? <CheckCircle size={26} color="green"/> : <Circle size={26} />}
+              <div style={{marginLeft: "8px", padding: "2px 0"}}>
+                <Title level={5}>{item.vehicle_type}</Title>
+                <Flex gap={8}>
+                  <Flex>
+                  <Text>{item.brand}</Text>
+                  &nbsp;
+                  <Text>{item.line}</Text>
+                  &nbsp;
+                  <Text>{item.color}</Text>
+                  </Flex>
+                  <p color="black">•</p>
+                  <Text>{item.plate_number}</Text>
+                </Flex>
+              </div>
             </Flex>
             <Flex
               style={{
@@ -85,12 +97,13 @@ export default function VehicleAndDriverAsignation({
             </Flex>
           </Flex>
         </Menu.Item>
+        </>
       ))}
     </Menu>
   );
 
   const driversSelectionMenu = (
-    items: IDriverByCarrierRequest[] | null | undefined,
+    items: ICarrierRequestDrivers[] | null | undefined,
     field: any
   ) => (
     <Menu
@@ -109,15 +122,17 @@ export default function VehicleAndDriverAsignation({
         borderRadius: "4px"
       }}
     >
-      {items?.map((item) => (
-        <Menu.Item key={item.id_driver} className={styles.dropdownSelect}>
+      {items?.map((item, index) => (
+        <>
+        {index !== 0 && <hr style={{ borderTop: "1px solid #f7f7f7" }}></hr>}
+        <Menu.Item key={item.id} className={styles.dropdownSelect}>
           <Flex align="center" justify="space-between" style={{ padding: "8px 4px" }}>
             <Flex align="center" gap={8}>
-              <Circle size={26} />
+              {(Number(selectedDrivers) === item.id) ? <CheckCircle size={26}/> : <Circle size={26} />}
               <>
-                <Text>{item.driver.name}</Text>
+                <Text>{item.name}</Text>
                 <p color="black">•</p>
-                <Text>{item.driver.phone}</Text>
+                <Text>{item.phone}</Text>
               </>
             </Flex>
             <Flex
@@ -134,52 +149,50 @@ export default function VehicleAndDriverAsignation({
             </Flex>
           </Flex>
         </Menu.Item>
+        </>
       ))}
     </Menu>
   );
 
   const onSubmit = (data: FormValues) => {
-    setVehicle(parseInt(data.vehicle));
-    setDriver(data.drivers.map((driverId) => parseInt(driverId)));
-    // You can add any additional logic here if needed
+    setVehicle(parseInt(data.vehicleForm));
+    setDriver(data.driverForm.map((driverId) => parseInt(driverId)));
   };
 
-  const selectedVehicle = watch("vehicle");
-  const selectedDrivers = watch("drivers");
-  console.log(selectedVehicle, selectedDrivers)
+  const selectedVehicle = watch("vehicleForm");
+  const selectedDrivers = watch("driverForm");
 
   useEffect(() => {
-    // Call onSubmit if both vehicle and drivers are selected
     if (selectedVehicle && selectedDrivers.length > 0) {
-      onSubmit({ vehicle: selectedVehicle, drivers: selectedDrivers });
+      onSubmit({ vehicleForm: selectedVehicle, driverForm: selectedDrivers });
       setIsNextStepActive(true);
     }
   }, [selectedVehicle, selectedDrivers]);
 
   const getSelectedVehicle = (
     id: number,
-    items: ITransferRequestVehicle[] | null | undefined,
+    items: ICarrierRequestVehicles[] | null | undefined,
     description: boolean,
     plate: boolean
   ) => {
     const selectedItem = items?.find(item => item.id === id);
     
-    const descriptionText = selectedItem && description ? `${selectedItem.vehicle_type?.description} • ${selectedItem.vehicle_type?.aditional_info}` : `Seleccione el vehículo`;
-    const plateText = selectedItem && `${!description && selectedItem.vehicle_type?.plate_number !== undefined ? selectedItem.vehicle_type?.plate_number : ""}`
+    const descriptionText = selectedItem && description ? `${selectedItem.vehicle_type} • ${selectedItem.brand} ${selectedItem.line} ${selectedItem.color}` : `Seleccione el vehículo`;
+    const plateText = selectedItem && `${!description && selectedItem.plate_number !== undefined ? selectedItem.plate_number : ""}`
   
     return description ? descriptionText : plate && plateText
   };
 
   const getSelectedDriver = (
     id: number,
-    items: IDriverByCarrierRequest[] | null | undefined,
+    items: ICarrierRequestDrivers[] | null | undefined,
     name: boolean,
     phone: boolean
   ) => {
-    const selectedItem = items?.find(item => item.id_driver === id);
+    const selectedItem = items?.find(item => item.id === id);
 
-    const nameText = selectedItem ? `${name ? selectedItem.driver?.name : selectedItem.driver?.phone}` : `Seleccione el conductor`;
-    const phoneText = selectedItem && `${!name && selectedItem.driver?.phone}`;
+    const nameText = selectedItem ? `${name ? selectedItem.name : selectedItem.phone}` : `Seleccione el conductor`;
+    const phoneText = selectedItem && `${!name && selectedItem.phone}`;
   
     return name ? nameText : phone && phoneText
   };
@@ -198,7 +211,7 @@ export default function VehicleAndDriverAsignation({
           </p>
         </div>
         <Controller
-          name="vehicle"
+          name="vehicleForm"
           control={control}
           render={({ field }) => (
             <Dropdown
@@ -297,7 +310,7 @@ export default function VehicleAndDriverAsignation({
             </div>
             <div className={styles.selector}>
               <Controller
-                name="drivers"
+                name="driverForm"
                 control={control}
                 render={({ field }) => (
                   <Dropdown
@@ -310,12 +323,12 @@ export default function VehicleAndDriverAsignation({
                         <Flex gap={12}>
                           <Flex align="center" gap={4}>
                             <Text>
-                              {getSelectedDriver(Number(selectedDrivers), drivers, true, false)}
+                              {getSelectedDriver(Number(selectedDrivers[0]), drivers, true, false)}
                             </Text>
                           </Flex>
                         </Flex>
                         <Flex gap={24}>
-                          <Text>{getSelectedDriver(Number(selectedDrivers), drivers, false, true)}</Text>
+                          <Text>{getSelectedDriver(Number(selectedDrivers[0]), drivers, false, true)}</Text>
                           <CaretDown size={20} color="black" />
                         </Flex>
                       </Flex>
