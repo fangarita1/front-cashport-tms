@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Modal, Table, TableProps, InputNumber, DatePicker } from "antd";
+import { Button, Modal, Table, TableProps, InputNumber, DatePicker, Input } from "antd";
 import "./wallet-tab-payment-agreement-modal.scss";
 import { CaretLeft } from "phosphor-react";
 import EvidenceModal from "../wallet-tab-evidence-modal";
@@ -17,6 +17,7 @@ interface Props {
   projectId?: number;
   messageShow: MessageInstance;
   invoiceSelected?: IInvoice[];
+  onCloseAllModals: () => void;
 }
 
 interface ITableData {
@@ -38,7 +39,8 @@ const PaymentAgreementModal: React.FC<Props> = ({
   invoiceSelected,
   clientId,
   projectId,
-  messageShow
+  messageShow,
+  onCloseAllModals
 }) => {
   const [selectedEvidence, setSelectedEvidence] = useState<File[]>([]);
   const [commentary, setCommentary] = useState<string>("");
@@ -70,7 +72,10 @@ const PaymentAgreementModal: React.FC<Props> = ({
         selectedEvidence[0] || null
       );
       messageShow.success("Acuerdo de pago creado exitosamente");
-      onClenModal();
+      onCloseAllModals();
+      setGlobalDate(null);
+      setIsSecondView(false);
+      setSelectedEvidence([]);
     } catch (error) {
       messageShow.error("Error al crear el acuerdo de pago. Por favor, intente de nuevo.");
     }
@@ -142,6 +147,16 @@ const PaymentAgreementModal: React.FC<Props> = ({
     });
   };
 
+  const formatNumber = (value: string): string => {
+    if (!value) return "";
+    const numStr = value.replace(/\D/g, "");
+    return `$ ${numStr.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+  };
+
+  const parseNumber = (value: string): number => {
+    return parseInt(value.replace(/[^\d]/g, ""), 10) || 0;
+  };
+
   const columns: TableProps<any>["columns"] = [
     { title: "ID Factura", dataIndex: "id", key: "id" },
     {
@@ -165,13 +180,18 @@ const PaymentAgreementModal: React.FC<Props> = ({
       dataIndex: "agreedValue",
       key: "agreedValue",
       render: (text: string, record, index: number) => (
-        <InputNumber
-          max={record.pending}
-          min={0}
-          value={text ? parseFloat(text) : undefined}
-          formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-          parser={(value) => value?.replace(/\$\s?|(,*)/g, "") as unknown as number}
-          onChange={(value) => handleCellChange("agreedValue", index, value?.toString() || "")}
+        <Input
+          value={formatNumber(text)}
+          onChange={(e) => {
+            const inputValue = e.target.value;
+            const numericValue = parseNumber(inputValue);
+
+            if (numericValue <= record.pending) {
+              handleCellChange("agreedValue", index, numericValue.toString());
+            } else {
+              handleCellChange("agreedValue", index, record.pending.toString());
+            }
+          }}
           className="number__input"
         />
       ),

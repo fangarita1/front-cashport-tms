@@ -74,7 +74,7 @@ export const WalletTab = () => {
   const closeAllModal = () => {
     setIsSelectOpen({ selected: 0 });
     setSelectedRows([]);
-    handleisGenerateActionOpen();
+    mutate(`/invoice/client/${clientId}/project/${projectId}`);
   };
 
   const handleOpenInvoiceDetail = (invoice: IInvoice) => {
@@ -174,6 +174,9 @@ export const WalletTab = () => {
         clientId={clientId}
         projectId={projectId}
         messageShow={messageShow}
+        onCloseAllModals={() => {
+          closeAllModal();
+        }}
       />
       <ModalActionDiscountCredit
         isOpen={showActionDetailModal?.isOpen}
