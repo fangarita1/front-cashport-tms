@@ -1533,7 +1533,7 @@ console.log("typeactive", typeactive)
                                     Volumen total
                                   </Text>
                                   <Text className="text-footer-table">
-                                    {dataCarga.reduce((sum, material) => sum + material.m3_volume, 0)} m3
+                                    {dataCarga.reduce((sum, material) => sum + (material.m3_volume * material.quantity), 0)} m3
                                   </Text>
                                 </Space>
                               </Flex>
@@ -1544,7 +1544,7 @@ console.log("typeactive", typeactive)
                                     Peso total
                                   </Text>
                                   <Text className="text-footer-table">
-                                    {dataCarga.reduce((sum, material) => sum + material.kg_weight, 0)} kg
+                                    {dataCarga.reduce((sum, material) => sum + (material.kg_weight * material.quantity), 0)} kg
                                   </Text>
                                 </Space>
                               </Flex>
