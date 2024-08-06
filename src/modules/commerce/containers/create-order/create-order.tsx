@@ -17,8 +17,8 @@ export interface ISelectedProduct {
 }
 
 export interface ISelectedProducts {
-  category: string;
   category_id: number;
+  category: string;
   products: ISelectedProduct[];
 }
 

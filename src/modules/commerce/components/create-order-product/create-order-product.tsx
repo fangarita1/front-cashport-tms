@@ -15,10 +15,11 @@ export interface CreateOrderProductProps {
     id: number;
     name: string;
     price: number;
-    discount: number;
-    discount_percentage: number;
+    discount: number | undefined;
+    discount_percentage: number | undefined;
     image: string;
     category_id: number;
+    SKU: string;
   };
   categoryName: string;
 }
