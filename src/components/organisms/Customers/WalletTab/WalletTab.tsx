@@ -8,7 +8,6 @@ import { InvoicesTable } from "@/components/molecules/tables/InvoicesTable/Invoi
 import { ModalGenerateAction } from "@/components/molecules/modals/ModalGenerateAction/ModalGenerateAction";
 import UiSearchInput from "@/components/ui/search-input";
 import { ModalEstimateTotalInvoices } from "@/components/molecules/modals/modal-estimate-total-invoices/modal-estimate-total-invoices";
-import InvoiceDetailModalProps from "@/modules/clients/containers/invoice-detail-modal";
 import { IInvoice, InvoicesData } from "@/types/invoices/IInvoices";
 import LabelCollapse from "@/components/ui/label-collapse";
 import Collapse from "@/components/ui/collapse";
@@ -19,9 +18,12 @@ import RadicationInvoice from "@/components/molecules/modals/Radication/Radicati
 import RegisterNews from "@/components/molecules/modals/RegisterNews/RegisterNews";
 import { useSWRConfig } from "swr";
 import "./wallettab.scss";
-import MoldalNoveltyDetail from "@/components/molecules/modals/MoldalNoveltyDetail/MoldalNoveltyDetail";
+import InvoiceDetailModal from "@/modules/clients/containers/invoice-detail-modal";
+import { useModalDetail } from "@/context/ModalContext";
 
 export const WalletTab = () => {
+  const { openModal } = useModalDetail();
+
   const [invoices, setInvoices] = useState<InvoicesData[] | undefined>([]);
   const [selectedRows, setSelectedRows] = useState<IInvoice[] | undefined>(undefined);
   const [isGenerateActionOpen, setisGenerateActionOpen] = useState(false);
@@ -30,13 +32,6 @@ export const WalletTab = () => {
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
   const { mutate } = useSWRConfig();
-  const [showInvoiceDetailModal, setShowInvoiceDetailModal] = useState<{
-    isOpen: boolean;
-    invoiceId: number;
-  }>({
-    isOpen: false,
-    invoiceId: 0
-  });
   const [showActionDetailModal, setShowActionDetailModal] = useState<{
     isOpen: boolean;
     actionType: number;
@@ -81,6 +76,16 @@ export const WalletTab = () => {
     setIsSelectOpen({ selected: 0 });
     setSelectedRows([]);
     handleisGenerateActionOpen();
+  };
+
+  const handleOpenInvoiceDetail = (invoice: IInvoice) => {
+    openModal("invoice", {
+      invoiceId: invoice.id,
+      clientId: clientId,
+      projectId: projectId,
+      selectInvoice: invoice,
+      handleActionInDetail: handleActionInDetail
+    });
   };
 
   return (
@@ -138,7 +143,7 @@ export const WalletTab = () => {
               ),
               children: (
                 <InvoicesTable
-                  setShowInvoiceDetailModal={setShowInvoiceDetailModal}
+                  openInvoiceDetail={handleOpenInvoiceDetail}
                   stateId={invoiceState.status_id}
                   dataSingleInvoice={invoiceState.invoices}
                   setSelectedRows={setSelectedRows}
@@ -163,25 +168,6 @@ export const WalletTab = () => {
           setShowActionDetailModal(e);
         }}
       />
-
-      {showInvoiceDetailModal?.isOpen && (
-        <InvoiceDetailModalProps
-          isOpen={showInvoiceDetailModal?.isOpen || false}
-          onClose={() => {
-            setSelectedRows([]);
-            setShowInvoiceDetailModal({ isOpen: false, invoiceId: 0 });
-          }}
-          invoiceId={showInvoiceDetailModal?.invoiceId || 0}
-          clientId={clientId}
-          projectId={projectId}
-          selectInvoice={
-            invoices
-              ?.flatMap((invoiceState) => invoiceState.invoices)
-              .find((invoice) => invoice.id === showInvoiceDetailModal?.invoiceId) || undefined
-          }
-          handleActionInDetail={handleActionInDetail}
-        />
-      )}
       <PaymentAgreementModal
         invoiceSelected={selectedRows}
         isOpen={isSelectOpen.selected === 6}
@@ -227,7 +213,8 @@ export const WalletTab = () => {
         messageShow={messageShow}
         onCloseAllModals={closeAllModal}
       />
-      <MoldalNoveltyDetail isOpen={false} onClose={onCloseModal} noveltyId={0} />
     </>
   );
+  {
+  }
 };

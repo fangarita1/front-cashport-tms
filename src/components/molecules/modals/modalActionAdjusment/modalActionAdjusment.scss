@@ -1,0 +1,113 @@
+@import "@styles/variables.scss";
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 0.75rem 0.5rem;
+
+    p {
+        font-size: 1rem;
+        font-weight: 300;
+    }
+}
+
+.actionButton {
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    background-color: $background;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    gap: 0.5rem;
+    border: none;
+    box-shadow: none;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &__caretRight {
+        margin-left: auto;
+    }
+
+    &__text {
+        font-size: 1rem;
+        font-weight: 400;
+        margin: 0;
+    }
+}
+
+.actionButton__text {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mal-ant-modal-content {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.mal-modalContentScroll {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    scrollbar-width: thin;
+}
+
+.mal-modalContent {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 1rem;
+
+    .mal-subTitleModalAction {
+        font-size: 1rem;
+        font-style: normal;
+        font-weight: 300;
+        line-height: 1.25rem;
+    }
+}
+
+.mal-conten_modal_select_ajust {
+    display: flex;
+    flex-direction: column;
+    height: 94%;
+    justify-content: space-between;
+}
+
+.mal-container__button {
+    margin-top: 1rem;
+}
+
+.mal-button__action__text {
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    padding: 0 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    flex-grow: 1;
+    border: none;
+    box-shadow: none;
+
+    &__green {
+        background-color: #cbe71e;
+    }
+
+    &__white {
+        background-color: #ffff;
+        border: solid 2px;
+    }
+
+}
+
+.title_modal_adjusment {
+    display: flex;
+    justify-content: space-between;
+    width: 95%;
+}

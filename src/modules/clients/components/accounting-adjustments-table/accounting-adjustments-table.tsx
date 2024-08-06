@@ -11,25 +11,20 @@ const { Text } = Typography;
 interface PropsInvoicesTable {
   dataAdjustmentsByStatus: IFinancialDiscount[];
   setSelectedRows: Dispatch<SetStateAction<IFinancialDiscount[] | undefined>>;
-  setShowAdjustmentDetailModal: Dispatch<
-    SetStateAction<{
-      isOpen: boolean;
-      adjustmentId: number;
-    }>
-  >;
+  openAdjustmentDetail: (adjustment: IFinancialDiscount) => void;
   financialStatusId: number;
 }
 
 const AccountingAdjustmentsTable = ({
   dataAdjustmentsByStatus: data,
   setSelectedRows,
-  setShowAdjustmentDetailModal,
+  openAdjustmentDetail,
   financialStatusId
 }: PropsInvoicesTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
-  const openAdjustmentDetail = (adjustmentId: number) => {
-    setShowAdjustmentDetailModal({ isOpen: true, adjustmentId });
+  const handleOpenDetail = (adjustment: IFinancialDiscount) => {
+    openAdjustmentDetail(adjustment);
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRows: any) => {
@@ -86,9 +81,9 @@ const AccountingAdjustmentsTable = ({
       title: "ID ERP",
       dataIndex: "id",
       key: "id",
-      render: (invoiceId) => (
-        <p onClick={() => openAdjustmentDetail(invoiceId)} className="adjustmentsTable__id">
-          {invoiceId}
+      render: (_, record) => (
+        <p onClick={() => handleOpenDetail(record)} className="adjustmentsTable__id">
+          {record.id}
         </p>
       ),
       sorter: (a, b) => a.id - b.id,
@@ -135,7 +130,7 @@ const AccountingAdjustmentsTable = ({
     {
       title: "",
       render: (_, record) => (
-        <Button onClick={() => openAdjustmentDetail(record.id)} icon={<Eye size={"1.2rem"} />} />
+        <Button onClick={() => handleOpenDetail(record)} icon={<Eye size={"1.2rem"} />} />
       ),
       width: 60,
       onCell: () => ({
