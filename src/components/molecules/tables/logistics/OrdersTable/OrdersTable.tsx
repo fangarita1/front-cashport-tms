@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Avatar, Button, Checkbox, Flex, Table, Tabs, Typography } from "antd";
+import { Avatar, Button, Checkbox, Collapse, Flex, Table, Tabs, Typography } from "antd";
 import type { TableProps } from "antd";
 import { Clipboard, DotsThree, Eye, Plus, Triangle } from "phosphor-react";
 
@@ -10,13 +10,12 @@ import { useAppStore } from "@/lib/store/store";
 import "./orderstable.scss";
 import UiSearchInput from "@/components/ui/search-input";
 import { countries } from "@/utils/countries";
-import { ITransferOrderList } from "@/types/logistics/schema";
+import { ITransferOrderList, TransferOrderListItems } from "@/types/logistics/schema";
 import { getAllTransferOrderList } from "@/services/logistics/transfer-orders";
 import Link from "next/link";
+import LabelCollapse from "@/components/ui/label-collapse";
 
 const { Text } = Typography;
-
-type OrderStatus = "upcoming" | "ongoing" | "finalized";
 
 export const OrdersTable = () => {
   const [selectFilters, setSelectFilters] = useState({
@@ -32,45 +31,7 @@ export const OrdersTable = () => {
     searchQuery: ""
   });
 
-  const getOrderStatus = (startDate: string, endDate: string): OrderStatus => {
-    const now = new Date();
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    if (now < start) return "upcoming";
-    if (now > end) return "ongoing";
-    return "finalized";
-  };
-
   const [transferOrderList, setTransferOrderList] = useState<ITransferOrderList[]>([]);
-  const [ordersByStatus, setOrdersByStatus] = useState<{
-    upcoming: ITransferOrderList[];
-    ongoing: ITransferOrderList[];
-    finalized: ITransferOrderList[];
-  }>({
-    upcoming: [],
-    ongoing: [],
-    finalized: []
-  });
-
-  useEffect(() => {
-    const categorizedOrders: {
-      upcoming: ITransferOrderList[];
-      ongoing: ITransferOrderList[];
-      finalized: ITransferOrderList[];
-    } = {
-      upcoming: [],
-      ongoing: [],
-      finalized: []
-    };
-
-    transferOrderList.forEach((order) => {
-      const status = getOrderStatus(order.start_date, order.end_date);
-      categorizedOrders[status].push(order);
-    });
-
-    setOrdersByStatus(categorizedOrders);
-  }, [transferOrderList]);
 
   useEffect(() => {
     loadTransferOrders();
@@ -80,7 +41,6 @@ export const OrdersTable = () => {
     if (transferOrderList.length > 0) return;
     const result = await getAllTransferOrderList();
     if (result.data.data.length > 0) {
-
       setTransferOrderList(result.data.data);
     }
   };
@@ -120,11 +80,33 @@ export const OrdersTable = () => {
             label: "Solicitudes",
             key: "0",
             children: (
-              <Table
-                loading={loading}
-                columns={columns as TableProps<any>["columns"]}
-                pagination={false}
-                dataSource={transferOrderList}
+              <Collapse
+                className="collapsesTransferOrders"
+                defaultActiveKey={"0"}
+                items={
+                  transferOrderList
+                    ? Object.entries(transferOrderList).map(([key, transferOrdersState]) => ({
+                        key: key,
+                        label: (
+                          <LabelCollapse
+                            status={transferOrdersState.description}
+                            quantity={transferOrdersState.trasnferorderrequests.length}
+                            color={transferOrdersState.color}
+                            quantityText="TO"
+                            removeIcons
+                          />
+                        ),
+                        children: (
+                          <Table
+                            loading={loading}
+                            columns={columns as TableProps<any>["columns"]}
+                            pagination={false}
+                            dataSource={transferOrdersState.trasnferorderrequests}
+                          />
+                        )
+                      }))
+                    : []
+                }
               />
             )
           },
@@ -158,7 +140,7 @@ export const OrdersTable = () => {
   );
 };
 
-const columns: TableProps<ITransferOrderList>["columns"] = [
+const columns: TableProps<TransferOrderListItems>["columns"] = [
   {
     title: "",
     key: "buttonSee",
@@ -172,7 +154,7 @@ const columns: TableProps<ITransferOrderList>["columns"] = [
     className: "tableTitle",
     key: "id",
     width: "54px",
-    render: (text, {id}) => (
+    render: (text, { id }) => (
       <Link href={`/logistics/orders/details/${id}`}>
         <Text style={{ color: "blue", textDecorationLine: "underline" }}>{text}</Text>
       </Link>
