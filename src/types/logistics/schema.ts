@@ -1459,6 +1459,13 @@ export interface IFormTransferOrder {
 }
 
 export interface ITransferOrderList {
+  color: string;
+  description: string;
+  statusid: string;
+  trasnferorderrequests: TransferOrderListItems[]
+}
+
+export interface TransferOrderListItems {
   id: number;
   id_service_type: number;
   service_type: string;
