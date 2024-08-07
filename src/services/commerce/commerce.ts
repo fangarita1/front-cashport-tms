@@ -6,10 +6,18 @@ import {
   ICreateOrderData,
   IEcommerceClient,
   IOrderConfirmedResponse,
+  IOrderData,
   IProductData,
   ISingleOrder
 } from "@/types/commerce/ICommerce";
 import { MessageType } from "@/context/MessageContext";
+
+export const getAllOrders = async (projectId: number) => {
+  const response: GenericResponse<IOrderData[]> = await API.get(
+    `/marketplace/projects/${projectId}/orders`
+  );
+  return response;
+};
 
 export const getSingleOrder = async (projectId: number, orderId: number) => {
   const response: GenericResponse<ISingleOrder[]> = await API.get(

@@ -120,3 +120,14 @@ interface IDetailOrder {
   discount_id: number;
   total_pronto_pago: number;
 }
+
+export interface IOrderData {
+  order_status: string;
+  id: number;
+  order_date: string;
+  city: string;
+  contacto: string;
+  total: number;
+  total_pronto_pago: number;
+  client_name: string;
+}

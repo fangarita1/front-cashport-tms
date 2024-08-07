@@ -2,9 +2,10 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Button, Table, TableProps, Typography } from "antd";
 
 import { Eye } from "phosphor-react";
-import { formatMoney } from "@/utils/utils";
+import { formatDateDMY, formatMoney } from "@/utils/utils";
 
 import "./orders-view-table.scss";
+import { IOrderData } from "@/types/commerce/ICommerce";
 
 const { Text } = Typography;
 
@@ -26,7 +27,7 @@ const OrdersViewTable = ({ dataSingleOrder: data, setSelectedRows }: PropsOrders
     onChange: onSelectChange
   };
 
-  const columns: TableProps<any>["columns"] = [
+  const columns: TableProps<IOrderData>["columns"] = [
     {
       title: "TR",
       dataIndex: "id",
@@ -37,17 +38,18 @@ const OrdersViewTable = ({ dataSingleOrder: data, setSelectedRows }: PropsOrders
     },
     {
       title: "Cliente",
-      dataIndex: "client",
-      key: "client",
+      dataIndex: "client_name",
+      key: "client_name",
       render: (text) => <Text className="cell">{text}</Text>,
-      sorter: (a, b) => a.client.localeCompare(b.client),
+      sorter: (a, b) => a.client_name.localeCompare(b.client_name),
       showSorterTooltip: false
     },
     {
       title: "Fecha de creación",
-      key: "created_at",
-      dataIndex: "created_at",
-      render: (text) => <Text className="cell">{text}</Text>,
+      key: "order_date",
+      dataIndex: "order_date",
+      render: (text) => <Text className="cell">{formatDateDMY(text)}</Text>,
+      sorter: (a, b) => new Date(a.order_date).getTime() - new Date(b.order_date).getTime(),
       showSorterTooltip: false
     },
     {
@@ -60,8 +62,8 @@ const OrdersViewTable = ({ dataSingleOrder: data, setSelectedRows }: PropsOrders
     },
     {
       title: "Contacto",
-      key: "contact",
-      dataIndex: "contact",
+      key: "contacto",
+      dataIndex: "contacto",
       render: (text) => <Text className="cell">{text}</Text>
     },
     {
@@ -74,10 +76,10 @@ const OrdersViewTable = ({ dataSingleOrder: data, setSelectedRows }: PropsOrders
     },
     {
       title: "Total pronto pago",
-      key: "early_pay_total",
-      dataIndex: "early_pay_total",
+      key: "total_pronto_pago",
+      dataIndex: "total_pronto_pago",
       render: (amount) => <Text className="cell">{formatMoney(amount)}</Text>,
-      sorter: (a, b) => a.early_pay_total - b.early_pay_total,
+      sorter: (a, b) => a.total_pronto_pago - b.total_pronto_pago,
       showSorterTooltip: false,
       align: "right"
     },
