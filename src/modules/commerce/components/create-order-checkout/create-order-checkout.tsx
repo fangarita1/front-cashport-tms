@@ -10,25 +10,30 @@ import { ISelectType } from "@/types/clients/IClients";
 import styles from "./create-order-checkout.module.scss";
 import GeneralSelect from "@/components/ui/general-select";
 import AlternativeBlackButton from "@/components/atoms/buttons/alternativeBlackButton/alternativeBlackButton";
-import { getAdresses } from "@/services/commerce/commerce";
+import prefetch from "next/router";
+import { createDraft, createOrder, getAdresses } from "@/services/commerce/commerce";
 import { useAppStore } from "@/lib/store/store";
 import { ICommerceAdresses } from "@/types/commerce/ICommerce";
+import { useMessageApi } from "@/context/MessageContext";
+import { GenericResponse } from "@/types/global/IGlobal";
 
 interface IShippingInfoForm {
-  addresses?: ISelectType;
-  city?: string;
-  address?: string;
-  email?: string;
-  phone?: string;
-  comment?: string;
+  addresses: ISelectType;
+  city: string;
+  address: string;
+  email: string;
+  phone: string;
+  comment: string;
 }
 
 const CreateOrderCheckout: FC = ({}) => {
-  const { setCheckingOut, client } = useContext(OrderViewContext);
+  const { setCheckingOut, client, confirmOrderData } = useContext(OrderViewContext);
+  const { ID: projectId } = useAppStore((state) => state.selectedProject);
   const [radioValue, setRadioValue] = useState(0);
   const [loading, setLoading] = useState(false);
   const [addresses, setAddresses] = useState<ICommerceAdresses[]>([]);
   const router = useRouter();
+  const { showMessage } = useMessageApi();
 
   const {
     control,
@@ -37,13 +42,7 @@ const CreateOrderCheckout: FC = ({}) => {
     watch,
     formState: { errors, isValid }
   } = useForm<IShippingInfoForm>({
-    mode: "onChange",
-    defaultValues: {
-      city: "Bogota quemado",
-      address: "Calle quemad",
-      email: "quemad@gmail.com",
-      phone: ""
-    }
+    mode: "onChange"
   });
   const watchSelectAddress = watch("addresses");
 
@@ -51,6 +50,7 @@ const CreateOrderCheckout: FC = ({}) => {
     const selectedAddress =
       watchSelectAddress &&
       addresses.find((address) => address.address === watchSelectAddress.label);
+    if (!selectedAddress) return;
     setValue("city", selectedAddress?.city);
     setValue("address", selectedAddress?.address);
     setValue("email", selectedAddress?.email);
@@ -59,7 +59,6 @@ const CreateOrderCheckout: FC = ({}) => {
   useEffect(() => {
     const fetchAdresses = async () => {
       const response = await getAdresses(client.id);
-      console.log("Direcciones: ", response.data);
       setAddresses(response.data);
     };
     fetchAdresses();
@@ -73,19 +72,61 @@ const CreateOrderCheckout: FC = ({}) => {
     setRadioValue(parseInt(e.target.value));
   };
 
-  const onSubmitSaveDraft = (data: IShippingInfoForm) => {
-    console.info("Guardar borrador: ", data);
+  const onSubmitSaveDraft = async (data: IShippingInfoForm) => {
+    setLoading(true);
+    router.prefetch("/comercio");
+    const createOrderModelData = {
+      shipping_information: {
+        address: data.address,
+        city: data.city,
+        dispatch_address: data.address,
+        email: data.email,
+        phone_number: data.phone,
+        comments: data.comment
+      },
+      order_summary: confirmOrderData
+    };
+
+    const response = (await createDraft(
+      projectId,
+      client.id,
+      createOrderModelData,
+      showMessage
+    )) as GenericResponse<{ id_order: number }>;
+
+    if (response.status === 200) {
+      router.push(`/comercio`);
+    }
+    setLoading(false);
   };
 
-  const onSubmitFinishOrder = (data: IShippingInfoForm) => {
-    console.info("Finalizar ordenn: ", data);
+  const onSubmitFinishOrder = async (data: IShippingInfoForm) => {
+    setLoading(true);
+    const createOrderModelData = {
+      shipping_information: {
+        address: data.address,
+        city: data.city,
+        dispatch_address: data.address,
+        email: data.email,
+        phone_number: data.phone,
+        comments: data.comment
+      },
+      order_summary: confirmOrderData
+    };
 
-    // setLoading(true);
-    // setTimeout(() => {
-    //   const orderId = 45666;
-    //   router.push(`/comercio/pedidoConfirmado/${orderId}`);
-    //   setLoading(false);
-    // }, 1000);
+    const response = (await createOrder(
+      projectId,
+      client.id,
+      createOrderModelData,
+      showMessage
+    )) as GenericResponse<{ id_order: number }>;
+    if (response.status === 200) {
+      const url = `/comercio/pedidoConfirmado/${response.data.id_order}`;
+      router.prefetch(url);
+      router.push(url);
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -113,7 +154,7 @@ const CreateOrderCheckout: FC = ({}) => {
                 field={field}
                 title="Direcciones"
                 placeholder="Seleccione una dirección"
-                options={addresses.map((address) => address.address)}
+                options={addresses?.map((address) => address.address)}
                 customStyleContainer={{ gridColumn: "1 / span 2" }}
               />
             )}
@@ -227,23 +268,5 @@ const mockDiscounts = [
     id: 4,
     discount: "30% DCTO En las marcas Cetaphil",
     isReached: true
-  }
-];
-
-const mockAddresses = [
-  {
-    id: 1,
-    value: 1,
-    label: "Calle 1 # 1-1"
-  },
-  {
-    id: 2,
-    value: 2,
-    label: "Calle 2 # 2-2"
-  },
-  {
-    id: 3,
-    value: 3,
-    label: "Calle 3 # 3-3"
   }
 ];

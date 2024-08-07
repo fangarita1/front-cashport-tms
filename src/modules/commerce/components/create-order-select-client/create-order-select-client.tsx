@@ -26,6 +26,7 @@ const SelectClient = ({ errors, field }: Props) => {
   const [options, setOptions] = useState<{ value: number | string; label: string }[]>();
 
   useEffect(() => {
+    if (!ID) return;
     const fetchClients = async () => {
       setLoading(true);
       const response = await getClients(ID);

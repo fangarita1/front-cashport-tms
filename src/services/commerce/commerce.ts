@@ -6,8 +6,17 @@ import {
   ICreateOrderData,
   IEcommerceClient,
   IOrderConfirmedResponse,
-  IProductData
+  IProductData,
+  ISingleOrder
 } from "@/types/commerce/ICommerce";
+import { MessageType } from "@/context/MessageContext";
+
+export const getSingleOrder = async (projectId: number, orderId: number) => {
+  const response: GenericResponse<ISingleOrder[]> = await API.get(
+    `/marketplace/projects/${projectId}/order/${orderId}`
+  );
+  return response;
+};
 
 export const getClients = async (projectId: number) => {
   const response: GenericResponse<IEcommerceClient[]> = await API.get(
@@ -46,10 +55,46 @@ export const confirmOrder = async (
   }
 };
 
-export const createOrder = async (projectId: number, clientId: number, data: ICreateOrderData) => {
-  const response: GenericResponse<[]> = await API.post(
-    `/marketplace/projects/${projectId}/clients/${clientId}/create-order`,
-    data
-  );
-  return response;
+export const createOrder = async (
+  projectId: number,
+  clientId: number,
+  data: ICreateOrderData,
+  showMessage: (type: MessageType, content: string) => void
+) => {
+  try {
+    const response: GenericResponse<{ id_order: number }> = await API.post(
+      `/marketplace/projects/${projectId}/clients/${clientId}/create-order`,
+      data
+    );
+    if (response.status !== 200) {
+      throw response;
+    }
+    showMessage("success", "Orden creada correctamente");
+    return response;
+  } catch (error) {
+    showMessage("error", "Error al crear orden");
+    return error;
+  }
+};
+
+export const createDraft = async (
+  projectId: number,
+  clientId: number,
+  data: ICreateOrderData,
+  showMessage: (type: MessageType, content: string) => void
+) => {
+  try {
+    const response: GenericResponse<{ id_order: number }> = await API.post(
+      `/marketplace/projects/${projectId}/clients/${clientId}/create-draft`,
+      data
+    );
+    if (response.status !== 200) {
+      throw response;
+    }
+    showMessage("success", "Borrador guardado correctamente");
+    return response;
+  } catch (error) {
+    showMessage("error", "Error al guardar el borrador");
+    return error;
+  }
 };

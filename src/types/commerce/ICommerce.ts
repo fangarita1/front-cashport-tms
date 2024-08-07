@@ -70,15 +70,17 @@ export interface IOrderConfirmedResponse {
   total_pronto_pago: number;
 }
 
+interface IShippingInformation {
+  address: string;
+  city: string;
+  dispatch_address: string;
+  email: string;
+  phone_number: string;
+  comments: string;
+}
+
 export interface ICreateOrderData {
-  shipping_information: {
-    address: string;
-    city: string;
-    dispatch_address: string;
-    email: string;
-    phone_number: string;
-    comments: string;
-  };
+  shipping_information: IShippingInformation;
   order_summary: IOrderConfirmedResponse;
 }
 
@@ -87,4 +89,34 @@ export interface ICommerceAdresses {
   city: string;
   email: string;
   id: number;
+}
+
+export interface ISingleOrder {
+  id: number;
+  client_id: number;
+  project_id: number;
+  city: string;
+  contacto: string;
+  total: number;
+  total_pronto_pago: number;
+  order_status: string;
+  detail: IDetailOrder;
+  shipping_info: IShippingInformation;
+  created_by: number;
+  order_date: string;
+  created_at: string;
+  updated_at: string;
+  is_deleted: number;
+  is_draft: number;
+  client_name: string;
+}
+
+interface IDetailOrder {
+  taxes: number;
+  total: number;
+  products: Product[];
+  subtotal: number;
+  discounts: number;
+  discount_id: number;
+  total_pronto_pago: number;
 }

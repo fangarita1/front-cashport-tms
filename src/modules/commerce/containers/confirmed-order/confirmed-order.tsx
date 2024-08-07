@@ -1,18 +1,32 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Flex } from "antd";
 import { useParams, useRouter } from "next/navigation";
 import ConfirmedOrderItem from "../../components/confirmed-order-item";
 import { CheckCircle } from "phosphor-react";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import ConfirmedOrderShippingInfo from "../../components/confirmed-order-shipping-info";
-import { extractSingleParam } from "@/utils/utils";
+import { extractSingleParam, formatMoney } from "@/utils/utils";
 
 import styles from "./confirmed-order.module.scss";
+import { getSingleOrder } from "@/services/commerce/commerce";
+import { useAppStore } from "@/lib/store/store";
+import { ISingleOrder } from "@/types/commerce/ICommerce";
 
 export const ConfirmedOrderView: FC = () => {
+  const { ID: projectId } = useAppStore((state) => state.selectedProject);
   const params = useParams();
   const router = useRouter();
   const orderIdParam = extractSingleParam(params.orderId);
+  const [order, setOrder] = useState<ISingleOrder>();
+
+  useEffect(() => {
+    if (!orderIdParam || !projectId) return;
+    const fetchOrder = async () => {
+      const response = await getSingleOrder(projectId, parseInt(orderIdParam));
+      setOrder(response.data[0]);
+    };
+    fetchOrder();
+  }, [params, projectId]);
 
   const handleGoBack = () => {
     router.push("/comercio/");
@@ -22,7 +36,7 @@ export const ConfirmedOrderView: FC = () => {
     <div className={styles.confirmedOrderView}>
       <div className={styles.confirmedOrderView__content}>
         <div className={styles.confirmedOrderView__content__header}>
-          <p>Pedido #{orderIdParam}</p>
+          <p>Pedido #{order?.id}</p>
           <div className={styles.title}>
             <h2>Tu pedido ha sido solicitado</h2>
             <CheckCircle className={styles.check} size={90} weight="fill" />
@@ -37,7 +51,7 @@ export const ConfirmedOrderView: FC = () => {
               justify="space-between"
             >
               <h2 className={styles.mainTitle}>Resumen</h2>
-              <p className={styles.quantity}>SKUs: 4</p>
+              <p className={styles.quantity}>SKUs: X</p>
             </Flex>
 
             <div className={styles.categories}>
@@ -60,16 +74,22 @@ export const ConfirmedOrderView: FC = () => {
               <h2>Datos de envío</h2>
               <ConfirmedOrderShippingInfo
                 title="Direcciones"
-                data="007795"
+                data={order?.shipping_info.address}
                 customStyles={{ gridColumn: "1 / span 2" }}
               />
-              <ConfirmedOrderShippingInfo title="Ciudad" data="Bogota" />
-              <ConfirmedOrderShippingInfo title="Dirección de despacho" data="Calle 12 #3 - 45" />
-              <ConfirmedOrderShippingInfo title="Email" data="cliente@gmail.com" />
-              <ConfirmedOrderShippingInfo title="Teléfono contacto" data="3001234567" />
+              <ConfirmedOrderShippingInfo title="Ciudad" data={order?.shipping_info?.city} />
+              <ConfirmedOrderShippingInfo
+                title="Dirección de despacho"
+                data={order?.shipping_info?.dispatch_address}
+              />
+              <ConfirmedOrderShippingInfo title="Email" data={order?.shipping_info?.email} />
+              <ConfirmedOrderShippingInfo
+                title="Teléfono contacto"
+                data={order?.shipping_info?.phone_number}
+              />
               <ConfirmedOrderShippingInfo
                 title="Observaciones"
-                data="Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias."
+                data={order?.shipping_info?.comments}
                 customStyles={{ gridColumn: "1 / span 2" }}
               />
             </div>
@@ -89,23 +109,23 @@ export const ConfirmedOrderView: FC = () => {
           <Flex vertical gap={"0.25rem"}>
             <Flex justify="space-between">
               <p>Subtotal</p>
-              <p>$XXXXX</p>
+              <p>{formatMoney(order?.detail?.subtotal)}</p>
             </Flex>
             <Flex justify="space-between">
               <p>IVA 19%</p>
-              <p>$XXXXX</p>
+              <p>{formatMoney(order?.detail?.taxes)}</p>
             </Flex>
             <Flex justify="space-between">
               <p>Descuentos</p>
-              <p>-$XXXXX</p>
+              <p>-{formatMoney(order?.detail?.discounts)}</p>
             </Flex>
             <Flex justify="space-between">
               <strong>Total</strong>
-              <strong>$XXXXX</strong>
+              <strong>{formatMoney(order?.detail?.total)}</strong>
             </Flex>
             <Flex className={styles.footer__earlyPaymentTotal} justify="space-between">
               <p>Total con pronto pago</p>
-              <p>$XXXXX</p>
+              <p>{formatMoney(order?.detail?.total_pronto_pago)}</p>
             </Flex>
           </Flex>
           <PrincipalButton onClick={handleGoBack}>Salir</PrincipalButton>
