@@ -48,7 +48,7 @@ const OrdersViewTable = ({ dataSingleOrder: data, setSelectedRows }: PropsOrders
       title: "Fecha de creación",
       key: "order_date",
       dataIndex: "order_date",
-      render: (text) => <Text className="cell">{formatDateDMY(text)}</Text>,
+      render: (date) => <Text className="cell">{date ? formatDateDMY(date) : ""}</Text>,
       sorter: (a, b) => new Date(a.order_date).getTime() - new Date(b.order_date).getTime(),
       showSorterTooltip: false
     },

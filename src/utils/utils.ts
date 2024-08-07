@@ -325,6 +325,6 @@ export const stringFromArrayOfSelect = (array: ISelectStringType[]): string => {
 };
 
 export const formatDateDMY = (dateString: string): string => {
-  const date = dayjs(dateString).add(1, "day");
+  const date = dayjs(dateString);
   return date.format("DD/MM/YYYY");
 };
