@@ -2612,3 +2612,22 @@ export interface VihicleDetail {
   documents: any[];
   images: any[];
 }
+
+export interface ICompanyCode {
+  id: number;
+  description: string;
+  active: boolean;
+  created_at: string;
+  created_by: string;
+  modified_at: string | null;
+  modified_by: string | null;
+}
+
+export interface IClient {
+  id: number;
+  description: string;
+  created_at: string;
+  created_by: string;
+  modified_at: string | null;
+  modified_by: string | null;
+}
