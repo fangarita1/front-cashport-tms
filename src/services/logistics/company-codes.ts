@@ -3,10 +3,10 @@ import config from "@/config";
 import { getIdToken } from "@/utils/api/api";
 import { IListData } from "@/types/logistics/schema";
 
-export const getOtherRequirements = async (): Promise<IListData> => {
+export const getCompanyCodes = async (): Promise<IListData> => {
     const token = await getIdToken();
     try {
-        const response: IListData = await axios.get(`${config.API_HOST}/carrier/all/other-requirements`, {
+        const response: IListData = await axios.get(`${config.API_HOST}/transfer-order/all/subsidiaries`, {
         headers: {
             Accept: "application/json, text/plain, */*",
             Authorization: `Bearer ${token}`
@@ -18,4 +18,3 @@ export const getOtherRequirements = async (): Promise<IListData> => {
         return error as any;
     }
 };
-      
