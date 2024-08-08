@@ -1184,6 +1184,7 @@ export interface ITransferOrderOtherRequirements {
   modified_at: Date;
   modified_by: string;
   other_requirement_desc: string;
+  description: string
 }
 
 export interface ITransferOrderVehicle {
@@ -2449,4 +2450,9 @@ export interface IClient {
   created_by: string;
   modified_at: string | null;
   modified_by: string | null;
+}
+
+export interface ISelectOptionOrders {
+  value: React.Key | null | undefined; 
+  label: string | null | undefined;
 }

@@ -18,7 +18,7 @@ import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 
 //schemas
-import { IAditionalByMaterial, IClient, ICompanyCode, ICreateRegister, IFormTransferOrder, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ITransferOrder, ITransferOrderContacts, ITransferOrderDocuments, ITransferOrderOtherRequirements, ITransferOrderPersons, IVehicleType, TransferOrderDocumentType } from "@/types/logistics/schema";
+import { IAditionalByMaterial, IClient, ICompanyCode, ICreateRegister, IFormTransferOrder, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ISelectOptionOrders, ITransferOrder, ITransferOrderContacts, ITransferOrderDocuments, ITransferOrderOtherRequirements, ITransferOrderPersons, IVehicleType, TransferOrderDocumentType } from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
@@ -56,11 +56,9 @@ import useSWRInmutable from "swr/immutable";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
 import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
-import { FileText, UserPlus, Warning } from "phosphor-react";
+import { FileText, UserPlus } from "phosphor-react";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
-import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 import { RangePickerProps } from "antd/es/date-picker";
-import { DividerCustom } from "@/components/atoms/DividerCustom/DividerCustom";
 import ModalAddContact from "@/components/molecules/modals/ModalAddContact/ModalAddContact";
 import { getCompanyCodes } from "@/services/logistics/company-codes";
 import { getClients } from "@/services/logistics/clients";
@@ -488,7 +486,7 @@ export const CreateOrderView = () => {
   
   const [optionsMaterial, setOptionsMaterial] = useState<any>([]);//useState<SelectProps<object>['options']>([]);
   const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
-  const [selectedMaterial, setSelectedMaterial] = useState(null);
+
   let cargaIdx = 0;
 
   const searchResultMaterial = async (query: string) => {
@@ -517,11 +515,7 @@ export const CreateOrderView = () => {
     return result;
   }     
 
-  const setOptionsCostCenter = (idPsl:number) => {
-    const pslFinded =  optionsPSL && optionsPSL.find(option => option.value === idPsl)
-    if( !pslFinded) return []
-    return pslFinded.costCenters.map((c:any)=>({value: c.id, label: c.description}))
-  }
+
   const loadMaterials = async () => {
     if(optionsMaterial !== undefined && optionsMaterial.length >0 ) return;
 
@@ -554,6 +548,10 @@ export const CreateOrderView = () => {
     loadMaterials();
   }, []);
 
+  const filteredMaterialOptions = optionsMaterial.filter(
+    (option:any) => !dataCarga.some(material => material.description === option.value)
+  );
+
   const addMaterial = async (value:any) =>{
     cargaIdx = cargaIdx + 1;
     console.log(cargaIdx);
@@ -582,7 +580,6 @@ export const CreateOrderView = () => {
       setDataCarga(dataCarga => [...dataCarga, newvalue]);
     }
 
-    setSelectedMaterial(null);
   };
 
   const handleDeleteMaterial = (key: React.Key) => {
@@ -601,8 +598,8 @@ export const CreateOrderView = () => {
           item.quantity = item.quantity + 1;
         }
         if(sign=='-'){
+          if(item.quantity === 1) return item.quantity
           item.quantity = item.quantity - 1;
-          if(item.quantity <0) item.quantity = 0;
         }
       }
     });    
@@ -645,8 +642,6 @@ export const CreateOrderView = () => {
 
   const [optionsVehicles, setOptionsVehicles] = useState<any>([]);//useState<SelectProps<object>['options']>([]);
   const [dataVehicles, setDataVehicles] = useState<IVehicleType[]>([]);
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
-
 
   let vehiclesIdx = 0;
 
@@ -686,6 +681,10 @@ export const CreateOrderView = () => {
     loadSuggestedVehicles();
   }, [typeactive]);
 
+  const filteredVehiclesOptions = optionsVehicles.filter(
+    (option:any) => !dataVehicles.some(vehicle => vehicle.description === option.value)
+  );
+
   const addVehicle = async (value:any) =>{
     vehiclesIdx = vehiclesIdx + 1;
     
@@ -695,9 +694,8 @@ export const CreateOrderView = () => {
     const newvalue : IVehicleType = value;
     console.log(newvalue);
     await setDataVehicles(dataVehicles => [...dataVehicles, newvalue]);
-
-    setSelectedMaterial(null);
   };
+
 
   const handleDeleteVehicle = (key: React.Key) => {
     console.log(key)
@@ -715,8 +713,8 @@ export const CreateOrderView = () => {
           item.quantity = item.quantity + 1;
         }
         if(sign=='-'){
+          if(item.quantity === 1) return item.quantity
           item.quantity = item.quantity - 1;
-          if(item.quantity <0) item.quantity = 0;
         }
       }
     });    
@@ -760,6 +758,12 @@ export const CreateOrderView = () => {
   useEffect(() => {
     loadPSL();
   }, []);
+
+  const setOptionsCostCenter = (idPsl:number) => {
+    const pslFinded =  optionsPSL && optionsPSL.find(option => option.value === idPsl)
+    if( !pslFinded) return []
+    return pslFinded.costCenters.map((c:any)=>({value: c.id, label: c.description}))
+  }
 
   const addPsl = async () =>{
     const createNewPsl = (key:number) => {
@@ -853,7 +857,7 @@ export const CreateOrderView = () => {
 
   const [optionsRequirements, setOptionsRequirements] = useState<SelectProps<object>['options']>([]);
   const [dataRequirements, setDataRequirements] = useState<ITransferOrderOtherRequirements[]>([]);
-  const [selectedRequirement, setSelectedRequirement] = useState(null);
+
   let requirementsIdx = 0;
 
   const loadRequirements = async () => {
@@ -885,6 +889,10 @@ export const CreateOrderView = () => {
     loadRequirements();
   }, []);
 
+  const filteredOptionalRequirementssOptions = optionsRequirements ? optionsRequirements.filter(
+    option => !dataRequirements.some(req => req.description === option.value)
+  ): []
+
   const addRequeriment = async (value:any) =>{
     requirementsIdx = requirementsIdx + 1;
     
@@ -894,8 +902,6 @@ export const CreateOrderView = () => {
     const newvalue : ITransferOrderOtherRequirements = value;
     //console.log(newvalue);
     await setDataRequirements(dataRequirements => [...dataRequirements, newvalue]);
-
-    setSelectedRequirement(null);
   };
 
   const handleDeleteRequirement = (key: React.Key) => {
@@ -914,8 +920,8 @@ export const CreateOrderView = () => {
           item.quantity = item.quantity + 1;
         }
         if(sign=='-'){
-          item.quantity = item.quantity - 1;
-          if(item.quantity <0) item.quantity = 0;
+          if(item.quantity === 1) return item.quantity
+          else item.quantity = item.quantity - 1;
         }
       }
     });    
@@ -964,17 +970,12 @@ export const CreateOrderView = () => {
     loadContacts();
   }, []);
 
-  const updateContacts = (key: React.Key, field: string, ndata: string) => {
+  const updateContacts = (key: React.Key, field: "name" | "contact_number", ndata: string) => {
     //console.log(key)
     const newData = [...dataContacts];
     newData.forEach(item => {
       if(item.key === key){
-        if(field=='name'){
-          item.name = ndata;
-        }
-        if(field=='phone'){
-          item.contact_number = ndata;
-        }
+        item[field] = ndata
       }
     });    
     
@@ -987,7 +988,7 @@ export const CreateOrderView = () => {
     const [optionsCompanyCodes, setOptionsCompanyCodes] = useState<ICompanyCode[]>([]);
   
     const loadCompanyCodes= async () => {
-      if(optionsRequirements !== undefined && optionsRequirements.length >0 ) return;
+      if(optionsCompanyCodes !== undefined && optionsCompanyCodes.length >0 ) return;
   
       const res = await getCompanyCodes();
       let result: any = [];
@@ -1006,7 +1007,7 @@ export const CreateOrderView = () => {
     const [optionsClients, setOptionsClients] = useState<IClient[]>([]);
 
     const loadClients= async () => {
-      if(optionsRequirements !== undefined && optionsRequirements.length >0 ) return;
+      if(optionsClients !== undefined && optionsClients.length >0 ) return;
   
       const res = await getClients();
       let result: any = [];
@@ -1287,7 +1288,6 @@ export const CreateOrderView = () => {
       }
     }
   };
-console.log("typeactive", typeactive)
   /* acoordion */
   const actionsOptions = [
     {
@@ -1400,7 +1400,6 @@ console.log("typeactive", typeactive)
                         hourStep={1}
                         type={'time'} 
                         onChange={(value) => {
-                          //console.log(value)
                           setHoraInicial(value);
                           setHoraInicialValid(true);
                         }}
@@ -1469,7 +1468,6 @@ console.log("typeactive", typeactive)
                       hourStep={1}
                       type={'time'} 
                       onChange={(value) => {
-                        //console.log(value);
                         setHoraFinal(value);
                         setHoraFinalValid(true);
                       }} 
@@ -1558,13 +1556,9 @@ console.log("typeactive", typeactive)
                       placeholder="Buscar material"                 
                       style={{ width:'100%', height: "2.5rem" }}
                       optionFilterProp="children"
-                      value={selectedMaterial}
-                      filterOption={(input, option) =>                    
-                        option!.value!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
-                      }
-                    >
-                      { optionsMaterial.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
-                    </Select>
+                      value={null}
+                      options={filteredMaterialOptions.map(((option: ISelectOptionOrders) => ({value: option.value, key: option.value, label: option.label})))}
+                    />
                   </Col>
                   <Col span={12}/>
                   <Col span={24}>
@@ -1639,13 +1633,11 @@ console.log("typeactive", typeactive)
                         placeholder="Agregar vehículo"                  
                         style={{ width:"100%", height: "2.5rem" }}
                         optionFilterProp="children"
-                        value={selectedVehicle}
-                        filterOption={(input, option) =>                    
-                          option!.value!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        value={null}
+                        options={filteredVehiclesOptions.map(((option: ISelectOptionOrders) => 
+                          ({value: option.value, key: option.value, label: option.label})))
                         }
-                      >
-                        { optionsVehicles.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
-                      </Select>
+                      />
                   </Col>
                   <Col span={12}/>
                   <Col span={24}>
@@ -1739,7 +1731,6 @@ console.log("typeactive", typeactive)
                           className="puntoOrigen dateInputForm" 
                           options={setOptionsCostCenter(psl.idpsl)}
                           onChange={(e)=> {
-                            console.log("SELECT CC", e)
                             setDataPsl(prevDataPsl => 
                               prevDataPsl.map((psl, pslIndexMap) => {
                                 if (pslIndexMap === pslIndex) {
@@ -1869,10 +1860,10 @@ console.log("typeactive", typeactive)
               </Text>
               <Select
                   placeholder = 'Seleccione requerimiento adicional'
-                  options={optionsRequirements}
+                  options={filteredOptionalRequirementssOptions}
                   allowClear={true}
-                  value={selectedRequirement}
-                  className={"puntoOrigen dateInputForm"}
+                  value={null}
+                  className={"puntoOrigen dateInputForm"}    
               />
               <Col span={12}/>
             </Col>   
@@ -1908,7 +1899,7 @@ console.log("typeactive", typeactive)
                       <Input placeholder="Nombre del contacto" className="puntoOrigen dateInputForm" key={contact.key} value={contact.name} onChange={(e)=>{ updateContacts(contact.key,'name', e.target.value)}}/>
                     </Col>
                     <Col span={12} >
-                      <Input placeholder="Teléfono: 000 000 0000" className="puntoOrigen dateInputForm" key={contact.key} value={contact.contact_number} onChange={(e)=>{ updateContacts(contact.key,'phone', e.target.value)}}
+                      <Input placeholder="Teléfono: 000 000 0000" className="puntoOrigen dateInputForm" key={contact.key} value={contact.contact_number} onChange={(e)=>{ updateContacts(contact.key,'contact_number', e.target.value)}}
                       onKeyPress={(event) => {
                         if (!/[0-9]/.test(event.key)) {
                           event.preventDefault();
@@ -1934,7 +1925,7 @@ console.log("typeactive", typeactive)
                       <Input placeholder="Nombre del contacto" className="puntoOrigen dateInputForm"  key={contact.key}  value={contact.name} onChange={(e)=>{ updateContacts(contact.key,'name', e.target.value)}}/>
                     </Col>
                     <Col span={12}>
-                      <Input placeholder="Teléfono: 000 000 0000" className="puntoOrigen dateInputForm"  key={contact.key} value={contact.contact_number} onChange={(e)=>{ updateContacts(contact.key,'phone', e.target.value)}}
+                      <Input placeholder="Teléfono: 000 000 0000" className="puntoOrigen dateInputForm"  key={contact.key} value={contact.contact_number} onChange={(e)=>{ updateContacts(contact.key,'contact_number', e.target.value)}}
                       onKeyPress={(event) => {
                         if (!/[0-9]/.test(event.key)) {
                           event.preventDefault();
