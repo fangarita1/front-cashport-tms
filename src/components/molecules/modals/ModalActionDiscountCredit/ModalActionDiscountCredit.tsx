@@ -60,7 +60,6 @@ export const ModalActionDiscountCredit = ({
       <Modal
         width={"40%"}
         open={isOpen}
-        style={{ top: "5%" }}
         bodyStyle={{
           height: currentView === "select" ? "calc(80vh - 20px)" : "auto"
         }}

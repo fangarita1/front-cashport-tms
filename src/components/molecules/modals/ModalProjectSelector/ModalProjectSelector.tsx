@@ -50,7 +50,7 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
       LOGO: project.LOGO
     };
     setSelectedProject(projectInfo);
-
+    window.location.href = `/proyectos/review/${project.ID}`;
     onClose();
   };
 

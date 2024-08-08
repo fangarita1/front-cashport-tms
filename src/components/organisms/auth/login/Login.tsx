@@ -1,4 +1,4 @@
-import { Divider, Flex, Image, Typography } from "antd";
+import { Divider, Flex, Typography, Image } from "antd";
 
 import { LoginForm } from "../../forms/LoginForm/LoginForm";
 

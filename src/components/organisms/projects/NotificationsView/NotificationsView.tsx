@@ -7,6 +7,7 @@ import FiltersNotifications from "@/components/atoms/Filters/FiltersNotification
 import { formatDateAndTime } from "@/utils/utils";
 import { Check, Eye, X } from "phosphor-react";
 import { notifications } from "./mockdata";
+import { useModalDetail } from "@/context/ModalContext";
 
 const ListPanel = [
   { key: "pending", value: "Pendientes" },
@@ -27,6 +28,7 @@ interface Notifications {
   closed: Notification[];
 }
 export const NotificationsView = () => {
+  const { openModal } = useModalDetail();
   const renderNotifications = (type: keyof Notifications) => {
     const currentNotifications = notifications[type];
     return currentNotifications?.map((item, index) => (
@@ -54,7 +56,7 @@ export const NotificationsView = () => {
                   </div>
                 </>
               )}
-              <div className="eyeIcon">
+              <div className="eyeIcon" onClick={() => openModal("novelty", { noveltyId: item.id })}>
                 <Eye size={28} />
               </div>
             </Flex>

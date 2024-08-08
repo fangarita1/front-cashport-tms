@@ -12,12 +12,7 @@ interface PropsInvoicesTable {
   stateId: number;
   dataSingleInvoice: IInvoice[];
   setSelectedRows: Dispatch<SetStateAction<IInvoice[] | undefined>>;
-  setShowInvoiceDetailModal: Dispatch<
-    SetStateAction<{
-      isOpen: boolean;
-      invoiceId: number;
-    }>
-  >;
+  openInvoiceDetail: (invoice: IInvoice) => void;
   selectedRows?: IInvoice[];
 }
 
@@ -26,7 +21,7 @@ export const InvoicesTable = ({
   dataSingleInvoice: data,
   setSelectedRows,
   selectedRows,
-  setShowInvoiceDetailModal
+  openInvoiceDetail
 }: PropsInvoicesTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
@@ -42,8 +37,8 @@ export const InvoicesTable = ({
     }
   }, [selectedRows]);
 
-  const openInvoiceDetail = (invoiceId: number) => {
-    setShowInvoiceDetailModal({ isOpen: true, invoiceId });
+  const handleOpenDetail = (invoice: IInvoice) => {
+    openInvoiceDetail(invoice);
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRows: any) => {
@@ -99,8 +94,8 @@ export const InvoicesTable = ({
       title: "ID",
       dataIndex: "id",
       key: "id",
-      render: (invoiceId) => (
-        <Text onClick={() => openInvoiceDetail(invoiceId)} className="invoicesTable__id">
+      render: (invoiceId, record) => (
+        <Text onClick={() => handleOpenDetail(record)} className="invoicesTable__id">
           {invoiceId}
         </Text>
       ),
@@ -138,7 +133,7 @@ export const InvoicesTable = ({
               <p>Fecha de vencimiento</p>
               <strong>{formatDate(text)}</strong>
               <p>
-                Condición de pago <strong>X días</strong>
+                Condición de pago <strong> {daysLeft(text)} días</strong>
               </p>
             </div>
           }
@@ -246,7 +241,7 @@ export const InvoicesTable = ({
             </Tooltip>
           )}
 
-          <Button onClick={() => openInvoiceDetail(record.id)} icon={<Eye size={"1.2rem"} />} />
+          <Button onClick={() => handleOpenDetail(record)} icon={<Eye size={"1.2rem"} />} />
         </div>
       ),
       width: 100,

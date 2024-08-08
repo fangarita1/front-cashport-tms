@@ -1,25 +1,26 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import "./applyAccountingAdjustment.scss";
+import "./applynoveltymodal.scss";
 import { ISelectedAccountingAdjustment } from "../ModalActionDiscountCredit/ModalActionDiscountCredit";
-import { IInvoice } from "@/types/invoices/IInvoices";
 import UiTabs from "@/components/ui/ui-tabs";
 import ItemApplyModal from "@/components/atoms/ItemsApplyModal/ItemsApplyModal";
 import Table, { ColumnsType } from "antd/es/table";
-import { Flex, InputNumber, Modal } from "antd";
-import EvidenceModal from "@/modules/clients/components/wallet-tab-evidence-modal/wallet-tab-evidence-modal";
+import { Flex, InputNumber, Spin } from "antd";
 import { applyAccountingAdjustment } from "@/services/accountingAdjustment/accountingAdjustment";
 import { useParams } from "next/navigation";
 import { extractSingleParam } from "@/utils/utils";
 import { MessageInstance } from "antd/es/message/interface";
+import { IIncidentDetail } from "@/hooks/useNoveltyDetail";
 
 interface Props {
   type: number;
   selectedRows: ISelectedAccountingAdjustment[];
-  setSelectedRows: Dispatch<SetStateAction<ISelectedAccountingAdjustment[]>>;
   setCurrentView: Dispatch<SetStateAction<string>>;
-  invoiceSelected?: IInvoice[];
+  invoiceSelected?: IIncidentDetail[];
   messageApi: MessageInstance;
   onClosePrincipalModal?: () => void;
+  selectedEvidence: File | null;
+  onResolve: (data: { file?: File; comment: string }) => void;
+  comment?: string;
 }
 interface IcurrentInvoices {
   id: number;
@@ -34,23 +35,22 @@ interface NormalizedValue {
   }[];
 }
 
-interface infoObject {
-  file: File;
-  fileList: File[];
-}
-
-export const ApplyAccountingAdjustment = ({
+export const ApplyNoveltyModal = ({
   type,
   selectedRows: selectedNotes,
   setCurrentView,
   messageApi,
   onClosePrincipalModal,
+  selectedEvidence,
+  onResolve,
+  comment,
   invoiceSelected = []
 }: Props) => {
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
   const [selectTab, setSelectTab] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const [currentInvoices, setCurrentInvoices] = useState<IcurrentInvoices[]>([]);
   const [currentAdjustment, setCurrentAdjustment] = useState(
     selectedNotes.map((row) => row.current_value)
@@ -64,16 +64,13 @@ export const ApplyAccountingAdjustment = ({
       idAdjustment: number;
     }[];
   }>({});
-  const [openEvidenceModal, setOpenEvidenceModal] = useState(false);
-  const [selectedEvidence, setSelectedEvidence] = useState<File[]>([]);
-  const [commentary, setCommentary] = useState<string | undefined>();
 
   useEffect(() => {
     setCurrentInvoices(
       invoiceSelected.map((invoice) => ({
-        id: invoice.id,
-        current_value: invoice.current_value,
-        newBalance: invoice.current_value
+        id: invoice.invoice_id,
+        current_value: invoice.invoice_cashport_value,
+        newBalance: invoice.invoice_cashport_value
       }))
     );
   }, [invoiceSelected]);
@@ -98,8 +95,6 @@ export const ApplyAccountingAdjustment = ({
     const previousValue =
       applyValues[record.id]?.find((apply) => apply.idAdjustment === selectedNotes[selectTab].id)
         ?.balanceToApply ?? 0;
-    // validar que el valor no sea mayor al saldo disponible
-
     if (value && value > currentAdjustment[selectTab] && previousValue <= 0) {
       value = 0;
     }
@@ -109,18 +104,14 @@ export const ApplyAccountingAdjustment = ({
     if (value && value > previousValue && value > currentAdjustment[selectTab] + previousValue) {
       value = previousValue;
     }
-
-    // Validación para asegurarse de que el valor a aplicar no exceda el newBalance actual
     const maxApplicableValue = Math.min(value ?? 0, record.newBalance + previousValue);
 
     setApplyValues((prev) => ({
-      ...prev, // Toma el estado anterior
+      ...prev,
       [record.id]: [
-        // Mantiene todas las aplicaciones anteriores para el mismo registro, excepto la actualmente seleccionada
         ...(prev[record.id] ?? []).filter(
           (apply) => apply.idAdjustment !== selectedNotes[selectTab].id
         ),
-        // Agrega o actualiza la nueva aplicación con el valor ajustado que no excede el balance disponible
         { balanceToApply: maxApplicableValue, idAdjustment: selectedNotes[selectTab].id }
       ]
     }));
@@ -128,50 +119,16 @@ export const ApplyAccountingAdjustment = ({
     setCurrentInvoices((prev) => {
       return prev.map((invoice) => {
         if (invoice.id === record.id) {
-          const difference = maxApplicableValue - previousValue; // Calcula la diferencia entre el valor nuevo y el anterior
+          const difference = maxApplicableValue - previousValue;
           return {
             ...invoice,
             newBalance: invoice.newBalance - difference
           };
         }
-        return invoice; // Devuelve las facturas no modificadas
+        return invoice;
       });
     });
     handleValueChange(value ?? 0, selectTab, record);
-  };
-
-  const handleOnChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setCommentary(e.target.value);
-  };
-
-  const handleOnChangeDocument: any = (info: infoObject) => {
-    const { file: rawFile } = info;
-    if (rawFile) {
-      const fileSizeInMB = rawFile.size / (1024 * 1024);
-      if (fileSizeInMB > 30) {
-        alert("El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB.");
-        return;
-      }
-      setSelectedEvidence(selectedEvidence ? [...selectedEvidence, rawFile] : [rawFile]);
-    }
-  };
-
-  const handleOnDeleteDocument = (fileName: string) => {
-    const updatedFiles = selectedEvidence?.filter((file) => file.name !== fileName);
-    setSelectedEvidence(updatedFiles);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const file = files[0];
-      const fileSizeInMB = file.size / (1024 * 1024);
-      if (fileSizeInMB > 30) {
-        alert("El archivo es demasiado grande. Por favor, sube un archivo dse menos de 30 MB.");
-        return;
-      }
-      setSelectedEvidence(selectedEvidence ? [...selectedEvidence, file] : [file]);
-    }
   };
 
   const normalizarApplyValues = (applyValues: {
@@ -187,14 +144,22 @@ export const ApplyAccountingAdjustment = ({
   };
 
   const handleAttachEvidence = async () => {
+    setIsLoading(true);
     try {
       const normalizedData = normalizarApplyValues(applyValues);
       const adjustmentData = JSON.stringify(normalizedData);
-      if (!selectedEvidence) return;
+      onResolve({
+        file: selectedEvidence || undefined,
+        comment: comment || ""
+      });
+      if (!selectedEvidence) {
+        setIsLoading(false);
+        return;
+      }
       const typeAjustment = type === 2 ? 9 : type === 1 ? 10 : 11;
       const response = await applyAccountingAdjustment(
         adjustmentData,
-        selectedEvidence,
+        [selectedEvidence],
         projectIdParam as string,
         clientIdParam as string,
         typeAjustment
@@ -204,7 +169,6 @@ export const ApplyAccountingAdjustment = ({
           type: "success",
           content: "Ajuste contable aplicado correctamente"
         });
-        setOpenEvidenceModal(false);
         onClosePrincipalModal && onClosePrincipalModal();
       }
     } catch (error) {
@@ -213,6 +177,8 @@ export const ApplyAccountingAdjustment = ({
         content: "Error al aplicar el ajuste contable"
       });
       console.error("Error applying accounting adjustment:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -227,13 +193,13 @@ export const ApplyAccountingAdjustment = ({
       title: "Pendiente",
       dataIndex: "current_value",
       key: "current_value",
-      render: (text) => `$${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+      render: (text) => `$${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     },
     {
       title: "Saldo nuevo",
       dataIndex: "newBalance",
       key: "newBalance",
-      render: (text) => `$${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+      render: (text) => `$${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     },
     {
       title: "Valor a aplicar",
@@ -281,36 +247,19 @@ export const ApplyAccountingAdjustment = ({
         <button
           type="button"
           className="button__action__text button__action__text__white"
-          onClick={() => setCurrentView("select")}
+          onClick={() => setCurrentView("selectNote")}
         >
           Cancelar
         </button>
         <button
           type="button"
           className={`button__action__text ${selectedNotes.length > 0 ? "button__action__text__green" : ""}`}
-          onClick={() => setOpenEvidenceModal(true)}
+          onClick={() => handleAttachEvidence()}
+          disabled={Object.keys(applyValues).length === 0}
         >
-          Continuar
+          {isLoading ? <Spin size="small" /> : "Continuar"}
         </button>
       </Flex>
-      <Modal
-        width={"50%"}
-        open={openEvidenceModal}
-        onCancel={() => setOpenEvidenceModal(false)}
-        footer
-      >
-        <EvidenceModal
-          selectedEvidence={selectedEvidence}
-          handleOnChangeDocument={handleOnChangeDocument}
-          handleOnDeleteDocument={handleOnDeleteDocument}
-          handleFileChange={handleFileChange}
-          handleAttachEvidence={handleAttachEvidence}
-          handleOnChangeTextArea={handleOnChangeTextArea}
-          commentary={commentary}
-          setIsSecondView={setOpenEvidenceModal}
-          noComment
-        />
-      </Modal>
     </div>
   );
 };

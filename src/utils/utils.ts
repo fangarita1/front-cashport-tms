@@ -178,15 +178,15 @@ export const formatDatePlane = (date: string): string => {
 };
 export function daysLeft(dateString: string): number {
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const expirationDate = new Date(dateString);
-
+  expirationDate.setHours(0, 0, 0, 0);
   const diffInMs = expirationDate.getTime() - today.getTime();
 
-  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24)) + 1;
 
   return diffInDays;
 }
-
 export const insertPeriodEveryThreeDigits = (number: number) => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };

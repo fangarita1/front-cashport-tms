@@ -167,7 +167,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                           <div className={styles.cardInvoiceFiling}>
                             <h5 className={styles.title}>{getEventTitle(item.event_type_name)}</h5>
                             <div className={styles.date}>
-                              {formatDatePlane(item.event_date.toString())}
+                              {item.event_type_name === "Acuerdo de pago"
+                                ? formatDatePlane(item.create_at?.toString())
+                                : formatDatePlane(item.event_date.toString())}
                             </div>
                             {item.event_type_name === "Aviso de vencimiento" ? (
                               <div className={styles.quantity}>
@@ -196,7 +198,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                 <div
                                   className={styles.icons}
                                   onClick={() => {
-                                    handleDocumentClick(item.files[0] || "");
+                                    handleDocumentClick(item?.files[0] || "");
                                   }}
                                 >
                                   <ArrowLineDown
@@ -221,7 +223,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
 
                             {item.event_type_name === "Emision de factura" ? (
                               <div>
-                                 <div
+                                <div
                                   className={styles.icons}
                                   onClick={() => {
                                     handleDocumentClick(item.files[0] || "");
@@ -240,7 +242,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                             )}
                             {item.event_type_name === "Generar descuento" ? (
                               <div>
-                                   <div
+                                <div
                                   className={styles.icons}
                                   onClick={() => {
                                     handleDocumentClick(item.files[0] || "");
@@ -266,7 +268,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   <Envelope size={14} onClick={() => {}} />
                                 </div>
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                <div className={styles.name}>{`Valor: ${item.ammount}`}</div>
+                                <div
+                                  className={styles.name}
+                                >{`Valor: ${formatMoney(item.ammount)}`}</div>
                                 <div
                                   className={styles.name}
                                 >{`Fecha de pago acordada: ${formatDatePlane(item.event_date?.toString())}`}</div>
@@ -315,7 +319,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                 <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
                                 <div
                                   className={styles.name}
-                                >{`Estado inicial: ${item.previous_status_id ?? "N/A"}`}</div>
+                                >{`Estado inicial: ${item.previous_status ?? "N/A"}`}</div>
                                 <div
                                   className={styles.name}
                                 >{`Estado final: ${item.status_name}`}</div>
@@ -323,7 +327,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                             ) : (
                               ""
                             )}
-                             {item.event_type_name === "Registrar novedad" ? (
+                            {item.event_type_name === "Registrar novedad" ? (
                               <div>
                                 <div
                                   className={styles.icons}

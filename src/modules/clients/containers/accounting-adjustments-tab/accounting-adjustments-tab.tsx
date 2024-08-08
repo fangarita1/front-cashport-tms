@@ -11,16 +11,11 @@ import { extractSingleParam } from "@/utils/utils";
 import { IFinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 import UiFilterDropdown from "@/components/ui/ui-filter-dropdown";
-
 import "./accounting-adjustments-tab.scss";
-import ModalDetailAdjustment from "@/components/molecules/modals/ModalDetailAdjustment/ModalDetailAdjustment";
+import { useModalDetail } from "@/context/ModalContext";
 
 const AccountingAdjustmentsTab = () => {
   const [selectedRows, setSelectedRows] = useState<IFinancialDiscount[] | undefined>(undefined);
-  const [showAdjustmentDetailModal, setShowAdjustmentDetailModal] = useState<{
-    isOpen: boolean;
-    adjustmentId: number;
-  }>({} as { isOpen: boolean; adjustmentId: number });
   const [search, setSearch] = useState("");
 
   const params = useParams();
@@ -30,7 +25,15 @@ const AccountingAdjustmentsTab = () => {
   const projectId = projectIdParam ? parseInt(projectIdParam) : 0;
 
   const { data, isLoading } = useFinancialDiscounts(clientId, projectId);
+  const { openModal } = useModalDetail();
 
+  const handleOpenAdjustmentDetail = (adjustment: IFinancialDiscount) => {
+    openModal("adjustment", {
+      selectAdjusment: adjustment,
+      clientId,
+      projectId
+    });
+  };
   return (
     <>
       {isLoading ? (
@@ -73,15 +76,13 @@ const AccountingAdjustmentsTab = () => {
               children: (
                 <AccountingAdjustmentsTable
                   dataAdjustmentsByStatus={financialState.financial_discounts.map(
-                    (financialDiscount) => {
-                      return {
-                        ...financialDiscount,
-                        financial_status_id: financialState.status_id
-                      };
-                    }
+                    (financialDiscount) => ({
+                      ...financialDiscount,
+                      financial_status_id: financialState.status_id
+                    })
                   )}
                   setSelectedRows={setSelectedRows}
-                  setShowAdjustmentDetailModal={setShowAdjustmentDetailModal}
+                  openAdjustmentDetail={handleOpenAdjustmentDetail}
                   financialStatusId={financialState.status_id}
                 />
               )
@@ -89,7 +90,7 @@ const AccountingAdjustmentsTab = () => {
           />
         </div>
       )}
-
+      {/* 
       <ModalDetailAdjustment
         isOpen={showAdjustmentDetailModal.isOpen}
         selectAdjusment={data
@@ -100,7 +101,7 @@ const AccountingAdjustmentsTab = () => {
         onClose={() => setShowAdjustmentDetailModal({ isOpen: false, adjustmentId: 0 })}
         clientId={clientId}
         projectId={projectId}
-      />
+      /> */}
     </>
   );
 };
