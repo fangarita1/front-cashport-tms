@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Avatar, Button, Checkbox, Collapse, Flex, Spin, Table, Tabs, Typography } from "antd";
+import { Avatar, Button, Checkbox, Collapse, Flex, message, Spin, Table, Tabs, Typography } from "antd";
 import type { TableProps } from "antd";
 import { Clipboard, DotsThree, Eye, Plus, Triangle } from "phosphor-react";
 
@@ -14,6 +14,9 @@ import { ITransferOrderList, TransferOrderListItems } from "@/types/logistics/sc
 import { getAllTransferOrderList } from "@/services/logistics/transfer-orders";
 import Link from "next/link";
 import LabelCollapse from "@/components/ui/label-collapse";
+import { useTransferRequest } from "@/components/organisms/logistics/hooks/useTransferRequest";
+import { transferOrderMerge } from "@/services/logistics/transfer-request";
+import { useRouter } from "next/navigation";
 
 const { Text } = Typography;
 
@@ -22,9 +25,12 @@ export const OrdersTable = () => {
     country: [] as string[],
     currency: [] as string[]
   });
+  const router = useRouter();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [ordersId, setOrdersId] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [ messageApi, contextHolder ] = message.useMessage();
   const { loading, data } = useProjects({
     page: selectFilters.country.length !== 0 || selectFilters.currency.length !== 0 ? 1 : page,
     currencyId: selectFilters.currency,
@@ -51,8 +57,21 @@ export const OrdersTable = () => {
       checked ? [...prevOrdersId, id] : prevOrdersId.filter((orderId) => orderId !== id)
     );
   };
+  
+  const queryParam = ordersId.join(',');
 
-  console.log("ordersId:", ordersId);
+  const onClick = async () => {
+    setIsLoading(true);
+    const res = await transferOrderMerge(ordersId);
+    if (res.success) {
+      messageApi.open({ content: res.message, type: "success" })
+      router.push(`transfer-request/${queryParam}`)
+    } else {
+      messageApi.open({ content: res.message, type: "error" })
+    }
+    console.log(res)
+    setIsLoading(false)
+  };
 
   const columns: TableProps<TransferOrderListItems>["columns"] = [
     {
@@ -167,6 +186,7 @@ export const OrdersTable = () => {
 
   return (
     <main className="mainProjectsTable">
+      {contextHolder}
       <Flex justify="space-between" className="mainProjectsTable_header">
         <Flex gap={"10px"}>
           <UiSearchInput
@@ -182,8 +202,10 @@ export const OrdersTable = () => {
           <Button
             className="options"
             icon={<DotsThree size={"1.5rem"} />}
-            href={`transfer-request`}
             disabled={ordersId.length === 0}
+            href={`transfer-request/${queryParam}`}
+            onClick={onClick}
+            loading={isLoading}
           >
             Generar TR
           </Button>

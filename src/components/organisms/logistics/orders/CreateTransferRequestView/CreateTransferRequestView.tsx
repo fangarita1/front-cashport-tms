@@ -23,7 +23,8 @@ import {
   Steps,
   Drawer,
   Card,
-  Modal
+  Modal,
+  Spin
 } from "antd";
 import React, { useRef, useEffect, useState, useContext } from "react";
 
@@ -46,7 +47,12 @@ import { ProjectFormTab } from "@/components/molecules/tabs/Projects/ProjectForm
 import { addProject } from "@/services/projects/projects";
 
 //schemas
-import { IListData, ILocation, ITransferOrderRequest, ITransferOrdersRequest } from "@/types/logistics/schema";
+import {
+  IListData,
+  ILocation,
+  ITransferOrderRequest,
+  ITransferOrdersRequest
+} from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
@@ -56,7 +62,8 @@ import { ICreatePayload } from "@/types/projects/IProjects";
 
 //vars
 import { CREATED } from "@/utils/constants/globalConstants";
-import { useRouter } from "next/navigation";
+import { useRouter as useNextRouter } from "next/router";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   PlusCircle,
   Calendar,
@@ -81,16 +88,24 @@ import TabPane from "antd/es/tabs/TabPane";
 import FormWizard from "react-form-wizard-component";
 import "react-form-wizard-component/dist/style.css";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
+import { formatDatePlaneWithoutComma } from "@/utils/utils";
+import { useTransferRequest } from "../../hooks/useTransferRequest";
+import { transferOrderMerge } from "@/services/logistics/transfer-request";
 
 const { Title, Text } = Typography;
 
-export const CreateTransferRequestView = () => {
-  const { push } = useRouter();
+interface CreateTransferOrderRequestProps {
+  params: { id: string };
+}
+
+export const CreateTransferRequestView = ({ params }: CreateTransferOrderRequestProps) => {
+  const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
 
   /* Data */
+  const [ordersId, setOrdersId] = useState<number[]>([]);
   const [orders, setOrders] = useState<ITransferOrdersRequest>();
-  const [orderRequest, setOrderRequest] = useState<ITransferOrderRequest[]>([]);
+  const [orderRequest, setOrderRequest] = useState<ITransferOrderRequest>();
 
   /* Tipo de viaje */
   const [typeactive, setTypeActive] = useState("1");
@@ -118,10 +133,43 @@ export const CreateTransferRequestView = () => {
   const [expand, setExpand] = useState(false);
   const initialItemCount = 4;
   const directions = routeInfo.length > 0 ? routeInfo[0]["legs"][0]["steps"] : [];
-  const displayedDirections = expand ? directions : directions.slice(0, initialItemCount);
 
-  const [locations, setLocations] = useState<ILocation[]>([]);
-  const [locationOptions, setLocationOptions] = useState<any>([]);
+  /*Service loader */
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    loadRequests()
+  }, []);
+
+  const loadRequests = async () => {
+    setIsLoading(true);
+    const res = await transferOrderMerge(ordersId);
+    if (res.success) {
+      messageApi.open({ content: res.message, type: "success" });
+      setOrders(res.data);
+    } else {
+      messageApi.open({ content: res.message, type: "error" });
+      router.push("/logistics/orders");
+    }
+    setIsLoading(false);
+  }
+
+  useEffect(() => {
+    const decodedParam = params ? decodeURIComponent(params.id) : "";
+    const numbers = decodedParam ? decodedParam.split(",").map(Number) : [];
+    setOrdersId(numbers);
+  }, []);
+
+  useEffect(() => {
+    if (!!ordersId && !!orders) {
+      orders.orders.find((a) => a.id === ordersId[0]) &&
+        setOrderRequest(orders.orders.find((a) => a.id === ordersId[0]));
+    }
+  }, [ordersId, orders]);
+
+  const onTabSelect = (id: string) => {
+    setOrderRequest(orders?.orders.find((a) => a.id === Number(id)));
+  };
 
   const handleToggleExpand = () => {
     setExpand(!expand);
@@ -134,79 +182,32 @@ export const CreateTransferRequestView = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  console.log("routeInfo==>", routeInfo);
-
-  useEffect(() => {
-    loadLocations();
-  });
-
-  const loadLocations = async () => {
-    if (locations.length > 0) return;
-    const result = await getAllLocations();
-    if (result.data.data.length > 0) {
-      console.log(result.data.data);
-
-      const listlocations: any[] | ((prevState: ILocation[]) => ILocation[]) = [];
-      const listlocationoptions: { label: any; value: any }[] = [];
-
-      result.data.data.forEach((item) => {
-        listlocations.push(item);
-        listlocationoptions.push({ label: item.description, value: item.id });
-      });
-
-      setLocations(listlocations);
-      setLocationOptions(listlocationoptions);
-    }
-  };
-
-  /* Event Handlers */
-  // const onCreateProject = async (data: ICreatePayload) => {
-  //   console.log("DATA PARA POST: ", data);
-  //   if (!data.logo) return;
-  //   try {
-  //     const response = await addProject(data);
-  //     if (response.status === CREATED) {
-  //       messageApi.open({
-  //         type: "success",
-  //         content: "El proyecto fue creado exitosamente."
-  //       });
-  //       push("/");
-  //     }
-  //   } catch (error) {
-  //     messageApi.open({
-  //       type: "error",
-  //       content: "Oops, hubo un error por favor intenta mas tarde."
-  //     });
-  //   }
-  // };
-
-  // Cambia origen
-  const onChangeOrigin = (value: any) => {
-    console.log("origen:" + value);
-    locations.forEach(async (item, index) => {
-      if (item.id == value) {
-        console.log(item);
-        origin.current = [item.latitude, item.longitude];
-        calcRouteDirection();
-      }
-    });
-  };
-
-  // Cambia destino
-  const onChangeDestino = async (value: any) => {
-    console.log("destino:" + value);
-    locations.forEach(async (item, index) => {
-      if (item.id == value) {
-        console.log(item);
-        destination.current = [item.latitude, item.longitude];
-        calcRouteDirection();
-      }
-    });
-  };
-
   /* MAPBOX */
 
   useEffect(() => {
+    if (orderRequest !== undefined) {
+      const routes = orderRequest?.geometry;
+      setRouteInfo(routes);
+      // Check if any routes are returned
+      if (routes != undefined) {
+        origin.current = [
+          orderRequest?.start_location?.longitude,
+          orderRequest?.start_location?.latitude
+        ];
+        destination.current = [
+          orderRequest?.end_location?.longitude,
+          orderRequest?.end_location?.latitude
+        ];
+        const { distance, duration, geometry } = routes[0];
+        setRouteGeometry(geometry); // Set the route geometry
+        setDistance(parseFloat((distance / 1000).toFixed(0)) + " Km");
+        var date = new Date();
+        date.setSeconds(duration);
+        var hrs = date.toISOString().substr(11, 5);
+        setTimeTravel(hrs);
+      }
+    }
+
     if (!mapContainerRef.current) return;
 
     mapboxgl.accessToken = mapsAccessToken;
@@ -544,18 +545,18 @@ export const CreateTransferRequestView = () => {
                       <p>
                         <label>Tiempo Estimado</label>
                       </p>
-                      {/*travelData?.service_type !== "3" ? (
-                    <>*/}
-                      <p>
-                        <label>Volumen</label>
-                      </p>
-                      <p>
-                        <label>Peso</label>
-                      </p>
-                      {/*</>
-                  ) : (
-                    <p>Personas</p>
-                  )*/}
+                      {orderRequest?.id_service_type !== 3 ? (
+                        <>
+                          <p>
+                            <label>Volumen</label>
+                          </p>
+                          <p>
+                            <label>Peso</label>
+                          </p>
+                        </>
+                      ) : (
+                        <p>Personas</p>
+                      )}
                     </Col>
                     <Col span={12} className="travelDataValues">
                       <p>
@@ -564,18 +565,18 @@ export const CreateTransferRequestView = () => {
                       <p>
                         <label>{timetravel} hr</label>
                       </p>
-                      {/*travelData?.service_type !== "3" ? (
-                    <>*/}
-                      <p>
-                        <label>{/*travelData?.volume*/}00</label>
-                      </p>
-                      <p>
-                        <label>{/*travelData?.weight*/}00</label>
-                      </p>
-                      {/*</>
-                  ) : (
-                    <p>{travelData?.carrier_request_persons?.length}</p>
-                  )}*/}
+                      {orderRequest?.id_service_type !== 3 ? (
+                        <>
+                          <p>
+                            <label>{/*travelData?.volume*/}00</label>
+                          </p>
+                          <p>
+                            <label>{/*travelData?.weight*/}00</label>
+                          </p>
+                        </>
+                      ) : (
+                        <p>{orderRequest?.transfer_order_persons?.length}</p>
+                      )}
                     </Col>
                   </Row>
                   <Row>
@@ -589,7 +590,7 @@ export const CreateTransferRequestView = () => {
                     <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                       <p style={{ paddingTop: "1rem" }}>
                         <label>
-                          <b>{/*travelData?.service_type*/}Carga</b>
+                          <b>{orderRequest?.service_type_desc}</b>
                         </label>
                       </p>
                     </Col>
@@ -606,7 +607,7 @@ export const CreateTransferRequestView = () => {
                     <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                       <p style={{ paddingTop: "0.5rem" }}>
                         <label>
-                          <b>{/*travelData?.start_location*/}Bogotá Centro</b>
+                          <b>{orderRequest?.start_location?.description}</b>
                         </label>
                       </p>
                     </Col>
@@ -625,7 +626,7 @@ export const CreateTransferRequestView = () => {
                     <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                       <p style={{ paddingTop: "0.5rem" }}>
                         <label>
-                          <b>{/*travelData?.end_location*/}Bogotá Centro</b>
+                          <b>{orderRequest?.end_location?.description}</b>
                         </label>
                       </p>
                     </Col>
@@ -644,15 +645,17 @@ export const CreateTransferRequestView = () => {
                     <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                       <p style={{ paddingTop: "1rem" }}>
                         <label>
-                          <b>{/*travelData?.start_date?.split(" ")[1]*/} h</b>
+                          <b>{orderRequest?.start_date?.split(" ")[1]} h</b>
                         </label>
                       </p>
                       <p style={{ paddingTop: "0.5rem" }}>
-                        {/*travelData?.start_date ? (
-                      <b>{formatDatePlaneWithoutComma(travelData?.start_date?.split(" ")[0])}</b>
-                    ) : (
-                      <p>No date</p>
-                    )}*/}
+                        {orderRequest?.start_date ? (
+                          <b>
+                            {formatDatePlaneWithoutComma(orderRequest?.start_date?.split(" ")[0])}
+                          </b>
+                        ) : (
+                          <p>No date</p>
+                        )}
                         <b>01/08/2024</b>
                       </p>
                     </Col>
@@ -671,15 +674,17 @@ export const CreateTransferRequestView = () => {
                     <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                       <p style={{ paddingTop: "1rem" }}>
                         <label>
-                          <b>{/*travelData?.end_date?.split(" ")[1]*/} h</b>
+                          <b>{orderRequest?.end_date?.split(" ")[1]} h</b>
                         </label>
                       </p>
                       <p style={{ paddingTop: "0.5rem" }}>
-                        {/*travelData?.end_date ? (
-                      <b>{formatDatePlaneWithoutComma(travelData?.end_date?.split(" ")[0])}</b>
-                    ) : (
-                      <p>No date</p>
-                    )}*/}
+                        {orderRequest?.end_date ? (
+                          <b>
+                            {formatDatePlaneWithoutComma(orderRequest?.end_date?.split(" ")[0])}
+                          </b>
+                        ) : (
+                          <p>No date</p>
+                        )}
                         <b>01/08/2024</b>
                       </p>
                     </Col>
@@ -796,44 +801,27 @@ export const CreateTransferRequestView = () => {
                   Documentos
                 </h4>
                 <Row className="mainUploadDocuments">
-                  {/*transferOrder?.transfer_order_documents?.map((file) => (
-                      <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
-                        <UploadDocumentButton
-                          key={file.id}
-                          title={file.document_type_desc}
-                          isMandatory={!file.active}
-                          aditionalData={file.id}
-                          setFiles={() => { } }
-                          
-                          disabled
-                        >
-                          {file?.url_document ? (
-                            <UploadDocumentChild
-                              linkFile={file.url_document}
-                              nameFile={file.url_document.split("-").pop() || ""}
-                              onDelete={() => { } }
-                              showTrash={false} />
-                          ) : undefined}
-                        </UploadDocumentButton>
-                      </Col>
-                    ))}*/}
-                  <Col span={12} style={{ padding: "15px" }}>
-                    <UploadDocumentButton
-                      key={1}
-                      title={"No documents"}
-                      isMandatory={false}
-                      aditionalData={1}
-                      setFiles={() => {}}
-                      disabled
-                    >
-                      <UploadDocumentChild
-                        linkFile={"file.url_document"}
-                        nameFile={"file.url_document"}
-                        onDelete={() => {}}
-                        showTrash={false}
-                      />
-                    </UploadDocumentButton>
-                  </Col>
+                  {orderRequest?.transfer_order_documents?.map((file) => (
+                    <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
+                      <UploadDocumentButton
+                        key={file.id}
+                        title={file.document_type_desc}
+                        isMandatory={!file.active}
+                        aditionalData={file.id}
+                        setFiles={() => {}}
+                        disabled
+                      >
+                        {file?.url_document ? (
+                          <UploadDocumentChild
+                            linkFile={file.url_document}
+                            nameFile={file.url_document.split("-").pop() || ""}
+                            onDelete={() => {}}
+                            showTrash={false}
+                          />
+                        ) : undefined}
+                      </UploadDocumentButton>
+                    </Col>
+                  ))}
                   <Col span={24} style={{ paddingTop: "1rem" }}>
                     <hr style={{ borderTop: "1px solid #f7f7f7" }}></hr>
                   </Col>
@@ -843,56 +831,57 @@ export const CreateTransferRequestView = () => {
                     <h3>Datos de contacto</h3>
                     <p>&nbsp;</p>
                     <h4>Contacto inicial</h4>
-                    {/*transferOrder?.transfer_order_contacts?.filter(x=> x.contact_type == 1).map((contact) => (
-                      <Row style={{paddingTop:'0.5rem'}} key={contact.id}>*/}
-                    <Row style={{ paddingTop: "0.5rem" }}>
-                      {/*When integrated delete this line*/}
-                      <Col span={12} style={{ paddingLeft: "25px" }}>
-                        {"Daniel"}
-                      </Col>
-                      <Col span={8} style={{ textAlign: "right" }}>
-                        {"18293018293012"}
-                      </Col>
-                    </Row>
-                    {/*))}*/}
+                    {orderRequest?.transfer_order_contacts
+                      ?.filter((x) => x.contact_type == 1)
+                      .map((contact) => (
+                        <Row style={{ paddingTop: "0.5rem" }} key={contact.id}>
+                          <Col span={12} style={{ paddingLeft: "25px" }}>
+                            {"Daniel"}
+                          </Col>
+                          <Col span={8} style={{ textAlign: "right" }}>
+                            {"18293018293012"}
+                          </Col>
+                        </Row>
+                      ))}
                     <p>&nbsp;</p>
                     <h4>Contacto final</h4>
-                    {/*{transferOrder?.transfer_order_contacts?.filter(x=> x.contact_type == 2).map((contact) => (
-                      <Row style={{paddingTop:'0.5rem'}} key={contact.id}>*/}
-                    <Row style={{ paddingTop: "0.5rem" }}>
-                      <Col span={12} style={{ paddingLeft: "25px" }}>
-                        {"Daniel"}
-                      </Col>
-                      <Col span={8} style={{ textAlign: "right" }}>
-                        {"1391239183123"}
-                      </Col>
-                    </Row>
-                    {/*}))}*/}
+                    {orderRequest?.transfer_order_contacts
+                      ?.filter((x) => x.contact_type == 2)
+                      .map((contact) => (
+                        <Row style={{ paddingTop: "0.5rem" }} key={contact.id}>
+                          <Col span={12} style={{ paddingLeft: "25px" }}>
+                            {"Daniel"}
+                          </Col>
+                          <Col span={8} style={{ textAlign: "right" }}>
+                            {"1391239183123"}
+                          </Col>
+                        </Row>
+                      ))}
                     <p>&nbsp;</p>
                     <Row style={{ paddingTop: "1rem" }}>
                       <Col span={12}>
                         <h4>Cliente final</h4>
                       </Col>
                       <Col span={8} style={{ textAlign: "right" }}>
-                        {/*transferOrder?.client_desc*/}Daniel
+                        {orderRequest?.client_desc}
                       </Col>
                     </Row>
                     <p>&nbsp;</p>
                     <h4>Requerimientos adicionales</h4>
-                    {/*<Row style={{paddingTop:'1rem'}}>
-                        <Col span={24}>
-                        {transferOrder?.transfer_order_other_requeriments?.map((req) => (
-                          <div className="selected" key={req.id}>{req.other_requirement_desc} <small>{req.quantity}</small></div>
-                         ))}
-                        </Col>
-                      </Row>*/}
+                    <Row style={{ paddingTop: "1rem" }}>
+                      <Col span={24}>
+                        {orderRequest?.transfer_order_other_requeriments?.map((req) => (
+                          <div className="selected" key={req.id}>
+                            {req.other_requirement_desc} <small>{req.quantity}</small>
+                          </div>
+                        ))}
+                      </Col>
+                    </Row>
                   </Col>
                   <Col span={12}>
                     <h3>Instrucciones especiales</h3>
                     <p>&nbsp;</p>
-                    <p style={{ minHeight: "250px" }}>
-                      {/*transferOrder?.observation*/}Observacion
-                    </p>
+                    <p style={{ minHeight: "250px" }}>{orderRequest?.observation}</p>
                   </Col>
                 </Row>
               </Flex>
@@ -907,8 +896,9 @@ export const CreateTransferRequestView = () => {
       label: (
         <div className="collapseByAction__label">
           <Title className="collapseByAction__label__text" level={4}>
-            {(typeactive == "1" || typeactive == "2") && `Materiales`}
-            {typeactive == "3" && `Personas`}
+            {(orderRequest?.id_service_type == 1 || orderRequest?.id_service_type == 2) &&
+              `Materiales`}
+            {orderRequest?.id_service_type == 3 && `Personas`}
           </Title>
         </div>
       ),
@@ -919,12 +909,12 @@ export const CreateTransferRequestView = () => {
               <text>Vehículo Sugerido</text>
             </label>
           </>
-          {(typeactive == "1" || typeactive == "2") && (
+          {(orderRequest?.id_service_type == 1 || orderRequest?.id_service_type == 2) && (
             <>
               <Table columns={columnsCarga} />
             </>
           )}
-          {typeactive == "3" && (
+          {orderRequest?.id_service_type == 3 && (
             <>
               <Table columns={columnsCargaPersonas} />
             </>
@@ -1228,7 +1218,6 @@ export const CreateTransferRequestView = () => {
                                   placeholder="Buscar dirección inicial"
                                   className="puntoOrigen"
                                   style={{ width: "100%" }}
-                                  onChange={onChangeOrigin}
                                   optionFilterProp="children"
                                   filterOption={(input, option) =>
                                     option!
@@ -1236,18 +1225,7 @@ export const CreateTransferRequestView = () => {
                                       .toLowerCase()
                                       .indexOf(input.toLowerCase()) >= 0
                                   }
-                                >
-                                  {locationOptions.map(
-                                    (option: {
-                                      value: React.Key | null | undefined;
-                                      label: string | null | undefined;
-                                    }) => (
-                                      <Select.Option value={option.value} key={option.value}>
-                                        {option.label}
-                                      </Select.Option>
-                                    )
-                                  )}
-                                </Select>
+                                ></Select>
                               </Row>
                               {typeactive != "2" && (
                                 <Row style={{ marginTop: "1rem" }}>
@@ -1257,7 +1235,6 @@ export const CreateTransferRequestView = () => {
                                     placeholder="Buscar dirección final"
                                     className="puntoOrigen"
                                     style={{ width: "100%" }}
-                                    onChange={onChangeDestino}
                                     optionFilterProp="children"
                                     filterOption={(input, option) =>
                                       option!
@@ -1265,18 +1242,7 @@ export const CreateTransferRequestView = () => {
                                         .toLowerCase()
                                         .indexOf(input.toLowerCase()) >= 0
                                     }
-                                  >
-                                    {locationOptions.map(
-                                      (option: {
-                                        value: React.Key | null | undefined;
-                                        label: string | null | undefined;
-                                      }) => (
-                                        <Select.Option value={option.value} key={option.value}>
-                                          {option.label}
-                                        </Select.Option>
-                                      )
-                                    )}
-                                  </Select>
+                                  ></Select>
                                 </Row>
                               )}
                               <Row style={{ marginTop: "1.5rem" }}>
@@ -1489,7 +1455,7 @@ export const CreateTransferRequestView = () => {
                           <Row className="mainUploadDocuments">
                             {mockFiles.map((file) => (
                               // eslint-disable-next-line react/jsx-key
-                              <Col span={24} style={{ padding: "15px" }}>
+                              <Col span={24} style={{ padding: "15px" }} key={file.id}>
                                 <UploadDocumentButton
                                   key={file.id}
                                   title={file.title}
@@ -1576,35 +1542,47 @@ export const CreateTransferRequestView = () => {
                   </Modal>
                 </Col>
               </Row>
-              <Row style={{ width: "100%", flexDirection: "column" }}>
-                <Col>
-                  <Tabs defaultActiveKey="1">
-                    <TabPane key={"1"} tab={<h4>0000001</h4>}>
-                      <Row style={{ width: "100%" }} className="contentRow">
-                        <Col span={24} style={{ marginBottom: "1.5rem" }}>
-                          <Flex>
-                            <h5 style={{ fontWeight: "600", fontSize: "24px", lineHeight: "32px" }}>
-                              0000001
-                            </h5>
-                          </Flex>
-                        </Col>
+              {isLoading ? (
+                <Spin />
+              ) : (
+                <Row style={{ width: "100%", flexDirection: "column" }}>
+                  <Col>
+                    <Tabs defaultActiveKey={String(ordersId[0])} onChange={onTabSelect}>
+                      {ordersId.map((a) => (
+                        <TabPane key={a} tab={<h4>{a}</h4>}>
+                          <Row style={{ width: "100%" }} className="contentRow">
+                            <Col span={24} style={{ marginBottom: "1.5rem" }}>
+                              <Flex>
+                                <h5
+                                  style={{
+                                    fontWeight: "600",
+                                    fontSize: "24px",
+                                    lineHeight: "32px"
+                                  }}
+                                >
+                                  {a}
+                                </h5>
+                              </Flex>
+                            </Col>
 
-                        <Col span={24}>
-                          <Collapse
-                            className="collapseByAction"
-                            style={{ width: "100%" }}
-                            expandIconPosition="end"
-                            accordion={false}
-                            bordered={false}
-                            ghost
-                            items={actionsOptions}
-                          />
-                        </Col>
-                      </Row>
-                    </TabPane>
-                  </Tabs>
-                </Col>
-              </Row>
+                            <Col span={24}>
+                              <Collapse
+                                className="collapseByAction"
+                                style={{ width: "100%" }}
+                                expandIconPosition="end"
+                                accordion={false}
+                                bordered={false}
+                                ghost
+                                items={actionsOptions}
+                              />
+                            </Col>
+                          </Row>
+                        </TabPane>
+                      ))}
+                    </Tabs>
+                  </Col>
+                </Row>
+              )}
             </Col>
           </Row>
           <Flex justify="space-between" style={{ marginTop: "24px" }}>
