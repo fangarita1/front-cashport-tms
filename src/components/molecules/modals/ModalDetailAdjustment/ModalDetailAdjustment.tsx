@@ -33,35 +33,6 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
   const [isModalSelectOpen, setIsModalSelectOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const statusClass = (status: string): string => {
-    switch (status) {
-      case "Identificado" || "coinciliada":
-        return styles.identifiedReconciled;
-      case "En auditoría":
-        return styles.inAudit;
-      case "No identificado":
-        return styles.unidentified;
-      case "aplicacion":
-        return styles.applied;
-      case "Ap. parcialmente":
-        return styles.partially;
-      case "sin conciliar":
-        return styles.noReconcile;
-      case "novedades":
-        return styles.novelty;
-      case "saldo":
-        return styles.balances;
-      case "glosado":
-        return styles.glossed;
-      case "devolucion":
-        return styles.return;
-      case "vencida":
-        return styles.annulment;
-      default:
-        return "";
-    }
-  };
-
   const getEventTitle = (item: string) => {
     switch (item) {
       case "Generar nota de credito":
