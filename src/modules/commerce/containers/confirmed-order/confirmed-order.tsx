@@ -51,19 +51,19 @@ export const ConfirmedOrderView: FC = () => {
               justify="space-between"
             >
               <h2 className={styles.mainTitle}>Resumen</h2>
-              <p className={styles.quantity}>SKUs: X</p>
+              <p className={styles.quantity}>SKUs: {order?.detail?.products?.length}</p>
             </Flex>
 
             <div className={styles.categories}>
-              {mockOrder.map((category) => (
-                <div className={styles.category} key={category.id}>
+              {order?.detail?.products?.map((category) => (
+                <div className={styles.category} key={category.id_category}>
                   <Flex justify="space-between" align="center">
                     <p className={styles.category__header}>{category.category}</p>
                     <p className={styles.category__header}>Skus: {category.products.length}</p>
                   </Flex>
                   <div className={styles.products}>
                     {category.products.map((product) => (
-                      <ConfirmedOrderItem key={product.id} product={product} />
+                      <ConfirmedOrderItem key={product.product_sku} product={product} />
                     ))}
                   </div>
                 </div>
@@ -121,11 +121,11 @@ export const ConfirmedOrderView: FC = () => {
             </Flex>
             <Flex justify="space-between">
               <strong>Total</strong>
-              <strong>{formatMoney(order?.detail?.total)}</strong>
+              <strong>{formatMoney(order?.total)}</strong>
             </Flex>
             <Flex className={styles.footer__earlyPaymentTotal} justify="space-between">
               <p>Total con pronto pago</p>
-              <p>{formatMoney(order?.detail?.total_pronto_pago)}</p>
+              <p>{formatMoney(order?.total_pronto_pago)}</p>
             </Flex>
           </Flex>
           <PrincipalButton onClick={handleGoBack}>Salir</PrincipalButton>
@@ -136,61 +136,6 @@ export const ConfirmedOrderView: FC = () => {
 };
 
 export default ConfirmedOrderView;
-
-const mockOrder = [
-  {
-    id: 1,
-    category: "Cremas faciales",
-    products: [
-      {
-        id: 1,
-        name: "Galderma Cetaphil Crema Hidratante X 453 Gr 1",
-        price: 120000,
-        discount: 60000,
-        discount_percentage: 50,
-        quantity: 2,
-        image: "/images/cetaphilMock.png",
-        category_id: 1
-      },
-      {
-        id: 2,
-        name: "Galderma Cetaphil Crema Hidratante X 453 Gr 2",
-        price: 20000,
-        discount: 0,
-        discount_percentage: 5,
-        quantity: 1,
-        image: "/images/cetaphilMock.png",
-        category_id: 1
-      }
-    ]
-  },
-  {
-    id: 2,
-    category: "Bloqueadores",
-    products: [
-      {
-        id: 3,
-        name: "Galderma Cetaphil Crema Hidratante X 453 Gr 1",
-        price: 15000,
-        discount: 0,
-        discount_percentage: 0,
-        quantity: 1,
-        image: "/images/cetaphilMock.png",
-        category_id: 2
-      },
-      {
-        id: 4,
-        name: "Galderma Cetaphil Crema Hidratante X 453 Gr 2",
-        price: 25000,
-        discount: 0,
-        discount_percentage: 5,
-        quantity: 1,
-        image: "/images/cetaphilMock.png",
-        category_id: 2
-      }
-    ]
-  }
-];
 
 const mockDiscounts = [
   {

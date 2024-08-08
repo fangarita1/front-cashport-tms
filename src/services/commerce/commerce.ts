@@ -67,6 +67,7 @@ export const createOrder = async (
   projectId: number,
   clientId: number,
   data: ICreateOrderData,
+  // eslint-disable-next-line no-unused-vars
   showMessage: (type: MessageType, content: string) => void
 ) => {
   try {
@@ -89,6 +90,7 @@ export const createDraft = async (
   projectId: number,
   clientId: number,
   data: ICreateOrderData,
+  // eslint-disable-next-line no-unused-vars
   showMessage: (type: MessageType, content: string) => void
 ) => {
   try {

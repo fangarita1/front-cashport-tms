@@ -5,7 +5,7 @@ import { Eye } from "phosphor-react";
 import { formatDateDMY, formatMoney } from "@/utils/utils";
 
 import "./orders-view-table.scss";
-import { IOrderData } from "@/types/commerce/ICommerce";
+import { IOrder } from "@/types/commerce/ICommerce";
 
 const { Text } = Typography;
 
@@ -27,7 +27,7 @@ const OrdersViewTable = ({ dataSingleOrder: data, setSelectedRows }: PropsOrders
     onChange: onSelectChange
   };
 
-  const columns: TableProps<IOrderData>["columns"] = [
+  const columns: TableProps<IOrder>["columns"] = [
     {
       title: "TR",
       dataIndex: "id",
@@ -49,7 +49,7 @@ const OrdersViewTable = ({ dataSingleOrder: data, setSelectedRows }: PropsOrders
       key: "order_date",
       dataIndex: "order_date",
       render: (date) => <Text className="cell">{date ? formatDateDMY(date) : ""}</Text>,
-      sorter: (a, b) => new Date(a.order_date).getTime() - new Date(b.order_date).getTime(),
+      sorter: (a, b) => new Date(a.order_date)?.getTime() - new Date(b.order_date)?.getTime(),
       showSorterTooltip: false
     },
     {

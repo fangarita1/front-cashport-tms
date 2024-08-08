@@ -1,4 +1,4 @@
-import { FC, use, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import Link from "next/link";
 import { Button, Flex, MenuProps } from "antd";
 import UiSearchInput from "@/components/ui/search-input";
@@ -13,13 +13,13 @@ import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemo
 import styles from "./orders-view.module.scss";
 import { useAppStore } from "@/lib/store/store";
 import { getAllOrders } from "@/services/commerce/commerce";
-import { IOrderData } from "@/types/commerce/ICommerce";
-import { set } from "react-hook-form";
+import { IOrder } from "@/types/commerce/ICommerce";
 
 interface IOrdersByCategory {
   status: string;
   color: string;
-  orders: IOrderData[];
+  count: number;
+  orders: IOrder[];
 }
 
 export const OrdersView: FC = () => {
@@ -33,24 +33,9 @@ export const OrdersView: FC = () => {
     const fetchOrders = async () => {
       const response = await getAllOrders(projectId);
       if (response.status === 200) {
-        const ordersByCategoryData = response.data.reduce(
-          (acc: IOrdersByCategory[], order: IOrderData) => {
-            const category = acc.find((category) => category.status === order.order_status);
-            if (category) {
-              category.orders.push(order);
-            } else {
-              acc.push({
-                status: order.order_status,
-                color: "#0085FF",
-                orders: [order]
-              });
-            }
-            return acc;
-          },
-          []
-        );
-        ordersByCategoryData[1].color = "#A9BA43";
-        setOrdersByCategory(ordersByCategoryData);
+        console.log("data", response.data);
+
+        setOrdersByCategory(response.data);
       }
     };
     fetchOrders();

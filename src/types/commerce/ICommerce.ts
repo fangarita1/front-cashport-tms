@@ -52,17 +52,21 @@ export interface IConfirmOrderData {
   }[];
 }
 
-interface Product {
+export interface IProductInDetail {
   product_sku: string;
+  product_name: string;
   quantity: number;
   price: number;
   taxes: number;
   image: string;
+  id_category: number;
+  discount: number;
+  discount_percentage: number;
 }
 
 export interface IOrderConfirmedResponse {
   discount_id: number;
-  products: Product[];
+  products: IProductInDetail[];
   subtotal: number;
   taxes: number;
   discounts: number;
@@ -112,17 +116,30 @@ export interface ISingleOrder {
 }
 
 interface IDetailOrder {
-  taxes: number;
-  total: number;
-  products: Product[];
+  products: ICategories[];
   subtotal: number;
   discounts: number;
   discount_id: number;
+  taxes: number;
   total_pronto_pago: number;
 }
 
+export interface ICategories {
+  id_category: number;
+  category: string;
+  products: IProductInDetail[];
+}
+
 export interface IOrderData {
+  color: string;
+  status: string;
+  count: number;
+  orders: IOrder[];
+}
+
+export interface IOrder {
   order_status: string;
+  rgb: string;
   id: number;
   order_date: string;
   city: string;
