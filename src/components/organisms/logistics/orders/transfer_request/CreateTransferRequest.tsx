@@ -50,6 +50,7 @@ import { addProject } from "@/services/projects/projects";
 import {
   IListData,
   ILocation,
+  IMaterial,
   ITransferOrderRequest,
   ITransferOrdersRequest
 } from "@/types/logistics/schema";
@@ -98,7 +99,7 @@ interface CreateTransferOrderRequestProps {
   params: { id: string };
 }
 
-export const CreateTransferRequestView = ({ params }: CreateTransferOrderRequestProps) => {
+export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProps) => {
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -106,6 +107,7 @@ export const CreateTransferRequestView = ({ params }: CreateTransferOrderRequest
   const [ordersId, setOrdersId] = useState<number[]>([]);
   const [orders, setOrders] = useState<ITransferOrdersRequest>();
   const [orderRequest, setOrderRequest] = useState<ITransferOrderRequest>();
+  const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
 
   /* Tipo de viaje */
   const [typeactive, setTypeActive] = useState("1");
@@ -117,6 +119,13 @@ export const CreateTransferRequestView = ({ params }: CreateTransferOrderRequest
   const [destinoIzaje, setDestinoIzaje] = useState(false);
   const [fechaInicial, setFechaInicial] = useState<Dayjs | null>(null);
   const [horaInicial, setHoraInicial] = useState<Dayjs | null>(null);
+
+  const optionsFlexible = [
+    { value: 0, label: "Exacto" },
+    { value: 1, label: "+/- 1 día" },
+    { value: 2, label: "+/- 2 días" },
+    { value: 3, label: "+/- 3 días" }
+  ];
 
   /* MAPBOX */
   const mapsAccessToken =
@@ -132,33 +141,36 @@ export const CreateTransferRequestView = ({ params }: CreateTransferOrderRequest
 
   const [expand, setExpand] = useState(false);
   const initialItemCount = 4;
-  const directions = routeInfo.length > 0 ? routeInfo[0]["legs"][0]["steps"] : [];
+  //const directions = routeInfo.length > 0 ? routeInfo[0]["legs"][0]["steps"] : [];
 
   /*Service loader */
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  console.log("orderRequest:", orderRequest);
+
   useEffect(() => {
-    loadRequests()
-  }, []);
+    const decodedParam = params ? decodeURIComponent(params.id) : "";
+    const numbers = decodedParam ? decodedParam.split(",").map(Number) : [];
+    setOrdersId(numbers);
+  }, [params]);
+
+  useEffect(() => {
+    if (ordersId.length > 0) {
+      loadRequests();
+    }
+  }, [ordersId]);
 
   const loadRequests = async () => {
     setIsLoading(true);
     const res = await transferOrderMerge(ordersId);
     if (res.success) {
-      messageApi.open({ content: res.message, type: "success" });
       setOrders(res.data);
     } else {
       messageApi.open({ content: res.message, type: "error" });
       router.push("/logistics/orders");
     }
     setIsLoading(false);
-  }
-
-  useEffect(() => {
-    const decodedParam = params ? decodeURIComponent(params.id) : "";
-    const numbers = decodedParam ? decodedParam.split(",").map(Number) : [];
-    setOrdersId(numbers);
-  }, []);
+  };
 
   useEffect(() => {
     if (!!ordersId && !!orders) {
@@ -207,6 +219,15 @@ export const CreateTransferRequestView = ({ params }: CreateTransferOrderRequest
         setTimeTravel(hrs);
       }
     }
+
+    orderRequest?.transfer_order_material?.forEach(async (mat) => {
+      mat?.material?.forEach(async (m) => {
+        const newvalue: IMaterial = m;
+        newvalue.quantity = mat.quantity;
+        console.log(newvalue);
+        await setDataCarga((dataCarga) => [...dataCarga, newvalue]);
+      });
+    });
 
     if (!mapContainerRef.current) return;
 
@@ -278,7 +299,7 @@ export const CreateTransferRequestView = ({ params }: CreateTransferOrderRequest
     // return () => {
     //   map.remove();
     // };
-  }, [mapStyle, routeGeometry, origin, destination]);
+  }, [mapStyle, routeGeometry, origin, destination, orderRequest]);
 
   // calculate direction
   const calcRouteDirection = async () => {
@@ -368,7 +389,7 @@ export const CreateTransferRequestView = ({ params }: CreateTransferOrderRequest
   const columnsCarga: TableProps<any>["columns"] = [
     {
       title: "Cantidad",
-      dataIndex: "quanity",
+      dataIndex: "quantity",
       key: "name",
       render: (text) => <Text>{text}</Text>,
       sorter: (a, b) => a.quantity - b.quantity,
@@ -641,22 +662,34 @@ export const CreateTransferRequestView = ({ params }: CreateTransferOrderRequest
                           <b>Fecha y hora inicial</b>
                         </label>
                       </p>
+                      <p style={{ paddingTop: "0.5rem" }}>
+                        <label>
+                          <b>
+                            {
+                              optionsFlexible.find(
+                                (x) => x.value == orderRequest?.start_date_flexible
+                              )?.label
+                            }
+                          </b>
+                        </label>
+                      </p>
                     </Col>
                     <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                       <p style={{ paddingTop: "1rem" }}>
                         <label>
-                          <b>{orderRequest?.start_date?.split(" ")[1]} h</b>
+                          <b>{orderRequest?.start_date?.split("T")[1].substring(0, 5)} h</b>
                         </label>
                       </p>
                       <p style={{ paddingTop: "0.5rem" }}>
                         {orderRequest?.start_date ? (
                           <b>
-                            {formatDatePlaneWithoutComma(orderRequest?.start_date?.split(" ")[0])}
+                            {formatDatePlaneWithoutComma(
+                              new Date(orderRequest?.start_date?.split("T")[0]).toString()
+                            )}
                           </b>
                         ) : (
                           <p>No date</p>
                         )}
-                        <b>01/08/2024</b>
                       </p>
                     </Col>
                     <Col span={24} style={{ paddingTop: "1rem" }}>
@@ -670,22 +703,34 @@ export const CreateTransferRequestView = ({ params }: CreateTransferOrderRequest
                           <b>Fecha y hora final</b>
                         </label>
                       </p>
+                      <p style={{ paddingTop: "0.5rem" }}>
+                        <label>
+                          <b>
+                            {
+                              optionsFlexible.find(
+                                (x) => x.value == orderRequest?.start_date_flexible
+                              )?.label
+                            }
+                          </b>
+                        </label>
+                      </p>
                     </Col>
                     <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                       <p style={{ paddingTop: "1rem" }}>
                         <label>
-                          <b>{orderRequest?.end_date?.split(" ")[1]} h</b>
+                          <b>{orderRequest?.end_date?.split("T")[1].substring(0, 5)} h</b>
                         </label>
                       </p>
                       <p style={{ paddingTop: "0.5rem" }}>
-                        {orderRequest?.end_date ? (
+                        {orderRequest?.start_date ? (
                           <b>
-                            {formatDatePlaneWithoutComma(orderRequest?.end_date?.split(" ")[0])}
+                            {formatDatePlaneWithoutComma(
+                              new Date(orderRequest?.start_date?.split("T")[0]).toString()
+                            )}
                           </b>
                         ) : (
                           <p>No date</p>
                         )}
-                        <b>01/08/2024</b>
                       </p>
                     </Col>
                   </Row>
@@ -904,19 +949,33 @@ export const CreateTransferRequestView = ({ params }: CreateTransferOrderRequest
       ),
       children: (
         <div>
-          <>
+          <div>
             <label className="locationLabels" style={{ display: "flex" }}>
               <text>Vehículo Sugerido</text>
             </label>
-          </>
+            {orderRequest?.transfer_order_vehicles ? (
+              orderRequest?.transfer_order_vehicles.map((a) => (
+                <div className="vehicles_sugested" key={a.id}>
+                  {a.vehicle_type_desc}
+                </div>
+              ))
+            ) : (
+              <p></p>
+            )}
+          </div>
           {(orderRequest?.id_service_type == 1 || orderRequest?.id_service_type == 2) && (
             <>
-              <Table columns={columnsCarga} />
+              <Table columns={columnsCarga} dataSource={dataCarga} pagination={false} />
             </>
           )}
           {orderRequest?.id_service_type == 3 && (
             <>
-              <Table columns={columnsCargaPersonas} />
+              <Table
+                columns={columnsCargaPersonas}
+                dataSource={
+                  orderRequest.transfer_order_persons ? orderRequest.transfer_order_persons : []
+                }
+              />
             </>
           )}
         </div>
@@ -954,268 +1013,269 @@ export const CreateTransferRequestView = ({ params }: CreateTransferOrderRequest
   return (
     <>
       {contextHolder}
-      <main className="mainCreateOrder">
-        <SideBar />
-        <Flex vertical className="containerCreateOrder">
-          <Flex className="infoHeaderOrder">
-            <Flex gap={"2rem"}>
-              <Title level={2} className="titleName">
-                Ordenes de transferencia
-              </Title>
-            </Flex>
-            <Flex component={"navbar"} align="center" justify="space-between">
-              <NavRightSection />
-            </Flex>
-          </Flex>
-          {/* ------------Main Info Order-------------- */}
-          <Row className="orderContainer">
-            <Col>
-              <Row style={{ width: "100%", justifyContent: "center" }}>
-                <Col span={16} style={{ padding: "16px 0" }}>
-                  <Flex justify="space-evenly">
-                    <Steps
-                      style={{ width: "100%" }}
-                      size="small"
-                      current={0}
-                      iconPrefix={`-`}
-                      items={[
-                        {
-                          title: "Solicitud de transferencia"
-                        },
-                        {
-                          title: "Seleccion de vehiculos"
-                        },
-                        {
-                          title: "Seleccion de proveedor"
-                        }
-                      ]}
-                    />
-                  </Flex>
-                </Col>
-              </Row>
-              <Row style={{ display: "flex", flexDirection: "column", padding: "32px 0" }}>
-                <Col style={{ display: "flex", justifyContent: "space-between" }}>
-                  <Flex>
-                    <Title style={{ fontWeight: "700", fontSize: "24px", lineHeight: "36px" }}>
-                      Solicitud de transferencia
-                    </Title>
-                  </Flex>
-                  <Flex>
-                    <Button
-                      style={{
-                        width: "146px",
-                        height: "48px",
-                        padding: "12px 24px"
-                      }}
-                      type="default"
-                      className="active"
-                      onClick={() => {
-                        setOpenDrawer(true);
-                      }}
-                    >
-                      <text style={{ fontSize: "16px", lineHeight: "24px", fontWeight: "600" }}>
-                        Tracking
-                      </text>
-                      <CaretDoubleRight size={16} />
-                    </Button>
-                  </Flex>
-                  <Drawer
-                    title="Tracking"
-                    placement="right"
-                    open={openDrawer}
-                    onClose={() => {
-                      setOpenDrawer(false);
+      <Flex className="mainCreateOrder">
+        <Row className="orderContainer">
+          <Col>
+            <Row style={{ width: "100%", justifyContent: "center" }}>
+              <Col span={16} style={{ padding: "16px 0" }}>
+                <Flex justify="space-evenly">
+                  <Steps
+                    style={{ width: "100%" }}
+                    size="small"
+                    current={0}
+                    iconPrefix={`-`}
+                    items={[
+                      {
+                        title: "Solicitud de transferencia"
+                      },
+                      {
+                        title: "Seleccion de vehiculos"
+                      },
+                      {
+                        title: "Seleccion de proveedor"
+                      }
+                    ]}
+                  />
+                </Flex>
+              </Col>
+            </Row>
+            <Row style={{ display: "flex", flexDirection: "column", padding: "32px 0" }}>
+              <Col style={{ display: "flex", justifyContent: "space-between" }}>
+                <Flex>
+                  <Title style={{ fontWeight: "700", fontSize: "24px", lineHeight: "36px" }}>
+                    Solicitud de transferencia
+                  </Title>
+                </Flex>
+                <Flex>
+                  <Button
+                    style={{
+                      width: "146px",
+                      height: "48px",
+                      padding: "12px 24px"
                     }}
-                    closable={true}
-                    key="right"
-                    footer={
-                      <>
+                    type="default"
+                    className="active"
+                    onClick={() => {
+                      setOpenDrawer(true);
+                    }}
+                  >
+                    <text style={{ fontSize: "16px", lineHeight: "24px", fontWeight: "600" }}>
+                      Tracking
+                    </text>
+                    <CaretDoubleRight size={16} />
+                  </Button>
+                </Flex>
+                <Drawer
+                  title="Tracking"
+                  placement="right"
+                  open={openDrawer}
+                  onClose={() => {
+                    setOpenDrawer(false);
+                  }}
+                  closable={true}
+                  key="right"
+                  footer={
+                    <>
+                      <button
+                        onClick={() => {
+                          setIsModalOpen(true);
+                        }}
+                        className="active"
+                        style={{
+                          borderRadius: "10px",
+                          padding: "10px",
+                          border: "none",
+                          float: "right"
+                        }}
+                      >
+                        Agregar
+                      </button>
+                    </>
+                  }
+                >
+                  <Card style={{ width: "100%", padding: "0px" }}>
+                    <Row>
+                      <Col span={2}>
+                        <DotsSixVertical style={{ fontSize: "20px" }} />
+                      </Col>
+                      <Col span={18}>
+                        <p>Izaje</p>
+                        <p>Bogotá Centro</p>
+                        <p>
+                          <b>Inicio</b> 27 Junio 2024 - 02:15
+                        </p>
+                        <p>
+                          <b>Inicio</b> 28 Junio 2024 - 14:30
+                        </p>
+                      </Col>
+                      <Col span={4} style={{ textAlign: "right" }}>
+                        <p>
+                          <button
+                            className="active"
+                            style={{ width: "24px", border: "none", borderRadius: "5px" }}
+                          >
+                            1
+                          </button>{" "}
+                        </p>
+                        <p>&nbsp;</p>
+                        <p>&nbsp;</p>
+                        <p>
+                          <Pencil style={{ fontSize: "20px" }} />
+                          <Trash style={{ fontSize: "20px" }} />
+                        </p>
+                      </Col>
+                    </Row>
+                  </Card>
+                  <div className="carddivider"></div>
+                  <Card style={{ width: "100%", padding: "0px" }}>
+                    <Row>
+                      <Col span={2}>
+                        <DotsSixVertical style={{ fontSize: "20px" }} />
+                      </Col>
+                      <Col span={18}>
+                        <p>Carga</p>
+                        <p>Bogotá Centro</p>
+                        <p>Cajica Plaza</p>
+                        <p>
+                          <b>Inicio</b> 27 Junio 2024 - 02:15
+                        </p>
+                        <p>
+                          <b>Inicio</b> 28 Junio 2024 - 14:30
+                        </p>
+                      </Col>
+                      <Col span={4} style={{ textAlign: "right" }}>
+                        <p>
+                          <button
+                            className="active"
+                            style={{ width: "24px", border: "none", borderRadius: "5px" }}
+                          >
+                            2
+                          </button>{" "}
+                        </p>
+                        <p>&nbsp;</p>
+                        <p>&nbsp;</p>
+                        <p>&nbsp;</p>
+                        <p>
+                          <Pencil style={{ fontSize: "20px" }} />
+                          <Trash style={{ fontSize: "20px" }} />
+                        </p>
+                      </Col>
+                    </Row>
+                  </Card>
+                </Drawer>
+                <Modal
+                  width={"60%"}
+                  footer=""
+                  open={isModalOpen}
+                  onOk={() => {
+                    setIsModalOpen(false);
+                  }}
+                  onCancel={() => {
+                    setIsModalOpen(false);
+                  }}
+                >
+                  <FormWizard
+                    shape="circle"
+                    color="#e74c3c"
+                    stepSize="xs"
+                    onComplete={handleComplete}
+                    onTabChange={tabChanged}
+                    nextButtonText="Siguiente"
+                    backButtonText="Anterior"
+                    finishButtonText="Finalizar"
+                  >
+                    <FormWizard.TabContent title="Tipo de Viaje" icon="ti-user">
+                      <Title className="collapseByAction__label__text" level={4}>
+                        Tipo de Viaje
+                      </Title>
+                      <Flex gap="middle">
                         <button
-                          onClick={() => {
-                            setIsModalOpen(true);
-                          }}
-                          className="active"
-                          style={{
-                            borderRadius: "10px",
-                            padding: "10px",
-                            border: "none",
-                            float: "right"
-                          }}
+                          type="button"
+                          id={"1"}
+                          className={["tripTypes", typeactive === "1" ? "active" : undefined].join(
+                            " "
+                          )}
+                          onClick={handleTypeClick}
                         >
-                          Agregar
+                          <div className="tripTypeIcons">
+                            <img
+                              className="icon"
+                              loading="lazy"
+                              alt=""
+                              src="/images/logistics/truck.svg"
+                            />
+                            <div className="text">Carga</div>
+                          </div>
                         </button>
-                      </>
-                    }
-                  >
-                    <Card style={{ width: "100%", padding: "0px" }}>
-                      <Row>
-                        <Col span={2}>
-                          <DotsSixVertical style={{ fontSize: "20px" }} />
-                        </Col>
-                        <Col span={18}>
-                          <p>Izaje</p>
-                          <p>Bogotá Centro</p>
-                          <p>
-                            <b>Inicio</b> 27 Junio 2024 - 02:15
-                          </p>
-                          <p>
-                            <b>Inicio</b> 28 Junio 2024 - 14:30
-                          </p>
-                        </Col>
-                        <Col span={4} style={{ textAlign: "right" }}>
-                          <p>
-                            <button
-                              className="active"
-                              style={{ width: "24px", border: "none", borderRadius: "5px" }}
-                            >
-                              1
-                            </button>{" "}
-                          </p>
-                          <p>&nbsp;</p>
-                          <p>&nbsp;</p>
-                          <p>
-                            <Pencil style={{ fontSize: "20px" }} />
-                            <Trash style={{ fontSize: "20px" }} />
-                          </p>
-                        </Col>
-                      </Row>
-                    </Card>
-                    <div className="carddivider"></div>
-                    <Card style={{ width: "100%", padding: "0px" }}>
-                      <Row>
-                        <Col span={2}>
-                          <DotsSixVertical style={{ fontSize: "20px" }} />
-                        </Col>
-                        <Col span={18}>
-                          <p>Carga</p>
-                          <p>Bogotá Centro</p>
-                          <p>Cajica Plaza</p>
-                          <p>
-                            <b>Inicio</b> 27 Junio 2024 - 02:15
-                          </p>
-                          <p>
-                            <b>Inicio</b> 28 Junio 2024 - 14:30
-                          </p>
-                        </Col>
-                        <Col span={4} style={{ textAlign: "right" }}>
-                          <p>
-                            <button
-                              className="active"
-                              style={{ width: "24px", border: "none", borderRadius: "5px" }}
-                            >
-                              2
-                            </button>{" "}
-                          </p>
-                          <p>&nbsp;</p>
-                          <p>&nbsp;</p>
-                          <p>&nbsp;</p>
-                          <p>
-                            <Pencil style={{ fontSize: "20px" }} />
-                            <Trash style={{ fontSize: "20px" }} />
-                          </p>
-                        </Col>
-                      </Row>
-                    </Card>
-                  </Drawer>
-                  <Modal
-                    width={"60%"}
-                    footer=""
-                    open={isModalOpen}
-                    onOk={() => {
-                      setIsModalOpen(false);
-                    }}
-                    onCancel={() => {
-                      setIsModalOpen(false);
-                    }}
-                  >
-                    <FormWizard
-                      shape="circle"
-                      color="#e74c3c"
-                      stepSize="xs"
-                      onComplete={handleComplete}
-                      onTabChange={tabChanged}
-                      nextButtonText="Siguiente"
-                      backButtonText="Anterior"
-                      finishButtonText="Finalizar"
-                    >
-                      <FormWizard.TabContent title="Tipo de Viaje" icon="ti-user">
+                        <button
+                          type="button"
+                          id={"2"}
+                          className={["tripTypes", typeactive === "2" ? "active" : undefined].join(
+                            " "
+                          )}
+                          onClick={handleTypeClick}
+                        >
+                          <div className="tripTypeIcons">
+                            <img
+                              className="icon"
+                              loading="lazy"
+                              alt=""
+                              src="/images/logistics/izaje.svg"
+                            />
+                            <div className="text">Izaje</div>
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          id={"3"}
+                          className={["tripTypes", typeactive === "3" ? "active" : undefined].join(
+                            " "
+                          )}
+                          onClick={handleTypeClick}
+                        >
+                          <div className="tripTypeIcons">
+                            <img
+                              className="icon"
+                              loading="lazy"
+                              alt=""
+                              src="/images/logistics/users.svg"
+                            />
+                            <div className="text">Personal</div>
+                          </div>
+                        </button>
+                      </Flex>
+                    </FormWizard.TabContent>
+                    <FormWizard.TabContent title="Agendamiento" icon="ti-settings">
+                      <>
                         <Title className="collapseByAction__label__text" level={4}>
-                          Tipo de Viaje
+                          Agendamiento
                         </Title>
-                        <Flex gap="middle">
-                          <button
-                            type="button"
-                            id={"1"}
-                            className={[
-                              "tripTypes",
-                              typeactive === "1" ? "active" : undefined
-                            ].join(" ")}
-                            onClick={handleTypeClick}
-                          >
-                            <div className="tripTypeIcons">
-                              <img
-                                className="icon"
-                                loading="lazy"
-                                alt=""
-                                src="/images/logistics/truck.svg"
-                              />
-                              <div className="text">Carga</div>
-                            </div>
-                          </button>
-                          <button
-                            type="button"
-                            id={"2"}
-                            className={[
-                              "tripTypes",
-                              typeactive === "2" ? "active" : undefined
-                            ].join(" ")}
-                            onClick={handleTypeClick}
-                          >
-                            <div className="tripTypeIcons">
-                              <img
-                                className="icon"
-                                loading="lazy"
-                                alt=""
-                                src="/images/logistics/izaje.svg"
-                              />
-                              <div className="text">Izaje</div>
-                            </div>
-                          </button>
-                          <button
-                            type="button"
-                            id={"3"}
-                            className={[
-                              "tripTypes",
-                              typeactive === "3" ? "active" : undefined
-                            ].join(" ")}
-                            onClick={handleTypeClick}
-                          >
-                            <div className="tripTypeIcons">
-                              <img
-                                className="icon"
-                                loading="lazy"
-                                alt=""
-                                src="/images/logistics/users.svg"
-                              />
-                              <div className="text">Personal</div>
-                            </div>
-                          </button>
-                        </Flex>
-                      </FormWizard.TabContent>
-                      <FormWizard.TabContent title="Agendamiento" icon="ti-settings">
-                        <>
-                          <Title className="collapseByAction__label__text" level={4}>
-                            Agendamiento
-                          </Title>
-                          <Row>
-                            <Col span={24} style={{ padding: "25px" }}>
-                              <Row>
-                                <label className="locationLabels">Punto Origen</label>
-                                <br></br>
+                        <Row>
+                          <Col span={24} style={{ padding: "25px" }}>
+                            <Row>
+                              <label className="locationLabels">Punto Origen</label>
+                              <br></br>
 
+                              <Select
+                                showSearch
+                                placeholder="Buscar dirección inicial"
+                                className="puntoOrigen"
+                                style={{ width: "100%" }}
+                                optionFilterProp="children"
+                                filterOption={(input, option) =>
+                                  option!
+                                    .children!.toString()
+                                    .toLowerCase()
+                                    .indexOf(input.toLowerCase()) >= 0
+                                }
+                              ></Select>
+                            </Row>
+                            {typeactive != "2" && (
+                              <Row style={{ marginTop: "1rem" }}>
+                                <label className="locationLabels">Punto Destino</label>
                                 <Select
                                   showSearch
-                                  placeholder="Buscar dirección inicial"
+                                  placeholder="Buscar dirección final"
                                   className="puntoOrigen"
                                   style={{ width: "100%" }}
                                   optionFilterProp="children"
@@ -1227,381 +1287,364 @@ export const CreateTransferRequestView = ({ params }: CreateTransferOrderRequest
                                   }
                                 ></Select>
                               </Row>
-                              {typeactive != "2" && (
-                                <Row style={{ marginTop: "1rem" }}>
-                                  <label className="locationLabels">Punto Destino</label>
-                                  <Select
-                                    showSearch
-                                    placeholder="Buscar dirección final"
-                                    className="puntoOrigen"
-                                    style={{ width: "100%" }}
-                                    optionFilterProp="children"
-                                    filterOption={(input, option) =>
-                                      option!
-                                        .children!.toString()
-                                        .toLowerCase()
-                                        .indexOf(input.toLowerCase()) >= 0
-                                    }
-                                  ></Select>
-                                </Row>
-                              )}
-                              <Row style={{ marginTop: "1.5rem" }}>
-                                <Col span={24}>
-                                  <label className="locationLabels">Fecha y hora inicial</label>
+                            )}
+                            <Row style={{ marginTop: "1.5rem" }}>
+                              <Col span={24}>
+                                <label className="locationLabels">Fecha y hora inicial</label>
+                              </Col>
+                              <Col span={8}>
+                                <DatePicker
+                                  placeholder="Seleccione fecha"
+                                  onChange={(value, dateString) => {
+                                    //console.log('Selected Time: ', value);
+                                    //console.log('Formatted Selected Time: ', dateString);
+                                    setFechaInicial(value);
+                                  }}
+                                />
+                              </Col>
+                              <Col span={8}>
+                                <TimePicker
+                                  placeholder="Seleccione hora"
+                                  format={"HH:mm"}
+                                  minuteStep={15}
+                                  hourStep={1}
+                                  type={"time"}
+                                  onChange={(value) => {
+                                    console.log(value);
+                                    setHoraInicial(value);
+                                  }}
+                                />
+                              </Col>
+                              <Col span={8}>
+                                <Select
+                                  placeholder="Seleccione"
+                                  className="puntoOrigen"
+                                  style={{ width: "100%" }}
+                                  options={[{ value: "2", label: "Exacto" }]}
+                                />
+                              </Col>
+                            </Row>
+                            <Row style={{ marginTop: "1.5rem" }}>
+                              <Col span={24}>
+                                <label className="locationLabels">Fecha y hora final</label>
+                              </Col>
+                              <Col span={8}>
+                                <DatePicker
+                                  placeholder="Seleccione fecha"
+                                  onChange={(value, dateString) => {
+                                    console.log("Selected Time: ", value);
+                                    console.log("Formatted Selected Time: ", dateString);
+                                  }}
+                                />
+                              </Col>
+                              <Col span={8}>
+                                <TimePicker
+                                  placeholder="Seleccione hora"
+                                  format={"HH:mm"}
+                                  minuteStep={15}
+                                  hourStep={1}
+                                  type={"time"}
+                                  onChange={(value) => console.log(value)}
+                                />
+                              </Col>
+                              <Col span={8}>
+                                <Select
+                                  placeholder="Seleccione"
+                                  className="puntoOrigen"
+                                  style={{ width: "100%" }}
+                                  options={[{ value: "2", label: "Exacto" }]}
+                                />
+                              </Col>
+                            </Row>
+                            {routeGeometry && (
+                              <Row className="divdistance">
+                                <Col span={12}>
+                                  <p>
+                                    <label>Distancia Total</label>
+                                  </p>
+                                  <p>
+                                    <label>Tiempo Estimado</label>
+                                  </p>
                                 </Col>
-                                <Col span={8}>
-                                  <DatePicker
-                                    placeholder="Seleccione fecha"
-                                    onChange={(value, dateString) => {
-                                      //console.log('Selected Time: ', value);
-                                      //console.log('Formatted Selected Time: ', dateString);
-                                      setFechaInicial(value);
-                                    }}
-                                  />
-                                </Col>
-                                <Col span={8}>
-                                  <TimePicker
-                                    placeholder="Seleccione hora"
-                                    format={"HH:mm"}
-                                    minuteStep={15}
-                                    hourStep={1}
-                                    type={"time"}
-                                    onChange={(value) => {
-                                      console.log(value);
-                                      setHoraInicial(value);
-                                    }}
-                                  />
-                                </Col>
-                                <Col span={8}>
-                                  <Select
-                                    placeholder="Seleccione"
-                                    className="puntoOrigen"
-                                    style={{ width: "100%" }}
-                                    options={[{ value: "2", label: "Exacto" }]}
-                                  />
+                                <Col span={12} className="text-right">
+                                  <p>
+                                    <label>{distance}</label>
+                                  </p>
+                                  <p>
+                                    <label>{timetravel}</label>
+                                  </p>
                                 </Col>
                               </Row>
-                              <Row style={{ marginTop: "1.5rem" }}>
-                                <Col span={24}>
-                                  <label className="locationLabels">Fecha y hora final</label>
-                                </Col>
-                                <Col span={8}>
-                                  <DatePicker
-                                    placeholder="Seleccione fecha"
-                                    onChange={(value, dateString) => {
-                                      console.log("Selected Time: ", value);
-                                      console.log("Formatted Selected Time: ", dateString);
-                                    }}
-                                  />
-                                </Col>
-                                <Col span={8}>
-                                  <TimePicker
-                                    placeholder="Seleccione hora"
-                                    format={"HH:mm"}
-                                    minuteStep={15}
-                                    hourStep={1}
-                                    type={"time"}
-                                    onChange={(value) => console.log(value)}
-                                  />
-                                </Col>
-                                <Col span={8}>
-                                  <Select
-                                    placeholder="Seleccione"
-                                    className="puntoOrigen"
-                                    style={{ width: "100%" }}
-                                    options={[{ value: "2", label: "Exacto" }]}
-                                  />
-                                </Col>
-                              </Row>
-                              {routeGeometry && (
-                                <Row className="divdistance">
-                                  <Col span={12}>
-                                    <p>
-                                      <label>Distancia Total</label>
-                                    </p>
-                                    <p>
-                                      <label>Tiempo Estimado</label>
-                                    </p>
-                                  </Col>
-                                  <Col span={12} className="text-right">
-                                    <p>
-                                      <label>{distance}</label>
-                                    </p>
-                                    <p>
-                                      <label>{timetravel}</label>
-                                    </p>
-                                  </Col>
-                                </Row>
-                              )}
+                            )}
+                          </Col>
+                          <Col span={24}>
+                            <div
+                              ref={mapContainerRef}
+                              style={{
+                                width: "100%",
+                                height: "30vh",
+                                border: "1px #F7F7F7 solid"
+                              }}
+                            />
+                          </Col>
+                        </Row>
+                      </>
+                    </FormWizard.TabContent>
+                    <FormWizard.TabContent title="Responsables" icon="ti-check">
+                      <>
+                        <Title className="collapseByAction__label__text" level={4}>
+                          Responsables
+                        </Title>
+                        <label
+                          className="locationLabels"
+                          style={{ display: "flex", marginTop: "2rem" }}
+                        >
+                          <text>Company Code</text>
+                        </label>
+                        <Select
+                          style={{ width: "350px" }}
+                          options={[
+                            { value: "1", label: "Halliburton" },
+                            { value: "2", label: "Halliburton zona franca" }
+                          ]}
+                        />
+                        <div className="divdistance">
+                          <Row>
+                            <Col span={10}>
+                              <label
+                                className="locationLabels"
+                                style={{ display: "flex", marginTop: "2rem" }}
+                              >
+                                <text>Product Service Line (PSL)</text>
+                              </label>
+                              <Select
+                                style={{ width: "100%" }}
+                                options={[{ value: "1", label: "PSL 1" }]}
+                              />
                             </Col>
-                            <Col span={24}>
-                              <div
-                                ref={mapContainerRef}
-                                style={{
-                                  width: "100%",
-                                  height: "30vh",
-                                  border: "1px #F7F7F7 solid"
-                                }}
+                            <Col span={8} style={{ paddingLeft: "30px" }}>
+                              <label
+                                className="locationLabels"
+                                style={{ display: "flex", marginTop: "2rem" }}
+                              >
+                                <text>Porcentaje PSL</text>
+                              </label>
+                              <InputNumber<number>
+                                style={{ width: "100%" }}
+                                defaultValue={100}
+                                min={0}
+                                max={100}
+                                formatter={(value) => `${value}%`}
+                                parser={(value) => value?.replace("%", "") as unknown as number}
                               />
                             </Col>
                           </Row>
-                        </>
-                      </FormWizard.TabContent>
-                      <FormWizard.TabContent title="Responsables" icon="ti-check">
-                        <>
-                          <Title className="collapseByAction__label__text" level={4}>
-                            Responsables
-                          </Title>
-                          <label
-                            className="locationLabels"
-                            style={{ display: "flex", marginTop: "2rem" }}
-                          >
-                            <text>Company Code</text>
-                          </label>
-                          <Select
-                            style={{ width: "350px" }}
-                            options={[
-                              { value: "1", label: "Halliburton" },
-                              { value: "2", label: "Halliburton zona franca" }
-                            ]}
-                          />
-                          <div className="divdistance">
-                            <Row>
-                              <Col span={10}>
+                          <Row>
+                            <Col span={10} style={{ paddingLeft: "30px" }}>
+                              <label
+                                className="locationLabels"
+                                style={{ display: "flex", marginTop: "2rem" }}
+                              >
+                                <text>Centro de costos</text>
+                              </label>
+                              <Select
+                                style={{ width: "100%" }}
+                                options={[{ value: "1", label: "Centro de costos 1" }]}
+                              />
+                            </Col>
+                            <Col span={8} style={{ paddingLeft: "30px" }}>
+                              <label
+                                className="locationLabels"
+                                style={{ display: "flex", marginTop: "2rem" }}
+                              >
+                                <text>Porcentaje CC</text>
+                              </label>
+                              <InputNumber<number>
+                                style={{ width: "100%" }}
+                                defaultValue={100}
+                                min={0}
+                                max={100}
+                                formatter={(value) => `${value}%`}
+                                parser={(value) => value?.replace("%", "") as unknown as number}
+                              />
+                            </Col>
+                            <Col span={6} style={{ textAlign: "center" }}>
+                              <p>&nbsp;</p>
+                              <p>&nbsp;</p>
+                              <PlusCircle></PlusCircle>
+                              <text>Agregar centro de costos</text>
+                            </Col>
+                          </Row>
+                        </div>
+                        <Row>
+                          <Col span={24} className="text-right">
+                            <PlusCircle></PlusCircle>
+                            <text>Agregar PSL</text>
+                          </Col>
+                        </Row>
+                      </>
+                    </FormWizard.TabContent>
+                    <FormWizard.TabContent title="Informacion Adicional" icon="ti-check">
+                      <>
+                        <Title className="collapseByAction__label__text" level={4}>
+                          Informacion Adicional
+                        </Title>
+                        <label
+                          className="locationLabels"
+                          style={{ display: "flex", marginTop: "2rem" }}
+                        >
+                          <text>Documentos</text>
+                        </label>
+                        <Row className="mainUploadDocuments">
+                          {mockFiles.map((file) => (
+                            // eslint-disable-next-line react/jsx-key
+                            <Col span={24} style={{ padding: "15px" }} key={file.id}>
+                              <UploadDocumentButton
+                                key={file.id}
+                                title={file.title}
+                                isMandatory={file.isMandatory}
+                                setFiles={setFiles}
+                              />
+                            </Col>
+                          ))}
+                        </Row>
+                        <Row>
+                          <Col span={24} className="text-right">
+                            <PlusCircle></PlusCircle>
+                            <text>Agregar otro documento</text>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col span={24}>
+                            <label
+                              className="locationLabels"
+                              style={{ display: "flex", marginTop: "2rem" }}
+                            >
+                              <text>Instrucciones especiales</text>
+                            </label>
+                            <TextArea rows={4} />
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col span={24}>
+                            <label
+                              className="locationLabels"
+                              style={{ display: "flex", marginTop: "2rem" }}
+                            >
+                              <text>Datos de Contacto</text>
+                            </label>
+                            <Row style={{ paddingLeft: "30px" }}>
+                              <Col span={24}>
                                 <label
                                   className="locationLabels"
                                   style={{ display: "flex", marginTop: "2rem" }}
                                 >
-                                  <text>Product Service Line (PSL)</text>
+                                  <text>Contacto punto origen</text>
                                 </label>
-                                <Select
-                                  style={{ width: "100%" }}
-                                  options={[{ value: "1", label: "PSL 1" }]}
-                                />
+                                <Row>
+                                  <Col span={12} style={{ paddingRight: "15px" }}>
+                                    <Input placeholder="Nombre del contacto" />
+                                  </Col>
+                                  <Col span={12} style={{ paddingLeft: "15px" }}>
+                                    <Input placeholder="Teléfono: 000 000 0000 " />
+                                  </Col>
+                                </Row>
                               </Col>
-                              <Col span={8} style={{ paddingLeft: "30px" }}>
+                              <Col span={24}>
                                 <label
                                   className="locationLabels"
                                   style={{ display: "flex", marginTop: "2rem" }}
                                 >
-                                  <text>Porcentaje PSL</text>
+                                  <text>Contacto punto origen</text>
                                 </label>
-                                <InputNumber<number>
-                                  style={{ width: "100%" }}
-                                  defaultValue={100}
-                                  min={0}
-                                  max={100}
-                                  formatter={(value) => `${value}%`}
-                                  parser={(value) => value?.replace("%", "") as unknown as number}
-                                />
+                                <Row>
+                                  <Col span={12} style={{ paddingRight: "15px" }}>
+                                    <Input placeholder="Nombre del contacto" />
+                                  </Col>
+                                  <Col span={12} style={{ paddingLeft: "15px" }}>
+                                    <Input placeholder="Teléfono: 000 000 0000 " />
+                                  </Col>
+                                </Row>
                               </Col>
                             </Row>
-                            <Row>
-                              <Col span={10} style={{ paddingLeft: "30px" }}>
-                                <label
-                                  className="locationLabels"
-                                  style={{ display: "flex", marginTop: "2rem" }}
-                                >
-                                  <text>Centro de costos</text>
-                                </label>
-                                <Select
-                                  style={{ width: "100%" }}
-                                  options={[{ value: "1", label: "Centro de costos 1" }]}
-                                />
-                              </Col>
-                              <Col span={8} style={{ paddingLeft: "30px" }}>
-                                <label
-                                  className="locationLabels"
-                                  style={{ display: "flex", marginTop: "2rem" }}
-                                >
-                                  <text>Porcentaje CC</text>
-                                </label>
-                                <InputNumber<number>
-                                  style={{ width: "100%" }}
-                                  defaultValue={100}
-                                  min={0}
-                                  max={100}
-                                  formatter={(value) => `${value}%`}
-                                  parser={(value) => value?.replace("%", "") as unknown as number}
-                                />
-                              </Col>
-                              <Col span={6} style={{ textAlign: "center" }}>
-                                <p>&nbsp;</p>
-                                <p>&nbsp;</p>
+                            <Row style={{ marginTop: "2rem" }}>
+                              <Col span={24} className="text-right">
                                 <PlusCircle></PlusCircle>
-                                <text>Agregar centro de costos</text>
+                                <text>Agregar otro contacto</text>
                               </Col>
                             </Row>
-                          </div>
-                          <Row>
-                            <Col span={24} className="text-right">
-                              <PlusCircle></PlusCircle>
-                              <text>Agregar PSL</text>
-                            </Col>
-                          </Row>
-                        </>
-                      </FormWizard.TabContent>
-                      <FormWizard.TabContent title="Informacion Adicional" icon="ti-check">
-                        <>
-                          <Title className="collapseByAction__label__text" level={4}>
-                            Informacion Adicional
-                          </Title>
-                          <label
-                            className="locationLabels"
-                            style={{ display: "flex", marginTop: "2rem" }}
-                          >
-                            <text>Documentos</text>
-                          </label>
-                          <Row className="mainUploadDocuments">
-                            {mockFiles.map((file) => (
-                              // eslint-disable-next-line react/jsx-key
-                              <Col span={24} style={{ padding: "15px" }} key={file.id}>
-                                <UploadDocumentButton
-                                  key={file.id}
-                                  title={file.title}
-                                  isMandatory={file.isMandatory}
-                                  setFiles={setFiles}
-                                />
-                              </Col>
-                            ))}
-                          </Row>
-                          <Row>
-                            <Col span={24} className="text-right">
-                              <PlusCircle></PlusCircle>
-                              <text>Agregar otro documento</text>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col span={24}>
-                              <label
-                                className="locationLabels"
-                                style={{ display: "flex", marginTop: "2rem" }}
-                              >
-                                <text>Instrucciones especiales</text>
-                              </label>
-                              <TextArea rows={4} />
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col span={24}>
-                              <label
-                                className="locationLabels"
-                                style={{ display: "flex", marginTop: "2rem" }}
-                              >
-                                <text>Datos de Contacto</text>
-                              </label>
-                              <Row style={{ paddingLeft: "30px" }}>
-                                <Col span={24}>
-                                  <label
-                                    className="locationLabels"
-                                    style={{ display: "flex", marginTop: "2rem" }}
-                                  >
-                                    <text>Contacto punto origen</text>
-                                  </label>
-                                  <Row>
-                                    <Col span={12} style={{ paddingRight: "15px" }}>
-                                      <Input placeholder="Nombre del contacto" />
-                                    </Col>
-                                    <Col span={12} style={{ paddingLeft: "15px" }}>
-                                      <Input placeholder="Teléfono: 000 000 0000 " />
-                                    </Col>
-                                  </Row>
-                                </Col>
-                                <Col span={24}>
-                                  <label
-                                    className="locationLabels"
-                                    style={{ display: "flex", marginTop: "2rem" }}
-                                  >
-                                    <text>Contacto punto origen</text>
-                                  </label>
-                                  <Row>
-                                    <Col span={12} style={{ paddingRight: "15px" }}>
-                                      <Input placeholder="Nombre del contacto" />
-                                    </Col>
-                                    <Col span={12} style={{ paddingLeft: "15px" }}>
-                                      <Input placeholder="Teléfono: 000 000 0000 " />
-                                    </Col>
-                                  </Row>
-                                </Col>
-                              </Row>
-                              <Row style={{ marginTop: "2rem" }}>
-                                <Col span={24} className="text-right">
-                                  <PlusCircle></PlusCircle>
-                                  <text>Agregar otro contacto</text>
-                                </Col>
-                              </Row>
-                            </Col>
-                          </Row>
-                        </>
-                      </FormWizard.TabContent>
-                    </FormWizard>
-                    {/* add style */}
-                    <style>{`
+                          </Col>
+                        </Row>
+                      </>
+                    </FormWizard.TabContent>
+                  </FormWizard>
+                  {/* add style */}
+                  <style>{`
                             @import url("https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css");
                         `}</style>
-                  </Modal>
+                </Modal>
+              </Col>
+            </Row>
+            {!!isLoading ? (
+              <Spin style={{ display: "flex", justifyContent: "center", marginTop: "10%" }} />
+            ) : (
+              <Row style={{ width: "100%", flexDirection: "column" }}>
+                <Col>
+                  <Tabs defaultActiveKey={String(ordersId[0])} onChange={onTabSelect}>
+                    {ordersId.map((a) => (
+                      <TabPane key={a} tab={<h4>{a}</h4>}>
+                        <Row style={{ width: "100%" }} className="contentRow">
+                          <Col span={24} style={{ marginBottom: "1.5rem" }}>
+                            <Flex>
+                              <h5
+                                style={{
+                                  fontWeight: "600",
+                                  fontSize: "24px",
+                                  lineHeight: "32px"
+                                }}
+                              >
+                                {a}
+                              </h5>
+                            </Flex>
+                          </Col>
+
+                          <Col span={24}>
+                            <Collapse
+                              defaultActiveKey={"0"}
+                              className="collapseByAction"
+                              style={{ width: "100%" }}
+                              expandIconPosition="end"
+                              accordion={false}
+                              bordered={false}
+                              ghost
+                              items={actionsOptions}
+                            />
+                          </Col>
+                        </Row>
+                      </TabPane>
+                    ))}
+                  </Tabs>
                 </Col>
               </Row>
-              {isLoading ? (
-                <Spin />
-              ) : (
-                <Row style={{ width: "100%", flexDirection: "column" }}>
-                  <Col>
-                    <Tabs defaultActiveKey={String(ordersId[0])} onChange={onTabSelect}>
-                      {ordersId.map((a) => (
-                        <TabPane key={a} tab={<h4>{a}</h4>}>
-                          <Row style={{ width: "100%" }} className="contentRow">
-                            <Col span={24} style={{ marginBottom: "1.5rem" }}>
-                              <Flex>
-                                <h5
-                                  style={{
-                                    fontWeight: "600",
-                                    fontSize: "24px",
-                                    lineHeight: "32px"
-                                  }}
-                                >
-                                  {a}
-                                </h5>
-                              </Flex>
-                            </Col>
-
-                            <Col span={24}>
-                              <Collapse
-                                className="collapseByAction"
-                                style={{ width: "100%" }}
-                                expandIconPosition="end"
-                                accordion={false}
-                                bordered={false}
-                                ghost
-                                items={actionsOptions}
-                              />
-                            </Col>
-                          </Row>
-                        </TabPane>
-                      ))}
-                    </Tabs>
-                  </Col>
-                </Row>
-              )}
-            </Col>
-          </Row>
-          <Flex justify="space-between" style={{ marginTop: "24px" }}>
-            <Flex align="flex-start">
-              <Button disabled className="backButton">
-                Atras
-              </Button>
-            </Flex>
-            <Flex gap="middle" align="flex-end">
-              {/*<Button type="primary">
+            )}
+          </Col>
+        </Row>
+        <Flex justify="space-between" style={{ marginTop: "24px" }}>
+          <Flex align="flex-start">
+            <Button disabled className="backButton">
+              Atras
+            </Button>
+          </Flex>
+          <Flex gap="middle" align="flex-end">
+            {/*<Button type="primary">
                                   Guardar como draft
                               </Button>*/}
-              <Button disabled className="nextButton">
-                Siguiente
-              </Button>
-            </Flex>
+            <Button disabled className="nextButton">
+              Siguiente
+            </Button>
           </Flex>
         </Flex>
-      </main>
+      </Flex>
     </>
   );
 };

@@ -203,7 +203,6 @@ export const OrdersTable = () => {
             className="options"
             icon={<DotsThree size={"1.5rem"} />}
             disabled={ordersId.length === 0}
-            href={`transfer-request/${queryParam}`}
             onClick={onClick}
             loading={isLoading}
           >

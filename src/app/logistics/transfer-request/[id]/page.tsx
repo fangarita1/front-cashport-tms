@@ -1,10 +1,10 @@
 "use client";
 
-import { CreateTransferRequestView } from "@/components/organisms/logistics/orders/CreateTransferRequestView/CreateTransferRequestView";
+import { CreateTransferRequest } from "@/components/organisms/logistics/orders/transfer_request/CreateTransferRequest";
 
 
 function CreateTransferRequestPage({ params }: { params: { id: string } }) {
-  return <CreateTransferRequestView params={params} />;
+  return <CreateTransferRequest params={params} />;
 }
 
 export default CreateTransferRequestPage;

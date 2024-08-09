@@ -3,7 +3,7 @@
 .mainCreateOrder {
     width: 100%;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     height: 100%;
     background-color: $background;
 
@@ -33,16 +33,6 @@
         width: 100%;
         padding: 2rem;
         height: auto;
-        .titleName {
-					margin: auto;
-					font-weight: 600;
-					width: 398px;
-					height: 32px;
-					color:var(--Black, #141414);
-					line-height: 124%;
-					font-style: normal;
-          font-size: 24px;
-        }
 
         .subtitleNit {
             font-weight: 600;
@@ -100,6 +90,15 @@
         background-color: $green;
         font-size: 14px;
         font-weight: 700;
+    }
+    .vehicles_sugested {
+        background-color: $white;
+        border: 1px solid $dark-gray;
+        width: fit-content;
+        padding: 5px 10px;
+        border-radius: 10px;
+        display: inline-block;
+        margin-right: 10px;
     }
 }
 
