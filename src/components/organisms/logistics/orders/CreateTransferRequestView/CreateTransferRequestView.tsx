@@ -44,17 +44,18 @@ import {
 
 import "../../../../../styles/_variables_logistics.css";
 
-import "./createtransferorder.scss";
+import "./createtransferrequest.scss";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import TextArea from "antd/es/input/TextArea";
 import TabPane from "antd/es/tabs/TabPane";
 
 import FormWizard from "react-form-wizard-component";
 import 'react-form-wizard-component/dist/style.css';
+import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 
 const { Title, Text } = Typography;
 
-export const CreateTransferOrderView = () => {
+export const CreateTransferRequestView = () => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -454,6 +455,359 @@ export const CreateTransferOrderView = () => {
 
   /* acoordion */
   const actionsOptions = [
+    {
+      key: 0,
+      label: (
+        <div className="collapseByAction__label">
+          <Package size={16} />
+          <Title className="collapseByAction__label__text" level={4}>
+            Datos del viaje
+          </Title>
+        </div>
+      ),
+      children: (
+        <Flex vertical className="travelDataWrapper">
+      <Flex className="travelDataTop">
+        <Flex style={{ marginBottom: "28px" }}>
+          <h3>Datos del viaje</h3>
+        </Flex>
+      </Flex>
+      <Flex className="travelDataInfo">
+        <Row style={{ width: "100%" }}>
+          <Col span={12} style={{ width: "100%" }}>
+            <Flex vertical style={{ width: "90%" }}>
+              <Row className="travelDataInfoBox">
+                <Col span={12} className="travelDataTitles">
+                  <p>
+                    <label>Distancia Total</label>
+                  </p>
+                  <p>
+                    <label>Tiempo Estimado</label>
+                  </p>
+                  {/*travelData?.service_type !== "3" ? (
+                    <>*/}
+                      <p>
+                        <label>Volumen</label>
+                      </p>
+                      <p>
+                        <label>Peso</label>
+                      </p>
+                    {/*</>
+                  ) : (
+                    <p>Personas</p>
+                  )*/}
+                </Col>
+                <Col span={12} className="travelDataValues">
+                  <p>
+                    <label>{distance}</label>
+                  </p>
+                  <p>
+                    <label>{timetravel} hr</label>
+                  </p>
+                  {/*travelData?.service_type !== "3" ? (
+                    <>*/}
+                      <p>
+                        <label>{/*travelData?.volume*/}00</label>
+                      </p>
+                      <p>
+                        <label>{/*travelData?.weight*/}00</label>
+                      </p>
+                    {/*</>
+                  ) : (
+                    <p>{travelData?.carrier_request_persons?.length}</p>
+                  )}*/}
+                </Col>
+              </Row>
+              <Row>
+                <Col span={12} style={{ paddingTop: "0.5rem" }}>
+                  <p style={{ paddingTop: "1rem" }}>
+                    <label>
+                      <b>Tipo de viaje</b>
+                    </label>
+                  </p>
+                </Col>
+                <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
+                  <p style={{ paddingTop: "1rem" }}>
+                    <label>
+                      <b>{/*travelData?.service_type*/}Carga</b>
+                    </label>
+                  </p>
+                </Col>
+                <Col span={24} style={{ paddingTop: "1rem" }}>
+                  <hr style={{ borderTop: "1px solid #f7f7f7" }}></hr>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={12} style={{ paddingTop: "0.5rem" }}>
+                  <p style={{ paddingTop: "1rem" }}>
+                    <b>Punto Origen</b>
+                  </p>
+                </Col>
+                <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
+                  <p style={{ paddingTop: "0.5rem" }}>
+                    <label>
+                      <b>{/*travelData?.start_location*/}Bogotá Centro</b>
+                    </label>
+                  </p>
+                </Col>
+                <Col span={24} style={{ paddingTop: "1rem" }}>
+                  <hr style={{ borderTop: "1px solid #f7f7f7" }}></hr>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={12} style={{ paddingTop: "0.5rem" }}>
+                  <p style={{ paddingTop: "1rem" }}>
+                    <label>
+                      <b>Punto Destino</b>
+                    </label>
+                  </p>
+                </Col>
+                <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
+                  <p style={{ paddingTop: "0.5rem" }}>
+                    <label>
+                      <b>{/*travelData?.end_location*/}Bogotá Centro</b>
+                    </label>
+                  </p>
+                </Col>
+                <Col span={24} style={{ paddingTop: "1rem" }}>
+                  <hr style={{ borderTop: "1px solid #f7f7f7" }}></hr>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={12} style={{ paddingTop: "0.5rem" }}>
+                  <p style={{ paddingTop: "1rem" }}>
+                    <label>
+                      <b>Fecha y hora inicial</b>
+                    </label>
+                  </p>
+                </Col>
+                <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
+                  <p style={{ paddingTop: "1rem" }}>
+                    <label>
+                      <b>{/*travelData?.start_date?.split(" ")[1]*/} h</b>
+                    </label>
+                  </p>
+                  <p style={{ paddingTop: "0.5rem" }}>
+                    {/*travelData?.start_date ? (
+                      <b>{formatDatePlaneWithoutComma(travelData?.start_date?.split(" ")[0])}</b>
+                    ) : (
+                      <p>No date</p>
+                    )}*/}
+                    <b>01/08/2024</b>
+                  </p>
+                </Col>
+                <Col span={24} style={{ paddingTop: "1rem" }}>
+                  <hr style={{ borderTop: "1px solid #f7f7f7" }}></hr>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={12} style={{ paddingTop: "0.5rem" }}>
+                  <p style={{ paddingTop: "1rem" }}>
+                    <label>
+                      <b>Fecha y hora final</b>
+                    </label>
+                  </p>
+                </Col>
+                <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
+                  <p style={{ paddingTop: "1rem" }}>
+                    <label>
+                      <b>{/*travelData?.end_date?.split(" ")[1]*/} h</b>
+                    </label>
+                  </p>
+                  <p style={{ paddingTop: "0.5rem" }}>
+                    {/*travelData?.end_date ? (
+                      <b>{formatDatePlaneWithoutComma(travelData?.end_date?.split(" ")[0])}</b>
+                    ) : (
+                      <p>No date</p>
+                    )}*/}
+                    <b>01/08/2024</b>
+                  </p>
+                </Col>
+              </Row>
+            </Flex>
+          </Col>
+          <Col span={12}>
+            <Flex vertical className="travelDataMapResume" style={{ width: "100%" }}>
+              <div
+                ref={mapContainerRef}
+                style={{
+                  width: "100%",
+                  height: "50vh",
+                  border: "1px #F7F7F7 solid"
+                }}
+              />
+            </Flex>
+          </Col>
+        </Row>
+      </Flex>
+    </Flex>
+      )
+    },
+    {
+      key: 1,
+      label: (
+        <div className="collapseByAction__label">
+          <Package size={16} />
+          <Title className="collapseByAction__label__text" level={4}>
+            Responsables
+          </Title>
+        </div>
+      ),
+      children: (
+        <Flex>
+            <Row style={{width:'100%'}}>
+              <Col span={24}>
+                <Flex vertical className="orderContainer" style={{width: '99%', marginTop: '2rem'}}>
+                  <h3>Responsables</h3>
+                  <p>&nbsp;</p>
+                  <Row>
+                    <Col span={12} style={{paddingTop:'0.5rem'}}>
+                      <p style={{paddingTop:'1rem'}}>
+                        <label><b>PSL:</b> Product service line 1</label>
+                      </p>
+                      <p style={{paddingTop:'0.5rem'}}>
+                        <label>&nbsp;&nbsp;&nbsp;<b>CC:</b> Centro de costos 1</label>
+                      </p>
+                    </Col>
+                    <Col span={12} style={{paddingTop:'0.5rem', textAlign:'right'}}>
+                      <p style={{paddingTop:'1rem'}}>
+                        <label><b>100%</b></label>
+                      </p>
+                      <p style={{paddingTop:'0.5rem'}}>
+                        <label><b>100%</b></label>
+                      </p>
+                    </Col>
+                    <Col span={24} style={{paddingTop:'1rem'}}>
+                      <hr style={{borderTop: '1px solid #f7f7f7'}}></hr>
+                    </Col>
+                  </Row> 
+                </Flex>
+              </Col>
+            </Row>
+          </Flex>
+      )
+    },
+    {
+      key: 2,
+      label: (
+        <div className="collapseByAction__label">
+          <Package size={16} />
+          <Title className="collapseByAction__label__text" level={4}>
+            Información adicional
+          </Title>
+        </div>
+      ),
+      children: (
+        <Flex style={{marginTop:'1rem'}}>
+            <Row style={{width:'100%'}}>
+              <Col span={24}>
+                <Flex vertical className="orderContainer" style={{width: '99%', marginTop: '2rem'}}>
+                  <h3>Información adicional</h3>
+                  <p>&nbsp;</p>
+                  <h4>Documentos</h4>
+                  <Row className="mainUploadDocuments">                    
+                    {/*transferOrder?.transfer_order_documents?.map((file) => (
+                      <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
+                        <UploadDocumentButton
+                          key={file.id}
+                          title={file.document_type_desc}
+                          isMandatory={!file.active}
+                          aditionalData={file.id}
+                          setFiles={() => { } }
+                          
+                          disabled
+                        >
+                          {file?.url_document ? (
+                            <UploadDocumentChild
+                              linkFile={file.url_document}
+                              nameFile={file.url_document.split("-").pop() || ""}
+                              onDelete={() => { } }
+                              showTrash={false} />
+                          ) : undefined}
+                        </UploadDocumentButton>
+                      </Col>
+                    ))}*/}
+                    <Col span={12} style={{ padding: "15px" }}>
+                        <UploadDocumentButton
+                          key={1}
+                          title={"No documents"}
+                          isMandatory={false}
+                          aditionalData={1}
+                          setFiles={() => { } }
+                          
+                          disabled
+                        >
+                            <UploadDocumentChild
+                              linkFile={"file.url_document"}
+                              nameFile={"file.url_document"}
+                              onDelete={() => { } }
+                              showTrash={false} />
+                        </UploadDocumentButton>
+                      </Col>
+                    <Col span={24} style={{paddingTop:'1rem'}}>
+                      <hr style={{borderTop: '1px solid #f7f7f7'}}></hr>
+                    </Col>
+                  </Row>
+                  <Row style={{marginTop:'2rem'}}>
+                    <Col span={12}>
+                      <h3>Datos de contacto</h3>
+                      <p>&nbsp;</p>
+                      <h4>Contacto inicial</h4>
+                      {/*transferOrder?.transfer_order_contacts?.filter(x=> x.contact_type == 1).map((contact) => (
+                      <Row style={{paddingTop:'0.5rem'}} key={contact.id}>*/} 
+                      <Row style={{paddingTop:'0.5rem'}}>{/*When integrated delete this line*/}
+                        <Col span={12} style={{paddingLeft:'25px'}}>
+                          {"Daniel"}
+                        </Col>
+                        <Col span={8} style={{textAlign:'right'}}>
+                          {"18293018293012"}
+                        </Col>
+                      </Row>
+                      {/*))}*/}
+                      <p>&nbsp;</p>
+                      <h4>Contacto final</h4>
+                      {/*{transferOrder?.transfer_order_contacts?.filter(x=> x.contact_type == 2).map((contact) => (
+                      <Row style={{paddingTop:'0.5rem'}} key={contact.id}>*/}
+                      <Row style={{paddingTop:'0.5rem'}}>
+                        <Col span={12} style={{paddingLeft:'25px'}}>
+                          {"Daniel"}
+                        </Col>
+                        <Col span={8} style={{textAlign:'right'}}>
+                          {"1391239183123"}
+                        </Col>
+                      </Row>
+                      {/*}))}*/}
+                      <p>&nbsp;</p>
+                      <Row style={{paddingTop:'1rem'}}>
+                        <Col span={12}>
+                          <h4>Cliente final</h4>
+                        </Col>
+                        <Col span={8} style={{textAlign:'right'}}>
+                          {/*transferOrder?.client_desc*/}Daniel
+                        </Col>
+                      </Row>
+                      <p>&nbsp;</p>
+                      <h4>Requerimientos adicionales</h4>
+                      {/*<Row style={{paddingTop:'1rem'}}>
+                        <Col span={24}>
+                        {transferOrder?.transfer_order_other_requeriments?.map((req) => (
+                          <div className="selected" key={req.id}>{req.other_requirement_desc} <small>{req.quantity}</small></div>
+                         ))}
+                        </Col>
+                      </Row>*/}                      
+                    </Col>                    
+                    <Col span={12} className="bleft">
+                      <h3>Instrucciones especiales</h3>
+                      <p>&nbsp;</p>
+                      <p style={{minHeight:'250px'}}>{/*transferOrder?.observation*/}Observacion</p>
+                    </Col>
+                  </Row> 
+                </Flex>
+              </Col>
+            </Row>
+          </Flex>
+      )
+    },
     {
       key: 3,
       label: (
@@ -1020,17 +1374,23 @@ export const CreateTransferOrderView = () => {
                             accordion={false}
                             ghost              
                             items={actionsOptions}
-                            defaultActiveKey={['2']}
                             />            
                         </Col>
                         <Col span={6} offset={18} className="text-right" style={{marginTop:'2rem', marginBottom:'2rem'}}>
-                            <Flex gap="middle" align="flex-end">
-                            <Button type="primary">
-                                Guardar como drfat
-                            </Button>
-                            <Button disabled >
-                                Siguiente
-                            </Button>
+                            <Flex justify="space-between">
+                              <Flex align="flex-start">
+                                <Button disabled>
+                                  Atras
+                                </Button>
+                              </Flex>
+                              <Flex gap="middle" align="flex-end">
+                              {/*<Button type="primary">
+                                  Guardar como draft
+                              </Button>*/}
+                              <Button disabled >
+                                  Siguiente
+                              </Button>
+                              </Flex>
                             </Flex>
                         </Col>
                         </Row>

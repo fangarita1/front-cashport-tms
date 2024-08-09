@@ -3,9 +3,8 @@ import { Flex } from "antd";
 import UiSearchInput from "@/components/ui/search-input/search-input";
 import AceptCarrierView from "./view/AceptCarrierView/AceptCarrierView";
 import styles from "./AceptCarrier.module.scss";
-import { getAceptCarrierRequestList, getAllTransferRequestList } from "@/services/logistics/acept_carrier";
+import { getAceptCarrierRequestList } from "@/services/logistics/acept_carrier";
 import { useEffect, useState } from "react";
-import { ICarriersRequestList } from "@/types/logistics/schema";
 import { FilterProjects } from "@/components/atoms/Filters/FilterProjects/FilterProjects";
 import { useProjects } from "@/hooks/useProjects";
 
@@ -26,18 +25,10 @@ export default function AceptCarrier() {
     loadCarrierRequestTransferList();
   }, []);
 
-  const loadTransferRequestsOrders = async () => {
-    const result = await getAllTransferRequestList();
-    setCarriers(result.data.data);
-  };
-
   const loadCarrierRequestTransferList = async () => {
     const result = await getAceptCarrierRequestList("3");
-    console.log("data:", result.data.data)
     setCarriers(result.data.data)
   }
-
-  console.log("carriers:", carriers);
 
   return (
     <div className={styles.wrapper}>

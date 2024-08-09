@@ -7,17 +7,18 @@ dayjs.locale("es");
 import { ProviderDetailTravelData } from "@/types/acept_carrier/acept_carrier";
 import styles from "./travelData.module.scss";
 import mapboxgl from "mapbox-gl";
-import { IMaterial, ITransferRequestDetail } from "@/types/logistics/schema";
+import { ICarrierRequestDetail } from "@/types/logistics/schema";
 import { formatDatePlaneWithoutComma } from "@/utils/utils";
 
 interface TravelDataProps {
-  travelData: ITransferRequestDetail | undefined;
+  travelData: ICarrierRequestDetail | undefined;
 }
 
 export default function TravelData({ travelData }: TravelDataProps) {
   /* Agendamiento */
   const origin = useRef<any>([]);
   const destination = useRef<any>([]);
+  console.log(origin);
 
   /* MAPBOX */
   const [routeGeometry, setRouteGeometry] = useState<any>(null);
@@ -27,31 +28,25 @@ export default function TravelData({ travelData }: TravelDataProps) {
   const mapContainerRef = useRef(null);
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/streets-v12");
 
+  useEffect(() => {
+    loadTravelData();
+  }, [travelData]);
+
   /* MAPBOX */
   const mapsAccessToken =
     "pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA";
 
-  useEffect(() => {
-    loadTravelData();
-  }, [])
-
   const loadTravelData = async () => {
     if (travelData !== undefined) {
-      origin.current = [
-        travelData?.start_location?.longitude,
-        travelData?.start_location?.latitude
-      ];
-      destination.current = [
-        travelData?.end_location?.longitude,
-        travelData?.end_location?.latitude
-      ];
       const routes = travelData?.geometry;
       setRouteInfo(routes);
       // Check if any routes are returned
       if (routes != undefined) {
+        origin.current = [travelData.start_longitude, travelData.start_latitude];
+        destination.current = [travelData.end_longitude, travelData.end_latitude];
         const { distance, duration, geometry } = routes[0];
         setRouteGeometry(geometry); // Set the route geometry
-        setDistance(parseFloat((distance / 1000).toFixed(2)) + " Km");
+        setDistance(parseFloat((distance / 1000).toFixed(0)) + " Km");
         var date = new Date();
         date.setSeconds(duration);
         var hrs = date.toISOString().substr(11, 5);
@@ -114,6 +109,10 @@ export default function TravelData({ travelData }: TravelDataProps) {
             "line-width": 6
           }
         });
+      }
+      if (travelData?.id_service_type == 3) {
+        map.setCenter(origin.current);
+        map.setZoom(14);
       } else {
         // Get the route bounds
         const bounds = routeGeometry.coordinates.reduce(
@@ -132,8 +131,6 @@ export default function TravelData({ travelData }: TravelDataProps) {
     //   map.remove();
     // };
   }, [mapStyle, routeGeometry, origin, destination]);
-
-  console.log("distance:", distance, "timeTravel:", timetravel);
 
   return (
     <Flex vertical className={styles.wrapper}>
@@ -154,26 +151,38 @@ export default function TravelData({ travelData }: TravelDataProps) {
                   <p>
                     <label>Tiempo Estimado</label>
                   </p>
-                  <p>
-                    <label>Volumen</label>
-                  </p>
-                  <p>
-                    <label>Peso</label>
-                  </p>
+                  {travelData?.service_type !== "3" ? (
+                    <>
+                      <p>
+                        <label>Volumen</label>
+                      </p>
+                      <p>
+                        <label>Peso</label>
+                      </p>
+                    </>
+                  ) : (
+                    <p>Personas</p>
+                  )}
                 </Col>
                 <Col span={12} className={styles.values}>
                   <p>
-                    <label>{distance} km</label>
+                    <label>{distance}</label>
                   </p>
                   <p>
-                    <label>{timetravel} h</label>
+                    <label>{timetravel} hr</label>
                   </p>
-                  <p>
-                    <label>00</label>
-                  </p>
-                  <p>
-                    <label>00</label>
-                  </p>
+                  {travelData?.service_type !== "3" ? (
+                    <>
+                      <p>
+                        <label>{travelData?.volume}</label>
+                      </p>
+                      <p>
+                        <label>{travelData?.weight}</label>
+                      </p>
+                    </>
+                  ) : (
+                    <p>{travelData?.carrier_request_persons?.length}</p>
+                  )}
                 </Col>
               </Row>
               <Row>
@@ -198,13 +207,13 @@ export default function TravelData({ travelData }: TravelDataProps) {
               <Row>
                 <Col span={12} style={{ paddingTop: "0.5rem" }}>
                   <p style={{ paddingTop: "1rem" }}>
-                      <b>Punto Origen</b>
+                    <b>Punto Origen</b>
                   </p>
                 </Col>
                 <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                   <p style={{ paddingTop: "0.5rem" }}>
                     <label>
-                      <b>{travelData?.start_location?.description}</b>
+                      <b>{travelData?.start_location}</b>
                     </label>
                   </p>
                 </Col>
@@ -223,7 +232,7 @@ export default function TravelData({ travelData }: TravelDataProps) {
                 <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                   <p style={{ paddingTop: "0.5rem" }}>
                     <label>
-                      <b>{travelData?.end_location?.description}</b>
+                      <b>{travelData?.end_location}</b>
                     </label>
                   </p>
                 </Col>
@@ -242,15 +251,15 @@ export default function TravelData({ travelData }: TravelDataProps) {
                 <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                   <p style={{ paddingTop: "1rem" }}>
                     <label>
-                      <b>{travelData?.start_date?.split(" ")[1]}</b>
+                      <b>{travelData?.start_date?.split(" ")[1]} h</b>
                     </label>
                   </p>
                   <p style={{ paddingTop: "0.5rem" }}>
-                      {travelData?.start_date ? (
-                        <b>{formatDatePlaneWithoutComma(travelData?.start_date?.split(" ")[0])}</b>
-                      ) : (
-                        <p>No date</p>
-                      )}
+                    {travelData?.start_date ? (
+                      <b>{formatDatePlaneWithoutComma(travelData?.start_date?.split(" ")[0])}</b>
+                    ) : (
+                      <p>No date</p>
+                    )}
                   </p>
                 </Col>
                 <Col span={24} style={{ paddingTop: "1rem" }}>
@@ -260,19 +269,23 @@ export default function TravelData({ travelData }: TravelDataProps) {
               <Row>
                 <Col span={12} style={{ paddingTop: "0.5rem" }}>
                   <p style={{ paddingTop: "1rem" }}>
-                      <label><b>Fecha y hora final</b></label>
+                    <label>
+                      <b>Fecha y hora final</b>
+                    </label>
                   </p>
                 </Col>
                 <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
                   <p style={{ paddingTop: "1rem" }}>
-                      <label><b>{travelData?.end_date?.split(" ")[1]} h</b></label>
+                    <label>
+                      <b>{travelData?.end_date?.split(" ")[1]} h</b>
+                    </label>
                   </p>
                   <p style={{ paddingTop: "0.5rem" }}>
-                      {travelData?.end_date ? (
-                        <b>{formatDatePlaneWithoutComma(travelData?.end_date?.split(" ")[0])}</b>
-                      ) : (
-                        <p>No date</p>
-                      )}
+                    {travelData?.end_date ? (
+                      <b>{formatDatePlaneWithoutComma(travelData?.end_date?.split(" ")[0])}</b>
+                    ) : (
+                      <p>No date</p>
+                    )}
                   </p>
                 </Col>
               </Row>

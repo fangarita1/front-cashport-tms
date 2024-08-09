@@ -8,13 +8,15 @@ interface ButtonsProps {
   isLeftButtonActive?: boolean;
   handleNext: () => void;
   handleBack: () => void;
+  handleReject: () => void;
 }
 
 export default function Buttons({
   isRightButtonActive,
   isLeftButtonActive,
   handleNext,
-  handleBack
+  handleBack,
+  handleReject
 }: ButtonsProps) {
   return (
     <Flex className={styles.wrapper}>
@@ -29,7 +31,7 @@ export default function Buttons({
         </button>
       </div>
       <Flex className={styles.right}>
-        <button className={styles.deleteButton}>Rechazar</button>
+        <button className={styles.deleteButton} onClick={() => handleReject()}>Rechazar</button>
         <button
           className={styles.nextButton}
           disabled={!isRightButtonActive}
@@ -38,7 +40,7 @@ export default function Buttons({
             color: isRightButtonActive ? "black" : "white",
             cursor: isRightButtonActive ? "pointer" : "not-allowed"
           }}
-          onClick={() => handleNext()}
+          onClick={handleNext}
         >
           Siguiente
         </button>
