@@ -3,7 +3,7 @@ import { ArrowLineDown, CaretDoubleRight, DotsThree, Receipt } from "phosphor-re
 import styles from "./modalDetailAdjustment.module.scss";
 import { formatDatePlane, formatMoney } from "@/utils/utils";
 import { FileDownloadModal } from "../FileDownloadModal/FileDownloadModal";
-import { IFinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
+import { FinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
 import { useFinancialDiscountDetail } from "@/hooks/useDetailAdjustment";
 import { ModalActionAdjusment } from "../modalActionAdjusment/ModalActionAdjusment";
 import { Button } from "antd";
@@ -12,7 +12,7 @@ interface ModalDetailAdjustmentProps {
   isOpen: boolean;
   onClose: () => void;
   clientId: number;
-  selectAdjusment?: IFinancialDiscount;
+  selectAdjusment?: FinancialDiscount;
   projectId: number;
 }
 

@@ -10,7 +10,6 @@ import { useFinancialDiscounts } from "@/hooks/useFinancialDiscounts";
 import { extractSingleParam } from "@/utils/utils";
 import {
   FinancialDiscount,
-  FinancialDiscountsResponse,
   StatusFinancialDiscounts
 } from "@/types/financialDiscounts/IFinancialDiscounts";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
@@ -19,7 +18,7 @@ import "./accounting-adjustments-tab.scss";
 import { useModalDetail } from "@/context/ModalContext";
 
 const AccountingAdjustmentsTab = () => {
-  const [selectedRows, setSelectedRows] = useState<FinancialDiscountsResponse[] | undefined>(
+  const [selectedRows, setSelectedRows] = useState<FinancialDiscount[] | undefined>(
     undefined
   );
   const [search, setSearch] = useState("");
@@ -33,7 +32,7 @@ const AccountingAdjustmentsTab = () => {
   const { data, isLoading } = useFinancialDiscounts(clientId, projectId);
   const { openModal } = useModalDetail();
 
-  const handleOpenAdjustmentDetail = (adjustment: FinancialDiscountsResponse) => {
+  const handleOpenAdjustmentDetail = (adjustment: FinancialDiscount) => {
     openModal("adjustment", {
       selectAdjusment: adjustment,
       clientId,

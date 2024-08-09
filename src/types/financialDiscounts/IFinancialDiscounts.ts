@@ -28,6 +28,7 @@ export interface FinancialDiscount {
   project_name: string;
   document_type_name: string;
   motive_name: string | null;
+  financial_status_id: number;
 }
 
 export interface StatusFinancialDiscounts {
