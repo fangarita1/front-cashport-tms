@@ -18,9 +18,7 @@ import "./accounting-adjustments-tab.scss";
 import { useModalDetail } from "@/context/ModalContext";
 
 const AccountingAdjustmentsTab = () => {
-  const [selectedRows, setSelectedRows] = useState<FinancialDiscount[] | undefined>(
-    undefined
-  );
+  const [selectedRows, setSelectedRows] = useState<FinancialDiscount[] | undefined>(undefined);
   const [search, setSearch] = useState("");
 
   const params = useParams();
@@ -80,21 +78,21 @@ const AccountingAdjustmentsTab = () => {
                 <LabelCollapse status={financialState.status_name} color={financialState.color} />
               ),
               children: (
-                <>
+                <>  
                   <AccountingAdjustmentsTable
                     dataAdjustmentsByStatus={financialState.financial_discounts_legalized}
                     setSelectedRows={setSelectedRows}
                     openAdjustmentDetail={handleOpenAdjustmentDetail}
                     financialStatusId={financialState.status_id}
                   />
-                  {/* {financialState.financial_discounts_not_legalized.length > 0 && (
+                  {financialState.financial_discounts_not_legalized.length > 0 && (
                     <AccountingAdjustmentsTable
                       dataAdjustmentsByStatus={financialState.financial_discounts_not_legalized}
                       setSelectedRows={setSelectedRows}
                       openAdjustmentDetail={handleOpenAdjustmentDetail}
                       financialStatusId={financialState.status_id}
                     />
-                  )} */}
+                  )}
                 </>
               )
             }))}
