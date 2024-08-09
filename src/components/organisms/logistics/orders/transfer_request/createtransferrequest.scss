@@ -44,7 +44,6 @@
         }
     }
 
-
     .infoHeaderOrder {
         gap: 2rem;
         margin-bottom: 1.5rem;
@@ -61,7 +60,8 @@
         border-radius: 4px;
         border: 1px solid $dark-gray;
         flex-direction: column;
-        .ant-tabs-content,.ant-tabs-tabpane {
+        .ant-tabs-content,
+        .ant-tabs-tabpane {
             height: 100%;
         }
     }
@@ -76,7 +76,7 @@
     .backButton {
         width: 72px;
         height: 45px;
-        border-radius: 4px; 
+        border-radius: 4px;
         padding: 16px;
         background-color: $dark-gray;
         font-size: 14px;
@@ -85,7 +85,7 @@
     .nextButton {
         width: 101px;
         height: 45px;
-        border-radius: 4px; 
+        border-radius: 4px;
         padding: 16px;
         background-color: $green;
         font-size: 14px;
@@ -100,10 +100,14 @@
         display: inline-block;
         margin-right: 10px;
     }
+
+    .stepper {
+        justify-content: center;
+    }
 }
 
-.ant-collapse{
-    width:100%;
+.ant-collapse {
+    width: 100%;
 }
 .collapseByAction {
     display: flex;
@@ -113,7 +117,6 @@
     .ant-collapse-header {
         font-size: 1rem;
         font-weight: 400;
-        
 
         span {
             margin: 0;
@@ -140,8 +143,55 @@
     }
 
     &__children {
-        padding-top:2rem;
-        padding-bottom:2rem;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        &__item {
+            margin: 1rem 0;
+        }
+        hr {
+            border: none;
+            height: 1px;
+            background-color: $dark-gray;
+        }
+    }
+}
+
+.collapseByActionVehicles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .ant-collapse-header {
+        font-size: 1rem;
+        font-weight: 400;
+
+        span {
+            margin: 0;
+        }
+    }
+
+    &__label {
+        display: flex;
+        flex-direction: column;
+
+        &__text {
+            font-size: 1rem !important;
+            font-weight: 400 !important;
+            margin: 0 !important;
+        }
+    }
+
+    .ant-collapse-content {
+        padding: 0 !important;
+
+        &-box {
+            padding: 0 24px !important;
+        }
+    }
+
+    &__children {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
         &__item {
             margin: 1rem 0;
         }
@@ -156,31 +206,31 @@
 /* TRIP SELECTION TYPE*/
 .active {
     background-color: var(--green) !important;
-  }
+}
 
 .icon {
     width: 27px;
     height: 27px;
     position: relative;
-  }
-  .text {
+}
+.text {
     text-decoration: none;
     position: relative;
     color: inherit;
     display: inline-block;
     min-width: 51px;
-  }
-  .tripTypeIcons,
-  .tripTypes {
+}
+.tripTypeIcons,
+.tripTypes {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-  }
-  .tripTypeIcons {
+}
+.tripTypeIcons {
     gap: var(--gap-9xs);
-  }
-  .tripTypes {
+}
+.tripTypes {
     flex: 1;
     border-radius: var(--br-5xs);
     background-color: var(--white);
@@ -195,12 +245,10 @@
     color: var(--black);
     font-family: var(--font-poppins);
     cursor: pointer;
-  }
+}
 
-
-  
- /*Agendamiento*/
- .locationLabels {
+/*Agendamiento*/
+.locationLabels {
     width: 100%;
     align-self: stretch;
     flex-direction: column;
@@ -210,8 +258,8 @@
     color: var(--black) !important;
     font-family: var(--font-poppins) !important;
     margin-bottom: 0.5rem;
- }
- .puntoOrigen{
+}
+.puntoOrigen {
     align-self: stretch;
     position: relative;
     letter-spacing: -1px;
@@ -223,55 +271,55 @@
     background: #f7f7f7 !important;
 }
 
-.divdistance{
+.divdistance {
     margin-top: 10px;
     background: #f7f7f7 !important;
     padding: 15px;
 }
 
-.divdistance p{
+.divdistance p {
     padding: 5px;
 }
 
-.text-right{
+.text-right {
     text-align: right;
 }
 
-.ant-drawer .ant-drawer-content{
+.ant-drawer .ant-drawer-content {
     background-color: #f7f7f7 !important;
 }
 
-.ant-card-body{
+.ant-card-body {
     padding: 15px !important;
 }
 
-.carddivider{
+.carddivider {
     margin-left: 2rem;
-    border-left: 2px #DDDDDD solid;
+    border-left: 2px #dddddd solid;
     height: 40px;
 }
 
-.form-wizard-steps{
+.form-wizard-steps {
     display: none !important;
 }
 
-.wizard-footer-right{
+.wizard-footer-right {
     background-color: var(--green) !important;
 }
 
-.wizard-footer-left{
+.wizard-footer-left {
     background-color: var(--black) !important;
 }
 
-.wizard-progress-bar{
+.wizard-progress-bar {
     background-color: var(--green) !important;
 }
-.react-form-wizard .wizard-tab-content{
+.react-form-wizard .wizard-tab-content {
     text-align: left !important;
     padding-bottom: 25px !important;
     min-height: 250px !important;
 }
-.collapseByAction__label__text{
+.collapseByAction__label__text {
     margin-top: 10px !important;
     margin-bottom: 10px !important;
     font-weight: bold !important;
@@ -282,7 +330,7 @@
     margin-top: 18px;
     padding-bottom: 24px;
     .travelDataInfoBox {
-        background-color: #F7F7F7;
+        background-color: #f7f7f7;
         padding: 18px;
         border-radius: 4px;
         .travelDataTitles {
@@ -297,5 +345,5 @@
             flex-direction: column;
             gap: 4px;
         }
-  }
+    }
 }

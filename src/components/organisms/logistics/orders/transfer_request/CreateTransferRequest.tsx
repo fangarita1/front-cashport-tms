@@ -52,6 +52,8 @@ import {
   ILocation,
   IMaterial,
   ITransferOrderRequest,
+  ITransferOrderRequestMaterials,
+  ITransferOrderRequestVehiclesAsignation,
   ITransferOrdersRequest
 } from "@/types/logistics/schema";
 
@@ -76,7 +78,13 @@ import {
   DotsSixVertical,
   CaretDoubleRight,
   Radioactive,
-  Warning
+  Warning,
+  Truck,
+  Check,
+  CraneTower,
+  Users,
+  Eye,
+  CheckCircle
 } from "@phosphor-icons/react";
 
 import "../../../../../styles/_variables_logistics.css";
@@ -103,11 +111,15 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
 
-  /* Data */
+  /* Data first page*/
   const [ordersId, setOrdersId] = useState<number[]>([]);
   const [orders, setOrders] = useState<ITransferOrdersRequest>();
   const [orderRequest, setOrderRequest] = useState<ITransferOrderRequest>();
   const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
+
+  /*Data second page */
+  const [vehiclesSelection, setVehiclesSelection] =
+    useState<ITransferOrderRequestVehiclesAsignation>();
 
   /* Tipo de viaje */
   const [typeactive, setTypeActive] = useState("1");
@@ -127,6 +139,16 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
     { value: 3, label: "+/- 3 días" }
   ];
 
+  /*Steps */
+  const [view, setView] = useState<"solicitation" | "vehicles" | "carrier">("solicitation");
+  const [isNextStepActive, setIsNextStepActive] = useState<boolean>(true);
+  const steps = [
+    { title: "Solicitud de transferencia" },
+    { title: "Seleccion de vehiculos" },
+    { title: "Seleccion de proveedor" }
+  ];
+  const currentStepIndex = view === "solicitation" ? 0 : view === "vehicles" ? 1 : 2;
+
   /* MAPBOX */
   const mapsAccessToken =
     "pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA"; //import.meta.env.VITE_MAP_BOX_ACCESS_TOKEN,
@@ -145,8 +167,6 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
 
   /*Service loader */
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  console.log("orderRequest:", orderRequest);
 
   useEffect(() => {
     const decodedParam = params ? decodeURIComponent(params.id) : "";
@@ -178,6 +198,12 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
         setOrderRequest(orders.orders.find((a) => a.id === ordersId[0]));
     }
   }, [ordersId, orders]);
+
+  useEffect(() => {
+    if (view === "vehicles") {
+      setIsNextStepActive(false);
+    }
+  }, [isNextStepActive]);
 
   const onTabSelect = (id: string) => {
     setOrderRequest(orders?.orders.find((a) => a.id === Number(id)));
@@ -384,6 +410,24 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
     }
   };
 
+  /*Steps funcionality */
+
+  const handleNext = async () => {
+    if (view === "solicitation") {
+      setView("vehicles");
+    } else if (view === "vehicles") {
+      setView("carrier");
+    }
+  };
+
+  const handleBack = () => {
+    if (view === "carrier") {
+      setView("vehicles");
+    } else if (view === "vehicles") {
+      setView("solicitation");
+    } else router.push("/logistics/orders");
+  };
+
   /* Carga */
 
   const columnsCarga: TableProps<any>["columns"] = [
@@ -499,6 +543,84 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
     }
   ];
 
+  const columnsVehiclesMaterial: TableProps<IMaterial>["columns"] = [
+    {
+      title: "CR",
+      dataIndex: "quantity",
+      key: "quantity",
+      render: (total) => <Text>{total}</Text>,
+      sorter: (a, b) => a.quantity - b.quantity,
+      showSorterTooltip: false
+    },
+    {
+      title: "Cantidad en el trayecto",
+      dataIndex: "",
+      key: "",
+      render: () => <Text>a</Text>,
+      sorter: (a, b) => a.id - b.id,
+      showSorterTooltip: false
+    },
+    {
+      title: "SKU",
+      key: "sku",
+      dataIndex: "sku",
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => a.quantity - b.quantity,
+      showSorterTooltip: false
+    },
+    {
+      title: "Nombre",
+      key: "name",
+      dataIndex: "description",
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => a.description.localeCompare(b.description),
+      showSorterTooltip: false
+    },
+    {
+      title: "Dimensiones",
+      key: "dimensions",
+      dataIndex: ["mt_height", "mt_length", "mt_width"],
+      render: (text, record) => (
+        <>
+          <Text>W {record.mt_width}</Text>
+          <Text>H {record.mt_height}</Text>
+          <Text>D {record.mt_length}</Text>
+        </>
+      ),
+      sorter: (a, b) => a.mt_width - b.mt_width,
+      showSorterTooltip: false
+    },
+    {
+      title: "Volumen",
+      key: "m3_volume",
+      dataIndex: "m3_volume",
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => Number(a.m3_volume) - Number(b.m3_volume),
+      showSorterTooltip: false
+    },
+    {
+      title: "Peso",
+      key: "kg_weight",
+      dataIndex: "kg_weight",
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => a.kg_weight - b.kg_weight,
+      showSorterTooltip: false,
+      align: "right"
+    },
+    {
+      title: "",
+      key: "buttonSee",
+      width: 64,
+      dataIndex: "id",
+      render: (id) => (
+        <Flex style={{ gap: "6px", justifyContent: "flex-end" }}>
+          <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Warning size={"1.3rem"} />} />
+          <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Eye size={"1.3rem"} />} />
+        </Flex>
+      )
+    }
+  ];
+
   const columnsCargaVehiculo = [
     {
       title: "Vehiculo",
@@ -540,7 +662,7 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
     }
   ];
 
-  /* acoordion */
+  /*Acoordion selection */
   const actionsOptions = [
     {
       key: 0,
@@ -881,10 +1003,10 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
                       .map((contact) => (
                         <Row style={{ paddingTop: "0.5rem" }} key={contact.id}>
                           <Col span={12} style={{ paddingLeft: "25px" }}>
-                            {"Daniel"}
+                            {contact.name}
                           </Col>
                           <Col span={8} style={{ textAlign: "right" }}>
-                            {"18293018293012"}
+                            {contact.contact_number}
                           </Col>
                         </Row>
                       ))}
@@ -895,10 +1017,10 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
                       .map((contact) => (
                         <Row style={{ paddingTop: "0.5rem" }} key={contact.id}>
                           <Col span={12} style={{ paddingLeft: "25px" }}>
-                            {"Daniel"}
+                            {contact.name}
                           </Col>
                           <Col span={8} style={{ textAlign: "right" }}>
-                            {"1391239183123"}
+                            {contact.contact_number}
                           </Col>
                         </Row>
                       ))}
@@ -983,21 +1105,122 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
     }
   ];
 
-  const tabitems: TabsProps["items"] = [
+  /*Acordion to vehicles selection */
+  const actionsOptionsVehiclesSelection = [
     {
-      key: "1",
-      label: "Tab 1",
-      children: "Content of Tab Pane 1"
-    },
-    {
-      key: "2",
-      label: "Tab 2",
-      children: "Content of Tab Pane 2"
-    },
-    {
-      key: "3",
-      label: "Tab 3",
-      children: "Content of Tab Pane 3"
+      key: 0,
+      style: { border: "1px solid #dddddd", borderRadius: "4px" },
+      label: (
+        <Flex className="collapseByActionVehicles__label">
+          <Flex style={{ paddingTop: "1rem" }}>
+            <Flex>
+              <div className="serviceTypeLabel">
+                {vehiclesSelection?.stepOne.transferRequest.map((a) =>
+                  a.id_service_type === 0 ? <Truck /> : <CraneTower />
+                )}{" "}
+                <Truck /> Camion C-100
+              </div>
+            </Flex>
+            {vehiclesSelection?.stepOne.transferRequest.map(
+              (a) =>
+                a.id_service_type === 0 && (
+                  <Flex>
+                    <Users />
+                  </Flex>
+                )
+            )}
+            <Flex>
+              <CheckCircle color="#CBE71E" />
+            </Flex>
+          </Flex>
+          <Flex>
+            <Flex>
+              <Flex>
+                <div>Origen</div>
+                <div>Centro empresarial dorado plaza</div>
+              </Flex>
+            </Flex>
+            {vehiclesSelection?.stepOne.transferRequest.map(
+              (a) =>
+                a.id_service_type === 0 && (
+                  <>
+                    <hr style={{ borderTop: "1px solid #DDDDD" }} />
+                    <Flex>
+                      <Flex>
+                        <div>Destino</div>
+                        <div>Base barrancabermeja</div>
+                      </Flex>
+                    </Flex>
+                  </>
+                )
+            )}
+            <hr style={{ borderTop: "1px solid #DDDDD" }} />
+            <Col>
+              <Flex>
+                <div>Destino</div>
+                <div>Base barrancabermeja</div>
+              </Flex>
+            </Col>
+          </Flex>
+        </Flex>
+      ),
+      children: (
+        <Flex className="informationContainer">
+          {/*Top section */}
+          <Flex className="topSection">
+            <div>Input</div>
+            <Trash />
+          </Flex>
+          <Flex>
+            <div>Volumen utilizado</div>
+            <div>40%</div>
+          </Flex>
+          <hr style={{ borderTop: "1px solid #DDDDD" }} />
+          <Flex>
+            <div>Volumen máximo</div>
+            <div>00 m3</div>
+          </Flex>
+          <hr style={{ borderTop: "1px solid #DDDDD" }} />
+          <Flex>
+            <div>Peso utilizado</div>
+            <div>10%</div>
+          </Flex>
+          <hr style={{ borderTop: "1px solid #DDDDD" }} />
+          <Flex>
+            <div>Peso máximo</div>
+            <div>00 kg</div>
+          </Flex>
+          {/*Second section */}
+          <Flex>
+            <div>Input</div>
+            <Trash />
+          </Flex>
+          <Flex>
+            <div>Volumen productos</div>
+            <div>00</div>
+          </Flex>
+          <hr style={{ borderTop: "1px solid #DDDDD" }} />
+          <Flex>
+            <div>Peso productos</div>
+            <div>00 kg</div>
+          </Flex>
+          <hr style={{ borderTop: "1px solid #DDDDD" }} />
+          <Flex>
+            <div>Productos</div>
+            <div>20/40</div>
+          </Flex>
+          <hr style={{ borderTop: "1px solid #DDDDD" }} />
+          <Flex>
+            <Button disabled>Embalaje</Button>
+          </Flex>
+          <Table columns={columnsVehiclesMaterial} dataSource={dataCarga} pagination={false} />
+          {/**Buttons */}
+          <Flex>
+            <Button>Agregar vehíchulo</Button>
+            <Button>Guardar</Button>
+          </Flex>
+        </Flex>
+      )
     }
   ];
 
@@ -1018,24 +1241,50 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
           <Col>
             <Row style={{ width: "100%", justifyContent: "center" }}>
               <Col span={16} style={{ padding: "16px 0" }}>
-                <Flex justify="space-evenly">
-                  <Steps
-                    style={{ width: "100%" }}
-                    size="small"
-                    current={0}
-                    iconPrefix={`-`}
-                    items={[
-                      {
-                        title: "Solicitud de transferencia"
-                      },
-                      {
-                        title: "Seleccion de vehiculos"
-                      },
-                      {
-                        title: "Seleccion de proveedor"
-                      }
-                    ]}
-                  />
+                <Flex className="stepper">
+                  <Col span={16}>
+                    <Flex justify="space-evenly" style={{ width: "100%" }}>
+                      {steps.map((step, index) => {
+                        const isCurrentStep = index === currentStepIndex;
+                        const isCompletedStep = index < currentStepIndex;
+                        const stepColor = isCurrentStep
+                          ? "#141414"
+                          : isCompletedStep
+                            ? "#CBE71E"
+                            : "#969696";
+                        const fontWeight = isCurrentStep ? "bold" : "normal";
+                        return (
+                          <Flex>
+                            <Flex>
+                              {index > 0 && <span style={{ margin: "0 8px", width: "" }}>-</span>}
+                            </Flex>
+                            <Flex key={index} align="center">
+                              <Flex align="center">
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    width: 24,
+                                    height: 24,
+                                    borderRadius: "50%",
+                                    background: stepColor,
+                                    color: "white",
+                                    fontWeight: fontWeight
+                                  }}
+                                >
+                                  {isCompletedStep ? index + 1 : index + 1}
+                                </div>
+                                <div style={{ marginLeft: 8, fontWeight: fontWeight }}>
+                                  {step.title}
+                                </div>
+                              </Flex>
+                            </Flex>
+                          </Flex>
+                        );
+                      })}
+                    </Flex>
+                  </Col>
                 </Flex>
               </Col>
             </Row>
@@ -1043,7 +1292,11 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
               <Col style={{ display: "flex", justifyContent: "space-between" }}>
                 <Flex>
                   <Title style={{ fontWeight: "700", fontSize: "24px", lineHeight: "36px" }}>
-                    Solicitud de transferencia
+                    {view === "solicitation"
+                      ? "Solicitud de transferencia"
+                      : view === "vehicles"
+                        ? "Asignación de vehículos"
+                        : "Selección de proveedor"}
                   </Title>
                 </Flex>
                 <Flex>
@@ -1587,7 +1840,7 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
             </Row>
             {!!isLoading ? (
               <Spin style={{ display: "flex", justifyContent: "center", marginTop: "10%" }} />
-            ) : (
+            ) : view === "solicitation" ? (
               <Row style={{ width: "100%", flexDirection: "column" }}>
                 <Col>
                   <Tabs defaultActiveKey={String(ordersId[0])} onChange={onTabSelect}>
@@ -1626,20 +1879,49 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
                   </Tabs>
                 </Col>
               </Row>
+            ) : view === "vehicles" ? (
+              <Row>
+                <Col>
+                  <Flex>
+                    <label>
+                      <p>Vehículos sugeridos</p>
+                    </label>
+                    <Row style={{ paddingTop: "1rem" }}>
+                      <Col span={24}>
+                        <div className="vehicles">
+                          Camion C-100 <small>01</small>
+                        </div>
+                      </Col>
+                      <Col span={24}>
+                        <Collapse
+                          defaultActiveKey={"0"}
+                          className="collapseByAction"
+                          style={{ width: "100%" }}
+                          expandIconPosition="end"
+                          accordion={false}
+                          bordered={false}
+                          ghost
+                          items={actionsOptionsVehiclesSelection}
+                        />
+                      </Col>
+                    </Row>
+                  </Flex>
+                </Col>
+              </Row>
+            ) : (
+              <p>Seleccion de proveedor</p>
             )}
           </Col>
         </Row>
         <Flex justify="space-between" style={{ marginTop: "24px" }}>
           <Flex align="flex-start">
-            <Button disabled className="backButton">
+            <Button className="backButton" onClick={handleBack}>
               Atras
             </Button>
           </Flex>
           <Flex gap="middle" align="flex-end">
-            {/*<Button type="primary">
-                                  Guardar como draft
-                              </Button>*/}
-            <Button disabled className="nextButton">
+            {view === "vehicles" && <Button className="saveButton">Guardar como draft</Button>}
+            <Button disabled={!isNextStepActive} className="nextButton" onClick={handleNext}>
               Siguiente
             </Button>
           </Flex>
