@@ -23,8 +23,6 @@ export const SelectNoveltyNode: React.FC<Props> = ({
   clientId,
   projectId
 }) => {
-  console.log(projectId, clientId, type);
-
   const { data, isLoading } = useAcountingAdjustment(clientId || "0", projectId || "0", type);
 
   const handleNoteSelection = (item: any) => {
@@ -38,7 +36,7 @@ export const SelectNoveltyNode: React.FC<Props> = ({
   return (
     <div className="acn-modalContent">
       <Flex vertical className="acn-content-modal-select-note">
-      <p className="acn-subTitleModalAction">{titleApplyMap[type || 1]}</p>
+        <p className="acn-subTitleModalAction">{titleApplyMap[type || 1]}</p>
         <div className="acn-modalContentScroll">
           {isLoading ? (
             <Spin size="large" style={{ margin: "auto" }} />
@@ -84,8 +82,7 @@ export const SelectNoveltyNode: React.FC<Props> = ({
 };
 
 const titleApplyMap: Record<number, string> = {
-    1: "Selecciona la(s) nota(s) débito a aplicar",
-    2: "Selecciona la(s) nota(s) crédito a aplicar",
-    3: "Selecciona los descuentos a aplicar"
-  };
-  
+  1: "Selecciona la(s) nota(s) débito a aplicar",
+  2: "Selecciona la(s) nota(s) crédito a aplicar",
+  3: "Selecciona los descuentos a aplicar"
+};
