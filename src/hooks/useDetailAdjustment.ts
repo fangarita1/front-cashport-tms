@@ -22,7 +22,7 @@ interface FinancialDiscountEvent {
 }
 
 interface FinancialDiscountData {
-  details: FinancialDiscountEvent[];
+  detail: FinancialDiscountEvent[];
   initial_amount: number;
   current_amount: number;
   appliedamount: number;
