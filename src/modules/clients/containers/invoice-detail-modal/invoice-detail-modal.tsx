@@ -155,7 +155,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
             <div className={styles.description}>
               <div className={styles.stepperContainer}>
                 <div className={styles.stepperContent}>
-                  {true ? (
+                  {loading ? (
                     <StepperContentSkeleton />
                   ) : (
                     (invoiceData?.results ?? []).map((item, index, arr) => {
