@@ -216,7 +216,7 @@ export const legalizeFinancialDiscount = async (
 ): Promise<GenericResponse> => {
   try {
     const response: GenericResponse = await API.post(
-      `${config.API_HOST}/api/financial-discount/legalize/project/${projectId}/client/${clientId}`,
+      `${config.API_HOST}/financial-discount/legalize/project/${projectId}/client/${clientId}`,
       discountData
     );
 

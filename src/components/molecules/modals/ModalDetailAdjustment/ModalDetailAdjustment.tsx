@@ -45,6 +45,8 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
         return "Radicación";
       case "Registrar novedad":
         return "Novedad";
+      case "legalizado":
+        return "Legalizado desde ajuste CashPort";
       default:
         return item;
     }
@@ -126,6 +128,15 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                               <div>
                                 <div className={styles.date}>comentarios</div>
                                 <div className={styles.date}>{item?.comments}</div>{" "}
+                              </div>
+                            ) : null}
+                            {item?.event_name === "legalizado" ? (
+                              <div>
+                                <div className={styles.adjustment}>
+                                  <div className={styles.idAdjustment}>
+                                    ID de la novedad: {item.id}
+                                  </div>
+                                </div>
                               </div>
                             ) : null}
                             {item?.event_name === "Facturas aplicadas" ? (

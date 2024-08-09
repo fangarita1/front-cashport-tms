@@ -1,4 +1,4 @@
-import { Flex, Modal, Spin } from "antd";
+import { Flex, message, Modal, Spin } from "antd";
 import { CaretRight, Pencil, Trash } from "phosphor-react";
 import React, { useState } from "react";
 import "./modalActionAdjusment.scss";
@@ -39,202 +39,25 @@ export const ModalActionAdjusment = ({ isOpen, onClose, adjustment, clientId }: 
   const [currentView, setCurrentView] = useState<string>("selectAccountingAdjustment");
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
   const { ID: projectId } = useAppStore((state) => state.selectedProject);
-  const [isSelectLoading, setSelectIsLoading] = useState<boolean>(false);
+  const [selectIsLoading, setSelectIsLoading] = useState<boolean>(false);
 
+  const [messageApi, contextHolder] = message.useMessage();
   // Update the handleCheckClick function
   const handleCheckClick = (item: LegalizedFinancialDiscount) => {
     setSelectedItemId(item.id);
   };
 
   const { data: noteData, isLoading } = useLegalizedFinancialDiscount({
-    typeLegalized: 1,
+    typeLegalized: 0,
     projectId,
     clientId: clientId || "0"
   });
-
-  // const noteData = [
-  //   {
-  //     id: 1,
-  //     current_value: 100000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 1000000
-  //   },
-  //   {
-  //     id: 2,
-  //     current_value: 200000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 2000000
-  //   },
-  //   {
-  //     id: 3,
-  //     current_value: 300000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 300000
-  //   },
-  //   {
-  //     id: 4,
-  //     current_value: 400000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 400000
-  //   },
-  //   {
-  //     id: 5,
-  //     current_value: 500000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 500000
-  //   },
-  //   {
-  //     id: 6,
-  //     current_value: 600000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 600000
-  //   },
-  //   {
-  //     id: 1,
-  //     current_value: 100000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 1000000
-  //   },
-  //   {
-  //     id: 2,
-  //     current_value: 200000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 2000000
-  //   },
-  //   {
-  //     id: 3,
-  //     current_value: 300000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 300000
-  //   },
-  //   {
-  //     id: 4,
-  //     current_value: 400000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 400000
-  //   },
-  //   {
-  //     id: 5,
-  //     current_value: 500000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 500000
-  //   },
-  //   {
-  //     id: 6,
-  //     current_value: 600000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 600000
-  //   },
-  //   {
-  //     id: 1,
-  //     current_value: 100000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 1000000
-  //   },
-  //   {
-  //     id: 2,
-  //     current_value: 200000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 2000000
-  //   },
-  //   {
-  //     id: 3,
-  //     current_value: 300000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 300000
-  //   },
-  //   {
-  //     id: 4,
-  //     current_value: 400000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 400000
-  //   },
-  //   {
-  //     id: 5,
-  //     current_value: 500000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 500000
-  //   },
-  //   {
-  //     id: 6,
-  //     current_value: 600000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 600000
-  //   },
-  //   {
-  //     id: 1,
-  //     current_value: 100000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 1000000
-  //   },
-  //   {
-  //     id: 2,
-  //     current_value: 200000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 2000000
-  //   },
-  //   {
-  //     id: 3,
-  //     current_value: 300000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 300000
-  //   },
-  //   {
-  //     id: 4,
-  //     current_value: 400000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 400000
-  //   },
-  //   {
-  //     id: 5,
-  //     current_value: 500000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 500000
-  //   },
-  //   {
-  //     id: 6,
-  //     current_value: 600000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 600000
-  //   },
-  //   {
-  //     id: 7,
-  //     current_value: 700000,
-  //     selected: false,
-  //     motive_name: "Volumen",
-  //     intialAmount: 700000
-  //   }
-  // ];
 
   const handleContinue = async () => {
     if (selectedItemId !== null) {
       setSelectIsLoading(true);
       try {
-        const response: GenericResponse = await legalizeFinancialDiscount(
+        await legalizeFinancialDiscount(
           {
             discount_id_legalized: selectedItemId,
             discount_id_not_legalized: +adjustment.id
@@ -242,17 +65,16 @@ export const ModalActionAdjusment = ({ isOpen, onClose, adjustment, clientId }: 
           projectId,
           +clientId
         );
-        // Handle the successful response
-        console.log(response);
+        messageApi.success("Ajuste contable legalizado correctamente");
         setCurrentView("selectAccountingAdjustment");
       } catch (error) {
-        // Handle the error
-        console.error(error);
+        messageApi.error("Error al legalizar el ajuste contable");
       } finally {
         setSelectIsLoading(false);
       }
     }
   };
+
   return (
     <Modal
       open={isOpen}
@@ -279,6 +101,7 @@ export const ModalActionAdjusment = ({ isOpen, onClose, adjustment, clientId }: 
         height: currentView === "legalizeAccountingAdjustment" ? "calc(80vh - 20px)" : "auto"
       }}
     >
+      {contextHolder}
       {currentView === "selectAccountingAdjustment" && (
         <div className="content">
           <Flex vertical gap="small">
@@ -291,7 +114,7 @@ export const ModalActionAdjusment = ({ isOpen, onClose, adjustment, clientId }: 
               </p>
               <CaretRight className="actionButton__caretRight" />
             </button>
-            <button
+            {/* <button
               className="actionButton"
               onClick={() => setCurrentView("editAccountingAdjustment")}
             >
@@ -310,7 +133,7 @@ export const ModalActionAdjusment = ({ isOpen, onClose, adjustment, clientId }: 
                 Eliminar ajuste contable
               </p>
               <CaretRight className="actionButton__caretRight" />
-            </button>
+            </button> */}
           </Flex>
         </div>
       )}
@@ -331,8 +154,9 @@ export const ModalActionAdjusment = ({ isOpen, onClose, adjustment, clientId }: 
                       id: item.id,
                       current_value: item.current_value,
                       selected: selectedItemId === item.id,
+                      intialAmount: item.initial_value,
                       motive_name: item.document_type_name,
-                      percentage: item.initial_value
+                      percentage: null
                     }}
                     type={extractType(adjustment.type) || 1}
                     onHeaderClick={() => handleCheckClick(item)}
@@ -351,10 +175,15 @@ export const ModalActionAdjusment = ({ isOpen, onClose, adjustment, clientId }: 
               </button>
               <button
                 type="button"
-                className={`mal-button__action__text ${selectedItemId !== null ? "mal-button__action__text__green" : ""}`}
+                className={`mal-button__action__text ${
+                  selectedItemId !== null && !selectIsLoading
+                    ? "mal-button__action__text__green"
+                    : ""
+                }`}
                 onClick={handleContinue}
+                disabled={selectedItemId === null || selectIsLoading}
               >
-                Continuar
+                {selectIsLoading ? "Procesando..." : "Continuar"}
               </button>
             </Flex>
           </Flex>
