@@ -5,20 +5,22 @@ import { CaretLeft } from "phosphor-react";
 import { OrderViewContext } from "../../containers/create-order/create-order";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-import { Controller, set, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { ISelectType } from "@/types/clients/IClients";
 import styles from "./create-order-checkout.module.scss";
 import GeneralSelect from "@/components/ui/general-select";
 import AlternativeBlackButton from "@/components/atoms/buttons/alternativeBlackButton/alternativeBlackButton";
-import prefetch from "next/router";
 import { createDraft, createOrder, getAdresses } from "@/services/commerce/commerce";
 import { useAppStore } from "@/lib/store/store";
-import { ICommerceAdresses } from "@/types/commerce/ICommerce";
+import { ICommerceAdresses, IShippingInformation } from "@/types/commerce/ICommerce";
 import { useMessageApi } from "@/context/MessageContext";
 import { GenericResponse } from "@/types/global/IGlobal";
 
 interface IShippingInfoForm {
-  addresses: ISelectType;
+  addresses: {
+    value: string;
+    label: string;
+  };
   city: string;
   address: string;
   email: string;
@@ -27,7 +29,7 @@ interface IShippingInfoForm {
 }
 
 const CreateOrderCheckout: FC = ({}) => {
-  const { setCheckingOut, client, confirmOrderData } = useContext(OrderViewContext);
+  const { setCheckingOut, client, confirmOrderData, shippingInfo } = useContext(OrderViewContext);
   const { ID: projectId } = useAppStore((state) => state.selectedProject);
   const [radioValue, setRadioValue] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -42,7 +44,8 @@ const CreateOrderCheckout: FC = ({}) => {
     watch,
     formState: { errors, isValid }
   } = useForm<IShippingInfoForm>({
-    mode: "onChange"
+    mode: "onChange",
+    defaultValues: shippingInfo ? shippingInfoToForm(shippingInfo) : undefined
   });
   const watchSelectAddress = watch("addresses");
 
@@ -270,3 +273,17 @@ const mockDiscounts = [
     isReached: true
   }
 ];
+
+const shippingInfoToForm = (shippingInfo: IShippingInformation) => {
+  return {
+    addresses: {
+      label: shippingInfo.address,
+      value: shippingInfo.address
+    },
+    city: shippingInfo.city,
+    address: shippingInfo.address,
+    email: shippingInfo.email,
+    phone: shippingInfo.phone_number,
+    comment: shippingInfo.comments
+  };
+};

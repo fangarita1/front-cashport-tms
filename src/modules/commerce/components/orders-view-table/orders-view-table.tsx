@@ -1,11 +1,13 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { Button, Table, TableProps, Typography } from "antd";
-
+import { useRouter } from "next/navigation";
 import { Eye } from "phosphor-react";
+
+import { useAppStore } from "@/lib/store/store";
 import { formatDateDMY, formatMoney } from "@/utils/utils";
 
-import "./orders-view-table.scss";
 import { IOrder } from "@/types/commerce/ICommerce";
+import "./orders-view-table.scss";
 
 const { Text } = Typography;
 
@@ -21,11 +23,26 @@ const OrdersViewTable = ({
   orderStatus
 }: PropsOrdersViewTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const router = useRouter();
+  const setDraftInfo = useAppStore((state) => state.setDraftInfo);
 
-  // const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
-  //   setSelectedRowKeys(newSelectedRowKeys);
-  //   setSelectedRows(newSelectedRow);
-  // };
+  const handleSeeDetail = (order: IOrder) => {
+    const { id: orderId, order_status } = order;
+
+    if (order_status === "En proceso") {
+      const url = `/comercio/pedidoConfirmado/${orderId}`;
+      router.prefetch(url);
+      router.push(url);
+    } else if (order_status === "Borrador") {
+      const draftInfo = {
+        id: orderId,
+        client_name: order.client_name
+      };
+      setDraftInfo(draftInfo);
+      router.push("/comercio/pedido");
+    }
+  };
+
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRows: IOrder[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
     if (newSelectedRowKeys.length >= 1) {
@@ -129,7 +146,13 @@ const OrdersViewTable = ({
       key: "buttonSee",
       width: 64,
       dataIndex: "",
-      render: () => <Button className="buttonSeeProject" icon={<Eye size={"1.3rem"} />} />
+      render: (_, row) => (
+        <Button
+          onClick={() => handleSeeDetail(row)}
+          className="buttonSeeProject"
+          icon={<Eye size={"1.3rem"} />}
+        />
+      )
     }
   ];
 

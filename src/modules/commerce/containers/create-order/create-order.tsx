@@ -1,10 +1,12 @@
-import { Dispatch, FC, createContext, useState } from "react";
+import { Dispatch, FC, createContext, useEffect, useState } from "react";
 import SearchClient from "../../components/create-order-search-client/create-order-search-client";
 import CreateOrderMarket from "../../components/create-order-market";
 import CreateOrderCart from "../../components/create-order-cart";
-import styles from "./create-order.module.scss";
 import CreateOrderCheckout from "../../components/create-order-checkout";
-import { IOrderConfirmedResponse } from "@/types/commerce/ICommerce";
+import { IOrderConfirmedResponse, IShippingInformation } from "@/types/commerce/ICommerce";
+import { useAppStore } from "@/lib/store/store";
+import styles from "./create-order.module.scss";
+import { getSingleOrder } from "@/services/commerce/commerce";
 
 export interface ISelectedProduct {
   id: number;
@@ -39,6 +41,8 @@ interface IOrderViewContext {
   setCheckingOut: Dispatch<boolean>;
   confirmOrderData: IOrderConfirmedResponse;
   setConfirmOrderData: Dispatch<IOrderConfirmedResponse>;
+  shippingInfo: IShippingInformation | undefined;
+  setShippingInfo: Dispatch<IShippingInformation>;
 }
 
 export const OrderViewContext = createContext<IOrderViewContext>({} as IOrderViewContext);
@@ -48,6 +52,45 @@ export const CreateOrderView: FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<ISelectedCategories[]>([]);
   const [checkingOut, setCheckingOut] = useState(false);
   const [confirmOrderData, setConfirmOrderData] = useState({} as IOrderConfirmedResponse);
+  const [shippingInfo, setShippingInfo] = useState<IShippingInformation>();
+  const { draftInfo, setDraftInfo, selectedProject } = useAppStore((state) => state);
+
+  useEffect(() => {
+    if (draftInfo.client_name) {
+      const fetchDraft = async () => {
+        if (!selectedProject.ID || !draftInfo.id) return;
+        const response = await getSingleOrder(selectedProject.ID, draftInfo.id);
+        setClient({
+          name: response.data[0].client_name,
+          id: response.data[0].client_id
+        });
+
+        const selectedCategories = response.data[0].detail.products.map((category) => ({
+          category_id: category.id_category,
+          category: category.category,
+          products: category.products.map((product) => ({
+            id: parseInt(product.product_sku),
+            name: product.product_name,
+            price: product.price,
+            discount: product.discount,
+            discount_percentage: product.discount_percentage,
+            quantity: product.quantity,
+            image: product.image,
+            category_id: product.id_category,
+            SKU: product.product_sku
+          }))
+        }));
+        setSelectedCategories(selectedCategories);
+        setShippingInfo(response.data[0].shipping_info);
+      };
+      fetchDraft();
+      setCheckingOut(true);
+    }
+
+    return () => {
+      setDraftInfo({ id: 0, client_name: undefined });
+    };
+  }, []);
 
   return (
     <OrderViewContext.Provider
@@ -59,7 +102,9 @@ export const CreateOrderView: FC = () => {
         checkingOut,
         setCheckingOut,
         confirmOrderData,
-        setConfirmOrderData
+        setConfirmOrderData,
+        shippingInfo,
+        setShippingInfo
       }}
     >
       <div className={styles.ordersView}>

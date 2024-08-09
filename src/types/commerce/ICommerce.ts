@@ -66,7 +66,7 @@ export interface IProductInDetail {
 
 export interface IOrderConfirmedResponse {
   discount_id: number;
-  products: IProductInDetail[];
+  products?: IProductInDetail[];
   subtotal: number;
   taxes: number;
   discounts: number;
@@ -74,7 +74,7 @@ export interface IOrderConfirmedResponse {
   total_pronto_pago: number;
 }
 
-interface IShippingInformation {
+export interface IShippingInformation {
   address: string;
   city: string;
   dispatch_address: string;
