@@ -99,7 +99,8 @@ export const ClientsViewTable = () => {
         <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
           <Text className="text">{row.client_name}</Text>
         </Link>
-      )
+      ),
+      width: "30%"
     },
     {
       align: "right",
@@ -253,18 +254,21 @@ export const ClientsViewTable = () => {
           </Col>
         </Row>
       </div>
-      <Table
-        loading={loading}
-        // scroll={{ y: "61dvh", x: undefined }}
-        columns={columns as TableProps<any>["columns"]}
-        dataSource={tableData.map((data) => ({ ...data, key: data.client_id }))}
-        pagination={false}
-      />
-      {hasMore && (
-        <div ref={loader} style={{ textAlign: "center", padding: "20px" }}>
-          <Spin />
-        </div>
-      )}
+      <div className="table-container">
+        <Table
+          loading={loading}
+          scroll={{ x: "max-content" }}
+          columns={columns as TableProps<any>["columns"]}
+          dataSource={tableData.map((data) => ({ ...data, key: data.client_id }))}
+          pagination={false}
+          sticky={{ offsetHeader: 0 }}
+        />
+        {hasMore && (
+          <div ref={loader} style={{ textAlign: "center", padding: "20px" }}>
+            <Spin />
+          </div>
+        )}
+      </div>
     </main>
   );
 };
