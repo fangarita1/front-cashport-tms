@@ -7,16 +7,9 @@ import { Minus, Plus, Trash } from "phosphor-react";
 import styles from "./create-order-cart-item.module.scss";
 import { Button, Flex } from "antd";
 import { useHandleProductsItems } from "../../hooks/create-order/handle-products-items.hook";
+import { ISelectedProduct } from "@/types/commerce/ICommerce";
 export interface CreateOrderItemProps {
-  product: {
-    id: number;
-    name: string;
-    price: number;
-    discount: number | undefined;
-    discount_percentage: number | undefined;
-    image: string;
-    category_id: number;
-  };
+  product: ISelectedProduct;
   categoryName: string;
 }
 

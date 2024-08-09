@@ -6,6 +6,9 @@ import {
   FieldError as OriginalFieldError
 } from "react-hook-form";
 import { selectClientForm } from "../create-order-search-client/create-order-search-client";
+import { useAppStore } from "@/lib/store/store";
+import { useEffect, useState } from "react";
+import { getClients } from "@/services/commerce/commerce";
 import "./create-order-select-client.scss";
 
 type ExtendedFieldError =
@@ -18,29 +21,41 @@ interface Props {
 }
 
 const SelectClient = ({ errors, field }: Props) => {
+  const { ID } = useAppStore((state) => state.selectedProject);
+  const [loading, setLoading] = useState(false);
+  const [options, setOptions] = useState<{ value: number | string; label: string }[]>();
+
+  useEffect(() => {
+    if (!ID) return;
+    const fetchClients = async () => {
+      setLoading(true);
+      const response = await getClients(ID);
+      const clients = response?.data;
+      const options = clients?.map((client) => ({
+        value: client.client_id,
+        label: client.client_name
+      }));
+      setLoading(false);
+      setOptions(options);
+    };
+    fetchClients();
+  }, [ID]);
+
   return (
     <Select
       showSearch
       optionFilterProp="label"
       placeholder="Seleccione un cliente"
       className={errors ? "selectInputClientError" : "selectInputClientCustom"}
-      loading={false}
+      loading={loading}
       variant="borderless"
       optionLabelProp="label"
       {...field}
       popupClassName="selectDrop"
-      options={mockOptions}
+      options={options}
       labelInValue
     />
   );
 };
 
 export default SelectClient;
-
-const mockOptions = [
-  { value: "1", label: "Cliente 1", className: "selectOptions" },
-  { value: "2", label: "Cliente 2", className: "selectOptions" },
-  { value: "3", label: "Cliente 3", className: "selectOptions" },
-  { value: "4", label: "Cliente 4", className: "selectOptions" },
-  { value: "5", label: "Cliente 5", className: "selectOptions" }
-];
