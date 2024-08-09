@@ -1,0 +1,48 @@
+.mainTransferOrders {
+  display: flex;
+
+  .content {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    padding: 2rem;
+    padding-left: 2.5rem;
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      row-gap: 2rem;
+      background-color: #FFFFFF;
+      border-radius: 15px;
+      border: 1px solid #DDD;
+      box-shadow: -6px 6px 32px 0px rgba(0, 0, 0, 0.2);
+
+      .filterContainer {
+        display: flex;
+        column-gap: 0.5rem;
+      }
+
+      .tabContainer {
+        display: flex;
+        column-gap: 2rem;
+        border-bottom: 1px solid #DDD;
+
+        .tab {
+          padding-bottom: 4px;
+          color: #DDD;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+
+          &.active {
+            color: #141414;
+            font-weight: 700;
+            border-bottom: 1px solid #141414;
+          }
+        }
+      }
+    }
+  }
+}
