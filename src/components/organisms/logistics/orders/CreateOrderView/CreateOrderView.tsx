@@ -18,7 +18,7 @@ import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 
 //schemas
-import { IAditionalByMaterial, ICreateRegister, IFormTransferOrder, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ITransferOrder, ITransferOrderContacts, ITransferOrderDocuments, ITransferOrderOtherRequirements, ITransferOrderPersons, IVehicleType, TransferOrderDocumentType } from "@/types/logistics/schema";
+import { IAditionalByMaterial, IClient, ICompanyCode, ICreateRegister, IFormTransferOrder, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ISelectOptionOrders, ITransferOrder, ITransferOrderContacts, ITransferOrderDocuments, ITransferOrderOtherRequirements, ITransferOrderPersons, IVehicleType, TransferOrderDocumentType } from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
@@ -56,12 +56,12 @@ import useSWRInmutable from "swr/immutable";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
 import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
-import { FileText, UserPlus, Warning } from "phosphor-react";
+import { FileText, UserPlus } from "phosphor-react";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
-import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 import { RangePickerProps } from "antd/es/date-picker";
-import { DividerCustom } from "@/components/atoms/DividerCustom/DividerCustom";
 import ModalAddContact from "@/components/molecules/modals/ModalAddContact/ModalAddContact";
+import { getCompanyCodes } from "@/services/logistics/company-codes";
+import { getClients } from "@/services/logistics/clients";
 
 const { Title, Text } = Typography;
 
@@ -486,7 +486,7 @@ export const CreateOrderView = () => {
   
   const [optionsMaterial, setOptionsMaterial] = useState<any>([]);//useState<SelectProps<object>['options']>([]);
   const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
-  const [selectedMaterial, setSelectedMaterial] = useState(null);
+
   let cargaIdx = 0;
 
   const searchResultMaterial = async (query: string) => {
@@ -514,6 +514,7 @@ export const CreateOrderView = () => {
 
     return result;
   }     
+
 
   const loadMaterials = async () => {
     if(optionsMaterial !== undefined && optionsMaterial.length >0 ) return;
@@ -547,6 +548,10 @@ export const CreateOrderView = () => {
     loadMaterials();
   }, []);
 
+  const filteredMaterialOptions = optionsMaterial.filter(
+    (option:any) => !dataCarga.some(material => material.description === option.value)
+  );
+
   const addMaterial = async (value:any) =>{
     cargaIdx = cargaIdx + 1;
     console.log(cargaIdx);
@@ -575,7 +580,6 @@ export const CreateOrderView = () => {
       setDataCarga(dataCarga => [...dataCarga, newvalue]);
     }
 
-    setSelectedMaterial(null);
   };
 
   const handleDeleteMaterial = (key: React.Key) => {
@@ -594,8 +598,8 @@ export const CreateOrderView = () => {
           item.quantity = item.quantity + 1;
         }
         if(sign=='-'){
+          if(item.quantity === 1) return item.quantity
           item.quantity = item.quantity - 1;
-          if(item.quantity <0) item.quantity = 0;
         }
       }
     });    
@@ -638,13 +642,11 @@ export const CreateOrderView = () => {
 
   const [optionsVehicles, setOptionsVehicles] = useState<any>([]);//useState<SelectProps<object>['options']>([]);
   const [dataVehicles, setDataVehicles] = useState<IVehicleType[]>([]);
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
+
   let vehiclesIdx = 0;
 
   const loadSuggestedVehicles = async () => {
-    if(optionsVehicles !== undefined && optionsVehicles.length >0 ) return;
-
-    const res = await (getSuggestedVehicles());
+    const res = await getSuggestedVehicles(typeactive);
     const result:any = [];
     //console.log (res);
     if(res.data.data.length > 0){
@@ -674,6 +676,15 @@ export const CreateOrderView = () => {
     loadSuggestedVehicles();
   }, []);
 
+  useEffect(() => {
+    setDataVehicles([])
+    loadSuggestedVehicles();
+  }, [typeactive]);
+
+  const filteredVehiclesOptions = optionsVehicles.filter(
+    (option:any) => !dataVehicles.some(vehicle => vehicle.description === option.value)
+  );
+
   const addVehicle = async (value:any) =>{
     vehiclesIdx = vehiclesIdx + 1;
     
@@ -683,9 +694,8 @@ export const CreateOrderView = () => {
     const newvalue : IVehicleType = value;
     console.log(newvalue);
     await setDataVehicles(dataVehicles => [...dataVehicles, newvalue]);
-
-    setSelectedMaterial(null);
   };
+
 
   const handleDeleteVehicle = (key: React.Key) => {
     console.log(key)
@@ -703,8 +713,8 @@ export const CreateOrderView = () => {
           item.quantity = item.quantity + 1;
         }
         if(sign=='-'){
+          if(item.quantity === 1) return item.quantity
           item.quantity = item.quantity - 1;
-          if(item.quantity <0) item.quantity = 0;
         }
       }
     });    
@@ -713,75 +723,81 @@ export const CreateOrderView = () => {
   };
 
   /* Responsables */
-
-  // TODO: Load PSL
-  // TODO: load CostCenters
+  const dataPslDefault = [
+    {
+      key: 1,
+      idpsl: 1,
+      descpsl: '',
+      percent: 100,
+      costcenters: [
+        {
+          key: 1,
+          idpslcostcenter: 1,
+          descpslcostcenter: '',
+          percent: 100
+        }
+      ]
+    },
+  ]
   const [optionsPSL, setOptionsPSL] = useState<SelectProps<object>['options']>([]);
-  const [dataPsl, setDataPsl] = useState<IOrderPsl[]>([]);
-  let pslIdx = 0;
+  const [dataPsl, setDataPsl] = useState<IOrderPsl[]>(dataPslDefault);
 
   const loadPSL = async () => {
     if(optionsPSL !== undefined && optionsPSL.length >0 ) return;
 
-    const res = await (getPsl());
+    const res = await getPsl();
     const result:any = [];
-    //console.log (res);
     if(res.data.data.length > 0){
       res.data.data.forEach((item) => {
-        result.push({value:item.id, label: item.description})
+        result.push({value: item.id, label: item.description, costCenters: item.cost_center})
       });      
     }
-
     setOptionsPSL(result); 
-    await addPsl();
   };
 
   useEffect(() => {
     loadPSL();
   }, []);
 
-  const addPsl = async () =>{
-    pslIdx = pslIdx + 1;   
+  const setOptionsCostCenter = (idPsl:number) => {
+    const pslFinded =  optionsPSL && optionsPSL.find(option => option.value === idPsl)
+    if( !pslFinded) return []
+    return pslFinded.costCenters.map((c:any)=>({value: c.id, label: c.description}))
+  }
 
-    //default values
-    const newvalue : IOrderPsl = {
-      key:pslIdx,
-      idpsl: 1,
-      descpsl: '',
-      percent:100,
-      costcenters: []
-    };
-    const costcenter : IOrderPslCostCenter ={
-      key:1,
-      idpslcostcenter: 1,
-      descpslcostcenter: '',
-      percent: 100
-    }
-    newvalue.costcenters.push(costcenter);
-    console.log(newvalue);
-    await setDataPsl(dataPsl => [...dataPsl, newvalue]);
+  const addPsl = async () =>{
+    const createNewPsl = (key:number) => {
+      return {
+          key,
+          idpsl: 1,
+          descpsl: '',
+          percent:100,
+          costcenters: [{
+            key: 1,
+            idpslcostcenter: 1,
+            descpslcostcenter: '',
+            percent: 100
+          }]  
+        }}
+    setDataPsl(dataPsl => [...dataPsl, createNewPsl(dataPsl?.length ? dataPsl?.length+1 : 1)]);
   };
 
-  const addPslCostCenter = (key: React.Key) => {
-    console.log(key)
-    const newData = [...dataPsl];
-    newData.forEach(item => {
-      console.log("item.key",item.key)
-      if(item.key === key){
-        //last costcenter
-        const lastitem = item.costcenters.at(-1);
-
-        const costcenter : IOrderPslCostCenter ={
-          key: (lastitem!=undefined ? lastitem.key +1 : 1),
-          idpslcostcenter: 1,
-          descpslcostcenter: '',
-          percent: 100
-        }
-        item.costcenters.push(costcenter);
-      }
-    });    
-    
-    setDataPsl(newData);
+  const addPslCostCenter = (key: React.Key) => {  
+    const createNewCC = (key:number) => {
+      return {
+            key,
+            idpslcostcenter: 1,
+            descpslcostcenter: '',
+            percent: 100
+          
+        }}
+    setDataPsl(prevDataPsl => 
+      prevDataPsl.map(item => 
+        item.key === key ? 
+        { ...item, costcenters: [...item.costcenters, createNewCC(item.costcenters.length + 1)] } 
+        : item
+      )
+    );
   };
 
   const handleChangeExpirationDate = (index: number, value: any) => {
@@ -841,13 +857,13 @@ export const CreateOrderView = () => {
 
   const [optionsRequirements, setOptionsRequirements] = useState<SelectProps<object>['options']>([]);
   const [dataRequirements, setDataRequirements] = useState<ITransferOrderOtherRequirements[]>([]);
-  const [selectedRequirement, setSelectedRequirement] = useState(null);
+
   let requirementsIdx = 0;
 
   const loadRequirements = async () => {
     if(optionsRequirements !== undefined && optionsRequirements.length >0 ) return;
 
-    const res = await (getOtherRequirements());
+    const res = await getOtherRequirements();
     const result:any = [];
     //console.log (res);
     if(res.data.data.length > 0){
@@ -873,9 +889,9 @@ export const CreateOrderView = () => {
     loadRequirements();
   }, []);
 
-  const handleChangeSelectedRequirements=()=>{
-    
-  }
+  const filteredOptionalRequirementssOptions = optionsRequirements ? optionsRequirements.filter(
+    option => !dataRequirements.some(req => req.description === option.value)
+  ): []
 
   const addRequeriment = async (value:any) =>{
     requirementsIdx = requirementsIdx + 1;
@@ -886,8 +902,6 @@ export const CreateOrderView = () => {
     const newvalue : ITransferOrderOtherRequirements = value;
     //console.log(newvalue);
     await setDataRequirements(dataRequirements => [...dataRequirements, newvalue]);
-
-    setSelectedRequirement(null);
   };
 
   const handleDeleteRequirement = (key: React.Key) => {
@@ -906,8 +920,8 @@ export const CreateOrderView = () => {
           item.quantity = item.quantity + 1;
         }
         if(sign=='-'){
-          item.quantity = item.quantity - 1;
-          if(item.quantity <0) item.quantity = 0;
+          if(item.quantity === 1) return item.quantity
+          else item.quantity = item.quantity - 1;
         }
       }
     });    
@@ -956,22 +970,57 @@ export const CreateOrderView = () => {
     loadContacts();
   }, []);
 
-  const UpdateContact = (key: React.Key, field: string, ndata: string) => {
+  const updateContacts = (key: React.Key, field: "name" | "contact_number", ndata: string) => {
     //console.log(key)
     const newData = [...dataContacts];
     newData.forEach(item => {
       if(item.key === key){
-        if(field=='name'){
-          item.name = ndata;
-        }
-        if(field=='phone'){
-          item.contact_number = ndata;
-        }
+        item[field] = ndata
       }
     });    
     
     setDataContacts(newData);
   };
+
+
+
+   /* Company Code */
+    const [optionsCompanyCodes, setOptionsCompanyCodes] = useState<ICompanyCode[]>([]);
+  
+    const loadCompanyCodes= async () => {
+      if(optionsCompanyCodes !== undefined && optionsCompanyCodes.length >0 ) return;
+  
+      const res = await getCompanyCodes();
+      let result: any = [];
+      if(res.data.data.length > 0){
+        result = res.data.data.map((item) => ({value: item.id.toString(), label: item.description}));      
+      }
+      setOptionsCompanyCodes(result); 
+    };
+  
+    useEffect(() => {
+      loadCompanyCodes();
+    }, []);
+
+
+    /* Clients */
+    const [optionsClients, setOptionsClients] = useState<IClient[]>([]);
+
+    const loadClients= async () => {
+      if(optionsClients !== undefined && optionsClients.length >0 ) return;
+  
+      const res = await getClients();
+      let result: any = [];
+      if(res.data.data.length > 0){
+        result = res.data.data.map((item) => ({value: item.id, label: item.description}));      
+      }
+      setOptionsClients(result); 
+    };
+  
+    useEffect(() => {
+      loadClients();
+    }, []);
+
 
 
   /* Datos de personas */
@@ -1239,7 +1288,6 @@ export const CreateOrderView = () => {
       }
     }
   };
-console.log("typeactive", typeactive)
   /* acoordion */
   const actionsOptions = [
     {
@@ -1352,7 +1400,6 @@ console.log("typeactive", typeactive)
                         hourStep={1}
                         type={'time'} 
                         onChange={(value) => {
-                          //console.log(value)
                           setHoraInicial(value);
                           setHoraInicialValid(true);
                         }}
@@ -1376,7 +1423,7 @@ console.log("typeactive", typeactive)
                         ]}
                         onChange={(value)=>{
                           setFechaInicialFlexible(value);
-                          setFechaInicialFlexibleValid(false);
+                          setFechaInicialFlexibleValid(true);
                         }}
                       />
                       {(!fechaInicialFlexibleValid) &&
@@ -1421,7 +1468,6 @@ console.log("typeactive", typeactive)
                       hourStep={1}
                       type={'time'} 
                       onChange={(value) => {
-                        //console.log(value);
                         setHoraFinal(value);
                         setHoraFinalValid(true);
                       }} 
@@ -1510,13 +1556,9 @@ console.log("typeactive", typeactive)
                       placeholder="Buscar material"                 
                       style={{ width:'100%', height: "2.5rem" }}
                       optionFilterProp="children"
-                      value={selectedMaterial}
-                      filterOption={(input, option) =>                    
-                        option!.value!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
-                      }
-                    >
-                      { optionsMaterial.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
-                    </Select>
+                      value={null}
+                      options={filteredMaterialOptions.map(((option: ISelectOptionOrders) => ({value: option.value, key: option.value, label: option.label})))}
+                    />
                   </Col>
                   <Col span={12}/>
                   <Col span={24}>
@@ -1591,13 +1633,11 @@ console.log("typeactive", typeactive)
                         placeholder="Agregar vehículo"                  
                         style={{ width:"100%", height: "2.5rem" }}
                         optionFilterProp="children"
-                        value={selectedVehicle}
-                        filterOption={(input, option) =>                    
-                          option!.value!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        value={null}
+                        options={filteredVehiclesOptions.map(((option: ISelectOptionOrders) => 
+                          ({value: option.value, key: option.value, label: option.label})))
                         }
-                      >
-                        { optionsVehicles.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
-                      </Select>
+                      />
                   </Col>
                   <Col span={12}/>
                   <Col span={24}>
@@ -1630,7 +1670,7 @@ console.log("typeactive", typeactive)
                 </Text>
                 <Select
                   className={companyValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
-                  options={[{ value: '1', label: 'Halliburton' },{ value: '2', label: 'Halliburton zona franca' }]}
+                  options={optionsCompanyCodes}
                   onChange={(value)=>{
                     setCompany(value);
                     setCompanyValid(true);
@@ -1644,17 +1684,24 @@ console.log("typeactive", typeactive)
               </Col>
               <Col span={12}/>
             </Row>
-            {dataPsl.map((psl, index) => (
-              <div className="divdistance" style={{marginBottom: index+1 === dataPsl.length ? 0 : "1rem"}} key={psl.key}>
+            {dataPsl.map((psl, pslIndex) => (
+              <div className="divdistance" style={{marginBottom: pslIndex+1 === dataPsl.length ? 0 : "1rem"}} key={`PSL-${pslIndex}-${psl.key}`}>
                 <Row>
                   <Col span={10}>
                     <Text className="locationLabels" style={{ display: 'flex' }}>
                       Product Service Line (PSL)
                     </Text>
                     <Select
-                        options={[{ value: 1, label: 'PSL 1' }]}
-                        defaultValue={{ key: psl.idpsl}}
+                        options={optionsPSL}
+                        placeholder={"Selecciona PSL"}
                         className="puntoOrigen dateInputForm" 
+                        onChange={(e)=> {
+                          setDataPsl(prevDataPsl => 
+                            prevDataPsl.map((item, i) => 
+                              i === pslIndex ? { ...item, idpsl: e, key: pslIndex+1 } : item
+                            )
+                          );
+                        }}
                     />
                   </Col>
                   <Col span={6} style={{paddingLeft:'30px'}}>
@@ -1673,16 +1720,31 @@ console.log("typeactive", typeactive)
                   </Col>
                   <Col span={8}/>
                 </Row>
-                {psl.costcenters.map((cc, index) => (
+                {psl.costcenters.map((cc, ccIndex) => (
                   <Row key={cc.key}>
                     <Col span={10} style={{paddingLeft:'30px'}}>
                       <Text className="locationLabels" style={{ display: 'flex', marginTop: '0.5rem' }}>
                         Centro de costos
                       </Text>
                       <Select
+                          placeholder={"Selecciona Centro de costos"}
                           className="puntoOrigen dateInputForm" 
-                          options={[{ value: 1, label: 'Centro de costos 1' }]}
-                          defaultValue={{ key: cc.idpslcostcenter}}
+                          options={setOptionsCostCenter(psl.idpsl)}
+                          onChange={(e)=> {
+                            setDataPsl(prevDataPsl => 
+                              prevDataPsl.map((psl, pslIndexMap) => {
+                                if (pslIndexMap === pslIndex) {
+                                  return {
+                                    ...psl,
+                                    costcenters: psl.costcenters.map((cc, ccIndexMap) => 
+                                      ccIndexMap === ccIndex ? { ...cc, idpslcostcenter: e, key: ccIndex+1 } : cc
+                                    )
+                                  };
+                                }
+                                return psl;
+                              })
+                            );
+                          }}
                       />
                     </Col>  
                     <Col span={6} style={{paddingLeft:'30px'}}>
@@ -1699,7 +1761,7 @@ console.log("typeactive", typeactive)
                       />
                     </Col>  
                     <Col span={8} style={{display:"flex", justifyContent: "center", alignItems:"flex-end"}}>
-                      {index+1 === psl.costcenters.length && 
+                      {ccIndex+1 === psl.costcenters.length && 
                       <Flex align="center" justify="center">
                         <PlusCircle size={24}/>
                         <button onClick={() => addPslCostCenter(psl.key)} className="btnagregarpsl">
@@ -1777,7 +1839,7 @@ console.log("typeactive", typeactive)
                 placeholder = 'Seleccione cliente final'
                 style={{ width: '100%' }}
                 className={clientValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
-                options={[{ value: 1, label: 'Cliente 1' }]}
+                options={optionsClients}
                 onChange={(value)=>{
                   setClient(value);
                   setClientValid(true);
@@ -1798,10 +1860,10 @@ console.log("typeactive", typeactive)
               </Text>
               <Select
                   placeholder = 'Seleccione requerimiento adicional'
-                  options={optionsRequirements}
+                  options={filteredOptionalRequirementssOptions}
                   allowClear={true}
-                  value={selectedRequirement}
-                  className={"puntoOrigen dateInputForm"}
+                  value={null}
+                  className={"puntoOrigen dateInputForm"}    
               />
               <Col span={12}/>
             </Col>   
@@ -1831,13 +1893,13 @@ console.log("typeactive", typeactive)
                   <Text className="locationLabels" style={{ display: 'flex'}}>
                     Contacto punto origen
                   </Text>
-                  {dataContacts.filter(f => f.contact_type == 1).map((contact)=>(
-                  <Row key={contact.key} gutter={24}>
+                  {dataContacts.filter(f => f.contact_type == 1).map((contact, index)=>(
+                  <Row key={`contacto-origen-${index}-${contact.key}`} gutter={32}>
                     <Col span={12} >
-                      <Input placeholder="Nombre del contacto" className="puntoOrigen dateInputForm" key={contact.key} value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
+                      <Input placeholder="Nombre del contacto" className="puntoOrigen dateInputForm" key={contact.key} value={contact.name} onChange={(e)=>{ updateContacts(contact.key,'name', e.target.value)}}/>
                     </Col>
                     <Col span={12} >
-                      <Input placeholder="Teléfono: 000 000 0000" className="puntoOrigen dateInputForm" key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}
+                      <Input placeholder="Teléfono: 000 000 0000" className="puntoOrigen dateInputForm" key={contact.key} value={contact.contact_number} onChange={(e)=>{ updateContacts(contact.key,'contact_number', e.target.value)}}
                       onKeyPress={(event) => {
                         if (!/[0-9]/.test(event.key)) {
                           event.preventDefault();
@@ -1857,13 +1919,13 @@ console.log("typeactive", typeactive)
                   <Text className="locationLabels" style={{ display: 'flex'}}>
                     Contacto punto destino
                   </Text>
-                  {dataContacts.filter((f) => f.contact_type == 2).map((contact,index)=>(
-                  <Row key={`contacto-${index}-${contact.key}`} gutter={16}>
+                  {dataContacts.filter((f) => f.contact_type == 2).map((contact, index)=>(
+                  <Row key={`contacto-destino-${index}-${contact.key}`} gutter={32}>
                     <Col span={12}>
-                      <Input placeholder="Nombre del contacto" className="puntoOrigen dateInputForm"  key={contact.key}  value={contact.name} onChange={(e)=>{ UpdateContact(contact.key,'name', e.target.value)}}/>
+                      <Input placeholder="Nombre del contacto" className="puntoOrigen dateInputForm"  key={contact.key}  value={contact.name} onChange={(e)=>{ updateContacts(contact.key,'name', e.target.value)}}/>
                     </Col>
                     <Col span={12}>
-                      <Input placeholder="Teléfono: 000 000 0000" className="puntoOrigen dateInputForm"  key={contact.key} value={contact.contact_number} onChange={(e)=>{ UpdateContact(contact.key,'phone', e.target.value)}}
+                      <Input placeholder="Teléfono: 000 000 0000" className="puntoOrigen dateInputForm"  key={contact.key} value={contact.contact_number} onChange={(e)=>{ updateContacts(contact.key,'contact_number', e.target.value)}}
                       onKeyPress={(event) => {
                         if (!/[0-9]/.test(event.key)) {
                           event.preventDefault();
@@ -1955,7 +2017,7 @@ console.log("typeactive", typeactive)
                     Guardar como draft
                   </Button>
                   <Button disabled={isButtonDisabled} className="active" style={{fontWeight:"bold"}}  onClick={()=>{onCreateOrder()}} >
-                    Siguiente
+                    Confirmar
                   </Button>
                 </Flex>
               </Col>

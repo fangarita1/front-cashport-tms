@@ -3,12 +3,11 @@ import config from "@/config";
 import { getIdToken } from "@/utils/api/api";
 import { IListData } from "@/types/logistics/schema";
 
-export const getSuggestedVehicles = async (): Promise<IListData> => {
+export const getSuggestedVehicles = async (typeOfServiceId:string): Promise<IListData> => {
   const token = await getIdToken();
   try {
-    const formData = new FormData();
-    //formData.append("term", term);
-    const response: IListData = await axios.post(`${config.API_HOST}/vehicle/suggested`, formData, {
+    const body = { id : typeOfServiceId }
+    const response: IListData = await axios.post(`${config.API_HOST}/vehicle/suggested`, body, {
       headers: {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "multipart/form-data",
