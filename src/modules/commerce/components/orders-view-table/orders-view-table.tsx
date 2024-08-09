@@ -12,14 +12,55 @@ const { Text } = Typography;
 interface PropsOrdersViewTable {
   dataSingleOrder: any[];
   setSelectedRows: Dispatch<SetStateAction<any[] | undefined>>;
+  orderStatus: string;
 }
 
-const OrdersViewTable = ({ dataSingleOrder: data, setSelectedRows }: PropsOrdersViewTable) => {
+const OrdersViewTable = ({
+  dataSingleOrder: data,
+  setSelectedRows,
+  orderStatus
+}: PropsOrdersViewTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
-  const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
+  // const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
+  //   setSelectedRowKeys(newSelectedRowKeys);
+  //   setSelectedRows(newSelectedRow);
+  // };
+  const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRows: IOrder[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
-    setSelectedRows(newSelectedRow);
+    if (newSelectedRowKeys.length >= 1) {
+      setSelectedRows((prevSelectedRows) => {
+        if (prevSelectedRows) {
+          const filteredSelectedRows = newSelectedRows.filter(
+            (newSelectedRow) =>
+              !prevSelectedRows.some((prevSelectedRow) => prevSelectedRow.id === newSelectedRow.id)
+          );
+          const unCheckedRows = prevSelectedRows.filter(
+            (prevSelectedRow) =>
+              !newSelectedRowKeys.includes(prevSelectedRow.id) &&
+              prevSelectedRow.order_status === orderStatus // Assuming you have an orderStatus variable
+          );
+          if (unCheckedRows.length > 0) {
+            const filteredPrevSelectedRows = prevSelectedRows.filter(
+              (prevSelectedRow) => !unCheckedRows.includes(prevSelectedRow)
+            );
+            return filteredPrevSelectedRows;
+          }
+          return [...prevSelectedRows, ...filteredSelectedRows];
+        } else {
+          return newSelectedRows;
+        }
+      });
+    }
+    if (newSelectedRowKeys.length === 0) {
+      setSelectedRows((prevSelectedRows) => {
+        if (prevSelectedRows) {
+          return prevSelectedRows.filter(
+            (prevSelectedRow) => prevSelectedRow.order_status !== orderStatus
+          );
+        }
+      });
+    }
   };
 
   const rowSelection = {

@@ -12,8 +12,9 @@ import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemo
 
 import styles from "./orders-view.module.scss";
 import { useAppStore } from "@/lib/store/store";
-import { getAllOrders } from "@/services/commerce/commerce";
+import { deleteOrders, getAllOrders } from "@/services/commerce/commerce";
 import { IOrder } from "@/types/commerce/ICommerce";
+import { useMessageApi } from "@/context/MessageContext";
 
 interface IOrdersByCategory {
   status: string;
@@ -26,24 +27,28 @@ export const OrdersView: FC = () => {
   const { ID: projectId } = useAppStore((state) => state.selectedProject);
   const [ordersByCategory, setOrdersByCategory] = useState<IOrdersByCategory[]>();
   const [isOpenModalRemove, setIsOpenModalRemove] = useState<boolean>(false);
-  const [selectedRows, setSelectedRows] = useState<any[] | undefined>();
+  const [selectedRows, setSelectedRows] = useState<IOrder[]>();
+
+  const { showMessage } = useMessageApi();
+
+  const fetchOrders = async () => {
+    const response = await getAllOrders(projectId);
+    if (response.status === 200) {
+      setOrdersByCategory(response.data);
+    }
+  };
 
   useEffect(() => {
     if (!projectId) return;
-    const fetchOrders = async () => {
-      const response = await getAllOrders(projectId);
-      if (response.status === 200) {
-        console.log("data", response.data);
-
-        setOrdersByCategory(response.data);
-      }
-    };
     fetchOrders();
   }, [projectId]);
 
-  const handleDeleteOrders = () => {
-    console.info("Delete orders: ", selectedRows);
+  const handleDeleteOrders = async () => {
+    const selectedOrdersIds = selectedRows?.map((order) => order.id);
+    if (!selectedOrdersIds) return;
+    await deleteOrders(selectedOrdersIds, showMessage);
     setIsOpenModalRemove(false);
+    fetchOrders();
   };
 
   const items: MenuProps["items"] = [
@@ -88,7 +93,11 @@ export const OrdersView: FC = () => {
               />
             ),
             children: (
-              <OrdersViewTable dataSingleOrder={order.orders} setSelectedRows={setSelectedRows} />
+              <OrdersViewTable
+                dataSingleOrder={order.orders}
+                setSelectedRows={setSelectedRows}
+                orderStatus={order.status}
+              />
             )
           }))}
         />

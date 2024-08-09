@@ -108,3 +108,26 @@ export const createDraft = async (
     return error;
   }
 };
+
+export const deleteOrders = async (
+  ordersId: number[],
+  // eslint-disable-next-line no-unused-vars
+  showMessage: (type: MessageType, content: string) => void
+) => {
+  const ordersIds = {
+    orders_ids: ordersId
+  };
+  try {
+    const response: GenericResponse<[]> = await API.delete(`/marketplace/orders`, {
+      data: ordersIds
+    });
+    if (response.status !== 200) {
+      throw response;
+    }
+    showMessage("success", "Orden eliminada correctamente");
+    return response;
+  } catch (error) {
+    showMessage("error", "Error al eliminar ordenes");
+    return error;
+  }
+};
