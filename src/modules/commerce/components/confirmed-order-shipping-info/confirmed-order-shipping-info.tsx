@@ -4,7 +4,7 @@ import styles from "./confirmed-order-shipping-info.module.scss";
 
 export interface ConfirmedOrderShippingInfoProps {
   title: string;
-  data: string;
+  data?: string;
   customStyles?: React.CSSProperties;
 }
 

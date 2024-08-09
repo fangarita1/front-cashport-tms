@@ -1,6 +1,7 @@
 import { IChanel } from "@/types/bre/IBRE";
 import { ISelectStringType } from "@/types/communications/ICommunications";
 import { CountryCode } from "@/types/global/IGlobal";
+import dayjs from "dayjs";
 
 interface Subline {
   id: number;
@@ -321,4 +322,9 @@ export const formatCurrencyMoney = (value: number): string => {
 
 export const stringFromArrayOfSelect = (array: ISelectStringType[]): string => {
   return array.map((item) => item.value).join(", ");
+};
+
+export const formatDateDMY = (dateString: string): string => {
+  const date = dayjs(dateString);
+  return date.format("DD/MM/YYYY");
 };

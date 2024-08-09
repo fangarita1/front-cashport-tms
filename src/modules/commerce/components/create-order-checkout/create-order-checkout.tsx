@@ -1,4 +1,4 @@
-import { FC, useContext, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Flex, Radio, RadioChangeEvent } from "antd";
 import { CaretLeft } from "phosphor-react";
@@ -10,36 +10,62 @@ import { ISelectType } from "@/types/clients/IClients";
 import styles from "./create-order-checkout.module.scss";
 import GeneralSelect from "@/components/ui/general-select";
 import AlternativeBlackButton from "@/components/atoms/buttons/alternativeBlackButton/alternativeBlackButton";
+import { createDraft, createOrder, getAdresses } from "@/services/commerce/commerce";
+import { useAppStore } from "@/lib/store/store";
+import { ICommerceAdresses, IShippingInformation } from "@/types/commerce/ICommerce";
+import { useMessageApi } from "@/context/MessageContext";
+import { GenericResponse } from "@/types/global/IGlobal";
 
 interface IShippingInfoForm {
-  addresses?: ISelectType[];
-  city?: string;
-  address?: string;
-  email?: string;
-  phone?: string;
-  comment?: string;
+  addresses: {
+    value: string;
+    label: string;
+  };
+  city: string;
+  address: string;
+  email: string;
+  phone: string;
+  comment: string;
 }
 
 const CreateOrderCheckout: FC = ({}) => {
-  const { setCheckingOut } = useContext(OrderViewContext);
+  const { setCheckingOut, client, confirmOrderData, shippingInfo } = useContext(OrderViewContext);
+  const { ID: projectId } = useAppStore((state) => state.selectedProject);
   const [radioValue, setRadioValue] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [addresses, setAddresses] = useState<ICommerceAdresses[]>([]);
   const router = useRouter();
+  const { showMessage } = useMessageApi();
 
   const {
     control,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isValid }
   } = useForm<IShippingInfoForm>({
     mode: "onChange",
-    defaultValues: {
-      addresses: [],
-      city: "Bogota quemado",
-      address: "Calle quemad",
-      email: "quemad@gmail.com",
-      phone: ""
-    }
+    defaultValues: shippingInfo ? shippingInfoToForm(shippingInfo) : undefined
   });
+  const watchSelectAddress = watch("addresses");
+
+  useEffect(() => {
+    const selectedAddress =
+      watchSelectAddress &&
+      addresses.find((address) => address.address === watchSelectAddress.label);
+    if (!selectedAddress) return;
+    setValue("city", selectedAddress?.city);
+    setValue("address", selectedAddress?.address);
+    setValue("email", selectedAddress?.email);
+  }, [watchSelectAddress]);
+
+  useEffect(() => {
+    const fetchAdresses = async () => {
+      const response = await getAdresses(client.id);
+      setAddresses(response.data);
+    };
+    fetchAdresses();
+  }, []);
 
   const handleGoBack = () => {
     setCheckingOut(false);
@@ -49,19 +75,61 @@ const CreateOrderCheckout: FC = ({}) => {
     setRadioValue(parseInt(e.target.value));
   };
 
-  const onSubmitSaveDraft = (data: IShippingInfoForm) => {
-    console.info("Guardar borrador: ", data);
+  const onSubmitSaveDraft = async (data: IShippingInfoForm) => {
+    setLoading(true);
+    router.prefetch("/comercio");
+    const createOrderModelData = {
+      shipping_information: {
+        address: data.address,
+        city: data.city,
+        dispatch_address: data.address,
+        email: data.email,
+        phone_number: data.phone,
+        comments: data.comment
+      },
+      order_summary: confirmOrderData
+    };
+
+    const response = (await createDraft(
+      projectId,
+      client.id,
+      createOrderModelData,
+      showMessage
+    )) as GenericResponse<{ id_order: number }>;
+
+    if (response.status === 200) {
+      router.push(`/comercio`);
+    }
+    setLoading(false);
   };
 
-  const onSubmitFinishOrder = (data: IShippingInfoForm) => {
-    console.info("Finalizar orden: ", data);
-
+  const onSubmitFinishOrder = async (data: IShippingInfoForm) => {
     setLoading(true);
-    setTimeout(() => {
-      const orderId = 45666;
-      router.push(`/comercio/pedidoConfirmado/${orderId}`);
-      setLoading(false);
-    }, 1000);
+    const createOrderModelData = {
+      shipping_information: {
+        address: data.address,
+        city: data.city,
+        dispatch_address: data.address,
+        email: data.email,
+        phone_number: data.phone,
+        comments: data.comment
+      },
+      order_summary: confirmOrderData
+    };
+
+    const response = (await createOrder(
+      projectId,
+      client.id,
+      createOrderModelData,
+      showMessage
+    )) as GenericResponse<{ id_order: number }>;
+    if (response.status === 200) {
+      const url = `/comercio/pedidoConfirmado/${response.data.id_order}`;
+      router.prefetch(url);
+      router.push(url);
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -89,7 +157,7 @@ const CreateOrderCheckout: FC = ({}) => {
                 field={field}
                 title="Direcciones"
                 placeholder="Seleccione una dirección"
-                options={mockAddresses}
+                options={addresses?.map((address) => address.address)}
                 customStyleContainer={{ gridColumn: "1 / span 2" }}
               />
             )}
@@ -206,20 +274,16 @@ const mockDiscounts = [
   }
 ];
 
-const mockAddresses = [
-  {
-    id: 1,
-    value: 1,
-    label: "Calle 1 # 1-1"
-  },
-  {
-    id: 2,
-    value: 2,
-    label: "Calle 2 # 2-2"
-  },
-  {
-    id: 3,
-    value: 3,
-    label: "Calle 3 # 3-3"
-  }
-];
+const shippingInfoToForm = (shippingInfo: IShippingInformation) => {
+  return {
+    addresses: {
+      label: shippingInfo.address,
+      value: shippingInfo.address
+    },
+    city: shippingInfo.city,
+    address: shippingInfo.address,
+    email: shippingInfo.email,
+    phone: shippingInfo.phone_number,
+    comment: shippingInfo.comments
+  };
+};

@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import Link from "next/link";
 import { Button, Flex, MenuProps } from "antd";
 import UiSearchInput from "@/components/ui/search-input";
@@ -11,14 +11,44 @@ import OrdersViewTable from "../../components/orders-view-table/orders-view-tabl
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
 
 import styles from "./orders-view.module.scss";
+import { useAppStore } from "@/lib/store/store";
+import { deleteOrders, getAllOrders } from "@/services/commerce/commerce";
+import { IOrder } from "@/types/commerce/ICommerce";
+import { useMessageApi } from "@/context/MessageContext";
+
+interface IOrdersByCategory {
+  status: string;
+  color: string;
+  count: number;
+  orders: IOrder[];
+}
 
 export const OrdersView: FC = () => {
+  const { ID: projectId } = useAppStore((state) => state.selectedProject);
+  const [ordersByCategory, setOrdersByCategory] = useState<IOrdersByCategory[]>();
   const [isOpenModalRemove, setIsOpenModalRemove] = useState<boolean>(false);
-  const [selectedRows, setSelectedRows] = useState<any[] | undefined>();
+  const [selectedRows, setSelectedRows] = useState<IOrder[]>();
 
-  const handleDeleteOrders = () => {
-    console.info("Delete orders: ", selectedRows);
+  const { showMessage } = useMessageApi();
+
+  const fetchOrders = async () => {
+    const response = await getAllOrders(projectId);
+    if (response.status === 200) {
+      setOrdersByCategory(response.data);
+    }
+  };
+
+  useEffect(() => {
+    if (!projectId) return;
+    fetchOrders();
+  }, [projectId]);
+
+  const handleDeleteOrders = async () => {
+    const selectedOrdersIds = selectedRows?.map((order) => order.id);
+    if (!selectedOrdersIds) return;
+    await deleteOrders(selectedOrdersIds, showMessage);
     setIsOpenModalRemove(false);
+    fetchOrders();
   };
 
   const items: MenuProps["items"] = [
@@ -52,8 +82,8 @@ export const OrdersView: FC = () => {
           </Link>
         </Flex>
         <Collapse
-          items={mockOrders?.map((order) => ({
-            key: order.status_id,
+          items={ordersByCategory?.map((order) => ({
+            key: order.status,
             label: (
               <LabelCollapse
                 status={order.status}
@@ -63,7 +93,11 @@ export const OrdersView: FC = () => {
               />
             ),
             children: (
-              <OrdersViewTable dataSingleOrder={order.orders} setSelectedRows={setSelectedRows} />
+              <OrdersViewTable
+                dataSingleOrder={order.orders}
+                setSelectedRows={setSelectedRows}
+                orderStatus={order.status}
+              />
             )
           }))}
         />
@@ -80,56 +114,3 @@ export const OrdersView: FC = () => {
 };
 
 export default OrdersView;
-
-const mockOrders = [
-  {
-    status_id: 1,
-    status: "En proceso",
-    color: "#0085FF",
-    orders: [
-      {
-        id: 12,
-        client: "SKINBOOSTER",
-        created_at: "30/09/2021",
-        city: "Bogotá",
-        contact: 3001234567,
-        total: 150000,
-        early_pay_total: 90000
-      },
-      {
-        id: 34,
-        client: "SKINBOOSTER2",
-        created_at: "31/09/2021",
-        city: "Medellin",
-        contact: 3001234567,
-        total: 200000,
-        early_pay_total: 90000
-      }
-    ]
-  },
-  {
-    status_id: 2,
-    status: "Procesados",
-    color: "#A9BA43",
-    orders: [
-      {
-        id: 56,
-        client: "SKINBOOSTER",
-        created_at: "30/09/2021",
-        city: "Barranquilla",
-        contact: 3001234567,
-        total: 100000,
-        early_pay_total: 90000
-      },
-      {
-        id: 78,
-        client: "SKINBOOSTER2",
-        created_at: "31/09/2021",
-        city: "Bogotá",
-        contact: 3001234567,
-        total: 900000,
-        early_pay_total: 90000
-      }
-    ]
-  }
-];
