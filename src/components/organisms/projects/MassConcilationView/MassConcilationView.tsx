@@ -14,6 +14,8 @@ export const MassConcilationView = () => {
   const clientIdParam = extractSingleParam(params.clientId);
   const clientId = clientIdParam ? parseInt(clientIdParam) : 0;
 
+  console.log("clientId", clientId);
+
   return (
     <div>
       {currentView === "paste" ? (
