@@ -19,7 +19,7 @@ interface ItemsSelected {
   id: number;
   current_value: number;
   selected: boolean;
-  motive_name: string;
+  motive_name: string | null;
   percentage?: number | null;
   intialAmount?: number;
 }
@@ -48,16 +48,14 @@ export const SelectAccountingAdjustment = ({
   useEffect(() => {
     if (data) {
       setDateSelect(
-        data
-          .map((item) => ({
-            id: item.id,
-            current_value: item.current_value,
-            selected: selectedRows.some((row) => row.id === item.id),
-            motive_name: item.motive_name,
-            percentage: item.percentage,
-            intialAmount: item.initial_value
-          }))
-          .flat()
+        data?.[type - 1].financial_discounts_not_legalized.map((item) => ({
+          id: item.id,
+          current_value: item.current_value,
+          selected: selectedRows.some((row) => row.id === item.id),
+          motive_name: item.motive_name,
+          percentage: item.percentage,
+          intialAmount: item.initial_value
+        }))
       );
     }
   }, [data, selectedRows]);
@@ -70,7 +68,7 @@ export const SelectAccountingAdjustment = ({
           {isLoading ? (
             <Spin size="large" style={{ margin: "auto" }} />
           ) : (
-            dateSelect.map((item, index) => (
+            dateSelect?.map((item, index) => (
               <ItemsActionsModal
                 key={index}
                 item={item}

@@ -41,7 +41,7 @@ export const SelectNoveltyNode: React.FC<Props> = ({
           {isLoading ? (
             <Spin size="large" style={{ margin: "auto" }} />
           ) : (
-            data?.map((item, index) => (
+            data?.[type].financial_discounts_not_legalized?.map((item, index) => (
               <ItemsActionsModal
                 key={index}
                 item={{
