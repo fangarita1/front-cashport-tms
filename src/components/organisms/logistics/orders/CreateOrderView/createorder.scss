@@ -41,7 +41,7 @@
 					color:var(--Black, #141414);
 					line-height: 124%;
 					font-style: normal;
-          font-size: 24px;
+                    font-size: 24px;
         }
 
         .subtitleNit {
@@ -231,6 +231,7 @@
 }
 
 .dateInputFormError {
+    width: 100% !important;
     height: 2.5rem !important;
     border: 1px dashed red !important;
     background-color: $background !important;

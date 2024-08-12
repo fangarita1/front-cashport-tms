@@ -1358,6 +1358,7 @@ export interface ITransferOrderOtherRequirements {
   modified_at: Date;
   modified_by: string;
   other_requirement_desc: string;
+  description: string
 }
 
 export interface ITransferOrderVehicle {
@@ -2895,4 +2896,28 @@ export interface VihicleDetail {
   gps_password: string;
   documents: any[];
   images: any[];
+}
+
+export interface ICompanyCode {
+  id: number;
+  description: string;
+  active: boolean;
+  created_at: string;
+  created_by: string;
+  modified_at: string | null;
+  modified_by: string | null;
+}
+
+export interface IClient {
+  id: number;
+  description: string;
+  created_at: string;
+  created_by: string;
+  modified_at: string | null;
+  modified_by: string | null;
+}
+
+export interface ISelectOptionOrders {
+  value: React.Key | null | undefined; 
+  label: string | null | undefined;
 }

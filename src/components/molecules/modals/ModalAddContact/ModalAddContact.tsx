@@ -14,7 +14,7 @@ type PropsModal = {
     setDataContacts: (value: React.SetStateAction<ITransferOrderContacts[]>) => void
 };
 
-export default function ModalAddContact(props: PropsModal) {
+export default function ModalAddContact(props: Readonly<PropsModal>) {
   const {
     isOpen,
     onClose,
@@ -36,10 +36,9 @@ export default function ModalAddContact(props: PropsModal) {
   const handleOnOk =()=>{
     if (!type) return message.error('Debe elegir un punto de contacto');
     if (name.length <= 0) return message.error('Debe digitar un nombre de contacto');
-    setDataContacts(prevContacts =>{
-      const lastitem = prevContacts.filter(f => f.contact_type == type).at(-1);    
-      const newcontact : ITransferOrderContacts ={
-        key: (lastitem != undefined ? lastitem.key +1 : 1),
+    setDataContacts(prevContacts =>{  
+      const newcontact : ITransferOrderContacts = {
+        key: prevContacts.length+1,
         contact_type: type,
         id: 0,
         id_transfer_order: 0,
@@ -65,10 +64,14 @@ export default function ModalAddContact(props: PropsModal) {
       onClose={() => onClose()}
       closeIcon={<X onClick={onClose} />}
       footer={
-        <Flex justify="space-between">
-          <SecondaryButton onClick={onClose}>Cancelar</SecondaryButton>
-          <PrincipalButton onClick={handleOnOk}>Crear contacto</PrincipalButton>
-        </Flex>
+        <Row style={{width:"100%"}}>
+          <Col span={12} style={{paddingRight: 8}}>
+            <SecondaryButton fullWidth onClick={onClose}>Cancelar</SecondaryButton>
+          </Col>
+          <Col span={12} style={{paddingLeft: 8}}>
+            <PrincipalButton fullWidth onClick={handleOnOk}>Crear contacto</PrincipalButton>
+          </Col>
+        </Row>
       }
     >
         <Flex style={{width:'100%', height: "100%"}} vertical> 
@@ -89,8 +92,7 @@ export default function ModalAddContact(props: PropsModal) {
                   setType(e)
                 }}
               />
-              </Col>
-                
+              </Col>  
               <Col span={24} style={{marginBottom: "1rem"}}>
                 <label className="locationLabels" style={{ display: 'flex' }}>
                   <Text>Nombre</Text>
