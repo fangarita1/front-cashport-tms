@@ -121,12 +121,14 @@ const RegisterNewsConcilation = ({
     try {
       if (!invoices) return;
       const invoiceList = Object.entries(invoices).flatMap(([key, category]) =>
-        category.invoices.map((invoice: { id: string; motive_id: string; difference: string }) => ({
-          invoice_id: invoice.id,
-          motive_id: invoice.motive_id,
-          difference: invoice.difference,
-          status: key
-        }))
+        category.invoices.map(
+          (invoice: { id: string; motive_id: string; difference_amount: string }) => ({
+            invoice_id: invoice.id,
+            motive_id: invoice.motive_id,
+            difference: invoice.difference_amount,
+            status: key
+          })
+        )
       );
       try {
         const response = await invoiceCreateIncident(
