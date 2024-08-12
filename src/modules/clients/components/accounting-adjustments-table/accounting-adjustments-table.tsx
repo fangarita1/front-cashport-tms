@@ -3,15 +3,15 @@ import { Button, Table, TableProps, Typography } from "antd";
 
 import { Eye } from "phosphor-react";
 import { formatDate, formatMoney } from "@/utils/utils";
-import { IFinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
+import { FinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
 import "./accounting-adjustments-table.scss";
 
 const { Text } = Typography;
 
 interface PropsInvoicesTable {
-  dataAdjustmentsByStatus: IFinancialDiscount[];
-  setSelectedRows: Dispatch<SetStateAction<IFinancialDiscount[] | undefined>>;
-  openAdjustmentDetail: (adjustment: IFinancialDiscount) => void;
+  dataAdjustmentsByStatus: FinancialDiscount[];
+  setSelectedRows: Dispatch<SetStateAction<FinancialDiscount[] | undefined>>;
+  openAdjustmentDetail: (adjustment: FinancialDiscount) => void;
   financialStatusId: number;
 }
 
@@ -23,7 +23,7 @@ const AccountingAdjustmentsTable = ({
 }: PropsInvoicesTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
-  const handleOpenDetail = (adjustment: IFinancialDiscount) => {
+  const handleOpenDetail = (adjustment: FinancialDiscount) => {
     openAdjustmentDetail(adjustment);
   };
 
@@ -35,7 +35,7 @@ const AccountingAdjustmentsTable = ({
         if (prevSelectedRows) {
           //check if the new selected rows are already in the selected rows
           const filteredSelectedRows = newSelectedRows.filter(
-            (newSelectedRow: IFinancialDiscount) =>
+            (newSelectedRow: FinancialDiscount) =>
               !prevSelectedRows.some((prevSelectedRow) => prevSelectedRow.id === newSelectedRow.id)
           );
 
@@ -76,7 +76,7 @@ const AccountingAdjustmentsTable = ({
     onChange: onSelectChange
   };
 
-  const columns: TableProps<IFinancialDiscount>["columns"] = [
+  const columns: TableProps<FinancialDiscount>["columns"] = [
     {
       title: "ID ERP",
       dataIndex: "id",

@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 import { IInvoice } from "@/types/invoices/IInvoices";
-import { IFinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
+import { FinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
 import InvoiceDetailModal from "@/modules/clients/containers/invoice-detail-modal";
 import ModalDetailAdjustment from "@/components/molecules/modals/ModalDetailAdjustment/ModalDetailAdjustment";
 import MoldalNoveltyDetail from "@/components/molecules/modals/MoldalNoveltyDetail/MoldalNoveltyDetail";
@@ -24,7 +24,7 @@ interface NoveltyModalProps {
 
 interface AdjustmentModalProps {
   clientId: number;
-  selectAdjusment?: IFinancialDiscount;
+  selectAdjusment?: FinancialDiscount;
   projectId: number;
 }
 
