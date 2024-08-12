@@ -11,7 +11,7 @@ interface ItemsActionsModalProps {
     id: number;
     current_value: number;
     selected: boolean;
-    motive_name?: string | undefined;
+    motive_name?: string | null;
     percentage?: number | null;
     intialAmount?: number;
   };

@@ -48,7 +48,7 @@ export const ModalActionAdjusment = ({ isOpen, onClose, adjustment, clientId }: 
   };
 
   const { data: noteData, isLoading } = useLegalizedFinancialDiscount({
-    typeLegalized: 0,
+    typeLegalized: 1,
     projectId,
     clientId: clientId || "0"
   });
