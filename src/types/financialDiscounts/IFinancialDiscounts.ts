@@ -24,6 +24,7 @@ export interface FinancialDiscount {
   validity_range: string | null;
   earlypay_date: string | null;
   is_legalized: number;
+  is_deleted: number;
   status_name: string;
   project_name: string;
   document_type_name: string;
@@ -35,14 +36,10 @@ export interface StatusFinancialDiscounts {
   status_id: number;
   status_name: string;
   color: string;
-  financial_discounts_legalized: FinancialDiscount[];
-  temp_discount_total_legalized: number;
-  count_legalized: number;
-  financial_discounts_not_legalized: FinancialDiscount[];
-  temp_discount_total_not_legalized: number;
-  count_not_legalized: number;
+  financial_discounts: FinancialDiscount[];
+  total: number;
+  count: number;
 }
-
 export interface FinancialDiscountsResponse {
   data: StatusFinancialDiscounts[];
 }
