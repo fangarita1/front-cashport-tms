@@ -100,28 +100,31 @@ export const ClientsViewTable = () => {
           <Text className="text">{row.client_name}</Text>
         </Link>
       ),
-      width: "30%"
+      width: "20%"
     },
     {
       align: "right",
       title: "Cartera",
       dataIndex: "total_portfolio",
       key: "total_portfolio",
-      render: (text) => <Text>{formatMoney(text)}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>,
+      width: "10%"
     },
     {
       align: "right",
       title: "Vencida",
       dataIndex: "past_due_ammount",
       key: "past_due_ammount",
-      render: (text) => <Text>{formatMoney(text)}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>,
+      width: "10%"
     },
     {
       align: "right",
       title: "Presupuesto",
       key: "budget_ammount",
       dataIndex: "budget_ammount",
-      render: (text) => <Text>{formatMoney(text)}</Text>
+      render: (text) => <Text>{formatMoney(text)}</Text>,
+      width: "10%"
     },
     {
       align: "right",
@@ -184,7 +187,7 @@ export const ClientsViewTable = () => {
 
   return (
     <main className="mainClientsTable">
-      <div className="stickykpis">
+      <div>
         <Flex justify="space-between" className="mainClientsTable_header">
           <Flex gap={"10px"}>
             <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
@@ -254,21 +257,24 @@ export const ClientsViewTable = () => {
           </Col>
         </Row>
       </div>
-      <div className="table-container">
-        <Table
-          loading={loading}
-          scroll={{ x: "max-content" }}
-          columns={columns as TableProps<any>["columns"]}
-          dataSource={tableData.map((data) => ({ ...data, key: data.client_id }))}
-          pagination={false}
-          sticky={{ offsetHeader: 0 }}
-        />
-        {hasMore && (
-          <div ref={loader} style={{ textAlign: "center", padding: "20px" }}>
-            <Spin />
-          </div>
-        )}
-      </div>
+      <Table
+        loading={loading}
+        scroll={{ x: 1350 }}
+        columns={columns as TableProps<any>["columns"]}
+        dataSource={tableData.map((data) => ({ ...data, key: data.client_id }))}
+        pagination={false}
+        sticky={
+          {
+            offsetHeader: -20,
+            offsetScroll: 0
+          } as any
+        }
+      />
+      {hasMore && !loading && (
+        <div ref={loader} style={{ textAlign: "center", padding: "20px" }}>
+          <Spin />
+        </div>
+      )}
     </main>
   );
 };
