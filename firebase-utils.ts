@@ -7,7 +7,7 @@ import { useAppStore } from "@/lib/store/store";
 const getAuth = async (
   email: string,
   password: string,
-  router: any,
+  router: AppRouterInstance,
   isSignUp: any,
   openNotification: () => void
 ) => {
@@ -41,9 +41,9 @@ const getAuth = async (
             tokenExm: `${JSON.stringify(userCred)}`
           }
         }).then((response) => {
-          localStorage.setItem(STORAGE_TOKEN, token);
           if (response.status === 200) {
-            router.push("/");
+            localStorage.setItem(STORAGE_TOKEN, token);
+            router.push("/clientes/all");
           }
         });
       })

@@ -102,7 +102,11 @@ export const SideBar = () => {
             type="primary"
             size="large"
             icon={<Gear size={26} />}
-            className={path === "/" ? "buttonIcon" : "buttonIconActive"}
+            className={
+              path === "/" || path.startsWith("/proyectos/review")
+                ? "buttonIcon"
+                : "buttonIconActive"
+            }
           >
             {isSideBarLarge && "Ajustes"}
           </Button>

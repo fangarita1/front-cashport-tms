@@ -92,6 +92,7 @@ export const LoginForm = () => {
                 placeholder="Contrasena"
                 variant="borderless"
                 required
+                autoComplete="current-password"
                 suffix={
                   <Tooltip title={showPassword ? "Hidden Password" : "Show Password"}>
                     {!showPassword ? (
