@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { Flex, Input, Tooltip, Typography, notification } from "antd";
@@ -24,7 +24,11 @@ const schema = yup.object().shape({
   email: yup.string().email().required(),
   password: yup.string().min(5).max(32).required()
 });
-export const LoginForm = () => {
+
+interface LoginFormProps {
+  setResetPassword: Dispatch<SetStateAction<boolean>>;
+}
+export const LoginForm = ({ setResetPassword }: LoginFormProps) => {
   const router = useRouter();
   const { Text, Title } = Typography;
   const [isLoading, setIsLoading] = useState(false);
@@ -58,6 +62,10 @@ export const LoginForm = () => {
 
     await getAuth(email.trim(), password, router, false, () => openNotification("topRight"));
     reset();
+  };
+  const handleForgotPassword = () => {
+    console.log("Forgot Password");
+    setResetPassword(true);
   };
 
   return (
@@ -110,7 +118,9 @@ export const LoginForm = () => {
             )}
           />
         </div>
-        <p className="forgotPassword">Olvidé mi contraseña</p>
+        <p onClick={handleForgotPassword} className="forgotPassword">
+          Olvidé mi contraseña
+        </p>
       </Flex>
 
       <PrincipalButton disabled={!isValid} loading={isLoading} htmlType="submit">

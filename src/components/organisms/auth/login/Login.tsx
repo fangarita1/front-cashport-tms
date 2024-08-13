@@ -2,11 +2,15 @@ import { Button, Flex, Image } from "antd";
 
 import { LoginForm } from "../../forms/LoginForm/LoginForm";
 import { Envelope } from "phosphor-react";
-import { InfoCardLogin } from "@/components/molecules/login/InfoCardLogin";
+import { InfoCardLogin } from "@/components/molecules/login/InfoCardLogin/InfoCardLogin";
 
 import styles from "./login.module.scss";
+import { useState } from "react";
+import { RestartPassword } from "@/components/molecules/login/RestarPassword/RestartPassword";
 
 export const LoginView = () => {
+  const [resetPassword, setResetPassword] = useState(false);
+
   return (
     <main className={styles.container}>
       <InfoCardLogin />
@@ -21,7 +25,11 @@ export const LoginView = () => {
             />
             <h3>CashPort</h3>
           </div>
-          <LoginForm />
+          {!resetPassword ? (
+            <LoginForm setResetPassword={setResetPassword} />
+          ) : (
+            <RestartPassword setResetPassword={setResetPassword} />
+          )}
         </Flex>
         <Button className={styles.contactButton}>
           Contáctanos <Envelope size={16} />
