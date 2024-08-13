@@ -2634,6 +2634,21 @@ export interface IClient {
 }
 
 export interface ISelectOptionOrders {
-  value: React.Key | null | undefined; 
+  value: string | null | undefined; 
   label: string | null | undefined;
+}
+export interface CustomOptionType {
+  value: string;
+  label: React.JSX.Element;
+  key: string;
+}
+export interface CCOptionType {
+  description: string;
+  id: number;
+  id_psl: number;
+}
+export interface PSLOptionType {
+  value: number;
+  label: string;
+  costcenters: CCOptionType[];
 }
