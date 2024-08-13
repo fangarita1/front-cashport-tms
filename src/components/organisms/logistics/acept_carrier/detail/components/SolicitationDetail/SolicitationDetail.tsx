@@ -31,9 +31,17 @@ export default function SolicitationDetail({
   return (
     <Flex className={styles.wrapper}>
       <TravelData travelData={providerDetail} />
-      <AditionalInfo aditionalInfo={providerDetail} setIsNextStepActive={setIsNextStepActive} />
+      <AditionalInfo 
+        title="Información adicional"
+        documents={providerDetail?.carrier_request_documents}
+        contacts={providerDetail?.carrier_request_contacts}
+        setIsNextStepActive={setIsNextStepActive} />
       {/*{service_type !== "3" ? <Materials materials={dataCarga} /> : <Persons persons={persons} />}*/}
-      <Materials materials={dataCarga}/>
+      <Flex vertical className={styles.sectionWrapper} style={{width: '100%'}}>
+        <h3>Materiales</h3>
+        <p>&nbsp;</p>
+        <Materials materials={dataCarga}/>
+      </Flex>
     </Flex>
   );
 }

@@ -3,34 +3,47 @@ import { Col, Flex, Row } from "antd";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 import styles from "./aditionalInfo.module.scss";
-import { ICarrierRequestDetail } from "@/types/logistics/schema";
 import { Dispatch, SetStateAction, useEffect } from "react";
 
 interface AditionalInfoProps {
-  aditionalInfo: ICarrierRequestDetail | undefined;
-  setIsNextStepActive: Dispatch<SetStateAction<boolean>>;
+  title: string;
+  documents:any;
+  contacts: any;
+  finalClient?: string;
+  otherRequirements?: any;
+  specialInstructions?: string;
+  setIsNextStepActive?: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function AditionalInfo({ aditionalInfo, setIsNextStepActive }: AditionalInfoProps) {
+const CONTACT_TYPES = {
+  ORIGIN: 1,
+  DESTINATION: 2,
+};
+
+export default function AditionalInfo({ title, documents, contacts, specialInstructions, finalClient, otherRequirements, setIsNextStepActive }: Readonly<AditionalInfoProps>) {
 
   useEffect(() => {
-    aditionalInfo?.carrier_request_documents?.length !== undefined && setIsNextStepActive(true)
+    if(setIsNextStepActive){
+      documents?.length !== undefined && setIsNextStepActive(true)
+    }
   }, []);
   
   return (
-    <Flex style={{ marginTop: "1rem" }} className={styles.wrapper}>
-      <h3>Información adicional</h3>
-      <p>&nbsp;</p>
+    <Flex className={styles.wrapper}>
+      <p className={styles.sectionTitle}>{title || "Información adicional"}</p>
       <Row style={{ width: "100%" }}>
         <Col span={24}>
-          <Flex vertical style={{ width: "99%", marginTop: "2rem" }}>
-            <h4>Documentos</h4>
+          <Flex vertical style={{ width: "99%"}}>
+            <p className={styles.title} style={{marginBottom: "0.5rem"}}>Documentos</p>
             <Row>
-              {aditionalInfo?.carrier_request_documents?.map((file) => (
-                <>
+              {documents?.map((file:any) => (
                   <Col
                     span={12}
-                    style={{ padding: "15px", borderRight: "1px solid #f7f7f7" }}
+                    style={{ 
+                      paddingLeft: "15px", 
+                      paddingRight: "15px", 
+                      paddingBottom: "0.5rem", 
+                      borderRight: "1px solid #f7f7f7" }}
                     key={`file-${file.id}`}
                   >
                     <UploadDocumentButton
@@ -51,69 +64,64 @@ export default function AditionalInfo({ aditionalInfo, setIsNextStepActive }: Ad
                       ) : undefined}
                     </UploadDocumentButton>
                   </Col>
-                </>
               ))}
               <Col span={24} style={{ paddingTop: "1rem" }}>
                 <hr style={{ borderTop: "1px solid #f7f7f7" }}></hr>
               </Col>
             </Row>
-            <Row style={{ marginTop: "2rem" }}>
+            <Row style={{ marginTop: "1rem" }}>
               <Col span={12}>
-                <h3>Datos de contacto</h3>
-                <p>&nbsp;</p>
-                <h4>Contacto inicial</h4>
-                {aditionalInfo?.carrier_request_contacts
-                  ?.filter((x: any) => x.contact_type == 1)
+                <p className={styles.subtitle} style={{marginBottom: "0.5rem"}}>Datos de contacto</p>
+                <p className={styles.bodyStrong}>Contacto inicial</p>
+                {contacts
+                  ?.filter((x: any) => x.contact_type == CONTACT_TYPES.ORIGIN)
                   .map((contact: any) => (
-                    <Row style={{ paddingTop: "0.5rem" }} key={contact.number}>
+                    <Row  key={contact.number}>
                       <Col span={12} style={{ paddingLeft: "25px" }}>
-                        {contact.name}
-                      </Col>
+                        <p className={styles.bodyReg}>{contact.name}</p>
+                      </Col>  
                       <Col span={8} style={{ textAlign: "right" }}>
-                        {contact.contact_number}
+                        <p className={styles.bodyReg}>{contact.contact_number}</p>
                       </Col>
                     </Row>
                   ))}
-                <p>&nbsp;</p>
-                <h4>Contacto final</h4>
-                {aditionalInfo?.carrier_request_contacts
-                  ?.filter((x: any) => x.contact_type == 2)
+                <p className={styles.bodyStrong} style={{marginTop: "0.5rem"}}>Contacto final</p>
+                {contacts
+                  ?.filter((x: any) => x.contact_type == CONTACT_TYPES.DESTINATION)
                   .map((contact: any) => (
-                    <Row style={{ paddingTop: "0.5rem" }} key={contact.number}>
+                    <Row  key={contact.number}>
                       <Col span={12} style={{ paddingLeft: "25px" }}>
-                        {contact.name}
+                        <p className={styles.bodyReg}>{contact.name}</p>
                       </Col>
                       <Col span={8} style={{ textAlign: "right" }}>
-                        {contact.contact_number}
+                        <p className={styles.bodyReg}>{contact.contact_number}</p>
                       </Col>
                     </Row>
                   ))}
-                <p>&nbsp;</p>
                 <Row style={{ paddingTop: "1rem" }}>
                   <Col span={12}>
-                    <h4>Cliente final</h4>
+                    <p className={styles.subtitle}>Cliente final</p>
                   </Col>
                   <Col span={8} style={{ textAlign: "right" }}>
-                    
+                      {finalClient && <p className={styles.bodyReg}>{finalClient}</p>}
                   </Col>
                 </Row>
-                <p>&nbsp;</p>
-                <h4>Requerimientos adicionales</h4>
-                <Row style={{ paddingTop: "1rem" }}>
+                <p className={styles.subtitle} style={{ paddingTop: "0.5rem" }}>Requerimientos adicionales</p>
+                <Row style={{ paddingTop: "0.5rem" }}>
                   <Col span={24}>
-                    {/*{aditionalInfo?.transfer_request_other_requeriments?.map((req: any) => (
+                    {otherRequirements?.map((req: any) => (
                       <div className={styles.selected} key={req.quantity}>
                         {req.type} <small>{req.quantity}</small>
                       </div>
-                    ))}*/}
+                    ))}
                   </Col>
                 </Row>
               </Col>
               <Col span={12}>
-                <h3>Instrucciones especiales</h3>
-                <p>&nbsp;</p>
-                <p>{/*aditionalInfo?.observation*/}</p>
-                <Flex style={{ marginTop: "24px" }}>
+                <p className={styles.subtitle} style={{marginBottom: "0.25rem"}}>Instrucciones especiales</p>
+                {specialInstructions &&
+                <p className={styles.bodyReg}>{specialInstructions}</p>}
+                <Flex style={{ marginTop: "1rem" }}>
                   <UploadDocumentButton
                     key={1}
                     title={"Nombre del documento"}
