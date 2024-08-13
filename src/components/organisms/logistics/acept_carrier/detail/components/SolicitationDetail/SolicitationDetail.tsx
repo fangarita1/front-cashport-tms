@@ -33,9 +33,10 @@ export default function SolicitationDetail({
       <TravelData travelData={providerDetail} />
       <AditionalInfo 
         title="Información adicional"
-        documents={providerDetail?.carrier_request_documents}
-        contacts={providerDetail?.carrier_request_contacts}
-        setIsNextStepActive={setIsNextStepActive} />
+        documents={providerDetail?.carrier_request_documents ?? []}
+        contacts={providerDetail?.carrier_request_contacts ?? []}
+        setIsNextStepActive={setIsNextStepActive}
+        />
       {/*{service_type !== "3" ? <Materials materials={dataCarga} /> : <Persons persons={persons} />}*/}
       <Flex vertical className={styles.sectionWrapper} style={{width: '100%'}}>
         <h3>Materiales</h3>
