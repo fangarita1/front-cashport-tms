@@ -70,7 +70,7 @@ export const NotificationsView = () => {
     <div className="notificationView">
       <Tabs
         defaultActiveKey="1"
-        style={{ height: 220 }}
+        style={{ width: "100%", height: "100%" }}
         items={ListPanel.map((item, i) => {
           return {
             label: `${item.value}`,

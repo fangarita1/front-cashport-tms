@@ -7,6 +7,32 @@
     padding-bottom: 0;
     padding: 1rem 2rem;
     border-radius: 0.5rem;
+
+
+    .ant-tabs-nav .ant-tabs-tab .ant-tabs-tab-btn {
+        color: $dark-gray;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .ant-tabs-nav .ant-tabs-tab {
+        padding-bottom: 0.25rem !important;
+
+        &.ant-tabs-tab-active .ant-tabs-tab-btn {
+            color: $black;
+            font-weight: 700;
+        }
+    }
+
+    .stickyNotification {
+        .ant-tabs-nav {
+            position: sticky !important;
+            top: 1rem;
+            margin-left: -0.5rem !important;
+            margin-right: -0.5rem !important;
+            padding-left: 0.5rem;
+        }
+    }
 }
 
 .searchBar__container {
