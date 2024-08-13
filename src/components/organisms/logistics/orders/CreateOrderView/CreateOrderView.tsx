@@ -62,6 +62,7 @@ import { RangePickerProps } from "antd/es/date-picker";
 import ModalAddContact from "@/components/molecules/modals/ModalAddContact/ModalAddContact";
 import { getCompanyCodes } from "@/services/logistics/company-codes";
 import { getClients } from "@/services/logistics/clients";
+import { getTravelDuration } from "@/utils/logistics/maps";
 
 const { Title, Text } = Typography;
 
@@ -78,9 +79,9 @@ export const CreateOrderView = () => {
   const destination = useRef<any>([]);
   const [origenIzaje, setOrigenIzaje] = useState(false);
   const [destinoIzaje, setDestinoIzaje] = useState(false);
-  const fechaInicial = useRef<Dayjs>();
+  const [fechaInicial, setFechaInicial] = useState<Dayjs | undefined>(undefined);
   const [horaInicial, setHoraInicial] = useState<Dayjs>();
-  const fechaFinal = useRef<Dayjs>();
+  const [fechaFinal, setFechaFinal] = useState<Dayjs | undefined>(undefined);
   const [horaFinal, setHoraFinal] = useState<Dayjs>();
   const [fechaInicialFlexible, setFechaInicialFlexible] = useState(-1);
   const [fechaFinalFlexible, setFechaFinalFlexible] = useState(-1);
@@ -334,7 +335,7 @@ export const CreateOrderView = () => {
       setRouteInfo(routes);
       // Check if any routes are returned
       if (routes.length > 0) {
-       
+
         const { distance, duration, geometry } = routes[0];
 
         // Valid directions, use the distance and duration for further processing
@@ -344,10 +345,7 @@ export const CreateOrderView = () => {
         };        
         setRouteGeometry(geometry); // Set the route geometry
         setDistance(parseFloat((distance/1000).toFixed(2)) + " Km");
-        var date = new Date();
-        date.setSeconds(duration);
-        var hrs = date.toISOString().substr(11, 5);
-        setTimeTravel(hrs + " Hrs")
+        calculateDuration(duration);
         return directions;
       } else {
         // No routes found
@@ -365,6 +363,18 @@ export const CreateOrderView = () => {
     }
   };
 
+  useEffect(() => {
+    const init = fechaInicial?.hour(horaInicial?.get('hour') || 0).minute(horaInicial?.get('minute') || 0).toDate() || new Date();
+    const finish = fechaFinal?.hour(horaFinal?.get('hour') || 0).minute(horaFinal?.get('minute') || 0).toDate() || new Date();
+    const duration = (finish.getTime()  - init.getTime() ) / 1000 ;
+    typeactive == '2' &&
+    calculateDuration(duration);
+  }, [typeactive, fechaInicial, fechaFinal, horaInicial, horaFinal]);
+
+  const calculateDuration = (duration: number) => {
+    const hrs = getTravelDuration(duration);
+    setTimeTravel(hrs + " Hrs")
+  }
   /* Tipo de viaje */
   const handleTypeClick = (event:any) => {
     //console.log(event);
@@ -1047,7 +1057,7 @@ export const CreateOrderView = () => {
           messageApi.error("Punto Destino es obligatorio");
         }
       }
-      if(fechaInicial.current == undefined || fechaInicial.current == null){
+      if(fechaInicial == undefined || fechaInicial == null){
         setFechaInicialValid(false);
         isformvalid = false;
         messageApi.error("Fecha Inicial es obligatorio");
@@ -1057,7 +1067,7 @@ export const CreateOrderView = () => {
         isformvalid = false;
         messageApi.error("Hora Inicial es obligatorio")
       }
-      if(fechaFinal.current == undefined || fechaFinal.current == null){
+      if(fechaFinal == undefined || fechaFinal == null){
         setFechaFinalValid(false);
         isformvalid = false;
         messageApi.error("Fecha Final es obligatorio");
@@ -1144,11 +1154,8 @@ export const CreateOrderView = () => {
     const inimin = horaInicial?horaInicial.get('minute'):0;
     const finhour = horaFinal?horaFinal.get('hour'):0;
     const finmin = horaFinal?horaFinal.get('minute'):0;
-
-    fechaInicial.current = fechaInicial.current?.hour(inihour);
-    fechaInicial.current = fechaInicial.current?.minute(inimin);
-    fechaFinal.current = fechaFinal.current?.hour(finhour);
-    fechaFinal.current = fechaFinal.current?.minute(finmin);
+    const fechaInicialToBody = fechaInicial?.hour(inihour).minute(inimin);
+    const fechaFinalToBody = fechaFinal?.hour(finhour).minute(finmin);
 
     //console.log(fechaInicial);
     //console.log(fechaFinal);
@@ -1159,8 +1166,8 @@ export const CreateOrderView = () => {
       id: 0,
       id_user: 1,
       user: cuser?.email,
-      start_date: fechaInicial.current?.toDate().toISOString(),
-      end_date: fechaFinal.current?.toDate().toISOString(),
+      start_date: fechaInicialToBody?.toDate().toISOString(),
+      end_date: fechaFinalToBody?.toDate().toISOString(),
       start_freight_equipment: String(origenIzaje?1:0),
       end_freight_equipment: String(destinoIzaje?1:0),
       rotation: "0",
@@ -1381,7 +1388,7 @@ export const CreateOrderView = () => {
                           //console.log('Selected Time: ', value);
                           //console.log('Formatted Selected Time: ', dateString);
                           //setFechaInicial(value);
-                          fechaInicial.current = value;
+                          setFechaInicial(value);
                           setFechaInicialValid(true);
                         }}
                         className={fechaInicialValid ? "dateInputForm" : "dateInputFormError"}
@@ -1449,7 +1456,7 @@ export const CreateOrderView = () => {
                           //console.log('Selected Time: ', value);
                           //console.log('Formatted Selected Time: ', dateString);
                           //setFechaFinal(value);
-                          fechaFinal.current = value;
+                          setFechaFinal(value);
                           setFechaFinalValid(true);
                         }}
                         className={fechaFinalValid ? "dateInputForm" : "dateInputFormError"}
