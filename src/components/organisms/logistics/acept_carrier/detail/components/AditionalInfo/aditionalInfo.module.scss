@@ -8,13 +8,13 @@
   width: 100%;
   background-color: $white;
   .selected{
-    background-color: #141414;
+    background-color: #3D3D3D;
     color:white;
     width: fit-content;
     padding: 5px 10px;
-    border-radius: 10px;
+    border-radius: 0.5rem;
     display: inline-block;
-    margin-right: 10px;
+    margin-right: 1rem;
   }
   .selected small{
     background-color: #f7f7f7;
@@ -42,6 +42,13 @@
   font-weight: 700;
   line-height: 32px;
   letter-spacing: -1px;
+}
+
+.bodyReg{
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0px;
 }
 
 .bodyStrong {

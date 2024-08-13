@@ -23,7 +23,6 @@ export const Responsibles =({ title }: ResponsiblesProps)=>{
                     <p className={styles.bodyReg}>100%</p>
                 </Col>
             </Row> 
-            <Divider className={styles.divider}/>
         </Flex>
     )
 }

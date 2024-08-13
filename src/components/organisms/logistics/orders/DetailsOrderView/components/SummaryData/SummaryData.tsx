@@ -1,4 +1,4 @@
-import { Col, Divider, Flex, Row, Typography } from "antd"
+import { Col, Divider, Flex, Row } from "antd"
 import styles from "./SummaryData.module.scss"
 import { ITransferOrder } from "@/types/logistics/schema";
 
@@ -10,7 +10,6 @@ interface SummaryDataProps {
     transferOrder: ITransferOrder | undefined
     optionsFlexible: {  value: number; label: string;}[]
 }
-const { Text } = Typography;
 
 export const SummaryData =({ title, routeGeometry, distance, timetravel, transferOrder, optionsFlexible }: SummaryDataProps)=>{
     
@@ -62,9 +61,9 @@ export const SummaryData =({ title, routeGeometry, distance, timetravel, transfe
                 </Col>
                 <Col span={12} style={{display: "flex", flexDirection:"column", gap:"0.5rem", alignItems:"flex-end"}}>
                     { transferOrder?.end_freight_equipment &&
-                        <Text strong>Requiere agendar izaje</Text>                      
+                        <p className={styles.bodyStrong}>Requiere agendar izaje</p>                      
                     }
-                    <Text strong>{transferOrder?.end_location?.description}</Text>
+                    <p className={styles.bodyStrong}>{transferOrder?.end_location?.description}</p>
                 </Col>
             </Row>
             <Divider className={styles.divider}/>
