@@ -24,7 +24,8 @@ import {
   Drawer,
   Card,
   Modal,
-  Spin
+  Spin,
+  Checkbox
 } from "antd";
 import React, { useRef, useEffect, useState, useContext } from "react";
 
@@ -51,10 +52,13 @@ import {
   IListData,
   ILocation,
   IMaterial,
+  ISelectOptionOrders,
   ITransferOrderRequest,
+  ITransferOrderRequestContacts,
   ITransferOrderRequestMaterials,
   ITransferOrderRequestVehiclesAsignation,
-  ITransferOrdersRequest
+  ITransferOrdersRequest,
+  IVehicleType
 } from "@/types/logistics/schema";
 
 //locations
@@ -84,7 +88,13 @@ import {
   CraneTower,
   Users,
   Eye,
-  CheckCircle
+  CheckCircle,
+  CaretDown,
+  Person,
+  User,
+  CaretLeft,
+  CaretRight,
+  Circle
 } from "@phosphor-icons/react";
 
 import "../../../../../styles/_variables_logistics.css";
@@ -97,9 +107,10 @@ import TabPane from "antd/es/tabs/TabPane";
 import FormWizard from "react-form-wizard-component";
 import "react-form-wizard-component/dist/style.css";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
-import { formatDatePlaneWithoutComma } from "@/utils/utils";
+import { formatDatePlaneWithoutComma, formatMoney } from "@/utils/utils";
 import { useTransferRequest } from "../../hooks/useTransferRequest";
-import { transferOrderMerge } from "@/services/logistics/transfer-request";
+import { createTransferRequest, transferOrderMerge } from "@/services/logistics/transfer-request";
+import { getSuggestedVehicles } from "@/services/logistics/vehicles";
 
 const { Title, Text } = Typography;
 
@@ -116,10 +127,160 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
   const [orders, setOrders] = useState<ITransferOrdersRequest>();
   const [orderRequest, setOrderRequest] = useState<ITransferOrderRequest>();
   const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
+  const [savedData, setSavedData] = useState<ITransferOrderRequestVehiclesAsignation>();
 
   /*Data second page */
-  const [vehiclesSelection, setVehiclesSelection] =
-    useState<ITransferOrderRequestVehiclesAsignation>();
+  const [vehicleKey, setVehicleKey] = useState<number | null>(null);
+  const [vehiclesSelected, setVehiclesSelected] = useState<IVehicleType[]>([]);
+  const [vehiclesSections, setVehiclesSections] = useState<number[]>([0]);
+  const [sugestedVehicles, setSugestedVehicles] = useState<IVehicleType[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [optionsVehicles, setOptionsVehicles] = useState<any>([]);
+
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange
+  };
+
+  const addVehiclesSections = () => {
+    setVehiclesSections([...vehiclesSections, vehiclesSections.length]);
+  };
+
+  const removeVehiclesSection = (index: number) => {
+    if (index === 0) return; // Prevent removal of the first section
+
+    // Remove the section
+    setVehiclesSections((prevSections) => prevSections.filter((_, i) => i !== index));
+
+    // Remove the associated vehicle if it exists
+    setVehiclesSelected((prevVehicles) => prevVehicles.filter((_, i) => i !== index));
+  };
+
+  // Function to handle quantity changes and update totals
+  const handleQuantityMaterial = (key: React.Key, sign: string) => {
+    const newData = [...dataCarga];
+    newData.forEach(item => {
+      if(item.key === key){
+        if(sign=='+'){
+          item.quantity = item.quantity + 1;
+        }
+        if(sign=='-'){
+          if(item.quantity === 1) return item.quantity
+          item.quantity = item.quantity - 1;
+        }
+      }
+    });    
+    
+    setDataCarga(newData);
+  };
+
+  const filteredVehiclesOptions = optionsVehicles.filter(
+    (option: any) => !vehiclesSelected?.some((vehicle) => vehicle.description === option.value)
+  );
+
+  let vehiclesIdx = 0;
+
+  const loadSuggestedVehicles = async () => {
+    const res = await getSuggestedVehicles(String(orderRequest?.id_service_type));
+    const result: any = [];
+    if (res.data.data.length > 0) {
+      res.data.data.forEach((item) => {
+        const strlabel = (
+          <Flex align="center" gap={12}>
+            <Circle size={24} />
+            <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "4px" }}>
+              <Flex justify="space-between">
+                <Text>
+                  <b>{item.description}</b>
+                </Text>
+                <div>{formatMoney(item.price)}</div>
+              </Flex>
+              <Text>
+                Ocupación Volumen {item.volume} - Peso {item.weight}
+              </Text>
+              <Text>Cantidad disponibles: {item.available}</Text>
+            </div>
+          </Flex>
+        );
+
+        result.push({ value: item.description, label: strlabel });
+      });
+    }
+
+    setSugestedVehicles(res.data.data);
+    setOptionsVehicles(result);
+  };
+
+  const addVehicle = (index: number, selectedOption: any) => {
+    // Find the actual vehicle object from the selected option
+    const vehicle = sugestedVehicles.find((v) => v.description === selectedOption.value);
+    console.log(vehicle);
+
+    if (vehicle) {
+      const newVehicle: IVehicleType = {
+        key: index,
+        id: vehicle.id,
+        description: vehicle.description,
+        vehicle_subtype: vehicle.vehicle_subtype,
+        actyvity_type: vehicle.actyvity_type,
+        kg_capacity: vehicle.kg_capacity,
+        m3_volume: vehicle.m3_volume,
+        width: vehicle.width,
+        height: vehicle.height,
+        aditional_info: vehicle.aditional_info,
+        length: vehicle.length,
+        passenger_capacity: vehicle.passenger_capacity,
+        speed_multiple: vehicle.speed_multiple,
+        active: vehicle.active,
+        created_at: vehicle.created_at,
+        created_by: vehicle.created_by,
+        modified_at: vehicle.modified_at,
+        modified_by: vehicle.modified_by,
+        icon: vehicle.icon,
+        image: vehicle.image,
+        quantity: 1,
+        plate_number: vehicle.plate_number
+      };
+
+      setVehiclesSelected((prevVehicles) => {
+        const updatedVehicles = [...prevVehicles];
+        updatedVehicles[index] = newVehicle;
+        return updatedVehicles;
+      });
+    }
+  };
+
+  const calculateTotalCapacities = () => {
+    let totalVolume = 0;
+    let totalWeight = 0;
+    let totalPersons = 0;
+  
+    vehiclesSelected.forEach(vehicle => {
+      totalVolume += vehicle.m3_volume * vehicle.quantity;
+      totalWeight += vehicle.kg_capacity * vehicle.quantity;
+      totalPersons += vehicle.passenger_capacity * vehicle.quantity;
+    });
+  
+    return { totalVolume, totalWeight, totalPersons };
+  };
+
+  const { totalVolume, totalWeight, totalPersons } = calculateTotalCapacities();
+
+  const usedVolume = dataCarga.reduce((sum, material) => sum + (material.m3_volume * material.quantity), 0);
+  const usedWeight = dataCarga.reduce((sum, material) => sum + (material.kg_weight * material.quantity), 0);
+
+  const volumeUsedPercentage = (usedVolume / totalVolume) * 100;
+  const weightUsedPercentage = (usedWeight / totalWeight) * 100;
+
+  console.log("vehiclesSelected:", vehiclesSelected);
+
+  useEffect(() => {
+    loadSuggestedVehicles();
+  }, [orderRequest]);
 
   /* Tipo de viaje */
   const [typeactive, setTypeActive] = useState("1");
@@ -205,6 +366,12 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
     }
   }, [isNextStepActive]);
 
+  useEffect(() => {
+    if (!!savedData) {
+      setOrderRequest(savedData.stepOne.transferRequest);
+    }
+  }, [savedData]);
+
   const onTabSelect = (id: string) => {
     setOrderRequest(orders?.orders.find((a) => a.id === Number(id)));
   };
@@ -250,7 +417,6 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
       mat?.material?.forEach(async (m) => {
         const newvalue: IMaterial = m;
         newvalue.quantity = mat.quantity;
-        console.log(newvalue);
         await setDataCarga((dataCarga) => [...dataCarga, newvalue]);
       });
     });
@@ -284,7 +450,6 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
       }
 
       if (routeGeometry) {
-        console.log(routeGeometry);
         const datajson: GeoJSON.Feature = {
           type: "Feature",
           geometry: routeGeometry,
@@ -330,9 +495,6 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
   // calculate direction
   const calcRouteDirection = async () => {
     //if (origin.length > 2) {
-    console.log("entro0");
-    console.log("entro1:" + origin.current.length);
-    console.log("entro2:" + destination.current.length);
     if (origin.current.length == 0 || destination.current.length == 0) return;
 
     try {
@@ -359,15 +521,11 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
       //setOrigin([-74.07231699675322, 4.66336863727521]);
       //setDestination([-74.027990000000000, 4.918570000000000]);
 
-      console.log(origin);
-      console.log(destination);
-
       const response = await axios.get(
         `https://api.mapbox.com/directions/v5/mapbox/driving/${origin.current[0]},${origin.current[1]};${destination.current[0]},${destination.current[1]}?steps=true&geometries=geojson&access_token=${mapsAccessToken}`
       );
 
       const routes = response.data.routes;
-      console.log("routes=>", routes);
       setRouteInfo(routes);
       // Check if any routes are returned
       if (routes.length > 0) {
@@ -415,6 +573,7 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
   const handleNext = async () => {
     if (view === "solicitation") {
       setView("vehicles");
+      createTransferRequest();
     } else if (view === "vehicles") {
       setView("carrier");
     }
@@ -545,20 +704,29 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
 
   const columnsVehiclesMaterial: TableProps<IMaterial>["columns"] = [
     {
-      title: "CR",
+      title: "Total",
       dataIndex: "quantity",
       key: "quantity",
       render: (total) => <Text>{total}</Text>,
       sorter: (a, b) => a.quantity - b.quantity,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      align: "center"
     },
     {
       title: "Cantidad en el trayecto",
       dataIndex: "",
       key: "",
-      render: () => <Text>a</Text>,
+      render: (_, record) => (
+        <Flex align="center" justify="center">
+          <CaretLeft onClick={() => handleQuantityMaterial(record.key, "-")} />
+          &nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;
+          <CaretRight onClick={() => handleQuantityMaterial(record.key, "+")} />
+        </Flex>
+      ),
       sorter: (a, b) => a.id - b.id,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      align: "center",
+      width: "10%"
     },
     {
       title: "SKU",
@@ -566,7 +734,8 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
       dataIndex: "sku",
       render: (text) => <Text>{text}</Text>,
       sorter: (a, b) => a.quantity - b.quantity,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      align: "center"
     },
     {
       title: "Nombre",
@@ -588,7 +757,8 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
         </>
       ),
       sorter: (a, b) => a.mt_width - b.mt_width,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      align: "center"
     },
     {
       title: "Volumen",
@@ -596,7 +766,8 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
       dataIndex: "m3_volume",
       render: (text) => <Text>{text}</Text>,
       sorter: (a, b) => Number(a.m3_volume) - Number(b.m3_volume),
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      align: "center"
     },
     {
       title: "Peso",
@@ -605,10 +776,10 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
       render: (text) => <Text>{text}</Text>,
       sorter: (a, b) => a.kg_weight - b.kg_weight,
       showSorterTooltip: false,
-      align: "right"
+      align: "center"
     },
     {
-      title: "",
+      title: "Alertas",
       key: "buttonSee",
       width: 64,
       dataIndex: "id",
@@ -617,7 +788,43 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
           <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Warning size={"1.3rem"} />} />
           <Button style={{ backgroundColor: "#F7F7F7" }} icon={<Eye size={"1.3rem"} />} />
         </Flex>
-      )
+      ),
+      align: "center"
+    }
+  ];
+
+  const columnsVehiclesPerson: TableProps<ITransferOrderRequestContacts>["columns"] = [
+    {
+      title: "Nombre",
+      key: "name",
+      dataIndex: "name",
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => a.name.localeCompare(b.name),
+      showSorterTooltip: false
+    },
+    {
+      title: "Telefono",
+      dataIndex: "contact_number",
+      key: "contact_number",
+      render: () => <Text>a</Text>,
+      sorter: (a, b) => a.contact_number - b.contact_number,
+      showSorterTooltip: false
+    },
+    {
+      title: "PSL",
+      key: "psl",
+      dataIndex: "psl",
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => Number(a.id_psl) - Number(b.id_psl),
+      showSorterTooltip: false
+    },
+    {
+      title: "CC",
+      key: "id_cost_center",
+      dataIndex: "id_cost_center",
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => Number(a.id_cost_center) - Number(b.id_cost_center),
+      showSorterTooltip: false
     }
   ];
 
@@ -1105,127 +1312,185 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
     }
   ];
 
+  const TitleComponent = ({ state, id }: { state: string; id: number }) => (
+    <div className="collapseHeader">
+      <div className="collapseJustify">
+        <div className="collapseStateContainer">
+          {state === "Carga" ? (
+            <Truck size={27} color="#FFFFFF" weight="fill" />
+          ) : state === "Izaje" ? (
+            <CraneTower size={27} color="#FFFFFF" weight="fill" />
+          ) : (
+            <User size={27} color="#FFFFFF" weight="fill" />
+          )}
+          <Text className="collapseState">{state}</Text>
+        </div>
+        <div>
+          <CaretDown
+            className={`collapseCaret ${id === vehicleKey && "collapseRotate"}`}
+            size={24}
+          />
+        </div>
+      </div>
+      <div className="collapseFromTo">
+        <div className="collapseFromToContainer">
+          <Text className="collapseTitle">Origen</Text>
+          <Text className="collapseSubtitle">CENTRO EMPRESARIAL DORADO PLAZA</Text>
+        </div>
+        <div className="collapseFromToContainer collapseRight">
+          <div className="collapseFromToContainer">
+            <Text className="collapseTitle">Destino</Text>
+            <Text className="collapseSubtitle">BASE BARRANCABERMEJA</Text>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   /*Acordion to vehicles selection */
   const actionsOptionsVehiclesSelection = [
     {
       key: 0,
       style: { border: "1px solid #dddddd", borderRadius: "4px" },
-      label: (
-        <Flex className="collapseByActionVehicles__label">
-          <Flex style={{ paddingTop: "1rem" }}>
-            <Flex>
-              <div className="serviceTypeLabel">
-                {vehiclesSelection?.stepOne.transferRequest.map((a) =>
-                  a.id_service_type === 0 ? <Truck /> : <CraneTower />
-                )}{" "}
-                <Truck /> Camion C-100
-              </div>
-            </Flex>
-            {vehiclesSelection?.stepOne.transferRequest.map(
-              (a) =>
-                a.id_service_type === 0 && (
-                  <Flex>
-                    <Users />
-                  </Flex>
-                )
-            )}
-            <Flex>
-              <CheckCircle color="#CBE71E" />
-            </Flex>
-          </Flex>
-          <Flex>
-            <Flex>
-              <Flex>
-                <div>Origen</div>
-                <div>Centro empresarial dorado plaza</div>
-              </Flex>
-            </Flex>
-            {vehiclesSelection?.stepOne.transferRequest.map(
-              (a) =>
-                a.id_service_type === 0 && (
-                  <>
-                    <hr style={{ borderTop: "1px solid #DDDDD" }} />
-                    <Flex>
-                      <Flex>
-                        <div>Destino</div>
-                        <div>Base barrancabermeja</div>
-                      </Flex>
-                    </Flex>
-                  </>
-                )
-            )}
-            <hr style={{ borderTop: "1px solid #DDDDD" }} />
-            <Col>
-              <Flex>
-                <div>Destino</div>
-                <div>Base barrancabermeja</div>
-              </Flex>
-            </Col>
-          </Flex>
-        </Flex>
-      ),
+      label: <TitleComponent state={"Carga"} id={0} />,
+      showArrow: false,
       children: (
-        <Flex className="informationContainer">
-          {/*Top section */}
-          <Flex className="topSection">
-            <div>Input</div>
-            <Trash />
-          </Flex>
-          <Flex>
-            <div>Volumen utilizado</div>
-            <div>40%</div>
-          </Flex>
-          <hr style={{ borderTop: "1px solid #DDDDD" }} />
-          <Flex>
-            <div>Volumen máximo</div>
-            <div>00 m3</div>
-          </Flex>
-          <hr style={{ borderTop: "1px solid #DDDDD" }} />
-          <Flex>
-            <div>Peso utilizado</div>
-            <div>10%</div>
-          </Flex>
-          <hr style={{ borderTop: "1px solid #DDDDD" }} />
-          <Flex>
-            <div>Peso máximo</div>
-            <div>00 kg</div>
-          </Flex>
-          {/*Second section */}
-          <Flex>
-            <div>Input</div>
-            <Trash />
-          </Flex>
-          <Flex>
-            <div>Volumen productos</div>
-            <div>00</div>
-          </Flex>
-          <hr style={{ borderTop: "1px solid #DDDDD" }} />
-          <Flex>
-            <div>Peso productos</div>
-            <div>00 kg</div>
-          </Flex>
-          <hr style={{ borderTop: "1px solid #DDDDD" }} />
-          <Flex>
-            <div>Productos</div>
-            <div>20/40</div>
-          </Flex>
-          <hr style={{ borderTop: "1px solid #DDDDD" }} />
-          <Flex>
-            <Button disabled>Embalaje</Button>
-          </Flex>
-          <Table columns={columnsVehiclesMaterial} dataSource={dataCarga} pagination={false} />
-          {/**Buttons */}
-          <Flex>
-            <Button>Agregar vehíchulo</Button>
-            <Button>Guardar</Button>
-          </Flex>
-        </Flex>
+        <div className="collapseInformationWrapper">
+          {vehiclesSections.map((section, index) => (
+            <div className="collapseInformationContainer" key={index}>
+              <div className="collapseResumeWrapper">
+                <div className="collapseTopSection">
+                  <Select
+                    showSearch
+                    placeholder="Agregar vehículo"
+                    style={{ width: "28%", height: "45px" }}
+                    optionFilterProp="children"
+                    value={vehiclesSelected.find((v) => v.key === index)?.description || null}
+                    options={filteredVehiclesOptions.map((option: ISelectOptionOrders) => ({
+                      value: option.value,
+                      key: option.value,
+                      label: option.label
+                    }))}
+                    onSelect={(value) => {
+                      const selectedVehicle = optionsVehicles.find(
+                        (option: { value: string }) => option.value === value
+                      );
+                      addVehicle(index, selectedVehicle);
+                    }}
+                    listHeight={510}
+                    dropdownStyle={{ width: "600px" }}
+                  />
+                  <Trash
+                    size={18}
+                    onClick={() => removeVehiclesSection(index)}
+                    style={{ cursor: index === 0 ? "not-allowed" : "pointer" }}
+                  />
+                </div>
+                {dataCarga.filter((a) => a.id_type_material === 3) ? (
+                  <>
+                    <div className="collapseResumeContainer">
+                      <div className="collapseResum">
+                        <div className="collapseResumItem collapseBorder">
+                          <Text className="collapseText">Volumen utilizado</Text>
+                          <Text className="collapseText collapseBold">
+                            {vehiclesSelected.length === 0 ? 0 : volumeUsedPercentage.toFixed(2)} %
+                          </Text>
+                        </div>
+                        <div className="collapseResumItem collapseBorder">
+                          <Text className="collapseText">Volumen máximo</Text>
+                          <Text className="collapseText collapseBold">
+                            {totalVolume.toFixed(2)} m3
+                          </Text>
+                        </div>
+                        <div className="collapseResumItem collapseBorder">
+                          <Text className="collapseText">Peso utilizado</Text>
+                          <Text className="collapseText collapseBold">
+                            {vehiclesSelected.length === 0 ? 0 : weightUsedPercentage.toFixed(2)} %
+                          </Text>
+                        </div>
+                        <div className="collapseResumItem">
+                          <Text className="collapseText">Peso máximo</Text>
+                          <Text className="collapseText collapseBold">
+                            {totalWeight.toFixed(2)} kg
+                          </Text>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="collapseResumeContainer">
+                      <div className="collapseResum">
+                        <div className="collapseResumItem collapseBorder">
+                          <Text className="collapseText">Volumen productos</Text>
+                          <Text className="collapseText collapseBold">{usedVolume} m3</Text>
+                        </div>
+                        <div className="collapseResumItem collapseBorder">
+                          <Text className="collapseText">Peso productos</Text>
+                          <Text className="collapseText collapseBold">{usedWeight} kg</Text>
+                        </div>
+                        <div className="collapseResumItem collapseBorder">
+                          <Text className="collapseText">Productos</Text>
+                          <Text className="collapseText collapseBold">{dataCarga.reduce((total, item) => total + item.quantity, 0)}/40</Text>
+                        </div>
+                        <div className="collapseResumItem">
+                          <Button disabled className="collapseBaggageButton">
+                            Embalaje
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="collapsePersonsResumeContainer">
+                    <div className="collapsePersonsResum">
+                      <div className="collapsePersonsResumItem collapsePersonsBorder">
+                        <Text className="collapsePersonsText">Personas</Text>
+                        <Text className="collapsePersonsText collapsePersonsBold">{`5/${totalPersons}`}</Text>
+                      </div>
+                      <div className="collapsePersonsResumItem">
+                        <Button disabled className="collapsePersonsAcomodationButton">
+                          Acomodación
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div>
+                {dataCarga.filter((a) => a.id_type_material === 2) ? (
+                  <Table
+                    columns={columnsVehiclesMaterial}
+                    dataSource={dataCarga}
+                    pagination={false}
+                    rowSelection={rowSelection}
+                    rowClassName={(record) =>
+                      selectedRowKeys.includes(record.id) ? "selectedRow" : ""
+                    }
+                  />
+                ) : (
+                  <Table
+                    columns={columnsVehiclesPerson}
+                    dataSource={[]}
+                    pagination={false}
+                    rowSelection={rowSelection}
+                    rowClassName={(record) =>
+                      selectedRowKeys.includes(record.id) ? "selectedRow" : ""
+                    }
+                  />
+                )}
+              </div>
+            </div>
+          ))}
+          <div className="collapseButtons">
+            <Button className="collapseAddVehicleButton" onClick={addVehiclesSections}>
+              Agregar vehíchulo
+            </Button>
+            <Button className="collapseSaveButton">Guardar</Button>
+          </div>
+        </div>
       )
     }
   ];
 
   const handleComplete = () => {
-    console.log("Form completed!");
     // Handle form completion logic here
   };
   const tabChanged = ({ prevIndex, nextIndex }: { prevIndex: number; nextIndex: number }) => {
@@ -1237,12 +1502,12 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
     <>
       {contextHolder}
       <Flex className="mainCreateOrder">
-        <Row className="orderContainer">
-          <Col>
-            <Row style={{ width: "100%", justifyContent: "center" }}>
-              <Col span={16} style={{ padding: "16px 0" }}>
+        <Flex className="orderContainer">
+          <Flex style={{ flexDirection: "column" }}>
+            <Flex style={{ width: "100%", justifyContent: "center" }}>
+              <Flex style={{ padding: "16px 0" }}>
                 <Flex className="stepper">
-                  <Col span={16}>
+                  <Flex>
                     <Flex justify="space-evenly" style={{ width: "100%" }}>
                       {steps.map((step, index) => {
                         const isCurrentStep = index === currentStepIndex;
@@ -1254,7 +1519,7 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
                             : "#969696";
                         const fontWeight = isCurrentStep ? "bold" : "normal";
                         return (
-                          <Flex>
+                          <Flex key={index}>
                             <Flex>
                               {index > 0 && <span style={{ margin: "0 8px", width: "" }}>-</span>}
                             </Flex>
@@ -1269,7 +1534,7 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
                                     height: 24,
                                     borderRadius: "50%",
                                     background: stepColor,
-                                    color: "white",
+                                    color: isCompletedStep ? "black" : "white",
                                     fontWeight: fontWeight
                                   }}
                                 >
@@ -1284,13 +1549,13 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
                         );
                       })}
                     </Flex>
-                  </Col>
+                  </Flex>
                 </Flex>
-              </Col>
-            </Row>
-            <Row style={{ display: "flex", flexDirection: "column", padding: "32px 0" }}>
-              <Col style={{ display: "flex", justifyContent: "space-between" }}>
-                <Flex>
+              </Flex>
+            </Flex>
+            <Flex style={{ flexDirection: "column", padding: "24px 0" }}>
+              <Flex style={{ justifyContent: "space-between" }}>
+                <div>
                   <Title style={{ fontWeight: "700", fontSize: "24px", lineHeight: "36px" }}>
                     {view === "solicitation"
                       ? "Solicitud de transferencia"
@@ -1298,7 +1563,20 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
                         ? "Asignación de vehículos"
                         : "Selección de proveedor"}
                   </Title>
-                </Flex>
+                  {view === "vehicles" && (
+                    <Flex className="vehiclesSubtitle" gap={10}>
+                      <label className="vehiclesSubtitleSugestion">
+                        <p>Vehículos sugeridos</p>
+                      </label>
+                      <div className="vehiclesSubtitleInformation">
+                        <p className="vehiclesSubtitleInformationVehicle">Camion C-100</p>
+                        <label className="vehiclesSubtitleInformationQuantity">
+                          <p className="vehiclesSubtitleInformationQuantityNumber">01</p>
+                        </label>
+                      </div>
+                    </Flex>
+                  )}
+                </div>
                 <Flex>
                   <Button
                     style={{
@@ -1836,18 +2114,21 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
                             @import url("https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css");
                         `}</style>
                 </Modal>
-              </Col>
-            </Row>
+              </Flex>
+            </Flex>
             {!!isLoading ? (
               <Spin style={{ display: "flex", justifyContent: "center", marginTop: "10%" }} />
             ) : view === "solicitation" ? (
-              <Row style={{ width: "100%", flexDirection: "column" }}>
-                <Col>
+              <Flex style={{ width: "100%", flexDirection: "column" }}>
+                <Flex style={{ flexDirection: "column" }}>
                   <Tabs defaultActiveKey={String(ordersId[0])} onChange={onTabSelect}>
                     {ordersId.map((a) => (
-                      <TabPane key={a} tab={<h4>{a}</h4>}>
-                        <Row style={{ width: "100%" }} className="contentRow">
-                          <Col span={24} style={{ marginBottom: "1.5rem" }}>
+                      <TabPane key={a} tab={<h4>{a}</h4>} style={{ padding: "24px 0" }}>
+                        <Flex
+                          style={{ width: "100%", flexDirection: "column" }}
+                          className="contentRow"
+                        >
+                          <Flex style={{ padding: "24px 0", flexDirection: "column" }}>
                             <Flex>
                               <h5
                                 style={{
@@ -1859,9 +2140,9 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
                                 {a}
                               </h5>
                             </Flex>
-                          </Col>
+                          </Flex>
 
-                          <Col span={24}>
+                          <Flex style={{ flexDirection: "column" }}>
                             <Collapse
                               defaultActiveKey={"0"}
                               className="collapseByAction"
@@ -1872,47 +2153,30 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
                               ghost
                               items={actionsOptions}
                             />
-                          </Col>
-                        </Row>
+                          </Flex>
+                        </Flex>
                       </TabPane>
                     ))}
                   </Tabs>
-                </Col>
-              </Row>
+                </Flex>
+              </Flex>
             ) : view === "vehicles" ? (
-              <Row>
-                <Col>
-                  <Flex>
-                    <label>
-                      <p>Vehículos sugeridos</p>
-                    </label>
-                    <Row style={{ paddingTop: "1rem" }}>
-                      <Col span={24}>
-                        <div className="vehicles">
-                          Camion C-100 <small>01</small>
-                        </div>
-                      </Col>
-                      <Col span={24}>
-                        <Collapse
-                          defaultActiveKey={"0"}
-                          className="collapseByAction"
-                          style={{ width: "100%" }}
-                          expandIconPosition="end"
-                          accordion={false}
-                          bordered={false}
-                          ghost
-                          items={actionsOptionsVehiclesSelection}
-                        />
-                      </Col>
-                    </Row>
-                  </Flex>
-                </Col>
-              </Row>
+              <div>
+                <Flex style={{ padding: "24px 0" }}>
+                  <Collapse
+                    onChange={(item) => setVehicleKey(Number(item[0]))}
+                    expandIconPosition="end"
+                    defaultActiveKey={0}
+                    ghost
+                    items={actionsOptionsVehiclesSelection}
+                  />
+                </Flex>
+              </div>
             ) : (
               <p>Seleccion de proveedor</p>
             )}
-          </Col>
-        </Row>
+          </Flex>
+        </Flex>
         <Flex justify="space-between" style={{ marginTop: "24px" }}>
           <Flex align="flex-start">
             <Button className="backButton" onClick={handleBack}>

@@ -1473,8 +1473,8 @@ export interface ITransferOrderRequestContacts {
   contact_type: number;
   name: string;
   contact_number: number;
-  id_psl: string | null | undefined;
-  id_cost_center: string | null | undefined;
+  id_psl: string;
+  id_cost_center: string;
   active: number;
   created_at: string;
   created_by: string;
@@ -1661,9 +1661,9 @@ export interface ITransferRequestMaterialStepOne {
  * interface.
  */
 export interface ITransferOrderRequestVehiclesAsignation {
-  general: ITransferRequestVehiclesSugest[];
+  general: ITransferRequestVehiclesSugest;
   stepOne: {
-    transferRequest: ITransferRequestStepOne[],
+    transferRequest: ITransferOrderRequest,
     transferRequestJourneys: ITransferRequestJourneyStepOne[],
     transferRequestMaterial: ITransferRequestMaterialStepOne[]
   }
@@ -1676,7 +1676,7 @@ export interface ITransferOrderRequestVehiclesAsignation {
  * interface.
  */
 export interface ITransferRequestVehiclesSugest {
-  transferRequestVehiclesSugest: any;
+  transferRequestVehiclesSugest: IVehicleType[];
 }
 /**
  * Exposes all fields present in transfer_request_journey_info as a typescript

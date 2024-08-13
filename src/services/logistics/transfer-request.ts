@@ -18,3 +18,8 @@ export const transferOrderMerge = async (ordersId: number[]): Promise<GenericRes
   const response: GenericResponsePage<ITransferOrdersRequest> = await API.post(`/transfer-order/merge`, {orders: ordersId});
   return response;
 };
+
+export const createTransferRequest = async (): Promise<GenericResponsePage<ITransferOrdersRequest>> => {
+  const response: GenericResponsePage<ITransferOrdersRequest> = await API.post(`/transfer-order`, {orders: 1});
+  return response;
+};
