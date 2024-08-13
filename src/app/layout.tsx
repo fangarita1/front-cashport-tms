@@ -20,6 +20,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </head>
         <body>
           <AntdRegistry>{children}</AntdRegistry>
+          <script id="ze-snippet" async src="https://static.zdassets.com/ekr/snippet.js?key=df419fa3-ccdd-477b-8d9a-5ce2c02b2812">
+          </script>
         </body>
       </html>
     </ConfigProvider>
