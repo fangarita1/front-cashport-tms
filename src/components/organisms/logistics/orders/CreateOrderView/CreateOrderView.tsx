@@ -18,7 +18,7 @@ import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 
 //schemas
-import { IAditionalByMaterial, IClient, ICompanyCode, ICreateRegister, IFormTransferOrder, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ISelectOptionOrders, ITransferOrder, ITransferOrderContacts, ITransferOrderDocuments, ITransferOrderOtherRequirements, ITransferOrderPersons, IVehicleType, TransferOrderDocumentType } from "@/types/logistics/schema";
+import { CustomOptionType, IAditionalByMaterial, IClient, ICompanyCode, ICreateRegister, IFormTransferOrder, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ISelectOptionOrders, ITransferOrder, ITransferOrderContacts, ITransferOrderDocuments, ITransferOrderOtherRequirements, ITransferOrderPersons, IVehicleType, PSLOptionType, TransferOrderDocumentType } from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
@@ -154,7 +154,7 @@ export const CreateOrderView = () => {
   const loadLocations = async () => {
     if(locations.length >0 ) return;
     const result = await getAllLocations();
-    if(result.data.data.length > 0){
+    if(result?.data?.data?.length > 0){
       //console.log(result.data.data);
       
       const listlocations: any[] | ((prevState: ILocation[]) => ILocation[]) = [];
@@ -493,46 +493,19 @@ export const CreateOrderView = () => {
       key: 'typeid',
     }
   ];
-  
-  const [optionsMaterial, setOptionsMaterial] = useState<any>([]);//useState<SelectProps<object>['options']>([]);
+
+  const [optionsMaterial, setOptionsMaterial] = useState<CustomOptionType[]>([]);
   const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
 
   let cargaIdx = 0;
 
-  const searchResultMaterial = async (query: string) => {
-    const res = await (getSearchMaterials(query));
-    const result:any = [];
-    //console.log (res);
-    if(res.data.data.length > 0){
-      res.data.data.forEach((item) => {        
-        const strlabel = <div style={{ display: 'flex', alignItems: "center"}}>
-                            <Col span={20}>
-                              <Text>
-                                  {item.type_description} - {item.description}
-                                  <br></br>
-                                  Volumen {item.m3_volume} m3 - Peso {item.kg_weight} Kg
-                              </Text>
-                            </Col>
-                            <Col span={4} style={{ display: 'flex', justifyContent: "flex-end"}}>
-                              <button className="btnagregar active" onClick={() => addMaterial(item)}>Agregar</button>
-                            </Col>
-                          </div>;
-
-        result.push({value:item.description, label: strlabel})
-      });      
-    }
-
-    return result;
-  }     
-
-
   const loadMaterials = async () => {
     if(optionsMaterial !== undefined && optionsMaterial.length >0 ) return;
 
-    const res = await (getAllMaterials());
+    const res = await getAllMaterials();
     const result:any = [];
     //console.log (res);
-    if(res.data.data.length > 0){
+    if(res?.data?.data?.length > 0){
       res.data.data.forEach((item) => {
         const strlabel = <div style={{ display: 'flex', alignItems: "center"}}>
                             <Col span={20}>
@@ -650,7 +623,7 @@ export const CreateOrderView = () => {
     },
   ];
 
-  const [optionsVehicles, setOptionsVehicles] = useState<any>([]);//useState<SelectProps<object>['options']>([]);
+  const [optionsVehicles, setOptionsVehicles] = useState<CustomOptionType[]>([]);
   const [dataVehicles, setDataVehicles] = useState<IVehicleType[]>([]);
 
   let vehiclesIdx = 0;
@@ -659,7 +632,7 @@ export const CreateOrderView = () => {
     const res = await getSuggestedVehicles(typeactive);
     const result:any = [];
     //console.log (res);
-    if(res.data.data.length > 0){
+    if(res?.data?.data?.length > 0){
       res.data.data.forEach((item) => {
         const strlabel = <div style={{ display: 'flex', alignItems: "center"}}>
                             <Col span={20}>
@@ -749,7 +722,8 @@ export const CreateOrderView = () => {
       ]
     },
   ]
-  const [optionsPSL, setOptionsPSL] = useState<SelectProps<object>['options']>([]);
+
+  const [optionsPSL, setOptionsPSL] = useState<PSLOptionType[]>([]);
   const [dataPsl, setDataPsl] = useState<IOrderPsl[]>(dataPslDefault);
 
   const loadPSL = async () => {
@@ -757,9 +731,9 @@ export const CreateOrderView = () => {
 
     const res = await getPsl();
     const result:any = [];
-    if(res.data.data.length > 0){
+    if(res?.data?.data?.length > 0){
       res.data.data.forEach((item) => {
-        result.push({value: item.id, label: item.description, costCenters: item.cost_center})
+        result.push({value: item.id, label: item.description, costcenters: item.cost_center})
       });      
     }
     setOptionsPSL(result); 
@@ -772,7 +746,7 @@ export const CreateOrderView = () => {
   const setOptionsCostCenter = (idPsl:number) => {
     const pslFinded =  optionsPSL && optionsPSL.find(option => option.value === idPsl)
     if( !pslFinded) return []
-    return pslFinded.costCenters.map((c:any)=>({value: c.id, label: c.description}))
+    return pslFinded.costcenters.map((c:any)=>({value: c.id, label: c.description}))
   }
 
   const addPsl = async () =>{
@@ -865,7 +839,7 @@ export const CreateOrderView = () => {
     },
   ];
 
-  const [optionsRequirements, setOptionsRequirements] = useState<SelectProps<object>['options']>([]);
+  const [optionsRequirements, setOptionsRequirements] = useState<CustomOptionType[]>([]);
   const [dataRequirements, setDataRequirements] = useState<ITransferOrderOtherRequirements[]>([]);
 
   let requirementsIdx = 0;
@@ -876,7 +850,7 @@ export const CreateOrderView = () => {
     const res = await getOtherRequirements();
     const result:any = [];
     //console.log (res);
-    if(res.data.data.length > 0){
+    if(res?.data?.data?.length > 0){
       res.data.data.forEach((item) => {
         const strlabel = <div style={{ display: 'flex', alignItems: "center"}}>
                           <Col span={20}>
@@ -1002,7 +976,7 @@ export const CreateOrderView = () => {
   
       const res = await getCompanyCodes();
       let result: any = [];
-      if(res.data.data.length > 0){
+      if(res?.data?.data?.length > 0){
         result = res.data.data.map((item) => ({value: item.id.toString(), label: item.description}));      
       }
       setOptionsCompanyCodes(result); 
@@ -1021,7 +995,7 @@ export const CreateOrderView = () => {
   
       const res = await getClients();
       let result: any = [];
-      if(res.data.data.length > 0){
+      if(res?.data?.data?.length > 0){
         result = res.data.data.map((item) => ({value: item.id, label: item.description}));      
       }
       setOptionsClients(result); 
@@ -1561,10 +1535,16 @@ export const CreateOrderView = () => {
                       showSearch
                       allowClear
                       placeholder="Buscar material"                 
-                      style={{ width:'100%', height: "2.5rem" }}
-                      optionFilterProp="children"
+                      options={filteredMaterialOptions}
                       value={null}
-                      options={filteredMaterialOptions.map(((option: ISelectOptionOrders) => ({value: option.value, key: option.value, label: option.label})))}
+                      style={{ width:'100%', height: "2.5rem" }}
+                      optionFilterProp="value"
+                      filterOption={(input: string, option) => {
+                        if (option) {
+                          return option.value.toLowerCase().includes(input.toLowerCase());
+                        }
+                        return false;
+                      }}
                     />
                   </Col>
                   <Col span={12}/>
@@ -1637,13 +1617,18 @@ export const CreateOrderView = () => {
                     </Text>
                     <Select
                         showSearch
+                        allowClear
                         placeholder="Agregar vehículo"                  
-                        style={{ width:"100%", height: "2.5rem" }}
-                        optionFilterProp="children"
+                        options={filteredVehiclesOptions}
                         value={null}
-                        options={filteredVehiclesOptions.map(((option: ISelectOptionOrders) => 
-                          ({value: option.value, key: option.value, label: option.label})))
-                        }
+                        style={{ width:"100%", height: "2.5rem" }}
+                        optionFilterProp="value"
+                        filterOption={(input: string, option) => {
+                          if (option) {
+                            return option.value.toLowerCase().includes(input.toLowerCase());
+                          }
+                          return false; 
+                        }}
                       />
                   </Col>
                   <Col span={12}/>
@@ -1699,8 +1684,9 @@ export const CreateOrderView = () => {
                       Product Service Line (PSL)
                     </Text>
                     <Select
-                        options={optionsPSL}
+                        showSearch
                         placeholder={"Selecciona PSL"}
+                        options={optionsPSL}
                         className="puntoOrigen dateInputForm" 
                         onChange={(e)=> {
                           setDataPsl(prevDataPsl => 
@@ -1708,6 +1694,13 @@ export const CreateOrderView = () => {
                               i === pslIndex ? { ...item, idpsl: e, key: pslIndex+1 } : item
                             )
                           );
+                        }}
+                        optionFilterProp="label"
+                        filterOption={(input: string, option) => {
+                          if (option) {
+                            return option.label?.toLowerCase().includes(input.toLowerCase());
+                          }
+                          return false;
                         }}
                     />
                   </Col>
@@ -1727,16 +1720,17 @@ export const CreateOrderView = () => {
                   </Col>
                   <Col span={8}/>
                 </Row>
-                {psl.costcenters.map((cc, ccIndex) => (
+                {psl.costcenters.map((cc, ccIndex:number) => (
                   <Row key={cc.key}>
                     <Col span={10} style={{paddingLeft:'30px'}}>
                       <Text className="locationLabels" style={{ display: 'flex', marginTop: '0.5rem' }}>
                         Centro de costos
                       </Text>
                       <Select
+                          showSearch
                           placeholder={"Selecciona Centro de costos"}
-                          className="puntoOrigen dateInputForm" 
                           options={setOptionsCostCenter(psl.idpsl)}
+                          className="puntoOrigen dateInputForm" 
                           onChange={(e)=> {
                             setDataPsl(prevDataPsl => 
                               prevDataPsl.map((psl, pslIndexMap) => {
@@ -1752,6 +1746,10 @@ export const CreateOrderView = () => {
                               })
                             );
                           }}
+                          optionFilterProp="label"
+                          filterOption={(input, option) =>
+                            option?.label?.toLowerCase().includes(input.toLowerCase()) 
+                          }
                       />
                     </Col>  
                     <Col span={6} style={{paddingLeft:'30px'}}>
@@ -1866,11 +1864,19 @@ export const CreateOrderView = () => {
                 Requerimientos adicionales
               </Text>
               <Select
-                  placeholder = 'Seleccione requerimiento adicional'
+                  showSearch
+                  allowClear
+                  placeholder='Seleccione requerimiento adicional'
                   options={filteredOptionalRequirementssOptions}
-                  allowClear={true}
                   value={null}
-                  className={"puntoOrigen dateInputForm"}    
+                  className={"puntoOrigen dateInputForm"}   
+                  optionFilterProp="value"
+                  filterOption={(input: string, option) => {
+                    if (option) {
+                      return option.value.toLowerCase().includes(input.toLowerCase());
+                    }
+                    return false; 
+                  }}
               />
               <Col span={12}/>
             </Col>   
