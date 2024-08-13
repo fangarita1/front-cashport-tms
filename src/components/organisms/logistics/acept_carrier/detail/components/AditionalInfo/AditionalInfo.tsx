@@ -85,7 +85,7 @@ export default function AditionalInfo({ title, documents, contacts, specialInstr
                       </Col>
                     </Row>
                   ))}
-                <p className={styles.bodyStrong}>Contacto final</p>
+                <p className={styles.bodyStrong} style={{marginTop: "0.5rem"}}>Contacto final</p>
                 {contacts
                   ?.filter((x: any) => x.contact_type == CONTACT_TYPES.DESTINATION)
                   .map((contact: any) => (
