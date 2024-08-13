@@ -30,12 +30,10 @@ export const DocumentButtonAction = ({
 
   const handleDocumentClick = () => {
     const fileExtension = documentUrl?.trim().split(".").pop()?.toLowerCase() ?? "";
-    if (fileExtension === "pdf") {
-      window.open(documentUrl, "_blank");
-    } else if (["png", "jpg", "jpeg"].includes(fileExtension)) {
+    if (["png", "jpg", "jpeg"].includes(fileExtension)) {
       if (isModalOpen === false) setIsModalOpen(true);
     } else {
-      showMessage("error", "Formato de archivo no soportado");
+      window.open(documentUrl, "_blank");
     }
   };
 
@@ -44,6 +42,7 @@ export const DocumentButtonAction = ({
     if (editable) {
       const input = document.createElement("input");
       input.type = "file";
+      input.accept = "image/*, application/pdf";
       input.onchange = async (e: any) => {
         const file = e.target.files[0];
         setLoadingReplaceDocument(true);
