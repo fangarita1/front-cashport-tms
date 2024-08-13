@@ -1,0 +1,67 @@
+@import "@/styles/variables.scss";
+
+.container {
+    height: 100%;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    width: 100%;
+    max-width: 1485px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 9fr 7fr;
+
+    .loginSection {
+        position: relative;
+
+        .login {
+            height: auto;
+            padding: 3rem 0;
+            border-radius: 12px;
+            width: 380px;
+
+            &__title {
+                align-self: flex-start;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 10px;
+                font-size: 3.125rem;
+                color: $black;
+                font-weight: 700;
+                margin-bottom: 1.5rem;
+            }
+
+            .imageLogo {
+                background-color: $black;
+                border-radius: 50%;
+                max-width: 70px;
+                padding: 0.4rem;
+            }
+        }
+
+        .contactButton {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            border-radius: 16px;
+            border: 1px solid $secondary;
+        }
+    }
+}
+
+//media queries
+@media (max-width: 1024px) {
+    .container {
+        display: flex;
+        gap: 3rem;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 680px) {
+    .container {
+        padding: 0.2rem;
+        padding-bottom: 1rem;
+    }
+}
