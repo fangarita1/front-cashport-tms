@@ -214,14 +214,10 @@ export const legalizeFinancialDiscount = async (
   projectId: number,
   clientId: number
 ): Promise<GenericResponse> => {
-  try {
-    const response: GenericResponse = await API.post(
-      `${config.API_HOST}/financial-discount/legalize/project/${projectId}/client/${clientId}`,
-      discountData
-    );
+  const response: GenericResponse = await API.post(
+    `${config.API_HOST}/financial-discount/legalize/project/${projectId}/client/${clientId}`,
+    discountData
+  );
 
-    return response;
-  } catch (error) {
-    return Promise.reject(error);
-  }
+  return response;
 };

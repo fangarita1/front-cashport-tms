@@ -46,9 +46,13 @@ export const SelectAccountingAdjustment = ({
   };
 
   useEffect(() => {
+    const concatData = [
+      ...(data?.[0]?.financial_discounts ?? []),
+      ...(data?.[1]?.financial_discounts ?? [])
+    ];
     if (data) {
       setDateSelect(
-        data?.[type - 1].financial_discounts_not_legalized.map((item) => ({
+        concatData.map((item) => ({
           id: item.id,
           current_value: item.current_value,
           selected: selectedRows.some((row) => row.id === item.id),

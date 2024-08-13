@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Flex, Spin } from "antd";
 import { CaretDoubleRight } from "phosphor-react";
@@ -16,6 +16,7 @@ import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 import UiFilterDropdown from "@/components/ui/ui-filter-dropdown";
 import "./accounting-adjustments-tab.scss";
 import { useModalDetail } from "@/context/ModalContext";
+import { mutate } from "swr";
 
 const AccountingAdjustmentsTab = () => {
   const [selectedRows, setSelectedRows] = useState<FinancialDiscount[] | undefined>(undefined);
@@ -28,15 +29,20 @@ const AccountingAdjustmentsTab = () => {
   const projectId = projectIdParam ? parseInt(projectIdParam) : 0;
 
   const { data, isLoading } = useFinancialDiscounts(clientId, projectId);
-  const { openModal } = useModalDetail();
+  const { openModal, modalType } = useModalDetail();
 
   const handleOpenAdjustmentDetail = (adjustment: FinancialDiscount) => {
     openModal("adjustment", {
       selectAdjusment: adjustment,
       clientId,
-      projectId
+      projectId,
+      legalized: adjustment.legalized
     });
   };
+
+  useEffect(() => {
+    mutate(`/financial-discount/project/${projectId}/client/${clientId}`);
+  }, [modalType]);
 
   return (
     <>
@@ -78,12 +84,13 @@ const AccountingAdjustmentsTab = () => {
                 <LabelCollapse status={financialState.status_name} color={financialState.color} />
               ),
               children: (
-                <>  
+                <>
                   <AccountingAdjustmentsTable
                     dataAdjustmentsByStatus={financialState.financial_discounts}
                     setSelectedRows={setSelectedRows}
                     openAdjustmentDetail={handleOpenAdjustmentDetail}
                     financialStatusId={financialState.status_id}
+                    legalized={financialState.legalized}
                   />
                 </>
               )

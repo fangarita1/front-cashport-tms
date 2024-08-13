@@ -57,7 +57,7 @@ export const ModalActionAdjusment = ({ isOpen, onClose, adjustment, clientId }: 
     if (selectedItemId !== null) {
       setSelectIsLoading(true);
       try {
-        await legalizeFinancialDiscount(
+        const response = await legalizeFinancialDiscount(
           {
             discount_id_legalized: selectedItemId,
             discount_id_not_legalized: +adjustment.id
@@ -65,16 +65,26 @@ export const ModalActionAdjusment = ({ isOpen, onClose, adjustment, clientId }: 
           projectId,
           +clientId
         );
-        messageApi.success("Ajuste contable legalizado correctamente");
-        setCurrentView("selectAccountingAdjustment");
+        if (response.success) {
+          setSelectedItemId(null);
+          messageApi.success("Ajuste contable legalizado correctamente");
+          setCurrentView("selectAccountingAdjustment");
+          onClose();
+        } else {
+          messageApi.error(response.message || "Error al legalizar el ajuste contable");
+        }
       } catch (error) {
-        messageApi.error("Error al legalizar el ajuste contable");
+        console.error("Error in legalizeFinancialDiscount:", error);
+        if (error instanceof Error) {
+          messageApi.error(`Error: ${error.name}`);
+        } else {
+          messageApi.error("Error desconocido al legalizar el ajuste contable");
+        }
       } finally {
         setSelectIsLoading(false);
       }
     }
   };
-
   return (
     <Modal
       open={isOpen}

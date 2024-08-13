@@ -30,6 +30,7 @@ export interface FinancialDiscount {
   document_type_name: string;
   motive_name: string | null;
   financial_status_id: number;
+  legalized?: boolean;
 }
 
 export interface StatusFinancialDiscounts {
@@ -38,6 +39,7 @@ export interface StatusFinancialDiscounts {
   color: string;
   financial_discounts: FinancialDiscount[];
   total: number;
+  legalized: boolean;
   count: number;
 }
 export interface FinancialDiscountsResponse {
