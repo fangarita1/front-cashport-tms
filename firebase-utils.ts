@@ -1,4 +1,9 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  sendPasswordResetEmail
+} from "firebase/auth";
 import { auth } from "./firebase";
 import { STORAGE_TOKEN } from "@/utils/constants/globalConstants";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -60,4 +65,20 @@ const logOut = (router: AppRouterInstance) => {
   const { resetStore } = useAppStore.getState();
   resetStore();
 };
-export { getAuth, logOut };
+
+const sendEmailResetPassword = async (email: string) => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+  } catch (error) {
+    handleError(error);
+  }
+};
+export { getAuth, logOut, sendEmailResetPassword };
+
+function handleError(error: unknown): void {
+  if (error instanceof Error) {
+    console.error(`Error: ${error.message}`);
+  } else {
+    console.error("An unknown error occurred:", error);
+  }
+}

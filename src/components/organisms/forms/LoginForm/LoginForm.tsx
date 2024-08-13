@@ -45,11 +45,15 @@ export const LoginForm = ({ setResetPassword }: LoginFormProps) => {
   const openNotification = (placement: NotificationPlacement) => {
     api.error({
       message: (
-        <Title level={5} type="secondary">
+        <Title className="notificationLoginText" level={5} type="secondary">
           Error
         </Title>
       ),
-      description: <Text type="secondary">Error: Email o contrraseñas incorrectas </Text>,
+      description: (
+        <Text className="notificationLoginText" type="secondary">
+          Email o contraseña incorrectos
+        </Text>
+      ),
       placement
     });
     setIsLoading(false);

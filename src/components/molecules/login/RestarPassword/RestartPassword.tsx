@@ -7,6 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import styles from "./restartPassword.module.scss";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
+import { sendEmailResetPassword } from "../../../../../firebase-utils";
 
 interface IAuthLogin {
   email: string;
@@ -33,10 +34,9 @@ export const RestartPassword = ({ setResetPassword }: RestartFormProps) => {
 
   const onSubmitHandler = async ({ email }: IAuthLogin) => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setEmail(email);
-    }, 1000);
+    sendEmailResetPassword(email);
+    setEmail(email);
+    setIsLoading(false);
   };
 
   const handleUnderstood = () => {
