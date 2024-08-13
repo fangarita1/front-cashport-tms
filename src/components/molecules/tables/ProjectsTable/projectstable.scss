@@ -3,22 +3,25 @@
 .pagination {
     justify-content: center;
 }
+
 .ant-pagination-item {
     border-radius: 50% !important;
 }
+
 .ant-table-tbody {
     justify-content: center;
 }
+
 .text {
     gap: 6px;
     display: flex;
     align-items: center;
 }
+
 .mainProjectsTable {
     width: 100%;
     height: 95%;
     padding-bottom: 0;
-    margin-top: 1.5rem;
     padding: 1rem 2rem;
     border-radius: 15px;
     box-shadow: -6px 6px 32px 0px rgba(0, 0, 0, 0.2);
@@ -42,6 +45,7 @@
             width: 400px;
             height: 48px;
         }
+
         .options {
             width: 48px;
             height: 48px;
@@ -57,12 +61,14 @@
         text-overflow: ellipsis;
         border: 1px solid $pending;
     }
+
     .tableUsers {
         text-align: center;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
     }
+
     .tableTitle {
         overflow: hidden;
         white-space: nowrap;
@@ -78,9 +84,11 @@
         text-overflow: ellipsis;
         border: 1px solid $active;
     }
+
     .ant-table-thead {
         text-align: center;
     }
+
     .statusActive {
         width: 0.75rem;
         height: 0.75rem;
@@ -102,9 +110,11 @@
             color: black !important;
         }
     }
+
     .icon-detail {
         background: #ddd;
     }
+
     .buttonNewProject {
         gap: 10px;
         display: flex;

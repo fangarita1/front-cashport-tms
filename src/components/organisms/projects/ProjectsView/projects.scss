@@ -1,25 +1,31 @@
 .mainProject {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    .contentProject {
-			height: 100%;
-			width: 100%;
-			margin: 0 0 32px 0;
-			background-color: white;
-			padding: 2rem;
-			padding-left: 2.5rem;
-			overflow-y: auto;
-        .titleName {
-						margin: auto;
-            font-weight: 600;
-						width: 398px;
-						height: 32px;
-						color: #141414;
-						line-height: 124%;
-						font-style: normal;
-						font-size: 24px;
-        }
-    }
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+
+	.contentProject {
+
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		margin: 0 0 32px 0;
+		background-color: white;
+		padding: 2rem;
+		padding-top: 1rem;
+		padding-bottom: 0.625rem;
+		overflow-y: auto;
+
+		.titleName {
+			margin: auto;
+			font-weight: 600;
+			width: 398px;
+			height: 32px;
+			color: #141414;
+			line-height: 124%;
+			font-style: normal;
+			font-size: 24px;
+		}
+	}
 }

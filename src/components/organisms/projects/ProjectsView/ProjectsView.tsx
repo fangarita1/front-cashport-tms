@@ -13,10 +13,10 @@ export const ProjectsView = () => {
   return (
     <main className="mainProject">
       <SideBar />
-      <Flex vertical className="contentProject">
+      <div className="contentProject">
         <Header title="Proyectos" />
         <ProjectTable />
-      </Flex>
+      </div>
     </main>
   );
 };
