@@ -5,12 +5,29 @@ import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDo
 import styles from "./aditionalInfo.module.scss";
 import { Dispatch, SetStateAction, useEffect } from "react";
 
+interface Documents {
+  id: number;
+  document_type_desc: string;
+  url_document: string;
+  active: number | string;
+}
+export interface Contacts {
+  id: number;
+  name: string;
+  contact_type: number;
+  contact_number: number | string;
+}
+interface OtherReq {
+  id: number;
+  other_requirement_desc: string;
+  quantity: number
+}
 interface AditionalInfoProps {
   title: string;
-  documents:any;
-  contacts: any;
+  documents?: Documents[];
+  contacts: Contacts[];
   finalClient?: string;
-  otherRequirements?: any;
+  otherRequirements?: OtherReq[];
   specialInstructions?: string;
   setIsNextStepActive?: Dispatch<SetStateAction<boolean>>;
 }
@@ -111,7 +128,7 @@ export default function AditionalInfo({ title, documents, contacts, specialInstr
                   <Col span={24}>
                     {otherRequirements?.map((req: any) => (
                       <div className={styles.selected} key={req.quantity}>
-                        {req.type} <small>{req.quantity}</small>
+                        {req.other_requirement_desc} <small>{req.quantity}</small>
                       </div>
                     ))}
                   </Col>
