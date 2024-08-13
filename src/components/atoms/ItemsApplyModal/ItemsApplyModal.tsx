@@ -8,7 +8,7 @@ interface ItemsApplyModalProps {
   item: {
     id: number;
     current_value: number;
-    motive_name?: string | undefined;
+    motive_name?: string | null;
     percentage?: number | null;
     intialAmount?: number;
   };

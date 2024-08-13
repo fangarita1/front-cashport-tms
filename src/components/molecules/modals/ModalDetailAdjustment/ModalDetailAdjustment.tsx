@@ -3,7 +3,7 @@ import { ArrowLineDown, CaretDoubleRight, DotsThree, Receipt } from "phosphor-re
 import styles from "./modalDetailAdjustment.module.scss";
 import { formatDatePlane, formatMoney } from "@/utils/utils";
 import { FileDownloadModal } from "../FileDownloadModal/FileDownloadModal";
-import { IFinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
+import { FinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
 import { useFinancialDiscountDetail } from "@/hooks/useDetailAdjustment";
 import { ModalActionAdjusment } from "../modalActionAdjusment/ModalActionAdjusment";
 import { Button } from "antd";
@@ -12,7 +12,7 @@ interface ModalDetailAdjustmentProps {
   isOpen: boolean;
   onClose: () => void;
   clientId: number;
-  selectAdjusment?: IFinancialDiscount;
+  selectAdjusment?: FinancialDiscount;
   projectId: number;
 }
 
@@ -33,35 +33,6 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
   const [isModalSelectOpen, setIsModalSelectOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const statusClass = (status: string): string => {
-    switch (status) {
-      case "Identificado" || "coinciliada":
-        return styles.identifiedReconciled;
-      case "En auditoría":
-        return styles.inAudit;
-      case "No identificado":
-        return styles.unidentified;
-      case "aplicacion":
-        return styles.applied;
-      case "Ap. parcialmente":
-        return styles.partially;
-      case "sin conciliar":
-        return styles.noReconcile;
-      case "novedades":
-        return styles.novelty;
-      case "saldo":
-        return styles.balances;
-      case "glosado":
-        return styles.glossed;
-      case "devolucion":
-        return styles.return;
-      case "vencida":
-        return styles.annulment;
-      default:
-        return "";
-    }
-  };
-
   const getEventTitle = (item: string) => {
     switch (item) {
       case "Generar nota de credito":
@@ -74,6 +45,8 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
         return "Radicación";
       case "Registrar novedad":
         return "Novedad";
+      case "legalizado":
+        return "Legalizado desde ajuste CashPort";
       default:
         return item;
     }
@@ -155,6 +128,15 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                               <div>
                                 <div className={styles.date}>comentarios</div>
                                 <div className={styles.date}>{item?.comments}</div>{" "}
+                              </div>
+                            ) : null}
+                            {item?.event_name === "legalizado" ? (
+                              <div>
+                                <div className={styles.adjustment}>
+                                  <div className={styles.idAdjustment}>
+                                    ID de la novedad: {item.id}
+                                  </div>
+                                </div>
                               </div>
                             ) : null}
                             {item?.event_name === "Facturas aplicadas" ? (
