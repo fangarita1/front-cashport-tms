@@ -63,6 +63,8 @@ import ModalAddContact from "@/components/molecules/modals/ModalAddContact/Modal
 import { getCompanyCodes } from "@/services/logistics/company-codes";
 import { getClients } from "@/services/logistics/clients";
 import { getTravelDuration } from "@/utils/logistics/maps";
+import CustomHourPicker from "@/components/molecules/logistics/HourPicker/HourPicker";
+import CustomTimeSelector from "@/components/molecules/logistics/HourPicker/HourPicker";
 
 const { Title, Text } = Typography;
 
@@ -78,6 +80,8 @@ export const CreateOrderView = () => {
   const origin = useRef<any>([]);
   const destination = useRef<any>([]);
   const [origenIzaje, setOrigenIzaje] = useState(false);
+  const [horasOrigenIzaje, setHorasOrigenIzaje] = useState<number>(1);
+  const [horasDestinoIzaje, setHorasDestinoIzaje] = useState<number>(1);
   const [destinoIzaje, setDestinoIzaje] = useState(false);
   const [fechaInicial, setFechaInicial] = useState<Dayjs | undefined>(undefined);
   const [horaInicial, setHoraInicial] = useState<Dayjs>();
@@ -105,6 +109,15 @@ export const CreateOrderView = () => {
     // Can not select days before today and today
     return current && current < dayjs().endOf('day');
   };
+
+    useEffect(() => {
+      if (!destinoIzaje) {
+          setHorasDestinoIzaje(1);
+      } 
+      if(!origenIzaje){
+        setHorasOrigenIzaje(1);
+      }
+  }, [origenIzaje, destinoIzaje]);
 
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWRInmutable(
     "0",
@@ -1144,6 +1157,8 @@ export const CreateOrderView = () => {
       end_date: fechaFinalToBody?.toDate().toISOString(),
       start_freight_equipment: String(origenIzaje?1:0),
       end_freight_equipment: String(destinoIzaje?1:0),
+      freight_origin_time: origenIzaje? horasOrigenIzaje : undefined,
+      freight_destination_time: destinoIzaje? horasDestinoIzaje : undefined,
       rotation: "0",
       start_date_flexible: fechaInicialFlexible,
       end_date_flexible: fechaFinalFlexible,
@@ -1307,11 +1322,22 @@ export const CreateOrderView = () => {
                     </>
                   }
                 { typeactive != "3" &&
-                  <Flex style={{marginTop:"0.5rem", justifyContent: "space-between", gap: "0.5rem"}}>
-                    <Switch disabled={typeactive === "2"}  checked={origenIzaje} onChange={event =>{
-                      setOrigenIzaje(event)
-                    }} />
-                    <Text>Requiere Izaje</Text>
+                  <Flex style={{marginTop:"0.5rem", width:"100%"}} align="center">
+                    <Col span={12} >
+                      <Flex gap={"0.5rem"} > 
+                        <Switch disabled={typeactive === "2"}  checked={origenIzaje} onChange={event =>{
+                          setOrigenIzaje(event)
+                        }} />
+                        <Text>Requiere Izaje</Text>
+                      </Flex>
+                    </Col>
+                    {origenIzaje && 
+                    <Col span={12} >
+                      <Flex gap={"0.5rem"} align="center" justify="end"> 
+                          <Text>Cuantas horas de izaje</Text>
+                          <CustomTimeSelector initialValue={horasOrigenIzaje} onTimeChange={(value)=>setHorasOrigenIzaje(value)}/>
+                      </Flex>
+                    </Col>}
                   </Flex>
                 }
               </Row>
@@ -1339,11 +1365,22 @@ export const CreateOrderView = () => {
                     </>
                   }
                 { typeactive != "3" &&
-                <Flex style={{marginTop:"0.5rem", justifyContent: "space-between", gap: "0.5rem"}}>
-                    <Switch checked={destinoIzaje}  onChange={event =>{
-                      setDestinoIzaje(event)
-                    }}/>
-                  <Text>Requiere Izaje</Text>
+                  <Flex style={{marginTop:"0.5rem", width:"100%"}} align="center">
+                  <Col span={12} >
+                    <Flex gap={"0.5rem"} > 
+                      <Switch  checked={destinoIzaje} onChange={event =>{
+                        setDestinoIzaje(event)
+                      }} />
+                      <Text>Requiere Izaje</Text>
+                    </Flex>
+                  </Col>
+                  {destinoIzaje && 
+                  <Col span={12} >
+                    <Flex gap={"0.5rem"} align="center" justify="end"> 
+                        <Text>Cuantas horas de izaje</Text>
+                        <CustomTimeSelector initialValue={horasDestinoIzaje} onTimeChange={(value)=>setHorasDestinoIzaje(value)}/>
+                    </Flex>
+                  </Col>}
                 </Flex>
                 }
               </Row>
