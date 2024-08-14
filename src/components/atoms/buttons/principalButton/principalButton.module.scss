@@ -2,7 +2,8 @@
 
 .button,
 .button__fullWidth {
-    background-color: $secondary;
+    background-color: $secondary !important;
+    background: $secondary;
     box-shadow: none;
     color: $black !important;
     display: flex;
