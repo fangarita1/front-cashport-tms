@@ -4,14 +4,12 @@ import React, { useState } from "react";
 import "./modalActionAdjusment.scss";
 import { Gavel } from "@phosphor-icons/react";
 import ItemsModalLegalize from "@/components/atoms/ItemsModalLegalize/ItemsModalLegalize";
-import { ISelectedAccountingAdjustment } from "../ModalActionDiscountCredit/ModalActionDiscountCredit";
 import { formatMoney } from "@/utils/utils";
 import { useAppStore } from "@/lib/store/store";
 import {
   LegalizedFinancialDiscount,
   useLegalizedFinancialDiscount
 } from "@/hooks/useLegalizedFinancialDiscount";
-import { GenericResponse } from "@/types/global/IGlobal";
 import { legalizeFinancialDiscount } from "@/services/accountingAdjustment/accountingAdjustment";
 
 interface Props {
@@ -57,7 +55,7 @@ export const ModalActionAdjusment = ({ isOpen, onClose, adjustment, clientId }: 
     if (selectedItemId !== null) {
       setSelectIsLoading(true);
       try {
-        await legalizeFinancialDiscount(
+        const response = await legalizeFinancialDiscount(
           {
             discount_id_legalized: selectedItemId,
             discount_id_not_legalized: +adjustment.id
@@ -65,16 +63,26 @@ export const ModalActionAdjusment = ({ isOpen, onClose, adjustment, clientId }: 
           projectId,
           +clientId
         );
-        messageApi.success("Ajuste contable legalizado correctamente");
-        setCurrentView("selectAccountingAdjustment");
+        if (response.success) {
+          setSelectedItemId(null);
+          messageApi.success("Ajuste contable legalizado correctamente");
+          setCurrentView("selectAccountingAdjustment");
+          onClose();
+        } else {
+          messageApi.error(response.message || "Error al legalizar el ajuste contable");
+        }
       } catch (error) {
-        messageApi.error("Error al legalizar el ajuste contable");
+        console.error("Error in legalizeFinancialDiscount:", error);
+        if (error instanceof Error) {
+          messageApi.error(`Error: ${error.name}`);
+        } else {
+          messageApi.error("Error desconocido al legalizar el ajuste contable");
+        }
       } finally {
         setSelectIsLoading(false);
       }
     }
   };
-
   return (
     <Modal
       open={isOpen}

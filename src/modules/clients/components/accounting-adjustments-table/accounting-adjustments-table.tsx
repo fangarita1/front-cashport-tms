@@ -13,18 +13,20 @@ interface PropsInvoicesTable {
   setSelectedRows: Dispatch<SetStateAction<FinancialDiscount[] | undefined>>;
   openAdjustmentDetail: (adjustment: FinancialDiscount) => void;
   financialStatusId: number;
+  legalized?: boolean;
 }
 
 const AccountingAdjustmentsTable = ({
   dataAdjustmentsByStatus: data,
   setSelectedRows,
   openAdjustmentDetail,
-  financialStatusId
+  financialStatusId,
+  legalized
 }: PropsInvoicesTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const handleOpenDetail = (adjustment: FinancialDiscount) => {
-    openAdjustmentDetail(adjustment);
+    openAdjustmentDetail({ ...adjustment, legalized: legalized });
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRows: any) => {

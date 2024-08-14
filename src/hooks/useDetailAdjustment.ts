@@ -19,6 +19,7 @@ interface FinancialDiscountEvent {
   username: string | null;
   event_name: string;
   financial_type: string;
+  cp_id: number | null;
 }
 
 interface FinancialDiscountData {

@@ -14,6 +14,7 @@ interface ItemsActionsModalProps {
     motive_name?: string | null;
     percentage?: number | null;
     intialAmount?: number;
+    cp_id?: number | null;
   };
 }
 
@@ -28,6 +29,7 @@ const ItemsActionsModal: FC<ItemsActionsModalProps> = ({ onHeaderClick, item, ty
             <strong className={"name"}>
               {titleMap[type]}
               <span>{item.id}</span>
+              {item.cp_id ? <span>{` ${item.cp_id}`}</span> : ""}
             </strong>
           </div>
           <div className={"label"}>{item.motive_name ?? "Volumen"}</div>

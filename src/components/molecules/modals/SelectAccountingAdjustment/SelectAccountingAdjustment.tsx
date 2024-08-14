@@ -22,6 +22,7 @@ interface ItemsSelected {
   motive_name: string | null;
   percentage?: number | null;
   intialAmount?: number;
+  cp_id?: number | null;
 }
 
 export const SelectAccountingAdjustment = ({
@@ -46,15 +47,20 @@ export const SelectAccountingAdjustment = ({
   };
 
   useEffect(() => {
+    const concatData = [
+      ...(data?.[0]?.financial_discounts ?? []),
+      ...(data?.[1]?.financial_discounts ?? [])
+    ];
     if (data) {
       setDateSelect(
-        data?.[type - 1].financial_discounts_not_legalized.map((item) => ({
+        concatData.map((item) => ({
           id: item.id,
           current_value: item.current_value,
           selected: selectedRows.some((row) => row.id === item.id),
           motive_name: item.motive_name,
           percentage: item.percentage,
-          intialAmount: item.initial_value
+          intialAmount: item.initial_value,
+          cp_id: item.cp_id
         }))
       );
     }
