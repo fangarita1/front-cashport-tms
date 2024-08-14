@@ -134,14 +134,20 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                             ) : null}
                             {item?.event_name === "Legaliazcion de ajuste" ? (
                               <div>
-                                <div className={styles.name}>
-                                  {`Valor: ${formatMoney(item?.ammount ?? "0")}`}
-                                </div>
+                                {item?.ammount && (
+                                  <div className={styles.name}>
+                                    {`Valor: ${formatMoney(item?.ammount ?? "0")}`}
+                                  </div>
+                                )}
+
                                 <div className={styles.adjustment}>
-                                  <Flex gap={"4px"}>
-                                    Cashport ID:{" "}
-                                    <div className={styles.idAdjustment}>{item.id}</div>
-                                  </Flex>
+                                  {item.cp_id && (
+                                    <Flex gap={"4px"}>
+                                      Cashport ID:{" "}
+                                      <div className={styles.idAdjustment}>{item.cp_id}</div>
+                                    </Flex>
+                                  )}
+
                                   <Flex gap={"4px"}>
                                     ID del ajuste:
                                     <div className={styles.idAdjustment}>{item.id}</div>

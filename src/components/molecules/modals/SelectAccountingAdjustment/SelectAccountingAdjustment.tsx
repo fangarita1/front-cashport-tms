@@ -22,6 +22,7 @@ interface ItemsSelected {
   motive_name: string | null;
   percentage?: number | null;
   intialAmount?: number;
+  cp_id?: number | null;
 }
 
 export const SelectAccountingAdjustment = ({
@@ -58,7 +59,8 @@ export const SelectAccountingAdjustment = ({
           selected: selectedRows.some((row) => row.id === item.id),
           motive_name: item.motive_name,
           percentage: item.percentage,
-          intialAmount: item.initial_value
+          intialAmount: item.initial_value,
+          cp_id: item.cp_id
         }))
       );
     }

@@ -4,14 +4,12 @@ import React, { useState } from "react";
 import "./modalActionAdjusment.scss";
 import { Gavel } from "@phosphor-icons/react";
 import ItemsModalLegalize from "@/components/atoms/ItemsModalLegalize/ItemsModalLegalize";
-import { ISelectedAccountingAdjustment } from "../ModalActionDiscountCredit/ModalActionDiscountCredit";
 import { formatMoney } from "@/utils/utils";
 import { useAppStore } from "@/lib/store/store";
 import {
   LegalizedFinancialDiscount,
   useLegalizedFinancialDiscount
 } from "@/hooks/useLegalizedFinancialDiscount";
-import { GenericResponse } from "@/types/global/IGlobal";
 import { legalizeFinancialDiscount } from "@/services/accountingAdjustment/accountingAdjustment";
 
 interface Props {

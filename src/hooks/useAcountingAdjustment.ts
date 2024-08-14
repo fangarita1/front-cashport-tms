@@ -31,6 +31,7 @@ interface FinancialDiscount {
   project_name: string;
   document_type_name: string;
   motive_name: string | null;
+  cp_id: number | null;
 }
 
 interface StatusGroup {
