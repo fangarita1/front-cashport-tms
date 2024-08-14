@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Spin, TableProps, Button, Col, Flex, Row, Table, Typography } from "antd";
 import {
@@ -17,31 +17,13 @@ import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
 import { formatMoney } from "@/utils/utils";
-import { useAppStore } from "@/lib/store/store";
-import redirectModal from "@/components/molecules/modals/redirectModal/RedirectModal";
-import useStore from "@/lib/hook/useStore";
-import { STORAGE_TOKEN } from "@/utils/constants/globalConstants";
+
 import "./ClientsViewTable.scss";
 
 const { Text } = Typography;
 
 export const ClientsViewTable = () => {
   const [page, setPage] = useState(1);
-  const [isComponentLoading, setIsComponentLoading] = useState(true);
-
-  const project = useStore(useAppStore, (projects) => projects.selectedProject);
-  const ID = project?.ID;
-
-  useEffect(() => {
-    setIsComponentLoading(false);
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem(STORAGE_TOKEN);
-    if (!isComponentLoading && !ID && !!token) {
-      redirectModal();
-    }
-  }, [isComponentLoading, ID]);
 
   const { data, loading } = usePortfolios({ page: page });
 

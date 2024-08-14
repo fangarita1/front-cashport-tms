@@ -1,6 +1,6 @@
 @import "@/styles/variables.scss";
 
-.loginForm {
+.changePassForm {
     width: 95%;
     margin: 1rem 0;
     height: 100%;
@@ -21,7 +21,18 @@
     }
 
     &__content {
-        margin: 2.75rem 0;
+        margin: 2rem 0;
+        margin-bottom: 4rem;
+
+        .errorMessage {
+            color: $red;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .iconEyePassword {
+            cursor: pointer;
+        }
     }
 
     .inputPassword {
@@ -52,31 +63,4 @@
             color: $darker-gray;
         }
     }
-
-    .forgotPassword {
-        font-size: 0.95rem;
-        color: $black;
-        text-decoration: underline;
-        align-self: flex-end;
-        cursor: pointer;
-        transition: all 0.1s ease-in-out;
-
-        &:hover {
-            color: $darker-gray;
-        }
-    }
-
-    .buttonContainer {
-        height: 50%;
-        width: 95%;
-        margin-top: 5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-right: 1rem;
-    }
-}
-
-.notificationLoginText {
-    color: $white !important;
 }
