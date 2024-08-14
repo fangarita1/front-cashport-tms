@@ -33,6 +33,7 @@ export const SelectNoveltyNode: React.FC<Props> = ({
     );
   };
 
+  const concatData = data?.[0].financial_discounts
   return (
     <div className="acn-modalContent">
       <Flex vertical className="acn-content-modal-select-note">
@@ -41,7 +42,7 @@ export const SelectNoveltyNode: React.FC<Props> = ({
           {isLoading ? (
             <Spin size="large" style={{ margin: "auto" }} />
           ) : (
-            data?.[type].financial_discounts_not_legalized?.map((item, index) => (
+            concatData?.map((item, index) => (
               <ItemsActionsModal
                 key={index}
                 item={{
