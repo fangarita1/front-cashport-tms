@@ -54,7 +54,7 @@ const getAuth = async (
   }
 };
 const logOut = (router: AppRouterInstance) => {
-  router.push("/auth/login");
+  window.location.href = "/auth/login";
   signOut(auth);
   localStorage.removeItem(STORAGE_TOKEN);
   const { resetStore } = useAppStore.getState();

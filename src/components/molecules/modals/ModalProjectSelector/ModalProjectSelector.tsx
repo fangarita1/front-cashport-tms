@@ -38,7 +38,7 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
       }
     };
 
-    if (projects.length === 0) {
+    if (projects?.length === 0) {
       fetchProjects();
     }
   }, []);
