@@ -3,11 +3,11 @@ import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { Flex, Input, Tooltip } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
+import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 
 import { Eye, EyeClosed } from "phosphor-react";
 
 import "./changePassForm.scss";
-import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 
 interface IChangePassForm {
   password: string;

@@ -1,12 +1,12 @@
-import { Button, Flex, Image } from "antd";
+import { useState } from "react";
+import { Flex, Image } from "antd";
 
 import { LoginForm } from "../../forms/LoginForm/LoginForm";
-import { Envelope } from "phosphor-react";
 import { InfoCardLogin } from "@/components/molecules/login/InfoCardLogin/InfoCardLogin";
+import { RestartPassword } from "@/components/molecules/login/RestarPassword/RestartPassword";
+import { ContactUsButton } from "@/components/atoms/buttons/contactUsButton/ContactUsButton";
 
 import styles from "./login.module.scss";
-import { useState } from "react";
-import { RestartPassword } from "@/components/molecules/login/RestarPassword/RestartPassword";
 
 export const LoginView = () => {
   const [resetPassword, setResetPassword] = useState(false);
@@ -30,10 +30,8 @@ export const LoginView = () => {
           ) : (
             <RestartPassword setResetPassword={setResetPassword} />
           )}
+          <ContactUsButton />
         </Flex>
-        <Button className={styles.contactButton}>
-          Contáctanos <Envelope size={16} />
-        </Button>
       </Flex>
     </main>
   );

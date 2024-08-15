@@ -1,18 +1,18 @@
-import { Button, Flex, Image } from "antd";
+import { Flex, Image } from "antd";
 
-import { Envelope } from "phosphor-react";
 import { InfoCardLogin } from "@/components/molecules/login/InfoCardLogin/InfoCardLogin";
+import { ChangePassForm } from "@/components/molecules/login/ChangePassForm/ChangePassForm";
+import { ContactUsButton } from "@/components/atoms/buttons/contactUsButton/ContactUsButton";
 
 import styles from "./changePass.module.scss";
-import { ChangePassForm } from "@/components/molecules/login/ChangePassForm/ChangePassForm";
 
 export const ChangePass = () => {
   return (
     <main className={styles.container}>
       <InfoCardLogin />
-      <Flex className={styles.loginSection} align="center" justify="center" vertical>
-        <Flex className={styles.login} vertical align="center" justify="space-between">
-          <div className={styles.login__title}>
+      <Flex className={styles.changeSection} align="center" justify="center" vertical>
+        <Flex className={styles.changePass} vertical align="center" justify="space-between">
+          <div className={styles.changePass__title}>
             <Image
               className={styles.imageLogo}
               src="/images/login/CashPort.png"
@@ -23,10 +23,8 @@ export const ChangePass = () => {
           </div>
 
           <ChangePassForm />
+          <ContactUsButton />
         </Flex>
-        <Button className={styles.contactButton}>
-          Contáctanos <Envelope size={16} />
-        </Button>
       </Flex>
     </main>
   );
