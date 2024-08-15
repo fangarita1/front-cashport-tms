@@ -299,8 +299,9 @@
                                     }
 
                                     .adjustment {
-                                        gap: 4px;
+                                        gap: 2px;
                                         display: flex;
+                                        flex-direction: column;
                                         font-size: 12px;
                                         font-weight: 400;
                                         color: #a5a5a5;

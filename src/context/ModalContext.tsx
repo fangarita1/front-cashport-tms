@@ -26,6 +26,7 @@ interface AdjustmentModalProps {
   clientId: number;
   selectAdjusment?: FinancialDiscount;
   projectId: number;
+  legalized?: boolean;
 }
 
 type ModalProps = InvoiceModalProps | NoveltyModalProps | AdjustmentModalProps;
@@ -33,6 +34,7 @@ type ModalProps = InvoiceModalProps | NoveltyModalProps | AdjustmentModalProps;
 interface ModalContextType {
   openModal: (type: ModalType, props: ModalProps) => void;
   closeModal: () => void;
+  modalType: ModalType;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -52,7 +54,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   };
 
   return (
-    <ModalContext.Provider value={{ openModal, closeModal }}>
+    <ModalContext.Provider value={{ openModal, closeModal, modalType }}>
       {children}
       {modalType === "invoice" && modalProps && (
         <InvoiceDetailModal

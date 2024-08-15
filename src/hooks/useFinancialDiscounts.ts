@@ -5,8 +5,7 @@ import { FinancialDiscountsResponse } from "@/types/financialDiscounts/IFinancia
 
 export const useFinancialDiscounts = (clientId: number, projectId: number) => {
   const { data, isLoading } = useSWR<FinancialDiscountsResponse>(
-    `/financial-discount/project/${projectId}/client/${clientId}
-  `,
+    `/financial-discount/project/${projectId}/client/${clientId}`,
     fetcher,
     {}
   );

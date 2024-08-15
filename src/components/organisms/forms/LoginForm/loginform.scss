@@ -2,7 +2,6 @@
 
 .loginForm {
     width: 95%;
-    margin: 1rem 0;
     height: 100%;
     display: flex;
     gap: 1.5rem;
@@ -60,6 +59,7 @@
         align-self: flex-end;
         cursor: pointer;
         transition: all 0.1s ease-in-out;
+        margin-top: -1rem;
 
         &:hover {
             color: $darker-gray;
@@ -79,4 +79,12 @@
 
 .notificationLoginText {
     color: $white !important;
+}
+
+@media (max-height: 720px) {
+    .loginForm {
+        &__content {
+            margin: 0;
+        }
+    }
 }

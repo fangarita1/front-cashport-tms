@@ -64,3 +64,12 @@
         }
     }
 }
+
+@media (max-height: 720px) {
+    .changePassForm {
+        margin: 0;
+        &__content {
+            margin: 0;
+        }
+    }
+}

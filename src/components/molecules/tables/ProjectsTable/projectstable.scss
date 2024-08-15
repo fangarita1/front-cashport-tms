@@ -135,4 +135,10 @@
     .imageWithoutImage {
         background-color: $secondary !important;
     }
+
+    .avatarProject {
+        img {
+            object-fit: scale-down;
+        }
+    }
 }

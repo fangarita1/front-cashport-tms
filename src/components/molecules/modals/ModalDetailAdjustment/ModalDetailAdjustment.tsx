@@ -6,7 +6,7 @@ import { FileDownloadModal } from "../FileDownloadModal/FileDownloadModal";
 import { FinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
 import { useFinancialDiscountDetail } from "@/hooks/useDetailAdjustment";
 import { ModalActionAdjusment } from "../modalActionAdjusment/ModalActionAdjusment";
-import { Button } from "antd";
+import { Button, Flex } from "antd";
 
 interface ModalDetailAdjustmentProps {
   isOpen: boolean;
@@ -14,6 +14,7 @@ interface ModalDetailAdjustmentProps {
   clientId: number;
   selectAdjusment?: FinancialDiscount;
   projectId: number;
+  legalized?: boolean;
 }
 
 const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
@@ -21,9 +22,9 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
   onClose,
   clientId,
   projectId,
-  selectAdjusment
+  selectAdjusment,
+  legalized = false
 }) => {
-  // remplaza este hook por el que acabamos de crear
   const { data: adjusmentData } = useFinancialDiscountDetail({
     financialDiscountId: selectAdjusment?.id ?? 0,
     projectId,
@@ -45,7 +46,7 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
         return "Radicación";
       case "Registrar novedad":
         return "Novedad";
-      case "legalizado":
+      case "Legaliazcion de ajuste":
         return "Legalizado desde ajuste CashPort";
       default:
         return item;
@@ -85,6 +86,7 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
           <Button
             className={styles.button__actions}
             size="large"
+            disabled={legalized}
             icon={<DotsThree size={"1.5rem"} />}
             onClick={() => {
               setIsModalSelectOpen(true);
@@ -130,12 +132,26 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                                 <div className={styles.date}>{item?.comments}</div>{" "}
                               </div>
                             ) : null}
-                            {item?.event_name === "legalizado" ? (
+                            {item?.event_name === "Legaliazcion de ajuste" ? (
                               <div>
-                                <div className={styles.adjustment}>
-                                  <div className={styles.idAdjustment}>
-                                    ID de la novedad: {item.id}
+                                {item?.ammount && (
+                                  <div className={styles.name}>
+                                    {`Valor: ${formatMoney(item?.ammount ?? "0")}`}
                                   </div>
+                                )}
+
+                                <div className={styles.adjustment}>
+                                  {item.cp_id && (
+                                    <Flex gap={"4px"}>
+                                      Cashport ID:{" "}
+                                      <div className={styles.idAdjustment}>{item.cp_id}</div>
+                                    </Flex>
+                                  )}
+
+                                  <Flex gap={"4px"}>
+                                    ID del ajuste:
+                                    <div className={styles.idAdjustment}>{item.id}</div>
+                                  </Flex>
                                 </div>
                               </div>
                             ) : null}
