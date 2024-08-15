@@ -775,8 +775,6 @@ export const CreateOrderView = () => {
     option => !dataPsl.some(req => req.idpsl === option.value)
   ): []
   
-  console.log("data psl", dataPsl)
-  console.log("optionsPSL", optionsPSL)
 
   const addPsl = async () =>{
     const createNewPsl = (key:number) => {
