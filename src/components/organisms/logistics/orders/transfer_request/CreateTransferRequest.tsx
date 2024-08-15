@@ -56,9 +56,10 @@ import {
   ITransferOrderRequest,
   ITransferOrderRequestContacts,
   ITransferOrderRequestMaterials,
-  ITransferOrderRequestVehiclesAsignation,
+  ITransferRequestCreation,
   ITransferOrdersRequest,
-  IVehicleType
+  IVehicleType,
+  ITransferRequestStepOneMaterial
 } from "@/types/logistics/schema";
 
 //locations
@@ -109,8 +110,9 @@ import "react-form-wizard-component/dist/style.css";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 import { formatDatePlaneWithoutComma, formatMoney } from "@/utils/utils";
 import { useTransferRequest } from "../../hooks/useTransferRequest";
-import { createTransferRequest, transferOrderMerge } from "@/services/logistics/transfer-request";
+import { createTransferRequest, getTransferRequestSteps, transferOrderMerge } from "@/services/logistics/transfer-request";
 import { getSuggestedVehicles } from "@/services/logistics/vehicles";
+import VehiclesSelection from "./vehiclesSelection/VehiclesSelection";
 
 const { Title, Text } = Typography;
 
@@ -127,7 +129,7 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
   const [orders, setOrders] = useState<ITransferOrdersRequest>();
   const [orderRequest, setOrderRequest] = useState<ITransferOrderRequest>();
   const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
-  const [savedData, setSavedData] = useState<ITransferOrderRequestVehiclesAsignation>();
+  const [transferRequest, setTransferRequest] = useState<ITransferRequestCreation>();
 
   /*Data second page */
   const [vehicleKey, setVehicleKey] = useState<number | null>(null);
@@ -163,18 +165,18 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
   // Function to handle quantity changes and update totals
   const handleQuantityMaterial = (key: React.Key, sign: string) => {
     const newData = [...dataCarga];
-    newData.forEach(item => {
-      if(item.key === key){
-        if(sign=='+'){
+    newData.forEach((item) => {
+      if (item.key === key) {
+        if (sign == "+") {
           item.quantity = item.quantity + 1;
         }
-        if(sign=='-'){
-          if(item.quantity === 1) return item.quantity
+        if (sign == "-") {
+          if (item.quantity === 1) return item.quantity;
           item.quantity = item.quantity - 1;
         }
       }
-    });    
-    
+    });
+
     setDataCarga(newData);
   };
 
@@ -258,25 +260,29 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
     let totalVolume = 0;
     let totalWeight = 0;
     let totalPersons = 0;
-  
-    vehiclesSelected.forEach(vehicle => {
+
+    vehiclesSelected.forEach((vehicle) => {
       totalVolume += vehicle.m3_volume * vehicle.quantity;
       totalWeight += vehicle.kg_capacity * vehicle.quantity;
       totalPersons += vehicle.passenger_capacity * vehicle.quantity;
     });
-  
+
     return { totalVolume, totalWeight, totalPersons };
   };
 
   const { totalVolume, totalWeight, totalPersons } = calculateTotalCapacities();
 
-  const usedVolume = dataCarga.reduce((sum, material) => sum + (material.m3_volume * material.quantity), 0);
-  const usedWeight = dataCarga.reduce((sum, material) => sum + (material.kg_weight * material.quantity), 0);
+  const usedVolume = dataCarga.reduce(
+    (sum, material) => sum + material.m3_volume * material.quantity,
+    0
+  );
+  const usedWeight = dataCarga.reduce(
+    (sum, material) => sum + material.kg_weight * material.quantity,
+    0
+  );
 
   const volumeUsedPercentage = (usedVolume / totalVolume) * 100;
   const weightUsedPercentage = (usedWeight / totalWeight) * 100;
-
-  console.log("vehiclesSelected:", vehiclesSelected);
 
   useEffect(() => {
     loadSuggestedVehicles();
@@ -341,15 +347,22 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
     }
   }, [ordersId]);
 
+  useEffect(() => {
+    if (!!transferRequest?.stepTwo) {
+      setView("vehicles")
+    }
+  }, [transferRequest]);
+
   const loadRequests = async () => {
     setIsLoading(true);
-    const res = await transferOrderMerge(ordersId);
-    if (res.success) {
+    //const res = await transferOrderMerge(ordersId);
+    const response = await getTransferRequestSteps(6);
+    setTransferRequest(response.data)
+    {/*if (res.success) {
       setOrders(res.data);
     } else {
-      messageApi.open({ content: res.message, type: "error" });
-      router.push("/logistics/orders");
-    }
+      
+    }*/}
     setIsLoading(false);
   };
 
@@ -365,12 +378,6 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
       setIsNextStepActive(false);
     }
   }, [isNextStepActive]);
-
-  useEffect(() => {
-    if (!!savedData) {
-      setOrderRequest(savedData.stepOne.transferRequest);
-    }
-  }, [savedData]);
 
   const onTabSelect = (id: string) => {
     setOrderRequest(orders?.orders.find((a) => a.id === Number(id)));
@@ -570,10 +577,24 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
 
   /*Steps funcionality */
 
+  const handleCreateTransferRequest = async () => {
+    setIsLoading(true);
+    const ordersId = orders ? orders?.orders.map((a) => a.id) : [0];
+    const tracking = orders ? orders?.tracking : [];
+
+    const res = await createTransferRequest(ordersId, tracking);
+    if (res.success) {
+      setView("vehicles");
+      setTransferRequest(res.data);
+    } else {
+      messageApi.open({ content: res.message, type: "error" });
+    }
+    setIsLoading(false);
+  };
+
   const handleNext = async () => {
     if (view === "solicitation") {
-      setView("vehicles");
-      createTransferRequest();
+      handleCreateTransferRequest();
     } else if (view === "vehicles") {
       setView("carrier");
     }
@@ -1428,7 +1449,9 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
                         </div>
                         <div className="collapseResumItem collapseBorder">
                           <Text className="collapseText">Productos</Text>
-                          <Text className="collapseText collapseBold">{dataCarga.reduce((total, item) => total + item.quantity, 0)}/40</Text>
+                          <Text className="collapseText collapseBold">
+                            {dataCarga.reduce((total, item) => total + item.quantity, 0)}/40
+                          </Text>
                         </div>
                         <div className="collapseResumItem">
                           <Button disabled className="collapseBaggageButton">
@@ -2162,14 +2185,17 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
               </Flex>
             ) : view === "vehicles" ? (
               <div>
-                <Flex style={{ padding: "24px 0" }}>
-                  <Collapse
-                    onChange={(item) => setVehicleKey(Number(item[0]))}
-                    expandIconPosition="end"
-                    defaultActiveKey={0}
-                    ghost
-                    items={actionsOptionsVehiclesSelection}
-                  />
+                <Flex style={{ padding: "24px 0", flexDirection: "column" }} gap={32}>
+                  {transferRequest?.stepTwo?.journey.map((a, index) => (
+                    <VehiclesSelection
+                      transferRequest={transferRequest}
+                      index={index}
+                      id_journey={a.id_journey}
+                      start_location_desc={a.start_location_desc}
+                      end_location_desc={a.end_location_desc}
+                      id_type_service={a.id_type_service}
+                    />
+                  ))}
                 </Flex>
               </div>
             ) : (
@@ -2186,7 +2212,7 @@ export const CreateTransferRequest = ({ params }: CreateTransferOrderRequestProp
           <Flex gap="middle" align="flex-end">
             {view === "vehicles" && <Button className="saveButton">Guardar como draft</Button>}
             <Button disabled={!isNextStepActive} className="nextButton" onClick={handleNext}>
-              Siguiente
+              {view !== "carrier" ? "Siguiente" : "Finalizar"}
             </Button>
           </Flex>
         </Flex>
