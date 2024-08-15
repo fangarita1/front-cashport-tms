@@ -43,6 +43,8 @@ interface IOrderViewContext {
   setConfirmOrderData: Dispatch<IOrderConfirmedResponse>;
   shippingInfo: IShippingInformation | undefined;
   setShippingInfo: Dispatch<IShippingInformation>;
+  discount_id: number;
+  setDiscountId: Dispatch<number>;
 }
 
 export const OrderViewContext = createContext<IOrderViewContext>({} as IOrderViewContext);
@@ -53,6 +55,7 @@ export const CreateOrderView: FC = () => {
   const [checkingOut, setCheckingOut] = useState(false);
   const [confirmOrderData, setConfirmOrderData] = useState({} as IOrderConfirmedResponse);
   const [shippingInfo, setShippingInfo] = useState<IShippingInformation>();
+  const [discount_id, setDiscountId] = useState(0);
   const { draftInfo, setDraftInfo, selectedProject } = useAppStore((state) => state);
 
   useEffect(() => {
@@ -104,7 +107,9 @@ export const CreateOrderView: FC = () => {
         confirmOrderData,
         setConfirmOrderData,
         shippingInfo,
-        setShippingInfo
+        setShippingInfo,
+        discount_id,
+        setDiscountId
       }}
     >
       <div className={styles.ordersView}>

@@ -149,3 +149,11 @@ export interface IOrder {
   total_pronto_pago: number;
   client_name: string;
 }
+
+export interface IDiscount {
+  id: number;
+  discount_name: string;
+  description: string;
+  id_client: number;
+  discount_type_id: number;
+}
