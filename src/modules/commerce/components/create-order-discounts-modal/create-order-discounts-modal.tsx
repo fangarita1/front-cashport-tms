@@ -19,8 +19,9 @@ const CreateOrderDiscountsModal: FC<CreateOrderDiscountsModalProps> = ({
   const { ID: projectId } = useAppStore((state) => state.selectedProject);
   const [radioValue, setRadioValue] = useState(0);
   const [discounts, setDiscounts] = useState<IDiscount[]>([]);
-  const { client, setDiscountId } = useContext(OrderViewContext);
+  const { client, discountId, setDiscountId } = useContext(OrderViewContext);
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const fetchDiscounts = async () => {
       setLoading(true);
@@ -31,6 +32,10 @@ const CreateOrderDiscountsModal: FC<CreateOrderDiscountsModalProps> = ({
       setLoading(false);
     };
     fetchDiscounts();
+
+    if (discountId) {
+      setRadioValue(discountId);
+    }
   }, [projectId, client]);
 
   const handleApplyDiscounts = () => {

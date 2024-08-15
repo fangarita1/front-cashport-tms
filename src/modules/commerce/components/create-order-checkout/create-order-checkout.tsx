@@ -13,10 +13,11 @@ import {
   createDraft,
   createOrder,
   createOrderFromDraft,
-  getAdresses
+  getAdresses,
+  getDiscounts
 } from "@/services/commerce/commerce";
 import { useAppStore } from "@/lib/store/store";
-import { ICommerceAdresses, IShippingInformation } from "@/types/commerce/ICommerce";
+import { ICommerceAdresses, IDiscount, IShippingInformation } from "@/types/commerce/ICommerce";
 import { useMessageApi } from "@/context/MessageContext";
 import { GenericResponse } from "@/types/global/IGlobal";
 
@@ -33,12 +34,13 @@ interface IShippingInfoForm {
 }
 
 const CreateOrderCheckout: FC = ({}) => {
-  const { setCheckingOut, client, confirmOrderData, shippingInfo } = useContext(OrderViewContext);
+  const { setCheckingOut, client, confirmOrderData, shippingInfo, discountId, setDiscountId } =
+    useContext(OrderViewContext);
   const { ID: projectId } = useAppStore((state) => state.selectedProject);
   const { draftInfo } = useAppStore((state) => state);
-  const [radioValue, setRadioValue] = useState(0);
   const [loading, setLoading] = useState(false);
   const [addresses, setAddresses] = useState<ICommerceAdresses[]>([]);
+  const [discounts, setDiscounts] = useState<IDiscount[]>([]);
   const router = useRouter();
   const { showMessage } = useMessageApi();
 
@@ -72,12 +74,24 @@ const CreateOrderCheckout: FC = ({}) => {
     fetchAdresses();
   }, []);
 
+  useEffect(() => {
+    const fetchDiscounts = async () => {
+      setLoading(true);
+      const response = await getDiscounts(projectId, client.id);
+      if (response.data) {
+        setDiscounts(response.data);
+      }
+      setLoading(false);
+    };
+    fetchDiscounts();
+  }, [projectId, client]);
+
   const handleGoBack = () => {
     setCheckingOut(false);
   };
 
   const handleChangeRadio = (e: RadioChangeEvent) => {
-    setRadioValue(parseInt(e.target.value));
+    setDiscountId(parseInt(e.target.value));
   };
 
   const onSubmitSaveDraft = async (data: IShippingInfoForm) => {
@@ -233,17 +247,12 @@ const CreateOrderCheckout: FC = ({}) => {
           <Radio.Group
             className={styles.radioGroup}
             onChange={handleChangeRadio}
-            value={radioValue}
+            value={discountId}
           >
-            {mockDiscounts.map((discount) => (
-              <Radio
-                className={styles.radioGroup__item}
-                key={discount.id}
-                value={discount.id}
-                disabled={!discount.isReached}
-              >
+            {discounts.map((discount) => (
+              <Radio className={styles.radioGroup__item} key={discount.id} value={discount.id}>
                 <div className={styles.radioGroup__item__label}>
-                  <p>{discount.discount}</p>
+                  <p>{discount.discount_name}</p>
                 </div>
               </Radio>
             ))}
@@ -274,29 +283,6 @@ const CreateOrderCheckout: FC = ({}) => {
 };
 
 export default CreateOrderCheckout;
-
-const mockDiscounts = [
-  {
-    id: 1,
-    discount: "5% DCTO En las marcas Cetaphil",
-    isReached: true
-  },
-  {
-    id: 2,
-    discount: "10% DCTO En las marcas Cetaphil",
-    isReached: false
-  },
-  {
-    id: 3,
-    discount: "15% DCTO En las marcas Cetaphil",
-    isReached: false
-  },
-  {
-    id: 4,
-    discount: "30% DCTO En las marcas Cetaphil",
-    isReached: true
-  }
-];
 
 const shippingInfoToForm = (shippingInfo: IShippingInformation) => {
   return {

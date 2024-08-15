@@ -45,7 +45,7 @@ export interface IFetchedCategories {
 }
 
 export interface IConfirmOrderData {
-  discount_id: number;
+  discount_id: number | undefined;
   order_summary: {
     product_sku: string;
     quantity: number;
