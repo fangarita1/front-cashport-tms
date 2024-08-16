@@ -225,7 +225,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
           id: invoice.id,
           emission: invoice.financial_record_date,
           pending: invoice.current_value,
-          agreedValue: "",
+          agreedValue: invoice.current_value.toString(), // Inicializar con el valor pendiente
           newDate: ""
         }))
       );
