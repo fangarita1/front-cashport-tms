@@ -1,19 +1,18 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { Flex, Input, Tooltip, Typography, notification } from "antd";
+import { Flex, Input, Tooltip, notification } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
-
 import { Eye, EyeClosed } from "phosphor-react";
-
-import { NotificationPlacement } from "antd/es/notification/interface";
 
 import { getAuth } from "../../../../../firebase-utils";
 
-import "./loginform.scss";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
+import { openNotification } from "@/components/atoms/Notification/Notification";
+
+import "./loginform.scss";
 
 interface IAuthLogin {
   email: string;
@@ -30,7 +29,6 @@ interface LoginFormProps {
 }
 export const LoginForm = ({ setResetPassword }: LoginFormProps) => {
   const router = useRouter();
-  const { Text, Title } = Typography;
   const [isLoading, setIsLoading] = useState(false);
   const {
     control,
@@ -42,33 +40,16 @@ export const LoginForm = ({ setResetPassword }: LoginFormProps) => {
   });
   const [api, contextHolder] = notification.useNotification();
 
-  const openNotification = (placement: NotificationPlacement) => {
-    api.error({
-      message: (
-        <Title className="notificationLoginText" level={5} type="secondary">
-          Error
-        </Title>
-      ),
-      description: (
-        <Text className="notificationLoginText" type="secondary">
-          Email o contraseña incorrectos
-        </Text>
-      ),
-      placement
-    });
-    setIsLoading(false);
-  };
-
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmitHandler = async ({ email, password }: IAuthLogin) => {
     setIsLoading(true);
 
-    await getAuth(email.trim(), password, router, false, () => openNotification("topRight"));
+    await getAuth(email.trim(), password, router, false, openNotification, api);
+    setIsLoading(false);
     reset();
   };
   const handleForgotPassword = () => {
-    console.log("Forgot Password");
     setResetPassword(true);
   };
 

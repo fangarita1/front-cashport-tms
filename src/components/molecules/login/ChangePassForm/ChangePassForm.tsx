@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { Flex, Input, Tooltip } from "antd";
+import { Flex, Input, notification, Tooltip } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 
 import { Eye, EyeClosed } from "phosphor-react";
 
 import "./changePassForm.scss";
+import { useRouter, useSearchParams } from "next/navigation";
+import { resetPassword } from "../../../../../firebase-utils";
+import { openNotification } from "@/components/atoms/Notification/Notification";
 
 interface IChangePassForm {
   password: string;
@@ -24,6 +27,11 @@ const schema = yup.object().shape({
 
 export const ChangePassForm = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const oobCode = searchParams.get("oobCode");
+  const [api, contextHolder] = notification.useNotification();
+  const router = useRouter();
+
   const {
     control,
     handleSubmit,
@@ -41,16 +49,34 @@ export const ChangePassForm = () => {
     confirmPassword: false
   });
 
-  const onSubmitHandler = async ({ password, confirmPassword }: IChangePassForm) => {
+  const onSubmitHandler = async ({ password }: IChangePassForm) => {
+    if (!oobCode) return;
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      console.log(password, confirmPassword);
-    }, 1000);
+    try {
+      await resetPassword(oobCode, password);
+      openNotification({
+        api: api,
+        type: "success",
+        title: "Contraseña restablecida",
+        message: "Tu contraseña ha sido restablecida"
+      });
+      setTimeout(() => {
+        router.push("/auth/login");
+      }, 1500);
+    } catch (error) {
+      openNotification({
+        api: api,
+        type: "error",
+        title: "Error",
+        message: "Hubo un error al restablecer la contraseña, pruebe mandar otro correo"
+      });
+    }
+    setIsLoading(false);
   };
-
+  if (!oobCode) return;
   return (
     <form className="changePassForm" onSubmit={handleSubmit(onSubmitHandler)}>
+      {contextHolder}
       <Flex vertical gap={"0.5rem"}>
         <h4 className="changePassForm__title">Restablece tu contraseña</h4>
         <p>Ingresa tu nueva contraseña</p>
@@ -77,7 +103,6 @@ export const ChangePassForm = () => {
                     {!showPassword.password ? (
                       <Eye
                         onClick={() => {
-                          console.log("click");
                           setShowPassword((prevState) => ({
                             ...prevState,
                             password: true
@@ -88,7 +113,6 @@ export const ChangePassForm = () => {
                     ) : (
                       <EyeClosed
                         onClick={() => {
-                          console.log("click2");
                           setShowPassword((prevState) => ({
                             ...prevState,
                             password: false
