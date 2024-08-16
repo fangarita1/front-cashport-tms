@@ -18,11 +18,11 @@ export const CarrierTable = () => {
 
   const loadCarriers = async () => {
     const result = await getAllCarriers();
-    if (result.data.data.length > 0) {
+    if (result?.length > 0) {
       const listCarriers: any[] | ((prevState: ICarrier[]) => ICarrier[]) = [];
       const listCarriersOptions: { label: any; value: any }[] = [];
 
-      result.data.data.forEach((item: any, index: number) => {
+      result.forEach((item: any, index: number) => {
         listCarriers.push(item);
         listCarriersOptions.push({ label: item.name, value: item.id });
       });

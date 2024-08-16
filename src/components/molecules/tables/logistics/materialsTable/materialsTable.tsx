@@ -2,20 +2,20 @@ import { useEffect, useState } from "react";
 import { Button, Flex, message, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import { DotsThree, Eye, Plus, Triangle } from "phosphor-react";
-import "./locationsTable.scss";
+import "./materialsTable.scss";
 import UiSearchInput from "@/components/ui/search-input";
-import { ILocation } from "@/types/logistics/schema";
-import { getAllLocations } from "@/services/logistics/locations";
+import { ILocation, IMaterial } from "@/types/logistics/schema";
+import { getAllMaterials } from "@/services/logistics/materials";
 import useSWR from "swr";
 
 const { Text } = Typography;
 
-export const LocationsTable = () => {
+export const MaterialsTable = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [datasource, setDatasource] = useState<any[]>([]);
 
-  const { data: locations, isLoading } = useSWR({}, getAllLocations, {
+  const { data: materials, isLoading } = useSWR({}, getAllMaterials, {
     onError: (error: any) => {
       console.error(error);
       message.error(error.message);
@@ -28,7 +28,7 @@ export const LocationsTable = () => {
   };
 
   useEffect(() => {
-    const data = locations
+    const data = materials
       ?.data.data.filter((element: any) => {
         if (!search) return true;
         return (
@@ -39,34 +39,66 @@ export const LocationsTable = () => {
       .map((element: any) => ({
         id: element.id,
         description: element.description,
-        citydesc: element.citydesc,
-        statedesc: element.statedesc,
-        location_type: element.location_type,
+        m3_volume: element.m3_volume,
+        mt_height: element.mt_height,
+        mt_width: element.mt_width,
+        mt_length: element.mt_length,
+        kg_weight: element.kg_weight,
         active: element.active,
       })) || [];
     setDatasource(data);
-  }, [locations, search]);
+  }, [materials, search]);
 
-  const columns: TableProps<ILocation>["columns"] = [
+  const columns: TableProps<IMaterial>["columns"] = [
+    {
+      title: "Código",
+      dataIndex: "id",
+      key: "id",
+    },
     {
       title: "Nombre",
       dataIndex: "description",
       key: "description",
     },
     {
-      title: "Departamento",
-      dataIndex: "statedesc",
-      key: "statedesc",
+      title: 'Volumen',
+      dataIndex: 'm3_volume',
+      key: 'm3_volume',
+      render: (_, record) =>{
+        return record.m3_volume + ' m3';
+      }
     },
     {
-      title: "Municipio",
-      dataIndex: "citydesc",
-      key: "citydesc",
+      title: "Alto",
+      dataIndex: "mt_height",
+      key: "mt_height",
+      render: (_, record) =>{
+        return record.mt_height + ' m';
+      }
     },
     {
-      title: "Tipo de ubicación",
-      dataIndex: "location_type",
-      key: "location_type",
+      title: "Ancho",
+      dataIndex: "mt_width",
+      key: "mt_width",
+      render: (_, record) =>{
+        return record.mt_width + ' m';
+      }
+    },
+    {
+      title: "Largo",
+      dataIndex: "mt_length",
+      key: "mt_length",
+      render: (_, record) =>{
+        return record.mt_length + ' m';
+      }
+    },
+    {
+      title: "Peso",
+      dataIndex: "kg_weight",
+      key: "kg_weight",
+      render: (_, record) =>{
+        return record.kg_weight + ' kg';
+      }
     },
     {
       title: "Estado",
@@ -93,7 +125,7 @@ export const LocationsTable = () => {
       dataIndex: "",
       render: (_, { id }) => (
         <Button
-          href={`/logistics/locations/${id}`}
+          href={`/logistics/materials/${id}`}
           className="icon-detail"
           icon={<Eye size={20} />}
         />
@@ -114,7 +146,7 @@ export const LocationsTable = () => {
           />
           <Button
             className="options"
-            href="/logistics/providers/provider"
+            href="/logistics/configutarion/material"
             icon={<DotsThree size={"1.5rem"} />}
           />
         </Flex>
@@ -123,9 +155,9 @@ export const LocationsTable = () => {
             type="primary"
             className="buttonNewProject"
             size="large"
-            href="/logistics/configuration/locations/new"
+            href="/logistics/configuration/materials/new"
           >
-            Nueva ubicación
+            Nuevo material
             {<Plus weight="bold" size={14} />}
           </Button>
         </Flex>

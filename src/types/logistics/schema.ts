@@ -1059,6 +1059,58 @@ export interface IIncidentsWithDefaults {
   modified_at?: Date | null;
   modified_by?: string | null;
 }
+
+export interface IState {
+  id: number;
+  id_country: number;
+  description: string;
+  codigodane: string;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
+export interface ICity {
+  id: number;
+  id_state: number;
+  description: string;
+  codigodane: string;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
+export interface ILocationTypes {
+  id: number;
+  description: string;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
+export interface IFormLocation {
+  general: ILocation;
+  files?: DocumentCompleteType[];
+  images: CustomFile[];
+  IS_ACTIVE: boolean;
+}
+
+export interface IGroupLocation {
+  id: number;
+  description: string;
+  city_id: string;
+  geoJSON: string;
+  active: boolean;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+  locations: Location[];
+}
+
 /**
  * Exposes all fields present in location as a typescript
  * interface.
@@ -1077,6 +1129,11 @@ export interface ILocation {
   created_by: string;
   modified_at?: Date | null;
   modified_by?: string | null;
+  state_id?: number;
+  group_location_id?: number;
+  additional_info: string;
+  contact_name: string;
+  contact_number: string;
 }
 /**
  * Exposes all fields present in driver as a typescript
@@ -2516,6 +2573,7 @@ export interface IFormDriver {
   general: IFormGeneralDriver;
   logo?: FileObject[];
   files?: DocumentCompleteType[];
+  images: CustomFile[];//JCBGRemover
 }
 export interface CustomFile extends File {
   url_archive: string;
