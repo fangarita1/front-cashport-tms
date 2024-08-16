@@ -123,6 +123,8 @@ interface IDetailOrder {
   discount_id: number;
   taxes: number;
   total_pronto_pago: number;
+  total: number;
+  discount_name: string;
 }
 
 export interface ICategories {
