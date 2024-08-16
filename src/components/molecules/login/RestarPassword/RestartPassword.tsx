@@ -68,6 +68,9 @@ export const RestartPassword = ({ setResetPassword }: RestartFormProps) => {
                 validationRules={{ required: "Email es obligatorio" }}
               />
             </div>
+            <p className={styles.forgotPassword} onClick={() => setResetPassword(false)}>
+              Volver al Login
+            </p>
           </Flex>
         </>
       )}
