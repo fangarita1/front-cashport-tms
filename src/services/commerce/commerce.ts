@@ -4,6 +4,7 @@ import {
   ICommerceAdresses,
   IConfirmOrderData,
   ICreateOrderData,
+  IDiscount,
   IEcommerceClient,
   IOrderConfirmedResponse,
   IOrderData,
@@ -45,6 +46,22 @@ export const getAdresses = async (clientId: number) => {
     `/marketplace/clients/${clientId}/other-addresses`
   );
   return response;
+};
+
+export const getDiscounts = async (
+  projectId: number,
+  clientId: number
+): Promise<GenericResponse<IDiscount[]>> => {
+  try {
+    const response: GenericResponse<IDiscount[]> = await API.get(
+      `/marketplace/projects/${projectId}/clients/${clientId}/discounts`
+    );
+
+    return response;
+  } catch (error) {
+    console.error(error);
+    return error as GenericResponse<IDiscount[]>;
+  }
 };
 
 export const confirmOrder = async (
