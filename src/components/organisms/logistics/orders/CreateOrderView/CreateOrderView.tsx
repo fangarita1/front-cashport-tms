@@ -63,6 +63,8 @@ import ModalAddContact from "@/components/molecules/modals/ModalAddContact/Modal
 import { getCompanyCodes } from "@/services/logistics/company-codes";
 import { getClients } from "@/services/logistics/clients";
 import { getTravelDuration } from "@/utils/logistics/maps";
+import CustomHourPicker from "@/components/molecules/logistics/HourPicker/HourPicker";
+import CustomTimeSelector from "@/components/molecules/logistics/HourPicker/HourPicker";
 
 const { Title, Text } = Typography;
 
@@ -78,6 +80,8 @@ export const CreateOrderView = () => {
   const origin = useRef<any>([]);
   const destination = useRef<any>([]);
   const [origenIzaje, setOrigenIzaje] = useState(false);
+  const [horasOrigenIzaje, setHorasOrigenIzaje] = useState<number>(1);
+  const [horasDestinoIzaje, setHorasDestinoIzaje] = useState<number>(1);
   const [destinoIzaje, setDestinoIzaje] = useState(false);
   const [fechaInicial, setFechaInicial] = useState<Dayjs | undefined>(undefined);
   const [horaInicial, setHoraInicial] = useState<Dayjs>();
@@ -102,9 +106,18 @@ export const CreateOrderView = () => {
   const [companyValid,setCompanyValid] = useState(true);
 
   const disabledDate: RangePickerProps['disabledDate'] = (current:any) => {
-    // Can not select days before today and today
-    return current && current < dayjs().endOf('day');
+    // Can not select days before today
+    return current && current < dayjs().startOf('day');
   };
+
+    useEffect(() => {
+      if (!destinoIzaje) {
+          setHorasDestinoIzaje(1);
+      } 
+      if(!origenIzaje){
+        setHorasOrigenIzaje(1);
+      }
+  }, [origenIzaje, destinoIzaje]);
 
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWRInmutable(
     "0",
@@ -755,12 +768,12 @@ export const CreateOrderView = () => {
           key,
           idpsl: 1,
           descpsl: '',
-          percent:100,
+          percent:0,
           costcenters: [{
             key: 1,
             idpslcostcenter: 1,
             descpslcostcenter: '',
-            percent: 100
+            percent: 0
           }]  
         }}
     setDataPsl(dataPsl => [...dataPsl, createNewPsl(dataPsl?.length ? dataPsl?.length+1 : 1)]);
@@ -772,7 +785,7 @@ export const CreateOrderView = () => {
             key,
             idpslcostcenter: 1,
             descpslcostcenter: '',
-            percent: 100
+            percent: 0
           
         }}
     setDataPsl(prevDataPsl => 
@@ -783,6 +796,103 @@ export const CreateOrderView = () => {
       )
     );
   };
+  
+  const adjustCostCenterPercentages = (costcenters: IOrderPslCostCenter[], oldPsdPercent:number, newPslPercent:number) =>{
+    const newCCs = costcenters.map((cc)=>{
+      const oldCCPercent =cc.percent/oldPsdPercent
+      const newCCValue = newPslPercent*oldCCPercent
+      return {...cc, percent: newCCValue}
+    })
+    return newCCs
+  }
+
+  const handlePslPercentChange = (value: number, pslIndex: number) => {
+    setDataPsl((prevDataPsl) => {
+      // Calcula el total actual de los porcentajes de los PSLs excluyendo el seleccionado
+      const totalPercentExcludingCurrent = prevDataPsl.reduce((total, psl, index) => {
+        return index !== pslIndex ? total + psl.percent : total;
+      }, 0);
+  
+      // Verifica si la suma total con el nuevo valor es mayor a 100
+      const isOverTotal = totalPercentExcludingCurrent + value > 100;
+  
+      const remainingPercent = 100 - value;
+      const otherPslCount = prevDataPsl.length - 1;
+  
+      // Actualiza los PSLs con la lógica correspondiente
+      const updatedPsl = prevDataPsl.map((psl, i) => {
+        if (i === pslIndex) {
+          return { ...psl, percent: value };
+        } else {
+          const adjustedPercent = isOverTotal ? remainingPercent / otherPslCount : psl.percent;
+          return {
+            ...psl,
+            percent: adjustedPercent,
+            costcenters: isOverTotal
+              ? adjustCostCenterPercentages(psl.costcenters, psl.percent, adjustedPercent)
+              : psl.costcenters,
+          };
+        }
+      });
+  
+      return updatedPsl;
+    });
+  };
+    
+  const handleCcPercentChange = (value: number, pslIndex: number, ccIndex: number) => {
+    setDataPsl((prevDataPsl) => 
+      prevDataPsl.map((psl, i) => {
+        if (i !== pslIndex) return psl;
+  
+        const currentPslPercent = psl.percent;
+  
+        if (value > currentPslPercent) {
+          return psl;
+        }
+  
+        const totalCCPercent = psl.costcenters.reduce((total, cc, index) => 
+          index !== ccIndex ? total + cc.percent : total, 0);
+  
+        const otherCcCount = psl.costcenters.length - 1;
+        let updatedCostCenters;
+  
+        if (value === 0) {
+          updatedCostCenters = psl.costcenters.map((cc, j) =>
+            j === ccIndex ? { ...cc, percent: value } : { ...cc, percent: currentPslPercent / otherCcCount }
+          );
+        } else if (totalCCPercent + value > currentPslPercent) {
+          const remainingPercent = currentPslPercent - value;
+          updatedCostCenters = psl.costcenters.map((cc, j) =>
+            j === ccIndex ? { ...cc, percent: value } : { ...cc, percent: remainingPercent / otherCcCount }
+          );
+        } else {
+          updatedCostCenters = psl.costcenters.map((cc, j) =>
+            j === ccIndex ? { ...cc, percent: value } : cc
+          );
+        }
+  
+        return { ...psl, costcenters: updatedCostCenters };
+      })
+    );
+  };
+  
+    const parser = (value: string | undefined) => Number(value?.replace('%', '')) as unknown as number;
+
+    const handleBlurPSL = (e: React.FocusEvent<HTMLInputElement>, pslIndex:number) => {
+      const formattedValue = e.target.value;
+      const numericValue = parser(formattedValue);
+      if (numericValue !== undefined && !isNaN(numericValue)) {
+        handlePslPercentChange(numericValue, pslIndex);
+      }
+    };
+  
+    const handleBlurCC = (e: React.FocusEvent<HTMLInputElement>, pslIndex:number, ccIndex: number) => {
+      const formattedValue = e.target.value;
+      const numericValue = parser(formattedValue);
+      if (numericValue !== undefined && !isNaN(numericValue)) {
+        handleCcPercentChange(numericValue, pslIndex, ccIndex);
+      }
+    };
 
   const handleChangeExpirationDate = (index: number, value: any) => {
     setSelectedFiles((prevState: any[]) => {
@@ -1103,7 +1213,22 @@ export const CreateOrderView = () => {
         isformvalid = false;
         messageApi.error("Debe agregar por lo menos un PSL")
       }
-
+      const checkPercentages = (psls: IOrderPsl[]) => {
+        const totalPslPercent = psls.reduce((total, psl) => total + psl.percent, 0);
+        if (totalPslPercent !== 100) {
+          isformvalid = false;
+          messageApi.error("La totalidad de los PSLs debe ser 100%")
+        }
+        for (const psl of psls) {
+          const totalCcPercent = psl.costcenters.reduce((total, cc) => total + cc.percent, 0);
+          if (totalCcPercent !== psl.percent) {
+            isformvalid = false;
+            messageApi.error("La suma de los centros de costos debe ser igual al del PSL asociado")
+          }
+        }
+      
+      };
+      checkPercentages(dataPsl)
       //datos de contacto
       dataContacts.forEach((contact)=>{
         //console.log(contact)
@@ -1144,6 +1269,8 @@ export const CreateOrderView = () => {
       end_date: fechaFinalToBody?.toDate().toISOString(),
       start_freight_equipment: String(origenIzaje?1:0),
       end_freight_equipment: String(destinoIzaje?1:0),
+      freight_origin_time: origenIzaje? horasOrigenIzaje : undefined,
+      freight_destination_time: destinoIzaje? horasDestinoIzaje : undefined,
       rotation: "0",
       start_date_flexible: fechaInicialFlexible,
       end_date_flexible: fechaFinalFlexible,
@@ -1307,11 +1434,22 @@ export const CreateOrderView = () => {
                     </>
                   }
                 { typeactive != "3" &&
-                  <Flex style={{marginTop:"0.5rem", justifyContent: "space-between", gap: "0.5rem"}}>
-                    <Switch disabled={typeactive === "2"}  checked={origenIzaje} onChange={event =>{
-                      setOrigenIzaje(event)
-                    }} />
-                    <Text>Requiere Izaje</Text>
+                  <Flex style={{marginTop:"0.5rem", width:"100%"}} align="center">
+                    <Col span={12} >
+                      <Flex gap={"0.5rem"} > 
+                        <Switch disabled={typeactive === "2"}  checked={origenIzaje} onChange={event =>{
+                          setOrigenIzaje(event)
+                        }} />
+                        <Text>Requiere Izaje</Text>
+                      </Flex>
+                    </Col>
+                    {origenIzaje && 
+                    <Col span={12} >
+                      <Flex gap={"0.5rem"} align="center" justify="end"> 
+                          <Text>Cuantas horas de izaje</Text>
+                          <CustomTimeSelector initialValue={horasOrigenIzaje} onTimeChange={(value)=>setHorasOrigenIzaje(value)}/>
+                      </Flex>
+                    </Col>}
                   </Flex>
                 }
               </Row>
@@ -1339,11 +1477,22 @@ export const CreateOrderView = () => {
                     </>
                   }
                 { typeactive != "3" &&
-                <Flex style={{marginTop:"0.5rem", justifyContent: "space-between", gap: "0.5rem"}}>
-                    <Switch checked={destinoIzaje}  onChange={event =>{
-                      setDestinoIzaje(event)
-                    }}/>
-                  <Text>Requiere Izaje</Text>
+                  <Flex style={{marginTop:"0.5rem", width:"100%"}} align="center">
+                  <Col span={12} >
+                    <Flex gap={"0.5rem"} > 
+                      <Switch  checked={destinoIzaje} onChange={event =>{
+                        setDestinoIzaje(event)
+                      }} />
+                      <Text>Requiere Izaje</Text>
+                    </Flex>
+                  </Col>
+                  {destinoIzaje && 
+                  <Col span={12} >
+                    <Flex gap={"0.5rem"} align="center" justify="end"> 
+                        <Text>Cuantas horas de izaje</Text>
+                        <CustomTimeSelector initialValue={horasDestinoIzaje} onTimeChange={(value)=>setHorasDestinoIzaje(value)}/>
+                    </Flex>
+                  </Col>}
                 </Flex>
                 }
               </Row>
@@ -1713,9 +1862,11 @@ export const CreateOrderView = () => {
                       defaultValue={psl.percent}
                       min={0}
                       max={100}
-                      formatter={(value) => `${value}%`}
-                      parser={(value) => value?.replace('%', '') as unknown as number}
+                      addonAfter="%"
+                      formatter={(value) => `${Math.floor(value || 0)}`} 
                       value={psl.percent}
+                      onBlur={(e) => handleBlurPSL(e, pslIndex)}
+                      step={1}
                     />
                   </Col>
                   <Col span={8}/>
@@ -1759,10 +1910,13 @@ export const CreateOrderView = () => {
                       <InputNumber<number>
                         className="puntoOrigen dateInputForm" 
                         defaultValue={cc.percent}
+                        value={cc.percent}
                         min={0}
-                        max={100}
-                        formatter={(value) => `${value}%`}
-                        parser={(value) => value?.replace('%', '') as unknown as number}
+                        max={psl.percent}
+                        addonAfter="%"
+                        step={1}                        
+                        formatter={(value) => `${Math.floor(value || 0)}`}  
+                        onBlur={(e) => handleBlurCC(e, pslIndex, ccIndex)}
                       />
                     </Col>  
                     <Col span={8} style={{display:"flex", justifyContent: "center", alignItems:"flex-end"}}>

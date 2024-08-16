@@ -1475,6 +1475,8 @@ export interface ITransferOrder {
   end_date?: string;
   start_freight_equipment: string;
   end_freight_equipment: string;
+  freight_origin_time?: number;
+  freight_destination_time?: number;
   rotation: string;
   start_date_flexible: number;
   end_date_flexible: number;
@@ -1509,6 +1511,8 @@ export interface ITransferOrder {
   transfer_order_products?: ITransferOrderProducts[] | null;
   //vehiculo sugerido
   transfer_order_vehicles?: ITransferOrderVehicle[] | null;
+  //psls y ccs asociados
+  transfer_order_psl?: ITransferOrderPsls[] | null
 }
 
 export interface IFormTransferOrder {
@@ -2709,4 +2713,18 @@ export interface PSLOptionType {
   value: number;
   label: string;
   costcenters: CCOptionType[];
+}
+
+export interface ITransferOrderCostCenter {
+  id: number,
+  id_transfer_order: number,
+  id_costcenter: number,
+  percentage: number,
+  cost_center_desc: string,
+  id_psl: number
+}
+export interface ITransferOrderPsls {
+  id: number,
+  description: string,
+  transfer_order_cost_center: ITransferOrderCostCenter[]
 }
