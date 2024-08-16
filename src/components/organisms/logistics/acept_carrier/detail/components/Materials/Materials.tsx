@@ -57,18 +57,18 @@ export default function Materials({ materials }: MaterialsDataProps) {
     },
     {
       title: "Ancho",
-      key: "broad",
-      dataIndex: "mt_length",
-      render: (amount) => <Text>{amount} m</Text>,
-      sorter: (a, b) => a.mt_length - b.mt_length,
-      showSorterTooltip: false
-    },
-    {
-      title: "Largo",
       key: "width",
       dataIndex: "mt_width",
       render: (amount) => <Text>{amount} m</Text>,
       sorter: (a, b) => a.mt_width - b.mt_width,
+      showSorterTooltip: false
+    },
+    {
+      title: "Largo",
+      key: "length",
+      dataIndex: "mt_length",
+      render: (amount) => <Text>{amount} m</Text>,
+      sorter: (a, b) => a.mt_length - b.mt_length,
       showSorterTooltip: false
     },
     {
@@ -94,13 +94,13 @@ export default function Materials({ materials }: MaterialsDataProps) {
   ];
 
   return (
-    <Flex style={{ marginTop: "1rem" }} className={styles.wrapper}>
+    <Flex >
       <Row style={{ width: "100%" }}>
         <Col span={24}>
-          <Flex vertical className={styles.table} style={{ width: "99%", marginTop: "2rem" }}>
-            <h3>Materiales</h3>
+          <Flex vertical style={{ width: "100%"  }}>
+            <p className={styles.title}>Materiales</p>
             <Row>
-              <Col span={24} style={{ paddingTop: "1rem" }}>
+              <Col span={24} style={{ paddingTop: "0.5rem" }}>
                 <Table
                   style={{ width: "100%" }}
                   columns={columns}

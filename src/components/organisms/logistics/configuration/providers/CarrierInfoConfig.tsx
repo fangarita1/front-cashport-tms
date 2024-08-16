@@ -25,6 +25,7 @@ import "../../../../../styles/_variables_logistics.css";
 
 import "./carrierInfoConfig.scss";
 import { CarrierTable } from "@/components/molecules/tables/logistics/carrierTable/carrierTableConfig";
+import { LocationsTable } from "@/components/molecules/tables/logistics/locationsTable/locationsTable";
 
 const { Title } = Typography;
 
@@ -70,7 +71,7 @@ export const CarrierInfoConfigView = () => {
     {
       key: "5",
       label: "Ubicacion",
-      children: <></>
+      children: <><LocationsTable></LocationsTable></>
     },
     {
       key: "6",
