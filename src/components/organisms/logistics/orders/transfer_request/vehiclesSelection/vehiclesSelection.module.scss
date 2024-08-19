@@ -150,4 +150,16 @@
         font-weight: 700;
         line-height: 21px;
     }
+    .collapseCancelButton {
+        height: 45px;
+        padding: 16px;
+        gap: 16px;
+        border-radius: 4px;
+        opacity: 0px;
+        background-color: $green;
+        font-family: Poppins;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 21px;
+    }
 }

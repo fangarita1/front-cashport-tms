@@ -1717,6 +1717,7 @@ export interface ITransferRequestMaterialStepOne {
 export interface ITransferRequestCreation {
   general: ITransferRequestVehiclesSugest;
   stepOne: {
+    transferOrders: ITransferOrderRequest[];
     transferRequest: ITransferRequestStepOne[];
     transferRequestJourneys: ITransferRequestJourneyStepOne[];
     transferRequestMaterial: ITransferRequestMaterialStepOne[];
@@ -1757,7 +1758,7 @@ export interface ITransferRequestJourneyInfo {
   id_route: string;
   start_location_desc: string;
   end_location_desc: string;
-  trips: [];
+  trips: IVehiclesPricingTrips[];
 }
 /**
  * Exposes all fields present in transfer_request_journey_review as a typescript
