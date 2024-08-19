@@ -5,7 +5,7 @@ import { CreateMaterialView } from "@/components/organisms/logistics/configurati
 function MaterialInfoPage() {
   return <CreateMaterialView params={{
     id: "",
-    locationId: ""
+    driverId: ""
   }} />;
 }
 
