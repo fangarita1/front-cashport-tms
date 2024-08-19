@@ -11,7 +11,7 @@ interface Documents {
   url_document: string;
   active: number | string;
 }
-export interface Contacts {
+interface Contacts {
   id: number;
   name: string;
   contact_type: number;
@@ -19,6 +19,7 @@ export interface Contacts {
 }
 interface OtherReq {
   id: number;
+  id_other_requeriments: number;
   other_requirement_desc: string;
   quantity: number
 }

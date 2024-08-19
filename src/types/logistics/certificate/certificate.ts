@@ -22,4 +22,4 @@ export interface Active {
   data: number[];
 }
 
-export type DocumentCompleteType = CertificateType & { file: File | undefined } & { expirationDate: any } & { link?: string };
+export type DocumentCompleteType = CertificateType & { file: File | undefined } & { expirationDate: any } & { link?: string } & { entity_type_desc?: string };

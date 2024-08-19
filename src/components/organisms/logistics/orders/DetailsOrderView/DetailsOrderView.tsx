@@ -207,7 +207,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
               </Col>
           </Flex>
           <Flex vertical>
-            <Responsibles title="Responsables"/>
+            <Responsibles title="Responsables" psls={transferOrder?.transfer_order_psl ?? []}/>
           </Flex>
           <Flex vertical>  
             <AditionalInfo 

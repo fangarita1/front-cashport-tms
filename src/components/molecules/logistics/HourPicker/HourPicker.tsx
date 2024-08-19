@@ -4,17 +4,18 @@ import { CaretDown, CaretUp } from 'phosphor-react';
 
 type CustomTimeSelectorProps = {
     initialValue?: number;
+    maxValue?: number
     onTimeChange?: (value: number) => void;
 };
 
-const CustomTimeSelector: React.FC<CustomTimeSelectorProps> = ({ initialValue = 1, onTimeChange }) => {
+const CustomTimeSelector: React.FC<CustomTimeSelectorProps> = ({ initialValue = 1, maxValue = 50, onTimeChange }) => {
 
     
     const [time, setTime] = useState<number>(initialValue);
 
     const handleIncrement = () => {
         setTime(prev => {
-        const newValue = prev < 20 ? prev + 1 : 1;
+        const newValue = prev < maxValue ? prev + 1 : 1;
         onTimeChange && onTimeChange(newValue);
         return newValue;
         });
@@ -22,7 +23,7 @@ const CustomTimeSelector: React.FC<CustomTimeSelectorProps> = ({ initialValue = 
 
     const handleDecrement = () => {
         setTime(prev => {
-        const newValue = prev > 1 ? prev - 1 : 20;
+        const newValue = prev > 1 ? prev - 1 : maxValue;
         onTimeChange && onTimeChange(newValue);
         return newValue;
         });
