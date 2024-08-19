@@ -55,15 +55,14 @@ import "./PricingTransferRequest.scss";
 
 import "react-form-wizard-component/dist/style.css";
 import { formatMoney } from "@/utils/utils";
-import {
-  createTransferRequest,
-} from "@/services/logistics/transfer-request";
+import { createTransferRequest } from "@/services/logistics/transfer-request";
 import { getSuggestedVehicles } from "@/services/logistics/vehicles";
 import VehiclesSelection from "./vehiclesSelection/VehiclesSelection";
 import { useRouter } from "next/navigation";
 import Steper from "@/components/molecules/Steppers/Steper";
 import PricingStepOne from "./components/steps/PricingStepOne";
 import { MODE_PRICING } from "./constant/constants";
+import PricingStepThree from "./components/steps/PricingStepThree";
 
 const { Title, Text } = Typography;
 
@@ -292,8 +291,6 @@ export default function PricingTransferRequest({
       setView("vehicles");
     }
   }, [transferRequest]);
-
-
 
   useEffect(() => {
     if (view === "vehicles") {
@@ -884,7 +881,7 @@ export default function PricingTransferRequest({
                 </Flex>
               </div>
             ) : (
-              <p>Seleccion de proveedor</p>
+              <PricingStepThree  data={transferRequest?.stepThree} />
             )}
           </Flex>
         </Flex>

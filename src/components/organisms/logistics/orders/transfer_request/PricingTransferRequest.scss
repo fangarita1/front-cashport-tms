@@ -190,7 +190,7 @@
                 }
             }
             .collapseCaret {
-                transition: transform 3s;
+                transition: transform .25s;
                 transform: rotate(180deg);
 
                 &.collapseRotate {
