@@ -26,7 +26,8 @@ const CreateOrderCart: FC = ({}) => {
     setCheckingOut,
     client,
     confirmOrderData,
-    setConfirmOrderData
+    setConfirmOrderData,
+    discountId
   } = useContext(OrderViewContext);
 
   const numberOfSelectedProducts = selectedCategories.reduce(
@@ -52,7 +53,7 @@ const CreateOrderCart: FC = ({}) => {
             quantity: product.quantity
           }));
         const confirmOrderData = {
-          discount_id: 0,
+          discount_id: discountId,
           order_summary: products
         };
         const response = (await confirmOrder(
@@ -72,7 +73,7 @@ const CreateOrderCart: FC = ({}) => {
     return () => {
       clearTimeout(timeOut);
     };
-  }, [selectedCategories]);
+  }, [selectedCategories, discountId]);
 
   return (
     <div className={styles.cartContainer}>

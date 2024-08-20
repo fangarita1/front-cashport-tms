@@ -5,6 +5,7 @@ import { IInvoice } from "@/types/invoices/IInvoices";
 import { CheckCircle, Eye, Handshake, Warning, WarningCircle } from "phosphor-react";
 import "./invoicestable.scss";
 import { daysLeft, formatDate, formatMoney } from "@/utils/utils";
+import dayjs from "dayjs";
 
 const { Text } = Typography;
 
@@ -203,7 +204,18 @@ export const InvoicesTable = ({
               color={"#f7f7f7"}
               key={`A${record.id}`}
             >
-              <Button icon={<Handshake size={"1.2rem"} />} />
+              <Button
+                icon={
+                  <Handshake
+                    size={"1.2rem"}
+                    color={
+                      dayjs(record?.agreement_info?.Fecha).isBefore(dayjs(), "day")
+                        ? "red"
+                        : "currentColor"
+                    }
+                  />
+                }
+              />
             </Tooltip>
           )}
           {record.novelty_info && (

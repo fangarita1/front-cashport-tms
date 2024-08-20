@@ -6,6 +6,7 @@ export interface InvoiceDetail {
       total_discount: number;
       total_creditNotes: number;
       total_debitNotes: number;
+      total_initial: number;
     };
   };
 }

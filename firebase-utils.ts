@@ -2,19 +2,24 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  confirmPasswordReset
 } from "firebase/auth";
+import { IOpenNotificationProps } from "@/components/atoms/Notification/Notification";
 import { auth } from "./firebase";
 import { STORAGE_TOKEN } from "@/utils/constants/globalConstants";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useAppStore } from "@/lib/store/store";
+import { NotificationInstance } from "antd/es/notification/interface";
 
 const getAuth = async (
   email: string,
   password: string,
   router: AppRouterInstance,
   isSignUp: any,
-  openNotification: () => void
+  // eslint-disable-next-line no-unused-vars
+  openNotification: ({ api, title, message, placement }: IOpenNotificationProps) => void,
+  api: NotificationInstance
 ) => {
   if (isSignUp) {
     createUserWithEmailAndPassword(auth, email, password)
@@ -54,12 +59,17 @@ const getAuth = async (
       })
       .catch((error) => {
         console.error({ error });
-        openNotification();
+        openNotification({
+          api: api,
+          type: "error",
+          title: "Error",
+          message: "Usuario o contraseña incorrectos"
+        });
       });
   }
 };
 const logOut = (router: AppRouterInstance) => {
-  router.push("/auth/login");
+  window.location.href = "/auth/login";
   signOut(auth);
   localStorage.removeItem(STORAGE_TOKEN);
   const { resetStore } = useAppStore.getState();
@@ -73,7 +83,16 @@ const sendEmailResetPassword = async (email: string) => {
     handleError(error);
   }
 };
-export { getAuth, logOut, sendEmailResetPassword };
+
+const resetPassword = async (oobCode: string, newPassword: string) => {
+  try {
+    await confirmPasswordReset(auth, oobCode, newPassword);
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export { getAuth, logOut, sendEmailResetPassword, resetPassword };
 
 function handleError(error: unknown): void {
   if (error instanceof Error) {
@@ -81,4 +100,5 @@ function handleError(error: unknown): void {
   } else {
     console.error("An unknown error occurred:", error);
   }
+  throw error;
 }

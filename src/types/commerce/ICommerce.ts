@@ -45,7 +45,7 @@ export interface IFetchedCategories {
 }
 
 export interface IConfirmOrderData {
-  discount_id: number;
+  discount_id: number | undefined;
   order_summary: {
     product_sku: string;
     quantity: number;
@@ -123,6 +123,8 @@ interface IDetailOrder {
   discount_id: number;
   taxes: number;
   total_pronto_pago: number;
+  total: number;
+  discount_name: string;
 }
 
 export interface ICategories {
@@ -148,4 +150,12 @@ export interface IOrder {
   total: number;
   total_pronto_pago: number;
   client_name: string;
+}
+
+export interface IDiscount {
+  id: number;
+  discount_name: string;
+  description: string;
+  id_client: number;
+  discount_type_id: number;
 }

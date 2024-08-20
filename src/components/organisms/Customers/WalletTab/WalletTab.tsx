@@ -86,6 +86,13 @@ export const WalletTab = () => {
       handleActionInDetail: handleActionInDetail
     });
   };
+  const validateInvoiceIsSelected = (): boolean => {
+    if (!selectedRows || selectedRows.length === 0) {
+      messageShow.error("Seleccione al menos una factura");
+      return false;
+    }
+    return true;
+  };
 
   return (
     <>
@@ -166,6 +173,7 @@ export const WalletTab = () => {
           setisGenerateActionOpen(!isGenerateActionOpen);
           setShowActionDetailModal(e);
         }}
+        validateInvoiceIsSelected={validateInvoiceIsSelected}
       />
       <PaymentAgreementModal
         invoiceSelected={selectedRows}

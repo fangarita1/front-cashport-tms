@@ -70,6 +70,14 @@
         }
     }
 
+    .text_blue {
+        font-size: 12px;
+        font-weight: 600;
+        padding-left: 8px;
+        line-height: normal;
+        color: #0085ff;
+    }
+
     .idOrder {
         gap: 4px;
         display: flex;
@@ -208,19 +216,23 @@
 
                     .stepperContent {
                         .mainStep {
-                            height: 120px;
+                            min-height: 120px;
                             display: flex;
                             column-gap: 10px;
                             position: relative;
-                            border-bottom: 10px;
+                            padding-bottom: 20px;
 
-                            &:lastchild {
-                                height: auto;
+                            &:last-child {
+                                min-height: auto;
+                                padding-bottom: 0;
                             }
 
                             .stepLine {
                                 width: 1px;
-                                height: 100%;
+                                position: absolute;
+                                top: 10px;
+                                bottom: 0;
+                                left: 4px;
                                 background-color: #dddddd;
 
                                 &.active {
@@ -229,14 +241,13 @@
                                 }
 
                                 &.inactive {
-                                    background-color: transparent;
-                                    border-left: 1px dashed transparent;
+                                    display: none;
                                 }
                             }
 
                             .stepCircle {
-                                top: 0px;
-                                left: -5px;
+                                top: 5px;
+                                left: 0px;
                                 width: 10px;
                                 height: 10px;
                                 border-radius: 50%;
@@ -250,7 +261,8 @@
 
                             .stepLabel {
                                 display: flex;
-                                margin-top: -5px;
+                                padding-left: 18px;
+                                flex-grow: 1;
 
                                 .quantity {
                                     gap: 6px;
