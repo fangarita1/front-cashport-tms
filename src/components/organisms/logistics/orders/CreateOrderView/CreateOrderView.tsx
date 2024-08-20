@@ -1,5 +1,5 @@
-import { Flex, Tabs, TabsProps, Typography, message, Collapse, Row, Col, Select, Switch, DatePicker, DatePickerProps, GetProps, TimePicker, Table, TableProps,AutoComplete, Input, ConfigProvider, InputNumber, Button, SelectProps, Popconfirm, Modal, Divider, Space } from "antd";
-import React, { useRef, useEffect, useState, useContext } from "react";
+import { Flex, Typography, message, Collapse, Row, Col, Select, Switch, DatePicker, TimePicker, Table, TableProps,AutoComplete, Input, InputNumber, Button, Popconfirm, Divider, Space } from "antd";
+import React, { useRef, useEffect, useState } from "react";
 import { runes } from 'runes2';
 
 // dayjs locale
@@ -18,19 +18,19 @@ import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 
 //schemas
-import { CustomOptionType, IAditionalByMaterial, IClient, ICompanyCode, ICreateRegister, IFormTransferOrder, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ISelectOptionOrders, ITransferOrder, ITransferOrderContacts, ITransferOrderDocuments, ITransferOrderOtherRequirements, ITransferOrderPersons, IVehicleType, PSLOptionType, TransferOrderDocumentType } from "@/types/logistics/schema";
+import { CustomOptionType, IClient, ICompanyCode, IFormTransferOrder, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ITransferOrder, ITransferOrderContacts, ITransferOrderOtherRequirements, ITransferOrderPersons, IVehicleType, PSLOptionType } from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
 
 //materials
-import { getAllMaterials, getSearchMaterials } from "@/services/logistics/materials";
+import { getAllMaterials} from "@/services/logistics/materials";
 
 //materials
 import { getSuggestedVehicles } from "@/services/logistics/vehicles";
 
 //vars
-import { CREATED, SUCCESS } from "@/utils/constants/globalConstants";
+import { SUCCESS } from "@/utils/constants/globalConstants";
 import { useRouter } from "next/navigation";
 import {
   PlusCircle,
@@ -63,7 +63,6 @@ import ModalAddContact from "@/components/molecules/modals/ModalAddContact/Modal
 import { getCompanyCodes } from "@/services/logistics/company-codes";
 import { getClients } from "@/services/logistics/clients";
 import { getTravelDuration } from "@/utils/logistics/maps";
-import CustomHourPicker from "@/components/molecules/logistics/HourPicker/HourPicker";
 import CustomTimeSelector from "@/components/molecules/logistics/HourPicker/HourPicker";
 
 const { Title, Text } = Typography;
@@ -756,11 +755,26 @@ export const CreateOrderView = () => {
     loadPSL();
   }, []);
 
-  const setOptionsCostCenter = (idPsl:number) => {
-    const pslFinded =  optionsPSL && optionsPSL.find(option => option.value === idPsl)
-    if( !pslFinded) return []
-    return pslFinded.costcenters.map((c:any)=>({value: c.id, label: c.description}))
-  }
+  const setOptionsCostCenter = (idPsl: number) => {
+    const pslFinded = optionsPSL?.find(option => option.value === idPsl);
+    if (!pslFinded) return [];
+
+    const pslInData = dataPsl.find(psl => psl.idpsl === idPsl);
+
+    const selectedCostCenterIds = pslInData?.costcenters.map(costCenter => costCenter.idpslcostcenter) || [];
+
+    const newCcArray = pslFinded.costcenters
+        .map(c => ({ value: c.id, label: c.description }))
+        .filter(c => !selectedCostCenterIds.includes(c.value));
+
+    return newCcArray;
+};
+
+
+  const filteredPsls = optionsPSL ? optionsPSL.filter(
+    option => !dataPsl.some(req => req.idpsl === option.value)
+  ): []
+  
 
   const addPsl = async () =>{
     const createNewPsl = (key:number) => {
@@ -1835,7 +1849,7 @@ export const CreateOrderView = () => {
                     <Select
                         showSearch
                         placeholder={"Selecciona PSL"}
-                        options={optionsPSL}
+                        options={filteredPsls}
                         className="puntoOrigen dateInputForm" 
                         onChange={(e)=> {
                           setDataPsl(prevDataPsl => 
@@ -1898,9 +1912,12 @@ export const CreateOrderView = () => {
                             );
                           }}
                           optionFilterProp="label"
-                          filterOption={(input, option) =>
-                            option?.label?.toLowerCase().includes(input.toLowerCase()) 
-                          }
+                          filterOption={(input: string, option) => {
+                            if (option) {
+                              return option?.label?.toLowerCase().includes(input.toLowerCase());
+                            }
+                            return false; 
+                          }}
                       />
                     </Col>  
                     <Col span={6} style={{paddingLeft:'30px'}}>
