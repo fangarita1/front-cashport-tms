@@ -9,6 +9,7 @@ import { formatCurrencyMoney, formatDate } from "@/utils/utils";
 
 import { createPaymentAgreement } from "@/services/accountingAdjustment/accountingAdjustment";
 import { MessageInstance } from "antd/es/message/interface";
+import { RangePickerProps } from "antd/es/date-picker";
 
 interface Props {
   isOpen: boolean;
@@ -156,6 +157,10 @@ const PaymentAgreementModal: React.FC<Props> = ({
   const parseNumber = (value: string): number => {
     return parseInt(value.replace(/[^\d]/g, ""), 10) || 0;
   };
+  const disabledDate = (current: dayjs.Dayjs): boolean => {
+    // Can not select days before today and today
+    return current && current < dayjs().startOf("day");
+  };
 
   const columns: TableProps<any>["columns"] = [
     { title: "ID Factura", dataIndex: "id", key: "id" },
@@ -206,6 +211,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
           value={text ? text : null}
           onChange={(date) => handleCellChange("newDate", index, date)}
           className="date__piker_input "
+          disabledDate={disabledDate}
         />
       ),
       align: "center"
@@ -219,7 +225,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
           id: invoice.id,
           emission: invoice.financial_record_date,
           pending: invoice.current_value,
-          agreedValue: "",
+          agreedValue: invoice.current_value.toString(), // Inicializar con el valor pendiente
           newDate: ""
         }))
       );
@@ -258,6 +264,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
                 placeholder="Selecciona la fecha"
                 onChange={onChangeDate}
                 className="date-input"
+                disabledDate={disabledDate}
               />
             </div>
 

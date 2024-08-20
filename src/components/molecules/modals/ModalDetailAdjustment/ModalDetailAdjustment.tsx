@@ -7,6 +7,7 @@ import { FinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscount
 import { useFinancialDiscountDetail } from "@/hooks/useDetailAdjustment";
 import { ModalActionAdjusment } from "../modalActionAdjusment/ModalActionAdjusment";
 import { Button, Flex } from "antd";
+import { it } from "node:test";
 
 interface ModalDetailAdjustmentProps {
   isOpen: boolean;
@@ -48,11 +49,25 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
         return "Novedad";
       case "Legaliazcion de ajuste":
         return "Legalizado desde ajuste CashPort";
+      case "Creacion de ajuste":
+        return "Creación de ajuste";
+      case "Emision del ajuste":
+        return "Emisión del ajuste";
       default:
         return item;
     }
   };
 
+  const extractType = (type: string) => {
+    if (type === "Nota debito") {
+      return "Nota de débito";
+    } else if (type === "Nota credito") {
+      return "Nota de crédito";
+    } else if (type === "Descuento") {
+      return "Descuento";
+    }
+    return type;
+  };
   const handleDocumentClick = (documentUrl: string) => {
     const fileExtension = documentUrl?.split(".").pop()?.toLowerCase() ?? "";
     if (fileExtension === "pdf") {
@@ -80,7 +95,8 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
         </div>
         <div className={styles.header}>
           <h4 className={styles.numberInvoice}>
-            {adjusmentData?.details[0].financial_type} {"  "}
+            {extractType(adjusmentData?.details[0]?.financial_type ?? "")}
+            {"  "}
             {selectAdjusment?.id}
           </h4>
           <Button
@@ -123,11 +139,27 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                             <div className={styles.date}>
                               {formatDatePlane(item?.event_date?.toString())}
                             </div>
+                            {item?.event_name === "Emision del ajuste" && item.cp_id && (
+                              <Flex gap={"4px"}>
+                                Cashport ID: <div className={styles.idAdjustment}>{item.cp_id}</div>
+                              </Flex>
+                            )}
                             {item.username && (
                               <div className={styles.name}>{`Responsable: ${item?.username}`}</div>
                             )}
                             {item?.event_name === "Creacion de ajuste" && item?.comments ? (
                               <div>
+                                {item.cp_id && (
+                                  <Flex gap={"4px"}>
+                                    Cashport ID:{" "}
+                                    <div className={styles.idAdjustment}>{item.cp_id}</div>
+                                  </Flex>
+                                )}
+                                {item.ammount && (
+                                  <div
+                                    className={styles.name}
+                                  >{`Valor: ${formatMoney(item?.ammount ?? "0")}`}</div>
+                                )}
                                 <div className={styles.date}>comentarios</div>
                                 <div className={styles.date}>{item?.comments}</div>{" "}
                               </div>
@@ -173,15 +205,16 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                                 <div
                                   className={styles.name}
                                 >{`Valor: ${formatMoney(item?.ammount ?? "0")}`}</div>
-                                <div className={styles.adjustment}>
-                                  {item?.invoices?.map((invoice) => {
+                                <Flex wrap gap={"2px"}>
+                                  {item?.invoices?.map((invoice, index, arr) => {
                                     return (
-                                      <div key={invoice} className={styles.idAdjustment}>
-                                        {invoice},
+                                      <div key={invoice} className={styles.text_blue}>
+                                        {invoice}
+                                        {index < arr.length - 1 ? "," : ""}
                                       </div>
                                     );
                                   })}
-                                </div>
+                                </Flex>
                               </div>
                             ) : (
                               ""
@@ -216,7 +249,7 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
           )}
           <hr />
           <div className={styles.total}>
-            <p className={styles.value}>Valor disponibles</p>
+            <p className={styles.value}>Valor disponible</p>
             <p className={styles.result}>
               {formatMoney(adjusmentData?.current_amount.toString() ?? "")}
             </p>

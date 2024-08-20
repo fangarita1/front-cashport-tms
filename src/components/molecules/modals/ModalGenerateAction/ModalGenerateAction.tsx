@@ -29,6 +29,7 @@ interface Props {
       actionType: number;
     }>
   >;
+  validateInvoiceIsSelected: () => boolean;
   setSelectOpen: Dispatch<SetStateAction<{ selected: number }>>;
 }
 
@@ -36,18 +37,23 @@ export const ModalGenerateAction = ({
   isOpen,
   onClose,
   clientId,
+  validateInvoiceIsSelected,
   setShowActionDetailModal,
   setSelectOpen
 }: Props) => {
   const router = useRouter();
   const handleActionDetail = (type: number) => {
-    setShowActionDetailModal({ isOpen: true, actionType: type });
+    if (validateInvoiceIsSelected()) {
+      setShowActionDetailModal({ isOpen: true, actionType: type });
+    }
   };
 
   const handleOpenModal = (type: number) => {
-    setSelectOpen({
-      selected: type
-    });
+    if (validateInvoiceIsSelected()) {
+      setSelectOpen({
+        selected: type
+      });
+    }
   };
   return (
     <Modal
