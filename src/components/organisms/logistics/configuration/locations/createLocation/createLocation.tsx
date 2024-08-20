@@ -21,15 +21,14 @@ export const CreateLocationView = ({ params }: Props) => {
     try {
         const response = await addLocation(
           {...data}, 
-          data.files, 
-          data.images
+          data.files
         );  
       if (response && response.status === 200) {
         messageApi.open({
           type: "success",
           content: `La ubicación fue creada exitosamente.`
         });
-        push(`/logistics/configuration/locations/${params.id}`);
+        push(`/logistics/configuration/locations/${response.data.data.id}`);
       }
     } catch (error) {
       if (error instanceof Error) {

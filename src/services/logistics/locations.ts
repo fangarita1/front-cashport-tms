@@ -21,6 +21,22 @@ export const getAllLocations = async (): Promise<IListData> => {
   }
 };
 
+export const getLocationById = async (id:string): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const response: IListData = await axios.get(`${config.API_HOST}/logistic-location/location/`+ id, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error creating new location: ", error);
+    return error as any;
+  }
+};
+
 export const getAllStatesByCountry = async (idcountry:string = "1"): Promise<IListData> => {
   const token = await getIdToken();
   try {
@@ -105,38 +121,13 @@ export const getAllDocumentsType = async (): Promise<CertificateType[]> => {
 
 export const createLocationForm =( 
   data: ILocation,
-  files: DocumentCompleteType[],
-  formImages: CustomFile[]
+  files: DocumentCompleteType[]
 ) => {
   const form = new FormData();
   const body: any = { ...data };
-  const hasImage = formImages.length > 0
-  if (!hasImage) {
-    throw new Error("At least one image file is required.");
-  }
-
-  body.images = formImages?.map((file: any, index) => ({
-    docReference: file.docReference || `image${index + 1}`,
-    uid: file?.uid,
-    url_archive: file?.url_archive,
-  }));
-
-  const expiration = files.find(f => !f.expirationDate && f.expiry);
-  if (expiration) {
-    throw new Error(`El documento ${expiration.description} debe tener una fecha de vencimiento`);
-  }
-
   body.files = files;
 
   form.append("body", JSON.stringify(body));
-
-  formImages.forEach((file: CustomFile, index: number) => {
-    if (file?.uid) {
-      form.append(`image${index + 1}`, file);
-    } else {
-      console.warn(`Image ${index + 1} is undefined.`);
-    }
-  });
 
   files.forEach((file) => {
     if (file.file) {
@@ -151,11 +142,11 @@ export const createLocationForm =(
 
 export const addLocation = async (
   data: ILocation,
-  files: DocumentCompleteType[],
-  formImages: CustomFile[]
+  files: DocumentCompleteType[]
 ): Promise<AxiosResponse<any, any>> => {
   try {
-   const form = createLocationForm(data, files, formImages)
+   const form = createLocationForm(data, files)
+   console.log(form)
     const response = await axios.post(`${config.API_HOST}/logistic-location/create/locations`, form, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -170,11 +161,10 @@ export const addLocation = async (
 };
 export const updateLocation = async (
   data: ILocation,
-  files: DocumentCompleteType[],
-  formImages: CustomFile[]
+  files: DocumentCompleteType[]
 ): Promise<AxiosResponse<any, any>> => {
   try {
-    const form = createLocationForm(data, files, formImages)
+    const form = createLocationForm(data, files)
     const response = await axios.put(`${config.API_HOST}/logistic-location/update/locations`, form, {
       headers: {
         "Content-Type": "multipart/form-data",
