@@ -67,7 +67,7 @@ export default function AceptCarrierDetailView({ params }: AceptCarrierDetailPro
  
   const loadTransferRequests = async () => {
     if (carrier != undefined) return;
-    //when there is more Id to consult, erase the "6" directly ID and leave the params
+    // when there is more Id to consult, erase the "6" directly ID and leave the params
     // cont result = await getTransferRequestId(params.id);
     const result = await getAceptCarrierRequestById("4");
     if (result.data.data.length > 0) {

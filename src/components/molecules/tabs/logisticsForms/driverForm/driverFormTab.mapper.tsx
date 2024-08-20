@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 import { SetStateAction } from "react";
 import { UseFormSetValue } from "react-hook-form";
 
-export type StatusForm = "review" | "create" | "edit"
+export type StatusForm = "review" | "create" | "edit";
 export interface DriverFormTabProps {
   idProjectForm?: string;
   data?: DriverData;
@@ -22,30 +22,34 @@ export interface DriverFormTabProps {
     id: string;
     driverId: string;
   };
-  handleFormState?: (newFormState: StatusForm) => void
+  handleFormState?: (newFormState: StatusForm) => void;
 }
 
 export type DriverData = IAPIDriver & { licence?: string } & { documents?: ICertificates[] };
 
-export type ApiVehicleType = { id_vehicle_type:number }
+export type ApiVehicleType = { id_vehicle_type: number };
 
-
-export const dataToProjectFormData = (data: any, vehiclesTypesData: VehicleType[] | undefined ): IFormDriver => {
-
-  function createVehicleTypeArray(dataVehicleTypes: ApiVehicleType[], vehiclesTypesData: VehicleType[]  | undefined) {
-    if (!vehiclesTypesData) return []
-    return dataVehicleTypes.map(vehicle => {
-      const vehicleType = vehiclesTypesData.find(type => type.id === vehicle.id_vehicle_type);
+export const dataToProjectFormData = (
+  data: any,
+  vehiclesTypesData: VehicleType[] | undefined
+): IFormDriver => {
+  function createVehicleTypeArray(
+    dataVehicleTypes: ApiVehicleType[],
+    vehiclesTypesData: VehicleType[] | undefined
+  ) {
+    if (!vehiclesTypesData) return [];
+    return dataVehicleTypes.map((vehicle) => {
+      const vehicleType = vehiclesTypesData.find((type) => type.id === vehicle.id_vehicle_type);
       return {
-        label: vehicleType ? vehicleType.description : 'Unknown',
+        label: vehicleType ? vehicleType.description : "Unknown",
         value: vehicle.id_vehicle_type
       };
     });
   }
-  
+
   const vehicleTypeArray = createVehicleTypeArray(data.vehicle_type, vehiclesTypesData);
   return {
-    
+    images: [],
     general: {
       id: data.id,
       phone: data.phone,
@@ -78,7 +82,7 @@ export const _onSubmit = (
   imageFile: FileObject[] | undefined,
   setImageError: (value: SetStateAction<boolean>) => void,
   setloading: (value: SetStateAction<boolean>) => void,
-  onSubmitForm: (data: any) => void,
+  onSubmitForm: (data: any) => void
 ) => {
   setloading(true);
   try {
@@ -87,7 +91,7 @@ export const _onSubmit = (
     onSubmitForm({ ...data, logo: imageFile, files });
   } catch (error) {
     console.warn({ error });
-  } finally{
+  } finally {
     setloading(false);
   }
 };
