@@ -19,9 +19,10 @@ interface ItemsSelected {
   id: number;
   current_value: number;
   selected: boolean;
-  motive_name: string;
+  motive_name: string | null;
   percentage?: number | null;
   intialAmount?: number;
+  cp_id?: number | null;
 }
 
 export const SelectAccountingAdjustment = ({
@@ -46,18 +47,21 @@ export const SelectAccountingAdjustment = ({
   };
 
   useEffect(() => {
+    const concatData = [
+      ...(data?.[0]?.financial_discounts ?? []),
+      ...(data?.[1]?.financial_discounts ?? [])
+    ];
     if (data) {
       setDateSelect(
-        data
-          .map((item) => ({
-            id: item.id,
-            current_value: item.current_value,
-            selected: selectedRows.some((row) => row.id === item.id),
-            motive_name: item.motive_name,
-            percentage: item.percentage,
-            intialAmount: item.initial_value
-          }))
-          .flat()
+        concatData.map((item) => ({
+          id: item.id,
+          current_value: item.current_value,
+          selected: selectedRows.some((row) => row.id === item.id),
+          motive_name: item.motive_name,
+          percentage: item.percentage,
+          intialAmount: item.initial_value,
+          cp_id: item.cp_id
+        }))
       );
     }
   }, [data, selectedRows]);
@@ -70,7 +74,7 @@ export const SelectAccountingAdjustment = ({
           {isLoading ? (
             <Spin size="large" style={{ margin: "auto" }} />
           ) : (
-            dateSelect.map((item, index) => (
+            dateSelect?.map((item, index) => (
               <ItemsActionsModal
                 key={index}
                 item={item}

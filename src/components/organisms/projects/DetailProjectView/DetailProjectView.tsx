@@ -53,6 +53,7 @@ export const DetailsProjectView = ({ isEdit = false, idProjectParam = "" }: Prop
       const response = await updateProject(finalData, idProjectParam, data.UUID);
       if (response.status === SUCCESS) {
         showMessage("success", "El proyecto fue editado exitosamente.");
+        window.location.reload();
       }
       setIsEditProject(false);
     } catch (error) {

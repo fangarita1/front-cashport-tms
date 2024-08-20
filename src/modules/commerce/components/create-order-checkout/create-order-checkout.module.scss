@@ -79,6 +79,11 @@
                 grid-template-columns: repeat(2, 1fr);
                 gap: 1rem;
                 margin-top: 1rem;
+                max-height: 220px;
+                overflow-y: scroll;
+                scrollbar-width: none;
+                mask-image: linear-gradient(to top, transparent, $white 20%);
+                padding-bottom: 1rem;
 
                 &__item {
                     border: 2px solid $dark-gray;

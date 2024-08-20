@@ -191,7 +191,6 @@ export const ApplyAccountingAdjustment = ({
       const normalizedData = normalizarApplyValues(applyValues);
       const adjustmentData = JSON.stringify(normalizedData);
       if (!selectedEvidence) return;
-      //  valida que si type es 1 pongas el 10 si es 2 el 9 y 3 el 11
       const typeAjustment = type === 2 ? 9 : type === 1 ? 10 : 11;
       const response = await applyAccountingAdjustment(
         adjustmentData,
@@ -249,9 +248,10 @@ export const ApplyAccountingAdjustment = ({
             )?.balanceToApply
           }
           max={currentAdjustmentStatic[selectTab] + 1}
-          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+          parser={(value) => parseFloat(value?.replace(/\./g, "") || "0")}
           onBlur={(event) => {
-            const rawValue = event.target.value.replace(/,/g, "");
+            const rawValue = event.target.value.replace(/\./g, "");
             const parsedValue = parseFloat(rawValue);
             handleApplyValueChange(isNaN(parsedValue) ? 0 : parsedValue, record);
           }}

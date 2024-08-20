@@ -6,6 +6,7 @@ import { BellSimpleRinging, Eye } from "phosphor-react";
 import { timeAgo } from "@/utils/utils";
 import TabPane from "antd/es/tabs/TabPane";
 import { notifications } from "./mockData";
+import { useModalDetail } from "@/context/ModalContext";
 interface PopoverUserNotificationsProps {
   setIsPopoverVisible: React.Dispatch<React.SetStateAction<boolean>>;
   isPopoverVisible: boolean;
@@ -18,6 +19,7 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
   const handleVisibleChange = (visible: boolean) => {
     setIsPopoverVisible(visible);
   };
+  const { openModal } = useModalDetail();
 
   const content = (
     <div className="notificationsPopoverContent">
@@ -47,7 +49,13 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
                   <p className="item__name">{item.name}</p>
                   <p className="item__date">{timeAgo(item.time.toString())}</p>
                 </div>
-                <div className="eyeIcon">
+                <div
+                  className="eyeIcon"
+                  onClick={() => {
+                    handleVisibleChange(false);
+                    openModal("novelty", { noveltyId: item.id });
+                  }}
+                >
                   <Eye size={28} />
                 </div>
               </List.Item>

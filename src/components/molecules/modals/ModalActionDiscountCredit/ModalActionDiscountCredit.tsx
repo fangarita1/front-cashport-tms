@@ -32,7 +32,7 @@ interface Props {
 export interface ISelectedAccountingAdjustment {
   id: number;
   current_value: number;
-  motive_name: string;
+  motive_name: string | null;
   percentage?: number | null;
   intialAmount?: number;
 }
@@ -60,7 +60,6 @@ export const ModalActionDiscountCredit = ({
       <Modal
         width={"40%"}
         open={isOpen}
-        style={{ top: "5%" }}
         bodyStyle={{
           height: currentView === "select" ? "calc(80vh - 20px)" : "auto"
         }}

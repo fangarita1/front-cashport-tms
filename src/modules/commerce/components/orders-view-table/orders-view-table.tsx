@@ -1,9 +1,12 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { Button, Table, TableProps, Typography } from "antd";
-
+import { useRouter } from "next/navigation";
 import { Eye } from "phosphor-react";
-import { formatMoney } from "@/utils/utils";
 
+import { useAppStore } from "@/lib/store/store";
+import { formatDateDMY, formatMoney } from "@/utils/utils";
+
+import { IOrder } from "@/types/commerce/ICommerce";
 import "./orders-view-table.scss";
 
 const { Text } = Typography;
@@ -11,14 +14,70 @@ const { Text } = Typography;
 interface PropsOrdersViewTable {
   dataSingleOrder: any[];
   setSelectedRows: Dispatch<SetStateAction<any[] | undefined>>;
+  orderStatus: string;
 }
 
-const OrdersViewTable = ({ dataSingleOrder: data, setSelectedRows }: PropsOrdersViewTable) => {
+const OrdersViewTable = ({
+  dataSingleOrder: data,
+  setSelectedRows,
+  orderStatus
+}: PropsOrdersViewTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const router = useRouter();
+  const setDraftInfo = useAppStore((state) => state.setDraftInfo);
 
-  const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
+  const handleSeeDetail = (order: IOrder) => {
+    const { id: orderId, order_status } = order;
+
+    if (order_status === "En proceso") {
+      const url = `/comercio/pedidoConfirmado/${orderId}`;
+      router.prefetch(url);
+      router.push(url);
+    } else if (order_status === "Borrador") {
+      const draftInfo = {
+        id: orderId,
+        client_name: order.client_name
+      };
+      setDraftInfo(draftInfo);
+      router.push("/comercio/pedido");
+    }
+  };
+
+  const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRows: IOrder[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
-    setSelectedRows(newSelectedRow);
+    if (newSelectedRowKeys.length >= 1) {
+      setSelectedRows((prevSelectedRows) => {
+        if (prevSelectedRows) {
+          const filteredSelectedRows = newSelectedRows.filter(
+            (newSelectedRow) =>
+              !prevSelectedRows.some((prevSelectedRow) => prevSelectedRow.id === newSelectedRow.id)
+          );
+          const unCheckedRows = prevSelectedRows.filter(
+            (prevSelectedRow) =>
+              !newSelectedRowKeys.includes(prevSelectedRow.id) &&
+              prevSelectedRow.order_status === orderStatus // Assuming you have an orderStatus variable
+          );
+          if (unCheckedRows.length > 0) {
+            const filteredPrevSelectedRows = prevSelectedRows.filter(
+              (prevSelectedRow) => !unCheckedRows.includes(prevSelectedRow)
+            );
+            return filteredPrevSelectedRows;
+          }
+          return [...prevSelectedRows, ...filteredSelectedRows];
+        } else {
+          return newSelectedRows;
+        }
+      });
+    }
+    if (newSelectedRowKeys.length === 0) {
+      setSelectedRows((prevSelectedRows) => {
+        if (prevSelectedRows) {
+          return prevSelectedRows.filter(
+            (prevSelectedRow) => prevSelectedRow.order_status !== orderStatus
+          );
+        }
+      });
+    }
   };
 
   const rowSelection = {
@@ -26,7 +85,7 @@ const OrdersViewTable = ({ dataSingleOrder: data, setSelectedRows }: PropsOrders
     onChange: onSelectChange
   };
 
-  const columns: TableProps<any>["columns"] = [
+  const columns: TableProps<IOrder>["columns"] = [
     {
       title: "TR",
       dataIndex: "id",
@@ -37,17 +96,18 @@ const OrdersViewTable = ({ dataSingleOrder: data, setSelectedRows }: PropsOrders
     },
     {
       title: "Cliente",
-      dataIndex: "client",
-      key: "client",
+      dataIndex: "client_name",
+      key: "client_name",
       render: (text) => <Text className="cell">{text}</Text>,
-      sorter: (a, b) => a.client.localeCompare(b.client),
+      sorter: (a, b) => a.client_name.localeCompare(b.client_name),
       showSorterTooltip: false
     },
     {
       title: "Fecha de creación",
-      key: "created_at",
-      dataIndex: "created_at",
-      render: (text) => <Text className="cell">{text}</Text>,
+      key: "order_date",
+      dataIndex: "order_date",
+      render: (date) => <Text className="cell">{date ? formatDateDMY(date) : ""}</Text>,
+      sorter: (a, b) => new Date(a.order_date)?.getTime() - new Date(b.order_date)?.getTime(),
       showSorterTooltip: false
     },
     {
@@ -60,8 +120,8 @@ const OrdersViewTable = ({ dataSingleOrder: data, setSelectedRows }: PropsOrders
     },
     {
       title: "Contacto",
-      key: "contact",
-      dataIndex: "contact",
+      key: "contacto",
+      dataIndex: "contacto",
       render: (text) => <Text className="cell">{text}</Text>
     },
     {
@@ -74,10 +134,10 @@ const OrdersViewTable = ({ dataSingleOrder: data, setSelectedRows }: PropsOrders
     },
     {
       title: "Total pronto pago",
-      key: "early_pay_total",
-      dataIndex: "early_pay_total",
+      key: "total_pronto_pago",
+      dataIndex: "total_pronto_pago",
       render: (amount) => <Text className="cell">{formatMoney(amount)}</Text>,
-      sorter: (a, b) => a.early_pay_total - b.early_pay_total,
+      sorter: (a, b) => a.total_pronto_pago - b.total_pronto_pago,
       showSorterTooltip: false,
       align: "right"
     },
@@ -86,7 +146,13 @@ const OrdersViewTable = ({ dataSingleOrder: data, setSelectedRows }: PropsOrders
       key: "buttonSee",
       width: 64,
       dataIndex: "",
-      render: () => <Button className="buttonSeeProject" icon={<Eye size={"1.3rem"} />} />
+      render: (_, row) => (
+        <Button
+          onClick={() => handleSeeDetail(row)}
+          className="buttonSeeProject"
+          icon={<Eye size={"1.3rem"} />}
+        />
+      )
     }
   ];
 

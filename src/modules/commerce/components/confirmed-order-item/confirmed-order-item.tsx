@@ -4,18 +4,10 @@ import { formatMoney } from "@/utils/utils";
 
 import styles from "./confirmed-order-item.module.scss";
 import { Flex } from "antd";
+import { IProductInDetail } from "@/types/commerce/ICommerce";
 
 export interface ConfirmedOrderItemProps {
-  product: {
-    id: number;
-    name: string;
-    price: number;
-    discount: number | undefined;
-    discount_percentage: number;
-    image: string;
-    category_id: number;
-    quantity: number;
-  };
+  product: IProductInDetail;
 }
 
 const ConfirmedOrderItem: FC<ConfirmedOrderItemProps> = ({ product }) => {
@@ -30,7 +22,7 @@ const ConfirmedOrderItem: FC<ConfirmedOrderItemProps> = ({ product }) => {
           height={100}
         />
       </div>
-      <h4 className={styles.name}>{product.name}</h4>
+      <h4 className={styles.name}>Nombre</h4>
 
       <div className={styles.price}>
         {product.discount ? (

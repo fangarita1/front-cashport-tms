@@ -1,5 +1,6 @@
 import config from "@/config";
 import { DiscountRequestBody } from "@/types/accountingAdjustment/IAccountingAdjustment";
+import { GenericResponse } from "@/types/global/IGlobal";
 import { API, getIdToken } from "@/utils/api/api";
 import axios, { AxiosResponse } from "axios";
 
@@ -203,4 +204,20 @@ export const createPaymentAgreement = async (
   );
 
   return response.data;
+};
+
+export const legalizeFinancialDiscount = async (
+  discountData: {
+    discount_id_legalized: number;
+    discount_id_not_legalized: number;
+  },
+  projectId: number,
+  clientId: number
+): Promise<GenericResponse> => {
+  const response: GenericResponse = await API.post(
+    `${config.API_HOST}/financial-discount/legalize/project/${projectId}/client/${clientId}`,
+    discountData
+  );
+
+  return response;
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import "./cardsClients.scss";
-import { Flex } from "antd";
+import { Flex, Skeleton } from "antd";
 import { formatMillionNumber, formatMoney } from "@/utils/utils";
 
 interface Props {
@@ -9,9 +9,24 @@ interface Props {
   title: string;
   notAMoneyValue?: boolean;
   customStyles?: React.CSSProperties;
+  loading?: boolean;
 }
 
-const CardsClients = ({ total, icon, title, notAMoneyValue, customStyles }: Props) => {
+const CardsClients = ({ total, icon, title, notAMoneyValue, customStyles, loading }: Props) => {
+  if (loading) {
+    return (
+      <Flex className="wrapperCardsClient" style={customStyles}>
+        <div className="header">
+          <Skeleton.Input style={{ width: 100 }} active size="small" />
+          <Skeleton.Avatar active size="small" shape="circle" />
+        </div>
+        <Flex className="card-client-value">
+          <Skeleton.Input style={{ width: 80 }} active size="small" />
+        </Flex>
+      </Flex>
+    );
+  }
+
   return (
     <Flex className="wrapperCardsClient" style={customStyles}>
       <div className="header">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Flex, Spin } from "antd";
 import { CaretDoubleRight } from "phosphor-react";
@@ -8,18 +8,18 @@ import AccountingAdjustmentsTable from "@/modules/clients/components/accounting-
 import Collapse from "@/components/ui/collapse";
 import { useFinancialDiscounts } from "@/hooks/useFinancialDiscounts";
 import { extractSingleParam } from "@/utils/utils";
-import { IFinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
+import {
+  FinancialDiscount,
+  StatusFinancialDiscounts
+} from "@/types/financialDiscounts/IFinancialDiscounts";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 import UiFilterDropdown from "@/components/ui/ui-filter-dropdown";
-
 import "./accounting-adjustments-tab.scss";
+import { useModalDetail } from "@/context/ModalContext";
+import { mutate } from "swr";
 
 const AccountingAdjustmentsTab = () => {
-  const [selectedRows, setSelectedRows] = useState<IFinancialDiscount[] | undefined>(undefined);
-  const [showAdjustmentDetailModal, setShowAdjustmentDetailModal] = useState<{
-    isOpen: boolean;
-    adjustmentId: number;
-  }>({} as { isOpen: boolean; adjustmentId: number });
+  const [selectedRows, setSelectedRows] = useState<FinancialDiscount[] | undefined>(undefined);
   const [search, setSearch] = useState("");
 
   const params = useParams();
@@ -29,6 +29,20 @@ const AccountingAdjustmentsTab = () => {
   const projectId = projectIdParam ? parseInt(projectIdParam) : 0;
 
   const { data, isLoading } = useFinancialDiscounts(clientId, projectId);
+  const { openModal, modalType } = useModalDetail();
+
+  const handleOpenAdjustmentDetail = (adjustment: FinancialDiscount) => {
+    openModal("adjustment", {
+      selectAdjusment: adjustment,
+      clientId,
+      projectId,
+      legalized: adjustment.legalized
+    });
+  };
+
+  useEffect(() => {
+    mutate(`/financial-discount/project/${projectId}/client/${clientId}`);
+  }, [modalType]);
 
   return (
     <>
@@ -64,25 +78,21 @@ const AccountingAdjustmentsTab = () => {
           </Flex>
 
           <Collapse
-            items={data?.map((financialState) => ({
+            items={data?.map((financialState: StatusFinancialDiscounts) => ({
               key: financialState.status_id,
               label: (
                 <LabelCollapse status={financialState.status_name} color={financialState.color} />
               ),
               children: (
-                <AccountingAdjustmentsTable
-                  dataAdjustmentsByStatus={financialState.financial_discounts.map(
-                    (financialDiscount) => {
-                      return {
-                        ...financialDiscount,
-                        financial_status_id: financialState.status_id
-                      };
-                    }
-                  )}
-                  setSelectedRows={setSelectedRows}
-                  setShowAdjustmentDetailModal={setShowAdjustmentDetailModal}
-                  financialStatusId={financialState.status_id}
-                />
+                <>
+                  <AccountingAdjustmentsTable
+                    dataAdjustmentsByStatus={financialState.financial_discounts}
+                    setSelectedRows={setSelectedRows}
+                    openAdjustmentDetail={handleOpenAdjustmentDetail}
+                    financialStatusId={financialState.status_id}
+                    legalized={financialState.legalized}
+                  />
+                </>
               )
             }))}
           />

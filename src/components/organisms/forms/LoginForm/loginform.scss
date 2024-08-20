@@ -1,38 +1,68 @@
-/* $layout-breakpoint-small: 960px; */
-@import "../../../../styles/variables";
+@import "@/styles/variables.scss";
 
-.form {
+.loginForm {
     width: 95%;
-    margin: 1rem 0;
     height: 100%;
     display: flex;
+    gap: 1.5rem;
     flex-direction: column;
-    align-items: center;
     justify-content: space-between;
 
-    .button {
-        background-color: $secondary;
-        border: none;
-        width: 12rem;
-        font-size: 1rem;
-        color: white;
-        height: 2.69rem;
+    &__title {
+        font-size: 1.5rem;
+        font-weight: 600;
     }
 
-    .input {
-        border-bottom: 1px solid white;
-        width: 95%;
-        color: white;
-        font-size: 1.1rem;
-        margin: 1.2rem;
+    &__inputTitle {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: $black;
+    }
+
+    &__content {
+        margin: 2.75rem 0;
+    }
+
+    .inputPassword {
+        background-color: $background;
         border-radius: 0;
+        padding: 0.7rem;
+        border-radius: 0.25rem;
+        font-size: 1rem;
+        font-weight: 300;
+        max-height: 3rem;
+
+        .ant-input {
+            &::placeholder {
+                color: $dark-gray !important;
+            }
+        }
+
         &::placeholder {
-            color: #fff !important;
+            color: $dark-gray !important;
+        }
+
+        &:disabled {
+            color: $dark-gray !important;
+        }
+
+        &.-readOnly {
+            background-color: $dark-gray;
+            color: $darker-gray;
         }
     }
-    .ant-input {
-        &::placeholder {
-            color: #fff !important;
+
+    .forgotPassword {
+        font-size: 0.95rem;
+        color: $black;
+        text-decoration: underline;
+        align-self: flex-end;
+        cursor: pointer;
+        transition: all 0.1s ease-in-out;
+        margin-top: -1rem;
+
+        &:hover {
+            color: $darker-gray;
         }
     }
 
@@ -45,9 +75,12 @@
         align-items: center;
         padding-right: 1rem;
     }
+}
 
-    .textForgotPassword {
-        font-size: 0.95rem;
-        color: white;
+@media (max-height: 720px) {
+    .loginForm {
+        &__content {
+            margin: 0;
+        }
     }
 }

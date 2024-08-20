@@ -1,40 +1,36 @@
-import { Divider, Flex, Image, Typography } from "antd";
+import { useState } from "react";
+import { Flex, Image } from "antd";
 
 import { LoginForm } from "../../forms/LoginForm/LoginForm";
+import { InfoCardLogin } from "@/components/molecules/login/InfoCardLogin/InfoCardLogin";
+import { RestartPassword } from "@/components/molecules/login/RestarPassword/RestartPassword";
+import { ContactUsButton } from "@/components/atoms/buttons/contactUsButton/ContactUsButton";
 
 import styles from "./login.module.scss";
 
 export const LoginView = () => {
-  const { Title } = Typography;
+  const [resetPassword, setResetPassword] = useState(false);
 
   return (
-    <main className={styles.home}>
-      <Flex align="center" className={styles.container}>
-        <Flex className={styles.companySection}>
-          <h1 className={styles.main_title}>
+    <main className={styles.container}>
+      <InfoCardLogin />
+      <Flex className={styles.loginSection} align="center" justify="center" vertical>
+        <Flex className={styles.login} vertical align="center" justify="space-between">
+          <div className={styles.login__title}>
             <Image
               className={styles.imageLogo}
               src="/images/login/CashPort.png"
               alt="Logo Company"
               preview={false}
-              width={"10%"}
             />
-            <div>CashPort</div>
-          </h1>
-          <div className={styles.textCompanyContainer}>
-            <Divider />
-            <Title level={1} style={{ fontSize: "1.6rem", fontWeight: 500, color: "white" }}>
-              Sistema de gestion de cobranzas
-            </Title>
+            <h3>CashPort</h3>
           </div>
-        </Flex>
-        <Flex className={styles.loginSection} align="center" justify="center">
-          <Flex className={styles.login} vertical align="center" justify="space-between">
-            <Title level={2} style={{ color: "white" }}>
-              Bienvenido
-            </Title>
-            <LoginForm />
-          </Flex>
+          {!resetPassword ? (
+            <LoginForm setResetPassword={setResetPassword} />
+          ) : (
+            <RestartPassword setResetPassword={setResetPassword} />
+          )}
+          <ContactUsButton />
         </Flex>
       </Flex>
     </main>

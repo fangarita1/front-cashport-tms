@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Button, Modal, Table, TableProps, InputNumber, DatePicker } from "antd";
+import { Button, Modal, Table, TableProps, InputNumber, DatePicker, Input } from "antd";
 import "./wallet-tab-payment-agreement-modal.scss";
 import { CaretLeft } from "phosphor-react";
 import EvidenceModal from "../wallet-tab-evidence-modal";
 import { IInvoice } from "@/types/invoices/IInvoices";
 import dayjs from "dayjs";
-import { formatCurrencyMoney } from "@/utils/utils";
+import { formatCurrencyMoney, formatDate } from "@/utils/utils";
 
 import { createPaymentAgreement } from "@/services/accountingAdjustment/accountingAdjustment";
 import { MessageInstance } from "antd/es/message/interface";
+import { RangePickerProps } from "antd/es/date-picker";
 
 interface Props {
   isOpen: boolean;
@@ -17,6 +18,7 @@ interface Props {
   projectId?: number;
   messageShow: MessageInstance;
   invoiceSelected?: IInvoice[];
+  onCloseAllModals: () => void;
 }
 
 interface ITableData {
@@ -38,7 +40,8 @@ const PaymentAgreementModal: React.FC<Props> = ({
   invoiceSelected,
   clientId,
   projectId,
-  messageShow
+  messageShow,
+  onCloseAllModals
 }) => {
   const [selectedEvidence, setSelectedEvidence] = useState<File[]>([]);
   const [commentary, setCommentary] = useState<string>("");
@@ -70,7 +73,10 @@ const PaymentAgreementModal: React.FC<Props> = ({
         selectedEvidence[0] || null
       );
       messageShow.success("Acuerdo de pago creado exitosamente");
-      onClenModal();
+      onCloseAllModals();
+      setGlobalDate(null);
+      setIsSecondView(false);
+      setSelectedEvidence([]);
     } catch (error) {
       messageShow.error("Error al crear el acuerdo de pago. Por favor, intente de nuevo.");
     }
@@ -142,6 +148,20 @@ const PaymentAgreementModal: React.FC<Props> = ({
     });
   };
 
+  const formatNumber = (value: string): string => {
+    if (!value) return "";
+    const numStr = value.replace(/\D/g, "");
+    return `$ ${numStr.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+  };
+
+  const parseNumber = (value: string): number => {
+    return parseInt(value.replace(/[^\d]/g, ""), 10) || 0;
+  };
+  const disabledDate = (current: dayjs.Dayjs): boolean => {
+    // Can not select days before today and today
+    return current && current < dayjs().startOf("day");
+  };
+
   const columns: TableProps<any>["columns"] = [
     { title: "ID Factura", dataIndex: "id", key: "id" },
     {
@@ -149,7 +169,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
       dataIndex: "emission",
       key: "emission",
       render: (text) => {
-        return <span>{dayjs(text).format("DD/MM/YYYY")}</span>;
+        return <span>{formatDate(text)}</span>;
       }
     },
     {
@@ -165,13 +185,18 @@ const PaymentAgreementModal: React.FC<Props> = ({
       dataIndex: "agreedValue",
       key: "agreedValue",
       render: (text: string, record, index: number) => (
-        <InputNumber
-          max={record.pending}
-          min={0}
-          value={text ? parseFloat(text) : undefined}
-          formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-          parser={(value) => value?.replace(/\$\s?|(,*)/g, "") as unknown as number}
-          onChange={(value) => handleCellChange("agreedValue", index, value?.toString() || "")}
+        <Input
+          value={formatNumber(text)}
+          onChange={(e) => {
+            const inputValue = e.target.value;
+            const numericValue = parseNumber(inputValue);
+
+            if (numericValue <= record.pending) {
+              handleCellChange("agreedValue", index, numericValue.toString());
+            } else {
+              handleCellChange("agreedValue", index, record.pending.toString());
+            }
+          }}
           className="number__input"
         />
       ),
@@ -184,15 +209,9 @@ const PaymentAgreementModal: React.FC<Props> = ({
       render: (text: string, _, index: number) => (
         <DatePicker
           value={text ? text : null}
-          onChange={(date, dateString) =>
-            handleCellChange(
-              "newDate",
-              index,
-              date
-              // dateString ? (typeof dateString === "string" ? dateString : dateString[0]) : ""
-            )
-          }
+          onChange={(date) => handleCellChange("newDate", index, date)}
           className="date__piker_input "
+          disabledDate={disabledDate}
         />
       ),
       align: "center"
@@ -204,9 +223,9 @@ const PaymentAgreementModal: React.FC<Props> = ({
       setTableData(
         invoiceSelected.map((invoice) => ({
           id: invoice.id,
-          emission: invoice.create_at,
+          emission: invoice.financial_record_date,
           pending: invoice.current_value,
-          agreedValue: "",
+          agreedValue: invoice.current_value.toString(), // Inicializar con el valor pendiente
           newDate: ""
         }))
       );
@@ -245,6 +264,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
                 placeholder="Selecciona la fecha"
                 onChange={onChangeDate}
                 className="date-input"
+                disabledDate={disabledDate}
               />
             </div>
 
