@@ -1,12 +1,12 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Flex, Switch } from "antd";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
+import { Col, Divider, Flex } from "antd";
 import { ICarrierRequestDrivers, ICarrierRequestVehicles } from "@/types/logistics/schema";
 import styles from "./confirmation.module.scss";
 import TextArea from "antd/es/input/TextArea";
 import CheckboxButton from "@/components/atoms/CheckboxButton/CheckboxButton";
 
 interface ConfirmationProps {
-  driverSelected: ICarrierRequestDrivers;
+  driverSelected: ICarrierRequestDrivers[];
   vehicleSelected: ICarrierRequestVehicles;
   setIsNextStepActive: Dispatch<SetStateAction<boolean>>;
   setObservation: Dispatch<SetStateAction<any>>;
@@ -26,30 +26,24 @@ export function Confirmation({ driverSelected, vehicleSelected, setIsNextStepAct
 
   return (
     <Flex className={styles.wrapper}>
-      <Flex className={styles.topInfo}>
-        <Flex className={styles.left}>
-          <div className={styles.vehicle}>
-            <b>
-              {vehicleSelected?.brand} {vehicleSelected?.color}
-            </b>
-          </div>
-          <div>
-            <b>{vehicleSelected?.plate_number}</b>
-          </div>
-        </Flex>
-        <hr style={{ borderTop: "1px solid #DDDDDD" }} />
-        <Flex className={styles.right}>
-          <div className={styles.driver}>
-            <b>
-              {driverSelected?.name} - {driverSelected?.phone}
-            </b>
-          </div>
-        </Flex>
+      <Flex className={styles.sectionWraper} vertical>
+        {driverSelected?.map((driver, index) => 
+          <Flex key={`vehicle-driver-${index}`}>
+            <Col span={11} >
+              <p className={styles.subtitle}>{vehicleSelected?.brand} {vehicleSelected?.color}</p>
+              <p className={styles.subtitle}>{vehicleSelected?.plate_number}</p>
+            </Col>
+            <Col span={2}>
+            <Divider type="vertical" className={styles.divider} />
+            </Col>
+            <Col span={11} style={{display: "flex", justifyContent: "flex-end"}}>
+              <p className={styles.subtitle}>{driver?.name} {driver?.last_name} - {driver?.phone}</p>
+            </Col> 
+          </Flex>
+        )}
       </Flex>
-      <Flex className={styles.bottomInfo}>
-        <div className={styles.section}>
-          <b>Comentarios</b>
-        </div>
+      <Flex vertical className={styles.sectionWraper} >
+        <p className={styles.subtitle}>Comentarios</p>
         <div className={styles.textArea}>
           <TextArea
             rows={4}

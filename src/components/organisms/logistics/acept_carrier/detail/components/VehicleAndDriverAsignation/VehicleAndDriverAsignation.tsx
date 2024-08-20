@@ -1,266 +1,174 @@
 "use client";
-import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { Dropdown, Menu, Typography, Flex, Button } from "antd";
+import React, {
+  useState,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+  useRef,
+  forwardRef,
+  useImperativeHandle
+} from "react";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { Typography, Flex, Button, Col, Select } from "antd";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { ICarrierRequestDrivers, ICarrierRequestVehicles } from "@/types/logistics/schema";
-import { CaretDown, Check, Circle, Plus, PlusCircle, CheckCircle } from "@phosphor-icons/react";
+import { Check, Circle, Plus, PlusCircle } from "@phosphor-icons/react";
 import styles from "./vehicleAndDriverAsignation.module.scss";
-
+import RadioButtonIcon from "@/components/atoms/RadioButton/RadioButton";
+import { Trash } from "phosphor-react";
+import { DefaultOptionType } from "antd/es/select";
+import DriverRenderOption from "./components/DriverRenderOption/DriverRenderOption";
+import DriverRenderLabel from "./components/DriverRenderLabel/DriverRenderLabel";
+import VehicleRenderOption from "./components/VehicleRenderOption/VehicleRenderOption";
+import VehicleRenderLabel from "./components/VehicleRenderLabel/VehicleRenderLabel";
+const { Option } = Select;
 const { Text, Title } = Typography;
 
 interface VehicleAndDriverAsignationProps {
   setIsNextStepActive: Dispatch<SetStateAction<boolean>>;
   setVehicle: (vehicle: number) => void;
-  setDriver: (drivers: number[]) => void;
+  setDrivers: (drivers: number[]) => void;
   drivers: ICarrierRequestDrivers[] | null | undefined;
   vehicles: ICarrierRequestVehicles[] | null | undefined;
+  currentDrivers: number[];
+  currentVehicle: number;
 }
-
 interface FormValues {
-  vehicleForm: string;
-  driverForm: string[];
+  vehicleForm: number | null;
+  driverForm: { driverId: number | null }[];
 }
 
-export default function VehicleAndDriverAsignation({
-  setIsNextStepActive,
-  setVehicle,
-  setDriver,
-  drivers,
-  vehicles,
-}: VehicleAndDriverAsignationProps) {
-  const { control, watch } = useForm<FormValues>({
+const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignation(
+  {
+    drivers,
+    vehicles,
+    setIsNextStepActive,
+    setVehicle,
+    setDrivers,
+    currentDrivers,
+    currentVehicle
+  }: VehicleAndDriverAsignationProps,
+  ref
+) {
+  const createDefault = () => {
+    const defaultDrivers = currentDrivers
+      ? currentDrivers.map((cd) => ({ driverId: cd }))
+      : [{ driverId: null }];
+    return defaultDrivers;
+  };
+  const { control, watch, register, getValues } = useForm<FormValues>({
     defaultValues: {
-      vehicleForm: "",
-      driverForm: []
+      vehicleForm: currentVehicle ?? null,
+      driverForm: createDefault()
     }
   });
-
-  const [driverSections, setDriverSections] = useState<number[]>([0]);
-  console.log("driversPage:", drivers)
-
-  useEffect(() => {
-    setIsNextStepActive(false)
-  }, []);
-
-  const addDriverSections = () => {
-    setDriverSections([...driverSections, driverSections.length]);
-  };
-
-  const vehiclesSelectionMenu = (
-    items: ICarrierRequestVehicles[] | null | undefined,
-    field: any
-  ) => (
-    <Menu
-      onClick={({ key }) => field.onChange(key)}
-      style={{
-        height: "100%",
-        padding: "0 2px",
-        backgroundColor: "#ffffff",
-        border: "1px solid #DDDFE8",
-        borderRadius: "4px"
-      }}
-    >
-      {items?.map((item, index) => (
-        <>
-        {index !== 0 && <hr style={{ borderTop: "1px solid #f7f7f7" }}></hr>}
-        <Menu.Item key={item.id} className={styles.dropdownSelect}>
-          <Flex align="center" justify="space-between" style={{ padding: "0 4px" }}>
-            <Flex align="center" gap={8}>
-              {(Number(selectedVehicle) === item.id) ? <CheckCircle size={26} color="green"/> : <Circle size={26} />}
-              <div style={{marginLeft: "8px", padding: "2px 0"}}>
-                <Title level={5}>{item.vehicle_type}</Title>
-                <Flex gap={8}>
-                  <Flex>
-                  <Text>{item.brand}</Text>
-                  &nbsp;
-                  <Text>{item.line}</Text>
-                  &nbsp;
-                  <Text>{item.color}</Text>
-                  </Flex>
-                  <p color="black">•</p>
-                  <Text>{item.plate_number}</Text>
-                </Flex>
-              </div>
-            </Flex>
-            <Flex
-              style={{
-                backgroundColor: "#CBE71E",
-                width: "24px",
-                height: "24px",
-                borderRadius: "2px"
-              }}
-              align="center"
-              justify="center"
-            >
-              <Check size={20} color="white" />
-            </Flex>
-          </Flex>
-        </Menu.Item>
-        </>
-      ))}
-    </Menu>
-  );
-
-  const driversSelectionMenu = (
-    items: ICarrierRequestDrivers[] | null | undefined,
-    field: any
-  ) => (
-    <Menu
-      onClick={({ key }) => {
-        const newDrivers = [...field.value];
-        if (!newDrivers.includes(key)) {
-          newDrivers.push(key);
-          field.onChange(newDrivers);
-        }
-      }}
-      style={{
-        height: "100%",
-        padding: "2px 2px",
-        backgroundColor: "#ffffff",
-        border: "1px solid #DDDFE8",
-        borderRadius: "4px"
-      }}
-    >
-      {items?.map((item, index) => (
-        <>
-        {index !== 0 && <hr style={{ borderTop: "1px solid #f7f7f7" }}></hr>}
-        <Menu.Item key={item.id} className={styles.dropdownSelect}>
-          <Flex align="center" justify="space-between" style={{ padding: "8px 4px" }}>
-            <Flex align="center" gap={8}>
-              {(Number(selectedDrivers) === item.id) ? <CheckCircle size={26}/> : <Circle size={26} />}
-              <>
-                <Text>{item.name}</Text>
-                &nbsp;
-                <Text>{item.last_name}</Text>
-                <p color="black">•</p>
-                <Text>{item.phone}</Text>
-              </>
-            </Flex>
-            <Flex
-              style={{
-                backgroundColor: "#CBE71E",
-                width: "24px",
-                height: "24px",
-                borderRadius: "2px"
-              }}
-              align="center"
-              justify="center"
-            >
-              <Check size={20} color="white" />
-            </Flex>
-          </Flex>
-        </Menu.Item>
-        </>
-      ))}
-    </Menu>
-  );
-
-  const onSubmit = (data: FormValues) => {
-    setVehicle(parseInt(data.vehicleForm));
-    setDriver(data.driverForm.map((driverId) => parseInt(driverId)));
-  };
-
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "driverForm"
+  });
   const selectedVehicle = watch("vehicleForm");
   const selectedDrivers = watch("driverForm");
+  const formCurrentValues = getValues();
+
+  const DRIVERS_MAX_QUANTITY = 5;
+  //const [isOpenModalDocuments, setIsOpenModalDocuments] = useState<boolean>(false);
 
   useEffect(() => {
-    if (selectedVehicle && selectedDrivers.length > 0) {
-      onSubmit({ vehicleForm: selectedVehicle, driverForm: selectedDrivers });
+    setIsNextStepActive(false);
+  }, []);
+
+  useEffect(() => {
+    console.log("formCurrentValues", formCurrentValues);
+    const { vehicleForm, driverForm } = formCurrentValues;
+    if (vehicleForm && driverForm[0].driverId !== null) {
       setIsNextStepActive(true);
     }
-  }, [selectedVehicle, selectedDrivers]);
+  }, [formCurrentValues]);
 
-  const getSelectedVehicle = (
-    id: number,
-    items: ICarrierRequestVehicles[] | null | undefined,
-    description: boolean,
-    plate: boolean
-  ) => {
-    const selectedItem = items?.find(item => item.id === id);
-    
-    const descriptionText = selectedItem && description ? `${selectedItem.vehicle_type} • ${selectedItem.brand} ${selectedItem.line} ${selectedItem.color}` : `Seleccione el vehículo`;
-    const plateText = selectedItem && `${!description && selectedItem.plate_number !== undefined ? selectedItem.plate_number : ""}`
-  
-    return description ? descriptionText : plate && plateText
+  const onSubmit = (data: FormValues) => {
+    const { vehicleForm, driverForm } = data;
+    vehicleForm && setVehicle(vehicleForm);
+    const driversIdsArray = driverForm
+      .map((d) => d.driverId)
+      .filter((driverId) => driverId !== null && driverId !== undefined);
+    setDrivers(driversIdsArray);
   };
 
-  const getSelectedDriver = (
-    id: number,
-    items: ICarrierRequestDrivers[] | null | undefined,
-    name: boolean,
-    phone: boolean
-  ) => {
-    const selectedItem = items?.find(item => item.id === id);
-
-    const nameText = selectedItem ? `${name ? selectedItem.name : selectedItem.phone}` : `Seleccione el conductor`;
-    const phoneText = selectedItem && `${!name && selectedItem.phone}`;
-  
-    return name ? nameText : phone && phoneText
+  const handleSubmitDriverVehicleForm = () => {
+    onSubmit(formCurrentValues);
   };
+
+  // Expone el método al padre
+  useImperativeHandle(ref, () => ({
+    handleSubmitDriverVehicleForm
+  }));
+
+  function filterDrivers(indexField: number) {
+    const selectedDriverIds = selectedDrivers
+      .map((driver) => driver.driverId)
+      .filter((id) => id !== null);
+    return drivers?.filter(
+      (driver) =>
+        !selectedDriverIds.includes(driver.id) ||
+        driver.id === selectedDrivers[indexField]?.driverId
+    );
+  }
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.title}>
-        <p>
-          <b>Vehiculo</b>
-        </p>
-      </div>
+      <p className={styles.sectionTitle}>Vehiculo</p>
       <div className={styles.container} style={{ gap: "6px" }}>
-        <div className={styles.subtitle}>
-          <p>
-            <b>Seleccione el vehículo</b>
-          </p>
-        </div>
+        <p className={styles.subtitle}>Seleccione el vehículo</p>
         <Controller
-          name="vehicleForm"
+          {...register(`vehicleForm`)}
           control={control}
-          render={({ field }) => (
-            <Dropdown
-              overlay={vehiclesSelectionMenu(vehicles, field)}
-              trigger={["click"]}
-              className={styles.dropdown}
-            >
-              <a className={styles.dropdownSelect} onClick={(e) => e.preventDefault()}>
-                <Flex justify="space-between" align="center">
-                  <Flex gap={12}>
-                    <Flex align="center" gap={4}>
-                      <Text>
-                        {getSelectedVehicle(
-                          Number(selectedVehicle),
-                          vehicles,
-                          true,
-                          false
-                        )}
-                      </Text>
-                    </Flex>
-                  </Flex>
-                  <Flex gap={24}>
-                    <Text>{getSelectedVehicle(
-                          Number(selectedVehicle),
-                          vehicles,
-                          false,
-                          true
-                        )}</Text>
-                    <CaretDown size={20} color="black" />
-                  </Flex>
-                </Flex>
-              </a>
-            </Dropdown>
-          )}
+          render={({ field }) => {
+            return (
+              <Select
+                {...field}
+                showSearch
+                placeholder="Seleccion el vehículo"
+                style={{ width: "25rem", height: "2.5rem" }}
+                optionLabelProp="label"
+                labelRender={(selectedValue) => (
+                  <VehicleRenderLabel vehicles={vehicles} selectedValue={selectedValue} />
+                )}
+                optionFilterProp="label"
+                filterOption={(input: string, option: any) => {
+                  if (option) {
+                    return option.label?.toLowerCase().includes(input.toLowerCase());
+                  }
+                  return false;
+                }}
+              >
+                {vehicles?.map((vehicle, index) => (
+                  <Option
+                    key={`option-vehicle-${vehicle.id}-${index}`}
+                    value={vehicle.id}
+                    label={`${vehicle.vehicle_type} ${vehicle.brand} ${vehicle.line} ${vehicle.color} ${vehicle.plate_number}`}
+                  >
+                    <VehicleRenderOption
+                      data={vehicle}
+                      index={index}
+                      selectedVehicle={selectedVehicle}
+                    />
+                  </Option>
+                ))}
+              </Select>
+            );
+          }}
         />
         <div className={styles.documentsTop}>
-          <p>
-            <b>Documentos</b>
-          </p>
-          <button disabled className={styles.button}>
-            <Plus size={16} /> Editar documentos
+          <p className={styles.subtitle}>Documentos del vehículo</p>
+          <button className={`${styles.buttonTransparent} ${styles.editDocs}`}>
+            <Plus size={20} />
+            <p>Editar documentos</p>
           </button>
         </div>
-        <Flex style={{ padding: "15px" }} gap={20}>
+        <div className={styles.uploadContainer}>
           <UploadDocumentButton
-            key={1}
             title={"Documento 1"}
+            key={`vehicle-document-{1}`}
             isMandatory
             aditionalData={1}
             setFiles={() => {}}
@@ -268,8 +176,8 @@ export default function VehicleAndDriverAsignation({
             column
           />
           <UploadDocumentButton
-            key={2}
             title={"Documento 2"}
+            key={`vehicle-document-{2}`}
             isMandatory
             aditionalData={2}
             setFiles={() => {}}
@@ -277,8 +185,8 @@ export default function VehicleAndDriverAsignation({
             column
           />
           <UploadDocumentButton
-            key={3}
             title={"Documento 3"}
+            key={`vehicle-document-{3}`}
             isMandatory
             aditionalData={3}
             setFiles={() => {}}
@@ -286,86 +194,117 @@ export default function VehicleAndDriverAsignation({
             column
           />
           <UploadDocumentButton
-            key={4}
-            title={"Aprobación ingreso a pazo"}
+            title={"Aprobación ingreso a pozo"}
+            key={`vehicle-document-{4}`}
             isMandatory={false}
             aditionalData={4}
             setFiles={() => {}}
             disabled
             column
           />
-        </Flex>
+        </div>
       </div>
-      {driverSections.map((section, index) => (
-        <div key={index}>
+      {fields.map((field, indexField: number) => (
+        <div key={`field-${field.id}-${indexField}`}>
           <hr style={{ borderTop: "1px solid #dddddd" }}></hr>
-          <div className={styles.title}>
-            <p>
-              <b>Conductor {index !== 0 && index + 1}</b>
-            </p>
-          </div>
+          <p className={styles.sectionTitle} style={{ marginTop: "2rem" }}>
+            Conductor {indexField !== 0 && indexField + 1}
+          </p>
           <div className={styles.container}>
-            <div className={styles.subtitle}>
-              <p>
-                <b>Seleccione el conductor</b>
-              </p>
-            </div>
+            <p className={styles.subtitle}>Seleccione el conductor</p>
             <div className={styles.selector}>
               <Controller
-                name="driverForm"
+                {...register(`driverForm.${indexField}.driverId`)}
                 control={control}
-                render={({ field }) => (
-                  <Dropdown
-                    overlay={driversSelectionMenu(drivers, field)}
-                    trigger={["click"]}
-                    className={styles.dropdown}
-                  >
-                    <a className={styles.dropdownSelect} onClick={(e) => e.preventDefault()}>
-                      <Flex justify="space-between" align="center">
-                        <Flex gap={12}>
-                          <Flex align="center" gap={4}>
-                            <Text>
-                              {getSelectedDriver(Number(selectedDrivers[0]), drivers, true, false)}
-                            </Text>
-                          </Flex>
-                        </Flex>
-                        <Flex gap={24}>
-                          <Text>{getSelectedDriver(Number(selectedDrivers[0]), drivers, false, true)}</Text>
-                          <CaretDown size={20} color="black" />
-                        </Flex>
-                      </Flex>
-                    </a>
-                  </Dropdown>
-                )}
+                render={({ field }) => {
+                  return (
+                    <Select
+                      {...field}
+                      showSearch
+                      placeholder="Seleccion el conductor"
+                      style={{ width: "25rem", height: "2.5rem" }}
+                      optionLabelProp="label"
+                      labelRender={(selectedValue) => (
+                        <DriverRenderLabel selectedValue={selectedValue} drivers={drivers} />
+                      )}
+                      optionFilterProp="label"
+                      filterOption={(input: string, option: any) => {
+                        if (option) {
+                          return option.label?.toLowerCase().includes(input.toLowerCase());
+                        }
+                        return false;
+                      }}
+                    >
+                      {filterDrivers(indexField)?.map((driver, index) => (
+                        <Option
+                          key={`option-driver-${driver.id}-${index}`}
+                          value={driver.id}
+                          label={`${driver.name} ${driver.last_name} ${driver.phone}`}
+                        >
+                          <DriverRenderOption
+                            selectedDrivers={selectedDrivers}
+                            data={driver}
+                            index={index}
+                            selectIndex={indexField}
+                          />
+                        </Option>
+                      ))}
+                    </Select>
+                  );
+                }}
               />
-              <Button disabled className={styles.driverButton} onClick={addDriverSections}>
-                <PlusCircle size={16} />
-                <p>
-                  <b>Agregar otro conductor</b>
-                </p>
-              </Button>
+              {indexField === fields.length - 1 ? (
+                <Flex>
+                  {fields.length > 1 ? (
+                    <button
+                      className={`${styles.buttonTransparent} ${styles.addOrRemove}`}
+                      onClick={() => remove(indexField)}
+                    >
+                      <Trash size={24} />
+                      <p>Eliminar conductor</p>
+                    </button>
+                  ) : (
+                    <></>
+                  )}
+                  <button
+                    className={`${styles.buttonTransparent} ${styles.addOrRemove}`}
+                    onClick={() => append({ driverId: null })}
+                    disabled={fields.length === DRIVERS_MAX_QUANTITY}
+                  >
+                    <PlusCircle size={24} />
+                    <p>Agregar otro conductor</p>
+                  </button>
+                </Flex>
+              ) : (
+                <button
+                  className={`${styles.buttonTransparent} ${styles.addOrRemove}`}
+                  onClick={() => remove(indexField)}
+                >
+                  <Trash size={24} />
+                  <p>Eliminar conductor</p>
+                </button>
+              )}
             </div>
             <div className={styles.documentsTop}>
-              <p>
-                <b>Documentos</b>
-              </p>
-              <Button disabled className={styles.button}>
-                <Plus size={16} /> Editar documentos
-              </Button>
+              <p className={styles.subtitle}>Documentos del conductor</p>
+              <button className={`${styles.buttonTransparent} ${styles.editDocs}`}>
+                <Plus size={20} />
+                <p>Editar documentos</p>
+              </button>
             </div>
-            <Flex style={{ padding: "15px" }} gap={20}>
+            <div className={styles.uploadContainer}>
               <UploadDocumentButton
-                key={index}
                 title={"Documento 1"}
+                key={`document1-driver-${indexField}`}
                 isMandatory
-                aditionalData={index}
+                aditionalData={indexField}
                 setFiles={() => {}}
                 disabled
                 column
               />
               <UploadDocumentButton
-                key={2}
                 title={"Documento 2"}
+                key={`document2-driver-${indexField}`}
                 isMandatory
                 aditionalData={2}
                 setFiles={() => {}}
@@ -373,8 +312,8 @@ export default function VehicleAndDriverAsignation({
                 column
               />
               <UploadDocumentButton
-                key={3}
                 title={"Documento 3"}
+                key={`document3-driver-${indexField}`}
                 isMandatory
                 aditionalData={3}
                 setFiles={() => {}}
@@ -382,18 +321,33 @@ export default function VehicleAndDriverAsignation({
                 column
               />
               <UploadDocumentButton
-                key={4}
-                title={"Documento 4"}
+                title={"Aprobación ingreso a pozo"}
+                key={`document4-driver-${indexField}`}
                 isMandatory={false}
                 aditionalData={4}
                 setFiles={() => {}}
                 disabled
                 column
               />
-            </Flex>
+            </div>
           </div>
         </div>
       ))}
+      {/* <ModalDocuments
+        isOpen={isOpenModalDocuments}
+        mockFiles={selectedFiles}
+        setFiles={setFiles}
+        documentsType={documentsType}
+        isLoadingDocuments={isLoadingDocuments}
+        onClose={() => setIsOpenModalDocuments(false)}
+        handleChange={handleChange}
+        handleChangeExpirationDate={handleChangeExpirationDate}
+        setSelectedFiles={setSelectedFiles}
+      /> */}
     </div>
   );
-}
+});
+
+VehicleAndDriverAsignation.displayName = "VehicleAndDriverAsignation";
+
+export default VehicleAndDriverAsignation;

@@ -14,7 +14,7 @@ interface infoObject {
   fileList: File[];
 }
 interface DocumentProps {
-  title: string;
+  title?: string;
   isMandatory: boolean;
   setFiles: Dispatch<SetStateAction<FileObject[]>>;
   containerClassName?: string;
@@ -126,10 +126,11 @@ export const UploadDocumentButton = ({
 
   return (
     <div className={`uploaddocumentbutton ${containerClassName}`} style={{display: displayFlex, flexDirection: columnDirection}}>
-      <Flex vertical justify="center">
+      {title && <Flex vertical justify="center">
         <Text className="titleDocument">{title}</Text>
         <Text className="descriptionDocument">*{isMandatory ? "Obligatorio" : "Opcional"}</Text>
-      </Flex>
+      </Flex>}
+
       <DocumentButton
         title={title}
         handleOnChange={handleOnChange}

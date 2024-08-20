@@ -4,20 +4,24 @@ import { Flex } from "antd";
 import styles from "./buttons.module.scss";
 
 interface ButtonsProps {
+  isRightSectionVisible?: boolean;
   isRightButtonActive?: boolean;
   isLeftButtonActive?: boolean;
+  isLastStep?: boolean;
   handleNext: () => void;
   handleBack: () => void;
   handleReject: () => void;
 }
 
 export default function Buttons({
+  isRightSectionVisible = true,
   isRightButtonActive,
   isLeftButtonActive,
+  isLastStep,
   handleNext,
   handleBack,
   handleReject
-}: ButtonsProps) {
+}: Readonly<ButtonsProps>) {
   return (
     <Flex className={styles.wrapper}>
       <div className={styles.left}>
@@ -30,6 +34,7 @@ export default function Buttons({
           <b>Atras</b>
         </button>
       </div>
+      {isRightSectionVisible && 
       <Flex className={styles.right}>
         <button className={styles.deleteButton} onClick={() => handleReject()}>Rechazar</button>
         <button
@@ -42,9 +47,9 @@ export default function Buttons({
           }}
           onClick={handleNext}
         >
-          Siguiente
+          {isLastStep ? "Finalizar" : "Siguiente"}
         </button>
-      </Flex>
+      </Flex>}
     </Flex>
   );
 }
