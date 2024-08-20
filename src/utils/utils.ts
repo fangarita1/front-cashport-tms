@@ -1,5 +1,7 @@
 import { IChanel } from "@/types/bre/IBRE";
+import { ISelectStringType } from "@/types/communications/ICommunications";
 import { CountryCode } from "@/types/global/IGlobal";
+import dayjs from "dayjs";
 
 interface Subline {
   id: number;
@@ -170,22 +172,22 @@ export const formatDateBars = (dateString: string): string => {
 export const formatDatePlane = (date: string): string => {
   const d = new Date(date);
   const year = d.getUTCFullYear();
-  const month = new Intl.DateTimeFormat('es-ES', { month: 'long', timeZone: 'UTC' }).format(d);
+  const month = new Intl.DateTimeFormat("es-ES", { month: "long", timeZone: "UTC" }).format(d);
   const day = d.getUTCDate();
 
   return `${day} ${month}, ${year}`;
 };
 export function daysLeft(dateString: string): number {
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const expirationDate = new Date(dateString);
-
+  expirationDate.setHours(0, 0, 0, 0);
   const diffInMs = expirationDate.getTime() - today.getTime();
 
-  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24)) + 1;
 
   return diffInDays;
 }
-
 export const insertPeriodEveryThreeDigits = (number: number) => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
@@ -307,4 +309,22 @@ export const formatMillionNumber = (number: number | undefined | null): string =
     return formatNumber.toFixed(2);
   }
   return formatNumber.toFixed();
+};
+
+export const formatCurrencyMoney = (value: number): string => {
+  if (typeof value !== "number") {
+    return "$0,00";
+  }
+  const [intPart] = value.toFixed(2).split(".");
+  const formattedIntPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return `$${formattedIntPart}`;
+};
+
+export const stringFromArrayOfSelect = (array: ISelectStringType[]): string => {
+  return array.map((item) => item.value).join(", ");
+};
+
+export const formatDateDMY = (dateString: string): string => {
+  const date = dayjs(dateString);
+  return date.format("DD/MM/YYYY");
 };

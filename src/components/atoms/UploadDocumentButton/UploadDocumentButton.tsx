@@ -29,13 +29,12 @@ export const UploadDocumentButton = ({
   containerClassName,
   draggerClassname,
   disabled,
-  children,
+  children
 }: DocumentProps) => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   useEffect(() => {
-    if (children)
-      setUploadedFile(null);
+    if (children) setUploadedFile(null);
   }, [children]);
 
   const handleOnChange: any = (info: infoObject) => {

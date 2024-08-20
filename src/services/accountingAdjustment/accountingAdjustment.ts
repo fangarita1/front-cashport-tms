@@ -1,5 +1,6 @@
 import config from "@/config";
 import { DiscountRequestBody } from "@/types/accountingAdjustment/IAccountingAdjustment";
+import { GenericResponse } from "@/types/global/IGlobal";
 import { API, getIdToken } from "@/utils/api/api";
 import axios, { AxiosResponse } from "axios";
 
@@ -8,6 +9,12 @@ interface RadicationData {
   radication_type: string;
   accept_date: string;
   comments: string;
+}
+interface AdjustmentData {
+  invoice_id: number;
+  date_agreement: string;
+  amount: number;
+  comment: string;
 }
 
 export const createAccountingAdjustment = async (
@@ -167,4 +174,50 @@ export const radicateInvoice = async (
   );
 
   return response.data;
+};
+
+export const createPaymentAgreement = async (
+  projectId: number,
+  clientId: string,
+  adjustmentData: AdjustmentData[],
+  file: File | null
+): Promise<AxiosResponse<any>> => {
+  const token = await getIdToken();
+
+  const formData = new FormData();
+  formData.append("adjustment_data", JSON.stringify(adjustmentData));
+
+  if (file) {
+    formData.append("file", file);
+  }
+
+  const response: AxiosResponse<any> = await axios.post(
+    `${config.API_HOST}/invoice/paymentAgreement/project/${projectId}/client/${clientId}`,
+    formData,
+    {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+
+  return response.data;
+};
+
+export const legalizeFinancialDiscount = async (
+  discountData: {
+    discount_id_legalized: number;
+    discount_id_not_legalized: number;
+  },
+  projectId: number,
+  clientId: number
+): Promise<GenericResponse> => {
+  const response: GenericResponse = await API.post(
+    `${config.API_HOST}/financial-discount/legalize/project/${projectId}/client/${clientId}`,
+    discountData
+  );
+
+  return response;
 };

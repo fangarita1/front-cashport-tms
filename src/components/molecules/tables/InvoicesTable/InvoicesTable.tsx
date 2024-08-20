@@ -5,6 +5,7 @@ import { IInvoice } from "@/types/invoices/IInvoices";
 import { CheckCircle, Eye, Handshake, Warning, WarningCircle } from "phosphor-react";
 import "./invoicestable.scss";
 import { daysLeft, formatDate, formatMoney } from "@/utils/utils";
+import dayjs from "dayjs";
 
 const { Text } = Typography;
 
@@ -12,12 +13,7 @@ interface PropsInvoicesTable {
   stateId: number;
   dataSingleInvoice: IInvoice[];
   setSelectedRows: Dispatch<SetStateAction<IInvoice[] | undefined>>;
-  setShowInvoiceDetailModal: Dispatch<
-    SetStateAction<{
-      isOpen: boolean;
-      invoiceId: number;
-    }>
-  >;
+  openInvoiceDetail: (invoice: IInvoice) => void;
   selectedRows?: IInvoice[];
 }
 
@@ -26,7 +22,7 @@ export const InvoicesTable = ({
   dataSingleInvoice: data,
   setSelectedRows,
   selectedRows,
-  setShowInvoiceDetailModal
+  openInvoiceDetail
 }: PropsInvoicesTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
@@ -42,8 +38,8 @@ export const InvoicesTable = ({
     }
   }, [selectedRows]);
 
-  const openInvoiceDetail = (invoiceId: number) => {
-    setShowInvoiceDetailModal({ isOpen: true, invoiceId });
+  const handleOpenDetail = (invoice: IInvoice) => {
+    openInvoiceDetail(invoice);
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRows: any) => {
@@ -99,8 +95,8 @@ export const InvoicesTable = ({
       title: "ID",
       dataIndex: "id",
       key: "id",
-      render: (invoiceId) => (
-        <Text onClick={() => openInvoiceDetail(invoiceId)} className="invoicesTable__id">
+      render: (invoiceId, record) => (
+        <Text onClick={() => handleOpenDetail(record)} className="invoicesTable__id">
           {invoiceId}
         </Text>
       ),
@@ -109,10 +105,10 @@ export const InvoicesTable = ({
     },
     {
       title: "Emisión",
-      dataIndex: "create_at",
-      key: "create_at",
+      dataIndex: "financial_record_date",
+      key: "financial_record_date",
       render: (text) => <Text className="cell -alignRight">{formatDate(text)}</Text>,
-      sorter: (a, b) => Date.parse(a.create_at) - Date.parse(b.create_at),
+      sorter: (a, b) => Date.parse(a.financial_record_date) - Date.parse(b.financial_record_date),
       showSorterTooltip: false,
       align: "right",
       width: 120
@@ -138,7 +134,7 @@ export const InvoicesTable = ({
               <p>Fecha de vencimiento</p>
               <strong>{formatDate(text)}</strong>
               <p>
-                Condición de pago <strong>X días</strong>
+                Condición de pago <strong> {daysLeft(text)} días</strong>
               </p>
             </div>
           }
@@ -208,7 +204,18 @@ export const InvoicesTable = ({
               color={"#f7f7f7"}
               key={`A${record.id}`}
             >
-              <Button icon={<Handshake size={"1.2rem"} />} />
+              <Button
+                icon={
+                  <Handshake
+                    size={"1.2rem"}
+                    color={
+                      dayjs(record?.agreement_info?.Fecha).isBefore(dayjs(), "day")
+                        ? "red"
+                        : "currentColor"
+                    }
+                  />
+                }
+              />
             </Tooltip>
           )}
           {record.novelty_info && (
@@ -246,7 +253,7 @@ export const InvoicesTable = ({
             </Tooltip>
           )}
 
-          <Button onClick={() => openInvoiceDetail(record.id)} icon={<Eye size={"1.2rem"} />} />
+          <Button onClick={() => handleOpenDetail(record)} icon={<Eye size={"1.2rem"} />} />
         </div>
       ),
       width: 100,

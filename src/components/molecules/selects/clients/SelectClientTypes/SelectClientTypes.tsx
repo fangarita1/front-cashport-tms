@@ -1,16 +1,23 @@
 import { Select, Typography } from "antd";
 
-import { ControllerRenderProps, FieldError, UseFormSetValue } from "react-hook-form";
+import {
+  ControllerRenderProps,
+  FieldErrorsImpl,
+  Merge,
+  FieldError as OriginalFieldError
+} from "react-hook-form";
 import { ClientFormType } from "@/types/clients/IClients";
 
 import "../commonInputStyles.scss";
 import { useClientTypes } from "@/hooks/useClientTypes";
 
+type ExtendedFieldError =
+  | OriginalFieldError
+  | Merge<OriginalFieldError, FieldErrorsImpl<{ value: number; label: string }>>;
+
 interface Props {
-  errors: FieldError | undefined;
+  errors: ExtendedFieldError | undefined;
   field: ControllerRenderProps<ClientFormType, "infoClient.client_type">;
-  setValue: UseFormSetValue<ClientFormType>;
-  watch: any;
 }
 
 export const SelectClientTypes = ({ errors, field }: Props) => {
@@ -34,6 +41,7 @@ export const SelectClientTypes = ({ errors, field }: Props) => {
         {...field}
         popupClassName="selectDrop"
         options={options}
+        labelInValue
       />
 
       {errors && (

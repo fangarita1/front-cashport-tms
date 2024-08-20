@@ -1,0 +1,148 @@
+@import "@/styles/variables";
+
+.resolve-novelty-modal {
+    .content {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin: 0.75rem 0.5rem;
+
+        p {
+            font-size: 1rem;
+            font-weight: 300;
+        }
+    }
+
+    .upload-section,
+    .comment-section {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 0.5rem;
+
+        label {
+            font-weight: 600;
+        }
+
+        small {
+            font-size: 0.75rem;
+            font-weight: 300;
+            color: $dark-gray;
+        }
+    }
+
+    .comment-section {
+        textarea {
+            background-color: $background;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.875rem 1rem;
+            width: 100%;
+            min-height: 4.25rem;
+            resize: none;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+    }
+
+    .footer {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+
+        button {
+            width: 100%;
+            height: fit-content;
+            box-shadow: none;
+            font-weight: 600;
+            padding: 12px 24px;
+        }
+
+        button:first-child {
+            background-color: $white;
+            color: black;
+            border: 1px solid black;
+
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+
+        button:last-child {
+            background-color: $secondary;
+            color: black;
+
+            &:hover {
+                background-color: darken($secondary, 10%) !important;
+                color: $white !important;
+                border: 1px solid transparent !important;
+            }
+
+            &:disabled {
+                background-color: $dark-gray;
+                cursor: not-allowed;
+
+                &:hover {
+                    background-color: $dark-gray !important;
+                    color: black !important;
+                }
+            }
+        }
+    }
+
+    .ant-modal-header {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .ant-modal-body {
+        padding-top: 0;
+    }
+
+    .ant-upload-list-item-name {
+        font-size: 0.875rem;
+    }
+
+    .ant-checkbox-wrapper {
+        font-size: 0.875rem;
+    }
+
+    .modal-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        span {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+    }
+
+
+    .actionButton {
+        font-family: inherit;
+        display: flex;
+        align-items: center;
+        background-color: $background;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        width: 100%;
+        gap: 0.5rem;
+        border: none;
+        box-shadow: none;
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        &__caretRight {
+            margin-left: auto;
+        }
+
+        &__text {
+            font-size: 1rem;
+            font-weight: 400;
+            margin: 0;
+        }
+    }
+
+}

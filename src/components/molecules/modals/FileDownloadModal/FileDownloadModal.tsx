@@ -6,16 +6,18 @@ interface InvoiceDownloadModalProps {
   isModalOpen: boolean;
   url: string;
   onCloseModal: React.Dispatch<React.SetStateAction<boolean>>;
+  title?: string;
 }
 
 export const FileDownloadModal: React.FC<InvoiceDownloadModalProps> = ({
   isModalOpen,
   url,
-  onCloseModal
+  onCloseModal,
+  title
 }) => {
   return (
     <Modal
-      title="Documento adjunto"
+      title={title ? title : "Documento adjunto"}
       className="wrapper"
       open={isModalOpen}
       footer={null}

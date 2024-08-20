@@ -31,6 +31,16 @@ export const ShipToProjectTable = ({ clientId, getClientValues, clientBillingPer
   });
   const { data, isLoading, createShipTo, getShipTo, deleteShipTo, editShipTo } =
     useShipTos(clientId);
+
+  const shipTosData = data?.map((shipTo) => ({
+    ...shipTo,
+    key: shipTo?.accounting_code,
+    channels: shipTo?.channels?.reduce((acc, channel) => `${acc} ${channel.description},`, ""),
+    lines_info: shipTo?.lines_info?.reduce((acc, line) => `${acc} ${line.description},`, ""),
+    sub_lines: shipTo?.sub_lines?.reduce((acc, subline) => `${acc} ${subline.description},`, ""),
+    zones: shipTo?.zones?.reduce((acc, zone) => `${acc} ${zone.description},`, "")
+  }));
+
   const [messageApi, contextHolder] = message.useMessage();
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -46,6 +56,7 @@ export const ShipToProjectTable = ({ clientId, getClientValues, clientBillingPer
 
   const columns: TableProps<any>["columns"] = [
     {
+      width: 110,
       title: "ID Ship To",
       dataIndex: "accounting_code",
       key: "accounting_code",
@@ -59,33 +70,32 @@ export const ShipToProjectTable = ({ clientId, getClientValues, clientBillingPer
     },
     {
       title: "Canal",
-      key: "channel_name",
-      dataIndex: "channel_name",
+      key: "channels",
+      dataIndex: "channels",
       render: (text) => <Text>{text}</Text>
     },
     {
       title: "Linea",
-      key: "line_name",
-      dataIndex: "line_name",
+      key: "lines_info",
+      dataIndex: "lines_info",
       render: (text) => <Text>{text}</Text>
     },
     {
       title: "Sublinea",
-      key: "subline",
-      dataIndex: "subline",
+      key: "sub_lines",
+      dataIndex: "sub_lines",
       render: (text) => <Text>{text}</Text>
     },
     {
       title: "Zona",
-      key: "zone_name",
-      dataIndex: "zone_name",
+      key: "zones",
+      dataIndex: "zones",
       render: (text) => <Text>{text}</Text>
     },
     {
       title: "Hereda parámetros",
       key: "dependecy_client",
       dataIndex: "dependecy_client",
-      width: "200px",
       render: (text) => <Text>{Boolean(text) ? "Sí" : "No"}</Text>
     },
     {
@@ -147,7 +157,7 @@ export const ShipToProjectTable = ({ clientId, getClientValues, clientBillingPer
               className="ShipToProjectTable__table"
               pagination={{ pageSize: 20 }}
               columns={columns}
-              dataSource={data?.map((shipTo) => ({
+              dataSource={shipTosData?.map((shipTo) => ({
                 ...shipTo,
                 key: shipTo.accounting_code
               }))}

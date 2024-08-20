@@ -15,6 +15,7 @@ import { Button } from "antd";
 import { IInvoice } from "@/types/invoices/IInvoices";
 import { formatDatePlane, formatMoney } from "@/utils/utils";
 import { useSWRConfig } from "swr";
+import StepperContentSkeleton from "./skeleton/skeleton-invoid-detail";
 
 interface InvoiceDetailModalProps {
   isOpen: boolean;
@@ -39,7 +40,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
   handleActionInDetail
 }) => {
   const { mutate } = useSWRConfig();
-  const { data: invoiceData } = useInvoiceDetail({ invoiceId, clientId, projectId });
+  const { data: invoiceData, loading } = useInvoiceDetail({ invoiceId, clientId, projectId });
   const [urlStep, setUrlStep] = useState<string | undefined>(undefined);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -154,197 +155,207 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
             <div className={styles.description}>
               <div className={styles.stepperContainer}>
                 <div className={styles.stepperContent}>
-                  {(invoiceData?.results ?? []).map((item, index, arr) => {
-                    return (
-                      <div key={item.id} className={styles.mainStep}>
-                        <div
-                          className={`${styles.stepLine} ${item.status_name && (index === arr.length - 1 ? styles.inactive : styles.active)}`}
-                        />
-                        <div
-                          className={`${styles.stepCircle} ${item.status_name && styles.active}`}
-                        />
-                        <div className={styles.stepLabel}>
-                          <div className={styles.cardInvoiceFiling}>
-                            <h5 className={styles.title}>{getEventTitle(item.event_type_name)}</h5>
-                            <div className={styles.date}>
-                              {formatDatePlane(item.event_date.toString())}
-                            </div>
-                            {item.event_type_name === "Aviso de vencimiento" ? (
-                              <div className={styles.quantity}>
-                                <div
-                                  className={styles.button}
-                                  onClick={() => {
-                                    setQuantity(quantity - 1);
-                                  }}
-                                >
-                                  <Minus size={12} />
-                                </div>
-                                <div className={styles.number}>{quantity}</div>
-                                <div
-                                  className={styles.button}
-                                  onClick={() => {
-                                    setQuantity(quantity + 1);
-                                  }}
-                                >
-                                  <Plus size={12} />
-                                </div>
+                  {loading ? (
+                    <StepperContentSkeleton />
+                  ) : (
+                    (invoiceData?.results ?? []).map((item, index, arr) => {
+                      return (
+                        <div key={item.id} className={styles.mainStep}>
+                          <div
+                            className={`${styles.stepLine} ${item.status_name && (index === arr.length - 1 ? styles.inactive : styles.active)}`}
+                          />
+                          <div
+                            className={`${styles.stepCircle} ${item.status_name && styles.active}`}
+                          />
+                          <div className={styles.stepLabel}>
+                            <div className={styles.cardInvoiceFiling}>
+                              <h5 className={styles.title}>
+                                {getEventTitle(item.event_type_name)}
+                              </h5>
+                              <div className={styles.date}>
+                                {item.event_type_name === "Acuerdo de pago"
+                                  ? formatDatePlane(item.create_at?.toString())
+                                  : formatDatePlane(item.event_date.toString())}
                               </div>
-                            ) : null}
-                            {item.event_type_name === "Generar nota de credito" ||
-                            item.event_type_name === "Generar nota de debito" ? (
-                              <div>
-                                <div
-                                  className={styles.icons}
-                                  onClick={() => {
-                                    handleDocumentClick(item.files[0] || "");
-                                  }}
-                                >
-                                  <ArrowLineDown
-                                    size={14}
+                              {item.event_type_name === "Aviso de vencimiento" ? (
+                                <div className={styles.quantity}>
+                                  <div
+                                    className={styles.button}
                                     onClick={() => {
-                                      setIsModalOpen;
+                                      setQuantity(quantity - 1);
                                     }}
-                                  />
+                                  >
+                                    <Minus size={12} />
+                                  </div>
+                                  <div className={styles.number}>{quantity}</div>
+                                  <div
+                                    className={styles.button}
+                                    onClick={() => {
+                                      setQuantity(quantity + 1);
+                                    }}
+                                  >
+                                    <Plus size={12} />
+                                  </div>
                                 </div>
-                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                <div
-                                  className={styles.name}
-                                >{`Valor: ${formatMoney(item.ammount ?? "0")}`}</div>
-                                <div className={styles.adjustment}>
-                                  ID del ajuste:
-                                  <div className={styles.idAdjustment}>{item.id ?? "N/A"}</div>
+                              ) : null}
+                              {item.event_type_name === "Generar nota de credito" ||
+                              item.event_type_name === "Generar nota de debito" ? (
+                                <div>
+                                  <div
+                                    className={styles.icons}
+                                    onClick={() => {
+                                      handleDocumentClick(item?.files[0] || "");
+                                    }}
+                                  >
+                                    <ArrowLineDown
+                                      size={14}
+                                      onClick={() => {
+                                        setIsModalOpen;
+                                      }}
+                                    />
+                                  </div>
+                                  <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                  <div
+                                    className={styles.name}
+                                  >{`Valor: ${formatMoney(item.ammount ?? "0")}`}</div>
+                                  <div className={styles.adjustment}>
+                                    ID del ajuste:
+                                    <div className={styles.idAdjustment}>{item.id ?? "N/A"}</div>
+                                  </div>
                                 </div>
-                              </div>
-                            ) : (
-                              ""
-                            )}
+                              ) : (
+                                ""
+                              )}
 
-                            {item.event_type_name === "Emision de factura" ? (
-                              <div>
-                                 <div
-                                  className={styles.icons}
-                                  onClick={() => {
-                                    handleDocumentClick(item.files[0] || "");
-                                  }}
-                                >
-                                  <ArrowLineDown
-                                    size={14}
+                              {item.event_type_name === "Emision de factura" ? (
+                                <div>
+                                  <div
+                                    className={styles.icons}
                                     onClick={() => {
-                                      setIsModalOpen(true);
+                                      handleDocumentClick(item.files[0] || "");
                                     }}
-                                  />
+                                  >
+                                    <ArrowLineDown
+                                      size={14}
+                                      onClick={() => {
+                                        setIsModalOpen(true);
+                                      }}
+                                    />
+                                  </div>
                                 </div>
-                              </div>
-                            ) : (
-                              ""
-                            )}
-                            {item.event_type_name === "Generar descuento" ? (
-                              <div>
-                                   <div
-                                  className={styles.icons}
-                                  onClick={() => {
-                                    handleDocumentClick(item.files[0] || "");
-                                  }}
-                                >
-                                  <ArrowLineDown size={14} onClick={() => {}} />
+                              ) : (
+                                ""
+                              )}
+                              {item.event_type_name === "Generar descuento" ? (
+                                <div>
+                                  <div
+                                    className={styles.icons}
+                                    onClick={() => {
+                                      handleDocumentClick(item.files[0] || "");
+                                    }}
+                                  >
+                                    <ArrowLineDown size={14} onClick={() => {}} />
+                                  </div>
+                                  <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                  <div
+                                    className={styles.name}
+                                  >{`Valor: ${formatMoney(item.ammount ?? "0")}`}</div>
+                                  <div className={styles.adjustment}>
+                                    ID del ajuste:
+                                    <div className={styles.idAdjustment}>{item.id}</div>
+                                  </div>
                                 </div>
-                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                <div
-                                  className={styles.name}
-                                >{`Valor: ${formatMoney(item.ammount ?? "0")}`}</div>
-                                <div className={styles.adjustment}>
-                                  ID del ajuste:
-                                  <div className={styles.idAdjustment}>{item.id}</div>
+                              ) : (
+                                ""
+                              )}
+                              {item.event_type_name === "Acuerdo de pago" ? (
+                                <div>
+                                  <div className={styles.icons}>
+                                    <Envelope size={14} onClick={() => {}} />
+                                  </div>
+                                  <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                  <div
+                                    className={styles.name}
+                                  >{`Valor: ${formatMoney(item.ammount)}`}</div>
+                                  <div
+                                    className={styles.name}
+                                  >{`Fecha de pago acordada: ${formatDatePlane(item.event_date?.toString())}`}</div>
                                 </div>
-                              </div>
-                            ) : (
-                              ""
-                            )}
-                            {item.event_type_name === "Acuerdo de pago" ? (
-                              <div>
-                                <div className={styles.icons}>
-                                  <Envelope size={14} onClick={() => {}} />
+                              ) : (
+                                ""
+                              )}
+                              {item.event_type_name === "Vencimiento acuerdo de pago" ? (
+                                <div>
+                                  <div className={styles.icons}>
+                                    <Envelope size={14} onClick={() => {}} />
+                                  </div>
+                                  <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                  <div className={styles.name}>{`Valor: ${""}`}</div>
                                 </div>
-                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                <div className={styles.name}>{`Valor: ${item.ammount}`}</div>
-                                <div
-                                  className={styles.name}
-                                >{`Fecha de pago acordada: ${item.event_date}`}</div>
-                              </div>
-                            ) : (
-                              ""
-                            )}
-                            {item.event_type_name === "Vencimiento acuerdo de pago" ? (
-                              <div>
-                                <div className={styles.icons}>
-                                  <Envelope size={14} onClick={() => {}} />
+                              ) : (
+                                ""
+                              )}
+                              {item.event_type_name === "Radicar factura" ? (
+                                <div>
+                                  <div
+                                    className={styles.icons}
+                                    onClick={() => {
+                                      handleDocumentClick(item.files[0] || "");
+                                    }}
+                                  >
+                                    <ArrowLineDown size={14} onClick={() => {}} />
+                                  </div>
+                                  <div
+                                    className={styles.name}
+                                  >{`Responsable: ${item.user_name}`}</div>
                                 </div>
-                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                <div className={styles.name}>{`Valor: ${""}`}</div>
-                              </div>
-                            ) : (
-                              ""
-                            )}
-                            {item.event_type_name === "Radicar factura" ? (
-                              <div>
-                                <div
-                                  className={styles.icons}
-                                  onClick={() => {
-                                    handleDocumentClick(item.files[0] || "");
-                                  }}
-                                >
-                                  <ArrowLineDown size={14} onClick={() => {}} />
+                              ) : (
+                                ""
+                              )}
+                              {item.event_type_name === "Cambiar estado" ? (
+                                <div>
+                                  <div
+                                    className={styles.icons}
+                                    onClick={() => {
+                                      handleDocumentClick(item.files[0] || "");
+                                    }}
+                                  >
+                                    <ArrowLineDown size={14} onClick={() => {}} />
+                                  </div>
+                                  <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                  <div
+                                    className={styles.name}
+                                  >{`Estado inicial: ${item.previous_status ?? "N/A"}`}</div>
+                                  <div
+                                    className={styles.name}
+                                  >{`Estado final: ${item.status_name}`}</div>
                                 </div>
-                                <div
-                                  className={styles.name}
-                                >{`Responsable: ${item.user_name}`}</div>
-                              </div>
-                            ) : (
-                              ""
-                            )}
-                            {item.event_type_name === "Cambiar estado" ? (
-                              <div>
-                                <div
-                                  className={styles.icons}
-                                  onClick={() => {
-                                    handleDocumentClick(item.files[0] || "");
-                                  }}
-                                >
-                                  <ArrowLineDown size={14} onClick={() => {}} />
+                              ) : (
+                                ""
+                              )}
+                              {item.event_type_name === "Registrar novedad" ? (
+                                <div>
+                                  <div
+                                    className={styles.icons}
+                                    onClick={() => {
+                                      handleDocumentClick(item.files[0] || "");
+                                    }}
+                                  >
+                                    <ArrowLineDown size={14} onClick={() => {}} />
+                                  </div>
+                                  <div
+                                    className={styles.name}
+                                  >{`Responsable: ${item.user_name}`}</div>
                                 </div>
-                                <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                <div
-                                  className={styles.name}
-                                >{`Estado inicial: ${item.previous_status_id ?? "N/A"}`}</div>
-                                <div
-                                  className={styles.name}
-                                >{`Estado final: ${item.status_name}`}</div>
-                              </div>
-                            ) : (
-                              ""
-                            )}
-                             {item.event_type_name === "Registrar novedad" ? (
-                              <div>
-                                <div
-                                  className={styles.icons}
-                                  onClick={() => {
-                                    handleDocumentClick(item.files[0] || "");
-                                  }}
-                                >
-                                  <ArrowLineDown size={14} onClick={() => {}} />
-                                </div>
-                                <div
-                                  className={styles.name}
-                                >{`Responsable: ${item.user_name}`}</div>
-                              </div>
-                            ) : (
-                              ""
-                            )}
+                              ) : (
+                                ""
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })
+                  )}
                 </div>
               </div>
             </div>
@@ -357,7 +368,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
           <div className={styles.initialValue}>
             <p className={styles.value}>Valor inicial</p>
             <p className={styles.result}>
-              {formatMoney(selectInvoice?.initial_value.toString() ?? "")}
+              {formatMoney(invoiceData?.totals.total_initial.toString() ?? "")}
             </p>
           </div>
           {invoiceData?.totals?.total_creditNotes !== undefined &&

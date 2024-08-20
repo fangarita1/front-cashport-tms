@@ -1,0 +1,69 @@
+.ant-modal-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.acn-modalContentScroll {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    scrollbar-width: thin;
+}
+
+.acn-modalContent {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 0.5rem;
+
+    .acn-subTitleModalAction {
+        font-size: 1rem;
+        font-style: normal;
+        font-weight: 300;
+        line-height: 1.25rem;
+    }
+}
+
+.acn-content-modal-select-note {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+    gap: 1rem;
+
+}
+
+.acn-button-create-action {
+    display: flex;
+    align-items: center;
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    gap: 0.5rem;
+    padding: 1.5rem 0;
+    border: none;
+    background-color: #ffff;
+    cursor: pointer;
+}
+
+.acn-button-action-text {
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    padding: 0 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    flex-grow: 1;
+    border: none;
+    box-shadow: none;
+
+    &--green {
+        background-color: #cbe71e;
+    }
+
+    &--white {
+        background-color: #ffff;
+        border: solid 2px;
+    }
+}

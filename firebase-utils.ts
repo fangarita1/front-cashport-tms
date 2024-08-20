@@ -1,15 +1,25 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  sendPasswordResetEmail,
+  confirmPasswordReset
+} from "firebase/auth";
+import { IOpenNotificationProps } from "@/components/atoms/Notification/Notification";
 import { auth } from "./firebase";
 import { STORAGE_TOKEN } from "@/utils/constants/globalConstants";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useAppStore } from "@/lib/store/store";
+import { NotificationInstance } from "antd/es/notification/interface";
 
 const getAuth = async (
   email: string,
   password: string,
-  router: any,
+  router: AppRouterInstance,
   isSignUp: any,
-  openNotification: () => void
+  // eslint-disable-next-line no-unused-vars
+  openNotification: ({ api, title, message, placement }: IOpenNotificationProps) => void,
+  api: NotificationInstance
 ) => {
   if (isSignUp) {
     createUserWithEmailAndPassword(auth, email, password)
@@ -41,23 +51,54 @@ const getAuth = async (
             tokenExm: `${JSON.stringify(userCred)}`
           }
         }).then((response) => {
-          localStorage.setItem(STORAGE_TOKEN, token);
           if (response.status === 200) {
-            router.push("/");
+            localStorage.setItem(STORAGE_TOKEN, token);
+            router.push("/clientes/all");
           }
         });
       })
       .catch((error) => {
         console.error({ error });
-        openNotification();
+        openNotification({
+          api: api,
+          type: "error",
+          title: "Error",
+          message: "Usuario o contraseña incorrectos"
+        });
       });
   }
 };
 const logOut = (router: AppRouterInstance) => {
-  router.push("/auth/login");
+  window.location.href = "/auth/login";
   signOut(auth);
   localStorage.removeItem(STORAGE_TOKEN);
   const { resetStore } = useAppStore.getState();
   resetStore();
 };
-export { getAuth, logOut };
+
+const sendEmailResetPassword = async (email: string) => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+const resetPassword = async (oobCode: string, newPassword: string) => {
+  try {
+    await confirmPasswordReset(auth, oobCode, newPassword);
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export { getAuth, logOut, sendEmailResetPassword, resetPassword };
+
+function handleError(error: unknown): void {
+  if (error instanceof Error) {
+    console.error(`Error: ${error.message}`);
+  } else {
+    console.error("An unknown error occurred:", error);
+  }
+  throw error;
+}

@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Avatar, Button, Flex } from "antd";
-import Image from "next/image";
 
 import {
   ArrowLineRight,
@@ -46,12 +45,8 @@ export const SideBar = () => {
       <Flex vertical className="containerButtons">
         <button className="logoContainer" onClick={() => setModalProjectSelectorOpen(true)}>
           {LOGO ? (
-            <Image
-              width={isSideBarLarge ? 75 : 50}
-              height={isSideBarLarge ? 75 : 50}
-              alt="logo company"
-              src={LOGO.trim()}
-            />
+            // eslint-disable-next-line @next/next/no-img-element
+            <img alt="logo company" src={LOGO.trim()} className="logoContainer__image" />
           ) : (
             <Avatar shape="square" className="imageWithoutImage" size={50} icon={<Clipboard />} />
           )}
@@ -102,7 +97,11 @@ export const SideBar = () => {
             type="primary"
             size="large"
             icon={<Gear size={26} />}
-            className={path === "/" ? "buttonIcon" : "buttonIconActive"}
+            className={
+              path === "/" || path.startsWith("/proyectos/review")
+                ? "buttonIcon"
+                : "buttonIconActive"
+            }
           >
             {isSideBarLarge && "Ajustes"}
           </Button>

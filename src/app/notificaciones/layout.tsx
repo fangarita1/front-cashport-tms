@@ -12,7 +12,7 @@ const NotificationLayout = () => {
     <div className="page">
       <SideBar />
       <div className="mainContent">
-        <Header title="Notificationes" />
+        <Header title="Notificaciones" />
         <Notification />
       </div>
     </div>

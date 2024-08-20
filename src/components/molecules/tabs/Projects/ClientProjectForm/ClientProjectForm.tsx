@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Button, Col, Flex, Input, Row, Spin, Typography } from "antd";
+import { Button, Flex, Input, Spin, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil, Plus } from "phosphor-react";
 
@@ -69,6 +69,7 @@ export const ClientProjectForm = ({
   const [billingPeriod, setBillingPeriod] = useState<IBillingPeriodForm | undefined>();
   const [clientDocuments, setClientDocuments] = useState<File[] | any[]>([]);
   const [isCreateLoading, setIsCreateLoading] = useState(false);
+  const [documentReplaced, setDocumentReplaced] = useState(false);
   const { showMessage } = useMessageApi();
 
   const { id: idProject } = useParams<{ id: string }>();
@@ -83,7 +84,7 @@ export const ClientProjectForm = ({
         city:
           data?.locations && data.locations.length > 0
             ? {
-                value: data.locations[0].id,
+                value: data.locations[0].location_id,
                 label: data.locations[0].city
               }
             : {
@@ -97,7 +98,10 @@ export const ClientProjectForm = ({
         nit: data.nit,
         client_name: data.client_name,
         business_name: data.business_name,
-        client_type: `${data.cliet_type}`,
+        client_type: {
+          value: data.client_type_id,
+          label: data.cliet_type
+        },
         holding_id: {
           value: data.holding_id === null ? 0 : data.holding_id,
           label: data.holding_name === null ? "- Sin Asignar -" : data.holding_name
@@ -152,7 +156,7 @@ export const ClientProjectForm = ({
 
   useEffect(() => {
     // UseEffect para dar un valor a dataClient, para pintar el form
-    (async () => {
+    const fetchClientData = async () => {
       if (isViewDetailsClient?.id === 0) {
         setIsEditAvailable(true);
         return;
@@ -171,8 +175,14 @@ export const ClientProjectForm = ({
 
       setClientDocuments(finalData.documents);
       setBillingPeriod(finalData.billing_period_config);
-    })();
-  }, [isViewDetailsClient, idProject]);
+    };
+    fetchClientData();
+
+    if (documentReplaced) {
+      fetchClientData();
+      setDocumentReplaced(false);
+    }
+  }, [isViewDetailsClient, idProject, documentReplaced]);
 
   const onSubmitHandler = async (data: any) => {
     if (isViewDetailsClient?.id) {
@@ -347,15 +357,10 @@ export const ClientProjectForm = ({
                     name="infoClient.client_type"
                     control={control}
                     rules={{ required: true, minLength: 1 }}
-                    disabled={isViewDetailsClient.id && isEditAvailable ? true : false}
+                    disabled={isViewDetailsClient.active && isEditAvailable ? true : false}
                     render={({ field }) => {
                       return (
-                        <SelectClientTypes
-                          errors={errors.infoClient?.client_type}
-                          field={field}
-                          setValue={setValue}
-                          watch={watch}
-                        />
+                        <SelectClientTypes errors={errors.infoClient?.client_type} field={field} />
                       );
                     }}
                   />
@@ -490,26 +495,30 @@ export const ClientProjectForm = ({
               {/* -----------------------------------Experiencia----------------------------------- */}
               <Title level={4}>Documentos</Title>
               <Flex vertical align="flex-start">
-                <Row className="clientDocuments" gutter={16}>
+                <div className="clientDocuments">
                   {clientDocuments?.map((document, index) => (
-                    <Col key={`${index}${document.name}`} span={6} style={{ marginBottom: "1rem" }}>
+                    <div key={`${index}${document.name}`} style={{ marginBottom: "1rem" }}>
                       <DocumentButtonAction
-                        fileName={document.name}
-                        documentUrl={document.URL?.trim()}
+                        renderedDocument={document}
+                        clientId={isViewDetailsClient?.id}
+                        editable={isViewDetailsClient?.active && isEditAvailable}
+                        setDocumentReplaced={setDocumentReplaced}
                       />
-                    </Col>
+                    </div>
                   ))}
-                </Row>
-                {!isViewDetailsClient.id && isEditAvailable ? (
+                </div>
+                {!isViewDetailsClient?.active && isEditAvailable ? (
                   <Button
                     size="large"
                     type="text"
                     className="buttonUploadDocument"
-                    disabled={watchClientType === undefined}
+                    disabled={!isViewDetailsClient?.active && watchClientType === undefined}
                     onClick={() => setIsUploadDocument(true)}
                     icon={<Plus weight="bold" size={15} />}
                   >
-                    Cargar Documento
+                    {isViewDetailsClient?.active && isEditAvailable
+                      ? "Editar documentos"
+                      : "Cargar Documentos"}
                   </Button>
                 ) : null}
               </Flex>
@@ -548,7 +557,15 @@ export const ClientProjectForm = ({
         isOpen={isUploadDocument}
         setIsOpenUpload={setIsUploadDocument}
         setClientDocuments={setClientDocuments}
-        clientTypeId={watchClientType}
+        clientTypeId={
+          isViewDetailsClient?.active
+            ? {
+                value: dataClient?.data?.client_type_id,
+                label: dataClient?.data?.cliet_type
+              }
+            : watchClientType
+        }
+        editing={isEditAvailable && isViewDetailsClient?.active}
       />
       <ModalBillingPeriod
         isOpen={isBillingPeriodOpen}

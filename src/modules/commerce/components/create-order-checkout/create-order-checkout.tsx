@@ -1,4 +1,4 @@
-import { FC, useContext, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Flex, Radio, RadioChangeEvent } from "antd";
 import { CaretLeft } from "phosphor-react";
@@ -6,62 +6,167 @@ import { OrderViewContext } from "../../containers/create-order/create-order";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { Controller, useForm } from "react-hook-form";
-import { ISelectType } from "@/types/clients/IClients";
 import styles from "./create-order-checkout.module.scss";
 import GeneralSelect from "@/components/ui/general-select";
 import AlternativeBlackButton from "@/components/atoms/buttons/alternativeBlackButton/alternativeBlackButton";
+import {
+  createDraft,
+  createOrder,
+  createOrderFromDraft,
+  getAdresses,
+  getDiscounts
+} from "@/services/commerce/commerce";
+import { useAppStore } from "@/lib/store/store";
+import { ICommerceAdresses, IDiscount, IShippingInformation } from "@/types/commerce/ICommerce";
+import { useMessageApi } from "@/context/MessageContext";
+import { GenericResponse } from "@/types/global/IGlobal";
 
 interface IShippingInfoForm {
-  addresses?: ISelectType[];
-  city?: string;
-  address?: string;
-  email?: string;
-  phone?: string;
-  comment?: string;
+  addresses: {
+    value: string;
+    label: string;
+  };
+  city: string;
+  address: string;
+  email: string;
+  phone: string;
+  comment: string;
 }
 
 const CreateOrderCheckout: FC = ({}) => {
-  const { setCheckingOut } = useContext(OrderViewContext);
-  const [radioValue, setRadioValue] = useState(0);
+  const { setCheckingOut, client, confirmOrderData, shippingInfo, discountId, setDiscountId } =
+    useContext(OrderViewContext);
+  const { ID: projectId } = useAppStore((state) => state.selectedProject);
+  const { draftInfo } = useAppStore((state) => state);
   const [loading, setLoading] = useState(false);
+  const [addresses, setAddresses] = useState<ICommerceAdresses[]>([]);
+  const [discounts, setDiscounts] = useState<IDiscount[]>([]);
   const router = useRouter();
+  const { showMessage } = useMessageApi();
 
   const {
     control,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isValid }
   } = useForm<IShippingInfoForm>({
     mode: "onChange",
-    defaultValues: {
-      addresses: [],
-      city: "Bogota quemado",
-      address: "Calle quemad",
-      email: "quemad@gmail.com",
-      phone: ""
-    }
+    defaultValues: shippingInfo ? shippingInfoToForm(shippingInfo) : undefined
   });
+  const watchSelectAddress = watch("addresses");
+
+  useEffect(() => {
+    const selectedAddress =
+      watchSelectAddress &&
+      addresses.find((address) => address.address === watchSelectAddress.label);
+    if (!selectedAddress) return;
+    setValue("city", selectedAddress?.city);
+    setValue("address", selectedAddress?.address);
+    setValue("email", selectedAddress?.email);
+  }, [watchSelectAddress]);
+
+  useEffect(() => {
+    const fetchAdresses = async () => {
+      const response = await getAdresses(client.id);
+      setAddresses(response.data);
+    };
+    fetchAdresses();
+  }, []);
+
+  useEffect(() => {
+    const fetchDiscounts = async () => {
+      setLoading(true);
+      const response = await getDiscounts(projectId, client.id);
+      if (response.data) {
+        setDiscounts(response.data);
+      }
+      setLoading(false);
+    };
+    fetchDiscounts();
+  }, [projectId, client]);
 
   const handleGoBack = () => {
     setCheckingOut(false);
   };
 
   const handleChangeRadio = (e: RadioChangeEvent) => {
-    setRadioValue(parseInt(e.target.value));
+    setDiscountId(parseInt(e.target.value));
   };
 
-  const onSubmitSaveDraft = (data: IShippingInfoForm) => {
-    console.info("Guardar borrador: ", data);
-  };
-
-  const onSubmitFinishOrder = (data: IShippingInfoForm) => {
-    console.info("Finalizar orden: ", data);
-
+  const onSubmitSaveDraft = async (data: IShippingInfoForm) => {
     setLoading(true);
-    setTimeout(() => {
-      const orderId = 45666;
-      router.push(`/comercio/pedidoConfirmado/${orderId}`);
+    router.prefetch("/comercio");
+    const createOrderModelData = {
+      shipping_information: {
+        address: data.address,
+        city: data.city,
+        dispatch_address: data.address,
+        email: data.email,
+        phone_number: data.phone,
+        comments: data.comment
+      },
+      order_summary: confirmOrderData
+    };
+
+    const response = (await createDraft(
+      projectId,
+      client.id,
+      createOrderModelData,
+      showMessage
+    )) as GenericResponse<{ id_order: number }>;
+
+    if (response.status === 200) {
+      router.push(`/comercio`);
+    }
+    setLoading(false);
+  };
+
+  const onSubmitFinishOrder = async (data: IShippingInfoForm) => {
+    setLoading(true);
+    const createOrderModelData = {
+      shipping_information: {
+        address: data.address,
+        city: data.city,
+        dispatch_address: data.address,
+        email: data.email,
+        phone_number: data.phone,
+        comments: data.comment
+      },
+      order_summary: confirmOrderData
+    };
+
+    if (!!draftInfo?.id || (!!draftInfo.client_name && draftInfo.id !== undefined)) {
+      const response = (await createOrderFromDraft(
+        projectId,
+        client.id,
+        draftInfo.id,
+        createOrderModelData,
+        showMessage
+      )) as GenericResponse<{ id_order: number }>;
+
+      if (response.status === 200) {
+        const url = `/comercio/pedidoConfirmado/${draftInfo.id}`;
+        router.prefetch(url);
+        router.push(url);
+      }
       setLoading(false);
-    }, 1000);
+      return;
+    }
+
+    const response = (await createOrder(
+      projectId,
+      client.id,
+      createOrderModelData,
+      showMessage
+    )) as GenericResponse<{ id_order: number }>;
+    if (response.status === 200) {
+      const url = `/comercio/pedidoConfirmado/${response.data.id_order}`;
+      router.prefetch(url);
+      router.push(url);
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -89,7 +194,7 @@ const CreateOrderCheckout: FC = ({}) => {
                 field={field}
                 title="Direcciones"
                 placeholder="Seleccione una dirección"
-                options={mockAddresses}
+                options={addresses?.map((address) => address.address)}
                 customStyleContainer={{ gridColumn: "1 / span 2" }}
               />
             )}
@@ -142,17 +247,12 @@ const CreateOrderCheckout: FC = ({}) => {
           <Radio.Group
             className={styles.radioGroup}
             onChange={handleChangeRadio}
-            value={radioValue}
+            value={discountId}
           >
-            {mockDiscounts.map((discount) => (
-              <Radio
-                className={styles.radioGroup__item}
-                key={discount.id}
-                value={discount.id}
-                disabled={!discount.isReached}
-              >
+            {discounts.map((discount) => (
+              <Radio className={styles.radioGroup__item} key={discount.id} value={discount.id}>
                 <div className={styles.radioGroup__item__label}>
-                  <p>{discount.discount}</p>
+                  <p>{discount.discount_name}</p>
                 </div>
               </Radio>
             ))}
@@ -164,6 +264,7 @@ const CreateOrderCheckout: FC = ({}) => {
             onClick={handleSubmit(onSubmitSaveDraft)}
             fullWidth
             loading={loading}
+            disabled={!!draftInfo?.id || !!draftInfo.client_name}
           >
             Guardar borrador
           </AlternativeBlackButton>
@@ -183,43 +284,16 @@ const CreateOrderCheckout: FC = ({}) => {
 
 export default CreateOrderCheckout;
 
-const mockDiscounts = [
-  {
-    id: 1,
-    discount: "5% DCTO En las marcas Cetaphil",
-    isReached: true
-  },
-  {
-    id: 2,
-    discount: "10% DCTO En las marcas Cetaphil",
-    isReached: false
-  },
-  {
-    id: 3,
-    discount: "15% DCTO En las marcas Cetaphil",
-    isReached: false
-  },
-  {
-    id: 4,
-    discount: "30% DCTO En las marcas Cetaphil",
-    isReached: true
-  }
-];
-
-const mockAddresses = [
-  {
-    id: 1,
-    value: 1,
-    label: "Calle 1 # 1-1"
-  },
-  {
-    id: 2,
-    value: 2,
-    label: "Calle 2 # 2-2"
-  },
-  {
-    id: 3,
-    value: 3,
-    label: "Calle 3 # 3-3"
-  }
-];
+const shippingInfoToForm = (shippingInfo: IShippingInformation) => {
+  return {
+    addresses: {
+      label: shippingInfo.address,
+      value: shippingInfo.address
+    },
+    city: shippingInfo.city,
+    address: shippingInfo.address,
+    email: shippingInfo.email,
+    phone: shippingInfo.phone_number,
+    comment: shippingInfo.comments
+  };
+};

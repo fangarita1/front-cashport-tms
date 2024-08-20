@@ -1,0 +1,12 @@
+@import "@styles/variables.scss";
+
+.mainCommunicationsTable {
+    margin-top: 1rem;
+    width: 100%;
+    overflow-y: none;
+    height: 100%;
+
+    .communicationsTable {
+        margin-top: 1rem;
+    }
+}

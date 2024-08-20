@@ -22,24 +22,6 @@ const InvoiceDownloadModal: React.FC<InvoiceDownloadModalProps> = ({
         footer={null}
         onCancel={() => handleCloseModal(false)}
       >
-        <div className={styles.header}>
-          <div className={styles.content}>
-            <div className={styles.description}>Ship To</div>
-            <div className={styles.value}>050</div>
-          </div>
-          <div className={styles.content}>
-            <div className={styles.description}>Canal</div>
-            <div className={styles.value}>Institucional</div>
-          </div>
-          <div className={styles.content}>
-            <div className={styles.description}>Linea</div>
-            <div className={styles.value}>Homecare</div>
-          </div>
-          <div className={styles.content}>
-            <div className={styles.description}>Sublinea</div>
-            <div className={styles.value}>Remeo</div>
-          </div>
-        </div>
         <div className={styles.img}>
           <div className={styles.bodyImg}>
             {url ? (
@@ -54,7 +36,7 @@ const InvoiceDownloadModal: React.FC<InvoiceDownloadModalProps> = ({
         </div>
         <div className={styles.footer}>
           <div className={styles.buttonDownload}>
-            <a  download={url} href={url} target="_blank">
+            <a download={url} href={url} target="_blank">
               Descargar
             </a>
           </div>

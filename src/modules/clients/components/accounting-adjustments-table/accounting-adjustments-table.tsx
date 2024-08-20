@@ -3,33 +3,30 @@ import { Button, Table, TableProps, Typography } from "antd";
 
 import { Eye } from "phosphor-react";
 import { formatDate, formatMoney } from "@/utils/utils";
-import { IFinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
+import { FinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscounts";
 import "./accounting-adjustments-table.scss";
 
 const { Text } = Typography;
 
 interface PropsInvoicesTable {
-  dataAdjustmentsByStatus: IFinancialDiscount[];
-  setSelectedRows: Dispatch<SetStateAction<IFinancialDiscount[] | undefined>>;
-  setShowAdjustmentDetailModal: Dispatch<
-    SetStateAction<{
-      isOpen: boolean;
-      adjustmentId: number;
-    }>
-  >;
+  dataAdjustmentsByStatus: FinancialDiscount[];
+  setSelectedRows: Dispatch<SetStateAction<FinancialDiscount[] | undefined>>;
+  openAdjustmentDetail: (adjustment: FinancialDiscount) => void;
   financialStatusId: number;
+  legalized?: boolean;
 }
 
 const AccountingAdjustmentsTable = ({
   dataAdjustmentsByStatus: data,
   setSelectedRows,
-  setShowAdjustmentDetailModal,
-  financialStatusId
+  openAdjustmentDetail,
+  financialStatusId,
+  legalized
 }: PropsInvoicesTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
-  const openAdjustmentDetail = (adjustmentId: number) => {
-    setShowAdjustmentDetailModal({ isOpen: true, adjustmentId });
+  const handleOpenDetail = (adjustment: FinancialDiscount) => {
+    openAdjustmentDetail({ ...adjustment, legalized: legalized });
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRows: any) => {
@@ -40,7 +37,7 @@ const AccountingAdjustmentsTable = ({
         if (prevSelectedRows) {
           //check if the new selected rows are already in the selected rows
           const filteredSelectedRows = newSelectedRows.filter(
-            (newSelectedRow: IFinancialDiscount) =>
+            (newSelectedRow: FinancialDiscount) =>
               !prevSelectedRows.some((prevSelectedRow) => prevSelectedRow.id === newSelectedRow.id)
           );
 
@@ -81,14 +78,14 @@ const AccountingAdjustmentsTable = ({
     onChange: onSelectChange
   };
 
-  const columns: TableProps<IFinancialDiscount>["columns"] = [
+  const columns: TableProps<FinancialDiscount>["columns"] = [
     {
       title: "ID ERP",
       dataIndex: "id",
       key: "id",
-      render: (invoiceId) => (
-        <p onClick={() => openAdjustmentDetail(invoiceId)} className="adjustmentsTable__id">
-          {invoiceId}
+      render: (_, record) => (
+        <p onClick={() => handleOpenDetail(record)} className="adjustmentsTable__id">
+          {record.id}
         </p>
       ),
       sorter: (a, b) => a.id - b.id,
@@ -135,7 +132,7 @@ const AccountingAdjustmentsTable = ({
     {
       title: "",
       render: (_, record) => (
-        <Button onClick={() => openAdjustmentDetail(record.id)} icon={<Eye size={"1.2rem"} />} />
+        <Button onClick={() => handleOpenDetail(record)} icon={<Eye size={"1.2rem"} />} />
       ),
       width: 60,
       onCell: () => ({

@@ -1,0 +1,75 @@
+@import "@/styles/variables.scss";
+
+.changePassForm {
+    width: 95%;
+    margin: 1rem 0;
+    height: 100%;
+    display: flex;
+    gap: 1.5rem;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &__title {
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    &__inputTitle {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: $black;
+    }
+
+    &__content {
+        margin: 2rem 0;
+        margin-bottom: 4rem;
+
+        .errorMessage {
+            color: $red;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .iconEyePassword {
+            cursor: pointer;
+        }
+    }
+
+    .inputPassword {
+        background-color: $background;
+        border-radius: 0;
+        padding: 0.7rem;
+        border-radius: 0.25rem;
+        font-size: 1rem;
+        font-weight: 300;
+        max-height: 3rem;
+
+        .ant-input {
+            &::placeholder {
+                color: $dark-gray !important;
+            }
+        }
+
+        &::placeholder {
+            color: $dark-gray !important;
+        }
+
+        &:disabled {
+            color: $dark-gray !important;
+        }
+
+        &.-readOnly {
+            background-color: $dark-gray;
+            color: $darker-gray;
+        }
+    }
+}
+
+@media (max-height: 720px) {
+    .changePassForm {
+        margin: 0;
+        &__content {
+            margin: 0;
+        }
+    }
+}

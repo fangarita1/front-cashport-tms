@@ -8,7 +8,7 @@ interface Props {
   titleInput?: string;
   nameInput: string;
   control: Control<any> | undefined;
-  error: FieldError | undefined;
+  error?: FieldError | undefined;
   typeInput?: string;
   customStyle?: any;
   hiddenTitle?: boolean;
@@ -17,6 +17,7 @@ interface Props {
   validationRules?: RegisterOptions;
   className?: string;
   readOnly?: boolean;
+  suffix?: React.ReactNode;
   // eslint-disable-next-line no-unused-vars
   changeInterceptor?: (value: any) => void;
 }
@@ -34,6 +35,7 @@ export const InputForm = ({
   validationRules,
   className,
   readOnly,
+  suffix,
   changeInterceptor
 }: Props) => {
   return (
@@ -59,6 +61,7 @@ export const InputForm = ({
               onChange(e);
               changeInterceptor?.(e.target.value);
             }}
+            suffix={suffix}
             {...field}
           />
         )}
