@@ -9,6 +9,7 @@ import { ModalEstimatedConcilation } from "@/components/molecules/modals/ModalEs
 import InvoiceDetailModal from "@/modules/clients/containers/invoice-detail-modal";
 
 import RegisterNewsConcilation from "@/components/molecules/modals/RegisterNewsConcilation/RegisterNewsConcilation";
+import { useAppStore } from "@/lib/store/store";
 
 interface Props {
   invoices: InfoConcilation | undefined;
@@ -28,6 +29,7 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
     isOpen: false,
     invoiceId: 0
   });
+  const { ID } = useAppStore((state) => state.selectedProject);
 
   useEffect(() => {
     if (invoices) {
@@ -83,14 +85,13 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
     setIsRegisterNewsOpen(true);
   };
 
-
   useEffect(() => {
     if (!invoices) return;
     const categoriesToValidate = ["invoices_not_found", "invoices_with_differences"];
     let allInvoicesHaveMotive = true;
 
     for (const category of categoriesToValidate) {
-      const invoiceCategory = invoices[category as keyof InfoConcilation]  ;
+      const invoiceCategory = invoices[category as keyof InfoConcilation];
       if (invoiceCategory) {
         for (const invoice of invoiceCategory.invoices) {
           if (invoice.motive_id == null) {
@@ -173,6 +174,7 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
           onClose={() => setShowInvoiceDetailModal({ isOpen: false, invoiceId: 0 })}
           invoiceId={showInvoiceDetailModal?.invoiceId || 0}
           clientId={clientId}
+          projectId={ID}
         />
       )}
       <RegisterNewsConcilation

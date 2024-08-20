@@ -114,18 +114,21 @@ export const ConcilationTable = ({
       className: "logosWrapper",
       render: (_, record) => (
         <div className="logos">
-          <Tooltip
-            title={
-              <div className="toolTip -clientAccept">
-                <p>Aceptación cliente</p>
-                <strong>{formatDateBars(record.accept_date?.toString() || "0")}</strong>
-              </div>
-            }
-            color={"#f7f7f7"}
-            key={`C${record.id}`}
-          >
-            <Button icon={<CheckCircle size={"1.2rem"} />} />
-          </Tooltip>
+          {record.accept_date ? (
+            <Tooltip
+              title={
+                <div className="toolTip -clientAccept">
+                  <p>Aceptación cliente</p>
+                  <strong>{formatDateBars(record.accept_date?.toString() || "0")}</strong>
+                </div>
+              }
+              color={"#f7f7f7"}
+              key={`C${record.id}`}
+            >
+              <Button icon={<CheckCircle size={"1.2rem"} />} />
+            </Tooltip>
+          ) : null}
+
           <Button onClick={() => openInvoiceDetail(record.id)} icon={<Eye size={"1.2rem"} />} />
         </div>
       ),

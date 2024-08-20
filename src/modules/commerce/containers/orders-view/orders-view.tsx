@@ -64,7 +64,6 @@ export const OrdersView: FC = () => {
 
   return (
     <div className={styles.ordersView}>
-      <h2 className={styles.title}>Mis pedidos</h2>
       <Flex className={styles.FlexContainer} vertical>
         <Flex className={styles.header}>
           <UiSearchInput
