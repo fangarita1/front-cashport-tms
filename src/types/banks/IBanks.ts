@@ -8,4 +8,5 @@ export interface ISingleBank {
   account_bank: string;
   state_name: string;
   state_color: string;
+  status_id: number;
 }
