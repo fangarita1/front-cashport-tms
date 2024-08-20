@@ -388,6 +388,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               title="Para"
               placeholder="Enviar a"
               options={forwardToEmails}
+              suffixIcon={null}
             />
           )}
         />
@@ -402,6 +403,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               title="Copia"
               placeholder="Copia a"
               options={forwardToEmails}
+              suffixIcon={null}
             />
           )}
         />

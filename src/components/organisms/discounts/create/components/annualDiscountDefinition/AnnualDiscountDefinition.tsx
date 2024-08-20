@@ -110,9 +110,9 @@ export default function AnnualDiscountDefinition({
             return (
               <>
                 <Select
+                  showSearch
+                  optionFilterProp="label"
                   placeholder="Selecciona cliente"
-                  placement="bottomLeft"
-                  labelRender={(e) => e.label}
                   className={`${style.selectInput} translate`}
                   loading={loading}
                   variant="borderless"
@@ -120,6 +120,7 @@ export default function AnnualDiscountDefinition({
                   options={options}
                   disabled={statusForm !== "create"}
                   {...field}
+                  labelInValue
                 ></Select>
                 <Text type="danger" hidden={!errors.client}>
                   {errors?.client?.message}

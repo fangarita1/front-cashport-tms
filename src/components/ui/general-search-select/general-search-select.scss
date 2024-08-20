@@ -13,12 +13,13 @@
             font-size: 1rem !important;
 
             .ant-select-selection-search {
-                font-weight: 300;
+                font-weight: 300 !important;
                 font-size: 1rem;
             }
 
             .ant-select-selection-placeholder {
                 color: $dark-gray;
+                font-weight: 300 !important;
             }
         }
 
