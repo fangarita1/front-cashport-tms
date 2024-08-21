@@ -36,13 +36,18 @@ const STEPSTYLES = {
   }
 };
 
+interface Step {
+  title: string;
+  disabled?: boolean;
+}
 interface CustomStepperProps {
-  steps: { title: string }[];
+  steps: Step[];
   currentStepIndex: number;
 }
 
 export const CustomStepper = ({ steps, currentStepIndex }: CustomStepperProps) => {
-  const getStepStyle = (stepIndex: number, currentIndex: number) => {
+  const getStepStyle = (step: Step, stepIndex: number, currentIndex: number) => {
+    if (step.disabled) return STEPSTYLES.DISABLED;
     if (currentIndex === stepIndex) return STEPSTYLES.CURRENT;
     if (currentIndex > stepIndex) return STEPSTYLES.COMPLETED;
     else return STEPSTYLES.NEXTSTEP;
@@ -52,7 +57,7 @@ export const CustomStepper = ({ steps, currentStepIndex }: CustomStepperProps) =
     <Flex className={styles.stepper}>
       <Flex justify="space-evenly">
         {steps.map((step, stepIndex) => {
-          const currentStepStyle = getStepStyle(stepIndex, currentStepIndex);
+          const currentStepStyle = getStepStyle(step, stepIndex, currentStepIndex);
           return (
             <Flex key={`step-${step.title}-${stepIndex}`} className={styles.step}>
               <div

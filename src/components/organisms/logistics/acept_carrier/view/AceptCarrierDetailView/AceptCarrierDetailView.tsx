@@ -30,7 +30,7 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
   const [view, setView] = useState<"detail" | "asignation" | "confirmation">("detail");
   const [isNextStepActive, setIsNextStepActive] = useState<boolean>(true);
   const [vehicleSelected, setVehicleSelected] = useState<number>(0);
-  const [driversSelected, setDriverSelected] = useState<number[]>([0]);
+  const [driversSelected, setDriversSelected] = useState<number[]>([0]);
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [drivers, setDrivers] = useState<any[]>([]);
   const [observation, setObservation] = useState<any>(null);
@@ -92,6 +92,30 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
   };
   const vehicleAndDriverRef = useRef<any>(null);
 
+  const submitCarrierRequest = async (
+    carrierId: string,
+    requestId: string,
+    vehicleId: string,
+    driverIds: string[],
+    status: string,
+    observation: string
+  ) => {
+    try {
+      setIsLoading(true);
+      await postCarrierRequest(carrierId, requestId, vehicleId, driverIds, status, observation);
+      messageApi.open({
+        content: "Aceptado"
+      });
+      router.push("/logistics/acept_carrier");
+    } catch (error) {
+      messageApi.open({
+        content: "Hubo un problema aceptando la orden"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleNext = async () => {
     if (vehicleAndDriverRef.current) {
       vehicleAndDriverRef.current.handleSubmitDriverVehicleForm();
@@ -101,7 +125,7 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
     } else if (view === "asignation") {
       setView("confirmation");
     } else {
-      await postCarrierRequest(
+      await submitCarrierRequest(
         String(carrier?.id_carrier),
         String(carrier?.id),
         String(vehicleSelected),
@@ -109,10 +133,6 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
         "1",
         observation
       );
-      messageApi.open({
-        content: "Aceptado"
-      });
-      router.push("/logistics/acept_carrier");
     }
   };
 
@@ -124,20 +144,74 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
 
   const handleReject = async () => {
     console.log("handleReject", "id carrier", carrier?.id_carrier, "id", carrier?.id);
-    await postCarrierReject(String(carrier?.id_carrier), String(carrier?.id));
-    messageApi.open({
-      content: "Rechazado"
-    });
-    router.push("/logistics/acept_carrier");
+    try {
+      setIsLoading(true);
+      const res = await postCarrierReject(String(carrier?.id_carrier), String(carrier?.id));
+      if (res) {
+        messageApi.open({
+          content: "Rechazado"
+        });
+      }
+      router.push("/logistics/acept_carrier");
+    } catch (error) {
+      messageApi.open({
+        content: "Hubo un problema rechazando la orden"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const currentStepIndex = view === "detail" ? 0 : view === "asignation" ? 1 : 2;
+  const canEdit = true; //carrier?.statusdesc === "Por confirmar";
 
   const steps = [
-    { title: "Detalle solicitud" },
-    { title: "Asignación de vehículo y conductor" },
-    { title: "Confirmar servicio" }
+    { title: "Detalle solicitud", disabled: false },
+    { title: "Asignación de vehículo y conductor", disabled: !canEdit },
+    { title: "Confirmar servicio", disabled: !canEdit }
   ];
+
+  const renderView = () => {
+    switch (view) {
+      case "detail":
+        return (
+          <SolicitationDetail
+            providerDetail={carrier}
+            dataCarga={dataCarga}
+            setIsNextStepActive={setIsNextStepActive}
+            service_type={carrier?.service_type}
+            geometry={routeGeometry}
+            distance={distance}
+            timetravel={timetravel}
+            mapContainerRef={mapContainerRef}
+          />
+        );
+      case "asignation":
+        return (
+          <VehicleAndDriverAsignation
+            setIsNextStepActive={setIsNextStepActive}
+            drivers={drivers}
+            vehicles={vehicles}
+            setDrivers={setDriversSelected}
+            setVehicle={setVehicleSelected}
+            ref={vehicleAndDriverRef}
+            currentDrivers={driversSelected}
+            currentVehicle={vehicleSelected}
+          />
+        );
+      case "confirmation":
+      default:
+        return (
+          <Confirmation
+            setIsNextStepActive={setIsNextStepActive}
+            driverSelected={drivers?.filter((driver) => driversSelected.includes(driver.id))}
+            vehicleSelected={vehicles.find((a) => a.id === vehicleSelected)}
+            setObservation={setObservation}
+            isNextStepActive={isNextStepActive}
+          />
+        );
+    }
+  };
 
   return (
     <>
@@ -178,39 +252,9 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
               </p>
             </Col>
           </Flex>
-          {view === "detail" ? (
-            <SolicitationDetail
-              providerDetail={carrier}
-              dataCarga={dataCarga}
-              setIsNextStepActive={setIsNextStepActive}
-              service_type={carrier?.service_type}
-              geometry={routeGeometry}
-              distance={distance}
-              timetravel={timetravel}
-              mapContainerRef={mapContainerRef}
-            />
-          ) : view === "asignation" ? (
-            <VehicleAndDriverAsignation
-              setIsNextStepActive={setIsNextStepActive}
-              drivers={drivers}
-              vehicles={vehicles}
-              setDrivers={setDriverSelected}
-              setVehicle={setVehicleSelected}
-              ref={vehicleAndDriverRef}
-              currentDrivers={driversSelected}
-              currentVehicle={vehicleSelected}
-            />
-          ) : (
-            <Confirmation
-              setIsNextStepActive={setIsNextStepActive}
-              driverSelected={drivers?.filter((driver) => driversSelected.includes(driver.id))}
-              vehicleSelected={vehicles.find((a) => a.id === vehicleSelected)}
-              setObservation={setObservation}
-              isNextStepActive={isNextStepActive}
-            />
-          )}
+          {renderView()}
           <Buttons
-            isRightSectionVisible={true} //CAMBIAR ! carrier?.statusdesc === "Por confirmar"
+            isRightSectionVisible={canEdit}
             isRightButtonActive={isNextStepActive}
             isLeftButtonActive={true}
             handleNext={handleNext}

@@ -13,36 +13,46 @@ interface ConfirmationProps {
   isNextStepActive: boolean;
 }
 
-export function Confirmation({ driverSelected, vehicleSelected, setIsNextStepActive, setObservation, isNextStepActive }: ConfirmationProps) {
+export function Confirmation({
+  driverSelected,
+  vehicleSelected,
+  setIsNextStepActive,
+  setObservation,
+  isNextStepActive
+}: ConfirmationProps) {
   console.log("isNextStep:", isNextStepActive);
 
   useEffect(() => {
-    setIsNextStepActive(false)
+    setIsNextStepActive(false);
   }, []);
-  
+
   const onConfirmation = (isNextStepActive: boolean) => {
-    setIsNextStepActive(!isNextStepActive)
+    setIsNextStepActive(!isNextStepActive);
   };
 
   return (
     <Flex className={styles.wrapper}>
       <Flex className={styles.sectionWraper} vertical>
-        {driverSelected?.map((driver, index) => 
+        {driverSelected?.map((driver, index) => (
           <Flex key={`vehicle-driver-${index}`}>
-            <Col span={11} >
-              <p className={styles.subtitle}>{vehicleSelected?.brand} {vehicleSelected?.color}</p>
+            <Col span={11} style={{ visibility: index !== 0 ? "hidden" : "initial" }}>
+              <p className={styles.subtitle}>
+                {vehicleSelected?.brand} {vehicleSelected?.color}
+              </p>
               <p className={styles.subtitle}>{vehicleSelected?.plate_number}</p>
             </Col>
             <Col span={2}>
-            <Divider type="vertical" className={styles.divider} />
+              <Divider type="vertical" className={styles.divider} />
             </Col>
-            <Col span={11} style={{display: "flex", justifyContent: "flex-end"}}>
-              <p className={styles.subtitle}>{driver?.name} {driver?.last_name} - {driver?.phone}</p>
-            </Col> 
+            <Col span={11} style={{ display: "flex", justifyContent: "flex-end" }}>
+              <p className={styles.subtitle}>
+                {driver?.name} {driver?.last_name} - {driver?.phone}
+              </p>
+            </Col>
           </Flex>
-        )}
+        ))}
       </Flex>
-      <Flex vertical className={styles.sectionWraper} >
+      <Flex vertical className={styles.sectionWraper}>
         <p className={styles.subtitle}>Comentarios</p>
         <div className={styles.textArea}>
           <TextArea
@@ -55,7 +65,9 @@ export function Confirmation({ driverSelected, vehicleSelected, setIsNextStepAct
       </Flex>
       <Flex className={styles.confirmation} gap={16}>
         <CheckboxButton onChange={() => onConfirmation(isNextStepActive)} />
-        <div className={styles.text}>Conozco y confirmo que el conductor asignado debe cumplir con el requerimiento #1234567</div>
+        <div className={styles.text}>
+          Conozco y confirmo que el conductor asignado debe cumplir con el requerimiento #1234567
+        </div>
       </Flex>
     </Flex>
   );

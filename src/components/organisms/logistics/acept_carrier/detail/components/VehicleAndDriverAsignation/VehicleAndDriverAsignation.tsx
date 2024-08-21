@@ -1,28 +1,32 @@
 "use client";
 import React, {
-  useState,
   useEffect,
   Dispatch,
   SetStateAction,
-  useRef,
   forwardRef,
-  useImperativeHandle
+  useImperativeHandle,
+  useState
 } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
-import { Typography, Flex, Button, Col, Select } from "antd";
+import { Flex, Select } from "antd";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { ICarrierRequestDrivers, ICarrierRequestVehicles } from "@/types/logistics/schema";
-import { Check, Circle, Plus, PlusCircle } from "@phosphor-icons/react";
 import styles from "./vehicleAndDriverAsignation.module.scss";
-import RadioButtonIcon from "@/components/atoms/RadioButton/RadioButton";
-import { Trash } from "phosphor-react";
-import { DefaultOptionType } from "antd/es/select";
 import DriverRenderOption from "./components/DriverRenderOption/DriverRenderOption";
 import DriverRenderLabel from "./components/DriverRenderLabel/DriverRenderLabel";
 import VehicleRenderOption from "./components/VehicleRenderOption/VehicleRenderOption";
 import VehicleRenderLabel from "./components/VehicleRenderLabel/VehicleRenderLabel";
+import AddRemoveButton from "./components/AddRemoveButton/AddRemoveButton";
+import EditDocsButton from "./components/EditDocsButton/EditDocsButton";
+import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
+// import { getDocumentsByEntityType } from "@/services/logistics/certificates";
+// import useSWR from "swr";
+import { documentsTypes, mockCarrierDocuments } from "../../mockdata";
+import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
+import dayjs from "dayjs";
+import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
+
 const { Option } = Select;
-const { Text, Title } = Typography;
 
 interface VehicleAndDriverAsignationProps {
   setIsNextStepActive: Dispatch<SetStateAction<boolean>>;
@@ -71,7 +75,7 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
   const formCurrentValues = getValues();
 
   const DRIVERS_MAX_QUANTITY = 5;
-  //const [isOpenModalDocuments, setIsOpenModalDocuments] = useState<boolean>(false);
+  const [isOpenModalDocuments, setIsOpenModalDocuments] = useState<boolean>(false);
 
   useEffect(() => {
     setIsNextStepActive(false);
@@ -113,6 +117,21 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
         driver.id === selectedDrivers[indexField]?.driverId
     );
   }
+
+  const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
+  useEffect(() => {
+    const docsWithLink =
+      documentsTypes
+        .filter((docs) => !docs.optional)
+        .map((dt, index) => ({
+          ...dt,
+          key: index,
+          file: undefined,
+          link: undefined,
+          expirationDate: dayjs(undefined)
+        })) || [];
+    setSelectedFiles(docsWithLink);
+  }, [documentsTypes]);
 
   return (
     <div className={styles.wrapper}>
@@ -160,56 +179,43 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
         />
         <div className={styles.documentsTop}>
           <p className={styles.subtitle}>Documentos del vehículo</p>
-          <button className={`${styles.buttonTransparent} ${styles.editDocs}`}>
-            <Plus size={20} />
-            <p>Editar documentos</p>
-          </button>
+          <EditDocsButton onClick={() => setIsOpenModalDocuments(true)} text="Editar documentos" />
         </div>
         <div className={styles.uploadContainer}>
-          <UploadDocumentButton
-            title={"Documento 1"}
-            key={`vehicle-document-{1}`}
-            isMandatory
-            aditionalData={1}
-            setFiles={() => {}}
-            disabled
-            column
-          />
-          <UploadDocumentButton
-            title={"Documento 2"}
-            key={`vehicle-document-{2}`}
-            isMandatory
-            aditionalData={2}
-            setFiles={() => {}}
-            disabled
-            column
-          />
-          <UploadDocumentButton
-            title={"Documento 3"}
-            key={`vehicle-document-{3}`}
-            isMandatory
-            aditionalData={3}
-            setFiles={() => {}}
-            disabled
-            column
-          />
-          <UploadDocumentButton
-            title={"Aprobación ingreso a pozo"}
-            key={`vehicle-document-{4}`}
-            isMandatory={false}
-            aditionalData={4}
-            setFiles={() => {}}
-            disabled
-            column
-          />
+          {selectedFiles.map((file, index) => (
+            <UploadDocumentButton
+              key={file.id}
+              title={file.description}
+              isMandatory={!file.optional}
+              aditionalData={file.id}
+              setFiles={() => {}}
+              files={file.file}
+              disabled
+              column
+            >
+              {file?.link ? (
+                <UploadDocumentChild
+                  linkFile={file.link}
+                  nameFile={file.link.split("-").pop() ?? ""}
+                  onDelete={() => {}}
+                  showTrash={false}
+                />
+              ) : undefined}
+            </UploadDocumentButton>
+          ))}
         </div>
       </div>
       {fields.map((field, indexField: number) => (
         <div key={`field-${field.id}-${indexField}`}>
           <hr style={{ borderTop: "1px solid #dddddd" }}></hr>
-          <p className={styles.sectionTitle} style={{ marginTop: "2rem" }}>
-            Conductor {indexField !== 0 && indexField + 1}
-          </p>
+          <Flex style={{ width: "100%" }} justify="space-between">
+            <p className={styles.sectionTitle} style={{ marginTop: "2rem" }}>
+              Conductor {indexField !== 0 && indexField + 1}
+            </p>
+            {fields.length > 1 && (
+              <AddRemoveButton type="remove" onClick={() => remove(indexField)} />
+            )}
+          </Flex>
           <div className={styles.container}>
             <p className={styles.subtitle}>Seleccione el conductor</p>
             <div className={styles.selector}>
@@ -253,97 +259,59 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
                   );
                 }}
               />
-              {indexField === fields.length - 1 ? (
-                <Flex>
-                  {fields.length > 1 ? (
-                    <button
-                      className={`${styles.buttonTransparent} ${styles.addOrRemove}`}
-                      onClick={() => remove(indexField)}
-                    >
-                      <Trash size={24} />
-                      <p>Eliminar conductor</p>
-                    </button>
-                  ) : (
-                    <></>
-                  )}
-                  <button
-                    className={`${styles.buttonTransparent} ${styles.addOrRemove}`}
-                    onClick={() => append({ driverId: null })}
-                    disabled={fields.length === DRIVERS_MAX_QUANTITY}
-                  >
-                    <PlusCircle size={24} />
-                    <p>Agregar otro conductor</p>
-                  </button>
-                </Flex>
-              ) : (
-                <button
-                  className={`${styles.buttonTransparent} ${styles.addOrRemove}`}
-                  onClick={() => remove(indexField)}
-                >
-                  <Trash size={24} />
-                  <p>Eliminar conductor</p>
-                </button>
+              {indexField === fields.length - 1 && (
+                <AddRemoveButton
+                  type="add"
+                  onClick={() => append({ driverId: null })}
+                  disabled={fields.length === DRIVERS_MAX_QUANTITY}
+                  text="Agregar otro conductor"
+                />
               )}
             </div>
             <div className={styles.documentsTop}>
               <p className={styles.subtitle}>Documentos del conductor</p>
-              <button className={`${styles.buttonTransparent} ${styles.editDocs}`}>
-                <Plus size={20} />
-                <p>Editar documentos</p>
-              </button>
+              <EditDocsButton
+                onClick={() => setIsOpenModalDocuments(true)}
+                text="Editar documentos"
+              />
             </div>
             <div className={styles.uploadContainer}>
-              <UploadDocumentButton
-                title={"Documento 1"}
-                key={`document1-driver-${indexField}`}
-                isMandatory
-                aditionalData={indexField}
-                setFiles={() => {}}
-                disabled
-                column
-              />
-              <UploadDocumentButton
-                title={"Documento 2"}
-                key={`document2-driver-${indexField}`}
-                isMandatory
-                aditionalData={2}
-                setFiles={() => {}}
-                disabled
-                column
-              />
-              <UploadDocumentButton
-                title={"Documento 3"}
-                key={`document3-driver-${indexField}`}
-                isMandatory
-                aditionalData={3}
-                setFiles={() => {}}
-                disabled
-                column
-              />
-              <UploadDocumentButton
-                title={"Aprobación ingreso a pozo"}
-                key={`document4-driver-${indexField}`}
-                isMandatory={false}
-                aditionalData={4}
-                setFiles={() => {}}
-                disabled
-                column
-              />
+              {selectedFiles.map((file, index) => (
+                <UploadDocumentButton
+                  key={file.id}
+                  title={file.description}
+                  isMandatory={!file.optional}
+                  aditionalData={file.id}
+                  setFiles={() => {}}
+                  files={file.file}
+                  disabled
+                  column
+                >
+                  {file?.link ? (
+                    <UploadDocumentChild
+                      linkFile={file.link}
+                      nameFile={file.link.split("-").pop() ?? ""}
+                      onDelete={() => {}}
+                      showTrash={false}
+                    />
+                  ) : undefined}
+                </UploadDocumentButton>
+              ))}
             </div>
           </div>
         </div>
       ))}
-      {/* <ModalDocuments
+      <ModalDocuments
         isOpen={isOpenModalDocuments}
         mockFiles={selectedFiles}
-        setFiles={setFiles}
-        documentsType={documentsType}
-        isLoadingDocuments={isLoadingDocuments}
+        setFiles={() => {}}
+        documentsType={documentsTypes}
+        isLoadingDocuments={false}
         onClose={() => setIsOpenModalDocuments(false)}
-        handleChange={handleChange}
-        handleChangeExpirationDate={handleChangeExpirationDate}
-        setSelectedFiles={setSelectedFiles}
-      /> */}
+        handleChange={() => {}}
+        handleChangeExpirationDate={() => {}}
+        setSelectedFiles={() => {}}
+      />
     </div>
   );
 });
