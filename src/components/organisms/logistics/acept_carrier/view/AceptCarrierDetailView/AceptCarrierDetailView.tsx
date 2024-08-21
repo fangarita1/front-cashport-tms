@@ -99,6 +99,7 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
             setDataCarga((dataCarga) => [...dataCarga, { ...newvalue, quantity: mat.units }]);
           });
         });
+
       }
     } catch (error) {
       console.error("Error loading transfer requests", error);

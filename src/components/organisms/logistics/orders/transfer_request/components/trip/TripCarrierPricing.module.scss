@@ -1,0 +1,17 @@
+@import "@/styles/variables.scss";
+
+.dataContainer {
+    background-color: $background;
+    border-radius: 4px;
+    padding: 1rem;
+    strong {
+        font-weight: bold;
+    }
+    .vehicleDescription {
+        width: 50%;
+    }
+    .fromTo {
+        width: 50%;
+        border-left: 1px solid $dark-gray;
+    }
+}
