@@ -34,10 +34,10 @@ export const normalizeLocationData = (data: any): any => {
 
   if (!data) return {};
 
-  const documents = data.documents.map((doc: any) => ({
+  const documents = data?.documents?.map((doc: any) => ({
     file: {
-      name: doc.url_archive.split("/").pop(),
-      url: doc.url_archive
+      name: doc.template.split("/").pop(),
+      url: doc.template
     }
   }));
 
@@ -51,14 +51,14 @@ export const normalizeLocationData = (data: any): any => {
       url_location: "",
       latitude: data.latitude,
       longitude: data.longitude,
-      location_type: data.location_type_id.toString(),
+      location_type: data.location_type_id?.toString(),
       active: data.active,
       created_at: new Date(data.created_at),
       created_by: data.created_by,
       modified_at: new Date(data.modified_at),
       modified_by: data.modified_by,
-      state_id: data.state_id.toString(),
-      group_location_id: data.group_location_id.toString(),
+      state_id: data.state_id?.toString(),
+      group_location_id: data.group_location_id?.toString(),
       additional_info: data.additional_info,
       contact_name: data.contact_name,
       contact_number: data.contact_number,

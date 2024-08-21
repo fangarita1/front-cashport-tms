@@ -283,7 +283,7 @@ export const MaterialFormTab = ({
           <Row gutter={16}> 
           <Col span={6}>  {/* Columna Fotos del Vehiculo */}
               <Title className="title" level={4}>
-                Fotos de vehículo
+                Fotos del material
               </Title>
               {/* ------------Image Project-------------- */}
               <Row>

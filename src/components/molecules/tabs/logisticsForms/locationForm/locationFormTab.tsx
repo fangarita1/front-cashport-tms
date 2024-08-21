@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Button, Card, Col, Flex, Row, Switch, Typography, message } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowsClockwise, CaretLeft, Pencil, Plus, XCircle } from "phosphor-react";
+import { ArrowsClockwise, CaretLeft, FileArrowUp, Pencil, Plus, XCircle } from "phosphor-react";
+import { auth } from "../../../../../../firebase";
 
 // components
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
@@ -98,24 +99,28 @@ export const LocationFormTab = ({
 
   useEffect(() => {
     const subscription = watch((data, {name, type}) =>{
-        console.log(data, name, type);
+        //console.log(data, name, type);
         if(name == 'general.state_id'){
           setIsSelectedState(true);
           setSelectedState(data.general?.state_id)
         }
         if(name == 'general.latitude'){
           setLatitude(data.general?.latitude)
-          markerRef.current.setLngLat([longitude,latitude])
-          mapRef.current.flyTo({
-            center: [longitude,latitude]
-          });
+          if(data.general?.latitude != undefined && data.general?.longitude != undefined){
+            markerRef.current.setLngLat([data.general?.longitude,data.general?.latitude])
+            mapRef.current.flyTo({
+              center: [data.general?.longitude,data.general?.latitude]
+            });
+          }
         }
         if(name == 'general.longitude'){
           setLongitude(data.general?.longitude)
-          markerRef.current.setLngLat([longitude,latitude])
-          mapRef.current.flyTo({
-            center: [longitude,latitude]
-          });
+          if(data.general?.latitude != undefined && data.general?.longitude != undefined){
+            markerRef.current.setLngLat([data.general?.longitude,data.general?.latitude])
+            mapRef.current.flyTo({
+              center: [data.general?.longitude,data.general?.latitude]
+            });
+          }
         }
       }
     )
@@ -139,6 +144,10 @@ export const LocationFormTab = ({
     mode: 'onChange' 
   });
   const { push } = useRouter();
+
+  const cuser = auth.currentUser;
+  const username:string = String(cuser?.email);
+  setValue("general.user",username);
 
   const isFormCompleted = () => {
     return isValid;
@@ -178,9 +187,9 @@ export const LocationFormTab = ({
 
     function onDragEnd() {
       const lngLat = markerRef.current.getLngLat();
-      setCoordinates([`Longitude: ${lngLat.lng}`, `Latitude: ${lngLat.lat}`]);
-      setValue("general.latitude", lngLat.lat);
-      setValue("general.longitude", lngLat.lng);
+      setCoordinates([`Longitude: ${Number(lngLat.lng).toFixed(6)}`, `Latitude: ${Number(lngLat.lat).toFixed(6)}`]);
+      setValue("general.latitude", Number(Number(lngLat.lat).toFixed(6)));
+      setValue("general.longitude", Number(Number(lngLat.lng).toFixed(6)));
       markerRef.current.setLngLat(lngLat)
       mapRef.current.flyTo({
         center: lngLat
@@ -199,67 +208,97 @@ export const LocationFormTab = ({
     file: File | undefined;
   }
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
+  const [listFiles, setListFiles] = useState<DocumentCompleteType[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
 
   useEffect(() => {
     if (Array.isArray(documentsType)) {
       const isFirstLoad = data?.documents?.length && selectedFiles.length === 0 
       if (isFirstLoad) {
-        const docsWithLink =
-          documentsType
-            ?.filter((f) => data.documents?.find((d) => d.id_document_type === f.id))
-            .map((f) => ({
-              ...f,
-              file:  undefined,
-              link: data.documents?.find((d) => d.id_document_type === f.id)?.url_archive,
-              expirationDate: dayjs(
-                data.documents?.find((d) => d.id_document_type === f.id)?.expiration_date
-              )
-            })) || [];
-        setSelectedFiles(docsWithLink);
+        // const docsWithLink =
+        //   documentsType
+        //     ?.filter((f) => data.documents?.find((d) => d.id_document_type === f.id))
+        //     .map((f) => ({
+        //       ...f,
+        //       file:  undefined,
+        //       link: data.documents?.find((d) => d.id_document_type === f.id)?.url_archive,
+        //       expirationDate: dayjs(
+        //         data.documents?.find((d) => d.id_document_type === f.id)?.expiration_date
+        //       )
+        //     })) || [];
+        // setSelectedFiles(docsWithLink);
       } else {
-        const documentsFiltered = documentsType?.filter((f) => !f?.optional || selectedFiles?.find((f2) => f2.id === f.id))
-        const docsWithFile =  documentsFiltered.map((f) => {
-            const prevFile = selectedFiles.find((f2) => f2.id === f.id);
-            return {
-              ...f,
-              link: prevFile?.link || undefined,
-              file: prevFile?.link ? undefined : files.find((f2) => f2.aditionalData === f.id)?.file,
-              expirationDate: prevFile?.expirationDate
-            };
-          });
-        if (docsWithFile?.length) {
-          setSelectedFiles([...docsWithFile]);
-        } else {
-          setSelectedFiles([]);
-        }
+        // const documentsFiltered = documentsType?.filter((f) => !f?.optional || selectedFiles?.find((f2) => f2.id === f.id))
+        // const docsWithFile =  documentsFiltered.map((f) => {
+        //     const prevFile = selectedFiles.find((f2) => f2.id === f.id);
+        //     return {
+        //       ...f,
+        //       link: prevFile?.link || undefined,
+        //       file: prevFile?.link ? undefined : files.find((f2) => f2.aditionalData === f.id)?.file,
+        //       expirationDate: prevFile?.expirationDate
+        //     };
+        //   });
+        // if (docsWithFile?.length) {
+        //   setSelectedFiles([...docsWithFile]);
+        // } else {
+        //   setSelectedFiles([]);
+        // }
       }
     }
   }, [files, documentsType]);
 
   useEffect(() => {
     if (statusForm === "review"){
+
       if (Array.isArray(documentsType)) {
           const docsWithLink =
             documentsType
-              ?.filter((f) => data?.documents?.find((d) => d.id_document_type === f.id))
+              ?.filter((f) => data?.documents?.find((d) => d.id === f.id))
               .map((f) => ({
                 ...f,
                 file:  undefined,
-                link: data?.documents?.find((d) => d.id_document_type === f.id)?.url_archive,
+                link: data?.documents?.find((d) => d.id === f.id)?.url_archive,
                 expirationDate: dayjs(
-                  data?.documents?.find((d) => d.id_document_type === f.id)?.expiration_date
+                  data?.documents?.find((d) => d.id === f.id)?.expiration_date
                 )
               })) || [];
           setSelectedFiles(docsWithLink);
       }
+
+      setLatitude(data?.latitude)
+      setLongitude(data?.longitude)
+      markerRef.current.setLngLat([data?.longitude,data?.latitude])
+      mapRef.current.flyTo({
+        center: [data?.longitude,data?.latitude]
+      });
+    
+      setTimeout(()=>{
+        
+        setValue("general.group_location_id", data?.group_location_id);
+
+        const location_type:number = Number(data?.location_type?.valueOf());
+        setValue("general.location_type", location_type);
+
+        const state_id:number = Number(data?.state_id?.valueOf());
+        setValue("general.state_id", data?.state_id);
+        setIsSelectedState(true);
+        setSelectedState(state_id)
+
+        setTimeout(()=>{
+          const city_id:number = Number(data?.city_id?.valueOf());
+          setValue("general.city_id", city_id);
+        },500)
+      },500);
+
     }
   }, [statusForm]);
 
 
+  //add file 
   const handleChange = (value: string[]) => {
     const sf = documentsType?.filter((file) => value.includes(file.id.toString()));
     if (sf) {
+      console.log(sf)
       setSelectedFiles((prevState) => {
         return sf.map((file) => {
           const prevFile = prevState.find((f) => f.id === file.id);
@@ -275,9 +314,18 @@ export const LocationFormTab = ({
     }
   };
 
+  //remove file
+  const handleRemoveFile = (idfile: number) => {
+    // eslint-disable-next-line no-unused-vars
+    let newData = selectedFiles.filter((item) => item.id !== idfile);
+    setSelectedFiles(newData);
+    setSelectedFiles((prevdata)=>{
+      newData =[...prevdata];
+      return prevdata;
+    })
+  };
+
   const onSubmit = async (data: any) => {
-    console.log(data);
-    return;
     const locationData: any = {
       ...data.general
     };    
@@ -320,7 +368,7 @@ export const LocationFormTab = ({
   return (
     <>
       {contextHolder}
-      <form className="vehiclesFormTab" onSubmit={handleSubmit(onSubmit)}>
+      <form className="locationFormTab" onSubmit={handleSubmit(onSubmit)}>
         <Flex component={"header"} className="headerProyectsForm">
             <Link href={`/logistics/configuration/locations/all`} passHref>
               <Button
@@ -605,7 +653,11 @@ export const LocationFormTab = ({
                   <Card key={file.id} className="filecard">
                     <Row>
                       <Col span={23}>{file.description}</Col>
-                      <Col span={1}><XCircle size={16} /></Col>
+                      <Col span={1}>
+                        {(statusForm === "create" || statusForm === "edit" ) && (
+                          <XCircle size={16} onClick={()=>{ handleRemoveFile(file.id)}} />
+                        )}
+                      </Col>
                       <Col span={24}>{file.entity_type_desc}</Col>
                       <Col>
                         {file?.link ? (
@@ -615,7 +667,7 @@ export const LocationFormTab = ({
                             onDelete={()=>{}}
                             showTrash={false}
                           />
-                        ) : undefined}
+                        ) : <FileArrowUp size={16} />}
                     </Col>
                     </Row>
                   </Card>

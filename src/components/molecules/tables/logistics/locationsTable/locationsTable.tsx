@@ -93,7 +93,7 @@ export const LocationsTable = () => {
       dataIndex: "",
       render: (_, { id }) => (
         <Button
-          href={`/logistics/locations/${id}`}
+          href={`/logistics/configuration/locations/${id}`}
           className="icon-detail"
           icon={<Eye size={20} />}
         />

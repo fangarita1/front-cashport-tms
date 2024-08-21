@@ -1134,6 +1134,7 @@ export interface ILocation {
   additional_info: string;
   contact_name: string;
   contact_number: string;
+  user: string;
 }
 /**
  * Exposes all fields present in driver as a typescript
