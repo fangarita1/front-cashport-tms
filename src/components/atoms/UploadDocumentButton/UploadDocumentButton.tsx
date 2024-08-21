@@ -5,7 +5,7 @@ import "./uploaddocumentbutton.scss";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 export interface FileObject {
-  docReference: string;
+  docReference?: string;
   file: File | undefined;
   aditionalData?: any;
 }
@@ -14,7 +14,7 @@ interface infoObject {
   fileList: File[];
 }
 interface DocumentProps {
-  title: string;
+  title?: string;
   isMandatory: boolean;
   setFiles: Dispatch<SetStateAction<FileObject[]>>;
   containerClassName?: string;
@@ -125,11 +125,17 @@ export const UploadDocumentButton = ({
   const columnDirection = column ? "column" : "column-reverse";
 
   return (
-    <div className={`uploaddocumentbutton ${containerClassName}`} style={{display: displayFlex, flexDirection: columnDirection}}>
-      <Flex vertical justify="center">
-        <Text className="titleDocument">{title}</Text>
-        <Text className="descriptionDocument">*{isMandatory ? "Obligatorio" : "Opcional"}</Text>
-      </Flex>
+    <div
+      className={`uploaddocumentbutton ${containerClassName}`}
+      style={{ display: displayFlex, flexDirection: columnDirection }}
+    >
+      {title && (
+        <Flex vertical justify="center">
+          <Text className="titleDocument">{title}</Text>
+          <Text className="descriptionDocument">*{isMandatory ? "Obligatorio" : "Opcional"}</Text>
+        </Flex>
+      )}
+
       <DocumentButton
         title={title}
         handleOnChange={handleOnChange}

@@ -462,6 +462,7 @@ export interface ICarrierRequestDetail {
   //personas -- aplica para viaje tipo persona!
   carrier_request_persons?: ICarrierRequestPersons[] | null;
 }
+
 /**
  * Exposes all fields present in carrier_request_contacts as a typescript
  * interface.
@@ -482,6 +483,7 @@ export interface ICarrierRequestContacts {
   modified_by: string;
   id_transfer_request: number;
 }
+
 /**
  * Exposes all fields present in carrier_request_documents as a typescript
  * interface.
@@ -1308,7 +1310,7 @@ export interface ILocationByGrouplocationWithDefaults {
 export interface IDocumentsType {
   id: string;
   entity_type: number;
-  description : string;
+  description: string;
   optional: string;
   id_location: number;
   id_material_type: number;
@@ -1349,7 +1351,7 @@ export interface IMaterial {
   type_description: string;
   quantity: number;
   material_type: IMaterialType[];
-  material_transport:IMaterialTransport[];
+  material_transport: IMaterialTransport[];
 }
 
 export interface IFormMaterial {
@@ -1401,7 +1403,6 @@ export interface IMaterialType {
   modified_by?: string | null;
 }
 
-
 /**
  * Exposes all fields present in material_type as a typescript
  * interface.
@@ -1437,7 +1438,7 @@ export interface IMaterialTypeWithDefaults {
  * Exposes all fields present in material_type as a typescript
  * interface.
  */
-export interface IMaterialTransport{
+export interface IMaterialTransport {
   id: number;
   description: string;
   created_at: Date;
@@ -1948,8 +1949,8 @@ export interface ITransferOrder {
   id_end_location: number;
   start_date?: string;
   end_date?: string;
-  start_freight_equipment: string;
-  end_freight_equipment: string;
+  start_freight_equipment: boolean | string;
+  end_freight_equipment: boolean | string;
   freight_origin_time?: number;
   freight_destination_time?: number;
   rotation: string;
@@ -3264,4 +3265,10 @@ export interface ITransferOrderPsls {
   id: number;
   description: string;
   transfer_order_cost_center: ITransferOrderCostCenter[];
+}
+
+export interface ICarrierRequestDetailAPI extends ICarrierRequestDetail {
+  vehicle: ICarrierRequestVehicles;
+  drivers: ICarrierRequestDrivers[];
+  observation?: string;
 }

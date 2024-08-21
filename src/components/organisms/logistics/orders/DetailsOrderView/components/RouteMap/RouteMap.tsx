@@ -2,14 +2,14 @@ import { Flex } from "antd"
 import styles from "./RouteMap.module.scss"
 
 interface RouteMapProps {
-    title: string;
+    title?: string;
     mapContainerRef: React.MutableRefObject<null>
 }
 
 export const RouteMap =({ title, mapContainerRef }: RouteMapProps)=>{
     return (
         <Flex vertical className={styles.container} style={{width: '100%'}}>
-            <p className={styles.sectionTitle}>{title || "Ruta"}</p>
+            {title && <p className={styles.sectionTitle}>{title || "Ruta"}</p>}
             <div
                 ref={mapContainerRef}
                 style={{

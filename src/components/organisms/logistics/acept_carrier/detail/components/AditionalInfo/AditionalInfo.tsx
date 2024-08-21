@@ -54,14 +54,14 @@ export default function AditionalInfo({ title, documents, contacts, specialInstr
           <Flex vertical style={{ width: "99%"}}>
             <p className={styles.title} style={{marginBottom: "0.5rem"}}>Documentos</p>
             <Row>
-              {documents?.map((file:any) => (
+              {documents?.map((file:any, index) => (
                   <Col
                     span={12}
                     style={{ 
-                      paddingLeft: "15px", 
-                      paddingRight: "15px", 
+                      paddingLeft: index%2 !== 0 ? "2.5rem": "0px", 
+                      paddingRight: index%2 == 0 ? "2.5rem": "0px", 
                       paddingBottom: "0.5rem", 
-                      borderRight: "1px solid #f7f7f7" }}
+                      borderRight: index%2 === 0 ? "1px solid #f7f7f7": "" }}
                     key={`file-${file.id}`}
                   >
                     <UploadDocumentButton
@@ -93,8 +93,8 @@ export default function AditionalInfo({ title, documents, contacts, specialInstr
                 <p className={styles.bodyStrong}>Contacto inicial</p>
                 {contacts
                   ?.filter((x: any) => x.contact_type == CONTACT_TYPES.ORIGIN)
-                  .map((contact: any) => (
-                    <Row  key={contact.number}>
+                  .map((contact: any, contactIndex: number) => (
+                    <Row key={`contact-origin-${contact.name}-${contactIndex}`}>
                       <Col span={12} style={{ paddingLeft: "25px" }}>
                         <p className={styles.bodyReg}>{contact.name}</p>
                       </Col>  
@@ -106,8 +106,8 @@ export default function AditionalInfo({ title, documents, contacts, specialInstr
                 <p className={styles.bodyStrong} style={{marginTop: "0.5rem"}}>Contacto final</p>
                 {contacts
                   ?.filter((x: any) => x.contact_type == CONTACT_TYPES.DESTINATION)
-                  .map((contact: any) => (
-                    <Row  key={contact.number}>
+                  .map((contact: any, contactIndex: number) => (
+                    <Row key={`contact-destination-${contact.name}-${contactIndex}`}>
                       <Col span={12} style={{ paddingLeft: "25px" }}>
                         <p className={styles.bodyReg}>{contact.name}</p>
                       </Col>
@@ -127,8 +127,8 @@ export default function AditionalInfo({ title, documents, contacts, specialInstr
                 <p className={styles.subtitle} style={{ paddingTop: "0.5rem" }}>Requerimientos adicionales</p>
                 <Row style={{ paddingTop: "0.5rem" }}>
                   <Col span={24}>
-                    {otherRequirements?.map((req: any) => (
-                      <div className={styles.selected} key={req.quantity}>
+                    {otherRequirements?.map((req: any, reqIndex: number) => (
+                      <div className={styles.selected} key={`other-req-${req.other_requirement_desc}-${reqIndex}`}>
                         {req.other_requirement_desc} <small>{req.quantity}</small>
                       </div>
                     ))}

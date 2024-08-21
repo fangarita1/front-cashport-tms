@@ -58,8 +58,10 @@
     align-items: center;
 }
 
-
-
+.sectionContainer {
+    border: 1px solid $dark-gray;
+    border-radius: 0.25rem;
+}
 // Text -styles //
 
 .sectionTitle {
