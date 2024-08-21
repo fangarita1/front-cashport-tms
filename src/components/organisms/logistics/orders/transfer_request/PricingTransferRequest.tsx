@@ -918,9 +918,7 @@ export default function PricingTransferRequest({
                 </Drawer>
               </Flex>
             </Flex>
-            {!!isLoading ? (
-              <Spin style={{ display: "flex", justifyContent: "center", marginTop: "10%" }} />
-            ) : view === "solicitation" ? (
+            { view === "solicitation" ? (
               <PricingStepOne ordersId={ordersId} orders={orders} />
             ) : view === "vehicles" ? (
               <div>
@@ -960,7 +958,7 @@ export default function PricingTransferRequest({
               disabled={!isNextStepActive}
               className="nextButton"
               onClick={handleNext}
-              loading={isSubmitting}
+              loading={isSubmitting || isLoading}
             >
               {view !== "carrier" ? "Siguiente" : "Finalizar"}
             </PrincipalButton>
