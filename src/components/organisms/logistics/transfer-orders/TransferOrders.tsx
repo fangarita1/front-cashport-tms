@@ -18,7 +18,7 @@ enum TabEnum {
 }
 
 export const TransferOrders = () => {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState<string>("");
   const [selectFilters, setSelectFilters] = useState({
     country: [] as string[],
     currency: [] as string[]
@@ -28,13 +28,13 @@ export const TransferOrders = () => {
   const renderView = () => {
     switch (tab) {
       case TabEnum.REQUESTS:
-        return <Request />
+        return <Request search={search} />
       case TabEnum.IN_PROCESS:
-        return <InProcess />
+        return <InProcess search={search} />
       case TabEnum.COMPLETED:
-        return <Completed />
+        return <Completed search={search} />
       default:
-        return <Request />
+        return <Request search={search} />
     }
   }
 
@@ -49,9 +49,7 @@ export const TransferOrders = () => {
               className="search"
               placeholder="Buscar"
               onChange={(event) => {
-                setTimeout(() => {
-                  setSearch(event.target.value);
-                }, 1000);
+                setSearch(event.target.value);
               }}
             />
             <FilterProjects setSelecetedProjects={setSelectFilters} />

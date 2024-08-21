@@ -30,3 +30,16 @@
     }
   }
 }
+
+.emptyContainer {
+  display: flex;
+  justify-content: center;
+  margin: 50px 0px;
+
+  .textEmpty {
+    color: rgba(20, 20, 20, 0.50);
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.12px;
+  }
+}
