@@ -1,4 +1,3 @@
-import axios from "axios";
 import { GenericResponse, GenericResponsePage } from "@/types/global/IGlobal";
 import {
   ITrackingPartial,
@@ -16,7 +15,6 @@ import {
   TripsCreation
 } from "@/types/logistics/trips/TripsSchema";
 import { API } from "@/utils/api/api";
-import config from "@/config";
 import { ITransferRequestDetail, ITransferRequestResponse } from "@/types/transferRequest/ITransferRequest";
 
 {
@@ -124,8 +122,9 @@ export const finishTransferRequest = async (data: TransferRequestFinish) => {
 
 export const getAcceptedTransferRequest = async (): Promise<ITransferRequestResponse[]> => {
   try {
-    const { data } = await axios.get(`${config.API_HOST}/transfer-request/transfer-request-order`);
-    return data;
+    const response: any = await API.get(`/transfer-request/transfer-request-order`);
+    if (response.success) return response.data;
+    return [];
   } catch (error) {
     console.error("Error get transfer-request/: ", error);
     throw error as any;
@@ -134,8 +133,9 @@ export const getAcceptedTransferRequest = async (): Promise<ITransferRequestResp
 
 export const getOnRouteTransferRequest = async (): Promise<ITransferRequestResponse[]> => {
   try {
-    const { data } = await axios.get(`${config.API_HOST}/transfer-request/transfer-request-on-route`);
-    return data;
+    const response: any = await API.get(`/transfer-request/transfer-request-on-route`);
+    if (response.success) return response.data;
+    return [];
   } catch (error) {
     console.error("Error get transfer-request/: ", error);
     throw error as any;
@@ -144,18 +144,20 @@ export const getOnRouteTransferRequest = async (): Promise<ITransferRequestRespo
 
 export const getFinishedTransferRequest = async (): Promise<ITransferRequestResponse[]> => {
   try {
-    const { data } = await axios.get(`${config.API_HOST}/transfer-request/transfer-request-finished`);
-    return data;
+    const response: any = await API.get(`/transfer-request/transfer-request-finished`);
+    if (response.success) return response.data;
+    return [];
   } catch (error) {
     console.error("Error get transfer-request/: ", error);
     throw error as any;
   }
 }
 
-export const getTransferRequestDetail = async (id: number): Promise<ITransferRequestDetail> => {
+export const getTransferRequestDetail = async (id: number): Promise<ITransferRequestDetail | {}> => {
   try {
-    const { data } = await axios.get(`${config.API_HOST}/transfer-request/details/${id}`);
-    return data;
+    const response: any = await API.get(`/transfer-request/details/${id}`);
+    if (response.success) return response.data;
+    return {};
   } catch (error) {
     console.error("Error get transfer-request/: ", error);
     throw error as any;
