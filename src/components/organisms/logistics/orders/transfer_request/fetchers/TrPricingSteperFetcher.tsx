@@ -21,6 +21,7 @@ export default function TrPricingSteperFetcher({ id }: { id: number }) {
       data={data}
       mode={MODE_PRICING.TRANSFER_REQUEST}
       mutateStepthree={mutateStepthree}
+      tracking={[]}
     />
   );
 }
