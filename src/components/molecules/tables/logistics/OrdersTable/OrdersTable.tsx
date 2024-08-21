@@ -1,5 +1,16 @@
 import { useEffect, useState } from "react";
-import { Avatar, Button, Checkbox, Collapse, Flex, message, Spin, Table, Tabs, Typography } from "antd";
+import {
+  Avatar,
+  Button,
+  Checkbox,
+  Collapse,
+  Flex,
+  message,
+  Spin,
+  Table,
+  Tabs,
+  Typography
+} from "antd";
 import type { TableProps } from "antd";
 import { Clipboard, DotsThree, Eye, Plus, Triangle } from "phosphor-react";
 
@@ -26,30 +37,30 @@ export const OrdersTable = () => {
     currency: [] as string[]
   });
   const router = useRouter();
-  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [ordersId, setOrdersId] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [ messageApi, contextHolder ] = message.useMessage();
-  const { loading, data } = useProjects({
-    page: selectFilters.country.length !== 0 || selectFilters.currency.length !== 0 ? 1 : page,
-    currencyId: selectFilters.currency,
-    countryId: selectFilters.country,
-    searchQuery: ""
-  });
+  const [messageApi, contextHolder] = message.useMessage();
 
   const [transferOrderList, setTransferOrderList] = useState<ITransferOrderList[]>([]);
 
   useEffect(() => {
     loadTransferOrders();
-  });
+  }, []);
 
   const loadTransferOrders = async () => {
-    if (transferOrderList.length > 0) return;
-    const result = await getAllTransferOrderList();
-    if (result.data.data.length > 0) {
-      setTransferOrderList(result.data.data);
+    setIsLoading(true);
+    try {
+      if (transferOrderList.length > 0) return;
+      const result = await getAllTransferOrderList();
+      if (result.data.data.length > 0) {
+        setTransferOrderList(result.data.data);
+      }
+    } catch (error) {
+      if (error instanceof Error) messageApi.open({ content: error.message, type: "error" });
+      else messageApi.open({ content: "Error al cargar las transferencias", type: "error" });
     }
+    setIsLoading(false);
   };
 
   const handleCheckboxChange = (id: number, checked: boolean) => {
@@ -57,20 +68,20 @@ export const OrdersTable = () => {
       checked ? [...prevOrdersId, id] : prevOrdersId.filter((orderId) => orderId !== id)
     );
   };
-  
-  const queryParam = ordersId.join(',');
+
+  const queryParam = ordersId.join(",");
 
   const onClick = async () => {
     setIsLoading(true);
-    const res = await transferOrderMerge(ordersId);
-    if (res.success) {
-      messageApi.open({ content: res.message, type: "success" })
-      router.push(`transfer-request/${queryParam}`)
-    } else {
-      messageApi.open({ content: res.message, type: "error" })
+    try {
+      await transferOrderMerge(ordersId);
+      messageApi.open({ content: "Operación realizada con éxito", type: "success" });
+      router.push(`transfer-request/create/${queryParam}`);
+    } catch (error) {
+      if (error instanceof Error) messageApi.open({ content: error.message, type: "error" });
+      else messageApi.open({ content: "Error al realizar la operación", type: "error" });
     }
-    console.log(res)
-    setIsLoading(false)
+    setIsLoading(false);
   };
 
   const columns: TableProps<TransferOrderListItems>["columns"] = [
@@ -219,73 +230,84 @@ export const OrdersTable = () => {
           {<Plus weight="bold" size={14} />}
         </Button>
       </Flex>
-      {!!loading ? (
-        <Spin style={{ display: "flex", justifyContent: "center", marginTop: "10%" }}/>
-      ) : (
-        <Tabs
-          defaultActiveKey="0"
-          items={[
-            {
-              label: "Solicitudes",
-              key: "0",
-              children: (
-                <Collapse
-                  className="collapsesTransferOrders"
-                  defaultActiveKey={"0"}
-                  items={
-                    transferOrderList
-                      ? Object.entries(transferOrderList).map(([key, transferOrdersState]) => ({
-                          key: key,
-                          label: (
-                            <LabelCollapse
-                              status={transferOrdersState.description}
-                              quantity={transferOrdersState.trasnferorderrequests.length}
-                              color={transferOrdersState.color}
-                              quantityText="TO"
-                              removeIcons
-                            />
-                          ),
+      <Tabs
+        defaultActiveKey="0"
+        items={[
+          {
+            label: "Solicitudes",
+            key: "0",
+            children: !transferOrderList.length ? (
+              <Spin style={{ display: "flex", justifyContent: "center", marginTop: "10%" }}/>
+            ) : (
+              <Collapse
+                className="collapsesTransferOrders"
+                defaultActiveKey={"1"}
+                items={
+                  transferOrderList
+                    ? Object.entries(transferOrderList).map(([key, transferOrdersState]) => ({
+                        key: key,
+                        label: (
+                          <LabelCollapse
+                            status={transferOrdersState.description}
+                            quantity={transferOrdersState.trasnferorderrequests.length}
+                            color={transferOrdersState.color}
+                            quantityText="TO"
+                            removeIcons
+                          />
+                        ),
+                        children: (
+                          <Table
+                            loading={isLoading}
+                            columns={columns as TableProps<any>["columns"]}
+                            pagination={false}
+                            dataSource={transferOrdersState.trasnferorderrequests}
+                          />
+                        )
+                      }))
+                    : [
+                        {
+                          label: "asd",
                           children: (
-                            <Table
-                              loading={loading}
-                              columns={columns as TableProps<any>["columns"]}
-                              pagination={false}
-                              dataSource={transferOrdersState.trasnferorderrequests}
+                            <Spin
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                marginTop: "10%"
+                              }}
                             />
                           )
-                        }))
-                      : []
-                  }
-                />
-              )
-            },
-            {
-              label: "En curso",
-              key: "1",
-              children: (
-                <Table
-                  loading={loading}
-                  columns={columns as TableProps<any>["columns"]}
-                  pagination={false}
-                  dataSource={[]}
-                />
-              )
-            },
-            {
-              label: "Finalizados",
-              key: "2",
-              children: (
-                <Table
-                  loading={loading}
-                  columns={columns as TableProps<any>["columns"]}
-                  pagination={false}
-                  dataSource={[]}
-                />
-              )
-            }
-          ]}
-        />
-      )}
+                        }
+                      ]
+                }
+              />
+            )
+          },
+          {
+            label: "En curso",
+            key: "1",
+            children: (
+              <Table
+                loading={isLoading}
+                columns={columns as TableProps<any>["columns"]}
+                pagination={false}
+                dataSource={[]}
+              />
+            )
+          },
+          {
+            label: "Finalizados",
+            key: "2",
+            children: (
+              <Table
+                loading={isLoading}
+                columns={columns as TableProps<any>["columns"]}
+                pagination={false}
+                dataSource={[]}
+              />
+            )
+          }
+        ]}
+      />
     </main>
   );
 };

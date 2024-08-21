@@ -15,7 +15,7 @@ import { STATUS } from "@/utils/constants/globalConstants";
 
 type Props = {
   data: {
-    journey: ITransferRequestJourneyReview[];
+    journey?: ITransferRequestJourneyReview[];
   };
   modalCarrier: boolean;
   // eslint-disable-next-line no-unused-vars
@@ -37,7 +37,7 @@ export default function PricingStepThree({
   });
   const handleSelectCarrier = (cp: CarrierPricingFinish) => {
     if (
-      !data.journey.some((j) =>
+      !data?.journey?.some((j) =>
         j.trips.some((t) =>
           t.carriers_pricing.some(
             (c) => c.id === cp.id_carrier_request && c.status === STATUS.CR.ASIGNADAS
@@ -68,7 +68,7 @@ export default function PricingStepThree({
   );
   return (
     <Flex gap={24} vertical>
-      {data.journey.map((journey, index) => (
+      {data.journey?.map((journey, index) => (
         <JourneyCollapse
           key={index}
           index={index}
