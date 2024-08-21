@@ -57,6 +57,8 @@ export const ClientsViewTable = () => {
     if (data?.data?.clientsPortfolio) {
       setTableData((prevData) => [...prevData, ...data.data.clientsPortfolio]);
       setHasMore(data.data.clientsPortfolio.length > 0);
+    } else if (data?.status === 200 && data?.message === "no rows") {
+      setHasMore(false);
     }
   }, [data]);
 
@@ -273,6 +275,11 @@ export const ClientsViewTable = () => {
       {hasMore && !loading && (
         <div ref={loader} style={{ textAlign: "center", padding: "20px" }}>
           <Spin />
+        </div>
+      )}
+      {!hasMore && !loading && tableData.length > 0 && (
+        <div style={{ textAlign: "center", padding: "20px" }}>
+          <Text>No hay más datos para cargar</Text>
         </div>
       )}
     </main>

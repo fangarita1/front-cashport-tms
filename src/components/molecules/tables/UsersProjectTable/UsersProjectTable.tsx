@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Button, Flex, Popconfirm, Spin, Table, Typography } from "antd";
+import { Button, Flex, Input, Popconfirm, Spin, Table, Typography } from "antd";
 import type { MenuProps, TableProps } from "antd";
 
 import { Eye, Plus, Triangle } from "phosphor-react";
@@ -20,6 +20,8 @@ import { ModalRemove } from "../../modals/ModalRemove/ModalRemove";
 
 import "./usersprojecttable.scss";
 import { useMessageApi } from "@/context/MessageContext";
+import { useDebounce } from "@/hooks/useDeabouce";
+import UiSearchInput from "@/components/ui/search-input/search-input";
 
 const { Text } = Typography;
 
@@ -38,6 +40,8 @@ export const UsersProjectTable: React.FC<Props> = ({
   const [selectedRows, setSelectedRows] = useState();
   const [isOpenModalRemove, setIsOpenModalRemove] = useState<boolean>(false);
   const { showMessage } = useMessageApi();
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   const onResendInvitation = async (email: string) => {
     const response = await onResendInvitationUser(email);
@@ -188,7 +192,8 @@ export const UsersProjectTable: React.FC<Props> = ({
     activeUsers: selectedUsers.status,
     channel: selectedUsers.channel,
     line: selectedUsers.line,
-    subline: selectedUsers.subline
+    subline: selectedUsers.subline,
+    searchQuery: debouncedSearchQuery
   });
 
   const onCreateUser = async () => {
@@ -253,6 +258,11 @@ export const UsersProjectTable: React.FC<Props> = ({
       <main className="mainUsersProjectTable">
         <Flex justify="space-between" className="mainUsersProjectTable_header">
           <Flex gap={"0.625rem"} align="center">
+            {/* create a input for search  */}
+            <UiSearchInput
+              placeholder="Buscar usuarios"
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
             <FilterUsers setSelectedUsers={setSelectedUsers} idProject={idProject} />
             <DotsDropdown items={items} />
           </Flex>
