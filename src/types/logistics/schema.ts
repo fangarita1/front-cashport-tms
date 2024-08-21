@@ -3266,6 +3266,7 @@ export interface ITransferOrderPsls {
   description: string;
   transfer_order_cost_center: ITransferOrderCostCenter[];
 }
+
 export interface ICarrierRequestDetailAPI extends ICarrierRequestDetail {
   vehicle: ICarrierRequestVehicles;
   drivers: ICarrierRequestDrivers[];
