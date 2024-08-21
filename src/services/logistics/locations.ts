@@ -1,9 +1,10 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { getIdToken } from "@/utils/api/api";
-import { CustomFile, IListData, ILocation } from "@/types/logistics/schema";
+import { CustomFile, IDocumentsType, IListData, ILocation } from "@/types/logistics/schema";
 import { CertificateType, DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 import { GenericResponse } from "@/types/global/IGlobal";
+
 
 export const getAllLocations = async (): Promise<IListData> => {
   const token = await getIdToken();
@@ -174,6 +175,25 @@ export const updateLocation = async (
     return response;
   } catch (error) {
     console.log("Error updating location: ", error);
+    throw error as any;
+  }
+};
+
+export const addDocumentsType = async (
+  formdata: FormData
+): Promise<AxiosResponse<any, any>> => {
+  try {
+   
+   console.log(formdata)
+    const response = await axios.post(`${config.API_HOST}/logistic-location/create/documents-type`, formdata, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Accept: "application/json, text/plain, */*"
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error creating documenttype: ", error);
     throw error as any;
   }
 };

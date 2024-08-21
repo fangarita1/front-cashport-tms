@@ -40,6 +40,40 @@ export const getAllMaterials = async (): Promise<IListData> => {
   }
 };
 
+export const getAllMaterialType = async (): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const response: IListData = await axios.get(`${config.API_HOST}/material/all/type`, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error get all getAllMaterialType: ", error);
+    return error as any;
+  }
+};
+
+export const getAllMaterialTransportType = async (): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const response: IListData = await axios.get(`${config.API_HOST}/material/all/transport`, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error get all getAllMaterialTransportType: ", error);
+    return error as any;
+  }
+};
+
 export const createMaterialForm =( 
   data: IMaterial,
   files: DocumentCompleteType[],

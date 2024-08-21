@@ -257,7 +257,7 @@ export const LocationFormTab = ({
               .map((f) => ({
                 ...f,
                 file:  undefined,
-                link: data?.documents?.find((d) => d.id === f.id)?.url_archive,
+                link: data?.documents?.find((d) => d.id === f.id)?.template,
                 expirationDate: dayjs(
                   data?.documents?.find((d) => d.id === f.id)?.expiration_date
                 )
@@ -304,8 +304,8 @@ export const LocationFormTab = ({
           const prevFile = prevState.find((f) => f.id === file.id);
           return {
             ...file,
-            file: prevFile?.link ? undefined : prevFile?.file,
-            link: prevFile?.link || undefined,
+            file: prevFile?.template ? undefined : prevFile?.file,
+            link: prevFile?.template || undefined,
             expirationDate: prevFile?.expirationDate
           };
         });
@@ -660,10 +660,10 @@ export const LocationFormTab = ({
                       </Col>
                       <Col span={24}>{file.entity_type_desc}</Col>
                       <Col>
-                        {file?.link ? (
+                        {file?.template ? (
                           <UploadDocumentChild
-                            linkFile={file.link}
-                            nameFile={file.link.split("-").pop() ?? ""}
+                            linkFile={file.template}
+                            nameFile={file.template.split("-").pop() ?? ""}
                             onDelete={()=>{}}
                             showTrash={false}
                           />

@@ -21,9 +21,9 @@ import {
   _onSubmit,
   dataToProjectFormData,
   validationButtonText,
-  DriverFormTabProps,
+  MaterialFormTabProps,
 } from "./materialFormTab.mapper";
-import {  IFormDriver, VehicleType } from "@/types/logistics/schema";
+import {  IFormMaterial, IMaterialType, IMaterialTransportType } from "@/types/logistics/schema";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
@@ -32,7 +32,7 @@ import useSWR from "swr";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
-import { getVehicleType } from "@/services/logistics/vehicle";
+import { getAllMaterialType, getAllMaterialTransportType } from "@/services/logistics/materials";
 import Link from "next/link";
 import dayjs from "dayjs";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
@@ -53,7 +53,7 @@ export const MaterialFormTab = ({
   onDesactivateProject = () => {},
   params,
   handleFormState = () => {},
-}: DriverFormTabProps) => {
+}: MaterialFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
@@ -61,9 +61,14 @@ export const MaterialFormTab = ({
     getDocumentsByEntityType
   );
 
-  const { data: vehiclesTypesData, isLoading: loadingVicles } = useSWR(
-    "/vehicle/type",
-    getVehicleType
+  const { data: materialsTypesData, isLoading: loadingMaterialsTypes } = useSWR(
+    "materialtypes",
+    getAllMaterialType
+  );
+
+  const { data: materialsTransportTypesData, isLoading: loadingMaterialsTransportTypes } = useSWR(
+    "materialtransporttypes",
+    getAllMaterialTransportType
   );
 
   const [imageFile, setImageFile] = useState<any | undefined>(undefined);
@@ -80,7 +85,7 @@ export const MaterialFormTab = ({
     Array(5).fill({ file: undefined, error: false })
   );
 
-  const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data, (vehiclesTypesData?.data as any) || []);
+  const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data);
   const {
     watch,
     setValue,
@@ -89,7 +94,7 @@ export const MaterialFormTab = ({
     handleSubmit,
     reset,
     formState: { errors, isValid}
-  } = useForm<IFormDriver>({
+  } = useForm<IFormMaterial>({
     defaultValues,
     disabled: statusForm === "review"
   });
@@ -168,11 +173,21 @@ export const MaterialFormTab = ({
     }
   }, [statusForm]);
 
-  const convertToSelectOptions = (vehicleTypes: VehicleType[]) => {
-    if (!Array.isArray(vehicleTypes)) return [];
-    return vehicleTypes?.map((vehicleType) => ({
-      label: vehicleType.description,
-      value: vehicleType.id
+  const convertToSelectOptions = (materialTypes: IMaterialType[]) => {
+    //console.log(materialTypes)
+    if (!Array.isArray(materialTypes)) return [];
+    return materialTypes?.map((materialType) => ({
+      label: materialType.description,
+      value: materialType.id
+    }));
+  };
+
+  const convertToSelectOptionsTransport = (materialTransportTypes: IMaterialTransportType[]) => {
+    //console.log(materialTransportTypes)
+    if (!Array.isArray(materialTransportTypes)) return [];
+    return materialTransportTypes?.map((materialTransportType) => ({
+      label: materialTransportType.description,
+      value: materialTransportType.id
     }));
   };
 
@@ -220,7 +235,7 @@ export const MaterialFormTab = ({
 
   return (
     <>
-      <Form className="driverForm">
+      <Form className="materialFormTab">
         <Flex component={"header"} className="headerProyectsForm">
           <Link href={`/logistics/configuration`} passHref>
             <Button
@@ -280,8 +295,8 @@ export const MaterialFormTab = ({
           </Flex>
         </Flex>
         <Flex component={"main"} flex="1" vertical style={{paddingRight: "1rem"}}>
-          <Row gutter={16}> 
-          <Col span={6}>  {/* Columna Fotos del Vehiculo */}
+          <Row gutter={[16,16]}> 
+            <Col span={6}>  {/* Columna Fotos del Vehiculo */}
               <Title className="title" level={4}>
                 Fotos del material
               </Title>
@@ -340,7 +355,7 @@ export const MaterialFormTab = ({
                 ))}
               </Row>
             </Col>
-            <Col span={19}> {/* Columna Informacion general*/}
+            <Col span={18}> {/* Columna Informacion general*/}
               <Row>
                 <Col span={24}>
                   <Title className="title" level={4}>
@@ -353,49 +368,49 @@ export const MaterialFormTab = ({
                 <Col span={12}>
                   <InputForm
                     titleInput="Código"
-                    nameInput="general.name"
+                    nameInput="general.id"
                     control={control}
-                    error={errors?.general?.name}
+                    error={errors?.general?.id}
                   />
                 </Col>
                 <Col span={12}>
                   <InputForm
                     titleInput="Nombre"
-                    nameInput="general.last_name"
+                    nameInput="general.description"
                     control={control}
-                    error={errors?.general?.last_name}
+                    error={errors?.general?.description}
                   />
                 </Col>
                 <Col span={6}>
                   <InputForm
                     titleInput="Alto"
-                    nameInput="general.last_name"
+                    nameInput="general.mt_height"
                     control={control}
-                    error={errors?.general?.last_name}
+                    error={errors?.general?.mt_height}
                   />
                 </Col>
                 <Col span={6}>
                   <InputForm
                     titleInput="Largo"
-                    nameInput="general.last_name"
+                    nameInput="general.mt_width"
                     control={control}
-                    error={errors?.general?.last_name}
+                    error={errors?.general?.mt_width}
                   />
                 </Col>
                 <Col span={6}>
                   <InputForm
                     titleInput="Ancho"
-                    nameInput="general.last_name"
+                    nameInput="general.mt_length"
                     control={control}
-                    error={errors?.general?.last_name}
+                    error={errors?.general?.mt_length}
                   />
                 </Col>
                 <Col span={6}>
                   <InputForm
                     titleInput="Peso"
-                    nameInput="general.last_name"
+                    nameInput="general.kg_weight"
                     control={control}
-                    error={errors?.general?.last_name}
+                    error={errors?.general?.kg_weight}
                   />
                 </Col>                                        
                 
@@ -404,45 +419,48 @@ export const MaterialFormTab = ({
           </Row>
           {/* ----------------------------------Vehiculos--------------------------------- */}
 
-          <Row gutter={24} style={{ width: "100%", marginTop: "2rem" }}>
-              <Title className="title" level={4}>
-                    Características
-              </Title>
-              <Col span={12}>
-                  <Controller
-                      name="general.vehicle_type"
+          <Row style={{ width: "100%", marginTop: "2rem" }}>
+              <Col span={24}>
+                <Title className="title" level={4}>
+                  Características
+                </Title>
+                <Row style={{ width: "100%", marginTop: "2rem" }}>
+                  <Col span={24}>
+                    <Controller
+                      name="general.material_transport"
                       control={control}
                       rules={{ required: true }}
                       render={({ field }) => 
                         <MultiSelectTags
                           field={field}
                           placeholder="Seleccionar"
-                          title="Característcas de transporte"
-                          errors={errors?.general?.vehicle_type}
-                          options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
+                          title="Características de transporte"
+                          errors={errors?.general?.material_type}
+                          options={convertToSelectOptionsTransport((materialsTransportTypesData?.data.data as any) || [])}
                           disabled={statusForm === "review"} 
                         />
                       }
                     />
-                </Col>
-                {/* <Col span={12}>
-                  <Controller
-                      name="general.vehicle_type"
+                  </Col>
+                  <Col span={24}>
+                    <Controller
+                      name="general.material_type"
                       control={control}
                       rules={{ required: true }}
                       render={({ field }) => 
                         <MultiSelectTags
                           field={field}
                           placeholder="Seleccionar"
-                          title="Característcas de seguridad"
-                          errors={errors?.general?.vehicle_type}
-                          options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
+                          title="Características de seguridad"
+                          errors={errors?.general?.material_type}
+                          options={convertToSelectOptions((materialsTypesData?.data.data as any) || [])}
                           disabled={statusForm === "review"} 
                         />
                       }
                     />
-                </Col> */}
-              
+                  </Col>                  
+                </Row>
+              </Col>              
           </Row>
 
           {["edit", "create"].includes(statusForm) && (

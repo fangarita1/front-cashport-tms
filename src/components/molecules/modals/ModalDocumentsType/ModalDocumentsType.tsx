@@ -6,16 +6,19 @@ import {
 } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 import { CertificateType, DocumentCompleteType } from "@/types/logistics/certificate/certificate";
-import { Button, Col, DatePicker, Flex, Modal, Row, Select, Spin, Switch, Tabs, TabsProps, Typography, Upload } from "antd";
+import { Button, Col, DatePicker, Flex, GetProp, message, Modal, Row, Select, Spin, Switch, Tabs, TabsProps, Typography, Upload, UploadFile, UploadProps } from "antd";
 import { CheckCircle, FileArrowUp, FloppyDisk, X } from "phosphor-react";
 import { Controller, useForm } from "react-hook-form";
 import { SelectInputForm } from "../../logistics/SelectInputForm/SelectInputForm";
 import { InputCreateDocument } from "@/components/atoms/inputs/inputCreate/InputCreateDocument";
 import SecondaryButton from "@/components/atoms/buttons/secondaryButton/SecondaryButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ICertificates, IDocumentsType } from "@/types/logistics/schema";
+import { addDocumentsType } from "@/services/logistics/locations";
 
 const { Title } = Typography;
 const { Option } = Select;
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 type PropsModalDocuments = {
   mockFiles: DocumentCompleteType[];
@@ -44,15 +47,91 @@ export default function ModalDocuments(props: PropsModalDocuments) {
   } = props;
 
   const {
+    watch,
     control,
   } = useForm<CertificateType>();
+  const [messageApi, contextHolder] = message.useMessage();
+  
+  const [documentName, setDocumentName] = useState<string>('');
+  const [documentType, setDocumentType] = useState<number>(0);
 
-  const [selectedFile, setSelectedFile] = useState<any>(null);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const upprops: UploadProps = {
+    onRemove: (file) => {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      setFileList(newFileList);
+    },
+    beforeUpload: (file) => {
+      setFileList([...fileList, file]);
 
-  const handleUploadChange = (info: any) => {
-    const file = info.file.originFileObj || info.file;
-    setSelectedFile(file);
+      return false;
+    },
+    fileList,
   };
+
+  const handleCreate = async () => {
+    const data: IDocumentsType ={
+      id: "",
+      entity_type: documentType,
+      description: documentName,
+      optional: "0",
+      id_location: 0,
+      id_material_type: 0,
+      expiry: "",
+      template: "",
+      active: "1",
+      created_at: new Date(),
+      created_by: "",
+      modified_at: new Date(),
+      modified_by: ""
+    }
+    // const formData = new FormData();
+
+    setUploading(true);
+
+    const form = new FormData();
+    const body: any = { ...data };
+    body.files = fileList;
+    fileList.forEach((file) => {
+      form.append('files[]', file as FileType);
+    });
+    form.append("body", JSON.stringify(body));
+
+    await addDocumentsType(form)
+    .then((result)=>{
+      setFileList([]);
+      // refresh list 
+      const newvalue : CertificateType = result.data.data;
+      documentsType?.push(newvalue);
+      const newdoccomplete: DocumentCompleteType =result.data.data;
+      mockFiles.push(newdoccomplete);
+
+      messageApi.success('Tipo de documento creado exitosamente!')
+    }).catch((error) => {
+      messageApi.error(error);
+    })
+    .finally(() => {
+      setUploading(false);
+    });
+    
+  };
+
+  useEffect(() => {
+    const subscription = watch((data, {name, type}) =>{
+        console.log(data, name, type);
+        if(name == 'description'){
+          setDocumentName(String(data?.description))
+        }
+        if(name == 'entity_type'){
+          setDocumentType(Number(data?.entity_type))
+        }
+      }
+    )
+    return () => subscription.unsubscribe()
+  }, []);
   
   return (
     <Modal
@@ -78,7 +157,7 @@ export default function ModalDocuments(props: PropsModalDocuments) {
         type="card"
         items = {[{
           key: '1',
-          label: 'Documento Existente',
+          label: 'Tipo de Documento Existente',
           children:
             <>
             <Flex style={{ width: "100%" }} justify="space-between">
@@ -116,7 +195,7 @@ export default function ModalDocuments(props: PropsModalDocuments) {
         },
         {
           key: '2',
-          label: 'Nuevo Documento',
+          label: 'Nuevo Tipo de Documento',
           children:
           <>
           <Flex style={{ width: "100%" }} justify="space-between">
@@ -136,7 +215,7 @@ export default function ModalDocuments(props: PropsModalDocuments) {
                     <Controller
                     name="entity_type"
                     control={control}
-                    rules={{ required: true }}
+                    rules={{ required: true }}                    
                     render={({ field }) => (
                       <SelectInputForm
                         placeholder="Seleccionar"
@@ -156,24 +235,21 @@ export default function ModalDocuments(props: PropsModalDocuments) {
                     name="template"
                     control={control}
                     render={({ field }) => (
+                      <>
                       <Upload
                         className="uploadDocumentButton"
-                        {...props}
-                        onChange={(info) => {
-                          field.onChange(info.file.originFileObj || info.file);
-                          handleUploadChange(info);
-                        }}
-                      >
-                        <Button htmlType="button" className="">
-                          <FileArrowUp size={16} />
-                          Cargar Plantilla
-                        </Button>{" "}
+                        {...upprops}>
+                          <Button htmlType="button" className="">
+                            <FileArrowUp size={16} />
+                            Cargar Plantilla
+                          </Button>{" "}
                       </Upload>
+                      </>
                     )}
                   />
               </Col>
               <Col span={12} style={{marginTop:'1rem', textAlign:'right'}}>
-                <Button htmlType="button" className="">
+                <Button htmlType="button" className="" onClick={handleCreate}>
                   <FloppyDisk size={16} />
                   Guardar
                 </Button>{" "}

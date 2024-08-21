@@ -1,7 +1,6 @@
 import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
-import { IBillingPeriodForm } from "@/types/billingPeriod/IBillingPeriod";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
-import { IAPIDriver, ICertificates, IFormDriver, VehicleType } from "@/types/logistics/schema";
+import { ICertificates, IMaterial} from "@/types/logistics/schema";
 import { IFormProject } from "@/types/projects/IFormProject";
 import Title from "antd/es/typography/Title";
 import dayjs from "dayjs";
@@ -9,9 +8,9 @@ import { SetStateAction } from "react";
 import { UseFormSetValue } from "react-hook-form";
 
 export type StatusForm = "review" | "create" | "edit"
-export interface DriverFormTabProps {
+export interface MaterialFormTabProps {
   idProjectForm?: string;
-  data?: DriverData;
+  data?: MaterialData;
   disabled?: boolean;
   onEditProject?: () => void;
   onSubmitForm?: (data: any) => void;
@@ -20,28 +19,30 @@ export interface DriverFormTabProps {
   statusForm: "create" | "edit" | "review";
   params: {
     id: string;
-    driverId: string;
+    materialId: string;
   };
   handleFormState?: (newFormState: StatusForm) => void
 }
 
-export type DriverData = IAPIDriver & { licence?: string } & { documents?: ICertificates[] };
+export interface MaterialImage {
+  id: number,
+  entity_type: number,
+  url_archive?: string,
+  file?: FileObject
+}
+export type MaterialData = IMaterial & { documents?: ICertificates[] }  & {images?: MaterialImage};
 
-export type ApiVehicleType = { id_vehicle_type:number }
 
+export const dataToProjectFormData = (data: any): any => {
 
-export const dataToProjectFormData = (data: any, vehiclesTypesData: VehicleType[] | undefined ): IFormDriver => {
+  if (!data) return {};
 
-  function createVehicleTypeArray(dataVehicleTypes: ApiVehicleType[], vehiclesTypesData: VehicleType[]  | undefined) {
-    if (!vehiclesTypesData) return []
-    return dataVehicleTypes.map(vehicle => {
-      const vehicleType = vehiclesTypesData.find(type => type.id === vehicle.id_vehicle_type);
-      return {
-        label: vehicleType ? vehicleType.description : 'Unknown',
-        value: vehicle.id_vehicle_type
-      };
-    });
-  }
+  const documents = data.documents.map((doc: any) => ({
+    file: {
+      name: doc.url_archive.split("/").pop(),
+      url: doc.url_archive
+    }
+  }));
 
   const images = data.images.map((image: any) => {
     const fileData = image.data;
@@ -50,34 +51,32 @@ export const dataToProjectFormData = (data: any, vehiclesTypesData: VehicleType[
     (file as any).url_archive = image.url_archive;
     return file;
   });
-  
-  const vehicleTypeArray = createVehicleTypeArray(data.vehicle_type, vehiclesTypesData);
-  return {
-    
+
+  return {    
     general: {
       id: data.id,
-      phone: data.phone,
-      email: data.email,
-      document_type: data.document_type,
-      document: data.document,
-      license: data?.licence || data.license,
-      license_category: data.licence_category || "",
-      license_expiration: dayjs(data.license_expiration) as any,
-      name: data.name,
-      last_name: data.last_name,
-      emergency_number: data.emergency_number,
-      emergency_contact: data.emergency_contact,
+      description: data.phone,
+      id_type_material: data.email,
+      kg_weight: data.document_type,
+      mt_height: data.document,
+      mt_width: data?.licence || data.license,
+      mt_length: data.licence_category || "",
+      m3_volume: dayjs(data.license_expiration) as any,
+      rotation: data.name,
+      can_stack: data.last_name,
+      image: data.emergency_number,
+      aditional_info: data.emergency_contact,
       active: data.active,
       created_at: data.created_at,
       created_by: data.created_by,
-      company: data.company,
-      rh: data.rh,
-      glasses: data.glasses,
-      birth_date: dayjs(data?.birth_date) as any,
-      photo: data.photo,
-      vehicle_type: vehicleTypeArray
+      modified_at: data.created_at,
+      modified_by: data.created_by,
+      icon: data.company,
+      restriction: data.rh,
     },
     images: images,
+    files: documents,
+    IS_ACTIVE: data.active
   };
 };
 
@@ -102,14 +101,9 @@ export const _onSubmit = (
 };
 
 export const effectFunction = (
-  generalDSOCurrentlyYear: string,
-  setValue: UseFormSetValue<IFormProject>,
-  billingPeriod: IBillingPeriodForm | undefined
+  setValue: UseFormSetValue<IFormProject>
 ) => {
-  if (generalDSOCurrentlyYear === "Sí") {
-    setValue("general.DSO_days", undefined);
-  }
-  if (billingPeriod) setValue("general.billing_period", JSON.stringify(billingPeriod));
+
 };
 
 export const validationButtonText = (statusForm: "create" | "edit" | "review") => {

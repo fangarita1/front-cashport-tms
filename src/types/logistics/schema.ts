@@ -767,6 +767,7 @@ export interface ICertificates {
   modified_at?: Date | null;
   modified_by?: string | null;
   id_document_type: number;
+  template: string;
 }
 
 /**
@@ -1303,6 +1304,23 @@ export interface ILocationByGrouplocationWithDefaults {
   modified_at?: Date | null;
   modified_by?: string | null;
 }
+
+export interface IDocumentsType {
+  id: string;
+  entity_type: number;
+  description : string;
+  optional: string;
+  id_location: number;
+  id_material_type: number;
+  expiry: string;
+  template: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
 /**
  * Exposes all fields present in material as a typescript
  * interface.
@@ -1330,6 +1348,14 @@ export interface IMaterial {
   restriction?: string | null;
   type_description: string;
   quantity: number;
+  material_type: IMaterialType[];
+  material_transport:IMaterialTransport[];
+}
+
+export interface IFormMaterial {
+  general: IMaterial;
+  files?: DocumentCompleteType[];
+  images: CustomFile[];
 }
 
 /**
@@ -1375,6 +1401,20 @@ export interface IMaterialType {
   modified_by?: string | null;
 }
 
+
+/**
+ * Exposes all fields present in material_type as a typescript
+ * interface.
+ */
+export interface IMaterialTransportType {
+  id: number;
+  description: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+}
+
 /**
  * Exposes the same fields as MaterialType,
  * but makes every field containing a DEFAULT value optional.
@@ -1387,6 +1427,19 @@ export interface IMaterialTypeWithDefaults {
   description: string;
   line: string;
   subline: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+}
+
+/**
+ * Exposes all fields present in material_type as a typescript
+ * interface.
+ */
+export interface IMaterialTransport{
+  id: number;
+  description: string;
   created_at: Date;
   created_by: string;
   modified_at?: Date | null;
