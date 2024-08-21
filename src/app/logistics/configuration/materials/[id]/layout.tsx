@@ -4,7 +4,7 @@ import { Flex, Typography, Row, Col, Tabs, TabsProps } from "antd";
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 import { usePathname, useRouter } from "next/navigation";
-import "./provider.scss";
+//import "./provider.scss";
 import "@/styles/_variables_logistics.css";
 
 interface Props {
