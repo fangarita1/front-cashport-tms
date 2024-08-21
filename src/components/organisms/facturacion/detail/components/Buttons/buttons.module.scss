@@ -1,0 +1,52 @@
+.wrapper {
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 64px;
+  .left {
+    .backButton {
+      width: 72px;
+      height: 45px;
+      border-radius: 4px;
+      padding: 16px;
+      border: 0;
+      font-size: 14px;
+      font-weight: 700;
+      background-color: #DDDDDD;
+      color: black;
+    }
+  }
+  .right {
+    align-items: center;
+    gap: 24px;
+    .deleteButton {
+      width: 100px;
+      height: 45px;
+      border-radius: 4px;
+      padding: 16px;
+      border: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #ED171F;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .nextButton {
+      width: 100px;
+      height: 45px;
+      border-radius: 4px;
+      padding: 16px;
+      border: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      
+    }
+  }
+}

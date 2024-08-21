@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button, Flex } from "antd";
 
-import { ArrowLineRight, BellSimpleRinging, Gear, Megaphone, User, UsersThree, Truck, MapPin, CurrencyCircleDollar, NewspaperClipping } from "phosphor-react";
+import { ArrowLineRight, BellSimpleRinging, Gear, Megaphone, User, UsersThree, Truck, MapPin, CurrencyCircleDollar, NewspaperClipping, Receipt} from "phosphor-react";
 import Image from "next/image";
 
 import "./sidebar.scss";
@@ -160,6 +160,16 @@ export const SideBar = () => {
             size="large"
             icon={<CurrencyCircleDollar size={26} />}
             className={path.startsWith("/logistics/acept_carrier") ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Proveedores"}
+          </Button>
+        </Link>
+        <Link href="/facturacion" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<Receipt size={26} />}
+            className={path.startsWith("/facturacion") ? "buttonIcon" : "buttonIconActive"}
           >
             {isSideBarLarge && "Proveedores"}
           </Button>
