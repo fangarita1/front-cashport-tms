@@ -30,7 +30,7 @@ export default function TravelData({ travelData }: TravelDataProps) {
 
   useEffect(() => {
     loadTravelData();
-  }, [travelData]);
+  }, []);
 
   /* MAPBOX */
   const mapsAccessToken =
