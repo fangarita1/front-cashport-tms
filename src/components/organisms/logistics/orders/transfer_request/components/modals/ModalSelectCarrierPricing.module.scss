@@ -1,0 +1,39 @@
+@import "@styles/variables.scss";
+.Footer {
+    width: 100%;
+}
+
+.checks {
+    width: 100%;
+    background-color: $background;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.header {
+    background-color: $background;
+    padding: 1rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    color: $black !important;
+    strong {
+        font-weight: bold !important;
+    }
+}
+
+
+.stBox {
+    display: flex;
+    column-gap: 4px;
+    align-items: center;
+    background-color: #3d3d3d;
+    padding: 8px 16px;
+    border-radius: 8px;
+    align-self: flex-start;
+
+    .stContent {
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+    }
+}

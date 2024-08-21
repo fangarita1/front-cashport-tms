@@ -45,10 +45,10 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
       trips: journey.trips.map((t) => ({
         id: t.id,
         id_vehicle_type: t.id_vehicle_type,
-        materialByTrip: t.material.map((m) => ({
+        materialByTrip: t?.material?.map((m) => ({
           id_material: m.id_material,
           units: m.units
-        }))
+        })) || []
       }))
     }
   });
@@ -122,7 +122,6 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
   };
 
   const handleSave = async (data: any) => {
-    console.log(data);
     try {
       const res = await submitTrips(journey.id_transfer_request, journey.id, data.trips);
       reset({
@@ -140,7 +139,7 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
     }
   };
 
-  const tags = (
+  const tag = (
     <div className="collapseInformationWrapper">
       {fields.map((section, index) => (
         <Trip
@@ -198,7 +197,7 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
       id_type_service={id_type_service}
       start_location_desc={start_location_desc}
       end_location_desc={end_location_desc}
-      tags={tags}
+      tag={tag}
       openTabs={openTabs}
       setOpenTabs={setOpenTabs}
     />

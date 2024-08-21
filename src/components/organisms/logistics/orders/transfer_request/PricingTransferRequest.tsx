@@ -30,7 +30,8 @@ import {
   ITransferOrderRequestContacts,
   ITransferRequestCreation,
   ITransferOrdersRequest,
-  IVehicleType
+  IVehicleType,
+  ITransferRequestJourneyReview
 } from "@/types/logistics/schema";
 
 import {
@@ -55,28 +56,49 @@ import "./PricingTransferRequest.scss";
 
 import "react-form-wizard-component/dist/style.css";
 import { formatMoney } from "@/utils/utils";
-import { createTransferRequest } from "@/services/logistics/transfer-request";
+import {
+  createTransferRequest,
+  finishTransferRequest
+} from "@/services/logistics/transfer-request";
 import { getSuggestedVehicles } from "@/services/logistics/vehicles";
 import VehiclesSelection from "./vehiclesSelection/VehiclesSelection";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Steper from "@/components/molecules/Steppers/Steper";
 import PricingStepOne from "./components/steps/PricingStepOne";
 import { MODE_PRICING } from "./constant/constants";
 import PricingStepThree from "./components/steps/PricingStepThree";
+import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
+import { TransferRequestFinish } from "@/types/logistics/transferRequest/transferRequest";
+import { set, useForm } from "react-hook-form";
 
 const { Title, Text } = Typography;
 
 interface PricingTransferOrderRequestProps {
   data: ITransferRequestCreation;
   mode: MODE_PRICING;
+  // eslint-disable-next-line no-unused-vars
+  mutateStepthree: (journey: ITransferRequestJourneyReview[]) => void;
 }
 
 export default function PricingTransferRequest({
   data: transferRequest,
-  mode
+  mode,
+  mutateStepthree
 }: PricingTransferOrderRequestProps) {
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
+  const params = useParams();
+  const id = parseInt(params.id as string);
+
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    watch,
+    formState: { isSubmitting }
+  } = useForm<TransferRequestFinish>({
+    defaultValues: { id, providers: [] }
+  });
 
   /* Data first page*/
   const [ordersId, setOrdersId] = useState<number[]>(
@@ -97,6 +119,7 @@ export default function PricingTransferRequest({
   const [sugestedVehicles, setSugestedVehicles] = useState<IVehicleType[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [optionsVehicles, setOptionsVehicles] = useState<any>([]);
+  const [modalCarrier, setModalCarrier] = useState(false);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
@@ -293,10 +316,14 @@ export default function PricingTransferRequest({
   }, [transferRequest]);
 
   useEffect(() => {
-    if (view === "vehicles") {
-      setIsNextStepActive(false);
+    if (view === "vehicles") setIsNextStepActive(true);
+    if (view === "carrier") {
+      const isValid = transferRequest?.stepThree.journey.every((j) =>
+        j.trips.every((t) => getValues("providers").some((p) => p.id_trip === t.id_trip))
+      );
+      setIsNextStepActive(isValid);
     }
-  }, [isNextStepActive]);
+  }, [isNextStepActive, watch("providers"), view]);
 
   const handleToggleExpand = () => {
     setExpand(!expand);
@@ -304,10 +331,6 @@ export default function PricingTransferRequest({
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    console.log(view);
-  }, [view]);
 
   /* Tipo de viaje */
   const handleTypeClick = (event: any) => {
@@ -351,6 +374,24 @@ export default function PricingTransferRequest({
       }
     } else if (view === "vehicles") {
       setView("carrier");
+    } else if (view === "carrier") {
+      if (
+        transferRequest?.stepThree.journey.every((j) =>
+          j.trips.every((t) => getValues("providers").some((p) => p.id_trip === t.id_trip))
+        )
+      )
+        handleSubmit(handleFinish)();
+    }
+  };
+
+  const handleFinish = async (data: TransferRequestFinish) => {
+    try {
+      await finishTransferRequest(data);
+      message.success("Solicitud de transferencia finalizada");
+      router.push("/logistics/orders");
+    } catch (error) {
+      if (error instanceof Error) message.error(error.message);
+      else message.error("Error al finalizar la solicitud de transferencia");
     }
   };
 
@@ -740,14 +781,18 @@ export default function PricingTransferRequest({
                     </Flex>
                   )}
                 </div>
-                <Flex>
-                  <Button
-                    style={{
-                      width: "146px",
-                      height: "48px",
-                      padding: "12px 24px"
-                    }}
-                    type="default"
+                <Flex
+                  gap={24}
+                  style={{
+                    height: "48px"
+                  }}
+                >
+                  {view === "carrier" && (
+                    <PrincipalButton type="default" onClick={() => setModalCarrier(true)}>
+                      Proveedores
+                    </PrincipalButton>
+                  )}
+                  <PrincipalButton
                     className="active"
                     onClick={() => {
                       setOpenDrawer(true);
@@ -757,7 +802,7 @@ export default function PricingTransferRequest({
                       Tracking
                     </text>
                     <CaretDoubleRight size={16} />
-                  </Button>
+                  </PrincipalButton>
                 </Flex>
                 <Drawer
                   title="Tracking"
@@ -881,21 +926,30 @@ export default function PricingTransferRequest({
                 </Flex>
               </div>
             ) : (
-              <PricingStepThree  data={transferRequest?.stepThree} />
+              <PricingStepThree
+                data={transferRequest?.stepThree}
+                modalCarrier={modalCarrier}
+                handleModalCarrier={(val: boolean) => setModalCarrier(val)}
+                mutateStepthree={mutateStepthree}
+                control={control}
+              />
             )}
           </Flex>
         </Flex>
-        <Flex justify="space-between" style={{ marginTop: "24px" }}>
-          <Flex align="flex-start">
-            <Button className="backButton" onClick={handleBack}>
-              Atras
-            </Button>
-          </Flex>
+        <Flex justify="space-between" style={{ marginTop: "24px", height: "53px" }}>
+          <PrincipalButton type="default" onClick={handleBack}>
+            Atras
+          </PrincipalButton>
           <Flex gap="middle" align="flex-end">
-            {view === "vehicles" && <Button className="saveButton">Guardar como draft</Button>}
-            <Button disabled={!isNextStepActive} className="nextButton" onClick={handleNext}>
+            {/* view === "vehicles" && <Button className="saveButton">Guardar como draft</Button> */}
+            <PrincipalButton
+              disabled={!isNextStepActive}
+              className="nextButton"
+              onClick={handleNext}
+              loading={isSubmitting}
+            >
               {view !== "carrier" ? "Siguiente" : "Finalizar"}
-            </Button>
+            </PrincipalButton>
           </Flex>
         </Flex>
       </Flex>

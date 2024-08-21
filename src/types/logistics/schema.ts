@@ -1828,7 +1828,57 @@ export interface ITransferRequestJourneyReview {
   start_location_desc: string;
   end_location_desc: string;
   service_type: number;
-  trips: [];
+  trips: TripCarriersPricing[];
+}
+export interface TripCarriersPricing {
+  id_trip: number
+  vehicle_type: number
+  vehicle_type_desc: string
+  start_date: string
+  end_date: string
+  start_location_desc: string
+  end_location_desc: string
+  carriers_pricing: CarriersPricing[]
+}
+
+export interface CarriersPricing {
+  carrier: string
+  plate_number: string
+  id_vehicle: number
+  driver: string
+  phone: any
+  driver_contract: string
+  driver_overcost: number
+  driver_delay: number
+  diver_trips: number
+  driver_score: number
+  id: number
+  id_carrier: number
+  id_service_type: number
+  service_type: string
+  start_date: string
+  end_date: string
+  id_start_location: number
+  start_location: string
+  id_end_location: number
+  end_location: string
+  status: string
+  created_at: string
+  created_by: string
+  statusdesc: string
+  color: string
+  vehicles: string
+  elapsedtime: string
+  amount: number
+  id_transfer_request: number
+  id_journey: number
+  id_trip: number
+  start_latitude: number
+  start_longitude: number
+  end_latitude: number
+  end_longitude: number
+  volume: number
+  weight: number
 }
 /**
  * Exposes all fields present in transfer_order as a typescript

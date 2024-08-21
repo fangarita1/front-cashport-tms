@@ -128,7 +128,6 @@ export default function Trip(props: TripProps) {
         }
       }
     );
-    console.log(totalVolume, totalWeight, totalPersons);
     return {
       totalVolume,
       totalWeight,
@@ -151,7 +150,6 @@ export default function Trip(props: TripProps) {
     weightUsedPercentage,
     quantity
   } = calculateTotalCapacities();
-  console.log(section);
   const columnsVehiclesMaterial: TableProps<any>["columns"] = [
     {
       title: "Total",
@@ -262,12 +260,17 @@ export default function Trip(props: TripProps) {
             <Text>
               Ocupación Volumen {item.m3_volume} - Peso {item.kg_capacity}
             </Text>
-            <Text>Cantidad disponibles: {item.disponibility}</Text>
+            <Text>Cantidad disponibles: {item.disponibility || 0}</Text>
           </div>
         </Flex>
       );
 
-      result.push({ value: item.description, label: strlabel, key: item.id });
+      result.push({
+        value: item.description,
+        label: strlabel,
+        key: item.id,
+        searchParam: item.description
+      });
     });
     setOptionsVehicles(result);
   }, [sugestedVehicles]);
