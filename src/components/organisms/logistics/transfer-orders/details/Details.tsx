@@ -49,7 +49,7 @@ export const TransferOrderDetails = () => {
   }
 
   const findDetails = async () => {
-    const data = await getTransferRequestDetail(Number(id));
+    const data = await getTransferRequestDetail(Number(id)) as ITransferRequestDetail;
     if (Object.keys(data).length !== 0 && data.id) {
       setTransferRequest(data);
     }
