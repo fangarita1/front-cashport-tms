@@ -1,5 +1,4 @@
 import { Flex, Select, SelectProps, Tag, Typography } from "antd";
-import "./general-search-select.scss";
 import {
   ControllerRenderProps,
   FieldErrorsImpl,
@@ -8,7 +7,9 @@ import {
   FieldError as OriginalFieldError
 } from "react-hook-form";
 import { X } from "phosphor-react";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
+
+import "./general-search-select.scss";
 
 type TagRender = SelectProps["tagRender"];
 
@@ -19,11 +20,13 @@ type ExtendedFieldError =
 interface PropsGeneralSelect<T extends FieldValues> {
   errors: ExtendedFieldError | undefined;
   field: ControllerRenderProps<T, any>;
-  title: string;
+  title?: string;
   placeholder: string;
   options: { value: number; label: string }[] | string[] | undefined;
   loading?: boolean;
   customStyleContainer?: React.CSSProperties;
+  disabled?: boolean;
+  suffixIcon?: ReactNode;
 }
 
 const GeneralSearchSelect = <T extends FieldValues>({
@@ -33,7 +36,9 @@ const GeneralSearchSelect = <T extends FieldValues>({
   placeholder,
   options,
   loading = false,
-  customStyleContainer
+  customStyleContainer,
+  disabled = false,
+  suffixIcon
 }: PropsGeneralSelect<T>) => {
   const [usedOptions, setUsedOptions] = useState<
     {
@@ -62,13 +67,6 @@ const GeneralSearchSelect = <T extends FieldValues>({
     }
   }, [options]);
 
-  // const usedOptions = options?.map((option) => {
-  //   return {
-  //     value: option.value,
-  //     label: option.label
-  //   };
-  // });
-
   const tagRender: TagRender = (props) => {
     const { label, onClose, closable } = props;
     const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
@@ -94,11 +92,11 @@ const GeneralSearchSelect = <T extends FieldValues>({
 
   return (
     <Flex vertical className="selectTitleAndError" style={customStyleContainer}>
-      <h4 className="inputTitle">{title}</h4>
+      {title && <h4 className="inputTitle">{title}</h4>}
       <Select
         {...field}
         mode="tags"
-        suffixIcon={null}
+        suffixIcon={suffixIcon}
         tagRender={tagRender}
         maxTagCount={"responsive"}
         optionFilterProp="label"
@@ -110,6 +108,7 @@ const GeneralSearchSelect = <T extends FieldValues>({
         popupClassName="selectSearchCustomDrop"
         options={usedOptions}
         labelInValue
+        disabled={disabled}
       />
       {errors && <Typography.Text className="textError">{title} es obligatorio *</Typography.Text>}
     </Flex>
