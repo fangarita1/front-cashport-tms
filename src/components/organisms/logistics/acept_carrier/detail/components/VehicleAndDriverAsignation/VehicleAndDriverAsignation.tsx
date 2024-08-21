@@ -36,6 +36,7 @@ interface VehicleAndDriverAsignationProps {
   vehicles: ICarrierRequestVehicles[] | null | undefined;
   currentDrivers: number[];
   currentVehicle: number;
+  formMode: "edit" | "view";
 }
 interface FormValues {
   vehicleForm: number | null;
@@ -50,10 +51,14 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
     setVehicle,
     setDrivers,
     currentDrivers,
-    currentVehicle
+    currentVehicle,
+    formMode
   }: VehicleAndDriverAsignationProps,
   ref
 ) {
+  console.log("currentDrivers", currentDrivers);
+  console.log("currentVehicle", currentVehicle);
+
   const createDefault = () => {
     const defaultDrivers = currentDrivers
       ? currentDrivers.map((cd) => ({ driverId: cd }))
@@ -145,6 +150,7 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
             return (
               <Select
                 {...field}
+                disabled={formMode === "view"}
                 showSearch
                 placeholder="Seleccion el vehículo"
                 style={{ width: "25rem", height: "2.5rem" }}
@@ -179,7 +185,11 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
         />
         <div className={styles.documentsTop}>
           <p className={styles.subtitle}>Documentos del vehículo</p>
-          <EditDocsButton onClick={() => setIsOpenModalDocuments(true)} text="Editar documentos" />
+          <EditDocsButton
+            onClick={() => setIsOpenModalDocuments(true)}
+            text="Editar documentos"
+            disabled={formMode === "view"}
+          />
         </div>
         <div className={styles.uploadContainer}>
           {selectedFiles.map((file, index) => (
@@ -213,7 +223,11 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
               Conductor {indexField !== 0 && indexField + 1}
             </p>
             {fields.length > 1 && (
-              <AddRemoveButton type="remove" onClick={() => remove(indexField)} />
+              <AddRemoveButton
+                type="remove"
+                onClick={() => remove(indexField)}
+                disabled={formMode === "view"}
+              />
             )}
           </Flex>
           <div className={styles.container}>
@@ -226,6 +240,7 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
                   return (
                     <Select
                       {...field}
+                      disabled={formMode === "view"}
                       showSearch
                       placeholder="Seleccion el conductor"
                       style={{ width: "25rem", height: "2.5rem" }}
@@ -263,7 +278,7 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
                 <AddRemoveButton
                   type="add"
                   onClick={() => append({ driverId: null })}
-                  disabled={fields.length === DRIVERS_MAX_QUANTITY}
+                  disabled={fields.length === DRIVERS_MAX_QUANTITY || formMode === "view"}
                   text="Agregar otro conductor"
                 />
               )}
@@ -273,6 +288,7 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
               <EditDocsButton
                 onClick={() => setIsOpenModalDocuments(true)}
                 text="Editar documentos"
+                disabled={formMode === "view"}
               />
             </div>
             <div className={styles.uploadContainer}>

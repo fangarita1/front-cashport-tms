@@ -4,6 +4,7 @@ import { ICarrierRequestDrivers, ICarrierRequestVehicles } from "@/types/logisti
 import styles from "./confirmation.module.scss";
 import TextArea from "antd/es/input/TextArea";
 import CheckboxButton from "@/components/atoms/CheckboxButton/CheckboxButton";
+import { FormMode } from "../../../view/AceptCarrierDetailView/AceptCarrierDetailView";
 
 interface ConfirmationProps {
   driverSelected: ICarrierRequestDrivers[];
@@ -11,6 +12,8 @@ interface ConfirmationProps {
   setIsNextStepActive: Dispatch<SetStateAction<boolean>>;
   setObservation: Dispatch<SetStateAction<any>>;
   isNextStepActive: boolean;
+  formMode: FormMode;
+  currentObservation: string;
 }
 
 export function Confirmation({
@@ -18,8 +21,10 @@ export function Confirmation({
   vehicleSelected,
   setIsNextStepActive,
   setObservation,
-  isNextStepActive
-}: ConfirmationProps) {
+  isNextStepActive,
+  formMode,
+  currentObservation
+}: Readonly<ConfirmationProps>) {
   console.log("isNextStep:", isNextStepActive);
 
   useEffect(() => {
@@ -56,6 +61,8 @@ export function Confirmation({
         <p className={styles.subtitle}>Comentarios</p>
         <div className={styles.textArea}>
           <TextArea
+            value={currentObservation}
+            disabled={formMode === "view"}
             rows={4}
             onChange={(event) => {
               setObservation(event.target.value);
@@ -64,7 +71,10 @@ export function Confirmation({
         </div>
       </Flex>
       <Flex className={styles.confirmation} gap={16}>
-        <CheckboxButton onChange={() => onConfirmation(isNextStepActive)} />
+        <CheckboxButton
+          onChange={() => onConfirmation(isNextStepActive)}
+          disabled={formMode === "view"}
+        />
         <div className={styles.text}>
           Conozco y confirmo que el conductor asignado debe cumplir con el requerimiento #1234567
         </div>

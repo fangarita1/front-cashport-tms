@@ -16,7 +16,11 @@ import {
   postCarrierReject,
   postCarrierRequest
 } from "@/services/logistics/acept_carrier";
-import { ICarrierRequestDetail, IMaterial } from "@/types/logistics/schema";
+import {
+  ICarrierRequestDetail,
+  ICarrierRequestDetailAPI,
+  IMaterial
+} from "@/types/logistics/schema";
 import { Confirmation } from "../../detail/components/Confirmation/Confirmation";
 import { useMapbox } from "@/utils/logistics/useMapBox";
 import { CustomStepper } from "../../detail/components/Stepper/Stepper";
@@ -24,10 +28,12 @@ import { CustomStepper } from "../../detail/components/Stepper/Stepper";
 interface AceptCarrierDetailProps {
   params: { id: string };
 }
+export type FormMode = "edit" | "view";
 
 export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrierDetailProps>) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [view, setView] = useState<"detail" | "asignation" | "confirmation">("detail");
+  const [formMode, setFormMode] = useState<FormMode>("view");
   const [isNextStepActive, setIsNextStepActive] = useState<boolean>(true);
   const [vehicleSelected, setVehicleSelected] = useState<number>(0);
   const [driversSelected, setDriversSelected] = useState<number[]>([0]);
@@ -65,13 +71,23 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
     loadTransferRequests();
   }, []);
 
+  const setCurrentData = (data: ICarrierRequestDetailAPI) => {
+    const { drivers, vehicle, observation } = data;
+    setVehicleSelected(vehicle.id);
+    setDriversSelected(drivers.map((d) => d.id));
+    observation && setObservation(observation);
+  };
+
   const loadTransferRequests = async () => {
     if (carrier != undefined) return;
     setIsLoading(true);
     try {
       const result = await getAceptCarrierRequestById(params.id);
       if (result?.data?.data?.length > 0) {
-        const to: ICarrierRequestDetail = result.data.data[0];
+        const to: ICarrierRequestDetailAPI = result.data.data[0];
+        setCurrentData(to);
+        const canEdit = to?.statusdesc === "Por confirmar";
+        setFormMode(canEdit ? "edit" : "view");
         const driversResult = await getDriverByCarrierId(to?.id_carrier);
         setDrivers(driversResult.data.data);
         const vehiclesResult = await getVehiclesByCarrierId(to?.id_carrier);
@@ -163,12 +179,13 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
   };
 
   const currentStepIndex = view === "detail" ? 0 : view === "asignation" ? 1 : 2;
-  const canEdit = true; //carrier?.statusdesc === "Por confirmar";
+  const isLastStep = view === "confirmation";
+  const canContinue = formMode === "edit" || (formMode === "view" && !isLastStep);
 
   const steps = [
     { title: "Detalle solicitud", disabled: false },
-    { title: "Asignación de vehículo y conductor", disabled: !canEdit },
-    { title: "Confirmar servicio", disabled: !canEdit }
+    { title: "Asignación de vehículo y conductor", disabled: false },
+    { title: "Confirmar servicio", disabled: false }
   ];
 
   const renderView = () => {
@@ -197,6 +214,7 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
             ref={vehicleAndDriverRef}
             currentDrivers={driversSelected}
             currentVehicle={vehicleSelected}
+            formMode={formMode}
           />
         );
       case "confirmation":
@@ -208,6 +226,8 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
             vehicleSelected={vehicles.find((a) => a.id === vehicleSelected)}
             setObservation={setObservation}
             isNextStepActive={isNextStepActive}
+            formMode={formMode}
+            currentObservation={observation}
           />
         );
     }
@@ -254,13 +274,13 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
           </Flex>
           {renderView()}
           <Buttons
-            isRightSectionVisible={canEdit}
+            canContinue={canContinue}
             isRightButtonActive={isNextStepActive}
             isLeftButtonActive={true}
             handleNext={handleNext}
             handleBack={handleBack}
             handleReject={handleReject}
-            isLastStep={view === "confirmation"}
+            isLastStep={isLastStep}
           />
         </Skeleton>
       </Flex>

@@ -4,7 +4,7 @@ import { Flex } from "antd";
 import styles from "./buttons.module.scss";
 
 interface ButtonsProps {
-  isRightSectionVisible?: boolean;
+  canContinue?: boolean;
   isRightButtonActive?: boolean;
   isLeftButtonActive?: boolean;
   isLastStep?: boolean;
@@ -14,7 +14,7 @@ interface ButtonsProps {
 }
 
 export default function Buttons({
-  isRightSectionVisible = true,
+  canContinue = true,
   isRightButtonActive,
   isLeftButtonActive,
   isLastStep,
@@ -34,22 +34,25 @@ export default function Buttons({
           <b>Atras</b>
         </button>
       </div>
-      {isRightSectionVisible && 
       <Flex className={styles.right}>
-        <button className={styles.deleteButton} onClick={() => handleReject()}>Rechazar</button>
-        <button
-          className={styles.nextButton}
-          disabled={!isRightButtonActive}
-          style={{
-            backgroundColor: isRightButtonActive ? "#CBE71E" : "#DDDDDD",
-            color: isRightButtonActive ? "black" : "white",
-            cursor: isRightButtonActive ? "pointer" : "not-allowed"
-          }}
-          onClick={handleNext}
-        >
-          {isLastStep ? "Finalizar" : "Siguiente"}
+        <button className={styles.deleteButton} onClick={() => handleReject()}>
+          Rechazar
         </button>
-      </Flex>}
+        {canContinue && (
+          <button
+            className={styles.nextButton}
+            disabled={!isRightButtonActive}
+            style={{
+              backgroundColor: isRightButtonActive ? "#CBE71E" : "#DDDDDD",
+              color: isRightButtonActive ? "black" : "white",
+              cursor: isRightButtonActive ? "pointer" : "not-allowed"
+            }}
+            onClick={handleNext}
+          >
+            {isLastStep ? "Finalizar" : "Siguiente"}
+          </button>
+        )}
+      </Flex>
     </Flex>
   );
 }

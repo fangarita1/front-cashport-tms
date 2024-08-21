@@ -445,12 +445,12 @@ export interface ICarrierRequestDetail {
   id_transfer_request: number;
   id_journey: number;
   id_trip: number;
-  start_latitude: number,
-  start_longitude: number,
-  end_latitude: number,
-  end_longitude: number,
-  volume: number,
-  weight: number,
+  start_latitude: number;
+  start_longitude: number;
+  end_latitude: number;
+  end_longitude: number;
+  volume: number;
+  weight: number;
   //geometry
   geometry: any;
   //datos de contacto!
@@ -462,6 +462,7 @@ export interface ICarrierRequestDetail {
   //personas -- aplica para viaje tipo persona!
   carrier_request_persons?: ICarrierRequestPersons[] | null;
 }
+
 /**
  * Exposes all fields present in carrier_request_contacts as a typescript
  * interface.
@@ -482,6 +483,7 @@ export interface ICarrierRequestContacts {
   modified_by: string;
   id_transfer_request: number;
 }
+
 /**
  * Exposes all fields present in carrier_request_documents as a typescript
  * interface.
@@ -580,7 +582,7 @@ export interface ICarrierRequestVehicles {
   gps_link: string;
   gps_password: string;
   gps_user: string;
-  has_gps: boolean
+  has_gps: boolean;
   id: number;
   id_carrier: number;
   id_vehicle_type: number;
@@ -728,25 +730,25 @@ export interface ICarriersWithDefaults {
  * interface.
  */
 export interface ICarriersRequestList {
-  statusid: string,
-  description: string,
-  color: string,
-  carrierrequests: ICarrierRequestsListDetail[]
+  statusid: string;
+  description: string;
+  color: string;
+  carrierrequests: ICarrierRequestsListDetail[];
 }
 /**
  * Exposes all fields present in certificates as a typescript
  * interface.
  */
 export interface ICarrierRequestsListDetail {
-  id: number,
-      service_type: string,
-      start_date: string,
-      end_date: string,
-      start_location: string,
-      end_location: string,
-      vehicles: string,
-      elapsedtime: string,
-      amount: number
+  id: number;
+  service_type: string;
+  start_date: string;
+  end_date: string;
+  start_location: string;
+  end_location: string;
+  vehicles: string;
+  elapsedtime: string;
+  amount: number;
 }
 /**
  * Exposes all fields present in certificates as a typescript
@@ -1358,7 +1360,7 @@ export interface ITransferOrderOtherRequirements {
   modified_at: Date;
   modified_by: string;
   other_requirement_desc: string;
-  description: string
+  description: string;
 }
 
 export interface ITransferOrderVehicle {
@@ -1455,7 +1457,7 @@ export interface ITransferOrder {
   //vehiculo sugerido
   transfer_order_vehicles?: ITransferOrderVehicle[] | null;
   //psls y ccs asociados
-  transfer_order_psl?: ITransferOrderPsls[] | null
+  transfer_order_psl?: ITransferOrderPsls[] | null;
 }
 
 export interface IFormTransferOrder {
@@ -1467,7 +1469,7 @@ export interface ITransferOrderList {
   color: string;
   description: string;
   statusid: string;
-  trasnferorderrequests: TransferOrderListItems[]
+  trasnferorderrequests: TransferOrderListItems[];
 }
 
 export interface TransferOrderListItems {
@@ -2638,7 +2640,7 @@ export interface IClient {
 }
 
 export interface ISelectOptionOrders {
-  value: string | null | undefined; 
+  value: string | null | undefined;
   label: string | null | undefined;
 }
 export interface CustomOptionType {
@@ -2658,15 +2660,20 @@ export interface PSLOptionType {
 }
 
 export interface ITransferOrderCostCenter {
-  id: number,
-  id_transfer_order: number,
-  id_costcenter: number,
-  percentage: number,
-  cost_center_desc: string,
-  id_psl: number
+  id: number;
+  id_transfer_order: number;
+  id_costcenter: number;
+  percentage: number;
+  cost_center_desc: string;
+  id_psl: number;
 }
 export interface ITransferOrderPsls {
-  id: number,
-  description: string,
-  transfer_order_cost_center: ITransferOrderCostCenter[]
+  id: number;
+  description: string;
+  transfer_order_cost_center: ITransferOrderCostCenter[];
+}
+export interface ICarrierRequestDetailAPI extends ICarrierRequestDetail {
+  vehicle: ICarrierRequestVehicles;
+  drivers: ICarrierRequestDrivers[];
+  observation?: string;
 }
