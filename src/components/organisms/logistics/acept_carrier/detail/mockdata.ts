@@ -1,5 +1,5 @@
 import { ProviderDetail } from "@/types/acept_carrier/acept_carrier";
-import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
+import { CertificateType } from "@/types/logistics/certificate/certificate";
 
 export const mockProviderDetail: ProviderDetail = {
   vehicle: "Camion 350",
@@ -283,7 +283,7 @@ export const mockProviderDetail: ProviderDetail = {
     }
   ]
 };
-export const mockCarrierDocuments: DocumentCompleteType[] = [
+export const mockCarrierDocuments: CertificateType[] = [
   {
     key: 1,
     id: 3,
@@ -334,6 +334,7 @@ export const mockCarrierDocuments: DocumentCompleteType[] = [
 export const documentsTypes = [
   {
     id: 3,
+    key: 1,
     entity_type: 1,
     description: "Tecnomecánica",
     optional: false,
@@ -349,6 +350,7 @@ export const documentsTypes = [
   },
   {
     id: 4,
+    key: 2,
     entity_type: 1,
     description: "SOAT",
     optional: false,
@@ -364,6 +366,7 @@ export const documentsTypes = [
   },
   {
     id: 5,
+    key: 3,
     entity_type: 1,
     description: "Seguro todo riesgo",
     optional: true,
@@ -379,6 +382,7 @@ export const documentsTypes = [
   },
   {
     id: 6,
+    key: 4,
     entity_type: 2,
     description: "Cédula",
     optional: true,
@@ -394,6 +398,7 @@ export const documentsTypes = [
   },
   {
     id: 7,
+    key: 5,
     entity_type: 2,
     description: "Licencia de conducción",
     optional: false,
@@ -409,6 +414,7 @@ export const documentsTypes = [
   },
   {
     id: 8,
+    key: 6,
     entity_type: 2,
     description: "Curso Manejo defensivo",
     optional: true,
@@ -424,6 +430,7 @@ export const documentsTypes = [
   },
   {
     id: 9,
+    key: 7,
     entity_type: 2,
     description: "Curso Manejo de sustancias peligrosas",
     optional: true,
@@ -439,6 +446,7 @@ export const documentsTypes = [
   },
   {
     id: 10,
+    key: 8,
     entity_type: 3,
     description: "Logo carrier",
     optional: true,
@@ -454,6 +462,7 @@ export const documentsTypes = [
   },
   {
     id: 11,
+    key: 9,
     entity_type: 4,
     description: "Documentos MT",
     optional: true,

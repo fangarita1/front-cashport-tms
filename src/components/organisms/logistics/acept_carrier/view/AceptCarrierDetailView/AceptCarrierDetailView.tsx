@@ -35,8 +35,8 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
   const [view, setView] = useState<"detail" | "asignation" | "confirmation">("detail");
   const [formMode, setFormMode] = useState<FormMode>("view");
   const [isNextStepActive, setIsNextStepActive] = useState<boolean>(true);
-  const [vehicleSelected, setVehicleSelected] = useState<number>(0);
-  const [driversSelected, setDriversSelected] = useState<number[]>([0]);
+  const [vehicleSelected, setVehicleSelected] = useState<number | null>(null);
+  const [driversSelected, setDriversSelected] = useState<Array<number | null>>([]);
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [drivers, setDrivers] = useState<any[]>([]);
   const [observation, setObservation] = useState<any>(null);
@@ -73,8 +73,8 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
 
   const setCurrentData = (data: ICarrierRequestDetailAPI) => {
     const { drivers, vehicle, observation } = data;
-    setVehicleSelected(vehicle.id);
-    setDriversSelected(drivers.map((d) => d.id));
+    setVehicleSelected(vehicle.id ?? null);
+    setDriversSelected(drivers.map((d) => d.id ?? null));
     observation && setObservation(observation);
   };
 

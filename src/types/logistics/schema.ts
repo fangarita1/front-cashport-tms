@@ -1418,8 +1418,8 @@ export interface ITransferOrder {
   id_end_location: number;
   start_date?: string;
   end_date?: string;
-  start_freight_equipment: boolean;
-  end_freight_equipment: boolean;
+  start_freight_equipment: boolean | string;
+  end_freight_equipment: boolean | string;
   freight_origin_time?: number;
   freight_destination_time?: number;
   rotation: string;

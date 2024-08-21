@@ -19,9 +19,7 @@ import VehicleRenderLabel from "./components/VehicleRenderLabel/VehicleRenderLab
 import AddRemoveButton from "./components/AddRemoveButton/AddRemoveButton";
 import EditDocsButton from "./components/EditDocsButton/EditDocsButton";
 import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
-// import { getDocumentsByEntityType } from "@/services/logistics/certificates";
-// import useSWR from "swr";
-import { documentsTypes, mockCarrierDocuments } from "../../mockdata";
+import { documentsTypes } from "../../mockdata";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 import dayjs from "dayjs";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
@@ -30,12 +28,12 @@ const { Option } = Select;
 
 interface VehicleAndDriverAsignationProps {
   setIsNextStepActive: Dispatch<SetStateAction<boolean>>;
-  setVehicle: (vehicle: number) => void;
-  setDrivers: (drivers: number[]) => void;
+  setVehicle: Dispatch<SetStateAction<number | null>>;
+  setDrivers: Dispatch<SetStateAction<(number | null)[]>>;
   drivers: ICarrierRequestDrivers[] | null | undefined;
   vehicles: ICarrierRequestVehicles[] | null | undefined;
-  currentDrivers: number[];
-  currentVehicle: number;
+  currentDrivers: (number | null)[];
+  currentVehicle: number | null;
   formMode: "edit" | "view";
 }
 interface FormValues {
@@ -56,8 +54,8 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
   }: VehicleAndDriverAsignationProps,
   ref
 ) {
-  console.log("currentDrivers", currentDrivers);
-  console.log("currentVehicle", currentVehicle);
+  const MANDATORY_DRIVERS_DOCS = [7];
+  const MANDATORY_VEHICLE_DOCS = [3, 4];
 
   const createDefault = () => {
     const defaultDrivers = currentDrivers
@@ -98,7 +96,7 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
     const { vehicleForm, driverForm } = data;
     vehicleForm && setVehicle(vehicleForm);
     const driversIdsArray = driverForm
-      .map((d) => d.driverId)
+      .map((d) => d.driverId ?? null)
       .filter((driverId) => driverId !== null && driverId !== undefined);
     setDrivers(driversIdsArray);
   };
@@ -133,7 +131,7 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
           key: index,
           file: undefined,
           link: undefined,
-          expirationDate: dayjs(undefined)
+          expirationDate: dayjs()
         })) || [];
     setSelectedFiles(docsWithLink);
   }, [documentsTypes]);
@@ -192,27 +190,29 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
           />
         </div>
         <div className={styles.uploadContainer}>
-          {selectedFiles.map((file, index) => (
-            <UploadDocumentButton
-              key={file.id}
-              title={file.description}
-              isMandatory={!file.optional}
-              aditionalData={file.id}
-              setFiles={() => {}}
-              files={file.file}
-              disabled
-              column
-            >
-              {file?.link ? (
-                <UploadDocumentChild
-                  linkFile={file.link}
-                  nameFile={file.link.split("-").pop() ?? ""}
-                  onDelete={() => {}}
-                  showTrash={false}
-                />
-              ) : undefined}
-            </UploadDocumentButton>
-          ))}
+          {selectedFiles
+            .filter((sf) => MANDATORY_VEHICLE_DOCS.includes(sf.id))
+            .map((file) => (
+              <UploadDocumentButton
+                key={file.id}
+                title={file.description}
+                isMandatory={!file.optional}
+                aditionalData={file.id}
+                setFiles={() => {}}
+                files={file.file}
+                disabled
+                column
+              >
+                {file?.link ? (
+                  <UploadDocumentChild
+                    linkFile={file.link}
+                    nameFile={file.link.split("-").pop() ?? ""}
+                    onDelete={() => {}}
+                    showTrash={false}
+                  />
+                ) : undefined}
+              </UploadDocumentButton>
+            ))}
         </div>
       </div>
       {fields.map((field, indexField: number) => (
@@ -292,27 +292,29 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
               />
             </div>
             <div className={styles.uploadContainer}>
-              {selectedFiles.map((file, index) => (
-                <UploadDocumentButton
-                  key={file.id}
-                  title={file.description}
-                  isMandatory={!file.optional}
-                  aditionalData={file.id}
-                  setFiles={() => {}}
-                  files={file.file}
-                  disabled
-                  column
-                >
-                  {file?.link ? (
-                    <UploadDocumentChild
-                      linkFile={file.link}
-                      nameFile={file.link.split("-").pop() ?? ""}
-                      onDelete={() => {}}
-                      showTrash={false}
-                    />
-                  ) : undefined}
-                </UploadDocumentButton>
-              ))}
+              {selectedFiles
+                .filter((sf) => MANDATORY_DRIVERS_DOCS.includes(sf.id))
+                .map((file) => (
+                  <UploadDocumentButton
+                    key={file.id}
+                    title={file.description}
+                    isMandatory={!file.optional}
+                    aditionalData={file.id}
+                    setFiles={() => {}}
+                    files={file.file}
+                    disabled
+                    column
+                  >
+                    {file?.link ? (
+                      <UploadDocumentChild
+                        linkFile={file.link}
+                        nameFile={file.link.split("-").pop() ?? ""}
+                        onDelete={() => {}}
+                        showTrash={false}
+                      />
+                    ) : undefined}
+                  </UploadDocumentButton>
+                ))}
             </div>
           </div>
         </div>
