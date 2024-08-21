@@ -125,3 +125,27 @@ a {
         }
     }
 }
+
+.scrollableTabGlobalCss {
+    // No reemplazar el classname
+    .ant-tabs-nav-list {
+        display: flex;
+        overflow-x: scroll;
+        white-space: nowrap; // Evita el salto de línea
+        .ant-tabs-tab-btn {
+            color: $black !important;
+        }
+        .ant-tabs-tab-btn > .activeTab {
+            font-size: 16px;
+            font-weight: 600;
+            color: $dark-gray !important;
+        }
+        &::-webkit-scrollbar {
+            height: 4px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: darkgrey;
+            border-radius: 10px;
+        }
+    }
+}

@@ -10,13 +10,15 @@ type Props = {
   isOpen: boolean;
   start_location_desc: string;
   end_location_desc: string;
+  handleChange: () => void;
 };
 const TitleComponent = ({
   id_type_service,
   id,
   isOpen,
   start_location_desc,
-  end_location_desc
+  end_location_desc,
+  handleChange
 }: Props) => {
   const serviceType =
     id_type_service === 1
@@ -26,7 +28,7 @@ const TitleComponent = ({
         : { title: "Personal", icon: <User size={27} color="#FFFFFF" weight="fill" /> };
 
   return (
-    <div className="collapseHeader">
+    <div className="collapseHeader" onClick={() => handleChange()}>
       <div className="collapseJustify">
         <div className="collapseStateContainer">
           {serviceType.icon}

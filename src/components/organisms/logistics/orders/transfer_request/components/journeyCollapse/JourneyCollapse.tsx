@@ -6,7 +6,7 @@ type Props = {
   id_type_service: number;
   start_location_desc: string;
   end_location_desc: string;
-  tags: any;
+  tag: any;
   openTabs: number[];
   setOpenTabs: any;
 };
@@ -17,7 +17,7 @@ export default function JourneyCollapse({
   end_location_desc,
   openTabs,
   setOpenTabs,
-  tags
+  tag
 }: Props) {
   const handleChange = () => {
     if (openTabs.includes(index)) {
@@ -37,11 +37,11 @@ export default function JourneyCollapse({
           isOpen={openTabs.includes(index)}
           start_location_desc={start_location_desc}
           end_location_desc={end_location_desc}
+          handleChange={handleChange}
         />
       ),
       showArrow: false,
-      onClick: () => handleChange(),
-      children: tags
+      children: tag
     }
   ];
   return (

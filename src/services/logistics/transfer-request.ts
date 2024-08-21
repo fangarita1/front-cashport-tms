@@ -8,7 +8,12 @@ import {
   IVehiclesPricingList,
   IVehiclesPricingTrips
 } from "@/types/logistics/schema";
-import { TripCreation, TripsCreation } from "@/types/logistics/trips/TripsSchema";
+import { TransferRequestFinish } from "@/types/logistics/transferRequest/transferRequest";
+import {
+  JourneyTripPricing,
+  TripCreation,
+  TripsCreation
+} from "@/types/logistics/trips/TripsSchema";
 import { API } from "@/utils/api/api";
 
 {
@@ -80,6 +85,31 @@ export const submitTrips = async (
   const response: GenericResponse<IVehiclesPricingTrips[]> = await API.post(
     `/trip/trips-material`,
     body
+  );
+  if (response.success) return response.data;
+  throw new Error(
+    response?.message || "Error obteniendo los pasos de la solicitud de transferencia"
+  );
+};
+
+export const getTransferRequestPricing = async ({
+  idTransferRequest
+}: {
+  idTransferRequest: number;
+}) => {
+  const response: GenericResponse<JourneyTripPricing[]> = await API.get(
+    `/transfer-request/pricing/${idTransferRequest}`
+  );
+  if (response.success) return response.data;
+  throw new Error(
+    response?.message || "Error obteniendo los pasos de la solicitud de transferencia"
+  );
+};
+
+export const finishTransferRequest = async (data: TransferRequestFinish) => {
+  const response: GenericResponse<boolean> = await API.post(
+    `/transfer-request/finish`,
+    data
   );
   if (response.success) return response.data;
   throw new Error(
