@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Button, Flex, Input, Popconfirm, Spin, Table, Typography } from "antd";
+import { Button, Flex, Popconfirm, Spin, Table, Typography } from "antd";
 import type { MenuProps, TableProps } from "antd";
 
 import { Eye, Plus, Triangle } from "phosphor-react";

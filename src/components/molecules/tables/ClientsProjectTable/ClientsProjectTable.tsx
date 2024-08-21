@@ -7,6 +7,8 @@ import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 import { IClient } from "@/types/clients/IClients";
 import { useClientsTable } from "@/hooks/useClients";
 import "./clientsprojecttable.scss";
+import UiSearchInput from "@/components/ui/search-input/search-input";
+import { useDebounce } from "@/hooks/useDeabouce";
 
 const { Text, Link } = Typography;
 
@@ -43,6 +45,8 @@ export const ClientsProjectTable = ({
     status: [] as number[]
   });
 
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const { id: idProject } = useParams<{ id: string }>();
 
   const onChangePage = (pagePagination: number) => {
@@ -101,7 +105,8 @@ export const ClientsProjectTable = ({
     payment_condition: filterClients.payment_condition,
     radication_type: filterClients.radication_type,
     status: filterClients.status,
-    messageApi
+    messageApi,
+    searchQuery: debouncedSearchQuery
   });
 
   useEffect(() => {
@@ -252,6 +257,10 @@ export const ClientsProjectTable = ({
         {contextHolder}
         <Flex justify="space-between" className="mainClientsProjectTable_header">
           <Flex gap={"0.625rem"}>
+            <UiSearchInput
+              placeholder="Buscar clientes"
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
             <FilterClients setFilterClients={setFilterClients} />
             <DotsDropdown items={items} />{" "}
           </Flex>
