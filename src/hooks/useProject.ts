@@ -11,18 +11,27 @@ interface Props {
 }
 
 export const useProject = ({ id }: Props) => {
+  const { projectsBasicInfo, setSelectedProject } = useAppStore((state) => state);
   const { data, isLoading } = useSWR<IProjectById>(`/project/${id}`, fetcher);
-  const setSelectProject = useAppStore((state) => state.setSelectedProject);
 
   useEffect(() => {
-    if (!data?.data[0]) return;
-    const projectInfo: ISelectedProject = {
-      ID: data?.data[0].ID,
-      NAME: data?.data[0].NAME,
-      LOGO: data?.data[0].LOGO
-    };
-    setSelectProject(projectInfo);
-  }, [data, setSelectProject]);
+    if (!data?.data[0] || !projectsBasicInfo) return;
+
+    const selectedProject = projectsBasicInfo?.find((project) => project.ID === data.data[0].ID);
+    if (selectedProject) {
+      const projectInfo: ISelectedProject = {
+        ID: selectedProject.ID,
+        NAME: selectedProject.NAME,
+        LOGO: selectedProject.LOGO,
+        views_permissions: selectedProject.views_permissions,
+        action_permissions: selectedProject.action_permissions,
+        isSuperAdmin: selectedProject.isSuperAdmin
+      };
+      setSelectedProject(projectInfo);
+    } else {
+      console.warn(`Project with ID: ${id} not found in fetched projects`);
+    }
+  }, [data, projectsBasicInfo, setSelectedProject]);
 
   return {
     data: data?.data[0] || ([] as any),

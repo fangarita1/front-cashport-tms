@@ -1,3 +1,4 @@
+import { ISelectedProject } from "@/lib/slices/createProjectSlice";
 import { IChanel } from "@/types/bre/IBRE";
 import { ISelectStringType } from "@/types/communications/ICommunications";
 import { CountryCode } from "@/types/global/IGlobal";
@@ -327,4 +328,21 @@ export const stringFromArrayOfSelect = (array: ISelectStringType[]): string => {
 export const formatDateDMY = (dateString: string): string => {
   const date = dayjs(dateString);
   return date.format("DD/MM/YYYY");
+};
+
+export const checkUserViewPermissions = (
+  selectedProject: ISelectedProject | undefined,
+  view?: string
+): boolean => {
+  if (!selectedProject) return false;
+  if (selectedProject.isSuperAdmin) {
+    return true;
+  }
+
+  const viewPermissions = selectedProject.views_permissions;
+  if (!viewPermissions) {
+    return false;
+  }
+
+  return viewPermissions.some((permission) => permission.page_name === view);
 };
