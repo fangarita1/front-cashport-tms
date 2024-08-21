@@ -769,6 +769,7 @@ export interface ICertificates {
   modified_at?: Date | null;
   modified_by?: string | null;
   id_document_type: number;
+  template: string;
 }
 
 /**
@@ -1061,6 +1062,58 @@ export interface IIncidentsWithDefaults {
   modified_at?: Date | null;
   modified_by?: string | null;
 }
+
+export interface IState {
+  id: number;
+  id_country: number;
+  description: string;
+  codigodane: string;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
+export interface ICity {
+  id: number;
+  id_state: number;
+  description: string;
+  codigodane: string;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
+export interface ILocationTypes {
+  id: number;
+  description: string;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
+export interface IFormLocation {
+  general: ILocation;
+  files?: DocumentCompleteType[];
+  images: CustomFile[];
+  IS_ACTIVE: boolean;
+}
+
+export interface IGroupLocation {
+  id: number;
+  description: string;
+  city_id: string;
+  geoJSON: string;
+  active: boolean;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+  locations: Location[];
+}
+
 /**
  * Exposes all fields present in location as a typescript
  * interface.
@@ -1079,6 +1132,12 @@ export interface ILocation {
   created_by: string;
   modified_at?: Date | null;
   modified_by?: string | null;
+  state_id?: number;
+  group_location_id?: number;
+  additional_info: string;
+  contact_name: string;
+  contact_number: string;
+  user: string;
 }
 /**
  * Exposes all fields present in driver as a typescript
@@ -1247,12 +1306,28 @@ export interface ILocationByGrouplocationWithDefaults {
   modified_at?: Date | null;
   modified_by?: string | null;
 }
+
+export interface IDocumentsType {
+  id: string;
+  entity_type: number;
+  description: string;
+  optional: string;
+  id_location: number;
+  id_material_type: number;
+  expiry: string;
+  template: string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
 /**
  * Exposes all fields present in material as a typescript
  * interface.
  */
 export interface IMaterial {
-  concat(material: IMaterial[] | undefined): IMaterial;
   key: number;
   id: number;
   description: string;
@@ -1275,6 +1350,14 @@ export interface IMaterial {
   restriction?: string | null;
   type_description: string;
   quantity: number;
+  material_type: IMaterialType[];
+  material_transport: IMaterialTransport[];
+}
+
+export interface IFormMaterial {
+  general: IMaterial;
+  files?: DocumentCompleteType[];
+  images: CustomFile[];
 }
 
 /**
@@ -1321,6 +1404,19 @@ export interface IMaterialType {
 }
 
 /**
+ * Exposes all fields present in material_type as a typescript
+ * interface.
+ */
+export interface IMaterialTransportType {
+  id: number;
+  description: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+}
+
+/**
  * Exposes the same fields as MaterialType,
  * but makes every field containing a DEFAULT value optional.
  *
@@ -1332,6 +1428,19 @@ export interface IMaterialTypeWithDefaults {
   description: string;
   line: string;
   subline: string;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+}
+
+/**
+ * Exposes all fields present in material_type as a typescript
+ * interface.
+ */
+export interface IMaterialTransport {
+  id: number;
+  description: string;
   created_at: Date;
   created_by: string;
   modified_at?: Date | null;
@@ -1403,7 +1512,429 @@ export interface IPsl {
   idcc: number;
   desccc: string;
 }
+/**
+ * Exposes all fields present in transfer_orders_request as a typescript
+ * interface.
+ */
+export interface ITransferOrdersRequest {
+  orders: ITransferOrderRequest[];
+  tracking: ITrackingPartial[];
+}
+/**
+ * Exposes all fields present in transfer_request_tracking as a typescript
+ * interface.
+ */
+export interface ITrackingPartial {
+  order_to: number;
+  id_end_location: number;
+  id_start_location: number;
+  end_date: string;
+  start_date: string;
+  id_type_service: number;
+}
+/**
+ * Exposes all fields present in transfer_order_request as a typescript
+ * interface.
+ */
+export interface ITransferOrderRequest {
+  id: number;
+  id_service_type: number;
+  id_user: number;
+  id_start_location: number;
+  id_end_location: number;
+  start_date: string;
+  end_date: string;
+  start_freight_equipment: boolean;
+  end_freight_equipment: boolean;
+  rotation: boolean;
+  start_date_flexible: number;
+  end_date_flexible: number;
+  id_route: string;
+  id_company: number;
+  id_client: number;
+  status: string;
+  active: boolean;
+  created_at: string;
+  created_by: string;
+  modified_at: string;
+  modified_by: string;
+  observation: string;
+  freight_origin_time: number;
+  freight_destination_time: number;
+  service_type_desc: string;
+  client_desc: string;
+  start_location?: ILocation | null | undefined;
+  end_location?: ILocation | null | undefined;
+  //geometry
+  geometry: any;
+  //datos de contacto
+  transfer_order_contacts?: ITransferOrderRequestContacts[] | null;
+  //centros de costo
+  transfer_order_cost_center?: ITransferOrderCostCenter[] | null;
+  //documentos
+  transfer_order_documents?: ITransferOrderDocuments[] | null;
+  //materiales
+  transfer_order_material?: ITransferOrderRequestMaterials[] | null;
+  //other_requirements
+  transfer_order_other_requeriments?: ITransferOrderRequestOtherRequeriments[] | null;
+  //personas
+  transfer_order_persons?: ITransferOrderPersons[] | null;
+  //productos
+  transfer_order_products?: ITransferOrderProducts[] | null;
+  //vehiculos
+  transfer_order_vehicles?: ITransferOrderRequestVehicles[] | null;
+  //journey
+  transfer_order_journey?: ITransferOrderRequestJourney[] | null;
+}
+/**
+ * Exposes all fields present in transfer_order_request_contacts as a typescript
+ * interface.
+ */
+export interface ITransferOrderRequestContacts {
+  id: number;
+  id_transfer_order: number;
+  id_contact: number;
+  contact_type: number;
+  name: string;
+  contact_number: number;
+  id_psl: string;
+  id_cost_center: string;
+  active: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string;
+  modified_by: string;
+  id_transfer_request?: number;
+}
+/**
+ * Exposes all fields present in transfer_order_request_materials as a typescript
+ * interface.
+ */
+export interface ITransferOrderRequestMaterials {
+  id: number;
+  id_transfer_order: number;
+  id_material: number;
+  quantity: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string;
+  modified_by: string;
+  units?: number;
+  id_trip?: number;
+  id_transfer_request?: number;
+  material: IMaterial[];
+}
+/**
+ * Exposes all fields present in transfer_order_request_materials as a typescript
+ * interface.
+ */
+export interface ITransferOrderRequestOtherRequeriments {
+  id: number;
+  id_transfer_order: number;
+  id_other_requeriments: number;
+  quantity: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string;
+  modified_by: string;
+  other_requirement_desc: string;
+}
+/**
+ * Exposes all fields present in transfer_order_request_vehicles as a typescript
+ * interface.
+ */
+export interface ITransferOrderRequestVehicles {
+  id: number;
+  id_transfer_order: number;
+  id_vehicle_type: number;
+  quantity: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string;
+  modified_by: string;
+  id_journey: number | string | null | undefined;
+  vehicle_type_desc: string;
+}
+/**
+ * Exposes all fields present in transfer_order_request_journey as a typescript
+ * interface.
+ */
+export interface ITransferOrderRequestJourney {
+  id: number;
+  id_transfer_order: number;
+  id_start_location: number;
+  id_end_location: number;
+  id_type_service: number;
+  order_to?: number;
+  created_at: number;
+  created_by: number;
+  modified_at: number | null;
+  modified_by: number | null;
+  order_tr?: number;
+  start_date: string;
+  end_date: string;
+  id_route: string;
+  start_location_desc: string;
+  end_location_desc: string;
+}
+/**
+ * Exposes all fields present in transfer_order_request_cost_center as a typescript
+ * interface.
+ */
+export interface ITransferOrderRequestCostCenter {
+  id: number;
+  id_transfer_order: number;
+  id_costcenter: number;
+  percentage: number;
+  active: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string;
+  modified_by: string;
+  id_transfer_request: number;
+  cost_center_desc: string;
+}
+/**
+ * Exposes all fields present in transfer_request_step_one as a typescript
+ * interface.
+ */
+export interface ITransferRequestStepOne {
+  id: number;
+  id_service_type: number;
+  service_type: number | null;
+  start_date: string;
+  end_date: string;
+  id_start_location: number;
+  id_end_location: number;
+  status: string;
+  created_at: string;
+  created_by: string;
+  statusdesc: string | null;
+  color: string | null;
+  start_location?: ILocation | null | undefined;
+  end_location?: ILocation | null | undefined;
+  //geometry
+  geometry: any;
+  //datos de contacto
+  transfer_request_contacts?: ITransferOrderRequestContacts[] | null;
+  //centros de costo
+  transfer_request_cost_center?: ITransferOrderRequestCostCenter[] | null;
+  //documentos
+  transfer_request_documents?: ITransferOrderDocuments[] | null;
+  //journey
+  transfer_request_journey?: ITransferOrderRequestJourney[] | null;
+  //materiales
+  transfer_request_material?: ITransferRequestStepOneMaterial[];
+  //materiales por viaje
+  transfer_request_material_by_trip?: [] | null;
+  //conductores por pedido de provedor
+  driver_by_carrier_request?: [] | null;
+  //vehiculos sugeridos
+  transfer_request_vehicles_sugest?: [] | null;
+  //pedidos de viaje
+  transfer_request_trips?: [] | null;
+  //other_requirements
+  transfer_request_other_requeriments?: ITransferOrderRequestOtherRequeriments[] | null;
+  //personas
+  transfer_request_persons?: ITransferOrderPersons[] | null;
+  //productos
+  transfer_request_products?: ITransferOrderProducts[] | null;
+  //vehiculos
+  transfer_request_vehicles?: ITransferOrderRequestVehicles[] | null;
+}
+/**
+ * Exposes all fields present in transfer_request_step_one_material as a typescript
+ * interface.
+ */
+export interface ITransferRequestStepOneMaterial {
+  id: number;
+  id_material: number;
+  units: number;
+  id_trip: number;
+  id_transfer_order: number;
+  id_transfer_request: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string | null;
+  modified_by: string | null;
+  material: IMaterialStepOne[];
+}
+/**
+ * Exposes all fields present in material_step_one as a typescript
+ * interface.
+ */
+export interface IMaterialStepOne {
+  id: number;
+  description: string;
+  id_type_material: number;
+  kg_weight: number;
+  mt_height: number;
+  mt_width: number;
+  mt_length: number;
+  m3_volume: number;
+  rotation: boolean;
+  can_stack: boolean;
+  image: string;
+  aditional_info: string;
+  active: boolean;
+  created_at: string;
+  created_by: string;
+  modified_at: string | null;
+  modified_by: string | null;
+  icon: string;
+  restriction: boolean;
+}
+/**
+ * Exposes all fields present in transfer_request_journey_step_one as a typescript
+ * interface.
+ */
+export interface ITransferRequestJourneyStepOne {
+  id: number;
+  id_transfer_order: number;
+  id_transfer_request: number;
+  id_start_location: number;
+  id_end_location: number;
+  start_date: string;
+  end_date: string;
+  id_type_service: number;
+  order_tr: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string | null;
+  modified_by: string | null;
+  id_route: string;
+  start_location_desc: string;
+  end_location_desc: string;
+}
+/**
+ * Exposes all fields present in transfer_request_material_step_one as a typescript
+ * interface.
+ */
+export interface ITransferRequestMaterialStepOne {
+  id: number;
+  id_material: number;
+  units: number;
+  id_trip: number;
+  id_transfer_order: number;
+  id_transfer_request: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string | null;
+  modified_by: string | null;
+}
+/**
+ * Exposes all fields present in transfer_order_request_vehicles_asignation as a typescript
+ * interface.
+ */
+export interface ITransferRequestCreation {
+  general?: ITransferRequestVehiclesSugest;
+  stepOne: {
+    transferOrders: ITransferOrderRequest[];
+    transferRequest?: ITransferRequestStepOne[];
+    transferRequestJourneys?: ITransferRequestJourneyStepOne[];
+    transferRequestMaterial?: ITransferRequestMaterialStepOne[];
+  };
+  stepTwo?: {
+    journey?: ITransferRequestJourneyInfo[];
+  };
+  stepThree?: {
+    journey?: ITransferRequestJourneyReview[];
+  };
+}
+/**
+ * Exposes all fields present in transfer_request_vehicles_sugest as a typescript
+ * interface.
+ */
+export interface ITransferRequestVehiclesSugest {
+  transferRequestVehiclesSugest: IVehicleType[];
+}
+/**
+ * Exposes all fields present in transfer_request_journey_info as a typescript
+ * interface.
+ */
+export interface ITransferRequestJourneyInfo {
+  id_journey: number;
+  id: number;
+  id_transfer_order: number;
+  id_transfer_request: number;
+  id_start_location: number;
+  id_end_location: number;
+  start_date: string;
+  end_date: string;
+  id_type_service: number;
+  order_tr: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string | null;
+  modified_by: string | null;
+  id_route: string;
+  start_location_desc: string;
+  end_location_desc: string;
+  trips: IVehiclesPricingTrips[];
+}
+/**
+ * Exposes all fields present in transfer_request_journey_review as a typescript
+ * interface.
+ */
+export interface ITransferRequestJourneyReview {
+  id_journey: number;
+  start_date: string;
+  end_date: string;
+  start_location_desc: string;
+  end_location_desc: string;
+  service_type: number;
+  trips: TripCarriersPricing[];
+}
+export interface TripCarriersPricing {
+  id_trip: number;
+  vehicle_type: number;
+  vehicle_type_desc: string;
+  start_date: string;
+  end_date: string;
+  start_location_desc: string;
+  end_location_desc: string;
+  carriers_pricing: CarriersPricing[];
+}
 
+export interface CarriersPricing {
+  carrier: string;
+  plate_number: string;
+  id_vehicle: number;
+  driver: string;
+  phone: any;
+  driver_contract: string;
+  driver_overcost: number;
+  driver_delay: number;
+  diver_trips: number;
+  driver_score: number;
+  id: number;
+  id_carrier: number;
+  id_service_type: number;
+  service_type: string;
+  start_date: string;
+  end_date: string;
+  id_start_location: number;
+  start_location: string;
+  id_end_location: number;
+  end_location: string;
+  status: string;
+  created_at: string;
+  created_by: string;
+  statusdesc: string;
+  color: string;
+  vehicles: string;
+  elapsedtime: string;
+  amount: number;
+  id_transfer_request: number;
+  id_journey: number;
+  id_trip: number;
+  start_latitude: number;
+  start_longitude: number;
+  end_latitude: number;
+  end_longitude: number;
+  volume: number;
+  weight: number;
+}
 /**
  * Exposes all fields present in transfer_order as a typescript
  * interface.
@@ -2434,7 +2965,69 @@ export interface IVehicleType {
   quantity: number;
   plate_number: number;
 }
-
+/**
+ * Exposes all fields present in vehicle_pricing as a typescript
+ * interface.
+ */
+export interface IVehiclesPricing {
+  id_carrier_pricing: string;
+  valid_from: string;
+  valid_to: string;
+  description: string;
+  disponibility: number;
+  price: number;
+  id: number;
+  m3_volume: number;
+  kg_capacity: number;
+  width: number;
+  height: number;
+  length: number;
+  m2_area: number;
+  passenger_capacity: number;
+  aditional_info: string;
+}
+/**
+ * Exposes all fields present in vehicle_pricing_trips as a typescript
+ * interface.
+ */
+export interface IVehiclesPricingTrips {
+  id: number;
+  id_journey: number;
+  id_transfer_request: number;
+  id_vehicle_type: number;
+  id_carrier_request: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string | null;
+  modified_by: string | null;
+  status: string;
+  material: IVehiclesPricingTripsMaterial[];
+}
+/**
+ * Exposes all fields present in vehicle_pricing_trips_material as a typescript
+ * interface.
+ */
+export interface IVehiclesPricingTripsMaterial {
+  id_transfer_request_material: number;
+  id_transfer_order: number;
+  id_trip: number;
+  id_material: number;
+  units: number;
+  description: string;
+  mt_height: number;
+  mt_width: number;
+  mt_length: number;
+  m3_volume: number;
+  m2_area: number;
+}
+/**
+ * Exposes all fields present in vehicle_pricing_list as a typescript
+ * interface.
+ */
+export interface IVehiclesPricingList {
+  vehiclesPricing: IVehiclesPricing[];
+  trips: IVehiclesPricingTrips[];
+}
 /**
  * Exposes the same fields as VehicleType,
  * but makes every field containing a DEFAULT value optional.
@@ -2522,6 +3115,7 @@ export interface IFormDriver {
   general: IFormGeneralDriver;
   logo?: FileObject[];
   files?: DocumentCompleteType[];
+  images: CustomFile[]; //JCBGRemover
 }
 export interface CustomFile extends File {
   url_archive: string;

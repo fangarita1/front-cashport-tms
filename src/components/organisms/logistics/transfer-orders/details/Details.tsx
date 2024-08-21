@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import styles from './details.module.scss';
 import Header from "@/components/organisms/header";
@@ -5,12 +6,15 @@ import { CaretDoubleRight, CaretLeft, DotsThree } from "phosphor-react";
 import { Button, Typography } from "antd";
 import { MainDescription } from "./main-description/MainDescription";
 import { Step } from "./step/Step";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Novelty } from "./novelty/Novelty";
+import { getTransferRequestDetail } from "@/services/logistics/transfer-request";
+import { useParams } from "next/navigation";
+import { ITransferRequestDetail } from "@/types/transferRequest/ITransferRequest";
 
 const Text = Typography;
 
-enum NavEnum {
+export enum NavEnum {
   NOVELTY = 'NOVELTY',
   VEHICLES = 'VEHICLES',
   MATERIALS = 'MATERIALS',
@@ -21,6 +25,9 @@ enum NavEnum {
 
 export const TransferOrderDetails = () => {
   const [nav, setNav] = useState<NavEnum>(NavEnum.NOVELTY)
+  const [transferRequest, setTransferRequest] = useState<ITransferRequestDetail | null>(null);
+
+  const { id } = useParams();
 
   const renderView = () => {
     switch (nav) {
@@ -40,6 +47,17 @@ export const TransferOrderDetails = () => {
         return <div />
     }
   }
+
+  const findDetails = async () => {
+    const data = await getTransferRequestDetail(Number(id)) as ITransferRequestDetail;
+    if (Object.keys(data).length !== 0 && data.id) {
+      setTransferRequest(data);
+    }
+  }
+
+  useEffect(() => {
+    findDetails();
+  }, [])
 
   return (
     <div className={styles.mainTransferOrdersDetails}>
@@ -69,8 +87,8 @@ export const TransferOrderDetails = () => {
               </Button>
             </div>
           </div>
-          <MainDescription />
-          <Step />
+          <MainDescription transferRequest={transferRequest} />
+          <Step step={transferRequest?.step || 1} />
         </div>
         <div className={styles.card}>
           <div className={styles.navContainer}>

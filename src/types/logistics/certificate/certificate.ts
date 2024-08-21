@@ -24,4 +24,4 @@ export interface Active {
 
 export type DocumentCompleteType = CertificateType & { file: File | undefined } & {
   expirationDate: any;
-} & { link?: string };
+} & { link?: string } & { entity_type_desc?: string };
