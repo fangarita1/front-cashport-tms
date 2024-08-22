@@ -26,6 +26,7 @@ import Materials from "../../acept_carrier/detail/components/Materials/Materials
 
 //styles
 import styles from "./DetailsOrderView.module.scss";
+import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 
 interface Props {
   idOrder: string;
@@ -234,11 +235,14 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
           </Flex>
           <Flex className={styles.footer}>
             <Col span={12}>
-              <button className={styles.backButton} onClick={()=>{
-                push("/logistics/orders");
-              }}>
-                Regresar
-              </button>
+              <PrincipalButton
+                type="default"
+                className={styles.backButton}
+                onClick={()=>{
+                  push("/logistics/transfer-orders");
+                }}>
+                  Regresar
+              </PrincipalButton>
             </Col>
             <Col span={12} />
           </Flex>

@@ -40,7 +40,7 @@ export default function PricingStepThree({
       !data?.journey?.some((j) =>
         j.trips.some((t) =>
           t.carriers_pricing.some(
-            (c) => c.id === cp.id_carrier_request && c.status === STATUS.CR.ASIGNADAS
+            (c) => c.id === cp.id_carrier_request && c.status === STATUS.CR.EN_REVISÓN
           )
         )
       )

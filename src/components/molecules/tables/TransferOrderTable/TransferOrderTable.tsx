@@ -1,4 +1,4 @@
-import { Button, Table, Typography } from "antd";
+import { Button, Checkbox, Table, Typography } from "antd";
 import type { TableColumnsType } from "antd";
 
 import "./transferOrderTable.scss";
@@ -41,7 +41,7 @@ interface DataType {
   valor: string;
 }
 
-const columns = (showColumn: boolean): TableColumnsType<DataType> => {
+const columns = (showColumn: boolean, redirect?: string): TableColumnsType<DataType> => {
   const timeToTrip = showColumn ? {
     title: 'Tiempo de viaje',
       dataIndex: 'tiempodeviaje',
@@ -153,7 +153,7 @@ const columns = (showColumn: boolean): TableColumnsType<DataType> => {
               icon={<Warning size={24} />}
             />
           )}
-          <Link href={`/logistics/transfer-orders/details/${text.tr}`}>
+          <Link href={`${redirect ? redirect : '/logistics/transfer-orders/details'}/${text.tr}`}>
             <Button
               className="btn"
               type="text"
@@ -170,9 +170,11 @@ const columns = (showColumn: boolean): TableColumnsType<DataType> => {
 interface ITransferOrdersTable {
   items: ITransferRequest[];
   showColumn?: boolean;
+  aditionalRow?: any;
+  redirect?: string;
 }
 
-export const TransferOrdersTable: FC<ITransferOrdersTable> = ({ items, showColumn = true }) => {
+export const TransferOrdersTable: FC<ITransferOrdersTable> = ({ items, showColumn = true, aditionalRow, redirect }) => {
   let data: DataType[] = [];
   if (items) {
     data = items.map((item, index) => {
@@ -206,12 +208,16 @@ export const TransferOrdersTable: FC<ITransferOrdersTable> = ({ items, showColum
       }
     })
   }
+  const columnsShow = columns(showColumn, redirect);
+  if (aditionalRow){
+    columnsShow.unshift(aditionalRow);
+  }
 
   return <Table
-    rowSelection={{
+    rowSelection={!aditionalRow ? {
       type: 'checkbox',
-    }}
-    columns={columns(showColumn)}
+    } : undefined}
+    columns={columnsShow}
     dataSource={data}
   />
 };

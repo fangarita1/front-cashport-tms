@@ -402,7 +402,7 @@ export default function PricingTransferRequest({
     try {
       await finishTransferRequest(data);
       message.success("Solicitud de transferencia finalizada");
-      router.push("/logistics/orders");
+      router.push("/logistics/transfer-orders");
     } catch (error) {
       if (error instanceof Error) message.error(error.message);
       else message.error("Error al finalizar la solicitud de transferencia");
