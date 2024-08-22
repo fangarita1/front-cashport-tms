@@ -1869,7 +1869,7 @@ export interface ITransferRequestCreation {
  * interface.
  */
 export interface ITransferRequestVehiclesSugest {
-  transferRequestVehiclesSugest: IVehicleType[];
+  transferRequestVehiclesSugest: any[];
 }
 /**
  * Exposes all fields present in transfer_request_journey_info as a typescript
