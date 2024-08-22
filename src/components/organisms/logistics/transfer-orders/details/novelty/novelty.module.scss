@@ -90,43 +90,56 @@
 
   }
 
-  .resumContainer {
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 32px;
+}
+
+.resumContainer {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+  border-radius: 4px;
+  background: #F7F7F7;
+  margin-bottom: 32px;
+
+  &.marginBottom {
+    margin-bottom: 0px;
+    margin-top: 0px;
+  }
+
+  .resum {
     display: flex;
-    justify-content: space-between;
-    padding: 16px;
-    border-radius: 4px;
-    background: #F7F7F7;
+    flex-direction: column;
+    row-gap: 4px;
+    width: 50%;
+    padding: 0px 0px 0px 16px;
 
-    .resum {
+    .resumItem {
       display: flex;
-      flex-direction: column;
-      row-gap: 4px;
-      width: 50%;
-      padding: 0px 0px 0px 16px;
+      column-gap: 8px;
 
-      .resumItem {
-        display: flex;
-        column-gap: 8px;
+      .text {
+        color: #141414;
+        font-size: 16px;
+        font-weight: 400;
+        letter-spacing: -1px;
 
-        .text {
-          color: #141414;
-          font-size: 16px;
-          font-weight: 400;
-          letter-spacing: -1px;
-
-          &.bold {
-            font-weight: 600;
-          }
-        }
-
-        &.right {
-          justify-content: space-between;
+        &.bold {
+          font-weight: 600;
         }
       }
 
       &.right {
-        border-left: 1px solid #DDD;
+        justify-content: space-between;
       }
+    }
+
+    &.right {
+      border-left: 1px solid #DDD;
     }
   }
 }

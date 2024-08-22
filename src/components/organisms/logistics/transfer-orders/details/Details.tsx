@@ -11,6 +11,7 @@ import { Novelty } from "./novelty/Novelty";
 import { getTransferRequestDetail } from "@/services/logistics/transfer-request";
 import { useParams } from "next/navigation";
 import { ITransferRequestDetail } from "@/types/transferRequest/ITransferRequest";
+import { useRouter } from "next/navigation";
 
 const Text = Typography;
 
@@ -28,11 +29,12 @@ export const TransferOrderDetails = () => {
   const [transferRequest, setTransferRequest] = useState<ITransferRequestDetail | null>(null);
 
   const { id } = useParams();
+  const router = useRouter();
 
   const renderView = () => {
     switch (nav) {
       case NavEnum.NOVELTY:
-        return <Novelty />
+        return <Novelty transferRequestId={transferRequest?.id || null} />
       case NavEnum.VEHICLES:
         return <div>Vehicles view</div>
       case NavEnum.MATERIALS:
@@ -50,8 +52,8 @@ export const TransferOrderDetails = () => {
 
   const findDetails = async () => {
     const data = await getTransferRequestDetail(Number(id));
-    if (Object.keys(data).length !== 0 && data.id) {
-      setTransferRequest(data);
+    if (Object.keys(data).length) {
+      setTransferRequest(data as ITransferRequestDetail);
     }
   }
 
@@ -66,7 +68,7 @@ export const TransferOrderDetails = () => {
         <Header title="Resumen del viaje" />
         <div className={styles.card}>
           <div className={styles.titleContainer}>
-            <div className={styles.backContainer}>
+            <div onClick={() => router.back()} className={styles.backContainer}>
               <CaretLeft size={24} />
               <Text className={styles.title}>Datos del viaje</Text>
             </div>

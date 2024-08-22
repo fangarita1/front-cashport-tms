@@ -26,7 +26,7 @@ export const Step: FC<IStepProps> = ({ step }) => {
     },
     {
       id: 3,
-      number: 4,
+      number: 3,
       title: 'En curso',
       date: '22/12/24 - 07:00 h',
       name: 'Nombre del responsable',
@@ -49,12 +49,14 @@ export const Step: FC<IStepProps> = ({ step }) => {
   return (
     <div className={styles.mainSteps}>
       {steps.map((item, index) => (
-        <div key={`step-${index}`} className={`${styles.step} ${index + 1 === steps.length && styles.lastStep}`}>
+        <div
+          key={`step-${index}`}
+          className={`${styles.step} ${index + 1 === steps.length && styles.lastStep}`}>
           <div className={styles.dotContainer}>
-            <div className={styles.dot}>
-              <Text className={styles.dotText}>{item.number}</Text>
+            <div className={`${styles.dot} ${index + 1 === step && styles.currentDot} ${index + 1 > step && styles.nextDot}`}>
+              <Text className={`${styles.dotText} ${index + 1 >= step && styles.currentDotText}`}>{item.number}</Text>
             </div>
-            {index + 1 === steps.length || <div className={styles.dotLine} />}
+            {index + 1 === steps.length || <div className={`${styles.dotLine} ${index + 1 === step - 1 && styles.currentDotLine} ${index + 1 >= step && styles.nextDotLine}`} />}
           </div>
           <div>
             <Text className={styles.title}>{item.title}</Text>
