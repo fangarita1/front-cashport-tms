@@ -4,6 +4,15 @@ import { CREATED, SUCCESS } from "@/utils/constants/globalConstants";
 import { MessageInstance } from "antd/es/message/interface";
 import axios, { AxiosResponse } from "axios";
 
+export interface IHoldingResponse {
+  status: number;
+  message: string;
+  data: Array<{
+    id: number;
+    name: string;
+  }>;
+}
+
 export const addHolding = async ({
   name,
   projectId,
@@ -67,6 +76,27 @@ export const removeHoldingById = async ({
       });
     }
 
+    return response;
+  } catch (error) {
+    return error as any;
+  }
+};
+
+
+export const getHoldingsByProjectId = async (
+  projectId: number
+): Promise<AxiosResponse<IHoldingResponse>> => {
+  const token = await getIdToken();
+  try {
+    const response: AxiosResponse<IHoldingResponse> = await axios.get(
+      `${config.API_HOST}/holding/project/${projectId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
     return response;
   } catch (error) {
     return error as any;

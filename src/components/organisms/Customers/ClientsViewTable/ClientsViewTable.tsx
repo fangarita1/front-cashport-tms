@@ -22,6 +22,9 @@ import redirectModal from "@/components/molecules/modals/redirectModal/RedirectM
 import useStore from "@/lib/hook/useStore";
 import { STORAGE_TOKEN } from "@/utils/constants/globalConstants";
 import "./ClientsViewTable.scss";
+import { useDebounce } from "@/hooks/useDeabouce";
+import UiSearchInput from "@/components/ui/search-input/search-input";
+import { FilterPortfolio, SelectedFilters } from "@/components/atoms/Filters/FilterPortfolio/FilterPortfolio";
 
 const { Text } = Typography;
 
@@ -31,10 +34,14 @@ export const ClientsViewTable = () => {
   const [tableData, setTableData] = useState<IClientsPortfolio[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const loader = useRef(null);
-
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const project = useStore(useAppStore, (projects) => projects.selectedProject);
   const ID = project?.ID;
-
+  const [filters, setFilters] = useState<SelectedFilters>({
+    holding: [],
+    clientGroup: [],
+  });
   useEffect(() => {
     setIsComponentLoading(false);
   }, []);
@@ -51,7 +58,12 @@ export const ClientsViewTable = () => {
     loadingId: 0
   });
 
-  const { data, loading } = usePortfolios({ page: page });
+  const { data, loading, error } = usePortfolios({
+    page: page,
+    searchQuery: debouncedSearchQuery,
+    holding: filters.holding.length > 0 ? parseInt(filters.holding[0]) : undefined,
+    client_group: filters.clientGroup.length > 0 ? parseInt(filters.clientGroup[0]) : undefined
+  });
 
   useEffect(() => {
     if (data?.data?.clientsPortfolio) {
@@ -62,11 +74,17 @@ export const ClientsViewTable = () => {
     }
   }, [data]);
 
+  useEffect(() => {
+    setPage(1);
+    setTableData([]);
+    setHasMore(true);
+  }, [debouncedSearchQuery, filters]);
+
   const loadMoreData = useCallback(() => {
-    if (!loading && hasMore) {
+    if (!loading && hasMore && !error) {
       setPage((prevPage) => prevPage + 1);
     }
-  }, [loading, hasMore]);
+  }, [loading, hasMore, error]);
 
   useEffect(() => {
     const options = {
@@ -76,21 +94,23 @@ export const ClientsViewTable = () => {
     };
 
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
+      if (entry.isIntersecting && !loading) {
         loadMoreData();
       }
     }, options);
 
-    if (loader.current) {
-      observer.observe(loader.current);
+    const currentLoader = loader.current;
+
+    if (currentLoader) {
+      observer.observe(currentLoader);
     }
 
     return () => {
-      if (loader.current) {
-        observer.unobserve(loader.current);
+      if (currentLoader) {
+        observer.unobserve(currentLoader);
       }
     };
-  }, [loadMoreData]);
+  }, [loadMoreData, loading]);
 
   const columns: TableProps<IClientsPortfolio>["columns"] = [
     {
@@ -186,12 +206,18 @@ export const ClientsViewTable = () => {
       )
     }
   ];
+  const handelSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPage(1);
+    setSearchQuery(e.target.value);
+  };
 
   return (
     <main className="mainClientsTable">
       <div>
         <Flex justify="space-between" className="mainClientsTable_header">
           <Flex gap={"10px"}>
+            <UiSearchInput placeholder="Buscar clientes" onChange={(e) => handelSearch(e)} />
+            <FilterPortfolio setSelectedFilters={setFilters} />
             <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
           </Flex>
         </Flex>
@@ -260,7 +286,7 @@ export const ClientsViewTable = () => {
         </Row>
       </div>
       <Table
-        loading={loading}
+        loading={loading && page === 1}
         scroll={{ x: 1350 }}
         columns={columns as TableProps<any>["columns"]}
         dataSource={tableData.map((data) => ({ ...data, key: data.client_id }))}
@@ -274,7 +300,7 @@ export const ClientsViewTable = () => {
       />
       {hasMore && !loading && (
         <div ref={loader} style={{ textAlign: "center", padding: "20px" }}>
-          <Spin />
+          {loading && page > 1 && <Spin />}
         </div>
       )}
       {!hasMore && !loading && tableData.length > 0 && (

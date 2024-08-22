@@ -4,6 +4,7 @@ import "../filterCascader.scss";
 export interface FilterOption {
   id: string;
   name: string;
+  isLeaf?: boolean;
   children?: FilterOption[];
 }
 
@@ -39,7 +40,7 @@ const GenericCascaderFilter: React.FC<GenericCascaderFilterProps> = ({
         const initialOptions: CascaderOption[] = filters.map((filter) => ({
           value: filter.id,
           label: filter.name,
-          isLeaf: !apiCallbacks[filter.id],
+          isLeaf: !apiCallbacks[filter.id] || filter.isLeaf,
           children: apiCallbacks[filter.id] ? [] : undefined
         }));
         setOptions(initialOptions);
@@ -87,7 +88,7 @@ const GenericCascaderFilter: React.FC<GenericCascaderFilterProps> = ({
 
   return (
     <Cascader
-      style={{ width: "15rem" }}
+    style={{ width: "15rem" }}
       options={options}
       loadData={loadData}
       onChange={onChange}

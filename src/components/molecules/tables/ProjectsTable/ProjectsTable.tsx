@@ -64,24 +64,9 @@ export const ProjectTable = () => {
       messageApi.open({ type: "error", content: error.message });
     }
   }, [error]);
-  const apiCallbacks = {
-    location: getLocations,
-    category: getCategories,
-    price: getPrices
-  };
-
-  const handleFilterChange = (filteredData: { [key: string]: string[] }) => {
-    console.log("Filtered data:", filteredData);
-    // Aquí puedes actualizar el estado de tu componente padre o realizar otras acciones
-  };
   return (
     <main className="mainProjectsTable">
       {contextHolder}
-      <GenericCascaderFilter 
-        getFilters={getFilters}
-        apiCallbacks={apiCallbacks}
-        onFilterChange={handleFilterChange} 
-      />
       <Flex justify="space-between" className="mainProjectsTable_header">
         <Flex gap={"10px"}>
           <UiSearchInput
