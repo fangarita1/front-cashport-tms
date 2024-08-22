@@ -6,19 +6,13 @@ import styles from "./AceptCarrier.module.scss";
 import { getAceptCarrierRequestList } from "@/services/logistics/acept_carrier";
 import { useEffect, useState } from "react";
 import { FilterProjects } from "@/components/atoms/Filters/FilterProjects/FilterProjects";
-import { useProjects } from "@/hooks/useProjects";
 
 export default function AceptCarrier() {
   const [carriers, setCarriers] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectFilters, setSelectFilters] = useState({
     country: [] as string[],
     currency: [] as string[]
-  });
-
-  const { loading, data } = useProjects({
-    currencyId: selectFilters.currency,
-    countryId: selectFilters.country,
-    searchQuery: ""
   });
 
   useEffect(() => {
@@ -26,9 +20,16 @@ export default function AceptCarrier() {
   }, []);
 
   const loadCarrierRequestTransferList = async () => {
-    const result = await getAceptCarrierRequestList("3");
-    setCarriers(result.data.data)
-  }
+    setLoading(true);
+    try {
+      const result = await getAceptCarrierRequestList("3");
+      setCarriers(result.data.data);
+    } catch (error) {
+      console.error("Error loading transfer requests", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -44,7 +45,7 @@ export default function AceptCarrier() {
         <FilterProjects setSelecetedProjects={setSelectFilters} height="48" />
       </Flex>
       <Flex vertical>
-        <AceptCarrierView carriers={carriers} loading={loading}/>
+        <AceptCarrierView carriers={carriers} loading={loading} />
       </Flex>
     </div>
   );

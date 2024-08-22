@@ -73,7 +73,7 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
 
   const setCurrentData = (data: ICarrierRequestDetailAPI) => {
     const { drivers, vehicle, observation } = data;
-    setVehicleSelected(vehicle.id ?? null);
+    setVehicleSelected(vehicle?.id ?? null);
     setDriversSelected(drivers.map((d) => d.id ?? null));
     observation && setObservation(observation);
   };
@@ -143,7 +143,7 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
     } else {
       await submitCarrierRequest(
         String(carrier?.id_carrier),
-        String(carrier?.id),
+        params.id,
         String(vehicleSelected),
         driversSelected.map(String),
         "1",
