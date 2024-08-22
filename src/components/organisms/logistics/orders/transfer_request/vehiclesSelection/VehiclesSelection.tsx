@@ -1,17 +1,10 @@
 import React, { FC, useEffect, useState } from "react";
-import { CaretDown, Circle, CraneTower, Truck, User } from "@phosphor-icons/react";
-import { Button, Collapse, CollapseProps, Flex, Typography } from "antd";
-import {
-  ITransferRequestCreation,
-  ITransferRequestJourneyInfo,
-  IVehiclesPricing
-} from "@/types/logistics/schema";
-import { formatMoney } from "@/utils/utils";
+import { Button, Flex, message } from "antd";
+import { ITransferRequestCreation, ITransferRequestJourneyInfo } from "@/types/logistics/schema";
 import { getTransferRequestVehicles, submitTrips } from "@/services/logistics/transfer-request";
 import Trip from "../components/trip/Trip";
 import { useFieldArray, useForm } from "react-hook-form";
 import useSWR from "swr";
-import TitleComponent from "../components/titles/JourneyTitle";
 import JourneyCollapse from "../components/journeyCollapse/JourneyCollapse";
 
 interface VehiclesSelectionProps {
@@ -22,9 +15,8 @@ interface VehiclesSelectionProps {
   end_location_desc: string;
   id_type_service: number;
   journey: ITransferRequestJourneyInfo;
+  setIsNextStepActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-const { Text } = Typography;
 
 const VehiclesSelection: FC<VehiclesSelectionProps> = ({
   transferRequest,
@@ -33,22 +25,40 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
   start_location_desc,
   end_location_desc,
   id_type_service,
-  journey
+  journey,
+  setIsNextStepActive
 }) => {
-  const { data: sugestedVehicles, isLoading: isLoadingVehicles } = useSWR(
+  const { data, isLoading: isLoadingVehicles } = useSWR(
     { id_journey },
-    ({ id_journey }) => getTransferRequestVehicles(id_journey)
+    ({ id_journey }) => getTransferRequestVehicles(id_journey),
+    { revalidateOnMount: true, revalidateOnFocus: false, revalidateOnReconnect: false }
   );
+  const sugestedVehicles = data?.vehiclesPricing;
+  const trips = data?.trips;
 
-  const { register, handleSubmit, watch, control, reset, formState } = useForm({
+  useEffect(() => {
+    reset({
+      trips: trips?.map((s) => ({
+        id: s.id,
+        id_vehicle_type: s.id_vehicle_type,
+        materialByTrip: s.material.map((m) => ({
+          id_material: m.id_material,
+          units: m.units
+        }))
+      }))
+    });
+  }, [sugestedVehicles]);
+
+  const { handleSubmit, control, reset, formState } = useForm({
     defaultValues: {
       trips: journey.trips.map((t) => ({
         id: t.id,
         id_vehicle_type: t.id_vehicle_type,
-        materialByTrip: t?.material?.map((m) => ({
-          id_material: m.id_material,
-          units: m.units
-        })) || []
+        materialByTrip:
+          t?.material?.map((m) => ({
+            id_material: m.id_material,
+            units: m.units
+          })) || []
       }))
     }
   });
@@ -57,6 +67,10 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
     keyName: "_id",
     name: "trips"
   });
+  useEffect(() => {
+    setIsNextStepActive(!formState.dirtyFields?.trips?.length && !!fields.length);
+    console.log(fields.length, formState.isDirty);
+  }, [fields, formState.dirtyFields?.trips]);
   const [openTabs, setOpenTabs] = useState<number[]>([]);
 
   const addVehiclesSections = () => {
@@ -123,6 +137,10 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
 
   const handleSave = async (data: any) => {
     try {
+      if (fields.length === 0) {
+        message.error("Debe agregar al menos una sección de vehículos");
+        return;
+      }
       const res = await submitTrips(journey.id_transfer_request, journey.id, data.trips);
       reset({
         trips: res.map((t) => ({
@@ -164,7 +182,11 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
         />
       ))}
       <div className="collapseButtons">
-        <Button className="collapseAddVehicleButton" onClick={addVehiclesSections}>
+        <Button
+          className="collapseAddVehicleButton"
+          onClick={addVehiclesSections}
+          loading={isLoadingVehicles}
+        >
           Agregar vehíchulo
         </Button>
         <Flex gap={5}>

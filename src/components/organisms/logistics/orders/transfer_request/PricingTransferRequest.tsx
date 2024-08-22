@@ -71,6 +71,7 @@ import PricingStepThree from "./components/steps/PricingStepThree";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import { TransferRequestFinish } from "@/types/logistics/transferRequest/transferRequest";
 import { useForm } from "react-hook-form";
+import ModalSelectCarrierPricing from "./components/modals/ModalSelectCarrierPricing";
 
 const { Title, Text } = Typography;
 
@@ -326,7 +327,7 @@ export default function PricingTransferRequest({
   }, [transferRequest]);
 
   useEffect(() => {
-    if (view === "vehicles") setIsNextStepActive(true);
+    if (view === "solicitation") setIsNextStepActive(true);
     if (view === "carrier") {
       const isValid = transferRequest?.stepThree?.journey?.every((j) =>
         j.trips.every((t) => getValues("providers").some((p) => p.id_trip === t.id_trip))
@@ -367,9 +368,8 @@ export default function PricingTransferRequest({
     try {
       const res = await createTransferRequest(ordersId, tracking);
       message.success("Solicitud de transferencia creada");
-      console.log("res", res?.stepOne?.transferRequest);
       res?.stepOne?.transferRequest?.length
-        ? router.push("/logistics/transfer-request/" + res.stepOne.transferRequest[0].id)
+        ? router.replace("/logistics/transfer-request/" + res.stepOne.transferRequest[0].id)
         : undefined;
     } catch (error) {
       if (error instanceof Error) message.error(error.message);
@@ -387,7 +387,13 @@ export default function PricingTransferRequest({
         handleCreateTransferRequest();
       }
     } else if (view === "vehicles") {
-      setView("carrier");
+      if (
+        transferRequest?.stepThree?.journey?.some((j) =>
+          j.trips.some((t) => t.carriers_pricing.length)
+        )
+      )
+        setView("carrier");
+      else setModalCarrier(true);
     } else if (view === "carrier") {
       if (
         transferRequest?.stepThree?.journey?.every((j) =>
@@ -918,7 +924,7 @@ export default function PricingTransferRequest({
                 </Drawer>
               </Flex>
             </Flex>
-            { view === "solicitation" ? (
+            {view === "solicitation" ? (
               <PricingStepOne ordersId={ordersId} orders={orders} />
             ) : view === "vehicles" ? (
               <div>
@@ -933,6 +939,7 @@ export default function PricingTransferRequest({
                       start_location_desc={a.start_location_desc}
                       end_location_desc={a.end_location_desc}
                       id_type_service={a.id_type_service}
+                      setIsNextStepActive={setIsNextStepActive}
                     />
                   ))}
                 </Flex>
@@ -940,9 +947,6 @@ export default function PricingTransferRequest({
             ) : (
               <PricingStepThree
                 data={transferRequest?.stepThree || { journey: [] }}
-                modalCarrier={modalCarrier}
-                handleModalCarrier={(val: boolean) => setModalCarrier(val)}
-                mutateStepthree={mutateStepthree}
                 control={control}
               />
             )}
@@ -956,7 +960,6 @@ export default function PricingTransferRequest({
             {/* view === "vehicles" && <Button className="saveButton">Guardar como draft</Button> */}
             <PrincipalButton
               disabled={!isNextStepActive}
-              className="nextButton"
               onClick={handleNext}
               loading={isSubmitting || isLoading}
             >
@@ -965,6 +968,13 @@ export default function PricingTransferRequest({
           </Flex>
         </Flex>
       </Flex>
+      <ModalSelectCarrierPricing
+        open={modalCarrier}
+        handleModalCarrier={(val: boolean) => setModalCarrier(val)}
+        mutateStepthree={mutateStepthree}
+        view={view}
+        setView={setView}
+      />
     </>
   );
 }

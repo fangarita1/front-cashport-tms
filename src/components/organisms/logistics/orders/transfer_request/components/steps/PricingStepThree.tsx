@@ -1,37 +1,27 @@
 import { ITransferRequestJourneyReview, TripCarriersPricing } from "@/types/logistics/schema";
-import { Flex, Modal } from "antd";
+import { Flex } from "antd";
 import JourneyCollapse from "../journeyCollapse/JourneyCollapse";
 import { useState } from "react";
 import TripCarrierPricing from "../trip/TripCarrierPricing";
 import style from "./PricingStepThree.module.scss";
-import ModalSelectCarrierPricing from "../modals/ModalSelectCarrierPricing";
-import { Control, useFieldArray, useForm } from "react-hook-form";
+import { Control, useFieldArray } from "react-hook-form";
 import {
   CarrierPricingFinish,
   TransferRequestFinish
 } from "@/types/logistics/transferRequest/transferRequest";
-import { useParams } from "next/navigation";
 import { STATUS } from "@/utils/constants/globalConstants";
 
 type Props = {
   data: {
     journey?: ITransferRequestJourneyReview[];
   };
-  modalCarrier: boolean;
-  // eslint-disable-next-line no-unused-vars
-  handleModalCarrier: (value: boolean) => void;
-  // eslint-disable-next-line no-unused-vars
-  mutateStepthree: (journey: ITransferRequestJourneyReview[]) => void;
   control: Control<TransferRequestFinish, any>;
 };
 export default function PricingStepThree({
   data,
-  modalCarrier,
-  handleModalCarrier,
-  mutateStepthree,
   control
 }: Props) {
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, update } = useFieldArray({
     control,
     name: "providers"
   });
@@ -80,11 +70,6 @@ export default function PricingStepThree({
           tag={tag({ trips: journey.trips })}
         />
       ))}
-      <ModalSelectCarrierPricing
-        open={modalCarrier}
-        handleModalCarrier={handleModalCarrier}
-        mutateStepthree={mutateStepthree}
-      />
     </Flex>
   );
 }
