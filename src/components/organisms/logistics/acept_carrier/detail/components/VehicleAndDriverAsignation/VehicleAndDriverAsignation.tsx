@@ -22,14 +22,29 @@ interface FormValues {
   driverForm: string[];
 }
 
-export default function VehicleAndDriverAsignation({
-  setIsNextStepActive,
-  setVehicle,
-  setDriver,
-  drivers,
-  vehicles,
-}: VehicleAndDriverAsignationProps) {
-  const { control, watch } = useForm<FormValues>({
+const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignation(
+  {
+    drivers,
+    vehicles,
+    setIsNextStepActive,
+    setVehicle,
+    setDrivers,
+    currentDrivers,
+    currentVehicle,
+    formMode
+  }: VehicleAndDriverAsignationProps,
+  ref
+) {
+  const MANDATORY_DRIVERS_DOCS = [7];
+  const MANDATORY_VEHICLE_DOCS = [3, 4];
+
+  const createDefault = () => {
+    const defaultDrivers = currentDrivers.length
+      ? currentDrivers.map((cd) => ({ driverId: cd }))
+      : [{ driverId: null }];
+    return defaultDrivers;
+  };
+  const { control, watch, register, getValues } = useForm<FormValues>({
     defaultValues: {
       vehicleForm: "",
       driverForm: []

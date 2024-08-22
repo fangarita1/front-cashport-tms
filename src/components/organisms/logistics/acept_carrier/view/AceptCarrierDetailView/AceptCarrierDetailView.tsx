@@ -55,10 +55,12 @@ export default function AceptCarrierDetailView({ params }: AceptCarrierDetailPro
     //loadVehicles();
   }, []);
 
-  {/*const loadVehicles = async () => {
-    const result = await getVehiclesByCarrierId(String(carrier?.id_carrier));
-    setVehicles(result.data.data);
-  }
+  const setCurrentData = (data: ICarrierRequestDetailAPI) => {
+    const { drivers, vehicle, observation } = data;
+    setVehicleSelected(vehicle?.id ?? null);
+    setDriversSelected(drivers.map((d) => d.id ?? null));
+    observation && setObservation(observation);
+  };
 
   const loadDrivers = async () => {
     const result = await getDriverByCarrierId(String(carrier?.id_carrier));
@@ -105,11 +107,14 @@ export default function AceptCarrierDetailView({ params }: AceptCarrierDetailPro
     } else if (view === "asignation") {
       setView("confirmation")
     } else {
-      await postCarrierRequest(String(carrier?.id_carrier), String(carrier?.id), String(vehicleSelected), driversSelected.map(String), "1", observation)
-      messageApi.open({
-        content: "Aceptado"
-      });
-      router.push("/logistics/acept_carrier");
+      await submitCarrierRequest(
+        String(carrier?.id_carrier),
+        params.id,
+        String(vehicleSelected),
+        driversSelected.map(String),
+        "1",
+        observation
+      );
     }
   };
 
