@@ -24,7 +24,6 @@ import {
   MaterialFormTabProps
 } from "./materialFormTab.mapper";
 import {  IFormMaterial, IMaterialType, IMaterialTransportType, IMaterialTransportByMaterial, CustomFile } from "@/types/logistics/schema";
-import { IFormMaterial, IMaterialType, IMaterialTransportType } from "@/types/logistics/schema";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 
 import {
