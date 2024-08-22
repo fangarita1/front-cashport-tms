@@ -2223,6 +2223,7 @@ export interface ITransferOrderDocumentsWithDefaults {
  * interface.
  */
 export interface ITransferOrderPersons {
+  key:number;
   id: number;
   id_transfer_order: number;
   id_user: number;
@@ -2233,6 +2234,12 @@ export interface ITransferOrderPersons {
   modified_at?: Date | null;
   modified_by?: string | null;
   id_user_subline: number;
+  name:string;
+  contact_number:string;
+  id_psl: number;
+  psl_desc:string;
+  id_cost_center: number;
+  cost_center_desc:string;
 }
 
 /**
