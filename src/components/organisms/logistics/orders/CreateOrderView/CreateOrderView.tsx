@@ -4,7 +4,7 @@ import { runes } from 'runes2';
 
 // dayjs locale
 import dayjs, { Dayjs } from 'dayjs';
-import 'dayjs/locale/es-us';
+import 'dayjs/locale/es';
 dayjs.locale('es');
 
 // mapbox

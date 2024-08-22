@@ -90,16 +90,6 @@ export const SideBar = () => {
               </Button>
             </Link></>
         )}
-        <Link href="/logistics/orders" passHref legacyBehavior>
-          <Button
-            type="primary"
-            size="large"
-            icon={<Truck size={26} />}
-            className={path.startsWith("/logistics/orders") ? "buttonIcon" : "buttonIconActive"}
-          >
-            {isSideBarLarge && "Solicitudes"}
-          </Button>
-        </Link>
         <Link href="/logistics/providers/all" passHref legacyBehavior>
           <Button
             type="primary"
@@ -148,8 +138,8 @@ export const SideBar = () => {
           <Button
             type="primary"
             size="large"
-            icon={<NewspaperClipping size={26} />}
-            className={path.startsWith("/logistics/transfer-orders") ? "buttonIcon" : "buttonIconActive"}
+            icon={<Truck size={26} />}
+            className={path.startsWith("/logistics/transfer-orders") || path.startsWith("/logistics/orders") ? "buttonIcon" : "buttonIconActive"}
           >
             {isSideBarLarge && "Ajustes"}
           </Button>
