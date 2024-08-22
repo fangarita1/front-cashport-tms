@@ -792,12 +792,16 @@ export default function PricingTransferRequest({
                       <label className="vehiclesSubtitleSugestion">
                         <p>Vehículos sugeridos</p>
                       </label>
-                      <div className="vehiclesSubtitleInformation">
-                        <p className="vehiclesSubtitleInformationVehicle">Camion C-100</p>
-                        <label className="vehiclesSubtitleInformationQuantity">
-                          <p className="vehiclesSubtitleInformationQuantityNumber">01</p>
-                        </label>
-                      </div>
+                      {transferRequest.general?.transferRequestVehiclesSugest?.map((veh) => (
+                        <div className="vehiclesSubtitleInformation" key={veh.id}>
+                          <p className="vehiclesSubtitleInformationVehicle">{veh.vehicle_type_desc}</p>
+                          <label className="vehiclesSubtitleInformationQuantity">
+                            <p className="vehiclesSubtitleInformationQuantityNumber">
+                              {veh.units.toString().padStart(2, "0")}
+                            </p>
+                          </label>
+                        </div>
+                      ))}
                     </Flex>
                   )}
                 </div>
