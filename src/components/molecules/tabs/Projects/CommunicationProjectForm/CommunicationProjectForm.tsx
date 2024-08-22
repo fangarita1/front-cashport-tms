@@ -239,13 +239,14 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               </div>
 
               <div className={styles.radioGroup__event}>
-                <Radio
-                  checked={radioValue === "evento"}
-                  onChange={() => handleChangeRadio("evento", field)}
-                  name="test"
-                  className={styles.radioGroup__event__radio}
-                  value={"evento"}
-                >
+                <div className={styles.radioGroup__event__left}>
+                  <Radio
+                    checked={radioValue === "evento"}
+                    onChange={() => handleChangeRadio("evento", field)}
+                    name="test"
+                    className={styles.radioGroup__event__radio}
+                    value={"evento"}
+                  />
                   <Controller
                     disabled={radioValue !== "evento"}
                     name="trigger.settings.event_type"
@@ -262,7 +263,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
                       />
                     )}
                   />
-                </Radio>
+                </div>
                 {watchEventType?.value?.startsWith("Vencimiento") && (
                   <InputExpirationNoticeDays
                     nameInput="trigger.settings.noticeDaysEvent"
@@ -275,12 +276,13 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
               </div>
 
               <div className={styles.radioGroup__actions}>
-                <Radio
-                  className={styles.radioGroup__actions__radio}
-                  checked={radioValue === "accion"}
-                  onChange={() => handleChangeRadio("accion", field)}
-                  value={"accion"}
-                >
+                <div className={styles.radioGroup__actions__left}>
+                  <Radio
+                    className={styles.radioGroup__actions__radio}
+                    checked={radioValue === "accion"}
+                    onChange={() => handleChangeRadio("accion", field)}
+                    value={"accion"}
+                  />
                   <Controller
                     disabled={radioValue !== "accion"}
                     name="trigger.settings.values"
@@ -297,7 +299,8 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
                       />
                     )}
                   />
-                </Radio>
+                </div>
+
                 <Controller
                   disabled={radioValue !== "accion"}
                   name="trigger.settings.subValues"
