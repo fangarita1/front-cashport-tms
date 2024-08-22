@@ -74,6 +74,23 @@ export const getAllMaterialTransportType = async (): Promise<IListData> => {
   }
 };
 
+export const getMaterialById = async (id:string): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const response: IListData = await axios.get(`${config.API_HOST}/material/`+ id, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error getMaterialById: ", error);
+    return error as any;
+  }
+};
+
+
 export const createMaterialForm =( 
   data: IMaterial,
   files: DocumentCompleteType[],
@@ -91,11 +108,6 @@ export const createMaterialForm =(
     uid: file?.uid,
     url_archive: file?.url_archive,
   }));
-
-  const expiration = files.find(f => !f.expirationDate && f.expiry);
-  if (expiration) {
-    throw new Error(`El documento ${expiration.description} debe tener una fecha de vencimiento`);
-  }
 
   body.files = files;
 

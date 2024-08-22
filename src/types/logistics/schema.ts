@@ -1346,10 +1346,11 @@ export interface IMaterial {
   modified_by?: string | null;
   icon: string;
   restriction?: string | null;
+  code_sku: string;
   type_description: string;
   quantity: number;
-  material_type: IMaterialType[];
-  material_transport:IMaterialTransport[];
+  material_type: IMaterialTypeByMaterial[];
+  material_transport:IMaterialTransportByMaterial[];
 }
 
 export interface IFormMaterial {
@@ -1445,6 +1446,27 @@ export interface IMaterialTransport{
   modified_at?: Date | null;
   modified_by?: string | null;
 }
+
+export interface IMaterialTypeByMaterial {
+  id: string;
+  id_material: number;
+  id_material_type: number;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
+export interface IMaterialTransportByMaterial {
+  id: string;
+  id_material: number;
+  id_material_transport_type: number;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
 
 export interface IOtherRequirements {
   id: number;

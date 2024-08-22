@@ -111,7 +111,9 @@
         width: 100% !important;
         max-width: 19rem !important;
         height: 14rem !important;
-        border-radius: 8px;
+        border-radius: 8px !important;
+        background-color: rgba(0, 0, 0, 0.02) !important;
+        border: 1px dashed #d9d9d9 !important;
     }
 
     .colfotomin .ant-upload-select {

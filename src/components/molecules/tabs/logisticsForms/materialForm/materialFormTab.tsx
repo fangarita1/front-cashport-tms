@@ -5,7 +5,8 @@ import {
   Flex,
   Form,
   Row,
-  Typography
+  Typography,
+  Image
 } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
@@ -13,7 +14,6 @@ import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 // components
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
 import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
-
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 
 import "./materialformtab.scss";
@@ -23,11 +23,7 @@ import {
   validationButtonText,
   MaterialFormTabProps,
 } from "./materialFormTab.mapper";
-import {  IFormMaterial, IMaterialType, IMaterialTransportType } from "@/types/logistics/schema";
-import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
-
-import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
-
+import {  IFormMaterial, IMaterialType, IMaterialTransportType, IMaterialTransportByMaterial, CustomFile } from "@/types/logistics/schema";
 import useSWR from "swr";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
@@ -35,14 +31,15 @@ import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDo
 import { getAllMaterialType, getAllMaterialTransportType } from "@/services/logistics/materials";
 import Link from "next/link";
 import dayjs from "dayjs";
-import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 import SubmitFormButton from "@/components/atoms/SubmitFormButton/SubmitFormButton";
-import LoadDocumentsButton from "@/components/atoms/LoadDocumentsButton/LoadDocumentsButton";
-import { SelectInputForm } from "@/components/molecules/logistics/SelectInputForm/SelectInputForm";
-import { bloodTypesOptions, documentTypesOptions, glassesOptions, licencesOptions } from "../formSelectOptions";
 import MultiSelectTags from "@/components/ui/multi-select-tags/MultiSelectTags";
 
 const { Title, Text } = Typography;
+
+interface OptionType {
+  value: number;
+  label: string;
+}
 
 export const MaterialFormTab = ({
   onEditProject = () => {},
@@ -54,6 +51,7 @@ export const MaterialFormTab = ({
   params,
   handleFormState = () => {},
 }: MaterialFormTabProps) => {
+
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
@@ -84,6 +82,8 @@ export const MaterialFormTab = ({
   const [images, setImages] = useState<ImageState[]>(
     Array(5).fill({ file: undefined, error: false })
   );
+
+  const [imagesUrl, setImagesURL] = useState<string[]>([]);
 
   const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data);
   const {
@@ -155,6 +155,17 @@ export const MaterialFormTab = ({
   }, [files, documentsType]);
 
   useEffect(() => {
+    const getblobimage = async (url: string): Promise<Blob> => {
+      console.log(url)
+      //axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+      //const res = await axios.get(url,{ crossdomain: true });
+      //console.log(res)
+      const  imgdata  = await fetch(url, { mode: 'no-cors'})
+      const imgblob = await imgdata.blob();
+      console.log(imgdata)
+      console.log(imgblob)
+      return imgblob
+    }
     if (statusForm === "review"){
       if (Array.isArray(documentsType)) {
           const docsWithLink =
@@ -170,6 +181,14 @@ export const MaterialFormTab = ({
               })) || [];
           setSelectedFiles(docsWithLink);
       }
+      if(data?.image){
+        let imgsarray = ['','','','',''];
+        const dimages= JSON.parse(data?.image);
+        dimages.forEach((dimg: { link: string; },idx: number) => {
+          imgsarray[idx] = dimg.link;
+        });                
+        setImagesURL(imgsarray);
+      }
     }
   }, [statusForm]);
 
@@ -182,6 +201,20 @@ export const MaterialFormTab = ({
     }));
   };
 
+  const convertToSelectOptionsData = (materialTypes: IMaterialType[]) => {
+    if (materialTypes.length == 0) return [];
+    let results:OptionType[] = []
+    data?.material_type.forEach(matty => {
+      let matfilter = materialTypes?.filter(f => f.id == matty.id_material_type);
+      let option: OptionType={
+        value: matfilter[0].id,
+        label: matfilter[0].description
+      }
+      results.push(option);
+    });
+    return results;
+  };
+
   const convertToSelectOptionsTransport = (materialTransportTypes: IMaterialTransportType[]) => {
     //console.log(materialTransportTypes)
     if (!Array.isArray(materialTransportTypes)) return [];
@@ -189,6 +222,20 @@ export const MaterialFormTab = ({
       label: materialTransportType.description,
       value: materialTransportType.id
     }));
+  };
+
+  const convertToSelectOptionsTransportData = (materialTransportTypes: IMaterialTransportType[]) => {
+    if (materialTransportTypes.length == 0) return [];
+    let results:OptionType[] = []
+    data?.material_transport.forEach(mattr => {
+      let matfilter = materialTransportTypes?.filter(f => f.id == mattr.id_material_transport_type);
+      let option: OptionType={
+        value: matfilter[0].id,
+        label: matfilter[0].description
+      }
+      results.push(option);
+    });
+    return results;
   };
 
   const handleChangeExpirationDate = (index: number, value: any) => {
@@ -217,16 +264,20 @@ export const MaterialFormTab = ({
     }
   };
 
-  const onSubmit = (data: any) => {
-    data.general.license_categorie = licencesOptions.find(
-      (item) => item.id === data.general.license_category
-    )?.value;
-    data.general.rhval = bloodTypesOptions.find((item) => item.id === data.general.rh)?.value;
-    data.general.vehicle_type = data.general.vehicle_type.map((v:any)=>v.value)
+  const onSubmit = async (data: any) => {
+
+    const hasImage = data.images.length > 0;
+    if (!hasImage){
+      setImageError(true);
+      return;
+    } 
+
+    const formImages = [...data.images]
+    setImages(Array(5).fill({ file: undefined }));
     _onSubmit(
       data,
       selectedFiles,
-      imageFile ? [{ docReference: "imagen", file: imageFile }] : undefined,
+      formImages,
       setImageError,
       setLoading,
       onSubmitForm,
@@ -303,28 +354,36 @@ export const MaterialFormTab = ({
               {/* ------------Image Project-------------- */}
               <Row>
                 <Col span={24} className="colfoto">
-                  <UploadImg
-                    disabled={statusForm === "review"}
-                    imgDefault={formImages ? formImages[0]?.url_archive : undefined}
-                    setImgFile={(file) => {
-                      const currentUrlArchive = formImages ? formImages[0]?.url_archive : undefined; // obtener el valor actual de url_archive
-                      if (currentUrlArchive) {
-                        (file as any).url_archive = currentUrlArchive;
-                        setValue(`images.${0}`, file);
-                      } else {
-                        setValue(`images.${0}`, file);
-                      }
-                      setImages((prev) =>
-                        prev.map((img, index) => (index === 0 ? { ...img, file } : img))
-                      );
-                      if (file) {
-                        setImageError(false);
-                      }
-                    }}
-                  />
-                  {imageError && (
-                    <Text className="textError">{"Al menos 1 imagen debe ser cargada *"}</Text>
-                  )}
+                  {statusForm === "review" &&
+                    <Image className="ant-upload-select" src={imagesUrl? imagesUrl[0]: undefined}></Image>
+                  }
+                  {statusForm !== "review" &&
+                    <>
+                    <UploadImg
+                      //disabled={statusForm === "review"}
+                      imgDefault={formImages ? formImages[0]?.url_archive : undefined}
+                      setImgFile={(file) => {
+                        const currentUrlArchive = formImages ? formImages[0]?.url_archive : undefined; // obtener el valor actual de url_archive
+                        if (currentUrlArchive) {
+                          (file as any).url_archive = currentUrlArchive;
+                          setValue(`images.${0}`, file);
+                        } else {
+                          setValue(`images.${0}`, file);
+                        }
+                        setImages((prev) =>
+                          prev.map((img, index) => (index === 0 ? { ...img, file } : img))
+                        );
+                        if (file) {
+                          //console.log(file)
+                          setImageError(false);
+                        }
+                      }}
+                    />
+                    {imageError && (                    
+                      <Text className="textError">{"Al menos 1 imagen debe ser cargada *"}</Text>
+                    )}
+                    </>
+                  }
                 </Col>
                 </Row>
                 <Row gutter={16}>
@@ -346,9 +405,9 @@ export const MaterialFormTab = ({
                             imgIndex === index + 1 ? { ...img, file } : img
                           )
                         );
-                        if (file) {
-                          setImageError(false);
-                        }
+                        // if (file) {
+                        //   setImageError(false);
+                        // }
                       }}
                     />
                   </Col>
@@ -368,9 +427,9 @@ export const MaterialFormTab = ({
                 <Col span={12}>
                   <InputForm
                     titleInput="Código"
-                    nameInput="general.id"
+                    nameInput="general.code_sku"
                     control={control}
-                    error={errors?.general?.id}
+                    error={errors?.general?.code_sku}
                   />
                 </Col>
                 <Col span={12}>
@@ -435,7 +494,8 @@ export const MaterialFormTab = ({
                           field={field}
                           placeholder="Seleccionar"
                           title="Características de transporte"
-                          errors={errors?.general?.material_type}
+                          errors={errors?.general?.material_transport}
+                          defaultValue={convertToSelectOptionsTransportData((materialsTransportTypesData?.data.data as any) || [])}
                           options={convertToSelectOptionsTransport((materialsTransportTypesData?.data.data as any) || [])}
                           disabled={statusForm === "review"} 
                         />
@@ -453,6 +513,7 @@ export const MaterialFormTab = ({
                           placeholder="Seleccionar"
                           title="Características de seguridad"
                           errors={errors?.general?.material_type}
+                          defaultValue={convertToSelectOptionsData((materialsTypesData?.data.data as any) || [])}
                           options={convertToSelectOptions((materialsTypesData?.data.data as any) || [])}
                           disabled={statusForm === "review"} 
                         />
