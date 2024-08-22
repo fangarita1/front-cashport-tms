@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Cascader } from "antd";
-
+import "../filterCascader.scss";
 export interface FilterOption {
   id: string;
   name: string;
@@ -87,12 +87,13 @@ const GenericCascaderFilter: React.FC<GenericCascaderFilterProps> = ({
 
   return (
     <Cascader
-      style={{ width: "100%" }}
+      style={{ width: "15rem" }}
       options={options}
       loadData={loadData}
       onChange={onChange}
       value={selectedOptions}
       multiple
+      className="filterCascader"
       changeOnSelect
       expandTrigger="hover"
       placeholder="Seleccionar filtros"

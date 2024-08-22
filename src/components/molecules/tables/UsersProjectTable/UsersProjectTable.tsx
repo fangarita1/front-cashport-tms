@@ -56,6 +56,7 @@ export const UsersProjectTable: React.FC<Props> = ({
       title: "Nombre",
       dataIndex: "USER_NAME",
       key: "USER_NAME",
+      sorter: (a, b) => a.USER_NAME?.localeCompare(b.USER_NAME),
       render: (text, { ID }) => (
         <button
           type="button"
@@ -70,18 +71,21 @@ export const UsersProjectTable: React.FC<Props> = ({
       title: "Correo",
       dataIndex: "EMAIL",
       key: "EMAIL",
+      sorter: (a, b) => a?.EMAIL?.localeCompare(b?.EMAIL),
       render: (text) => <Text>{text}</Text>
     },
     {
       title: "Telefono",
       key: "PHONE",
       dataIndex: "PHONE",
+      sorter: (a, b) => a?.PHONE?.localeCompare(b?.PHONE),
       render: (text) => <Text>{text}</Text>
     },
     {
       title: "Rol",
       key: "ROL_NAME",
       dataIndex: "ROL_NAME",
+      sorter: (a, b) => a?.ROL_NAME?.localeCompare(b?.ROL_NAME),
       render: (text) => <Text>{text}</Text>
     },
     {
@@ -95,6 +99,11 @@ export const UsersProjectTable: React.FC<Props> = ({
       key: "USER_ZONES",
       dataIndex: "USER_ZONES",
       width: "120px",
+      sorter: (a, b) => {
+        const zoneA = a?.USER_ZONES?.[0]?.ZONE_DESCRIPTION || "";
+        const zoneB = b?.USER_ZONES?.[0]?.ZONE_DESCRIPTION || "";
+        return zoneA?.localeCompare(zoneB);
+      },
       render: (arr) =>
         arr ? (
           arr.map((zone: UserZone) => (
@@ -111,6 +120,11 @@ export const UsersProjectTable: React.FC<Props> = ({
       key: "BUSSINES_RULES",
       dataIndex: "BUSSINES_RULES",
       width: "210px",
+      sorter: (a, b) => {
+        const ruleA = a.BUSSINESS_RULES?.[0]?.CHANNEL_DESCRIPTION || "";
+        const ruleB = b.BUSSINESS_RULES?.[0]?.CHANNEL_DESCRIPTION || "";
+        return ruleA?.localeCompare(ruleB);
+      },
       render: (arr) =>
         arr ? (
           <div className="responsabilityCell">
@@ -132,6 +146,7 @@ export const UsersProjectTable: React.FC<Props> = ({
       key: "status",
       width: "150px",
       dataIndex: "status",
+      sorter: (a, b) => (a.ACTIVE === b.ACTIVE ? 0 : a.ACTIVE ? -1 : 1),
       render: (_, { ACTIVE, EMAIL }) => (
         <>
           {ACTIVE ? (
