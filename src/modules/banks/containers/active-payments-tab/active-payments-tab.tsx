@@ -11,6 +11,7 @@ import LabelCollapse from "@/components/ui/label-collapse";
 import BanksTable from "../../components/banks-table/Banks-table";
 
 import styles from "./active-payments-tab.module.scss";
+import BanksRules from "../bank-rules";
 
 export const ActivePaymentsTab: FC = () => {
   const [selectedRows, setSelectedRows] = useState<any[] | undefined>();
@@ -18,46 +19,64 @@ export const ActivePaymentsTab: FC = () => {
     isOpen: boolean;
     clientId: number;
   }>({} as { isOpen: boolean; clientId: number });
+  const [showBankRules, setShowBankRules] = useState<boolean>(false);
+
+  const handleOpenBankRules = () => {
+    setShowBankRules(true);
+  };
 
   return (
-    <Flex className={styles.activePaymentsTab} vertical>
-      <div className={styles.header}>
-        <UiSearchInput
-          placeholder="Buscar"
-          onChange={(event) => {
-            setTimeout(() => {
-              console.info(event.target.value);
-            }, 1000);
-          }}
-        />
-        <FilterDiscounts />
-        <DotsDropdown />
-        <PrincipalButton customStyles={{ marginLeft: "auto" }}>
-          Reglas de bancos
-          <Bank size={16} />
-        </PrincipalButton>
-      </div>
-
-      <Collapse
-        items={mockBank?.map((status) => ({
-          key: status.status_id,
-          label: <LabelCollapse status={status.status_name} color={status.color} />,
-          children: (
-            <BanksTable
-              clientsByStatus={status.clients.map((client) => {
-                return {
-                  ...client,
-                  client_status_id: status.status_id
-                };
-              })}
-              setSelectedRows={setSelectedRows}
-              setShowBankDetail={setShowBankDetail}
-              bankStatusId={status.status_id}
+    <>
+      {showBankRules ? (
+        <BanksRules onClickBack={() => setShowBankRules(false)} />
+      ) : (
+        <Flex className={styles.activePaymentsTab} vertical>
+          <div className={styles.header}>
+            <UiSearchInput
+              placeholder="Buscar"
+              onChange={(event) => {
+                setTimeout(() => {
+                  console.info(event.target.value);
+                }, 1000);
+              }}
             />
-          )
-        }))}
-      />
-    </Flex>
+            <FilterDiscounts />
+            <DotsDropdown />
+            <PrincipalButton onClick={handleOpenBankRules} customStyles={{ marginLeft: "auto" }}>
+              Reglas de bancos
+              <Bank size={16} />
+            </PrincipalButton>
+          </div>
+
+          <Collapse
+            items={mockBank?.map((status) => ({
+              key: status.status_id,
+              label: (
+                <LabelCollapse
+                  status={status.status_name}
+                  color={status.color}
+                  quantity={status.clients.length}
+                  total={status.total}
+                />
+              ),
+              children: (
+                <BanksTable
+                  clientsByStatus={status.clients.map((client) => {
+                    return {
+                      ...client,
+                      client_status_id: status.status_id
+                    };
+                  })}
+                  setSelectedRows={setSelectedRows}
+                  setShowBankDetail={setShowBankDetail}
+                  bankStatusId={status.status_id}
+                />
+              )
+            }))}
+          />
+        </Flex>
+      )}
+    </>
   );
 };
 
@@ -66,8 +85,9 @@ export default ActivePaymentsTab;
 const mockBank = [
   {
     status_id: 1,
-    status_name: "Activo",
-    color: "green",
+    status_name: "Identificado",
+    color: "#0085FF",
+    total: 300000,
     clients: [
       {
         id: 1,
@@ -95,8 +115,9 @@ const mockBank = [
   },
   {
     status_id: 2,
-    status_name: "Inactivo",
-    color: "red",
+    status_name: "En auditoria",
+    total: 300000,
+    color: "#FE7A01",
     clients: [
       {
         id: 3,
