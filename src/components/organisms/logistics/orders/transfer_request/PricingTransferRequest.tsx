@@ -31,7 +31,8 @@ import {
   ITransferRequestCreation,
   ITransferOrdersRequest,
   IVehicleType,
-  ITransferRequestJourneyReview
+  ITransferRequestJourneyReview,
+  ITrackingPartial
 } from "@/types/logistics/schema";
 
 import {
@@ -69,7 +70,7 @@ import { MODE_PRICING } from "./constant/constants";
 import PricingStepThree from "./components/steps/PricingStepThree";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import { TransferRequestFinish } from "@/types/logistics/transferRequest/transferRequest";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 const { Title, Text } = Typography;
 
@@ -78,12 +79,14 @@ interface PricingTransferOrderRequestProps {
   mode: MODE_PRICING;
   // eslint-disable-next-line no-unused-vars
   mutateStepthree: (journey: ITransferRequestJourneyReview[]) => void;
+  tracking: ITrackingPartial[];
 }
 
 export default function PricingTransferRequest({
   data: transferRequest,
   mode,
-  mutateStepthree
+  mutateStepthree,
+  tracking
 }: PricingTransferOrderRequestProps) {
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
@@ -106,7 +109,7 @@ export default function PricingTransferRequest({
   );
   const [orders, setOrders] = useState<ITransferOrdersRequest | undefined>({
     orders: transferRequest?.stepOne?.transferOrders,
-    tracking: []
+    tracking
   });
   const [orderRequest, setOrderRequest] = useState<ITransferOrderRequest>();
   const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
@@ -297,7 +300,6 @@ export default function PricingTransferRequest({
   const [suggestions, setSuggestions] = useState([]);
 
   const [expand, setExpand] = useState(false);
-  const initialItemCount = 4;
   //const directions = routeInfo.length > 0 ? routeInfo[0]["legs"][0]["steps"] : [];
 
   /*Service loader */
@@ -311,17 +313,25 @@ export default function PricingTransferRequest({
 
   useEffect(() => {
     if (!!transferRequest?.stepTwo) {
-      setView("vehicles");
+      if (
+        transferRequest?.stepThree?.journey?.some((j) =>
+          j.trips.some((t) => t.carriers_pricing.some(() => true))
+        )
+      ) {
+        setView("carrier");
+      } else {
+        setView("vehicles");
+      }
     }
   }, [transferRequest]);
 
   useEffect(() => {
     if (view === "vehicles") setIsNextStepActive(true);
     if (view === "carrier") {
-      const isValid = transferRequest?.stepThree.journey.every((j) =>
+      const isValid = transferRequest?.stepThree?.journey?.every((j) =>
         j.trips.every((t) => getValues("providers").some((p) => p.id_trip === t.id_trip))
       );
-      setIsNextStepActive(isValid);
+      setIsNextStepActive(!!isValid);
     }
   }, [isNextStepActive, watch("providers"), view]);
 
@@ -354,14 +364,18 @@ export default function PricingTransferRequest({
     setIsLoading(true);
     const ordersId = orders ? orders?.orders.map((a) => a.id) : [0];
     const tracking = orders ? orders?.tracking : [];
-
-    const res = await createTransferRequest(ordersId, tracking);
-    if (res.success) {
-      setView("vehicles");
-      setTransferRequest(res.data);
-    } else {
-      messageApi.open({ content: res.message, type: "error" });
+    try {
+      const res = await createTransferRequest(ordersId, tracking);
+      message.success("Solicitud de transferencia creada");
+      console.log("res", res?.stepOne?.transferRequest);
+      res?.stepOne?.transferRequest?.length
+        ? router.push("/logistics/transfer-request/" + res.stepOne.transferRequest[0].id)
+        : undefined;
+    } catch (error) {
+      if (error instanceof Error) message.error(error.message);
+      else message.error("Error al crear la solicitud de transferencia");
     }
+
     setIsLoading(false);
   };
 
@@ -376,7 +390,7 @@ export default function PricingTransferRequest({
       setView("carrier");
     } else if (view === "carrier") {
       if (
-        transferRequest?.stepThree.journey.every((j) =>
+        transferRequest?.stepThree?.journey?.every((j) =>
           j.trips.every((t) => getValues("providers").some((p) => p.id_trip === t.id_trip))
         )
       )
@@ -388,7 +402,7 @@ export default function PricingTransferRequest({
     try {
       await finishTransferRequest(data);
       message.success("Solicitud de transferencia finalizada");
-      router.push("/logistics/orders");
+      router.push("/logistics/transfer-orders");
     } catch (error) {
       if (error instanceof Error) message.error(error.message);
       else message.error("Error al finalizar la solicitud de transferencia");
@@ -904,14 +918,12 @@ export default function PricingTransferRequest({
                 </Drawer>
               </Flex>
             </Flex>
-            {!!isLoading ? (
-              <Spin style={{ display: "flex", justifyContent: "center", marginTop: "10%" }} />
-            ) : view === "solicitation" ? (
+            { view === "solicitation" ? (
               <PricingStepOne ordersId={ordersId} orders={orders} />
             ) : view === "vehicles" ? (
               <div>
                 <Flex style={{ padding: "24px 0", flexDirection: "column" }} gap={32}>
-                  {transferRequest?.stepTwo?.journey.map((a, index) => (
+                  {transferRequest?.stepTwo?.journey?.map((a, index) => (
                     <VehiclesSelection
                       key={"vehicles-" + index}
                       journey={a}
@@ -927,7 +939,7 @@ export default function PricingTransferRequest({
               </div>
             ) : (
               <PricingStepThree
-                data={transferRequest?.stepThree}
+                data={transferRequest?.stepThree || { journey: [] }}
                 modalCarrier={modalCarrier}
                 handleModalCarrier={(val: boolean) => setModalCarrier(val)}
                 mutateStepthree={mutateStepthree}
@@ -946,7 +958,7 @@ export default function PricingTransferRequest({
               disabled={!isNextStepActive}
               className="nextButton"
               onClick={handleNext}
-              loading={isSubmitting}
+              loading={isSubmitting || isLoading}
             >
               {view !== "carrier" ? "Siguiente" : "Finalizar"}
             </PrincipalButton>

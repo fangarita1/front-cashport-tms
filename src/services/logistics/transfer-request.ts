@@ -15,6 +15,7 @@ import {
   TripsCreation
 } from "@/types/logistics/trips/TripsSchema";
 import { API } from "@/utils/api/api";
+import { ITransferRequestDetail, ITransferRequestResponse } from "@/types/transferRequest/ITransferRequest";
 
 {
   /*export const transferOrderMerge = async (orders: number[]) => {
@@ -27,25 +28,30 @@ import { API } from "@/utils/api/api";
 };*/
 }
 
-export const transferOrderMerge = async (
-  ordersId: number[]
-): Promise<GenericResponsePage<ITransferOrdersRequest>> => {
-  const response: GenericResponsePage<ITransferOrdersRequest> = await API.post(
+export const transferOrderMerge = async (ordersId: number[]): Promise<ITransferOrdersRequest> => {
+  const response: GenericResponse<ITransferOrdersRequest> = await API.post(
     `/transfer-order/merge`,
     { orders: ordersId }
   );
-  return response;
+  if (response.success) return response.data;
+  throw new Error(
+    response?.message || "Error obteniendo los pasos de la solicitud de transferencia"
+  );
 };
 
 export const createTransferRequest = async (
   transferOrderIds: number[],
   trackingPartial: ITrackingPartial[]
-): Promise<GenericResponsePage<ITransferRequestCreation>> => {
-  const response: GenericResponsePage<ITransferRequestCreation> = await API.post(
+): Promise<ITransferRequestCreation> => {
+  const response: GenericResponse<ITransferRequestCreation> = await API.post(
     `/transfer-request/create`,
     { transferOrderIds, trackingPartial }
   );
-  return response;
+  if (response.success) return response.data;
+  else
+    throw new Error(
+      response?.message || "Error obteniendo los pasos de la solicitud de transferencia"
+    );
 };
 
 export const getTransferRequestVehicles = async (
@@ -107,12 +113,53 @@ export const getTransferRequestPricing = async ({
 };
 
 export const finishTransferRequest = async (data: TransferRequestFinish) => {
-  const response: GenericResponse<boolean> = await API.post(
-    `/transfer-request/finish`,
-    data
-  );
+  const response: GenericResponse<boolean> = await API.post(`/transfer-request/finish`, data);
   if (response.success) return response.data;
   throw new Error(
     response?.message || "Error obteniendo los pasos de la solicitud de transferencia"
   );
 };
+
+export const getAcceptedTransferRequest = async (): Promise<ITransferRequestResponse[]> => {
+  try {
+    const response: any = await API.get(`/transfer-request/transfer-request-order`);
+    if (response.success) return response.data;
+    return [];
+  } catch (error) {
+    console.error("Error get transfer-request/: ", error);
+    throw error as any;
+  }
+}
+
+export const getOnRouteTransferRequest = async (): Promise<ITransferRequestResponse[]> => {
+  try {
+    const response: any = await API.get(`/transfer-request/transfer-request-on-route`);
+    if (response.success) return response.data;
+    return [];
+  } catch (error) {
+    console.error("Error get transfer-request/: ", error);
+    throw error as any;
+  }
+}
+
+export const getFinishedTransferRequest = async (): Promise<ITransferRequestResponse[]> => {
+  try {
+    const response: any = await API.get(`/transfer-request/transfer-request-finished`);
+    if (response.success) return response.data;
+    return [];
+  } catch (error) {
+    console.error("Error get transfer-request/: ", error);
+    throw error as any;
+  }
+}
+
+export const getTransferRequestDetail = async (id: number): Promise<ITransferRequestDetail | {}> => {
+  try {
+    const response: any = await API.get(`/transfer-request/details/${id}`);
+    if (response.success) return response.data;
+    return {};
+  } catch (error) {
+    console.error("Error get transfer-request/: ", error);
+    throw error as any;
+  }
+}

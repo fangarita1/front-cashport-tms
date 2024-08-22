@@ -462,6 +462,7 @@ export interface ICarrierRequestDetail {
   //personas -- aplica para viaje tipo persona!
   carrier_request_persons?: ICarrierRequestPersons[] | null;
 }
+
 /**
  * Exposes all fields present in carrier_request_contacts as a typescript
  * interface.
@@ -482,6 +483,7 @@ export interface ICarrierRequestContacts {
   modified_by: string;
   id_transfer_request: number;
 }
+
 /**
  * Exposes all fields present in carrier_request_documents as a typescript
  * interface.
@@ -1308,7 +1310,7 @@ export interface ILocationByGrouplocationWithDefaults {
 export interface IDocumentsType {
   id: string;
   entity_type: number;
-  description : string;
+  description: string;
   optional: string;
   id_location: number;
   id_material_type: number;
@@ -1402,7 +1404,6 @@ export interface IMaterialType {
   modified_by?: string | null;
 }
 
-
 /**
  * Exposes all fields present in material_type as a typescript
  * interface.
@@ -1438,7 +1439,7 @@ export interface IMaterialTypeWithDefaults {
  * Exposes all fields present in material_type as a typescript
  * interface.
  */
-export interface IMaterialTransport{
+export interface IMaterialTransport {
   id: number;
   description: string;
   created_at: Date;
@@ -1848,18 +1849,18 @@ export interface ITransferRequestMaterialStepOne {
  * interface.
  */
 export interface ITransferRequestCreation {
-  general: ITransferRequestVehiclesSugest;
+  general?: ITransferRequestVehiclesSugest;
   stepOne: {
     transferOrders: ITransferOrderRequest[];
-    transferRequest: ITransferRequestStepOne[];
-    transferRequestJourneys: ITransferRequestJourneyStepOne[];
-    transferRequestMaterial: ITransferRequestMaterialStepOne[];
+    transferRequest?: ITransferRequestStepOne[];
+    transferRequestJourneys?: ITransferRequestJourneyStepOne[];
+    transferRequestMaterial?: ITransferRequestMaterialStepOne[];
   };
-  stepTwo: {
-    journey: ITransferRequestJourneyInfo[];
+  stepTwo?: {
+    journey?: ITransferRequestJourneyInfo[];
   };
-  stepThree: {
-    journey: ITransferRequestJourneyReview[];
+  stepThree?: {
+    journey?: ITransferRequestJourneyReview[];
   };
 }
 /**
@@ -1907,54 +1908,54 @@ export interface ITransferRequestJourneyReview {
   trips: TripCarriersPricing[];
 }
 export interface TripCarriersPricing {
-  id_trip: number
-  vehicle_type: number
-  vehicle_type_desc: string
-  start_date: string
-  end_date: string
-  start_location_desc: string
-  end_location_desc: string
-  carriers_pricing: CarriersPricing[]
+  id_trip: number;
+  vehicle_type: number;
+  vehicle_type_desc: string;
+  start_date: string;
+  end_date: string;
+  start_location_desc: string;
+  end_location_desc: string;
+  carriers_pricing: CarriersPricing[];
 }
 
 export interface CarriersPricing {
-  carrier: string
-  plate_number: string
-  id_vehicle: number
-  driver: string
-  phone: any
-  driver_contract: string
-  driver_overcost: number
-  driver_delay: number
-  diver_trips: number
-  driver_score: number
-  id: number
-  id_carrier: number
-  id_service_type: number
-  service_type: string
-  start_date: string
-  end_date: string
-  id_start_location: number
-  start_location: string
-  id_end_location: number
-  end_location: string
-  status: string
-  created_at: string
-  created_by: string
-  statusdesc: string
-  color: string
-  vehicles: string
-  elapsedtime: string
-  amount: number
-  id_transfer_request: number
-  id_journey: number
-  id_trip: number
-  start_latitude: number
-  start_longitude: number
-  end_latitude: number
-  end_longitude: number
-  volume: number
-  weight: number
+  carrier: string;
+  plate_number: string;
+  id_vehicle: number;
+  driver: string;
+  phone: any;
+  driver_contract: string;
+  driver_overcost: number;
+  driver_delay: number;
+  diver_trips: number;
+  driver_score: number;
+  id: number;
+  id_carrier: number;
+  id_service_type: number;
+  service_type: string;
+  start_date: string;
+  end_date: string;
+  id_start_location: number;
+  start_location: string;
+  id_end_location: number;
+  end_location: string;
+  status: string;
+  created_at: string;
+  created_by: string;
+  statusdesc: string;
+  color: string;
+  vehicles: string;
+  elapsedtime: string;
+  amount: number;
+  id_transfer_request: number;
+  id_journey: number;
+  id_trip: number;
+  start_latitude: number;
+  start_longitude: number;
+  end_latitude: number;
+  end_longitude: number;
+  volume: number;
+  weight: number;
 }
 /**
  * Exposes all fields present in transfer_order as a typescript
@@ -1970,8 +1971,8 @@ export interface ITransferOrder {
   id_end_location: number;
   start_date?: string;
   end_date?: string;
-  start_freight_equipment: string;
-  end_freight_equipment: string;
+  start_freight_equipment: boolean | string;
+  end_freight_equipment: boolean | string;
   freight_origin_time?: number;
   freight_destination_time?: number;
   rotation: string;
@@ -2009,7 +2010,7 @@ export interface ITransferOrder {
   //vehiculo sugerido
   transfer_order_vehicles?: ITransferOrderVehicle[] | null;
   //psls y ccs asociados
-  transfer_order_psl?: ITransferOrderPsls[] | null
+  transfer_order_psl?: ITransferOrderPsls[] | null;
 }
 
 export interface IFormTransferOrder {
@@ -3136,7 +3137,7 @@ export interface IFormDriver {
   general: IFormGeneralDriver;
   logo?: FileObject[];
   files?: DocumentCompleteType[];
-  images: CustomFile[];//JCBGRemover
+  images: CustomFile[]; //JCBGRemover
 }
 export interface CustomFile extends File {
   url_archive: string;
@@ -3255,7 +3256,7 @@ export interface IClient {
 }
 
 export interface ISelectOptionOrders {
-  value: string | null | undefined; 
+  value: string | null | undefined;
   label: string | null | undefined;
 }
 export interface CustomOptionType {
@@ -3275,15 +3276,21 @@ export interface PSLOptionType {
 }
 
 export interface ITransferOrderCostCenter {
-  id: number,
-  id_transfer_order: number,
-  id_costcenter: number,
-  percentage: number,
-  cost_center_desc: string,
-  id_psl: number
+  id: number;
+  id_transfer_order: number;
+  id_costcenter: number;
+  percentage: number;
+  cost_center_desc: string;
+  id_psl: number;
 }
 export interface ITransferOrderPsls {
-  id: number,
-  description: string,
-  transfer_order_cost_center: ITransferOrderCostCenter[]
+  id: number;
+  description: string;
+  transfer_order_cost_center: ITransferOrderCostCenter[];
+}
+
+export interface ICarrierRequestDetailAPI extends ICarrierRequestDetail {
+  vehicle: ICarrierRequestVehicles;
+  drivers: ICarrierRequestDrivers[];
+  observation?: string;
 }

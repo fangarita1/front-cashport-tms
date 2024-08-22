@@ -1,9 +1,14 @@
 import { Typography } from 'antd';
 import styles from './step.module.scss';
+import { FC } from 'react';
 
 const Text = Typography;
 
-export const Step = () => {
+interface IStepProps {
+  step: number;
+}
+
+export const Step: FC<IStepProps> = ({ step }) => {
   const steps = [
     {
       id: 1,
@@ -17,7 +22,7 @@ export const Step = () => {
       number: 2,
       title: 'Pricing',
       date: '22/12/24 - 07:00 h',
-      name: 'Nombre del responsable',
+      name: '',
     },
     {
       id: 3,
