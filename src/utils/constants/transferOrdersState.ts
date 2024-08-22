@@ -31,7 +31,7 @@ export const TransferOrdersState = [
   },
   {
     id: '00ce0b06-71b8-4981-861f-b4fa100dbd25',
-    name: 'Sin procesar',
+    name: 'Procesando',
     bgColor: '#969696'
   },
   {
@@ -40,8 +40,13 @@ export const TransferOrdersState = [
     bgColor: '#ED171F'
   },
   {
+    id: 'a48b8b32-8699-4b6f-b56c-277238a656bc',
+    name: 'Procesado',
+    bgColor: '#0085FF'
+  },
+  {
     id: '9f5ba87c-8736-4367-8077-3b914d2ee711',
-    name: 'Drafts',
+    name: 'Sin procesar',
     bgColor: '#000000'
   },
   {
