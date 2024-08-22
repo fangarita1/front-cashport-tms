@@ -1,3 +1,5 @@
+import { INovelty } from "../novelty/INovelty";
+
 export interface ITripJourney {
   id: number;
   id_journey: number;
@@ -7,6 +9,7 @@ export interface ITripJourney {
   fare: number;
   surcharge: number;
   total: number;
+  novelties: INovelty[];
 }
 
 export interface ITransferJourney {
@@ -16,5 +19,5 @@ export interface ITransferJourney {
   end_date: Date;
   start_location: string;
   end_location: string;
-  trips: ITripJourney[]
+  trips: ITripJourney[];
 }

@@ -3,6 +3,9 @@ import type { TableColumnsType } from "antd";
 
 import "./novelty.scss";
 import { Eye } from "phosphor-react";
+import { INovelty } from "@/types/novelty/INovelty";
+import { FC } from "react";
+import { formatMoney } from "@/utils/utils";
 
 const { Text } = Typography;
 
@@ -64,7 +67,7 @@ const columns: TableColumnsType<DataType> = [
   {
     title: 'Soportes',
     dataIndex: 'support',
-    render: (text: string) => <Text className='row-text id'>{text}</Text>,
+    render: (text: string) => <Text className='row-text id clicked'>{text}</Text>,
   },
   {
     title: 'Valor',
@@ -101,39 +104,24 @@ const columns: TableColumnsType<DataType> = [
   },
 ];
 
-const data: DataType[] = [
-  {
-    key: '1',
-    id: '0000000',
-    noveltyType: 'Kilometros adicionales',
-    observation: 'Descripción de na novedad',
-    support: 'Ver soportes',
-    value: '$0.000',
-    state: 'Pendiente',
-  },
-  {
-    key: '2',
-    id: '0000000',
-    noveltyType: 'Stand By',
-    observation: 'Descripción de na novedad',
-    support: 'Ver soportes',
-    value: '$0.000',
-    state: 'Aceptada',
-  },
-  {
-    key: '3',
-    id: '0000000',
-    noveltyType: 'Doble conductor',
-    observation: 'Descripción de na novedad',
-    support: 'Ver soportes',
-    value: '$0.000',
-    state: 'Rechazada',
-  },
-];
+interface INoveltyTableProps {
+  novelties: INovelty[];
+}
 
-export const NoveltyTable = () => {
+export const NoveltyTable: FC<INoveltyTableProps> = ({ novelties }) => {
   return <Table
     columns={columns}
-    dataSource={data}
+    pagination={false}
+    dataSource={novelties.map((novelty) => {
+      return {
+        key: novelty.id,
+        id: String(novelty.id),
+        noveltyType: novelty.novelty_type,
+        observation: novelty.observation,
+        support: 'Ver soportes',
+        value: formatMoney(novelty.value),
+        state: novelty.status,
+      }
+    })}
   />
 };

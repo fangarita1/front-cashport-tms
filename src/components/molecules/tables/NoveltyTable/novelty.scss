@@ -11,6 +11,10 @@
     font-weight: 400;
   }
 
+  &.clicked {
+    cursor: pointer;
+  }
+
   &.value {
     font-weight: 600;
   }

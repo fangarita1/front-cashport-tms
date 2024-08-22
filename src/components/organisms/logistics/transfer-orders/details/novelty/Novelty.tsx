@@ -69,7 +69,7 @@ export const Novelty: FC<INoveltyProps> = ({ transferRequestId }) => {
           <CaretDown className={`${styles.caret} ${journey.id === key && styles.rotate}`} size={24} />
         </div>
       </div>
-      {journey.id !== key && journey.trips.map((trip) => <TripHeader isHeader trip={trip} />)}
+      {journey.id !== key && journey.trips.map((trip) => <TripHeader key={trip.id} isHeader trip={trip} />)}
     </div>
   )
 
@@ -87,16 +87,16 @@ export const Novelty: FC<INoveltyProps> = ({ transferRequestId }) => {
   return (
     <div className={styles.collapsableContainer}>
       {transferJournies?.map((journey) => (
-        <div className={styles.collapsable}>
+        <div key={journey.id} className={styles.collapsable}>
           <Collapse onChange={(item) => setKey(Number(item[0]))} expandIconPosition="end" ghost items={[{
             key: journey.id,
             label: <TitleComponent journey={journey} />,
             children: (
               <div className={styles.contentContainer}>
                 {journey.trips.map((trip) => (
-                  <div>
+                  <div key={trip.id}>
                     <TripHeader trip={trip} />
-                    <NoveltyTable />
+                    <NoveltyTable novelties={trip.novelties} />
                     <div className={styles.btnContainer}>
                       <Button className={styles.btn} type="text" size="large">
                         <Text className={styles.text}>Crear una novedad</Text>
