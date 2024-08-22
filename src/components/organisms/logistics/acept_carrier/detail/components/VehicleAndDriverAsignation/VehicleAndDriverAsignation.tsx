@@ -58,7 +58,7 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
   const MANDATORY_VEHICLE_DOCS = [3, 4];
 
   const createDefault = () => {
-    const defaultDrivers = currentDrivers
+    const defaultDrivers = currentDrivers.length
       ? currentDrivers.map((cd) => ({ driverId: cd }))
       : [{ driverId: null }];
     return defaultDrivers;

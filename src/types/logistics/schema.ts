@@ -1352,7 +1352,7 @@ export interface IMaterial {
   type_description: string;
   quantity: number;
   material_type: IMaterialTypeByMaterial[];
-  material_transport:IMaterialTransportByMaterial[];
+  material_transport: IMaterialTransportByMaterial[];
 }
 
 export interface IFormMaterial {
@@ -1467,7 +1467,6 @@ export interface IMaterialTransportByMaterial {
   modified_at: Date;
   modified_by: string;
 }
-
 
 export interface IOtherRequirements {
   id: number;
@@ -1607,6 +1606,8 @@ export interface ITransferOrderRequest {
   transfer_order_vehicles?: ITransferOrderRequestVehicles[] | null;
   //journey
   transfer_order_journey?: ITransferOrderRequestJourney[] | null;
+  //psls
+  transfer_order_psl?: ITransferOrderPsls[] | null;
 }
 /**
  * Exposes all fields present in transfer_order_request_contacts as a typescript
