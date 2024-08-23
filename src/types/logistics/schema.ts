@@ -1490,7 +1490,7 @@ export interface ITransferOrderOtherRequirements {
   modified_at: Date;
   modified_by: string;
   other_requirement_desc: string;
-  description: string;;
+  description: string;
 }
 
 export interface ITransferOrderVehicle {
