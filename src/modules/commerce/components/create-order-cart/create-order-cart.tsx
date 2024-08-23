@@ -132,7 +132,7 @@ const CreateOrderCart: FC = ({}) => {
               <p>{formatMoney(confirmOrderData?.subtotal)}</p>
             </Flex>
             <Flex justify="space-between">
-              <p>IVA 19%</p>
+              <p>IVA</p>
               <p>{formatMoney(confirmOrderData?.taxes)}</p>
             </Flex>
             <Flex justify="space-between">
