@@ -112,18 +112,6 @@ export const SideBar = () => {
           </Button>
         </Link>
         )}
-        {!isLogistics && ( // TODO: remove this condition
-        <Link href="/logistics/configuration" passHref legacyBehavior>
-          <Button
-            type="primary"
-            size="large"
-            icon={<Gear size={26} />}
-            className={path.startsWith("/logistics/configuration") ? "buttonIcon" : "buttonIconActive"}
-          >
-            {isSideBarLarge && "Ajustes"}
-          </Button>
-        </Link>
-        )}
         <Link href="/map" passHref legacyBehavior>
           <Button
             type="primary"
@@ -152,6 +140,16 @@ export const SideBar = () => {
             className={path.startsWith("/logistics/acept_carrier") ? "buttonIcon" : "buttonIconActive"}
           >
             {isSideBarLarge && "Proveedores"}
+          </Button>
+        </Link>
+        <Link href="/logistics/configuration" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<Gear size={26} />}
+            className={path.startsWith("/logistics/configuration") ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Ajustes"}
           </Button>
         </Link>
       </Flex>
