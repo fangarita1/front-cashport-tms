@@ -9,17 +9,17 @@ interface IPermissionData {
   rol_id: number;
   name: string;
   logo: string | null;
-  views_permissions: IViewPermission[];
-  action_permissions: string[];
+  views_permissions?: IViewPermission[];
+  action_permissions?: string[];
   is_super_admin: boolean;
 }
 
-interface IViewPermission {
-  page_name: string;
+export interface IViewPermission {
+  page_name: string | "Configuracion" | "Clientes";
   components: IComponentPermission[];
 }
 
-interface IComponentPermission {
+export interface IComponentPermission {
   component_name: string;
   create_permission: boolean;
   update_permission: boolean;
