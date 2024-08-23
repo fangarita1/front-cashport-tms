@@ -1,11 +1,11 @@
-import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
-import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 import { IMaterial, ITransferOrderRequest, ITransferOrdersRequest } from "@/types/logistics/schema";
 import { Button, Col, Collapse, Flex, Row, Table, TableProps, Tabs, Typography } from "antd";
 import TabTransferOrder from "../tabMap/TabTransferOrder";
 import { Radioactive } from "@phosphor-icons/react";
 import { Warning } from "phosphor-react";
 import TabPane from "antd/es/tabs/TabPane";
+import { Responsibles } from "../../../DetailsOrderView/components/Responsibles/Responsibles";
+import AditionalInfo from "@/components/organisms/logistics/acept_carrier/detail/components/AditionalInfo/AditionalInfo";
 
 const { Title, Text } = Typography;
 
@@ -13,8 +13,7 @@ type PricingStepOneProps = {
   ordersId: number[];
   orders: ITransferOrdersRequest | undefined;
 };
-export default function PricingStepOne({ ordersId, orders }: PricingStepOneProps) {
-
+export default function PricingStepOne({ ordersId, orders }: Readonly<PricingStepOneProps>) {
   const columnsCarga: TableProps<IMaterial>["columns"] = [
     {
       title: "Cantidad",
@@ -152,64 +151,10 @@ export default function PricingStepOne({ ordersId, orders }: PricingStepOneProps
         </div>
       ),
       children: (
-        <Flex>
-          <Row style={{ width: "100%", marginBottom: "18px" }}>
+        <Flex style={{ marginBottom: "24px" }}>
+          <Row style={{ width: "100%" }}>
             <Col span={24}>
-              <Flex vertical className="productsContainer" style={{ width: "100%" }}>
-                <Row>
-                  <Col span={12}>
-                    <p style={{ paddingTop: "1rem" }}>
-                      <label>
-                        <b>PSL:</b> Product service line 1
-                      </label>
-                    </p>
-                    <p style={{ paddingTop: "0.5rem" }}>
-                      <label>
-                        &nbsp;&nbsp;&nbsp;<b>CC:</b> Centro de costos 1
-                      </label>
-                    </p>
-                  </Col>
-                  <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
-                    <p style={{ paddingTop: "1rem" }}>
-                      <label>
-                        <b>100%</b>
-                      </label>
-                    </p>
-                    <p style={{ paddingTop: "0.5rem" }}>
-                      <label>
-                        <b>100%</b>
-                      </label>
-                    </p>
-                  </Col>
-                  <Col span={24} style={{ paddingTop: "1rem" }}>
-                    <hr style={{ borderTop: "1px solid #f7f7f7" }}></hr>
-                  </Col>
-                  <Col span={12}>
-                    <p style={{ paddingTop: "1rem" }}>
-                      <label>
-                        <b>PSL:</b> Product service line 1
-                      </label>
-                    </p>
-                    <p style={{ paddingTop: "0.5rem" }}>
-                      <label>
-                        &nbsp;&nbsp;&nbsp;<b>CC:</b> Centro de costos 1
-                      </label>
-                    </p>
-                  </Col>
-                  <Col span={12} style={{ paddingTop: "0.5rem", textAlign: "right" }}>
-                    <p style={{ paddingTop: "1rem" }}>
-                      <label>
-                        <b>100%</b>
-                      </label>
-                    </p>
-                    <p style={{ paddingTop: "0.5rem" }}>
-                      <label>
-                        <b>100%</b>
-                      </label>
-                    </p>
-                  </Col>
-                </Row>
-              </Flex>
+              <Responsibles psls={orderRequest?.transfer_order_psl ?? []} insideCollapse={true} />
             </Col>
           </Row>
         </Flex>
@@ -229,95 +174,14 @@ export default function PricingStepOne({ ordersId, orders }: PricingStepOneProps
         <Flex style={{ marginBottom: "24px" }}>
           <Row style={{ width: "100%" }}>
             <Col span={24}>
-              <Flex vertical style={{ width: "100%", marginTop: "24px" }}>
-                <h4 style={{ fontSize: "20px", lineHeight: "32px", fontWeight: "400" }}>
-                  Documentos
-                </h4>
-                <Row className="mainUploadDocuments">
-                  {orderRequest?.transfer_order_documents?.map((file) => (
-                    <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
-                      <UploadDocumentButton
-                        key={file.id}
-                        title={file.document_type_desc}
-                        isMandatory={!file.active}
-                        aditionalData={file.id}
-                        setFiles={() => {}}
-                        disabled
-                      >
-                        {file?.url_document ? (
-                          <UploadDocumentChild
-                            linkFile={file.url_document}
-                            nameFile={file.url_document.split("-").pop() || ""}
-                            onDelete={() => {}}
-                            showTrash={false}
-                          />
-                        ) : undefined}
-                      </UploadDocumentButton>
-                    </Col>
-                  ))}
-                  <Col span={24} style={{ paddingTop: "1rem" }}>
-                    <hr style={{ borderTop: "1px solid #f7f7f7" }}></hr>
-                  </Col>
-                </Row>
-                <Row style={{ marginTop: "2rem" }}>
-                  <Col span={12}>
-                    <h3>Datos de contacto</h3>
-                    <p>&nbsp;</p>
-                    <h4>Contacto inicial</h4>
-                    {orderRequest?.transfer_order_contacts
-                      ?.filter((x) => x.contact_type == 1)
-                      .map((contact) => (
-                        <Row style={{ paddingTop: "0.5rem" }} key={contact.id}>
-                          <Col span={12} style={{ paddingLeft: "25px" }}>
-                            {contact.name}
-                          </Col>
-                          <Col span={8} style={{ textAlign: "right" }}>
-                            {contact.contact_number}
-                          </Col>
-                        </Row>
-                      ))}
-                    <p>&nbsp;</p>
-                    <h4>Contacto final</h4>
-                    {orderRequest?.transfer_order_contacts
-                      ?.filter((x) => x.contact_type == 2)
-                      .map((contact) => (
-                        <Row style={{ paddingTop: "0.5rem" }} key={contact.id}>
-                          <Col span={12} style={{ paddingLeft: "25px" }}>
-                            {contact.name}
-                          </Col>
-                          <Col span={8} style={{ textAlign: "right" }}>
-                            {contact.contact_number}
-                          </Col>
-                        </Row>
-                      ))}
-                    <p>&nbsp;</p>
-                    <Row style={{ paddingTop: "1rem" }}>
-                      <Col span={12}>
-                        <h4>Cliente final</h4>
-                      </Col>
-                      <Col span={8} style={{ textAlign: "right" }}>
-                        {orderRequest?.client_desc}
-                      </Col>
-                    </Row>
-                    <p>&nbsp;</p>
-                    <h4>Requerimientos adicionales</h4>
-                    <Row style={{ paddingTop: "1rem" }}>
-                      <Col span={24}>
-                        {orderRequest?.transfer_order_other_requeriments?.map((req) => (
-                          <div className="selected" key={req.id}>
-                            {req.other_requirement_desc} <small>{req.quantity}</small>
-                          </div>
-                        ))}
-                      </Col>
-                    </Row>
-                  </Col>
-                  <Col span={12}>
-                    <h3>Instrucciones especiales</h3>
-                    <p>&nbsp;</p>
-                    <p style={{ minHeight: "250px" }}>{orderRequest?.observation}</p>
-                  </Col>
-                </Row>
-              </Flex>
+              <AditionalInfo
+                insideCollapse={true}
+                documents={orderRequest?.transfer_order_documents ?? []}
+                contacts={orderRequest?.transfer_order_contacts ?? []}
+                otherRequirements={orderRequest?.transfer_order_other_requeriments ?? []}
+                specialInstructions={orderRequest?.observation ?? ""}
+                finalClient={orderRequest?.client_desc ?? ""}
+              />
             </Col>
           </Row>
         </Flex>
@@ -377,7 +241,6 @@ export default function PricingStepOne({ ordersId, orders }: PricingStepOneProps
       )
     }
   ];
-
 
   return (
     <Flex style={{ width: "100%", flexDirection: "column" }}>

@@ -4,7 +4,7 @@ import { runes } from 'runes2';
 
 // dayjs locale
 import dayjs, { Dayjs } from 'dayjs';
-import 'dayjs/locale/es-us';
+import 'dayjs/locale/es';
 dayjs.locale('es');
 
 // mapbox
@@ -40,7 +40,8 @@ import {
   NewspaperClipping,
   Trash,
   CaretLeft,
-  CaretRight
+  CaretRight,
+  Phone
 } from "@phosphor-icons/react";
 
 import "../../../../../styles/_variables_logistics.css";
@@ -48,7 +49,7 @@ import "../../../../../styles/_variables_logistics.css";
 import "./createorder.scss";
 import { FileObject, UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import TextArea from "antd/es/input/TextArea";
-import { addTransferOrder } from "@/services/logistics/transfer-orders";
+import { addTransferOrder, getAllUsers } from "@/services/logistics/transfer-orders";
 import { getOtherRequirements } from "@/services/logistics/other-requirements";
 import { getPsl } from "@/services/logistics/psl";
 import { auth } from "../../../../../../firebase";
@@ -483,7 +484,7 @@ export const CreateOrderView = () => {
     },
   ];
 
-  const columnsCargaPersonas = [
+  const columnsCargaPersonas: TableProps<ITransferOrderPersons>['columns'] = [
     {
       title: 'Nombre',
       dataIndex: 'name',
@@ -491,18 +492,31 @@ export const CreateOrderView = () => {
     },
     {
       title: 'Teléfono',
-      dataIndex: 'phone',
-      key: 'phone',
+      dataIndex: 'contact_number',
+      key: 'contact_number',
     },
     {
       title: 'PSL',
-      dataIndex: 'psl',
-      key: 'psl',
+      dataIndex: 'psl_desc',
+      key: 'psl_desc',
     },
     {
       title: 'CC',
-      dataIndex: 'typeid',
-      key: 'typeid',
+      dataIndex: 'cost_center_desc',
+      key: 'cost_center_desc',
+    },
+    {
+      title: '',
+      dataIndex: 'alerts',
+      key: 'alerts',
+      render: (_, record) =>
+        dataPersons.length >= 1 ? (
+          <Popconfirm title="Esta seguro de eliminar?" onConfirm={() => handleDeletePerson(record.key)} >
+            <div style={{ display:"flex", justifyContent:"center",alignItems:"center", height:32, width: 32}}>
+              <Trash size={24}/>
+            </div>
+          </Popconfirm>
+        ) : null,
     }
   ];
 
@@ -1133,6 +1147,61 @@ export const CreateOrderView = () => {
 
   /* Datos de personas */
   const [dataPersons, setDataPersons] = useState<ITransferOrderPersons[]>([]);
+  const [optionsPersons, setOptionsPersons] = useState<CustomOptionType[]>([]);
+
+  const loadPersons= async () => {
+    if(optionsPersons !== undefined && optionsPersons.length >0 ) return;
+
+    const res = await getAllUsers();
+    let result: any = [];
+    if(res?.data?.data?.length > 0){
+      res.data.data.forEach((item) => {
+        const strlabel = <div style={{ display: 'flex', alignItems: "center"}}>
+                            <Col span={20}>
+                                <Text><b>{item.name}</b>
+                                <br/>
+                                <Phone size={12} /> {item.contact_number}
+                                <br/>
+                                {item.psl_desc} - {item.cost_center_desc}
+                                </Text>
+                            </Col>
+                            <Col span={4} style={{ display: 'flex', justifyContent: "flex-end"}}>
+                              <button className="btnagregar active" onClick={() => addPerson(item)}>Agregar</button>
+                            </Col>
+                        </div>;
+
+        result.push({value:item.description, label: strlabel})
+      });      
+    }
+    setOptionsPersons(result); 
+  };
+
+  useEffect(() => {
+    setDataPersons([])
+    loadPersons();
+  }, [typeactive]);
+
+  const filteredPersonsOptions = optionsPersons.filter(
+    (option:any) => !dataPersons.some(person => person.name === option.value)
+  );
+
+  let personsIdx = 0;
+  const addPerson = async (value:any) =>{
+    personsIdx = personsIdx + 1;
+
+    value.key = requirementsIdx;
+
+    const newvalue : ITransferOrderPersons = value;
+    //console.log(newvalue);
+    await setDataPersons(dataPersons => [...dataPersons, newvalue]);
+  };
+
+  const handleDeletePerson = (key: React.Key) => {
+    console.log(key)
+    personsIdx = personsIdx - 1;
+    const newData = dataPersons.filter((item) => item.key !== key);
+    setDataPersons(newData);
+  };
 
 
   /* Form Event Handlers */
@@ -1757,17 +1826,25 @@ export const CreateOrderView = () => {
                     <Text className="locationLabels" style={{ display: 'flex' }}>
                       Personas
                     </Text>
-                    <AutoComplete
-                      className="puntoOrigen dateInputForm"
-                      popupMatchSelectWidth={500}
-                      style={{ width:'100%', height: "2.5rem" }}
-                      size="large"
-                      placeholder="Buscar persona"
-                    />  
+                    <Select
+                        showSearch
+                        allowClear
+                        placeholder="Buscar persona"                  
+                        options={filteredPersonsOptions}
+                        value={null}
+                        style={{ width:"100%", height: "2.5rem" }}
+                        optionFilterProp="label"
+                        filterOption={(input: string, option) => {
+                          if (option) {
+                            return option.label.props.toLowerCase().includes(input.toLowerCase());
+                          }
+                          return false; 
+                        }}
+                      />
                   </Col>
                   <Col span={12}/>
                   <Col span={24}>
-                    <Table columns={columnsCargaPersonas} />
+                    <Table columns={columnsCargaPersonas} dataSource={dataPersons} />
                   </Col>
                 </Col>
               </Row>

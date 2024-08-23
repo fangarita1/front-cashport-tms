@@ -1,13 +1,17 @@
 "use client";
 import { getTransferRequestSteps } from "@/services/logistics/transfer-request";
 import { Spin } from "antd";
-import useSWR from "swr/immutable";
+import useSWR from "swr";
 import PricingTransferRequest from "../PricingTransferRequest";
 import { MODE_PRICING } from "../constant/constants";
 import { ITransferRequestJourneyReview } from "@/types/logistics/schema";
 
 export default function TrPricingSteperFetcher({ id }: { id: number }) {
   const { data, isLoading, mutate } = useSWR({ id }, ({ id }) => getTransferRequestSteps(id), {
+    revalidateOnMount: true,
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
     onError: (error) => {
       console.error("error", error);
     }

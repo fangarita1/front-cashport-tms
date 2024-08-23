@@ -30,21 +30,21 @@ export interface MaterialImage {
   url_archive?: string,
   file?: FileObject
 }
-export type MaterialData = IMaterial & { documents?: ICertificates[] }  & {images?: MaterialImage};
+export type MaterialData = IMaterial & { documents?: ICertificates[] }  & {images?: MaterialImage[]};
 
 
 export const dataToProjectFormData = (data: any): any => {
 
   if (!data) return {};
 
-  const documents = data.documents.map((doc: any) => ({
+  const documents = data.documents?.map((doc: any) => ({
     file: {
       name: doc.url_archive.split("/").pop(),
       url: doc.url_archive
     }
   }));
 
-  const images = data.images.map((image: any) => {
+  const images = data.images?.map((image: any) => {
     const fileData = image.data;
     const fileName = image.url_archive.split("/").pop();
     const file = new File([fileData], fileName);
@@ -55,24 +55,26 @@ export const dataToProjectFormData = (data: any): any => {
   return {    
     general: {
       id: data.id,
-      description: data.phone,
-      id_type_material: data.email,
-      kg_weight: data.document_type,
-      mt_height: data.document,
-      mt_width: data?.licence || data.license,
-      mt_length: data.licence_category || "",
-      m3_volume: dayjs(data.license_expiration) as any,
-      rotation: data.name,
-      can_stack: data.last_name,
-      image: data.emergency_number,
-      aditional_info: data.emergency_contact,
+      description: data.description,
+      id_type_material: data.id_type_material,
+      kg_weight: data.kg_weight,
+      mt_height: data.mt_height,
+      mt_width: data.mt_width,
+      mt_length: data.mt_length,
+      m3_volume: data.m3_volume,
+      rotation: data.rotation,
+      can_stack: data.can_stack,
+      image: data.image,
+      aditional_info: data.aditional_info,
       active: data.active,
       created_at: data.created_at,
       created_by: data.created_by,
       modified_at: data.created_at,
       modified_by: data.created_by,
-      icon: data.company,
-      restriction: data.rh,
+      icon: data.icon,
+      restriction: data.restriction,
+      code_sku:data.code_sku,
+      material_transport:data.material_transport
     },
     images: images,
     files: documents,
@@ -82,17 +84,16 @@ export const dataToProjectFormData = (data: any): any => {
 
 export const _onSubmit = (
   data: any,
-  files: DocumentCompleteType[],
-  imageFile: FileObject[] | undefined,
+  selectedFiles: DocumentCompleteType[],
+  imageFiles: { docReference: string; file: File }[],
   setImageError: (value: SetStateAction<boolean>) => void,
   setloading: (value: SetStateAction<boolean>) => void,
   onSubmitForm: (data: any) => void,
 ) => {
   setloading(true);
   try {
-    const hasImage = imageFile || data.general.photo;
-    if (!hasImage) return setImageError(true);
-    onSubmitForm({ ...data, logo: imageFile, files });
+    setImageError(false);
+    onSubmitForm({...data, images: imageFiles, files: selectedFiles});
   } catch (error) {
     console.warn({ error });
   } finally{

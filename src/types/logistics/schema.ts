@@ -462,6 +462,7 @@ export interface ICarrierRequestDetail {
   //personas -- aplica para viaje tipo persona!
   carrier_request_persons?: ICarrierRequestPersons[] | null;
 }
+
 /**
  * Exposes all fields present in carrier_request_contacts as a typescript
  * interface.
@@ -482,6 +483,7 @@ export interface ICarrierRequestContacts {
   modified_by: string;
   id_transfer_request: number;
 }
+
 /**
  * Exposes all fields present in carrier_request_documents as a typescript
  * interface.
@@ -1308,7 +1310,7 @@ export interface ILocationByGrouplocationWithDefaults {
 export interface IDocumentsType {
   id: string;
   entity_type: number;
-  description : string;
+  description: string;
   optional: string;
   id_location: number;
   id_material_type: number;
@@ -1346,10 +1348,11 @@ export interface IMaterial {
   modified_by?: string | null;
   icon: string;
   restriction?: string | null;
+  code_sku: string;
   type_description: string;
   quantity: number;
-  material_type: IMaterialType[];
-  material_transport:IMaterialTransport[];
+  material_type: IMaterialTypeByMaterial[];
+  material_transport: IMaterialTransportByMaterial[];
 }
 
 export interface IFormMaterial {
@@ -1401,7 +1404,6 @@ export interface IMaterialType {
   modified_by?: string | null;
 }
 
-
 /**
  * Exposes all fields present in material_type as a typescript
  * interface.
@@ -1437,13 +1439,33 @@ export interface IMaterialTypeWithDefaults {
  * Exposes all fields present in material_type as a typescript
  * interface.
  */
-export interface IMaterialTransport{
+export interface IMaterialTransport {
   id: number;
   description: string;
   created_at: Date;
   created_by: string;
   modified_at?: Date | null;
   modified_by?: string | null;
+}
+
+export interface IMaterialTypeByMaterial {
+  id: string;
+  id_material: number;
+  id_material_type: number;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
+export interface IMaterialTransportByMaterial {
+  id: string;
+  id_material: number;
+  id_material_transport_type: number;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
 }
 
 export interface IOtherRequirements {
@@ -1584,6 +1606,8 @@ export interface ITransferOrderRequest {
   transfer_order_vehicles?: ITransferOrderRequestVehicles[] | null;
   //journey
   transfer_order_journey?: ITransferOrderRequestJourney[] | null;
+  //psls
+  transfer_order_psl?: ITransferOrderPsls[] | null;
 }
 /**
  * Exposes all fields present in transfer_order_request_contacts as a typescript
@@ -1845,7 +1869,7 @@ export interface ITransferRequestCreation {
  * interface.
  */
 export interface ITransferRequestVehiclesSugest {
-  transferRequestVehiclesSugest: IVehicleType[];
+  transferRequestVehiclesSugest: any[];
 }
 /**
  * Exposes all fields present in transfer_request_journey_info as a typescript
@@ -1948,8 +1972,8 @@ export interface ITransferOrder {
   id_end_location: number;
   start_date?: string;
   end_date?: string;
-  start_freight_equipment: string;
-  end_freight_equipment: string;
+  start_freight_equipment: boolean | string;
+  end_freight_equipment: boolean | string;
   freight_origin_time?: number;
   freight_destination_time?: number;
   rotation: string;
@@ -2200,6 +2224,7 @@ export interface ITransferOrderDocumentsWithDefaults {
  * interface.
  */
 export interface ITransferOrderPersons {
+  key:number;
   id: number;
   id_transfer_order: number;
   id_user: number;
@@ -2210,6 +2235,12 @@ export interface ITransferOrderPersons {
   modified_at?: Date | null;
   modified_by?: string | null;
   id_user_subline: number;
+  name:string;
+  contact_number:string;
+  id_psl: number;
+  psl_desc:string;
+  id_cost_center: number;
+  cost_center_desc:string;
 }
 
 /**
@@ -3264,4 +3295,10 @@ export interface ITransferOrderPsls {
   id: number;
   description: string;
   transfer_order_cost_center: ITransferOrderCostCenter[];
+}
+
+export interface ICarrierRequestDetailAPI extends ICarrierRequestDetail {
+  vehicle: ICarrierRequestVehicles;
+  drivers: ICarrierRequestDrivers[];
+  observation?: string;
 }
