@@ -106,20 +106,19 @@ export const BankRuleModal = ({ showBankRuleModal, onClose }: Props) => {
             />
           </div>
         ))}
-
-        {!showBankRuleModal.ruleId && (
-          <Button
-            type="text"
-            size="large"
-            style={{ paddingLeft: 0, fontWeight: 500, width: "fit-content", marginTop: "0.4rem" }}
-            onClick={handleAddRule}
-            icon={<Plus size={"1.45rem"} />}
-          >
-            Agregar otra
-          </Button>
-        )}
       </div>
 
+      {!showBankRuleModal.ruleId && (
+        <Button
+          type="text"
+          size="large"
+          style={{ paddingLeft: 0, fontWeight: 500, width: "fit-content", marginTop: "-0.8rem" }}
+          onClick={handleAddRule}
+          icon={<Plus size={"1.45rem"} />}
+        >
+          Agregar otra
+        </Button>
+      )}
       <div className="bankRuleModal__footer">
         <SecondaryButton onClick={onClose}>Cancelar</SecondaryButton>
         <PrincipalButton disabled={!isValid} onClick={handleSubmit(handleAddEditRule)}>

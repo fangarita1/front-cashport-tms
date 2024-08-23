@@ -21,6 +21,10 @@
     &__rules {
         display: flex;
         flex-direction: column;
+        gap: 1.5rem;
+        max-height: 310px;
+        overflow-y: scroll;
+        scrollbar-width: none;
     }
 
     &__singleRule {
