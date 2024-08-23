@@ -1,4 +1,5 @@
 import { Button, Flex, MenuProps } from "antd";
+import { useState } from "react";
 import UiSearchInput from "@/components/ui/search-input";
 import FilterDiscounts from "@/components/atoms/Filters/FilterDiscounts/FilterDiscounts";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
@@ -6,14 +7,17 @@ import PrincipalButton from "@/components/atoms/buttons/principalButton/Principa
 import { Bank, CaretLeft } from "phosphor-react";
 
 import styles from "./banks-rules.module.scss";
+import BanksRulesTable from "../../components/banks-rules-table/Banks-rules-table";
 
 interface PropsBanksRules {
   onClickBack: () => void;
 }
 
 export const BanksRules = ({ onClickBack }: PropsBanksRules) => {
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
   const handleDeleteRules = () => {
-    console.info("Delete rules");
+    console.info("Delete rules with ids", selectedRowKeys);
   };
 
   const items: MenuProps["items"] = [
@@ -29,7 +33,7 @@ export const BanksRules = ({ onClickBack }: PropsBanksRules) => {
 
   return (
     <div className={styles.banksRules}>
-      <Flex justify="space-between" style={{ height: "3rem" }}>
+      <Flex justify="space-between" style={{ height: "3rem" }} align="center">
         <Button
           type="text"
           size="large"
@@ -45,7 +49,7 @@ export const BanksRules = ({ onClickBack }: PropsBanksRules) => {
         </PrincipalButton>
       </Flex>
 
-      <div className={styles.header}>
+      <div className={styles.tableHeaderButtons}>
         <UiSearchInput
           placeholder="Buscar"
           onChange={(event) => {
@@ -57,8 +61,41 @@ export const BanksRules = ({ onClickBack }: PropsBanksRules) => {
         <FilterDiscounts />
         <DotsDropdown items={items} />
       </div>
+
+      <BanksRulesTable
+        selectedRowKeys={selectedRowKeys}
+        setSelectedRowKeys={setSelectedRowKeys}
+        rules={mockRules}
+      />
     </div>
   );
 };
 
 export default BanksRules;
+
+const mockRules = [
+  {
+    id: 1,
+    description: "Cooperativa nacional de drog",
+    client_name: "Coopidrogas",
+    coincidence: "Coincidencia exacta"
+  },
+  {
+    id: 2,
+    description: "Cooperativa nacional de drog",
+    client_name: "Coopidrogas",
+    coincidence: "Contiene"
+  },
+  {
+    id: 3,
+    description: "Cooperativa nacional de drog",
+    client_name: "Coopidrogas",
+    coincidence: "Coincidencia exacta"
+  },
+  {
+    id: 4,
+    description: "Cooperativa nacional de drog",
+    client_name: "Coopidrogas",
+    coincidence: "Coincidencia exacta"
+  }
+];
