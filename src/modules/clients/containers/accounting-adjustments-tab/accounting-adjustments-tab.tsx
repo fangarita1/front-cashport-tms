@@ -17,6 +17,10 @@ import UiFilterDropdown from "@/components/ui/ui-filter-dropdown";
 import "./accounting-adjustments-tab.scss";
 import { useModalDetail } from "@/context/ModalContext";
 import { mutate } from "swr";
+import { useDebounce } from "@/hooks/useDeabouce";
+import AccountingAdjustmentsFilter, {
+  SelectedFiltersAccountingAdjustments
+} from "@/components/atoms/Filters/FilterAccountingAdjustmentTab/FilterAccountingAdjustmentTab";
 
 const AccountingAdjustmentsTab = () => {
   const [selectedRows, setSelectedRows] = useState<FinancialDiscount[] | undefined>(undefined);
@@ -27,8 +31,20 @@ const AccountingAdjustmentsTab = () => {
   const projectIdParam = extractSingleParam(params.projectId);
   const clientId = clientIdParam ? parseInt(clientIdParam) : 0;
   const projectId = projectIdParam ? parseInt(projectIdParam) : 0;
-
-  const { data, isLoading } = useFinancialDiscounts(clientId, projectId);
+  const debouncedSearchQuery = useDebounce(search, 500);
+  const [filters, setFilters] = useState<SelectedFiltersAccountingAdjustments>({
+    lines: [],
+    zones: [],
+    channels: []
+  });
+  const { data, isLoading } = useFinancialDiscounts({
+    clientId,
+    projectId,
+    id: debouncedSearchQuery ? parseInt(debouncedSearchQuery) : undefined,
+    line: filters.lines[0],
+    zone: filters.zones[0],
+    channel: filters.channels[0]
+  });
   const { openModal, modalType } = useModalDetail();
 
   const handleOpenAdjustmentDetail = (adjustment: FinancialDiscount) => {
@@ -46,37 +62,33 @@ const AccountingAdjustmentsTab = () => {
 
   return (
     <>
-      {isLoading ? (
-        <Flex justify="center" align="center" style={{ height: "3rem" }}>
-          <Spin />
-        </Flex>
-      ) : (
-        <div className="accountingAdjustmentsTab">
-          <Flex justify="space-between" className="accountingAdjustmentsTab__header">
-            <Flex gap={"0.5rem"}>
-              <UiSearchInput
-                className="search"
-                placeholder="Buscar"
-                onChange={(event) => {
-                  setTimeout(() => {
-                    setSearch(event.target.value);
-                  }, 1000);
-                }}
-              />
-              <UiFilterDropdown />
-              <DotsDropdown />
-            </Flex>
-
-            <Button
-              type="primary"
-              className="availableAdjustments"
-              onClick={() => console.log("click ajustes disponibles")}
-            >
-              Ajustes disponibles
-              <CaretDoubleRight size={16} style={{ marginLeft: "0.5rem" }} />
-            </Button>
+      <div className="accountingAdjustmentsTab">
+        <Flex justify="space-between" className="accountingAdjustmentsTab__header">
+          <Flex gap={"0.5rem"}>
+            <UiSearchInput
+              className="search"
+              placeholder="Buscar"
+              onChange={(event) => {
+                setSearch(event.target.value);
+              }}
+            />
+            <AccountingAdjustmentsFilter onFilterChange={setFilters} />
           </Flex>
+          <Button
+            type="primary"
+            className="availableAdjustments"
+            onClick={() => console.log("click ajustes disponibles")}
+          >
+            Ajustes disponibles
+            <CaretDoubleRight size={16} style={{ marginLeft: "0.5rem" }} />
+          </Button>
+        </Flex>
 
+        {isLoading ? (
+          <Flex justify="center" align="center" style={{ height: "3rem" }}>
+            <Spin />
+          </Flex>
+        ) : (
           <Collapse
             items={data?.map((financialState: StatusFinancialDiscounts) => ({
               key: financialState.status_id,
@@ -96,8 +108,8 @@ const AccountingAdjustmentsTab = () => {
               )
             }))}
           />
-        </div>
-      )}
+        )}
+      </div>
     </>
   );
 };
