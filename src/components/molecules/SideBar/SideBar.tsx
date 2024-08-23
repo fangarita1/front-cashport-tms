@@ -90,16 +90,6 @@ export const SideBar = () => {
               </Button>
             </Link></>
         )}
-        <Link href="/logistics/orders" passHref legacyBehavior>
-          <Button
-            type="primary"
-            size="large"
-            icon={<Truck size={26} />}
-            className={path.startsWith("/logistics/orders") ? "buttonIcon" : "buttonIconActive"}
-          >
-            {isSideBarLarge && "Solicitudes"}
-          </Button>
-        </Link>
         <Link href="/logistics/providers/all" passHref legacyBehavior>
           <Button
             type="primary"
@@ -122,18 +112,6 @@ export const SideBar = () => {
           </Button>
         </Link>
         )}
-        {!isLogistics && ( // TODO: remove this condition
-        <Link href="/logistics/configuration" passHref legacyBehavior>
-          <Button
-            type="primary"
-            size="large"
-            icon={<Gear size={26} />}
-            className={path.startsWith("/logistics/configuration") ? "buttonIcon" : "buttonIconActive"}
-          >
-            {isSideBarLarge && "Ajustes"}
-          </Button>
-        </Link>
-        )}
         <Link href="/map" passHref legacyBehavior>
           <Button
             type="primary"
@@ -148,8 +126,8 @@ export const SideBar = () => {
           <Button
             type="primary"
             size="large"
-            icon={<NewspaperClipping size={26} />}
-            className={path.startsWith("/logistics/transfer-orders") ? "buttonIcon" : "buttonIconActive"}
+            icon={<Truck size={26} />}
+            className={path.startsWith("/logistics/transfer-orders") || path.startsWith("/logistics/orders") ? "buttonIcon" : "buttonIconActive"}
           >
             {isSideBarLarge && "Ajustes"}
           </Button>
@@ -172,6 +150,14 @@ export const SideBar = () => {
             className={path.startsWith("/facturacion") ? "buttonIcon" : "buttonIconActive"}
           >
             {isSideBarLarge && "Proveedores"}
+        <Link href="/logistics/configuration" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<Gear size={26} />}
+            className={path.startsWith("/logistics/configuration") ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Ajustes"}
           </Button>
         </Link>
       </Flex>

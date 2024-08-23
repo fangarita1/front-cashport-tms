@@ -15,15 +15,15 @@
     display: flex;
     flex-direction: column;
     .dropdown {
-      width: 35%;
+      width: 25rem;
       height: 100%;
-      padding: 10px 16px;
+      padding: 0.5rem;
       border: 1px solid #DDDFE8;
       border-radius: 4px;
       .dropdownSelect {
         width: 100%;
         height: auto;
-        padding: 10px 16px;
+        padding: 0.5rem;
         border: 1px solid #DDDFE8;
         border-radius: 4px;
         .left {
@@ -50,14 +50,111 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-top: 1rem;
       .button {
         border: 0;
         background-color: $white;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 0.5rem; 
         cursor: pointer;
+        box-shadow: none;
       }
     }
+  }
+}
+.textDropdown {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.uploadContainer {
+  display: grid;
+  gap: 1rem;
+}
+
+/* Para pantallas grandes (4 elementos en una fila) */
+@media (min-width: 1024px) {
+  .uploadContainer {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Para pantallas medianas (2 filas de 2 elementos) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .uploadContainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Para pantallas pequeñas (4 filas de 1 elemento) */
+@media (max-width: 767px) {
+  .uploadContainer {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+.dropdownValue {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #2B2845;
+}
+.labelSelect {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+}
+.subtitle {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -1px;
+  margin-bottom: 0.75rem;
+}
+.sectionTitle {
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: -1px;
+  margin-bottom: 2rem;
+}
+.divider {
+  border: 0.0625rem solid $dark-gray;
+  margin:  0 !important;
+}
+.buttonTransparent {
+  border: none;
+  box-shadow: none;
+  background-color: $white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;  
+  padding: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  &:disabled {
+    background-color: $white; 
+    cursor: not-allowed;
+  }
+    p {
+      font-weight: 400; // Valor por defecto
+      font-size: 14px; // Valor por defecto
+      line-height: 14px; // Valor por defecto
+    }
+}
+.addOrRemove {
+  p {
+    font-weight: 700 ;
+    font-size: 14px ;
+    line-height: 14px;
+  }
+}
+.editDocs {
+  padding: 0;
+  p {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
   }
 }

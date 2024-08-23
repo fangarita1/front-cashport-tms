@@ -93,7 +93,7 @@ export const LocationsTable = () => {
       dataIndex: "",
       render: (_, { id }) => (
         <Button
-          href={`/logistics/locations/${id}`}
+          href={`/logistics/configuration/locations/${id}`}
           className="icon-detail"
           icon={<Eye size={20} />}
         />
@@ -117,11 +117,13 @@ export const LocationsTable = () => {
             href="/logistics/providers/provider"
             icon={<DotsThree size={"1.5rem"} />}
           />
+        </Flex>
+        <Flex justify="flex-end">
           <Button
             type="primary"
             className="buttonNewProject"
             size="large"
-            href="/logistics/configuration/locations/location"
+            href="/logistics/configuration/locations/new"
           >
             Nueva ubicación
             {<Plus weight="bold" size={14} />}

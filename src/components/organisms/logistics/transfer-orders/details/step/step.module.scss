@@ -46,6 +46,18 @@
           font-size: 16px;
           font-weight: 400;
           letter-spacing: -0.08px;
+
+          &.currentDotText {
+            color: #FFFFFF;
+          }
+        }
+
+        &.currentDot {
+          background-color: #141414;
+        }
+
+        &.nextDot {
+          background-color: #DDDDDD;
         }
       }
 
@@ -56,6 +68,14 @@
         background-color: #CBE71E;
         margin-left: 4px;
         margin-right: 4px;
+
+        &.currentDotLine {
+          background-color: #141414;
+        }
+
+        &.nextDotLine {
+          background-color: #DDDDDD;
+        }
       }
     }
 

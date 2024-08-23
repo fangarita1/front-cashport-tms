@@ -1,10 +1,10 @@
-import { Flex, Tabs, TabsProps, Typography, message, Collapse, Row, Col, Select, Switch, DatePicker, DatePickerProps, GetProps, TimePicker, Table, TableProps,AutoComplete, Input, ConfigProvider, InputNumber, Button, SelectProps, Popconfirm, Modal, Divider, Space } from "antd";
-import React, { useRef, useEffect, useState, useContext } from "react";
+import { Flex, Typography, message, Collapse, Row, Col, Select, Switch, DatePicker, TimePicker, Table, TableProps,AutoComplete, Input, InputNumber, Button, Popconfirm, Divider, Space, theme } from "antd";
+import React, { useRef, useEffect, useState } from "react";
 import { runes } from 'runes2';
 
 // dayjs locale
 import dayjs, { Dayjs } from 'dayjs';
-import 'dayjs/locale/es-us';
+import 'dayjs/locale/es';
 dayjs.locale('es');
 
 // mapbox
@@ -18,19 +18,19 @@ import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 
 //schemas
-import { CustomOptionType, IAditionalByMaterial, IClient, ICompanyCode, ICreateRegister, IFormTransferOrder, IListData, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ISelectOptionOrders, ITransferOrder, ITransferOrderContacts, ITransferOrderDocuments, ITransferOrderOtherRequirements, ITransferOrderPersons, IVehicleType, PSLOptionType, TransferOrderDocumentType } from "@/types/logistics/schema";
+import { CustomOptionType, IClient, ICompanyCode, IFormTransferOrder, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ITransferOrder, ITransferOrderContacts, ITransferOrderOtherRequirements, ITransferOrderPersons, IVehicleType, PSLOptionType } from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
 
 //materials
-import { getAllMaterials, getSearchMaterials } from "@/services/logistics/materials";
+import { getAllMaterials} from "@/services/logistics/materials";
 
 //materials
 import { getSuggestedVehicles } from "@/services/logistics/vehicles";
 
 //vars
-import { CREATED, SUCCESS } from "@/utils/constants/globalConstants";
+import { SUCCESS } from "@/utils/constants/globalConstants";
 import { useRouter } from "next/navigation";
 import {
   PlusCircle,
@@ -40,7 +40,8 @@ import {
   NewspaperClipping,
   Trash,
   CaretLeft,
-  CaretRight
+  CaretRight,
+  Phone
 } from "@phosphor-icons/react";
 
 import "../../../../../styles/_variables_logistics.css";
@@ -48,7 +49,7 @@ import "../../../../../styles/_variables_logistics.css";
 import "./createorder.scss";
 import { FileObject, UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import TextArea from "antd/es/input/TextArea";
-import { addTransferOrder } from "@/services/logistics/transfer-orders";
+import { addTransferOrder, getAllUsers } from "@/services/logistics/transfer-orders";
 import { getOtherRequirements } from "@/services/logistics/other-requirements";
 import { getPsl } from "@/services/logistics/psl";
 import { auth } from "../../../../../../firebase";
@@ -63,10 +64,10 @@ import ModalAddContact from "@/components/molecules/modals/ModalAddContact/Modal
 import { getCompanyCodes } from "@/services/logistics/company-codes";
 import { getClients } from "@/services/logistics/clients";
 import { getTravelDuration } from "@/utils/logistics/maps";
-import CustomHourPicker from "@/components/molecules/logistics/HourPicker/HourPicker";
 import CustomTimeSelector from "@/components/molecules/logistics/HourPicker/HourPicker";
 
 const { Title, Text } = Typography;
+const { useToken } = theme;
 
 export const CreateOrderView = () => {
   const { push } = useRouter();
@@ -484,7 +485,7 @@ export const CreateOrderView = () => {
     },
   ];
 
-  const columnsCargaPersonas = [
+  const columnsCargaPersonas: TableProps<ITransferOrderPersons>['columns'] = [
     {
       title: 'Nombre',
       dataIndex: 'name',
@@ -492,18 +493,31 @@ export const CreateOrderView = () => {
     },
     {
       title: 'Teléfono',
-      dataIndex: 'phone',
-      key: 'phone',
+      dataIndex: 'contact_number',
+      key: 'contact_number',
     },
     {
       title: 'PSL',
-      dataIndex: 'psl',
-      key: 'psl',
+      dataIndex: 'psl_desc',
+      key: 'psl_desc',
     },
     {
       title: 'CC',
-      dataIndex: 'typeid',
-      key: 'typeid',
+      dataIndex: 'cost_center_desc',
+      key: 'cost_center_desc',
+    },
+    {
+      title: '',
+      dataIndex: 'alerts',
+      key: 'alerts',
+      render: (_, record) =>
+        dataPersons.length >= 1 ? (
+          <Popconfirm title="Esta seguro de eliminar?" onConfirm={() => handleDeletePerson(record.key)} >
+            <div style={{ display:"flex", justifyContent:"center",alignItems:"center", height:32, width: 32}}>
+              <Trash size={24}/>
+            </div>
+          </Popconfirm>
+        ) : null,
     }
   ];
 
@@ -756,11 +770,26 @@ export const CreateOrderView = () => {
     loadPSL();
   }, []);
 
-  const setOptionsCostCenter = (idPsl:number) => {
-    const pslFinded =  optionsPSL && optionsPSL.find(option => option.value === idPsl)
-    if( !pslFinded) return []
-    return pslFinded.costcenters.map((c:any)=>({value: c.id, label: c.description}))
-  }
+  const setOptionsCostCenter = (idPsl: number) => {
+    const pslFinded = optionsPSL?.find(option => option.value === idPsl);
+    if (!pslFinded) return [];
+
+    const pslInData = dataPsl.find(psl => psl.idpsl === idPsl);
+
+    const selectedCostCenterIds = pslInData?.costcenters.map(costCenter => costCenter.idpslcostcenter) || [];
+
+    const newCcArray = pslFinded.costcenters
+        .map(c => ({ value: c.id, label: c.description }))
+        .filter(c => !selectedCostCenterIds.includes(c.value));
+
+    return newCcArray;
+};
+
+
+  const filteredPsls = optionsPSL ? optionsPSL.filter(
+    option => !dataPsl.some(req => req.idpsl === option.value)
+  ): []
+  
 
   const addPsl = async () =>{
     const createNewPsl = (key:number) => {
@@ -1119,6 +1148,61 @@ export const CreateOrderView = () => {
 
   /* Datos de personas */
   const [dataPersons, setDataPersons] = useState<ITransferOrderPersons[]>([]);
+  const [optionsPersons, setOptionsPersons] = useState<CustomOptionType[]>([]);
+
+  const loadPersons= async () => {
+    if(optionsPersons !== undefined && optionsPersons.length >0 ) return;
+
+    const res = await getAllUsers();
+    let result: any = [];
+    if(res?.data?.data?.length > 0){
+      res.data.data.forEach((item) => {
+        const strlabel = <div style={{ display: 'flex', alignItems: "center"}}>
+                            <Col span={20}>
+                                <Text><b>{item.name}</b>
+                                <br/>
+                                <Phone size={12} /> {item.contact_number}
+                                <br/>
+                                {item.psl_desc} - {item.cost_center_desc}
+                                </Text>
+                            </Col>
+                            <Col span={4} style={{ display: 'flex', justifyContent: "flex-end"}}>
+                              <button className="btnagregar active" onClick={() => addPerson(item)}>Agregar</button>
+                            </Col>
+                        </div>;
+
+        result.push({value:item.description, label: strlabel})
+      });      
+    }
+    setOptionsPersons(result); 
+  };
+
+  useEffect(() => {
+    setDataPersons([])
+    loadPersons();
+  }, [typeactive]);
+
+  const filteredPersonsOptions = optionsPersons.filter(
+    (option:any) => !dataPersons.some(person => person.name === option.value)
+  );
+
+  let personsIdx = 0;
+  const addPerson = async (value:any) =>{
+    personsIdx = personsIdx + 1;
+
+    value.key = requirementsIdx;
+
+    const newvalue : ITransferOrderPersons = value;
+    //console.log(newvalue);
+    await setDataPersons(dataPersons => [...dataPersons, newvalue]);
+  };
+
+  const handleDeletePerson = (key: React.Key) => {
+    console.log(key)
+    personsIdx = personsIdx - 1;
+    const newData = dataPersons.filter((item) => item.key !== key);
+    setDataPersons(newData);
+  };
 
 
   /* Form Event Handlers */
@@ -1360,7 +1444,7 @@ export const CreateOrderView = () => {
     });
 
     //personas
-    datato.transfer_order_persons =[];
+    datato.transfer_order_persons = dataPersons || [];
 
     //documentos
     datato.transfer_order_documents =[];
@@ -1526,9 +1610,10 @@ export const CreateOrderView = () => {
                       <TimePicker 
                         placeholder="Seleccione hora"
                         format={'HH:mm'}
-                        minuteStep={15} 
+                        minuteStep={15}
                         hourStep={1}
-                        type={'time'} 
+                        needConfirm={false}
+                        type={'time'}
                         onChange={(value) => {
                           setHoraInicial(value);
                           setHoraInicialValid(true);
@@ -1591,12 +1676,14 @@ export const CreateOrderView = () => {
                       }
                     </Col>
                     <Col span={8}>
-                      <TimePicker 
+                      <TimePicker
                       placeholder="Seleccione hora"   
                       format={'HH:mm'}
-                      minuteStep={15} 
+                      minuteStep={15}
+                      needConfirm={false}
                       hourStep={1}
-                      type={'time'} 
+                      type={'time'}
+                      variant="filled"
                       onChange={(value) => {
                         setHoraFinal(value);
                         setHoraFinalValid(true);
@@ -1743,17 +1830,25 @@ export const CreateOrderView = () => {
                     <Text className="locationLabels" style={{ display: 'flex' }}>
                       Personas
                     </Text>
-                    <AutoComplete
-                      className="puntoOrigen dateInputForm"
-                      popupMatchSelectWidth={500}
-                      style={{ width:'100%', height: "2.5rem" }}
-                      size="large"
-                      placeholder="Buscar persona"
-                    />  
+                    <Select
+                        showSearch
+                        allowClear
+                        placeholder="Buscar persona"                  
+                        options={filteredPersonsOptions}
+                        value={null}
+                        style={{ width:"100%", height: "2.5rem" }}
+                        optionFilterProp="label"
+                        filterOption={(input: string, option) => {
+                          if (option) {
+                            return option.label.props.toLowerCase().includes(input.toLowerCase());
+                          }
+                          return false; 
+                        }}
+                      />
                   </Col>
                   <Col span={12}/>
                   <Col span={24}>
-                    <Table columns={columnsCargaPersonas} />
+                    <Table columns={columnsCargaPersonas} dataSource={dataPersons} />
                   </Col>
                 </Col>
               </Row>
@@ -1835,7 +1930,7 @@ export const CreateOrderView = () => {
                     <Select
                         showSearch
                         placeholder={"Selecciona PSL"}
-                        options={optionsPSL}
+                        options={filteredPsls}
                         className="puntoOrigen dateInputForm" 
                         onChange={(e)=> {
                           setDataPsl(prevDataPsl => 
@@ -1898,9 +1993,12 @@ export const CreateOrderView = () => {
                             );
                           }}
                           optionFilterProp="label"
-                          filterOption={(input, option) =>
-                            option?.label?.toLowerCase().includes(input.toLowerCase()) 
-                          }
+                          filterOption={(input: string, option) => {
+                            if (option) {
+                              return option?.label?.toLowerCase().includes(input.toLowerCase());
+                            }
+                            return false; 
+                          }}
                       />
                     </Col>  
                     <Col span={6} style={{paddingLeft:'30px'}}>

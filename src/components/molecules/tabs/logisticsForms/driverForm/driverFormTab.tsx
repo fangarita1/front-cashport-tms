@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Button,
-  Col,
-  Flex,
-  Form,
-  Row,
-  Typography
-} from "antd";
+import { Button, Col, Flex, Form, Row, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
 
@@ -21,12 +14,15 @@ import {
   _onSubmit,
   dataToProjectFormData,
   validationButtonText,
-  DriverFormTabProps,
+  DriverFormTabProps
 } from "./driverFormTab.mapper";
-import {  IFormDriver, VehicleType } from "@/types/logistics/schema";
+import { IFormDriver, VehicleType } from "@/types/logistics/schema";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 
-import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+import {
+  FileObject,
+  UploadDocumentButton
+} from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 
 import useSWR from "swr";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
@@ -39,7 +35,12 @@ import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDo
 import SubmitFormButton from "@/components/atoms/SubmitFormButton/SubmitFormButton";
 import LoadDocumentsButton from "@/components/atoms/LoadDocumentsButton/LoadDocumentsButton";
 import { SelectInputForm } from "@/components/molecules/logistics/SelectInputForm/SelectInputForm";
-import { bloodTypesOptions, documentTypesOptions, glassesOptions, licencesOptions } from "../formSelectOptions";
+import {
+  bloodTypesOptions,
+  documentTypesOptions,
+  glassesOptions,
+  licencesOptions
+} from "../formSelectOptions";
 import MultiSelectTags from "@/components/ui/multi-select-tags/MultiSelectTags";
 
 const { Title, Text } = Typography;
@@ -52,7 +53,7 @@ export const DriverFormTab = ({
   onActiveProject = () => {},
   onDesactivateProject = () => {},
   params,
-  handleFormState = () => {},
+  handleFormState = () => {}
 }: DriverFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
@@ -72,41 +73,40 @@ export const DriverFormTab = ({
 
   const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
 
-  const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data, (vehiclesTypesData?.data as any) || []);
+  const defaultValues =
+    statusForm === "create"
+      ? {}
+      : dataToProjectFormData(data, (vehiclesTypesData?.data as any) || []);
   const {
     watch,
     getValues,
     control,
     handleSubmit,
     reset,
-    formState: { errors, isValid}
+    formState: { errors, isValid }
   } = useForm<IFormDriver>({
     defaultValues,
     disabled: statusForm === "review"
   });
 
   const isFormCompleted = () => {
-    return isValid && (imageFile || getValues("general.photo"))
-  }
-  const isSubmitButtonEnabled = isFormCompleted() && !loading
+    return isValid && (imageFile || getValues("general.photo"));
+  };
+  const isSubmitButtonEnabled = isFormCompleted() && !loading;
   /*archivos*/
-  interface FileObject {
-    docReference: string;
-    file: File | undefined;
-  }
+
   const [files, setFiles] = useState<(FileObject & { aditionalData?: any })[]>([]);
 
   useEffect(() => {
     if (Array.isArray(documentsType)) {
-      const isFirstLoad = data?.documents?.length && selectedFiles.length === 0 
+      const isFirstLoad = data?.documents?.length && selectedFiles.length === 0;
       if (isFirstLoad) {
-
         const docsWithLink =
           documentsType
             ?.filter((f) => data.documents?.find((d) => d.id_document_type === f.id))
             .map((f) => ({
               ...f,
-              file:  undefined,
+              file: undefined,
               link: data.documents?.find((d) => d.id_document_type === f.id)?.url_archive,
               expirationDate: dayjs(
                 data.documents?.find((d) => d.id_document_type === f.id)?.expiration_date
@@ -114,17 +114,18 @@ export const DriverFormTab = ({
             })) || [];
         setSelectedFiles(docsWithLink);
       } else {
-        
-        const documentsFiltered = documentsType?.filter((f) => !f?.optional || selectedFiles?.find((f2) => f2.id === f.id))
-        const docsWithFile =  documentsFiltered.map((f) => {
-            const prevFile = selectedFiles.find((f2) => f2.id === f.id);
-            return {
-              ...f,
-              link: prevFile?.link || undefined,
-              file: prevFile?.link ? undefined : files.find((f2) => f2.aditionalData === f.id)?.file,
-              expirationDate: prevFile?.expirationDate
-            };
-          });
+        const documentsFiltered = documentsType?.filter(
+          (f) => !f?.optional || selectedFiles?.find((f2) => f2.id === f.id)
+        );
+        const docsWithFile = documentsFiltered.map((f) => {
+          const prevFile = selectedFiles.find((f2) => f2.id === f.id);
+          return {
+            ...f,
+            link: prevFile?.link || undefined,
+            file: prevFile?.link ? undefined : files.find((f2) => f2.aditionalData === f.id)?.file,
+            expirationDate: prevFile?.expirationDate
+          };
+        });
         if (docsWithFile?.length) {
           setSelectedFiles([...docsWithFile]);
         } else {
@@ -135,20 +136,20 @@ export const DriverFormTab = ({
   }, [files, documentsType]);
 
   useEffect(() => {
-    if (statusForm === "review"){
+    if (statusForm === "review") {
       if (Array.isArray(documentsType)) {
-          const docsWithLink =
-            documentsType
-              ?.filter((f) => data?.documents?.find((d) => d.id_document_type === f.id))
-              .map((f) => ({
-                ...f,
-                file:  undefined,
-                link: data?.documents?.find((d) => d.id_document_type === f.id)?.url_archive,
-                expirationDate: dayjs(
-                  data?.documents?.find((d) => d.id_document_type === f.id)?.expiration_date
-                )
-              })) || [];
-          setSelectedFiles(docsWithLink);
+        const docsWithLink =
+          documentsType
+            ?.filter((f) => data?.documents?.find((d) => d.id_document_type === f.id))
+            .map((f) => ({
+              ...f,
+              file: undefined,
+              link: data?.documents?.find((d) => d.id_document_type === f.id)?.url_archive,
+              expirationDate: dayjs(
+                data?.documents?.find((d) => d.id_document_type === f.id)?.expiration_date
+              )
+            })) || [];
+        setSelectedFiles(docsWithLink);
       }
     }
   }, [statusForm]);
@@ -183,7 +184,6 @@ export const DriverFormTab = ({
           };
         });
       });
-      
     }
   };
 
@@ -192,14 +192,14 @@ export const DriverFormTab = ({
       (item) => item.id === data.general.license_category
     )?.value;
     data.general.rhval = bloodTypesOptions.find((item) => item.id === data.general.rh)?.value;
-    data.general.vehicle_type = data.general.vehicle_type.map((v:any)=>v.value)
+    data.general.vehicle_type = data.general.vehicle_type.map((v: any) => v.value);
     _onSubmit(
       data,
       selectedFiles,
       imageFile ? [{ docReference: "imagen", file: imageFile }] : undefined,
       setImageError,
       setLoading,
-      onSubmitForm,
+      onSubmitForm
     );
   };
 
@@ -222,7 +222,7 @@ export const DriverFormTab = ({
               <Button
                 className="buttons"
                 htmlType="button"
-                disabled={statusForm === "review"}  
+                disabled={statusForm === "review"}
                 onClick={(e) => {
                   e.preventDefault();
                   setIsOpenModal(true);
@@ -232,43 +232,45 @@ export const DriverFormTab = ({
                 <ArrowsClockwise size={"1.2rem"} />
               </Button>
             )}
-              {statusForm === "review" ? (
-                <Button
-                  className="buttons -edit"
-                  htmlType="button"
-                  onClick={(e) => {
-                    handleFormState("edit")
-                    e.preventDefault();
-                  }}
-                >
-                  {validationButtonText(statusForm)}
-                  <Pencil size={"1.2rem"} />
-                </Button>
-              ) : (
-                ""
-              )}
-              {statusForm === "edit" ? (
-                <Button
-                  className="buttons -edit"
-                  htmlType="button"
-                  onClick={(e) => {
-                    handleFormState("review")
-                    e.preventDefault();
-                    reset()
-                  }}
-                >
-                  {"Cancelar edición"}
-                </Button>
-              ) : (
-                ""
-              )}
+            {statusForm === "review" ? (
+              <Button
+                className="buttons -edit"
+                htmlType="button"
+                onClick={(e) => {
+                  handleFormState("edit");
+                  e.preventDefault();
+                }}
+              >
+                {validationButtonText(statusForm)}
+                <Pencil size={"1.2rem"} />
+              </Button>
+            ) : (
+              ""
+            )}
+            {statusForm === "edit" ? (
+              <Button
+                className="buttons -edit"
+                htmlType="button"
+                onClick={(e) => {
+                  handleFormState("review");
+                  e.preventDefault();
+                  reset();
+                }}
+              >
+                {"Cancelar edición"}
+              </Button>
+            ) : (
+              ""
+            )}
           </Flex>
         </Flex>
-        <Flex component={"main"} flex="1" vertical style={{paddingRight: "1rem"}}>
-          <Row gutter={16}> 
-            <Col span={5}> {/* Columna Foto de conductor*/}
+        <Flex component={"main"} flex="1" vertical style={{ paddingRight: "1rem" }}>
+          <Row gutter={16}>
+            <Col span={5}>
+              {" "}
+              {/* Columna Foto de conductor*/}
               <Title className="title" level={4}>
-                  Foto de conductor
+                Foto de conductor
               </Title>
               <UploadImg
                 disabled={statusForm === "review"}
@@ -283,11 +285,15 @@ export const DriverFormTab = ({
                 <Text className="textError">{"foto del conductor es obligatorio *"}</Text>
               )}
             </Col>
-            <Col span={19}> {/* Columna Informacion general*/}
+            <Col span={19}>
+              {" "}
+              {/* Columna Informacion general*/}
               <Title className="title" level={4}>
-                  Información General
+                Información General
               </Title>
-              <Row gutter={[16,16]}> {/* Fila campos info gral*/}
+              <Row gutter={[16, 16]}>
+                {" "}
+                {/* Fila campos info gral*/}
                 <Col span={8}>
                   <InputForm
                     titleInput="Nombres"
@@ -313,14 +319,14 @@ export const DriverFormTab = ({
                       name="general.rh"
                       control={control}
                       rules={{ required: true }}
-                      render={({ field }) => 
+                      render={({ field }) => (
                         <SelectInputForm
-                        placeholder="Selecciona Tipo de Sangre"
-                        error={errors?.general?.rh}
-                        field={field}
-                        options={bloodTypesOptions}
+                          placeholder="Selecciona Tipo de Sangre"
+                          error={errors?.general?.rh}
+                          field={field}
+                          options={bloodTypesOptions}
                         />
-                      }
+                      )}
                     />
                   </Flex>
                 </Col>
@@ -330,7 +336,7 @@ export const DriverFormTab = ({
                       titleInput="Fecha de nacimiento"
                       nameInput="general.birth_date"
                       placeholder="Seleccionar fecha de nacimiento"
-                      disabled={statusForm === "review"}  
+                      disabled={statusForm === "review"}
                       control={control}
                       error={errors?.general?.birth_date}
                     />
@@ -345,13 +351,14 @@ export const DriverFormTab = ({
                       name="general.document_type"
                       control={control}
                       rules={{ required: true }}
-                      render={({ field }) =>              
-                      <SelectInputForm
-                        placeholder="Selecciona Tipo de documento"
-                        error={errors?.general?.document_type}
-                        field={field}
-                        options={documentTypesOptions}
-                      />}
+                      render={({ field }) => (
+                        <SelectInputForm
+                          placeholder="Selecciona Tipo de documento"
+                          error={errors?.general?.document_type}
+                          field={field}
+                          options={documentTypesOptions}
+                        />
+                      )}
                     />
                   </Flex>
                 </Col>
@@ -400,82 +407,84 @@ export const DriverFormTab = ({
                   </Flex>
                 </Col>
               </Row>
-              <Title className="title" level={4} style={{marginTop: "1rem"}}>
+              <Title className="title" level={4} style={{ marginTop: "1rem" }}>
                 Datos de la licencia
               </Title>
-              <Row gutter={[16,16]}>  {/* Fila Datos de la licencia*/}
-                  <Col span={8}>
-                      <InputForm
-                      titleInput="Licencia"
-                      nameInput="general.license"
+              <Row gutter={[16, 16]}>
+                {" "}
+                {/* Fila Datos de la licencia*/}
+                <Col span={8}>
+                  <InputForm
+                    titleInput="Licencia"
+                    nameInput="general.license"
+                    control={control}
+                    error={errors?.general?.license}
+                  />
+                </Col>
+                <Col span={8}>
+                  <Flex vertical className="selectButton">
+                    <Title className="title" level={5}>
+                      Categoria
+                    </Title>
+                    <Controller
+                      name="general.license_category"
                       control={control}
-                      error={errors?.general?.license}
+                      rules={{ required: true }}
+                      render={({ field }) => (
+                        <SelectInputForm
+                          placeholder="Selecciona categoria de la licencia"
+                          error={errors?.general?.license_category}
+                          field={field}
+                          options={licencesOptions}
+                        />
+                      )}
                     />
-                  </Col>
-                  <Col span={8}>
-                    <Flex vertical className="selectButton">
-                      <Title className="title" level={5}>
-                        Categoria
-                      </Title>
-                      <Controller
-                        name="general.license_category"
-                        control={control}
-                        rules={{ required: true }}
-                        render={({ field }) => (
-                          <SelectInputForm
-                            placeholder="Selecciona categoria de la licencia"
-                            error={errors?.general?.license_category}
-                            field={field}
-                            options={licencesOptions}
-                          />
-                        )}
-                      />
-                    </Flex>
-                  </Col>
-                  <Col span={8}>
-                    <Flex vertical className="selectButton">
-                      <InputDateForm
-                        titleInput="Fecha de expiración"
-                        nameInput="general.license_expiration"
-                        placeholder="Seleccionar fecha de expiración"
-                        disabled={statusForm === "review"}  
-                        control={control}
-                        validationRules={{ required: true }}
-                        error={errors?.general?.license_expiration}
-                      />
-                    </Flex>
-                  </Col>
+                  </Flex>
+                </Col>
+                <Col span={8}>
+                  <Flex vertical className="selectButton">
+                    <InputDateForm
+                      titleInput="Fecha de expiración"
+                      nameInput="general.license_expiration"
+                      placeholder="Seleccionar fecha de expiración"
+                      disabled={statusForm === "review"}
+                      control={control}
+                      validationRules={{ required: true }}
+                      error={errors?.general?.license_expiration}
+                    />
+                  </Flex>
+                </Col>
               </Row>
             </Col>
           </Row>
           {/* ----------------------------------Vehiculos--------------------------------- */}
           <Row style={{ width: "100%", marginTop: "2rem" }}>
-              <Title className="title" level={4}>
-                    Vehículos
-              </Title>
-              <Controller
-                  name="general.vehicle_type"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field }) => 
-                    <MultiSelectTags
-                      field={field}
-                      placeholder="Seleccione vehiculos"
-                      title="Vehículos que está autorizados a manejar"
-                      errors={errors?.general?.vehicle_type}
-                      options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
-                      disabled={statusForm === "review"} 
-                    />
-                  }
+            <Title className="title" level={4}>
+              Vehículos
+            </Title>
+            <Controller
+              name="general.vehicle_type"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <MultiSelectTags
+                  field={field}
+                  placeholder="Seleccione vehiculos"
+                  title="Vehículos que está autorizados a manejar"
+                  errors={errors?.general?.vehicle_type}
+                  options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
+                  disabled={statusForm === "review"}
                 />
-              </Row>
+              )}
+            />
+          </Row>
           {/* -----------------------------------Contact----------------------------------- */}
           <Row style={{ width: "100%", marginTop: "2rem" }}>
             <Col span={24}>
               <Title className="title" level={4}>
                 Datos de Contacto
               </Title>
-              <Row gutter={[16,16]}> 
+              <Row gutter={[16, 16]}>
                 <Col span={6}>
                   <InputForm
                     titleInput="Nombres y apellidos"
@@ -499,26 +508,32 @@ export const DriverFormTab = ({
                     }}
                   />
                 </Col>
-              </Row>   
+              </Row>
             </Col>
           </Row>
-          <Row style={{marginTop: "2rem", marginBottom: "2rem"}}> {/* Fila Documentos */}
-              <Col span={8}>
-                <Title className="title" level={4}>
-                  Documentos
-                </Title>
-              </Col>
-              <Col span={8} offset={8} style={{display: "flex", justifyContent: "flex-end"}}>
-                {(statusForm === "create" || statusForm === "edit" ) && (
-                  <LoadDocumentsButton 
-                    text="Cargar documentos" 
-                    onClick={() => setIsOpenModalDocuments(true)}
-                  />
-                )}
-              </Col>
-            <Row style={{marginTop: "1rem", width: "100%"}} >
+          <Row style={{ marginTop: "2rem", marginBottom: "2rem" }}>
+            {" "}
+            {/* Fila Documentos */}
+            <Col span={8}>
+              <Title className="title" level={4}>
+                Documentos
+              </Title>
+            </Col>
+            <Col span={8} offset={8} style={{ display: "flex", justifyContent: "flex-end" }}>
+              {(statusForm === "create" || statusForm === "edit") && (
+                <LoadDocumentsButton
+                  text="Cargar documentos"
+                  onClick={() => setIsOpenModalDocuments(true)}
+                />
+              )}
+            </Col>
+            <Row style={{ marginTop: "1rem", width: "100%" }}>
               {selectedFiles.map((file, index) => (
-                <Col span={12} key={`file-${file.id}`}  style={{ marginBottom: "16px", paddingRight: index % 2 === 0 ? "16px" : "0"  }}>
+                <Col
+                  span={12}
+                  key={`file-${file.id}`}
+                  style={{ marginBottom: "16px", paddingRight: index % 2 === 0 ? "16px" : "0" }}
+                >
                   <UploadDocumentButton
                     key={file.id}
                     title={file.description}
@@ -542,14 +557,14 @@ export const DriverFormTab = ({
             </Row>
           </Row>
           {["edit", "create"].includes(statusForm) && (
-            <Row justify={"end"} >
+            <Row justify={"end"}>
               <SubmitFormButton
-                  text={validationButtonText(statusForm)}
-                  disabled={!isSubmitButtonEnabled}
-                  onClick={handleSubmit(onSubmit)}
-                />
+                text={validationButtonText(statusForm)}
+                disabled={!isSubmitButtonEnabled}
+                onClick={handleSubmit(onSubmit)}
+              />
             </Row>
-          )} 
+          )}
         </Flex>
       </Form>
       <ModalChangeStatus
