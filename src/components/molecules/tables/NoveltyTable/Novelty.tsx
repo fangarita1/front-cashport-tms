@@ -91,7 +91,7 @@ const columns: TableColumnsType<DataType> = [
   {
     title: '',
     dataIndex: '',
-    render: (text: string) => (
+    render: () => (
       <div className='btnContainer'>
         <Button
           className="btn"

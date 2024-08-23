@@ -1,4 +1,4 @@
-import { Button, Collapse, CollapseProps, ConfigProvider, Typography } from "antd";
+import { Button, Collapse, Typography } from "antd";
 import { CaretDown, Truck } from "phosphor-react";
 import styles from './novelty.module.scss';
 import { FC, useEffect, useState } from "react";
