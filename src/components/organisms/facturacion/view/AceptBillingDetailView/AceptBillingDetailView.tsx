@@ -109,7 +109,7 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
       label: <TitleComponent state="Carga" id={1} />,
       children: (
         <div>
-          <NoveltyTable />
+          <NoveltyTable novelties={[]} openDrawer={() => {}} handleShowDetails={() => {}} />
         </div>
       ),
       showArrow: false
@@ -121,7 +121,7 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
       label: <TitleComponent state="Carga" id={2} />,
       children: (
         <div>
-          <NoveltyTable />
+          <NoveltyTable novelties={[]} openDrawer={() => {}} handleShowDetails={() => {}} />
         </div>
       ),
       showArrow: false
