@@ -1,24 +1,36 @@
 "use client";
-import { Button, Collapse, CollapseProps, ConfigProvider, Flex, Typography } from "antd";
+import {
+  Button,
+  Collapse,
+  CollapseProps,
+  ConfigProvider,
+  Flex,
+  message,
+  Modal,
+  Typography
+} from "antd";
 import { CaretDoubleRight, CaretDown, CaretLeft, DotsThree, Truck } from "phosphor-react";
 import { getBillingDetailsById } from "@/services/billings/billings";
-import styles from './AceptBillingDetailView.module.scss';
+import styles from "./AceptBillingDetailView.module.scss";
 import { useState, useEffect } from "react";
 import { NoveltyTable } from "@/components/molecules/tables/NoveltyTable/Novelty";
 import { number } from "yup";
 import Link from "next/link";
+import ModalBillingAction from "@/components/molecules/modals/ModalBillingAction/ModalBillingAction";
 
-const Text = Typography
+const Text = Typography;
 
 interface AceptBillingDetailProps {
   params: { id: string };
 }
 
 export default function AceptBillingDetailView({ params }: AceptBillingDetailProps) {
-  console.log(params.id)
+  console.log(params.id);
   const [key, setKey] = useState<number | null>(null);
   const [billingData, setBillingData] = useState<any>(null);
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  console.log("billingData", billingData);
   useEffect(() => {
     const fetchBillingDetails = async () => {
       try {
@@ -37,7 +49,7 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
 
     fetchBillingDetails();
   }, [params.id]);
-  const TitleComponent = ({ state, id }: { state: string, id: number }) => (
+  const TitleComponent = ({ state, id }: { state: string; id: number }) => (
     <div className={styles.header}>
       <div className={styles.stateContainer}>
         <Truck size={27} color="#FFFFFF" weight="fill" />
@@ -87,76 +99,102 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
         </div>
       </div>
     </div>
-  )
+  );
 
-  const items: CollapseProps['items'] = [
+  const items: CollapseProps["items"] = [
     {
-      key: '1',
+      key: "1",
       label: <TitleComponent state="Carga" id={1} />,
       children: (
         <div>
-          <NoveltyTable/>
+          <NoveltyTable />
         </div>
       ),
-      showArrow: false,
-    },
+      showArrow: false
+    }
   ];
-  const items2: CollapseProps['items'] = [
+  const items2: CollapseProps["items"] = [
     {
-      key: '2',
+      key: "2",
       label: <TitleComponent state="Carga" id={2} />,
       children: (
         <div>
           <NoveltyTable />
         </div>
       ),
-      showArrow: false,
-    },
+      showArrow: false
+    }
   ];
 
   return (
-    <div className={styles.card}>
-      <div className={styles.linkButtonsContainer}>
-        <Link href="/facturacion" className={styles.link}>
-          <CaretLeft size={20} />
-          <div>Detalle de TR {params.id}</div>
-        </Link>
-  
-        <div className={styles.btnContainer}>
-          <Button className={styles.actionBtn} type="text" size="large">
-            <DotsThree size={24} />
-            <Text className={styles.text}>Generar acción</Text>
-          </Button>
+    <>
+      {contextHolder}
+      <div className={styles.card}>
+        <div className={styles.linkButtonsContainer}>
+          <Link href="/facturacion" className={styles.link}>
+            <CaretLeft size={20} />
+            <div>Detalle de TR {params.id}</div>
+          </Link>
+
+          <div className={styles.btnContainer}>
+            <Button
+              className={styles.actionBtn}
+              type="text"
+              size="large"
+              onClick={() => setIsModalVisible(true)}
+            >
+              <DotsThree size={24} />
+              <Text className={styles.text}>Generar acción</Text>
+            </Button>
+          </div>
         </div>
-      </div>
-  
-      <Flex className={styles.wrapper}>
-        <Flex className={styles.topInfo}>
-          <Flex className={styles.left}>
-            <div className={styles.vehicle}>
-              <b>Coltanques</b>
-            </div>
-            <br />
-            <div className={styles.vehicle}>
-              <b>Total servicio</b>
-            </div>
-          </Flex>
-          <Flex className={styles.right}>
-            <div className={styles.total}>
-              <b>$19.000.000</b>
-            </div>
+
+        <Flex className={styles.wrapper}>
+          <Flex className={styles.topInfo}>
+            <Flex className={styles.left}>
+              <div className={styles.vehicle}>
+                <b>Coltanques</b>
+              </div>
+              <br />
+              <div className={styles.vehicle}>
+                <b>Total servicio</b>
+              </div>
+            </Flex>
+            <Flex className={styles.right}>
+              <div className={styles.total}>
+                <b>$19.000.000</b>
+              </div>
+            </Flex>
           </Flex>
         </Flex>
-      </Flex>
-  
-      <div className={styles.collapsableContainer}>
-        <div className={styles.collapsable}>
-          <Collapse onChange={(item) => setKey(Number(item[0]))} expandIconPosition="end" ghost items={items} />
+
+        <div className={styles.collapsableContainer}>
+          <div className={styles.collapsable}>
+            <Collapse
+              onChange={(item) => setKey(Number(item[0]))}
+              expandIconPosition="end"
+              ghost
+              items={items}
+            />
+          </div>
+          <div className={styles.collapsable}>
+            <Collapse
+              onChange={(item) => setKey(Number(item[0]))}
+              expandIconPosition="end"
+              ghost
+              items={items2}
+            />
+          </div>
         </div>
-        <div className={styles.collapsable}>
-          <Collapse onChange={(item) => setKey(Number(item[0]))} expandIconPosition="end" ghost items={items2} />
-        </div>
+        <ModalBillingAction
+          isOpen={isModalVisible}
+          onClose={() => setIsModalVisible(false)}
+          idTR={billingData?.billing?.id ?? 0}
+          totalValue={billingData?.billing?.fare ?? 0}
+          billingStatus={billingData?.billing?.statusDesc}
+          messageApi={messageApi}
+        />
       </div>
-    </div>
-  )  
+    </>
+  );
 }
