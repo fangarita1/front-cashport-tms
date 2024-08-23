@@ -1444,7 +1444,7 @@ export const CreateOrderView = () => {
     });
 
     //personas
-    datato.transfer_order_persons =[];
+    datato.transfer_order_persons = dataPersons || [];
 
     //documentos
     datato.transfer_order_documents =[];
