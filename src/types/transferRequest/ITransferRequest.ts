@@ -18,6 +18,15 @@ export interface ITimeLine {
   location: string;
 }
 
+export interface IGeometryResponse {
+  weight_name: string;
+  weight: number;
+  duration: number;
+  distance: number;
+  legs: [];
+  geometry: any;
+}
+
 export interface ITransferRequestDetail {
   id: number;
   status: string;
@@ -32,6 +41,7 @@ export interface ITransferRequestDetail {
   time_total: number;
   step: number;
   timeLine: ITimeLine[];
+  geometry: IGeometryResponse;
 }
 
 export interface ITransferRequestResponse {
