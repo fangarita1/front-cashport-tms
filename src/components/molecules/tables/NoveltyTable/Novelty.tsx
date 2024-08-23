@@ -44,71 +44,76 @@ const getColor = (state: string) => {
       return '#FFFFFF'
   }
 }
-
-const columns: TableColumnsType<DataType> = [
-  {
-    title: 'ID',
-    dataIndex: 'id',
-    render: (text: string) => <Text className='row-text id'>{text}</Text>,
-    sorter: {
-      multiple: 1,
-    },
-  },
-  {
-    title: 'Tipo de novedad',
-    dataIndex: 'noveltyType',
-    render: (text: string) => <Text className='row-text'>{text}</Text>,
-  },
-  {
-    title: 'Observaciones',
-    dataIndex: 'observation',
-    render: (text: string) => <Text className='row-text'>{text}</Text>,
-  },
-  {
-    title: 'Soportes',
-    dataIndex: 'support',
-    render: (text: string) => <Text className='row-text id clicked'>{text}</Text>,
-  },
-  {
-    title: 'Valor',
-    dataIndex: 'value',
-    render: (text: string) => <Text className='row-text'>{text}</Text>,
-    sorter: {
-      multiple: 1,
-    },
-  },
-  {
-    title: 'Status',
-    dataIndex: 'state',
-    render: (text: string) => (
-      <div className='stateContainer'>
-        <div style={{ backgroundColor: getBgColor(text) }} className='stateContent'>
-          <Text style={{ color: getColor(text) }} className='text'>{text}</Text>
-        </div>
-      </div>
-    ),
-  },
-  {
-    title: '',
-    dataIndex: '',
-    render: () => (
-      <div className='btnContainer'>
-        <Button
-          className="btn"
-          type="text"
-          size="middle"
-          icon={<Eye size={24} />}
-        />
-      </div>
-    ),
-  },
-];
-
 interface INoveltyTableProps {
   novelties: INovelty[];
+  openDrawer: () => void;
+  handleShowDetails: (id: number) => void;
 }
 
-export const NoveltyTable: FC<INoveltyTableProps> = ({ novelties }) => {
+export const NoveltyTable: FC<INoveltyTableProps> = ({ novelties, openDrawer, handleShowDetails }) => {
+  const columns: TableColumnsType<DataType> = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      render: (text: string) => <Text className='row-text id'>{text}</Text>,
+      sorter: {
+        multiple: 1,
+      },
+    },
+    {
+      title: 'Tipo de novedad',
+      dataIndex: 'noveltyType',
+      render: (text: string) => <Text className='row-text'>{text}</Text>,
+    },
+    {
+      title: 'Observaciones',
+      dataIndex: 'observation',
+      render: (text: string) => <Text className='row-text'>{text}</Text>,
+    },
+    {
+      title: 'Soportes',
+      dataIndex: 'support',
+      render: (text: string) => <Text className='row-text id clicked'>{text}</Text>,
+    },
+    {
+      title: 'Valor',
+      dataIndex: 'value',
+      render: (text: string) => <Text className='row-text'>{text}</Text>,
+      sorter: {
+        multiple: 1,
+      },
+    },
+    {
+      title: 'Status',
+      dataIndex: 'state',
+      render: (text: string) => (
+        <div className='stateContainer'>
+          <div style={{ backgroundColor: getBgColor(text) }} className='stateContent'>
+            <Text style={{ color: getColor(text) }} className='text'>{text}</Text>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: '',
+      dataIndex: 'id',
+      render: (text) => (
+        <div className='btnContainer'>
+          <Button
+            className="btn"
+            type="text"
+            size="middle"
+            onClick={() => {
+              handleShowDetails(text)
+              openDrawer()
+            }}
+            icon={<Eye size={24} />}
+          />
+        </div>
+      ),
+    },
+  ];
+  
   return <Table
     columns={columns}
     pagination={false}

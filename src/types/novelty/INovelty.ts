@@ -1,4 +1,12 @@
-export interface INovelty {
+export interface INoveltyType {
+  id: number;
+  name: string;
+  icon_id: string;
+  updated_at: Date;
+  created_at: Date;
+}
+
+export interface IEvidence {
   id: number;
   novelty_id: number;
   name: string;
@@ -17,5 +25,20 @@ export interface INovelty {
   status_id: string;
   created_by: string;
   quantity: number;
-  evidences: INovelty[]
+  evidences: IEvidence[]
+}
+
+export interface INoveltyEvidenceBody {
+  name: string;
+  url: string;
+}
+
+export interface INoveltyBody {
+  observation: string;
+  novelty_type_id: number;
+  trip_id: number;
+  quantity: number;
+  value: number;
+  created_by: string;
+  evidences?: INoveltyEvidenceBody[]
 }

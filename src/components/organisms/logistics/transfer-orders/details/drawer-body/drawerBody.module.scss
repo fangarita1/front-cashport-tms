@@ -1,0 +1,141 @@
+.mainDrawerBody {
+  display: flex;
+  flex-direction: column;
+
+  .closeContainer {
+    cursor: pointer;
+  }
+
+  .titleSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .titleContainer {
+      display: flex;
+      flex-direction: column;
+      margin-top: 16;
+
+      .title {
+        color: #141414;
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .subtitle {
+        color: #666666;
+        font-size: 14px;
+        font-weight: 400;
+      }
+    }
+
+    .btnContainer {
+      display: flex;
+      column-gap: 16px;
+      justify-content: center;
+
+      .mapBtn {
+        display: flex;
+        padding: 8px 16px;
+        column-gap: 8px;
+        align-items: center;
+        justify-content: center;
+
+        .mapLabel {
+          color: #666666;
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+
+      .approbeBtn {
+        background-color: #CBE71E;
+
+        .approbeLabel {
+          color: #141414;
+          font-size: 16px;
+          font-weight: 400;
+        }
+      }
+    }
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background-color: #DDDDDD;
+    margin: 39px 0px;
+  }
+
+  .body {
+    display: flex;
+    column-gap: 27px;
+
+    .leftSection {
+      display: flex;
+      flex-direction: column;
+      row-gap: 16px;
+
+      .bodyTitleContainer {
+        display: flex;
+        column-gap: 8px;
+        align-items: center;
+
+        &.evidence {
+          margin-top: 39px;
+        }
+
+        .bodyTitle {
+          color: #666666;
+          font-size: 16px;
+          font-weight: 400;
+        }
+      }
+    }
+
+    .rightSection {
+      display: flex;
+      flex-direction: column;
+      row-gap: 16px;
+      flex: 1;
+
+      .editContainer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .editBtn {
+          cursor: pointer;
+        }
+      }
+
+      .text {
+        color: #666666;
+        font-size: 16px;
+        font-weight: 400;
+      }
+
+      .evidenceContainer {
+        display: flex;
+        flex-direction: column;
+        row-gap: 8px;
+        margin-top: 39px;
+
+        .evidence {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 16px;
+          background-color: #F7F7F7;
+          border-radius: 8px;
+
+          .evidenceTitle {
+            color: #141414;
+            font-size: 14px;
+            font-weight: 400;
+          }
+        }
+      }
+    }
+  }
+}

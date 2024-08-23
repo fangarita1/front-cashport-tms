@@ -1,20 +1,24 @@
 import { Button, Collapse, Typography } from "antd";
 import { CaretDown, Truck } from "phosphor-react";
 import styles from './novelty.module.scss';
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { NoveltyTable } from "@/components/molecules/tables/NoveltyTable/Novelty";
 import { ITransferJourney, ITripJourney } from "@/types/transferJourney/ITransferJourney";
-import { getTransferJourney } from "@/services/logistics/transfer-journey";
 import { formatMoney } from "@/utils/utils";
 
 const Text = Typography
 
 interface INoveltyProps {
   transferRequestId: number | null;
+  openDrawer: () => void;
+  // eslint-disable-next-line no-unused-vars
+  handleShowDetails: (id: number) => void;
+  handleOpenCreateDrawer: () => void;
+  transferJournies: ITransferJourney[];
+  setTripId: (id: number) => void;
 }
 
-export const Novelty: FC<INoveltyProps> = ({ transferRequestId }) => {
-  const [transferJournies, setTransferJournies] = useState<ITransferJourney[]>();
+export const Novelty: FC<INoveltyProps> = ({ openDrawer, handleShowDetails, transferJournies, handleOpenCreateDrawer, setTripId }) => {
   const [key, setKey] = useState<number | null>(null)
 
   const TripHeader = ({ trip, isHeader = false }: { trip: ITripJourney, isHeader?: boolean }) => (
@@ -73,17 +77,6 @@ export const Novelty: FC<INoveltyProps> = ({ transferRequestId }) => {
     </div>
   )
 
-  const findDetails = async () => {
-    const data = await getTransferJourney(Number(transferRequestId));
-    if (Object.keys(data).length) {
-      setTransferJournies(data as ITransferJourney[]);
-    }
-  }
-
-  useEffect(() => {
-    if (transferRequestId) findDetails();
-  }, [transferRequestId])
-
   return (
     <div className={styles.collapsableContainer}>
       {transferJournies?.map((journey) => (
@@ -96,9 +89,17 @@ export const Novelty: FC<INoveltyProps> = ({ transferRequestId }) => {
                 {journey.trips.map((trip) => (
                   <div key={trip.id}>
                     <TripHeader trip={trip} />
-                    <NoveltyTable novelties={trip.novelties} />
+                    <NoveltyTable novelties={trip.novelties} openDrawer={() => openDrawer()} handleShowDetails={handleShowDetails} />
                     <div className={styles.btnContainer}>
-                      <Button className={styles.btn} type="text" size="large">
+                      <Button
+                        onClick={() => {
+                          handleOpenCreateDrawer();
+                          setTripId(trip.id);
+                        }}
+                        className={styles.btn}
+                        type="text"
+                        size="large"
+                      >
                         <Text className={styles.text}>Crear una novedad</Text>
                       </Button>
                     </div>
