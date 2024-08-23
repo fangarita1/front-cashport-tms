@@ -1,7 +1,6 @@
-import { Button, Flex, Typography } from "antd";
+import { Button, Flex, Typography, Upload } from "antd";
 import { FileArrowUp, Trash } from "phosphor-react";
 import type { UploadFile, UploadProps } from "antd";
-import { Upload } from "antd";
 const { Dragger } = Upload;
 
 import "./documentbutton.scss";
@@ -10,7 +9,7 @@ import { shortenFileName } from "@/utils/utils";
 
 const { Text } = Typography;
 
-interface Props {
+export interface DocumentButtonProps {
   title?: string;
   fileName?: string;
   fileSize?: any;
@@ -34,7 +33,7 @@ export const DocumentButton = ({
   disabled,
   className,
   children
-}: Props) => {
+}: DocumentButtonProps) => {
   const props: UploadProps = {
     name: title,
     onChange: handleOnChange,
