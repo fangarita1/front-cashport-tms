@@ -1,9 +1,11 @@
 .link {
   display: flex;
+  gap: 8px;
   align-items: center;
-  margin-bottom: 18px;
   color: black;
   text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .link:hover {
@@ -14,25 +16,23 @@ color: black;
 display: flex;
 justify-content: space-between;
 align-items: center;
-margin-bottom: 18px;
+padding: 16px 0px;
 }
 
-.btnContainer {
-display: flex;
-gap: 8px; /* Cambiado de column-gap a gap para un espacio horizontal correcto */
 
 .actionBtn {
-  background-color: #F7F7F7;
+  background-color: #F7F7F7 !important;
   display: flex;
   align-items: center;
   gap: 8px;
+  height: 48px !important;
+  .text {
+    color: var(--Black, #141414);
+    font-size: 16px;
+    font-weight: 600;
+  }
 }
-.text {
-  color: var(--Black, #141414);
-  font-size: 16px;
-  font-weight: 600;
-}
-}
+
 
 
 .collapsableContainer {
@@ -41,6 +41,7 @@ gap: 8px; /* Cambiado de column-gap a gap para un espacio horizontal correcto */
   row-gap: 32px;
 
   .collapsable {
+    padding: 8px;
     border-radius: 8px;
     border: 1px solid #DDD;
   }
@@ -91,7 +92,8 @@ gap: 8px; /* Cambiado de column-gap a gap para un espacio horizontal correcto */
       display: flex;
       flex-direction: column;
       row-gap: 2px;
-      padding: 2px 16px;
+      //padding: 2px 16px;
+      margin-bottom: 2rem;
       width: 50%;
 
       .title {
@@ -110,6 +112,7 @@ gap: 8px; /* Cambiado de column-gap a gap para un espacio horizontal correcto */
       }
 
       &.right {
+        padding-left: 16px;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
@@ -139,7 +142,7 @@ gap: 8px; /* Cambiado de column-gap a gap para un espacio horizontal correcto */
       flex-direction: column;
       row-gap: 4px;
       width: 50%;
-      padding: 0px 0px 0px 16px;
+      padding: 0px;
 
       .resumItem {
         display: flex;
@@ -163,6 +166,7 @@ gap: 8px; /* Cambiado de column-gap a gap para un espacio horizontal correcto */
 
       &.right {
         border-left: 1px solid #DDD;
+        padding-left: 32px;
       }
     }
   }
@@ -216,12 +220,10 @@ gap: 8px; /* Cambiado de column-gap a gap para un espacio horizontal correcto */
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
-  margin-top: 1.5rem;
   row-gap: 2rem;
   background-color: #FFFFFF;
-  border-radius: 15px;
+  border-radius: 4px;
   border: 1px solid #DDD;
-  box-shadow: -6px 6px 32px 0px rgba(0, 0, 0, 0.2);
 
   .navContainer {
     display: flex;
@@ -296,3 +298,22 @@ gap: 8px; /* Cambiado de column-gap a gap para un espacio horizontal correcto */
   }
 }
 
+.boxContainer {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  background-color: #F7F7F7;
+  padding: 16px;
+}
+.headingText {
+  font-size: 24px;
+  font-weight: 700; 
+  line-height: 36px;
+  letter-spacing: -1px;
+}
+.titleText {
+  font-size: 32px;
+  font-weight: 600 !important; 
+  line-height: 36px;
+  letter-spacing: -1px;
+}

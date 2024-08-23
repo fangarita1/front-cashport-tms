@@ -1,12 +1,14 @@
 "use client";
 import {
   Button,
+  Col,
   Collapse,
   CollapseProps,
   ConfigProvider,
   Flex,
   message,
   Modal,
+  Row,
   Typography
 } from "antd";
 import { CaretDoubleRight, CaretDown, CaretLeft, DotsThree, Truck } from "phosphor-react";
@@ -132,40 +134,36 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
       <div className={styles.card}>
         <div className={styles.linkButtonsContainer}>
           <Link href="/facturacion" className={styles.link}>
-            <CaretLeft size={20} />
+            <CaretLeft size={20} weight="bold" />
             <div>Detalle de TR {params.id}</div>
           </Link>
 
-          <div className={styles.btnContainer}>
-            <Button
-              className={styles.actionBtn}
-              type="text"
-              size="large"
-              onClick={() => setIsModalVisible(true)}
-            >
-              <DotsThree size={24} />
-              <Text className={styles.text}>Generar acción</Text>
-            </Button>
-          </div>
+          <Button
+            className={styles.actionBtn}
+            type="text"
+            size="large"
+            onClick={() => setIsModalVisible(true)}
+          >
+            <DotsThree size={24} />
+            <Text className={styles.text}>Generar acción</Text>
+          </Button>
         </div>
 
-        <Flex className={styles.wrapper}>
-          <Flex className={styles.topInfo}>
-            <Flex className={styles.left}>
-              <div className={styles.vehicle}>
-                <b>Coltanques</b>
-              </div>
-              <br />
-              <div className={styles.vehicle}>
-                <b>Total servicio</b>
-              </div>
-            </Flex>
-            <Flex className={styles.right}>
-              <div className={styles.total}>
-                <b>$19.000.000</b>
-              </div>
-            </Flex>
-          </Flex>
+        <Flex className={styles.boxContainer} vertical gap={16}>
+          <Row>
+            <div className={styles.headingText}>Coltanques</div>
+          </Row>
+          <Row>
+            <Col span={12}>
+              <div className={styles.headingText}>Total servicio</div>
+            </Col>
+            <Col
+              span={12}
+              style={{ display: "flex", justifyContent: "flex-end", borderLeft: "1px solid #DDD" }}
+            >
+              <div className={styles.titleText}>$19.000.000</div>
+            </Col>
+          </Row>
         </Flex>
 
         <div className={styles.collapsableContainer}>
