@@ -164,6 +164,16 @@ export const SideBar = () => {
             {isSideBarLarge && "Proveedores"}
           </Button>
         </Link>
+        <Link href="/facturacion" passHref legacyBehavior>
+          <Button
+            type="primary"
+            size="large"
+            icon={<Receipt size={26} />}
+            className={path.startsWith("/facturacion") ? "buttonIcon" : "buttonIconActive"}
+          >
+            {isSideBarLarge && "Proveedores"}
+          </Button>
+        </Link>
         <Link href="/logistics/configuration" passHref legacyBehavior>
           <Button
             type="primary"
