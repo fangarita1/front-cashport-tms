@@ -6,33 +6,36 @@ import { useAppStore } from "@/lib/store/store";
 interface Props {
   page?: number;
   limit?: number;
-  holding?: number;
+  holding?: string[];
   searchQuery?: string;
-  client_group?: number;
+  client_group?: string[];
 }
 
-export const usePortfolios = ({ page, limit = 50, holding, searchQuery, client_group }: Props) => {
+export const usePortfolios = ({
+  page = 1,
+  limit = 50,
+  holding,
+  searchQuery,
+  client_group
+}: Props) => {
   const { ID } = useAppStore((state) => state.selectedProject);
 
-  const buildQueryString = () => {
-    const params = new URLSearchParams({
-      page: page?.toString() || "1",
-      limit: limit.toString()
-    });
+  const pageQuery = `page=${page}`;
+  const limitQuery = `&limit=${limit}`;
+  const holdingQuery = holding && holding.length > 0 ? `&holding=${holding.join(",")}` : "";
+  const searchQueryParam = searchQuery
+    ? `&searchQuery=${encodeURIComponent(searchQuery.toLowerCase().trim())}`
+    : "";
+  const clientGroupQuery =
+    client_group && client_group.length > 0 ? `&client_group=${client_group.join(",")}` : "";
 
-    if (holding) params.append("holding", holding.toString());
-    if (searchQuery) params.append("searchQuery", searchQuery);
-    if (client_group) params.append("client_group", client_group.toString());
+  const pathKey = `/portfolio/client/project/${ID}?${pageQuery}${limitQuery}${holdingQuery}${searchQueryParam}${clientGroupQuery}`;
 
-    return params.toString();
-  };
-
-  const pathKey = `/portfolio/client/project/${ID}?${buildQueryString()}`;
-  const { data, isLoading, error } = useSWR<IViewClientsTable>(pathKey, fetcher);
+  const { data, error } = useSWR<IViewClientsTable>(pathKey, fetcher);
 
   return {
     data,
-    loading: isLoading,
+    loading: !error && !data,
     error
   };
 };

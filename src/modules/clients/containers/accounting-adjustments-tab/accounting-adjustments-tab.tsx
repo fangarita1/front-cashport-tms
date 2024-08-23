@@ -12,8 +12,6 @@ import {
   FinancialDiscount,
   StatusFinancialDiscounts
 } from "@/types/financialDiscounts/IFinancialDiscounts";
-import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
-import UiFilterDropdown from "@/components/ui/ui-filter-dropdown";
 import "./accounting-adjustments-tab.scss";
 import { useModalDetail } from "@/context/ModalContext";
 import { mutate } from "swr";
@@ -41,9 +39,9 @@ const AccountingAdjustmentsTab = () => {
     clientId,
     projectId,
     id: debouncedSearchQuery ? parseInt(debouncedSearchQuery) : undefined,
-    line: filters.lines[0],
-    zone: filters.zones[0],
-    channel: filters.channels[0]
+    line: filters.lines,
+    zone: filters.zones,
+    channel: filters.channels
   });
   const { openModal, modalType } = useModalDetail();
 

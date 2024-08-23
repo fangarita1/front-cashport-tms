@@ -1,15 +1,17 @@
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { fetcher } from "@/utils/api/api";
 import { FinancialDiscountsResponse } from "@/types/financialDiscounts/IFinancialDiscounts";
 
-interface FinancialDiscountsProps {
+interface Props {
   clientId: number;
   projectId: number;
   id?: number;
-  line?: number;
-  subline?: number;
-  channel?: number;
-  zone?: number;
+  line?: number[];
+  subline?: number[];
+  channel?: number[];
+  zone?: number[];
+  searchQuery?: string;
+  page?: number;
 }
 
 export const useFinancialDiscounts = ({
@@ -19,25 +21,26 @@ export const useFinancialDiscounts = ({
   line,
   subline,
   channel,
-  zone
-}: FinancialDiscountsProps) => {
-  const buildQueryString = () => {
-    const params = new URLSearchParams();
-    if (id !== undefined) params.append("id", id.toString());
-    if (line !== undefined) params.append("line", line.toString());
-    if (subline !== undefined) params.append("subline", subline.toString());
-    if (channel !== undefined) params.append("channel", channel.toString());
-    if (zone !== undefined) params.append("zone", zone.toString());
-    return params.toString();
-  };
+  zone,
+  searchQuery,
+  page = 1
+}: Props) => {
+  const idQuery = id ? `&id=${id}` : "";
+  const lineQuery = line && line.length > 0 ? `&line=${line.join(",")}` : "";
+  const sublineQuery = subline && subline.length > 0 ? `&subline=${subline.join(",")}` : "";
+  const channelQuery = channel && channel.length > 0 ? `&channel=${channel.join(",")}` : "";
+  const zoneQuery = zone && zone.length > 0 ? `&zone=${zone.join(",")}` : "";
+  const searchQueryParam = searchQuery
+    ? `&searchQuery=${encodeURIComponent(searchQuery.toLowerCase().trim())}`
+    : "";
 
-  const queryString = buildQueryString();
-  const url = `/financial-discount/project/${projectId}/client/${clientId}${queryString ? `?${queryString}` : ""}`;
+  const pathKey = `/financial-discount/project/${projectId}/client/${clientId}?page=${page}${idQuery}${lineQuery}${sublineQuery}${channelQuery}${zoneQuery}${searchQueryParam}`;
 
-  const { data, isLoading } = useSWR<FinancialDiscountsResponse>(url, fetcher, {});
+  const { data, error } = useSWR<FinancialDiscountsResponse>(pathKey, fetcher, {});
 
   return {
-    data: data?.data,
-    isLoading
+    data: data?.data || [],
+    isLoading: !error && !data,
+    mutate
   };
 };

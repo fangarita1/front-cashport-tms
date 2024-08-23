@@ -4,6 +4,7 @@ import { IInvoices } from "@/types/invoices/IInvoices";
 
 interface Props {
   clientId: number;
+  projectId: number;
   page?: number;
   limit?: number;
   paymentAgreement?: number;
@@ -12,48 +13,44 @@ interface Props {
   zones?: number[];
   channels?: number[];
   searchQuery?: string;
-  projectId: number;
 }
 
 export const useInvoices = ({
   clientId,
-  page,
+  projectId,
+  page = 1,
   limit = 50,
   paymentAgreement,
   radicationType,
   lines,
   zones,
   channels,
-  searchQuery,
-  projectId
+  searchQuery
 }: Props) => {
-  const buildQueryString = () => {
-    const params = new URLSearchParams({
-      page: page?.toString() || "1",
-      limit: limit.toString()
-    });
+  const pageQuery = `page=${page}`;
+  const limitQuery = `&limit=${limit}`;
+  const paymentAgreementQuery =
+    paymentAgreement !== undefined && paymentAgreement !== null
+      ? `&payment_agrement=${paymentAgreement}`
+      : "";
+  const radicationTypeQuery =
+    radicationType !== undefined && radicationType !== null
+      ? `&radication_type=${radicationType}`
+      : "";
+  const linesQuery = lines && lines.length > 0 ? `&line=${lines.join(",")}` : "";
+  const zonesQuery = zones && zones.length > 0 ? `&zone=${zones.join(",")}` : "";
+  const channelsQuery = channels && channels.length > 0 ? `&channel=${channels.join(",")}` : "";
+  const searchQueryParam = searchQuery
+    ? `&id=${encodeURIComponent(searchQuery.toLowerCase().trim())}`
+    : "";
 
-    if (paymentAgreement !== undefined && paymentAgreement !== null) {
-      params.append("payment_agrement", paymentAgreement?.toString());
-    }
+  const pathKey = `/invoice/client/${clientId}/project/${projectId}?${pageQuery}${limitQuery}${paymentAgreementQuery}${radicationTypeQuery}${linesQuery}${zonesQuery}${channelsQuery}${searchQueryParam}`;
 
-    if (radicationType !== undefined && radicationType !== null)
-      params.append("radication_type", radicationType?.toString());
-    if (lines && lines.length > 0) lines.forEach((line) => params.append("line", line.toString()));
-    if (zones && zones.length > 0) zones.forEach((zone) => params.append("zone", zone.toString()));
-    if (channels && channels.length > 0)
-      channels.forEach((channel) => params.append("channel", channel.toString()));
-    if (searchQuery) params.append("id", searchQuery);
-
-    return params.toString();
-  };
-
-  const pathKey = `/invoice/client/${clientId}/project/${projectId}?${buildQueryString()}`;
-  const { data, isLoading, error } = useSWR<IInvoices>(pathKey, fetcher);
+  const { data, error } = useSWR<IInvoices>(pathKey, fetcher);
 
   return {
     data: data?.data,
-    isLoading,
+    isLoading: !error && !data,
     error
   };
 };

@@ -64,8 +64,8 @@ export const ClientsViewTable = () => {
   const { data, loading, error } = usePortfolios({
     page: page,
     searchQuery: debouncedSearchQuery,
-    holding: filters.holding.length > 0 ? parseInt(filters.holding[0]) : undefined,
-    client_group: filters.clientGroup.length > 0 ? parseInt(filters.clientGroup[0]) : undefined
+    holding: filters.holding,
+    client_group:   filters.clientGroup
   });
 
   useEffect(() => {
