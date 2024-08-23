@@ -445,12 +445,12 @@ export interface ICarrierRequestDetail {
   id_transfer_request: number;
   id_journey: number;
   id_trip: number;
-  start_latitude: number,
-  start_longitude: number,
-  end_latitude: number,
-  end_longitude: number,
-  volume: number,
-  weight: number,
+  start_latitude: number;
+  start_longitude: number;
+  end_latitude: number;
+  end_longitude: number;
+  volume: number;
+  weight: number;
   //geometry
   geometry: any;
   //datos de contacto!
@@ -582,7 +582,7 @@ export interface ICarrierRequestVehicles {
   gps_link: string;
   gps_password: string;
   gps_user: string;
-  has_gps: boolean
+  has_gps: boolean;
   id: number;
   id_carrier: number;
   id_vehicle_type: number;
@@ -2011,7 +2011,7 @@ export interface ITransferOrder {
   //vehiculo sugerido
   transfer_order_vehicles?: ITransferOrderVehicle[] | null;
   //psls y ccs asociados
-  transfer_order_psl?: ITransferOrderPsls[] | null;;
+  transfer_order_psl?: ITransferOrderPsls[] | null;
 }
 
 export interface IFormTransferOrder {
@@ -3267,7 +3267,7 @@ export interface IClient {
 }
 
 export interface ISelectOptionOrders {
-  value: string | null | undefined; 
+  value: string | null | undefined;
   label: string | null | undefined;
 }
 export interface CustomOptionType {
@@ -3287,19 +3287,18 @@ export interface PSLOptionType {
 }
 
 export interface ITransferOrderCostCenter {
-  id: number,
-  id_transfer_order: number,
-  id_costcenter: number,
-  percentage: number,
-  cost_center_desc: string,
-  id_psl: number
+  id: number;
+  id_transfer_order: number;
+  id_costcenter: number;
+  percentage: number;
+  cost_center_desc: string;
+  id_psl: number;
 }
 export interface ITransferOrderPsls {
   id: number;
   description: string;
   transfer_order_cost_center: ITransferOrderCostCenter[];
 }
-
 
 export interface IBillingsRequestList {
   statusId: string;
