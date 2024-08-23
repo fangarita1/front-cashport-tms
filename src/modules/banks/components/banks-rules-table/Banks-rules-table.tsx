@@ -15,12 +15,19 @@ interface PropsBanksRulesTable {
   selectedRowKeys: Key[];
   setSelectedRowKeys: Dispatch<SetStateAction<Key[]>>;
   rules: bankRule[];
+  setShowBankRuleModal: Dispatch<
+    SetStateAction<{
+      isOpen: boolean;
+      ruleId: number;
+    }>
+  >;
 }
 
 export const BanksRulesTable = ({
   selectedRowKeys,
   setSelectedRowKeys,
-  rules
+  rules,
+  setShowBankRuleModal
 }: PropsBanksRulesTable) => {
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
@@ -29,6 +36,13 @@ export const BanksRulesTable = ({
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange
+  };
+
+  const handleOpenEditRule = (ruleId: number) => {
+    setShowBankRuleModal({
+      isOpen: true,
+      ruleId
+    });
   };
 
   const columns: TableProps<bankRule>["columns"] = [
@@ -58,8 +72,8 @@ export const BanksRulesTable = ({
     {
       width: "1rem",
       className: "tableColumn",
-      render: () => (
-        <Button className="editButton">
+      render: (_, row) => (
+        <Button onClick={() => handleOpenEditRule(row.id)} className="editButton">
           <PencilLine size={24} />
         </Button>
       )

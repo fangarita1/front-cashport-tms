@@ -16,14 +16,20 @@ interface PropsBanksRules {
 
 export const BanksRules = ({ onClickBack }: PropsBanksRules) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [showBankRuleModal, setShowBankRuleModal] = useState(false);
+  const [showBankRuleModal, setShowBankRuleModal] = useState({
+    isOpen: false,
+    ruleId: 0
+  });
 
   const handleDeleteRules = () => {
     console.info("Delete rules with ids", selectedRowKeys);
   };
 
   const handleCreateNewRule = () => {
-    setShowBankRuleModal(true);
+    setShowBankRuleModal({
+      isOpen: true,
+      ruleId: 0
+    });
   };
 
   const items: MenuProps["items"] = [
@@ -75,9 +81,18 @@ export const BanksRules = ({ onClickBack }: PropsBanksRules) => {
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
         rules={mockRules}
+        setShowBankRuleModal={setShowBankRuleModal}
       />
 
-      <BankRuleModal isOpen={showBankRuleModal} onClose={() => setShowBankRuleModal(false)} />
+      <BankRuleModal
+        showBankRuleModal={showBankRuleModal}
+        onClose={() =>
+          setShowBankRuleModal({
+            isOpen: false,
+            ruleId: 0
+          })
+        }
+      />
     </div>
   );
 };

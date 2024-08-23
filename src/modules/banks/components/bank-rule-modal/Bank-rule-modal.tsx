@@ -10,12 +10,16 @@ import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import "./bank-rule-modal.scss";
 import { useEffect, useState } from "react";
 
+type Selector = { value: number | string; label: string };
 interface Props {
-  isOpen: boolean;
   onClose: () => void;
+  showBankRuleModal: {
+    isOpen: boolean;
+    ruleId: number;
+  };
 }
 
-export const BankRuleModal = ({ isOpen, onClose }: Props) => {
+export const BankRuleModal = ({ showBankRuleModal, onClose }: Props) => {
   const [ruleCount, setRuleCount] = useState(1);
 
   const {
@@ -25,9 +29,10 @@ export const BankRuleModal = ({ isOpen, onClose }: Props) => {
     reset
   } = useForm<{
     rules: {
+      id?: number;
       description: string;
-      client_name: any;
-      coincidence: any;
+      client_name: Selector;
+      coincidence: Selector;
     }[];
   }>({});
 
@@ -35,24 +40,33 @@ export const BankRuleModal = ({ isOpen, onClose }: Props) => {
     setRuleCount((prevCount) => prevCount + 1);
   };
 
-  const handleAddEditRule = (data: any) => console.log(data);
+  const handleAddEditRule = (data: any) => {
+    if (showBankRuleModal.ruleId) {
+      console.info("Edit rule with id", showBankRuleModal.ruleId);
+    } else {
+      console.info("Create new rule");
+    }
+    console.info(data);
+  };
 
   useEffect(() => {
-    if (!isOpen) {
+    if (!showBankRuleModal.isOpen) {
       setRuleCount(1);
       reset();
     }
-  }, [isOpen]);
+  }, [showBankRuleModal.isOpen]);
   return (
     <Modal
       className="bankRuleModal"
       width={"65%"}
-      open={isOpen}
+      open={showBankRuleModal.isOpen}
       onCancel={onClose}
       footer={null}
       destroyOnClose
     >
-      <h2 className="bankRuleModal__title">Nueva regla</h2>
+      <h2 className="bankRuleModal__title">
+        {showBankRuleModal.ruleId ? "Editar regla" : "Nueva regla"}
+      </h2>
       <p className="bankRuleModal__description">Ingresa descripcion y nombre del cliente</p>
 
       <div className="bankRuleModal__rules">
@@ -92,21 +106,24 @@ export const BankRuleModal = ({ isOpen, onClose }: Props) => {
             />
           </div>
         ))}
-        <Button
-          type="text"
-          size="large"
-          style={{ paddingLeft: 0, fontWeight: 500, width: "fit-content", marginTop: "0.4rem" }}
-          onClick={handleAddRule}
-          icon={<Plus size={"1.45rem"} />}
-        >
-          Agregar otra
-        </Button>
+
+        {!showBankRuleModal.ruleId && (
+          <Button
+            type="text"
+            size="large"
+            style={{ paddingLeft: 0, fontWeight: 500, width: "fit-content", marginTop: "0.4rem" }}
+            onClick={handleAddRule}
+            icon={<Plus size={"1.45rem"} />}
+          >
+            Agregar otra
+          </Button>
+        )}
       </div>
 
       <div className="bankRuleModal__footer">
         <SecondaryButton onClick={onClose}>Cancelar</SecondaryButton>
         <PrincipalButton disabled={!isValid} onClick={handleSubmit(handleAddEditRule)}>
-          Crear nueva regla
+          {showBankRuleModal.ruleId ? "Guardar cambios" : "Crear nueva regla"}
         </PrincipalButton>
       </div>
     </Modal>
