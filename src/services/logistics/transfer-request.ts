@@ -124,33 +124,33 @@ export const finishTransferRequest = async (data: TransferRequestFinish) => {
 
 export const getAcceptedTransferRequest = async (): Promise<ITransferRequestResponse[]> => {
   try {
-    const response: any = await API.get(`/transfer-request/transfer-request-order`);
+    const response: GenericResponse<ITransferRequestResponse[]> = await API.get(`/transfer-request/transfer-request-order`);
     if (response.success) return response.data;
     return [];
   } catch (error) {
-    console.error("Error get transfer-request/: ", error);
+    console.error("Error get transfer-request-order/: ", error);
     throw error as any;
   }
 };
 
 export const getOnRouteTransferRequest = async (): Promise<ITransferRequestResponse[]> => {
   try {
-    const response: any = await API.get(`/transfer-request/transfer-request-on-route`);
+    const response: GenericResponse<ITransferRequestResponse[]> = await API.get(`/transfer-request/transfer-request-on-route`);
     if (response.success) return response.data;
     return [];
   } catch (error) {
-    console.error("Error get transfer-request/: ", error);
+    console.error("Error get transfer-request-on-route/: ", error);
     throw error as any;
   }
 };
 
 export const getFinishedTransferRequest = async (): Promise<ITransferRequestResponse[]> => {
   try {
-    const response: any = await API.get(`/transfer-request/transfer-request-finished`);
+    const response: GenericResponse<ITransferRequestResponse[]> = await API.get(`/transfer-request/transfer-request-finished`);
     if (response.success) return response.data;
     return [];
   } catch (error) {
-    console.error("Error get transfer-request/: ", error);
+    console.error("Error get transfer-request-finished/: ", error);
     throw error as any;
   }
 };
@@ -159,11 +159,11 @@ export const getTransferRequestDetail = async (
   id: number
 ): Promise<ITransferRequestDetail | {}> => {
   try {
-    const response: any = await API.get(`/transfer-request/details/${id}`);
-    if (response.success) return response.data;
+    const { success, data }: GenericResponse<ITransferRequestResponse> = await API.get(`/transfer-request/details/${id}`);
+    if (success) return data;
     return {};
   } catch (error) {
-    console.error("Error get transfer-request/: ", error);
+    console.error("Error get request/details/:id/: ", error);
     throw error as any;
   }
 };
