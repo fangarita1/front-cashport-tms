@@ -14,7 +14,7 @@ type ExtendedFieldError =
   | Merge<OriginalFieldError, FieldErrorsImpl<{ value: number | string; label: string }>>;
 
 interface PropsGeneralSelect<T extends FieldValues> {
-  errors: ExtendedFieldError | undefined;
+  errors?: ExtendedFieldError | undefined;
   field: ControllerRenderProps<T, any>;
   title?: string;
   placeholder: string;

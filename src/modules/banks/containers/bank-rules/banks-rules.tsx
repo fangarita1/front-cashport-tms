@@ -8,6 +8,7 @@ import { Bank, CaretLeft } from "phosphor-react";
 
 import styles from "./banks-rules.module.scss";
 import BanksRulesTable from "../../components/banks-rules-table/Banks-rules-table";
+import { BankRuleModal } from "../../components/bank-rule-modal/Bank-rule-modal";
 
 interface PropsBanksRules {
   onClickBack: () => void;
@@ -15,9 +16,14 @@ interface PropsBanksRules {
 
 export const BanksRules = ({ onClickBack }: PropsBanksRules) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [showBankRuleModal, setShowBankRuleModal] = useState(false);
 
   const handleDeleteRules = () => {
     console.info("Delete rules with ids", selectedRowKeys);
+  };
+
+  const handleCreateNewRule = () => {
+    setShowBankRuleModal(true);
   };
 
   const items: MenuProps["items"] = [
@@ -44,7 +50,10 @@ export const BanksRules = ({ onClickBack }: PropsBanksRules) => {
           Reglas de bancos
         </Button>
 
-        <PrincipalButton customStyles={{ marginLeft: "auto", height: "3rem" }}>
+        <PrincipalButton
+          onClick={handleCreateNewRule}
+          customStyles={{ marginLeft: "auto", height: "3rem" }}
+        >
           Crear nueva regla <Bank size={16} />
         </PrincipalButton>
       </Flex>
@@ -67,6 +76,8 @@ export const BanksRules = ({ onClickBack }: PropsBanksRules) => {
         setSelectedRowKeys={setSelectedRowKeys}
         rules={mockRules}
       />
+
+      <BankRuleModal isOpen={showBankRuleModal} onClose={() => setShowBankRuleModal(false)} />
     </div>
   );
 };
