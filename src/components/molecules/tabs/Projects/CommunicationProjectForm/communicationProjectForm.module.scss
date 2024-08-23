@@ -66,6 +66,12 @@
                 gap: 1rem;
                 align-items: center;
 
+                &__left {
+                    display: grid;
+                    grid-template-columns: auto 1fr;
+                    gap: 1rem;
+                }
+
                 &__radio {
                     display: grid;
                     grid-template-columns: auto 1fr;
@@ -128,7 +134,13 @@
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 1rem;
-                align-items: flex-start;
+                align-items: center;
+
+                &__left {
+                    display: grid;
+                    grid-template-columns: auto 1fr;
+                    gap: 1rem;
+                }
 
                 &__radio {
                     display: grid;
@@ -138,6 +150,7 @@
                     align-items: center;
                     margin: 0 !important;
                     margin-right: -1rem !important;
+                    max-height: 3rem;
 
                     span {
                         padding: 0;
