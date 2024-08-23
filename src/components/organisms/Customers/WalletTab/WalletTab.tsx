@@ -19,10 +19,21 @@ import RegisterNews from "@/components/molecules/modals/RegisterNews/RegisterNew
 import { useSWRConfig } from "swr";
 import "./wallettab.scss";
 import { useModalDetail } from "@/context/ModalContext";
+import { useDebounce } from "@/hooks/useDeabouce";
+import {
+  SelectedFiltersWallet,
+  WalletTabFilter
+} from "@/components/atoms/Filters/FilterWalletTab/FilterWalletTab";
 
 export const WalletTab = () => {
   const { openModal } = useModalDetail();
-
+  const [filters, setFilters] = useState<SelectedFiltersWallet>({
+    lines: [],
+    zones: [],
+    channels: [],
+    paymentAgreement: null,
+    radicationType: null
+  });
   const [invoices, setInvoices] = useState<InvoicesData[] | undefined>([]);
   const [selectedRows, setSelectedRows] = useState<IInvoice[] | undefined>(undefined);
   const [isGenerateActionOpen, setisGenerateActionOpen] = useState(false);
@@ -30,6 +41,8 @@ export const WalletTab = () => {
   const params = useParams();
   const clientIdParam = extractSingleParam(params.clientId);
   const projectIdParam = extractSingleParam(params.projectId);
+
+  const debouncedSearchQuery = useDebounce(search, 300);
   const { mutate } = useSWRConfig();
   const [showActionDetailModal, setShowActionDetailModal] = useState<{
     isOpen: boolean;
@@ -47,13 +60,20 @@ export const WalletTab = () => {
 
   const { data, isLoading } = useInvoices({
     clientId: clientId || 0,
-    projectId: projectId || 0
+    projectId: projectId || 0,
+    searchQuery: debouncedSearchQuery,
+    paymentAgreement: filters.paymentAgreement !== null ? filters.paymentAgreement : undefined,
+    radicationType: filters.radicationType !== null ? filters.radicationType : undefined,
+    lines: filters.lines,
+    zones: filters.zones,
+    channels: filters.channels
   });
 
   useEffect(() => {
-    const invoicesData = data?.filter((invoiceState) => invoiceState.count > 0);
-
-    setInvoices(invoicesData);
+    if (data) {
+      const invoicesData: InvoicesData[] = data.filter((invoiceState) => invoiceState.count > 0);
+      setInvoices(invoicesData);
+    }
   }, [data]);
 
   const handleisGenerateActionOpen = () => {
@@ -100,42 +120,42 @@ export const WalletTab = () => {
       {selectedRows && selectedRows?.length > 0 && (
         <ModalEstimateTotalInvoices selectedInvoices={selectedRows} />
       )}
-      {isLoading ? (
-        <Flex justify="center" align="center" style={{ height: "3rem" }}>
-          <Spin />
-        </Flex>
-      ) : (
-        <div className="walletTab">
-          <Flex justify="space-between" className="walletTab__header">
-            <Flex gap={"0.5rem"}>
-              <UiSearchInput
-                className="search"
-                placeholder="Buscar"
-                onChange={(event) => {
-                  setTimeout(() => {
-                    setSearch(event.target.value);
-                  }, 1000);
-                }}
-              />
-              <Button
-                className="button__actions"
-                size="large"
-                icon={<DotsThree size={"1.5rem"} />}
-                onClick={handleisGenerateActionOpen}
-              >
-                Generar acción
-              </Button>
-            </Flex>
-
+      <div className="walletTab">
+        <Flex justify="space-between" className="walletTab__header">
+          <Flex gap={"0.5rem"}>
+            <UiSearchInput
+              className="search"
+              placeholder="Buscar por ID"
+              onChange={(event) => {
+                setSearch(event.target.value);
+              }}
+            />
+            <WalletTabFilter setSelectedFilters={setFilters} />
             <Button
-              type="primary"
-              className="button__adjustments"
-              onClick={() => console.log("click ajustes contables")}
+              className="button__actions"
+              size="large"
+              icon={<DotsThree size={"1.5rem"} />}
+              disabled={isLoading}
+              onClick={handleisGenerateActionOpen}
             >
-              Ajustes contables
-              <CaretDoubleRight size={16} style={{ marginLeft: "0.5rem" }} />
+              Generar acción
             </Button>
           </Flex>
+
+          <Button
+            type="primary"
+            className="button__adjustments"
+            onClick={() => console.log("click ajustes contables")}
+          >
+            Ajustes contables
+            <CaretDoubleRight size={16} style={{ marginLeft: "0.5rem" }} />
+          </Button>
+        </Flex>
+        {isLoading ? (
+          <Flex justify="center" align="center" style={{ height: "3rem" }}>
+            <Spin />
+          </Flex>
+        ) : (
           <Collapse
             items={invoices?.map((invoiceState) => ({
               key: invoiceState.status_id,
@@ -158,14 +178,14 @@ export const WalletTab = () => {
               )
             }))}
           />
-        </div>
-      )}
+        )}
+      </div>
 
       <ModalGenerateAction
         clientId={clientId}
         isOpen={isGenerateActionOpen}
         setSelectOpen={(e) => {
-          setisGenerateActionOpen(!isGenerateActionOpen);
+          setisGenerateActionOpen((prev) => !prev);
           setIsSelectOpen(e);
         }}
         onClose={handleisGenerateActionOpen}
@@ -189,7 +209,7 @@ export const WalletTab = () => {
       <ModalActionDiscountCredit
         isOpen={showActionDetailModal?.isOpen}
         onClose={() => {
-          setisGenerateActionOpen(!isGenerateActionOpen);
+          setisGenerateActionOpen((prev) => !prev);
           setShowActionDetailModal({ isOpen: false, actionType: 0 });
         }}
         showActionDetailModal={showActionDetailModal}

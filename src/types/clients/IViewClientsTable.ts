@@ -10,6 +10,7 @@ export interface IData {
   grandTotal: IGrandTotal;
 }
 export interface IClientsPortfolio {
+  total_balances: any;
   id: number;
   client_id: number;
   client_name: string;

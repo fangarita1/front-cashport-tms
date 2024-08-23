@@ -24,7 +24,10 @@ import { STORAGE_TOKEN } from "@/utils/constants/globalConstants";
 import "./ClientsViewTable.scss";
 import { useDebounce } from "@/hooks/useDeabouce";
 import UiSearchInput from "@/components/ui/search-input/search-input";
-import { FilterPortfolio, SelectedFilters } from "@/components/atoms/Filters/FilterPortfolio/FilterPortfolio";
+import {
+  FilterPortfolio,
+  SelectedFilters
+} from "@/components/atoms/Filters/FilterPortfolio/FilterPortfolio";
 
 const { Text } = Typography;
 
@@ -40,7 +43,7 @@ export const ClientsViewTable = () => {
   const ID = project?.ID;
   const [filters, setFilters] = useState<SelectedFilters>({
     holding: [],
-    clientGroup: [],
+    clientGroup: []
   });
   useEffect(() => {
     setIsComponentLoading(false);
@@ -122,7 +125,8 @@ export const ClientsViewTable = () => {
           <Text className="text">{row.client_name}</Text>
         </Link>
       ),
-      width: "20%"
+      width: "20%",
+      sorter: (a, b) => a.client_name.localeCompare(b.client_name)
     },
     {
       align: "right",
@@ -130,7 +134,8 @@ export const ClientsViewTable = () => {
       dataIndex: "total_portfolio",
       key: "total_portfolio",
       render: (text) => <Text>{formatMoney(text)}</Text>,
-      width: "10%"
+      width: "10%",
+      sorter: (a, b) => a.total_portfolio - b.total_portfolio
     },
     {
       align: "right",
@@ -138,7 +143,8 @@ export const ClientsViewTable = () => {
       dataIndex: "past_due_ammount",
       key: "past_due_ammount",
       render: (text) => <Text>{formatMoney(text)}</Text>,
-      width: "10%"
+      width: "10%",
+      sorter: (a, b) => a.past_due_ammount - b.past_due_ammount
     },
     {
       align: "right",
@@ -146,7 +152,8 @@ export const ClientsViewTable = () => {
       key: "budget_ammount",
       dataIndex: "budget_ammount",
       render: (text) => <Text>{formatMoney(text)}</Text>,
-      width: "10%"
+      width: "10%",
+      sorter: (a, b) => a.budget_ammount - b.budget_ammount
     },
     {
       align: "right",
@@ -175,13 +182,15 @@ export const ClientsViewTable = () => {
       title: "Saldos",
       key: "total_balances",
       dataIndex: "total_balances",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => a.total_balances - b.total_balances
     },
     {
       title: "Holding",
       key: "holding_name",
       dataIndex: "holding_name",
-      render: (text) => <Text className="text">{text}</Text>
+      render: (text) => <Text className="text">{text}</Text>,
+      sorter: (a, b) => a.holding_name?.localeCompare(b.holding_name)
     },
     {
       title: "",
