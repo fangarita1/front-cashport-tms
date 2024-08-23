@@ -1,9 +1,9 @@
 "use client";
 
-import { CarrierInfoConfigView } from "@/components/organisms/logistics/configuration/providers/CarrierInfoConfig";
+import { DefaultInfoConfigView } from "@/components/organisms/logistics/configuration/default/DefaultInfoConfig";
 
-function CarrierTableConfigPage() {
-  return <CarrierInfoConfigView />;
+function DefaultTableConfigPage() {
+  return <DefaultInfoConfigView />;
 }
 
-export default CarrierTableConfigPage;
+export default DefaultTableConfigPage;

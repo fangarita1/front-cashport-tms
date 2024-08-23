@@ -12,3 +12,28 @@ export const COOKIE_NAME = process.env.NEXT_PUBLIC_COOKIE_SESSION_NAME;
 // ---
 export const CREATED = 201;
 export const SUCCESS = 200;
+
+export const STATUS = {
+  TO: {
+    DRAFT: "9f5ba87c-8736-4367-8077-3b914d2ee711",
+    SIN_PROCESAR: "00ce0b06-71b8-4981-861f-b4fa100dbd25",
+    ESPERANDO_PROVEEDOR: "56859d8f-2345-4df2-b811-2371905d80a0"
+  },
+  CR: {
+    POR_CONFIRMAR: "e2210921-8650-44a2-8c3a-b96d9cd492b4",
+    EN_REVISÓN: "ae986b0b-071b-479d-a7ee-79160dae7fc9",
+    ASIGNADAS: "6f793cd8-6203-4287-8941-b3ee90a55194",
+    RECHAZADO: "64869ad8-70c1-4a2c-81c3-4d7f4879cb3a"
+  },
+  BNG: {
+    POR_ACEPTAR: "a9a0e7cd-96e3-4738-806d-225641117a62",
+    ACEPTADAS: "40f8e08b-1e7b-4412-ba57-e62e7352b729",
+    PREAUTORIZADO: "089a3253-94dc-43ed-bff9-3c3c332b4be1",
+    FACTURADO: "b46233c0-0587-4a57-a452-adf5c5a70c11"
+  },
+  TI: {
+    PENDIENTE: "dadec8ad-3c5d-40f7-b5b2-42b0ad7cd4d7",
+    ACEPTADA: "ab5034d3-dda6-4557-bf8c-e75ce6494097",
+    RECHAZADA: "da258586-c04b-4603-bea5-f9bce49687e0"
+  }
+};

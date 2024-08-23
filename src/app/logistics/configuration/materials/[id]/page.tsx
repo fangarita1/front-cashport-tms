@@ -1,10 +1,12 @@
-"use client";
+import { MaterialInfoView } from "@/components/organisms/logistics/configuration/materials/materialInfo/materialInfo";
 
-import { ProviderInfoView } from "@/components/organisms/logistics/proveedores/providerInfo/providerInfo";
+type Props = {
+  params: {
+    id: string;
+    materialId: string;
+  };
+};
 
-
-function ProviderInfoPage({ params }: { params: { id: string } }) {
-  return <ProviderInfoView idParam={params.id} />;
+export default function MaterialPage({ params }: Props) {
+  return <MaterialInfoView params={params} />;
 }
-
-export default ProviderInfoPage;

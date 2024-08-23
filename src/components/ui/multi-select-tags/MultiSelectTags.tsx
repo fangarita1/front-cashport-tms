@@ -50,6 +50,11 @@ const MultiSelectTags = <T extends FieldValues>({
         ) || [];
         setSelectedOptions(newSelectedOptions);
       }
+
+    if (Array.isArray(defaultValue)){
+      const newSelectedOptions = defaultValue as unknown as OptionType[];
+      setSelectedOptions(newSelectedOptions);
+    }
     
   }, [field.value, options]);
 

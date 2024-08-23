@@ -1,9 +1,21 @@
 import { TransferOrdersState } from "@/utils/constants/transferOrdersState";
 import styles from './completed.module.scss';
-import { Collapse, CollapseProps } from "antd";
+import { Collapse, CollapseProps, Typography } from "antd";
 import { TransferOrdersTable } from "@/components/molecules/tables/TransferOrderTable/TransferOrderTable";
+import { FC, useEffect, useState } from "react";
+import { ITransferRequestResponse } from "@/types/transferRequest/ITransferRequest";
+import { getFinishedTransferRequest } from "@/services/logistics/transfer-request";
 
-export const Completed = () => {
+const Text = Typography;
+
+interface ICompletedProps {
+  search: string;
+}
+
+export const Completed: FC<ICompletedProps> = ({ search }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [transferRequest, setTransferRequest] = useState<ITransferRequestResponse[]>([]);
+
   const getTitile = (stateId: string, number: number) => {
     const getState = TransferOrdersState.find((f) => f.id === stateId);
     return (
@@ -19,23 +31,44 @@ export const Completed = () => {
     )
   }
 
-  const items: CollapseProps['items'] = [
-    {
-      key: '1',
-      label: getTitile('1', 17),
-      children: <TransferOrdersTable />,
-    },
-    {
-      key: '2',
-      label: getTitile('10', 17),
-      children: <TransferOrdersTable />,
-    },
-    {
-      key: '3',
-      label: getTitile('11', 17),
-      children: <TransferOrdersTable />,
-    },
-  ];
+  const getTransferRequestAccepted = async () => {
+    try {
+      const getRequest = await getFinishedTransferRequest();
+      if (Array.isArray(getRequest)) {
+        setTransferRequest(getRequest);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-  return <Collapse ghost items={items} defaultActiveKey={['1']} />
+  useEffect(() => {
+    getTransferRequestAccepted();
+  }, [])
+
+  const filteredData = transferRequest.map(status => {
+    const filteredItems = status.items.filter(item => 
+      item.start_location.toLowerCase().includes(search.toLowerCase()) || 
+      item.end_location.toLowerCase().includes(search.toLowerCase())
+    );
+    
+    return { ...status, items: filteredItems };
+  }).filter(status => status.items.length > 0);
+
+  const renderItems: CollapseProps['items'] = filteredData.map((item, index) => {
+    return {
+      key: index,
+      label: getTitile(item.statusId, item.items.length),
+      children: <TransferOrdersTable showColumn={false} items={item.items} />,
+    }
+  })
+
+  if (isLoading) return (
+    <div className={styles.emptyContainer}>
+      <Text className={styles.textEmpty}>No Content</Text>
+    </div>
+  );
+
+  return <Collapse ghost items={renderItems} defaultActiveKey={['0']} />
 }

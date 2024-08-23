@@ -1,0 +1,19 @@
+@import "@/styles/variables.scss";
+.proposal {
+    padding-right: 1rem;
+}
+
+.children {
+    width: 100%;
+    > :nth-child(n) {
+        width: 50%;
+        padding: 1rem;
+    }
+    > :nth-child(even) {
+        border-left: 1px solid $dark-gray;
+    }
+}
+
+.star {
+    color: $green;
+}

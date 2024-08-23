@@ -5,7 +5,7 @@
 
   .mapContainer {
     width: 50%;
-    height: 384px;
+    height: 100%;
   }
 
   .trackContainer {
@@ -35,7 +35,7 @@
           cursor: pointer;
 
           .trackState {
-            color: #141414;
+            color: #FFFFFF;
             font-size: 14px;
             font-weight: 400;
             line-height: 18px;
