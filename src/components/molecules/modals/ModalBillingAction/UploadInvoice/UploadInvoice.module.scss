@@ -1,0 +1,44 @@
+.scrollableTabsUI {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap; // Evita el salto de línea
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    border-radius: 10px;
+  }
+
+  .tab {
+    flex-shrink: 0;
+    padding: 10px 20px; // Ajusta el padding según la necesidad
+    cursor: pointer; // Hace que el ratón cambie a mano cuando se pasa sobre las pestañas
+    box-sizing: border-box; // Incluye el padding en el cálculo del ancho del elemento
+    border: 1px solid transparent;
+
+    &:hover {
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+.subtitle {
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 275;
+  b{
+    font-weight: 500;  
+  }
+}
+.inputForm {
+  width: 206px !important;
+}
+.inputsContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 1rem 0;
+  gap: 1rem;
+}
