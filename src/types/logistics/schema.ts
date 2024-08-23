@@ -1759,7 +1759,7 @@ export interface ITransferRequestStepOne {
   //other_requirements
   transfer_request_other_requeriments?: ITransferOrderRequestOtherRequeriments[] | null;
   //personas
-  transfer_request_persons?: ITransferOrderPersons[] | null;
+  transfer_request_persons?: ITransferOrderRequestContacts[] | null;
   //productos
   transfer_request_products?: ITransferOrderProducts[] | null;
   //vehiculos
@@ -2224,7 +2224,7 @@ export interface ITransferOrderDocumentsWithDefaults {
  * interface.
  */
 export interface ITransferOrderPersons {
-  key:number;
+  key: number;
   id: number;
   id_transfer_order: number;
   id_user: number;
@@ -2235,12 +2235,12 @@ export interface ITransferOrderPersons {
   modified_at?: Date | null;
   modified_by?: string | null;
   id_user_subline: number;
-  name:string;
-  contact_number:string;
+  name: string;
+  contact_number: string;
   id_psl: number;
-  psl_desc:string;
+  psl_desc: string;
   id_cost_center: number;
-  cost_center_desc:string;
+  cost_center_desc: string;
 }
 
 /**
@@ -3031,7 +3031,10 @@ export interface IVehiclesPricingTrips {
   modified_at: string | null;
   modified_by: string | null;
   status: string;
-  material: IVehiclesPricingTripsMaterial[];
+  material?: IVehiclesPricingTripsMaterial[];
+  persons?: {
+    id_person_transfer_request: number;
+  }[];
 }
 /**
  * Exposes all fields present in vehicle_pricing_trips_material as a typescript

@@ -1,6 +1,10 @@
 import React, { FC, useEffect, useState } from "react";
 import { Button, Flex, message } from "antd";
-import { ITransferRequestCreation, ITransferRequestJourneyInfo } from "@/types/logistics/schema";
+import {
+  ITransferOrderRequestContacts,
+  ITransferRequestCreation,
+  ITransferRequestJourneyInfo
+} from "@/types/logistics/schema";
 import { getTransferRequestVehicles, submitTrips } from "@/services/logistics/transfer-request";
 import Trip from "../components/trip/Trip";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -41,10 +45,14 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
       trips: trips?.map((s) => ({
         id: s.id,
         id_vehicle_type: s.id_vehicle_type,
-        materialByTrip: s.material.map((m) => ({
-          id_material: m.id_material,
-          units: m.units
-        }))
+        materialByTrip:
+          s.material?.map((m) => ({
+            id_material: m.id_material,
+            units: m.units
+          })) || [],
+        personByTrip:
+          s.persons?.map((p) => ({ id_person_transfer_request: p.id_person_transfer_request })) ||
+          []
       }))
     });
   }, [sugestedVehicles]);
@@ -58,7 +66,10 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
           t?.material?.map((m) => ({
             id_material: m.id_material,
             units: m.units
-          })) || []
+          })) || [],
+        personByTrip:
+          t?.persons?.map((p) => ({ id_person_transfer_request: p.id_person_transfer_request })) ||
+          []
       }))
     }
   });
@@ -74,7 +85,7 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
   const [openTabs, setOpenTabs] = useState<number[]>([]);
 
   const addVehiclesSections = () => {
-    append({ id: 0, id_vehicle_type: 0, materialByTrip: [] });
+    append({ id: 0, id_vehicle_type: 0, materialByTrip: [], personByTrip: [] });
   };
 
   const handleAddMaterialByTrip = (index: number, id_material: number) => {
@@ -95,13 +106,15 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
               (fields[index].materialByTrip.find((m) => m.id_material === id_material)?.units ||
                 0) + 1
           }
-        ]
+        ],
+        personByTrip: []
       });
     } else {
       update(index, {
         id: fields[index].id,
         id_vehicle_type: fields[index].id_vehicle_type,
-        materialByTrip: [...fields[index].materialByTrip, { id_material, units: 1 }]
+        materialByTrip: [...fields[index].materialByTrip, { id_material, units: 1 }],
+        personByTrip: []
       });
     }
   };
@@ -113,7 +126,8 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
         update(index, {
           id: fields[index].id,
           id_vehicle_type: fields[index].id_vehicle_type,
-          materialByTrip: fields[index].materialByTrip.filter((m) => m.id_material !== id_material)
+          materialByTrip: fields[index].materialByTrip.filter((m) => m.id_material !== id_material),
+          personByTrip: []
         });
       } else {
         update(index, {
@@ -121,17 +135,45 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
           id_vehicle_type: fields[index].id_vehicle_type,
           materialByTrip: fields[index].materialByTrip.map((m) =>
             m.id_material === id_material ? { ...m, units: m.units - 1 } : m
-          )
+          ),
+          personByTrip: []
         });
       }
     }
+  };
+
+  const handleSelectPerson = (index: number, selectedPersons: ITransferOrderRequestContacts[]) => {
+    const persons = transferRequest?.stepOne?.transferRequest?.flatMap(
+      (a) => a.transfer_request_persons || []
+    );
+    update(index, {
+      id: fields[index].id,
+      id_vehicle_type: fields[index].id_vehicle_type,
+      personByTrip:
+        persons
+          ?.map((p) => ({
+            id_person_transfer_request:
+              selectedPersons.find(
+                (s) =>
+                  s.id === p.id &&
+                  !fields.some(
+                    (f, i) =>
+                      i !== index &&
+                      f.personByTrip.some((fp) => fp.id_person_transfer_request === s.id)
+                  )
+              )?.id || 0
+          }))
+          .filter((p) => p.id_person_transfer_request) || [],
+      materialByTrip: []
+    });
   };
 
   const handleSelectVehicle = (index: number, id_vehicle_type: number) => {
     update(index, {
       id: fields[index].id,
       id_vehicle_type,
-      materialByTrip: fields[index].materialByTrip
+      materialByTrip: fields[index].materialByTrip,
+      personByTrip: fields[index].personByTrip
     });
   };
 
@@ -146,10 +188,14 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
         trips: res.map((t) => ({
           id: t.id,
           id_vehicle_type: t.id_vehicle_type,
-          materialByTrip: t.material.map((m) => ({
-            id_material: m.id_material,
-            units: m.units
-          }))
+          materialByTrip:
+            t.material?.map((m) => ({
+              id_material: m.id_material,
+              units: m.units
+            })) || [],
+          personByTrip:
+            t.persons?.map((p) => ({ id_person_transfer_request: p.id_person_transfer_request })) ||
+            []
         }))
       });
     } catch (error) {
@@ -178,6 +224,7 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
           handleSelectVehicle={(id_vehicle_type: number) =>
             handleSelectVehicle(index, id_vehicle_type)
           }
+          handleSelectPerson={(id: any) => handleSelectPerson(index, id)}
           section={section}
         />
       ))}

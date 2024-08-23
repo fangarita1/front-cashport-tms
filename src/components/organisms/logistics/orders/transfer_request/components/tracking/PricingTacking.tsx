@@ -169,6 +169,7 @@ export default function PricingTacking() {
                   placeholder="Seleccione hora"
                   format={"HH:mm"}
                   minuteStep={15}
+                  needConfirm={false}
                   hourStep={1}
                   type={"time"}
                   onChange={(value) => {
@@ -205,6 +206,7 @@ export default function PricingTacking() {
                   format={"HH:mm"}
                   minuteStep={15}
                   hourStep={1}
+                  needConfirm={false}
                   type={"time"}
                   onChange={(value) => console.log(value)}
                 />
