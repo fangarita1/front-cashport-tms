@@ -1,6 +1,6 @@
 import { Col, Divider, Flex, Row } from "antd";
 import styles from "./SummaryData.module.scss";
-import { formatDatePlaneWithoutComma } from "@/utils/utils";
+import { formatDatePlaneWithoutComma, formatNumber } from "@/utils/utils";
 
 interface SummaryDataProps {
   title?: string;
@@ -22,6 +22,8 @@ interface SummaryDataProps {
   start_date_hour: string;
   end_date: string;
   end_date_hour: string;
+  freight_origin_time?: number;
+  freight_destination_time?: number;
 }
 
 export const SummaryData = ({
@@ -43,8 +45,11 @@ export const SummaryData = ({
   start_date,
   start_date_hour,
   end_date,
-  end_date_hour
+  end_date_hour,
+  freight_origin_time = 0,
+  freight_destination_time = 0
 }: SummaryDataProps) => {
+  const hourText = (quantity: number) => (quantity === 1 ? "hora" : "horas");
   return (
     <Flex vertical className={styles.container} style={{ width: "100%" }}>
       {title && <p className={styles.sectionTitle}>{title || "Resumen"}</p>}
@@ -53,8 +58,8 @@ export const SummaryData = ({
           <Col span={12} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             <p className={styles.subtitleReg}>Distancia Total</p>
             <p className={styles.subtitleReg}>Tiempo Estimado</p>
-            {volume && <p className={styles.subtitleReg}>Volumen</p>}
-            {weight && <p className={styles.subtitleReg}>Peso</p>}
+            {!!volume && <p className={styles.subtitleReg}>Volumen</p>}
+            {!!weight && <p className={styles.subtitleReg}>Peso</p>}
           </Col>
           <Col
             span={12}
@@ -65,10 +70,10 @@ export const SummaryData = ({
               alignItems: "flex-end"
             }}
           >
-            <p className={styles.subtitle}>{distance}</p>
+            <p className={styles.subtitle}>{formatNumber(distance)} km</p>
             <p className={styles.subtitle}>{timetravel}</p>
-            {volume && <p className={styles.subtitle}>{volume}</p>}
-            {weight && <p className={styles.subtitle}>{weight}</p>}
+            {!!volume && <p className={styles.subtitle}>{formatNumber(volume)} m3</p>}
+            {!!weight && <p className={styles.subtitle}>{formatNumber(weight)} kg</p>}
           </Col>
         </Row>
       )}
@@ -108,7 +113,11 @@ export const SummaryData = ({
             alignItems: "flex-end"
           }}
         >
-          {needLiftingOrigin && <p className={styles.bodyStrong}>Requiere agendar izaje</p>}
+          {needLiftingOrigin && !!freight_origin_time && (
+            <p className={styles.bodyStrong}>
+              Requiere {`${freight_origin_time} ${hourText(freight_origin_time)}`} de izaje
+            </p>
+          )}
           <p className={styles.bodyStrong}>{start_location}</p>
         </Col>
       </Row>
@@ -126,7 +135,12 @@ export const SummaryData = ({
             alignItems: "flex-end"
           }}
         >
-          {needLiftingDestination && <p className={styles.bodyStrong}>Requiere alquilar izaje</p>}
+          {needLiftingDestination && !!freight_destination_time && (
+            <p className={styles.bodyStrong}>
+              Requiere {`${freight_destination_time} ${hourText(freight_destination_time)}`} de
+              izaje
+            </p>
+          )}
           <p className={styles.bodyStrong}>{end_location}</p>
         </Col>
       </Row>
