@@ -8,7 +8,8 @@ import {
   Gear,
   Megaphone,
   User,
-  Clipboard
+  Clipboard,
+  Bank
 } from "phosphor-react";
 
 import "./sidebar.scss";

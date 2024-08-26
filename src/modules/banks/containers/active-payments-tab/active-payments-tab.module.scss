@@ -1,0 +1,9 @@
+@import "@/styles/variables.scss";
+
+.activePaymentsTab {
+    .header {
+        display: flex;
+        height: 48px;
+        gap: 0.5rem;
+    }
+}
