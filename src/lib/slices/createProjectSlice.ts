@@ -1,9 +1,13 @@
 import { IProject } from "@/types/projects/IProjects";
+import { IViewPermission } from "@/types/userPermissions/IUserPermissions";
 
 export type ISelectedProject = {
   ID: number;
   NAME: string;
   LOGO: string;
+  views_permissions?: IViewPermission[];
+  action_permissions?: string[];
+  isSuperAdmin?: boolean;
 };
 export interface ProjectSlice {
   projects: IProject[];

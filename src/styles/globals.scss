@@ -97,9 +97,6 @@ a {
 .translate .ant-select-selector {
     height: fit-content !important;
     transform: translateY(-50%);
-    span {
-        color: $dark-gray !important;
-    }
 }
 
 .translate .ant-select-selection-placeholder {

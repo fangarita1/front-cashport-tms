@@ -19,6 +19,8 @@ import Link from "next/link";
 import { useAppStore } from "@/lib/store/store";
 import useStore from "@/lib/hook/useStore";
 import { ModalProjectSelector } from "../modals/ModalProjectSelector/ModalProjectSelector";
+import { getUserPermissions } from "@/services/permissions/userPermissions";
+import { checkUserViewPermissions } from "@/utils/utils";
 
 export const SideBar = () => {
   const [isSideBarLarge, setIsSideBarLarge] = useState(false);
@@ -27,6 +29,10 @@ export const SideBar = () => {
   const router = useRouter();
   const path = usePathname();
   const project = useStore(useAppStore, (state) => state.selectedProject);
+  const setProjectsBasicInfo = useAppStore((state) => state.setProjectsBasicInfo);
+  const setSelectedProject = useAppStore((state) => state.setSelectedProject);
+  const projects = useAppStore((state) => state.projectsBasicInfo);
+
   const LOGO = project?.LOGO;
 
   useEffect(() => {
@@ -41,6 +47,38 @@ export const SideBar = () => {
     }
   }, [isComponentLoading, project]);
 
+  useEffect(() => {
+    //useEffect to call userPermissions and get the projects
+    const fetchProjects = async () => {
+      const response = await getUserPermissions();
+      setProjectsBasicInfo(
+        response?.data?.map((project) => ({
+          ID: project.project_id,
+          NAME: project.name,
+          LOGO: project.logo ? project.logo : "",
+          views_permissions: project.views_permissions,
+          action_permissions: project.action_permissions,
+          isSuperAdmin: project.is_super_admin
+        }))
+      );
+
+      if (response?.data?.length === 1) {
+        setSelectedProject({
+          ID: response?.data[0].project_id,
+          NAME: response?.data[0].name,
+          LOGO: response?.data[0].logo ? response?.data[0].logo : "",
+          views_permissions: response?.data[0].views_permissions,
+          action_permissions: response?.data[0].action_permissions,
+          isSuperAdmin: response?.data[0].is_super_admin
+        });
+      }
+    };
+
+    if (projects?.length === 0) {
+      fetchProjects();
+    }
+  }, []);
+
   return (
     <div className={isSideBarLarge ? "mainLarge" : "main"}>
       <Flex vertical className="containerButtons">
@@ -52,71 +90,72 @@ export const SideBar = () => {
             <Avatar shape="square" className="imageWithoutImage" size={50} icon={<Clipboard />} />
           )}
         </button>
+        {checkUserViewPermissions(project, "Clientes") && (
+          <Link href="/clientes/all">
+            <Button
+              type="primary"
+              size="large"
+              icon={<User size={26} />}
+              className={path.startsWith("/clientes") ? "buttonIcon" : "buttonIconActive"}
+            >
+              {isSideBarLarge && "Clientes"}
+            </Button>
+          </Link>
+        )}
+        {checkUserViewPermissions(project, "Descuentos") && (
+          <Link href="/descuentos" passHref legacyBehavior>
+            <Button
+              type="primary"
+              size="large"
+              icon={<BellSimpleRinging size={26} />}
+              className={path.startsWith("/descuentos") ? "buttonIcon" : "buttonIconActive"}
+            >
+              {isSideBarLarge && "Descuentos"}
+            </Button>
+          </Link>
+        )}
+        {checkUserViewPermissions(project, "Notificaciones") && (
+          <Link href="/notificaciones" passHref legacyBehavior>
+            <Button
+              type="primary"
+              size="large"
+              icon={<BellSimpleRinging size={26} />}
+              className={path.startsWith("/notificaciones") ? "buttonIcon" : "buttonIconActive"}
+            >
+              {isSideBarLarge && "Notificaciones"}
+            </Button>
+          </Link>
+        )}
 
-        <Link href="/clientes/all">
-          <Button
-            type="primary"
-            size="large"
-            icon={<User size={26} />}
-            className={path.startsWith("/clientes") ? "buttonIcon" : "buttonIconActive"}
-          >
-            {isSideBarLarge && "Clientes"}
-          </Button>
-        </Link>
-        <Link href="/descuentos" passHref legacyBehavior>
-          <Button
-            type="primary"
-            size="large"
-            icon={<BellSimpleRinging size={26} />}
-            className={path.startsWith("/descuentos") ? "buttonIcon" : "buttonIconActive"}
-          >
-            {isSideBarLarge && "Descuentos"}
-          </Button>
-        </Link>
-        <Link href="/notificaciones" passHref legacyBehavior>
-          <Button
-            type="primary"
-            size="large"
-            icon={<BellSimpleRinging size={26} />}
-            className={path.startsWith("/notificaciones") ? "buttonIcon" : "buttonIconActive"}
-          >
-            {isSideBarLarge && "Notificaciones"}
-          </Button>
-        </Link>
-        <Link href="/comercio" passHref legacyBehavior>
-          <Button
-            type="primary"
-            size="large"
-            icon={<Megaphone size={26} />}
-            className={path.startsWith("/comercio") ? "buttonIcon" : "buttonIconActive"}
-          >
-            {isSideBarLarge && "Comercio"}
-          </Button>
-        </Link>
-        <Link href="/banco" passHref legacyBehavior>
-          <Button
-            type="primary"
-            size="large"
-            icon={<Bank size={26} />}
-            className={path === "/banco" ? "buttonIcon" : "buttonIconActive"}
-          >
-            {isSideBarLarge && "Bancos"}
-          </Button>
-        </Link>
-        <Link href="/" passHref legacyBehavior>
-          <Button
-            type="primary"
-            size="large"
-            icon={<Gear size={26} />}
-            className={
-              path === "/" || path.startsWith("/proyectos/review")
-                ? "buttonIcon"
-                : "buttonIconActive"
-            }
-          >
-            {isSideBarLarge && "Ajustes"}
-          </Button>
-        </Link>
+        {checkUserViewPermissions(project, "Marketplace") && (
+          <Link href="/comercio" passHref legacyBehavior>
+            <Button
+              type="primary"
+              size="large"
+              icon={<Megaphone size={26} />}
+              className={path.startsWith("/comercio") ? "buttonIcon" : "buttonIconActive"}
+            >
+              {isSideBarLarge && "Descuentos"}
+            </Button>
+          </Link>
+        )}
+
+        {checkUserViewPermissions(project, "Configuracion") && (
+          <Link href="/" passHref legacyBehavior>
+            <Button
+              type="primary"
+              size="large"
+              icon={<Gear size={26} />}
+              className={
+                path === "/" || path.startsWith("/proyectos/review")
+                  ? "buttonIcon"
+                  : "buttonIconActive"
+              }
+            >
+              {isSideBarLarge && "Ajustes"}
+            </Button>
+          </Link>
+        )}
       </Flex>
       <Flex className="exit">
         <Button
