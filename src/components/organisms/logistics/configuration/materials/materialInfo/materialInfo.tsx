@@ -3,7 +3,7 @@ import { Typography, message, Spin } from "antd";
 import React, { useCallback, useState } from "react";
 import "../../../../../../styles/_variables_logistics.css";
 import "./materialInfo.scss";
-import { getMaterialById, updateMaterial } from "@/services/logistics/materials";
+import { getMaterialById, updateMaterial, updateMaterialStatus } from "@/services/logistics/materials";
 import { CustomFile, IFormMaterial } from "@/types/logistics/schema";
 import { StatusForm } from "@/components/molecules/tabs/logisticsForms/materialForm/materialFormTab.mapper";
 import { useRouter } from "next/navigation";
@@ -61,7 +61,45 @@ export const MaterialInfoView = ({ params }: Props) => {
     }
   };
 
-  console.log(data)
+  const handleActivation= async() =>{
+    console.log('active')
+    try {
+      const response = await updateMaterialStatus(params.id,'1');
+      if (response.status === 200) {
+        messageApi.open({
+          type: "success",
+          content: "El material fue editado exitosamente."
+        });
+        setStatusForm('review');
+        push(`/logistics/configuration/materials/${params.id}`);
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Oops, hubo un error por favor intenta mas tarde."
+      });
+    }
+  };
+
+  const handleDesactivation= async() =>{
+    console.log('desactive')
+    try {
+      const response = await updateMaterialStatus(params.id,'0');
+      if (response.status === 200) {
+        messageApi.open({
+          type: "success",
+          content: "El material fue editado exitosamente."
+        });
+        setStatusForm('review');
+        push(`/logistics/configuration/materials/${params.id}`);
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Oops, hubo un error por favor intenta mas tarde."
+      });
+    }
+  };
 
   return (
     <>
@@ -76,6 +114,8 @@ export const MaterialInfoView = ({ params }: Props) => {
             params={params}
             statusForm={statusForm}
             handleFormState={handleFormState}
+            onActiveMaterial={handleActivation}
+            onDesactivateMaterial={handleDesactivation}
           />
         )}
       </>

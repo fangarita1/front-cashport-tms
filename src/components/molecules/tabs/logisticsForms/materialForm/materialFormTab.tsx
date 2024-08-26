@@ -53,10 +53,10 @@ export const MaterialFormTab = ({
   onSubmitForm = () => {},
   statusForm = "review",
   data,
-  onActiveProject = () => {},
-  onDesactivateProject = () => {},
   params,
-  handleFormState = () => {}
+  handleFormState = () => {},
+  onActiveMaterial = () => {},
+  onDesactivateMaterial = () => {},
 }: MaterialFormTabProps) => {
 
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -522,8 +522,8 @@ export const MaterialFormTab = ({
         isActiveStatus={true}
         isOpen={isOpenModal}
         onClose={() => setIsOpenModal(false)}
-        onActive={onActiveProject}
-        onDesactivate={onDesactivateProject}
+        onActive={onActiveMaterial}
+        onDesactivate={onDesactivateMaterial}
       />
       <ModalDocuments
         isOpen={isOpenModalDocuments}
