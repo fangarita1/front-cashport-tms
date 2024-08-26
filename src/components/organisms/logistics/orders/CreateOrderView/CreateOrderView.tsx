@@ -53,7 +53,8 @@ import {
   ITransferOrderOtherRequirements,
   ITransferOrderPersons,
   IVehicleType,
-  PSLOptionType
+  PSLOptionType,
+  TripType
 } from "@/types/logistics/schema";
 
 //locations
@@ -1485,7 +1486,7 @@ export const CreateOrderView = () => {
       id_client: client,
       status: "",
       observation: observation,
-      service_type_desc: "",
+      service_type_desc: TripType.Carga,
       client_desc: ""
     };
 
