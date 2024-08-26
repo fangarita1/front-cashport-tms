@@ -1,17 +1,14 @@
 import React, { FC, useEffect, useState } from "react";
-import { CaretDown, Circle, CraneTower, Truck, User } from "@phosphor-icons/react";
-import { Button, Collapse, CollapseProps, Flex, Typography } from "antd";
+import { Button, Flex, message } from "antd";
 import {
+  ITransferOrderRequestContacts,
   ITransferRequestCreation,
-  ITransferRequestJourneyInfo,
-  IVehiclesPricing
+  ITransferRequestJourneyInfo
 } from "@/types/logistics/schema";
-import { formatMoney } from "@/utils/utils";
 import { getTransferRequestVehicles, submitTrips } from "@/services/logistics/transfer-request";
 import Trip from "../components/trip/Trip";
 import { useFieldArray, useForm } from "react-hook-form";
 import useSWR from "swr";
-import TitleComponent from "../components/titles/JourneyTitle";
 import JourneyCollapse from "../components/journeyCollapse/JourneyCollapse";
 
 interface VehiclesSelectionProps {
@@ -22,9 +19,8 @@ interface VehiclesSelectionProps {
   end_location_desc: string;
   id_type_service: number;
   journey: ITransferRequestJourneyInfo;
+  setIsNextStepActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-const { Text } = Typography;
 
 const VehiclesSelection: FC<VehiclesSelectionProps> = ({
   transferRequest,
@@ -33,22 +29,47 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
   start_location_desc,
   end_location_desc,
   id_type_service,
-  journey
+  journey,
+  setIsNextStepActive
 }) => {
-  const { data: sugestedVehicles, isLoading: isLoadingVehicles } = useSWR(
+  const { data, isLoading: isLoadingVehicles } = useSWR(
     { id_journey },
-    ({ id_journey }) => getTransferRequestVehicles(id_journey)
+    ({ id_journey }) => getTransferRequestVehicles(id_journey),
+    { revalidateOnMount: true, revalidateOnFocus: false, revalidateOnReconnect: false }
   );
+  const sugestedVehicles = data?.vehiclesPricing;
+  const trips = data?.trips;
 
-  const { register, handleSubmit, watch, control, reset, formState } = useForm({
+  useEffect(() => {
+    reset({
+      trips: trips?.map((s) => ({
+        id: s.id,
+        id_vehicle_type: s.id_vehicle_type,
+        materialByTrip:
+          s.material?.map((m) => ({
+            id_material: m.id_material,
+            units: m.units
+          })) || [],
+        personByTrip:
+          s.persons?.map((p) => ({ id_person_transfer_request: p.id_person_transfer_request })) ||
+          []
+      }))
+    });
+  }, [sugestedVehicles]);
+
+  const { handleSubmit, control, reset, formState } = useForm({
     defaultValues: {
       trips: journey.trips.map((t) => ({
         id: t.id,
         id_vehicle_type: t.id_vehicle_type,
-        materialByTrip: t?.material?.map((m) => ({
-          id_material: m.id_material,
-          units: m.units
-        })) || []
+        materialByTrip:
+          t?.material?.map((m) => ({
+            id_material: m.id_material,
+            units: m.units
+          })) || [],
+        personByTrip:
+          t?.persons?.map((p) => ({ id_person_transfer_request: p.id_person_transfer_request })) ||
+          []
       }))
     }
   });
@@ -57,10 +78,14 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
     keyName: "_id",
     name: "trips"
   });
+  useEffect(() => {
+    setIsNextStepActive(!formState.dirtyFields?.trips?.length && !!fields.length);
+    console.log(fields.length, formState.isDirty);
+  }, [fields, formState.dirtyFields?.trips]);
   const [openTabs, setOpenTabs] = useState<number[]>([]);
 
   const addVehiclesSections = () => {
-    append({ id: 0, id_vehicle_type: 0, materialByTrip: [] });
+    append({ id: 0, id_vehicle_type: 0, materialByTrip: [], personByTrip: [] });
   };
 
   const handleAddMaterialByTrip = (index: number, id_material: number) => {
@@ -81,13 +106,15 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
               (fields[index].materialByTrip.find((m) => m.id_material === id_material)?.units ||
                 0) + 1
           }
-        ]
+        ],
+        personByTrip: []
       });
     } else {
       update(index, {
         id: fields[index].id,
         id_vehicle_type: fields[index].id_vehicle_type,
-        materialByTrip: [...fields[index].materialByTrip, { id_material, units: 1 }]
+        materialByTrip: [...fields[index].materialByTrip, { id_material, units: 1 }],
+        personByTrip: []
       });
     }
   };
@@ -99,7 +126,8 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
         update(index, {
           id: fields[index].id,
           id_vehicle_type: fields[index].id_vehicle_type,
-          materialByTrip: fields[index].materialByTrip.filter((m) => m.id_material !== id_material)
+          materialByTrip: fields[index].materialByTrip.filter((m) => m.id_material !== id_material),
+          personByTrip: []
         });
       } else {
         update(index, {
@@ -107,31 +135,67 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
           id_vehicle_type: fields[index].id_vehicle_type,
           materialByTrip: fields[index].materialByTrip.map((m) =>
             m.id_material === id_material ? { ...m, units: m.units - 1 } : m
-          )
+          ),
+          personByTrip: []
         });
       }
     }
+  };
+
+  const handleSelectPerson = (index: number, selectedPersons: ITransferOrderRequestContacts[]) => {
+    const persons = transferRequest?.stepOne?.transferRequest?.flatMap(
+      (a) => a.transfer_request_persons || []
+    );
+    update(index, {
+      id: fields[index].id,
+      id_vehicle_type: fields[index].id_vehicle_type,
+      personByTrip:
+        persons
+          ?.map((p) => ({
+            id_person_transfer_request:
+              selectedPersons.find(
+                (s) =>
+                  s.id === p.id &&
+                  !fields.some(
+                    (f, i) =>
+                      i !== index &&
+                      f.personByTrip.some((fp) => fp.id_person_transfer_request === s.id)
+                  )
+              )?.id || 0
+          }))
+          .filter((p) => p.id_person_transfer_request) || [],
+      materialByTrip: []
+    });
   };
 
   const handleSelectVehicle = (index: number, id_vehicle_type: number) => {
     update(index, {
       id: fields[index].id,
       id_vehicle_type,
-      materialByTrip: fields[index].materialByTrip
+      materialByTrip: fields[index].materialByTrip,
+      personByTrip: fields[index].personByTrip
     });
   };
 
   const handleSave = async (data: any) => {
     try {
+      if (fields.length === 0) {
+        message.error("Debe agregar al menos una sección de vehículos");
+        return;
+      }
       const res = await submitTrips(journey.id_transfer_request, journey.id, data.trips);
       reset({
         trips: res.map((t) => ({
           id: t.id,
           id_vehicle_type: t.id_vehicle_type,
-          materialByTrip: t.material.map((m) => ({
-            id_material: m.id_material,
-            units: m.units
-          }))
+          materialByTrip:
+            t.material?.map((m) => ({
+              id_material: m.id_material,
+              units: m.units
+            })) || [],
+          personByTrip:
+            t.persons?.map((p) => ({ id_person_transfer_request: p.id_person_transfer_request })) ||
+            []
         }))
       });
     } catch (error) {
@@ -160,11 +224,16 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
           handleSelectVehicle={(id_vehicle_type: number) =>
             handleSelectVehicle(index, id_vehicle_type)
           }
+          handleSelectPerson={(id: any) => handleSelectPerson(index, id)}
           section={section}
         />
       ))}
       <div className="collapseButtons">
-        <Button className="collapseAddVehicleButton" onClick={addVehiclesSections}>
+        <Button
+          className="collapseAddVehicleButton"
+          onClick={addVehiclesSections}
+          loading={isLoadingVehicles}
+        >
           Agregar vehíchulo
         </Button>
         <Flex gap={5}>

@@ -6,16 +6,7 @@ import { SendCarrierRequest } from "@/types/logistics/carrier/carrier";
 import { ITransferRequestJourneyReview } from "@/types/logistics/schema";
 import { JourneyTripPricing } from "@/types/logistics/trips/TripsSchema";
 import { CraneTower } from "@phosphor-icons/react";
-import {
-  Checkbox,
-  Flex,
-  message,
-  Modal,
-  Spin,
-  Tabs,
-  TabsProps,
-  Typography
-} from "antd";
+import { Checkbox, Flex, message, Modal, Spin, Tabs, TabsProps, Typography } from "antd";
 import { useParams } from "next/navigation";
 import { Truck, User } from "phosphor-react";
 import { useEffect, useState } from "react";
@@ -29,24 +20,29 @@ type Props = {
   handleModalCarrier: (value: boolean) => void;
   // eslint-disable-next-line no-unused-vars
   mutateStepthree: (journey: ITransferRequestJourneyReview[]) => void;
+  view: string;
+  setView: React.Dispatch<React.SetStateAction<"solicitation" | "vehicles" | "carrier">>;
 };
 export default function ModalSelectCarrierPricing({
   open,
   handleModalCarrier,
-  mutateStepthree
+  mutateStepthree,
+  view,
+  setView
 }: Props) {
   const params = useParams();
   const id = parseInt(params.id as string);
   const [selectedTab, setSelectedTab] = useState("0");
   const [journey, setJourney] = useState<Omit<JourneyTripPricing, "trips">>();
   const { data, isLoading } = useSWR(
-    { idTransferRequest: id },
-    getTransferRequestPricing,
+    { idTransferRequest: id, open },
+    ({ idTransferRequest, open }) =>
+      open ? getTransferRequestPricing({ idTransferRequest }) : undefined,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      revalidateIfStale: false,
-      revalidateOnMount: true
+      revalidateIfStale: true,
+      revalidateOnMount: false
     }
   );
   const {
@@ -59,11 +55,17 @@ export default function ModalSelectCarrierPricing({
     name: "carrierRequest"
   });
 
+  useEffect(() => {
+    remove();
+    if (data?.length && open) setSelectedTab(data[0].trips[0].id_trip.toString());
+  }, [open]);
+
   const handleSubmitForm = async (data: SendCarrierRequest) => {
     try {
       const response = await sendCarrierRequest(data);
       if (response) handleModalCarrier(false);
       mutateStepthree(response.journey);
+      if (view === "vehicles") setView("carrier");
     } catch (error) {
       if (error instanceof Error) message.error(error.message);
       else message.error("Error al enviar solicitud");
@@ -90,11 +92,15 @@ export default function ModalSelectCarrierPricing({
       </PrincipalButton>
       <PrincipalButton
         fullWidth
-        disabled={!fields.length}
+        disabled={
+          view === "carrier"
+            ? !fields.length
+            : !dataFlated.every(({ trip }) => fields.some((x) => x.id_trip === trip.id_trip))
+        }
         loading={isSubmitting}
         onClick={handleSubmit(handleSubmitForm)}
       >
-        Enviar solicitudes
+        {view === "carrier" ? "Enviar solicitudes" : "Siguiente"}
       </PrincipalButton>
     </Flex>
   );
@@ -252,6 +258,7 @@ export default function ModalSelectCarrierPricing({
             size="large"
             style={{ fontWeight: "600" }}
             defaultActiveKey={selectedTab}
+            activeKey={selectedTab}
             items={items}
             onChange={(index) => setSelectedTab(index)}
           />

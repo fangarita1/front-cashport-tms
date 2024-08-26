@@ -890,6 +890,7 @@ export const CreateTransferOrderView = () => {
                                     format={"HH:mm"}
                                     minuteStep={15}
                                     hourStep={1}
+                                    needConfirm={false}
                                     type={"time"}
                                     onChange={(value) => {
                                       console.log(value);
@@ -925,6 +926,7 @@ export const CreateTransferOrderView = () => {
                                     format={"HH:mm"}
                                     minuteStep={15}
                                     hourStep={1}
+                                    needConfirm={false}
                                     type={"time"}
                                     onChange={(value) => console.log(value)}
                                   />

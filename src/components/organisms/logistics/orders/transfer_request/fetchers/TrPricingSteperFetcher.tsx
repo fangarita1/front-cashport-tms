@@ -9,6 +9,9 @@ import { ITransferRequestJourneyReview } from "@/types/logistics/schema";
 export default function TrPricingSteperFetcher({ id }: { id: number }) {
   const { data, isLoading, mutate } = useSWR({ id }, ({ id }) => getTransferRequestSteps(id), {
     revalidateOnMount: true,
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
     onError: (error) => {
       console.error("error", error);
     }

@@ -1,10 +1,10 @@
-import { Flex, Typography, message, Collapse, Row, Col, Select, Switch, DatePicker, TimePicker, Table, TableProps,AutoComplete, Input, InputNumber, Button, Popconfirm, Divider, Space } from "antd";
+import { Flex, Typography, message, Collapse, Row, Col, Select, Switch, DatePicker, TimePicker, Table, TableProps,AutoComplete, Input, InputNumber, Button, Popconfirm, Divider, Space, theme } from "antd";
 import React, { useRef, useEffect, useState } from "react";
 import { runes } from 'runes2';
 
 // dayjs locale
 import dayjs, { Dayjs } from 'dayjs';
-import 'dayjs/locale/es-us';
+import 'dayjs/locale/es';
 dayjs.locale('es');
 
 // mapbox
@@ -67,6 +67,7 @@ import { getTravelDuration } from "@/utils/logistics/maps";
 import CustomTimeSelector from "@/components/molecules/logistics/HourPicker/HourPicker";
 
 const { Title, Text } = Typography;
+const { useToken } = theme;
 
 export const CreateOrderView = () => {
   const { push } = useRouter();
@@ -1444,7 +1445,7 @@ export const CreateOrderView = () => {
     });
 
     //personas
-    datato.transfer_order_persons =[];
+    datato.transfer_order_persons = dataPersons || [];
 
     //documentos
     datato.transfer_order_documents =[];
@@ -1610,9 +1611,10 @@ export const CreateOrderView = () => {
                       <TimePicker 
                         placeholder="Seleccione hora"
                         format={'HH:mm'}
-                        minuteStep={15} 
+                        minuteStep={15}
                         hourStep={1}
-                        type={'time'} 
+                        needConfirm={false}
+                        type={'time'}
                         onChange={(value) => {
                           setHoraInicial(value);
                           setHoraInicialValid(true);
@@ -1675,12 +1677,14 @@ export const CreateOrderView = () => {
                       }
                     </Col>
                     <Col span={8}>
-                      <TimePicker 
+                      <TimePicker
                       placeholder="Seleccione hora"   
                       format={'HH:mm'}
-                      minuteStep={15} 
+                      minuteStep={15}
+                      needConfirm={false}
                       hourStep={1}
-                      type={'time'} 
+                      type={'time'}
+                      variant="filled"
                       onChange={(value) => {
                         setHoraFinal(value);
                         setHoraFinalValid(true);

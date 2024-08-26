@@ -26,6 +26,7 @@ type TripProps = {
   handleRemoveMaterialByTrip: (id_material: number) => void;
   handleSelectVehicle: (id_vehicle_type: number) => void;
   section: any;
+  handleSelectPerson: (persons: any[]) => void;
 };
 
 export default function Trip(props: TripProps) {
@@ -39,12 +40,15 @@ export default function Trip(props: TripProps) {
     handleAddMaterialByTrip,
     handleRemoveMaterialByTrip,
     handleSelectVehicle,
-    section
+    section,
+    handleSelectPerson
   } = props;
   const [optionsVehicles, setOptionsVehicles] = useState<any[]>([]);
   const [dataCarga, setDataCarga] = useState<ITransferRequestStepOneMaterial[]>([]);
+  const [persons, setPersons] = useState<ITransferOrderRequestContacts[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    console.log(newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
   const columnsVehiclesPerson: TableProps<ITransferOrderRequestContacts>["columns"] = [
@@ -93,6 +97,10 @@ export default function Trip(props: TripProps) {
         setDataCarga((dataCarga) => [...dataCarga, newvalue]);
       });
     });
+    const p = transferRequest?.stepOne.transferRequest?.flatMap(
+      (a) => a.transfer_request_persons?.map((p) => ({ ...p, key: p.id })) || []
+    );
+    setPersons(p || []);
   }, [transferRequest]);
 
   const calculateTotalCapacities = () => {
@@ -345,7 +353,7 @@ export default function Trip(props: TripProps) {
             <div className="collapsePersonsResum">
               <div className="collapsePersonsResumItem collapsePersonsBorder">
                 <Text className="collapsePersonsText">Personas</Text>
-                <Text className="collapsePersonsText collapsePersonsBold">{`5/${totalPersons}`}</Text>
+                <Text className="collapsePersonsText collapsePersonsBold">{`${section.personByTrip.length}/${totalPersons}`}</Text>
               </div>
               <div className="collapsePersonsResumItem">
                 <Button disabled className="collapsePersonsAcomodationButton">
@@ -362,15 +370,19 @@ export default function Trip(props: TripProps) {
             columns={columnsVehiclesMaterial}
             dataSource={dataCarga}
             pagination={false}
-            rowSelection={rowSelection}
             rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
           />
         ) : (
           <Table
             columns={columnsVehiclesPerson}
-            dataSource={[]}
+            dataSource={persons}
             pagination={false}
-            rowSelection={rowSelection}
+            rowSelection={{
+              onChange: (a, b, c) => {
+                  handleSelectPerson(b);
+              },
+              selectedRowKeys: section?.personByTrip?.map((p: any) => p.id_person_transfer_request)
+            }}
             rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
           />
         )}

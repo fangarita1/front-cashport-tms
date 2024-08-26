@@ -7,6 +7,7 @@ export interface TripCreation {
   id: number;
   id_vehicle_type: number;
   materialByTrip: MaterialByTrip[];
+  personByTrip: { id_person_transfer_request: number }[];
 }
 export interface MaterialByTrip {
   id_material: number;

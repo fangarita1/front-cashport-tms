@@ -1,4 +1,4 @@
-import { Flex, message, Row, Col } from "antd";
+import { Flex, message, Row, Col, Spin } from "antd";
 import React, { useRef, useEffect, useState } from "react";
 
 // dayjs locale
@@ -37,6 +37,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const [transferOrder, setTransferOrder] = useState<ITransferOrder>();
+  const [loading, setLoading] = useState<boolean>(true);
 
   const optionsFlexible = [
     { value: 0, label: "Exacto" },
@@ -67,104 +68,114 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
 
   const loadTransferOrder = async () => {
     if (transferOrder != undefined) return;
-    const result = await getTransferOrderById(idOrder);
-    if (result.data.data.length > 0) {
-      const to: ITransferOrder = result.data.data[0];
-      setTransferOrder(to);
+    try {
+      setLoading(true);
+      const result = await getTransferOrderById(idOrder);
+      if (result.data.data.length > 0) {
+        const to: ITransferOrder = result.data.data[0];
+        setTransferOrder(to);
 
-      to.transfer_order_material?.forEach(async (mat) => {
-        mat?.material?.forEach(async (m) => {
-          const newvalue: IMaterial = m;
-          newvalue.quantity = mat.quantity;
-          console.log(newvalue);
-          setDataCarga((prevData) => [...prevData, newvalue]);
+        to.transfer_order_material?.forEach(async (mat) => {
+          mat?.material?.forEach(async (m) => {
+            const newvalue: IMaterial = m;
+            newvalue.quantity = mat.quantity;
+            setDataCarga((prevData) => [...prevData, newvalue]);
+          });
         });
-      });
+      }
+    } catch (error) {
+      console.log("Error getTransferOrderById: ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
       {contextHolder}
-      <Flex className={styles.wrapper} gap={"1.5rem"}>
-        <Flex>
-          <Col span={12} style={{ paddingRight: "0.625rem" }}>
-            <Flex className={styles.sectionContainer} style={{ width: "100%", height: "100%" }}>
-              <RouteMap title="Ruta" mapContainerRef={mapContainerRef} />
-            </Flex>
-          </Col>
-          <Col span={12}>
-            <Flex className={styles.sectionContainer}>
-              <SummaryData
-                title="Resumen"
-                routeGeometry={routeGeometry}
-                distance={distance}
-                timetravel={timetravel}
-                needLiftingOrigin={transferOrder?.start_freight_equipment}
-                needLiftingDestination={transferOrder?.end_freight_equipment}
-                travelTypeDesc={transferOrder?.service_type_desc ?? ""}
-                vehiclesSuggested={transferOrder?.transfer_order_vehicles}
-                start_location={transferOrder?.start_location?.description ?? ""}
-                end_location={transferOrder?.end_location?.description ?? ""}
-                start_date_flexible={
-                  optionsFlexible.find((x) => x.value == transferOrder?.start_date_flexible)
-                    ?.label ?? ""
-                }
-                end_date_flexible={
-                  optionsFlexible.find((x) => x.value == transferOrder?.end_date_flexible)?.label ??
-                  ""
-                }
-                start_date={transferOrder?.start_date?.split("T")[0] ?? ""}
-                start_date_hour={transferOrder?.start_date?.split("T")[1].substring(0, 5) ?? ""}
-                end_date={transferOrder?.end_date?.split("T")[0] ?? ""}
-                end_date_hour={transferOrder?.end_date?.split("T")[1].substring(0, 5) ?? ""}
-              />
-            </Flex>
-          </Col>
-        </Flex>
-        <Flex vertical>
-          <Responsibles title="Responsables" psls={transferOrder?.transfer_order_psl ?? []} />
-        </Flex>
-        <Flex vertical>
-          <AditionalInfo
-            title="Información adicional"
-            documents={transferOrder?.transfer_order_documents ?? []}
-            contacts={transferOrder?.transfer_order_contacts ?? []}
-            otherRequirements={transferOrder?.transfer_order_other_requeriments ?? []}
-            specialInstructions={transferOrder?.observation ?? ""}
-            finalClient={transferOrder?.client_desc ?? ""}
-          />
-        </Flex>
-        <Flex className={styles.container} vertical>
-          <p className={styles.sectionTitle}>Carga</p>
-          <Materials materials={dataCarga} />
-          <p>&nbsp;</p>
-          <p className={styles.title}>Vehículos sugeridos</p>
-          <Row>
-            <Col span={24} style={{ paddingTop: "0.5rem" }}>
-              {transferOrder?.transfer_order_vehicles?.map((veh) => (
-                <div className={styles.selected} key={veh.id}>
-                  {veh.vehicle_type_desc} <small>{veh.quantity}</small>
-                </div>
-              ))}
+      {loading ? (
+        <Spin size="large" />
+      ) : (
+        <Flex className={styles.wrapper} gap={"1.5rem"}>
+          <Flex>
+            <Col span={12} style={{ paddingRight: "0.625rem" }}>
+              <Flex className={styles.sectionContainer} style={{ width: "100%", height: "100%" }}>
+                <RouteMap title="Ruta" mapContainerRef={mapContainerRef} />
+              </Flex>
             </Col>
-          </Row>
+            <Col span={12}>
+              <Flex className={styles.sectionContainer}>
+                <SummaryData
+                  title="Resumen"
+                  routeGeometry={routeGeometry}
+                  distance={distance}
+                  timetravel={timetravel}
+                  needLiftingOrigin={transferOrder?.start_freight_equipment}
+                  needLiftingDestination={transferOrder?.end_freight_equipment}
+                  travelTypeDesc={transferOrder?.service_type_desc ?? ""}
+                  vehiclesSuggested={transferOrder?.transfer_order_vehicles}
+                  start_location={transferOrder?.start_location?.description ?? ""}
+                  end_location={transferOrder?.end_location?.description ?? ""}
+                  start_date_flexible={
+                    optionsFlexible.find((x) => x.value == transferOrder?.start_date_flexible)
+                      ?.label ?? ""
+                  }
+                  end_date_flexible={
+                    optionsFlexible.find((x) => x.value == transferOrder?.end_date_flexible)
+                      ?.label ?? ""
+                  }
+                  start_date={dayjs(transferOrder?.start_date).format("YYYY-MM-DD")}
+                  start_date_hour={dayjs(transferOrder?.start_date).format("HH:mm") ?? ""}
+                  end_date={dayjs(transferOrder?.end_date).format("YYYY-MM-DD")}
+                  end_date_hour={dayjs(transferOrder?.end_date).format("HH:mm") ?? ""}
+                />
+              </Flex>
+            </Col>
+          </Flex>
+          <Flex vertical>
+            <Responsibles title="Responsables" psls={transferOrder?.transfer_order_psl ?? []} />
+          </Flex>
+          <Flex vertical>
+            <AditionalInfo
+              title="Información adicional"
+              documents={transferOrder?.transfer_order_documents ?? []}
+              contacts={transferOrder?.transfer_order_contacts ?? []}
+              otherRequirements={transferOrder?.transfer_order_other_requeriments ?? []}
+              specialInstructions={transferOrder?.observation ?? ""}
+              finalClient={transferOrder?.client_desc ?? ""}
+            />
+          </Flex>
+          <Flex className={styles.container} vertical>
+            <p className={styles.sectionTitle}>Carga</p>
+            <Materials materials={dataCarga} />
+            <p>&nbsp;</p>
+            <p className={styles.title}>Vehículos sugeridos</p>
+            <Row>
+              <Col span={24} style={{ paddingTop: "0.5rem" }}>
+                {transferOrder?.transfer_order_vehicles?.map((veh) => (
+                  <div className={styles.selected} key={veh.id}>
+                    {veh.vehicle_type_desc} <small>{veh.quantity}</small>
+                  </div>
+                ))}
+              </Col>
+            </Row>
+          </Flex>
+          <Flex className={styles.footer}>
+            <Col span={12}>
+              <PrincipalButton
+                type="default"
+                className={styles.backButton}
+                onClick={() => {
+                  push("/logistics/transfer-orders");
+                }}
+              >
+                Regresar
+              </PrincipalButton>
+            </Col>
+            <Col span={12} />
+          </Flex>
         </Flex>
-        <Flex className={styles.footer}>
-          <Col span={12}>
-            <PrincipalButton
-              type="default"
-              className={styles.backButton}
-              onClick={() => {
-                push("/logistics/transfer-orders");
-              }}
-            >
-              Regresar
-            </PrincipalButton>
-          </Col>
-          <Col span={12} />
-        </Flex>
-      </Flex>
+      )}
     </>
   );
 };

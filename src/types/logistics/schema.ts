@@ -1769,7 +1769,7 @@ export interface ITransferRequestStepOne {
   //other_requirements
   transfer_request_other_requeriments?: ITransferOrderRequestOtherRequeriments[] | null;
   //personas
-  transfer_request_persons?: ITransferOrderPersons[] | null;
+  transfer_request_persons?: ITransferOrderRequestContacts[] | null;
   //productos
   transfer_request_products?: ITransferOrderProducts[] | null;
   //vehiculos
@@ -1879,7 +1879,7 @@ export interface ITransferRequestCreation {
  * interface.
  */
 export interface ITransferRequestVehiclesSugest {
-  transferRequestVehiclesSugest: IVehicleType[];
+  transferRequestVehiclesSugest: any[];
 }
 /**
  * Exposes all fields present in transfer_request_journey_info as a typescript
@@ -2234,7 +2234,7 @@ export interface ITransferOrderDocumentsWithDefaults {
  * interface.
  */
 export interface ITransferOrderPersons {
-  key:number;
+  key: number;
   id: number;
   id_transfer_order: number;
   id_user: number;
@@ -2245,12 +2245,12 @@ export interface ITransferOrderPersons {
   modified_at?: Date | null;
   modified_by?: string | null;
   id_user_subline: number;
-  name:string;
-  contact_number:string;
+  name: string;
+  contact_number: string;
   id_psl: number;
-  psl_desc:string;
+  psl_desc: string;
   id_cost_center: number;
-  cost_center_desc:string;
+  cost_center_desc: string;
 }
 
 /**
@@ -3041,7 +3041,10 @@ export interface IVehiclesPricingTrips {
   modified_at: string | null;
   modified_by: string | null;
   status: string;
-  material: IVehiclesPricingTripsMaterial[];
+  material?: IVehiclesPricingTripsMaterial[];
+  persons?: {
+    id_person_transfer_request: number;
+  }[];
 }
 /**
  * Exposes all fields present in vehicle_pricing_trips_material as a typescript
@@ -3305,6 +3308,126 @@ export interface ITransferOrderPsls {
   id: number;
   description: string;
   transfer_order_cost_center: ITransferOrderCostCenter[];
+}
+
+export interface IBillingsRequestList {
+  statusId: string;
+  statusDesc: string;
+  statusColor: string;
+  billings: IBillingRequestsListDetail[];
+}
+
+export interface IBillingRequestsListDetail {
+  id: number;
+  idTransferRequest: number;
+  idCarrier: number;
+  carrier: string;
+  startLocation: string;
+  endLocation: string;
+  startDate: string;
+  endDate: string;
+  serviceTypes: string;
+  fare: number;
+  status_desc: string;
+  id_status: string;
+  status_color: string;
+}
+
+export interface IBillingDetails {
+  billing: IBillingRequestsListDetail;
+  journeys: IJourney[];
+  incidents: IIncident[];
+}
+
+export interface IIncident {
+  id: number;
+  id_trip: number;
+  id_driver: number;
+  id_incident_type: number;
+  id_pricing: number | null;
+  fare: number;
+  units: number;
+  description: string;
+  url_image: string;
+  date: string;
+  user: string;
+  status: string;
+  status_description: string;
+  status_color: string;
+}
+
+export interface ITripBilling {
+  id: number;
+  id_journey: number;
+  id_transfer_request: number;
+  id_vehicle_type: number;
+  id_carrier_request: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string | null;
+  modified_by: string | null;
+  status: string;
+  vehicle_type_desc: string;
+  drivers: string;
+  plate_number: string;
+  fare: number;
+  material: IMaterial[];
+  incidents: IIncident[];
+  overcost: number;
+  total: number;
+}
+
+export interface IMaterial {
+  id_transfer_request_material: number;
+  id_transfer_order: number | null;
+  id_trip: number;
+  id_material: number;
+  units: number;
+  description: string;
+  mt_height: number;
+  mt_width: number;
+  mt_length: number;
+  m3_volume: number;
+  m2_area: number;
+}
+
+export interface IJourney {
+  id: number;
+  id_transfer_order: number;
+  id_transfer_request: number;
+  id_start_location: number;
+  id_end_location: number;
+  start_date: string;
+  end_date: string;
+  id_type_service: number;
+  order_tr: number;
+  created_at: string;
+  created_by: string;
+  modified_at: string | null;
+  modified_by: string | null;
+  id_route: string;
+  start_location_desc: string;
+  end_location_desc: string;
+  trips: ITripBilling[];
+}
+
+export interface PreAuthorizationRequestData {
+  id: number;
+  idAuthorization: string;
+  authorizationFare: number;
+  dateAuthorization: string; // Considera usar `Date` si conviertes el string a objeto Date
+  link: string;
+  createdAt: string; // Considera usar `Date` si conviertes el string a objeto Date
+  createdBy: string;
+}
+export interface IBillingRequestDetail extends IBillingRequestsListDetail {
+  statusDesc: string; // Sobrescribe 'status_desc'
+  idStatus: string; // Sobrescribe 'id_status'
+  statusColor: string; // Sobrescribe 'status_color'
+}
+export interface IPreauthorizedRequest {
+  authorizations: PreAuthorizationRequestData[];
+  billing: IBillingRequestDetail;
 }
 
 export interface ICarrierRequestDetailAPI extends ICarrierRequestDetail {
