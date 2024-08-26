@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Cascader } from "antd";
 import { useAppStore } from "@/lib/store/store";
-import { getAllLinesByProject } from "@/services/line/line";
+import { getAllLinesByProject, getSubLinesByProject } from "@/services/line/line";
 import { getAllZones } from "@/services/zone/zones";
-import { getBusinessRulesByProjectId } from "@/services/businessRules/BR";
-import { ILine } from "@/types/lines/line";
+import { getChannelByProjectId } from "@/services/businessRules/BR";
+import { ILine, ISubLine } from "@/types/lines/line";
 import { IZone } from "@/types/zones/IZones";
-import { IChanel } from "@/types/bre/IBRE";
+
 
 import "../filterCascader.scss";
+import { channel } from "@/types/bre/IBRE";
 
 interface FilterOption {
   value: string | number;
@@ -20,6 +21,7 @@ interface FilterOption {
 export interface SelectedFiltersWallet {
   lines: number[];
   zones: number[];
+  sublines: number[];
   channels: number[];
   paymentAgreement: number | null;
   radicationType: number | null;
@@ -37,10 +39,11 @@ export const WalletTabFilter: React.FC<Props> = ({ setSelectedFilters }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [linesData, zonesData, businessRulesData] = await Promise.all([
+        const [linesData, zonesData, channelsData, sublinesData] = await Promise.all([
           getAllLinesByProject(ID.toString()),
           getAllZones({ idProject: ID.toString() }),
-          getBusinessRulesByProjectId(ID)
+          getChannelByProjectId(ID),
+          getSubLinesByProject(ID.toString())
         ]);
 
         const lines = linesData.map((line: ILine) => ({
@@ -53,17 +56,14 @@ export const WalletTabFilter: React.FC<Props> = ({ setSelectedFilters }) => {
           label: zone.ZONE_DESCRIPTION
         }));
 
-        const channels = businessRulesData.data.data.map((channel: IChanel) => ({
-          value: channel.CHANNEL_ID,
-          label: channel.CHANNEL_NAME,
-          children: channel.CHANNEL_LINES.map((line) => ({
-            value: line.id,
-            label: line.description,
-            children: line.sublines.map((subline) => ({
-              value: subline.id,
-              label: subline.description
-            }))
-          }))
+        const channels = channelsData.data.data.map((channel: channel) => ({
+          value: channel.id,
+          label: channel.channel_description
+        }));
+
+        const sublines = sublinesData.map((subline: ISubLine) => ({
+          value: subline.id,
+          label: subline.subline_description
         }));
 
         setCascaderOptions([
@@ -71,6 +71,11 @@ export const WalletTabFilter: React.FC<Props> = ({ setSelectedFilters }) => {
             value: "lines",
             label: "Líneas",
             children: lines
+          },
+          {
+            value: "sublines",
+            label: "Sublíneas",
+            children: sublines
           },
           {
             value: "zones",
@@ -117,6 +122,7 @@ export const WalletTabFilter: React.FC<Props> = ({ setSelectedFilters }) => {
     const newFilters: SelectedFiltersWallet = {
       lines: [],
       zones: [],
+      sublines: [],
       channels: [],
       paymentAgreement: null,
       radicationType: null
@@ -129,6 +135,9 @@ export const WalletTabFilter: React.FC<Props> = ({ setSelectedFilters }) => {
       switch (category) {
         case "lines":
           newFilters.lines.push(id);
+          break;
+        case "sublines":
+          newFilters.sublines.push(id);
           break;
         case "zones":
           newFilters.zones.push(id);

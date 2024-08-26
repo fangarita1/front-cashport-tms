@@ -31,6 +31,7 @@ export const WalletTab = () => {
     lines: [],
     zones: [],
     channels: [],
+    sublines: [],
     paymentAgreement: null,
     radicationType: null
   });
@@ -66,6 +67,7 @@ export const WalletTab = () => {
     radicationType: filters.radicationType !== null ? filters.radicationType : undefined,
     lines: filters.lines,
     zones: filters.zones,
+    sublines: filters.sublines,
     channels: filters.channels
   });
 
@@ -75,6 +77,12 @@ export const WalletTab = () => {
       setInvoices(invoicesData);
     }
   }, [data]);
+
+  useEffect(() => {
+   console.log(filters);
+   
+  }, [filters]);
+
 
   const handleisGenerateActionOpen = () => {
     setisGenerateActionOpen(!isGenerateActionOpen);

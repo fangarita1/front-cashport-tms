@@ -10,6 +10,7 @@ interface Props {
   paymentAgreement?: number;
   radicationType?: number;
   lines?: number[];
+  sublines?: number[];
   zones?: number[];
   channels?: number[];
   searchQuery?: string;
@@ -18,14 +19,16 @@ interface Props {
 export const useInvoices = ({
   clientId,
   projectId,
-  page = 1,
-  limit = 50,
+
   paymentAgreement,
   radicationType,
   lines,
   zones,
+  sublines,
   channels,
-  searchQuery
+  searchQuery,
+  page = 1,
+  limit = 50,
 }: Props) => {
   const pageQuery = `page=${page}`;
   const limitQuery = `&limit=${limit}`;
@@ -38,13 +41,14 @@ export const useInvoices = ({
       ? `&radication_type=${radicationType}`
       : "";
   const linesQuery = lines && lines.length > 0 ? `&line=${lines.join(",")}` : "";
+  const sublinesQuery = sublines && sublines.length > 0 ? `&line=${sublines.join(",")}` : "";
   const zonesQuery = zones && zones.length > 0 ? `&zone=${zones.join(",")}` : "";
   const channelsQuery = channels && channels.length > 0 ? `&channel=${channels.join(",")}` : "";
   const searchQueryParam = searchQuery
     ? `&id=${encodeURIComponent(searchQuery.toLowerCase().trim())}`
     : "";
 
-  const pathKey = `/invoice/client/${clientId}/project/${projectId}?${pageQuery}${limitQuery}${paymentAgreementQuery}${radicationTypeQuery}${linesQuery}${zonesQuery}${channelsQuery}${searchQueryParam}`;
+  const pathKey = `/invoice/client/${clientId}/project/${projectId}?${pageQuery}${limitQuery}${paymentAgreementQuery}${radicationTypeQuery}${linesQuery}${zonesQuery}${channelsQuery}${searchQueryParam}${sublinesQuery}`;
 
   const { data, error } = useSWR<IInvoices>(pathKey, fetcher);
 

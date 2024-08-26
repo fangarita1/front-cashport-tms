@@ -3,7 +3,18 @@ export interface IBRE {
   message: string;
   data: IChanel[];
 }
+export interface channeles {
+  status: number;
+  message: string;
+  data: channel[];
+}
 
+export interface channel {
+  id: number;
+  project_id: number;
+  channel_description: string;
+  is_deleted: number;
+}
 export interface IChanel {
   CHANNEL_ID: number;
   CHANNEL_NAME: string;
