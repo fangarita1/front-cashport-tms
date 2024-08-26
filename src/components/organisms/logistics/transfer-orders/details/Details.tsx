@@ -99,6 +99,7 @@ export const TransferOrderDetails = () => {
     const data = await aprobeOrRejectDetail(id, isApprobe);
     if (data) {
       findNovelties();
+      findDetails();
       setOpenDrawer(false);
     }
   }
