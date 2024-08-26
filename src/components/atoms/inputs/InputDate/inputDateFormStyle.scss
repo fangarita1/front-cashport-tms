@@ -10,7 +10,6 @@
         font-style: normal;
         font-weight: 600;
         line-height: normal;
-        margin-bottom: 0.5rem;
     }
 
     .dateInputForm {
@@ -55,6 +54,7 @@
             font-size: 1rem;
             border-radius: 0.25rem;
             box-shadow: none;
+            margin-bottom: 0.2rem;
             &::placeholder {
                 color: $secondary-gray;
             }
@@ -66,7 +66,5 @@
     .textError {
         padding-left: 0.5rem;
         color: red;
-        font-size: 0.875em; // 14px
-        margin-top: 4px;
     }
 }
