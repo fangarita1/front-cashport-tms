@@ -140,6 +140,19 @@ export const SideBar = () => {
           </Link>
         )}
 
+        {checkUserViewPermissions(project, "Bancos") && (
+          <Link href="/banco" passHref legacyBehavior>
+            <Button
+              type="primary"
+              size="large"
+              icon={<Bank size={26} />}
+              className={path === "/banco" ? "buttonIcon" : "buttonIconActive"}
+            >
+              {isSideBarLarge && "Bancos"}
+            </Button>
+          </Link>
+        )}
+
         {checkUserViewPermissions(project, "Configuracion") && (
           <Link href="/" passHref legacyBehavior>
             <Button
