@@ -1133,7 +1133,7 @@ export interface ILocation {
   modified_at?: Date | null;
   modified_by?: string | null;
   state_id?: number;
-  group_location_id?: number;
+  group_location?: string;
   additional_info: string;
   contact_name: string;
   contact_number: string;
@@ -1305,6 +1305,16 @@ export interface ILocationByGrouplocationWithDefaults {
   created_by: string;
   modified_at?: Date | null;
   modified_by?: string | null;
+}
+
+export interface IEntityType {
+  id: number;
+  description : string;
+  active: string;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
 }
 
 export interface IDocumentsType {
@@ -3301,4 +3311,34 @@ export interface ICarrierRequestDetailAPI extends ICarrierRequestDetail {
   vehicle: ICarrierRequestVehicles;
   drivers: ICarrierRequestDrivers[];
   observation?: string;
+}
+
+export interface IFormGeneralUser {
+  id: number;
+  phone: number;
+  email: string;
+  document_type: number;
+  vehicle_type: { label: string; value: number }[];
+  document: string;
+  license: string;
+  license_category: string;
+  licence_category?: string;
+  license_expiration: Date;
+  name: string;
+  last_name: string;
+  emergency_number: number;
+  emergency_contact: string;
+  firebaseguid?: string;
+  active: any;
+  status?: any;
+  created_at: Date;
+  created_by: string;
+  modified_at?: Date | null;
+  modified_by?: string | null;
+  company: string;
+  rh: string;
+  glasses: any;
+  birth_date: Date;
+  photo?: string;
+  company_id?: string;
 }

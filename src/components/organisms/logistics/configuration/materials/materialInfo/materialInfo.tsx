@@ -61,6 +61,7 @@ export const MaterialInfoView = ({ params }: Props) => {
     }
   };
 
+  console.log(data)
 
   return (
     <>

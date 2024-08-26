@@ -32,8 +32,7 @@ export const MaterialsTable = () => {
       ?.data.data.filter((element: any) => {
         if (!search) return true;
         return (
-          element.description.toLowerCase().includes(search.toLowerCase()) ||
-          element.nit.toLowerCase().includes(search.toLowerCase())
+          element.description.toLowerCase().includes(search.toLowerCase()) 
         );
       })
       .map((element: any) => ({
@@ -125,7 +124,7 @@ export const MaterialsTable = () => {
       dataIndex: "",
       render: (_, { id }) => (
         <Button
-          href={`/logistics/materials/${id}`}
+          href={`/logistics/configuration/materials/${id}`}
           className="icon-detail"
           icon={<Eye size={20} />}
         />

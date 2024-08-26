@@ -816,6 +816,7 @@ export const CreateOrderView = () => {
             percent: 0
           
         }}
+        console.log(dataPsl)
     setDataPsl(prevDataPsl => 
       prevDataPsl.map(item => 
         item.key === key ? 

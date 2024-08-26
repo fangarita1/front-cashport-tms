@@ -90,8 +90,6 @@ export const MaterialFormTab = ({
     Array(5).fill({ file: undefined, error: false })
   );
 
-  const [imagesUrl, setImagesURL] = useState<string[]>([]);
-
   const defaultValues = statusForm === "create" ? {} : dataToProjectFormData(data);
   const {
     watch,
@@ -159,17 +157,6 @@ export const MaterialFormTab = ({
   }, [files, documentsType]);
 
   useEffect(() => {
-    const getblobimage = async (url: string): Promise<Blob> => {
-      console.log(url)
-      //axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-      //const res = await axios.get(url,{ crossdomain: true });
-      //console.log(res)
-      const  imgdata  = await fetch(url, { mode: 'no-cors'})
-      const imgblob = await imgdata.blob();
-      console.log(imgdata)
-      console.log(imgblob)
-      return imgblob
-    }
     if (statusForm === "review"){
       if (Array.isArray(documentsType)) {
         const docsWithLink =
@@ -185,19 +172,10 @@ export const MaterialFormTab = ({
             })) || [];
         setSelectedFiles(docsWithLink);
       }
-      if(data?.image){
-        let imgsarray = ['','','','',''];
-        const dimages= JSON.parse(data?.image);
-        dimages.forEach((dimg: { link: string; },idx: number) => {
-          imgsarray[idx] = dimg.link;
-        });                
-        setImagesURL(imgsarray);
-      }
     }
   }, [statusForm]);
 
   const convertToSelectOptions = (materialTypes: IMaterialType[]) => {
-    //console.log(materialTypes)
     if (!Array.isArray(materialTypes)) return [];
     return materialTypes?.map((materialType) => ({
       label: materialType.description,
@@ -220,7 +198,6 @@ export const MaterialFormTab = ({
   };
 
   const convertToSelectOptionsTransport = (materialTransportTypes: IMaterialTransportType[]) => {
-    //console.log(materialTransportTypes)
     if (!Array.isArray(materialTransportTypes)) return [];
     return materialTransportTypes?.map((materialTransportType) => ({
       label: materialTransportType.description,
@@ -359,13 +336,8 @@ export const MaterialFormTab = ({
               {/* ------------Image Project-------------- */}
               <Row>
                 <Col span={24} className="colfoto">
-                  {statusForm === "review" &&
-                    <Image className="ant-upload-select" src={imagesUrl? imagesUrl[0]: undefined}></Image>
-                  }
-                  {statusForm !== "review" &&
-                    <>
-                    <UploadImg
-                      //disabled={statusForm === "review"}
+                  <UploadImg
+                      disabled={statusForm === "review"}
                       imgDefault={formImages ? formImages[0]?.url_archive : undefined}
                       setImgFile={(file) => {
                         const currentUrlArchive = formImages ? formImages[0]?.url_archive : undefined; // obtener el valor actual de url_archive
@@ -387,8 +359,6 @@ export const MaterialFormTab = ({
                     {imageError && (                    
                       <Text className="textError">{"Al menos 1 imagen debe ser cargada *"}</Text>
                     )}
-                    </>
-                  }
                 </Col>
               </Row>
               <Row gutter={16}>
@@ -451,8 +421,9 @@ export const MaterialFormTab = ({
                   />
                 </Col>
                 <Col span={6}>
-                  <InputForm
-                    titleInput="Alto"
+                  <InputForm                  
+                    typeInput="number"
+                    titleInput="Alto (m)"
                     nameInput="general.mt_height"
                     control={control}
                     error={errors?.general?.mt_height}
@@ -460,7 +431,8 @@ export const MaterialFormTab = ({
                 </Col>
                 <Col span={6}>
                   <InputForm
-                    titleInput="Largo"
+                    typeInput="number"
+                    titleInput="Largo (m)"
                     nameInput="general.mt_width"
                     control={control}
                     error={errors?.general?.mt_width}
@@ -468,7 +440,8 @@ export const MaterialFormTab = ({
                 </Col>
                 <Col span={6}>
                   <InputForm
-                    titleInput="Ancho"
+                    typeInput="number"
+                    titleInput="Ancho (m)"
                     nameInput="general.mt_length"
                     control={control}
                     error={errors?.general?.mt_length}
@@ -476,7 +449,8 @@ export const MaterialFormTab = ({
                 </Col>
                 <Col span={6}>
                   <InputForm
-                    titleInput="Peso"
+                    typeInput="number"
+                    titleInput="Peso (kg)"
                     nameInput="general.kg_weight"
                     control={control}
                     error={errors?.general?.kg_weight}

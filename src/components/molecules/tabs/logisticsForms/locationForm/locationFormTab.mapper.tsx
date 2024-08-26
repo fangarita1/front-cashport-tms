@@ -36,7 +36,7 @@ export const normalizeLocationData = (data: any): any => {
 
   const documents = data?.documents?.map((doc: any) => ({
     file: {
-      name: doc.template.split("/").pop(),
+      name: doc.template?.split("/").pop(),
       url: doc.template
     }
   }));
@@ -58,7 +58,7 @@ export const normalizeLocationData = (data: any): any => {
       modified_at: new Date(data.modified_at),
       modified_by: data.modified_by,
       state_id: data.state_id?.toString(),
-      group_location_id: data.group_location_id?.toString(),
+      group_location: data.group_location_id,
       additional_info: data.additional_info,
       contact_name: data.contact_name,
       contact_number: data.contact_number,

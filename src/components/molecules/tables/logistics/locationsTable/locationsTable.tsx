@@ -32,8 +32,7 @@ export const LocationsTable = () => {
       ?.data.data.filter((element: any) => {
         if (!search) return true;
         return (
-          element.description.toLowerCase().includes(search.toLowerCase()) ||
-          element.nit.toLowerCase().includes(search.toLowerCase())
+          element.description.toLowerCase().includes(search.toLowerCase())
         );
       })
       .map((element: any) => ({
