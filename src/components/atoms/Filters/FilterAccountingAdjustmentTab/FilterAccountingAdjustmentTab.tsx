@@ -10,6 +10,7 @@ import { IChanel } from "@/types/bre/IBRE";
 
 import "../filterCascader.scss";
 
+
 interface FilterOption {
   value: string | number;
   label: string;
@@ -24,7 +25,7 @@ export interface SelectedFiltersAccountingAdjustments {
 }
 
 interface AccountingAdjustmentsFilterProps {
-  onFilterChange: (filters: SelectedFilters) => void;
+  onFilterChange: (filters: SelectedFiltersAccountingAdjustments) => void;
 }
 
 export const AccountingAdjustmentsFilter: React.FC<AccountingAdjustmentsFilterProps> = ({
