@@ -12,15 +12,6 @@ import "./projectstable.scss";
 import UiSearchInput from "@/components/ui/search-input";
 import { countries } from "@/utils/countries";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
-import {
-  getCategories,
-  getCountries,
-  getCurrencies,
-  getFilters,
-  getLocations,
-  getPrices
-} from "@/components/atoms/Filters/GeneralFilter/mockDate";
-import GenericCascaderFilter from "@/components/atoms/Filters/GeneralFilter/GeneralFilter";
 
 const { Text } = Typography;
 
