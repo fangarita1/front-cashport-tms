@@ -1,5 +1,5 @@
 import { Flex, message, Row, Col, Spin } from "antd";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // dayjs locale
 import dayjs from "dayjs";
@@ -7,11 +7,10 @@ import "dayjs/locale/es-us";
 dayjs.locale("es");
 
 // mapbox
-import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 //schemas
-import { IMaterial, ITransferOrder } from "@/types/logistics/schema";
+import { IMaterial, ITransferOrder, TripType } from "@/types/logistics/schema";
 
 //navigation
 import { useRouter } from "next/navigation";
@@ -26,8 +25,8 @@ import Materials from "../../acept_carrier/detail/components/Materials/Materials
 
 //styles
 import styles from "./DetailsOrderView.module.scss";
-import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import { useMapbox } from "@/utils/logistics/useMapBox";
+import Persons from "../../acept_carrier/detail/components/Persons/Persons";
 
 interface Props {
   idOrder: string;
@@ -37,6 +36,10 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const [transferOrder, setTransferOrder] = useState<ITransferOrder>();
+  const [tripType, setTripType] = useState<TripType>(TripType.Carga);
+  const [materialsTotalWeight, setMaterialsTotalWeight] = useState<number>(0);
+  const [materialsTotalVolume, setMaterialsTotalVolume] = useState<number>(0);
+
   const [loading, setLoading] = useState<boolean>(true);
 
   const optionsFlexible = [
@@ -65,7 +68,23 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
   useEffect(() => {
     loadTransferOrder();
   });
+  function calculateTotalVolumeAndWeight(to: ITransferOrder) {
+    let totalVolume = 0;
+    let totalWeight = 0;
 
+    if (to.transfer_order_material) {
+      for (const materialItem of to.transfer_order_material) {
+        if (materialItem.material) {
+          for (const material of materialItem.material) {
+            totalVolume += material.m3_volume * materialItem.quantity;
+            totalWeight += material.kg_weight * materialItem.quantity;
+          }
+        }
+      }
+    }
+
+    return { totalVolume, totalWeight };
+  }
   const loadTransferOrder = async () => {
     if (transferOrder != undefined) return;
     try {
@@ -74,7 +93,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
       if (result.data.data.length > 0) {
         const to: ITransferOrder = result.data.data[0];
         setTransferOrder(to);
-
+        setTripType(to.service_type_desc);
         to.transfer_order_material?.forEach(async (mat) => {
           mat?.material?.forEach(async (m) => {
             const newvalue: IMaterial = m;
@@ -82,6 +101,11 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
             setDataCarga((prevData) => [...prevData, newvalue]);
           });
         });
+        if (to) {
+          const { totalVolume, totalWeight } = calculateTotalVolumeAndWeight(to);
+          setMaterialsTotalVolume(totalVolume);
+          setMaterialsTotalWeight(totalWeight);
+        }
       }
     } catch (error) {
       console.log("Error getTransferOrderById: ", error);
@@ -128,6 +152,10 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
                   start_date_hour={dayjs(transferOrder?.start_date).format("HH:mm") ?? ""}
                   end_date={dayjs(transferOrder?.end_date).format("YYYY-MM-DD")}
                   end_date_hour={dayjs(transferOrder?.end_date).format("HH:mm") ?? ""}
+                  freight_origin_time={transferOrder?.freight_origin_time}
+                  freight_destination_time={transferOrder?.freight_destination_time}
+                  volume={materialsTotalVolume}
+                  weight={materialsTotalWeight}
                 />
               </Flex>
             </Col>
@@ -146,9 +174,19 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
             />
           </Flex>
           <Flex className={styles.container} vertical>
-            <p className={styles.sectionTitle}>Carga</p>
-            <Materials materials={dataCarga} />
-            <p>&nbsp;</p>
+            {tripType === TripType.Personas ? (
+              <>
+                <p className={styles.sectionTitle}>Personas</p>
+                <Persons persons={transferOrder?.transfer_order_persons ?? []} />
+                <p>&nbsp;</p>
+              </>
+            ) : (
+              <>
+                <p className={styles.sectionTitle}>Carga</p>
+                <Materials materials={dataCarga} />
+                <p>&nbsp;</p>
+              </>
+            )}
             <p className={styles.title}>Vehículos sugeridos</p>
             <Row>
               <Col span={24} style={{ paddingTop: "0.5rem" }}>
@@ -160,17 +198,16 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
               </Col>
             </Row>
           </Flex>
-          <Flex className={styles.footer}>
+          <Flex>
             <Col span={12}>
-              <PrincipalButton
-                type="default"
+              <button
                 className={styles.backButton}
                 onClick={() => {
                   push("/logistics/transfer-orders");
                 }}
               >
                 Regresar
-              </PrincipalButton>
+              </button>
             </Col>
             <Col span={12} />
           </Flex>

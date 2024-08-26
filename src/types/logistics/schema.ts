@@ -1309,7 +1309,7 @@ export interface ILocationByGrouplocationWithDefaults {
 
 export interface IEntityType {
   id: number;
-  description : string;
+  description: string;
   active: string;
   created_at: Date;
   created_by: string;
@@ -1975,7 +1975,7 @@ export interface CarriersPricing {
 export interface ITransferOrder {
   id: number;
   id_service_type: string;
-  service_type_desc: string;
+  service_type_desc: TripType;
   id_user: number;
   user: string | null | undefined;
   id_start_location: number;
@@ -3464,4 +3464,10 @@ export interface IFormGeneralUser {
   birth_date: Date;
   photo?: string;
   company_id?: string;
+}
+
+export enum TripType {
+  Personas = "Personas",
+  Carga = "Carga",
+  Izaje = "Izaje"
 }

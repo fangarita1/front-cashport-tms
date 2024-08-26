@@ -8,7 +8,7 @@ import { ProviderDetailTravelData } from "@/types/acept_carrier/acept_carrier";
 import styles from "./travelData.module.scss";
 import mapboxgl from "mapbox-gl";
 import { ICarrierRequestDetail } from "@/types/logistics/schema";
-import { formatDatePlaneWithoutComma } from "@/utils/utils";
+import { formatDatePlaneWithoutComma, formatNumber } from "@/utils/utils";
 
 interface TravelDataProps {
   travelData: ICarrierRequestDetail | undefined;
@@ -166,7 +166,7 @@ export default function TravelData({ travelData }: TravelDataProps) {
                 </Col>
                 <Col span={12} className={styles.values}>
                   <p>
-                    <label>{distance}</label>
+                    <label>{formatNumber(distance)} km</label>
                   </p>
                   <p>
                     <label>{timetravel} hr</label>
@@ -174,10 +174,10 @@ export default function TravelData({ travelData }: TravelDataProps) {
                   {travelData?.service_type !== "3" ? (
                     <>
                       <p>
-                        <label>{travelData?.volume}</label>
+                        <label>{formatNumber(travelData?.volume ?? 0)} m3</label>
                       </p>
                       <p>
-                        <label>{travelData?.weight}</label>
+                        <label>{formatNumber(travelData?.weight ?? 0)} kg</label>
                       </p>
                     </>
                   ) : (

@@ -83,6 +83,7 @@ import TabPane from "antd/es/tabs/TabPane";
 import FormWizard from "react-form-wizard-component";
 import "react-form-wizard-component/dist/style.css";
 import { addTransferOrder } from "@/services/logistics/transfer-orders";
+import { formatNumber } from "@/utils/utils";
 
 const { Title, Text } = Typography;
 
@@ -952,7 +953,7 @@ export const CreateTransferOrderView = () => {
                                   </Col>
                                   <Col span={12} className="text-right">
                                     <p>
-                                      <label>{distance}</label>
+                                      <label>{formatNumber(distance)} km</label>
                                     </p>
                                     <p>
                                       <label>{timetravel}</label>

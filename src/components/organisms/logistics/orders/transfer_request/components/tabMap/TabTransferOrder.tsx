@@ -2,7 +2,7 @@ import mapboxgl from "mapbox-gl";
 import { ITransferOrderRequest } from "@/types/logistics/schema";
 import { Col, Flex, Row } from "antd";
 import { useEffect, useRef, useState } from "react";
-import { formatDatePlaneWithoutComma } from "@/utils/utils";
+import { formatDatePlaneWithoutComma, formatNumber } from "@/utils/utils";
 type PricingStepOneProps = {
   orderRequest: ITransferOrderRequest | undefined;
 };
@@ -131,7 +131,7 @@ export default function TabTransferOrder({ orderRequest }: PricingStepOneProps) 
                 </Col>
                 <Col span={12} className="travelDataValues">
                   <p>
-                    <label>{distance}</label>
+                    <label>{formatNumber(distance)} km</label>
                   </p>
                   <p>
                     <label>{timetravel} hr</label>
