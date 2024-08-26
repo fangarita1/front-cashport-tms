@@ -170,3 +170,23 @@ export const updateMaterial = async (
     throw error as any;
   }
 };
+
+export const updateMaterialStatus = async (
+  location_id:string, active:string
+): Promise<AxiosResponse<any, any>> => {
+  try {
+    const form = new FormData();
+    const body: any = { "material_id":location_id, "active":active };
+    form.append("body", JSON.stringify(body));  
+    const response = await axios.put(`${config.API_HOST}/material/updatestatus`, form, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Accept: "application/json, text/plain, */*"
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error updating material: ", error);
+    throw error as any;
+  }
+};

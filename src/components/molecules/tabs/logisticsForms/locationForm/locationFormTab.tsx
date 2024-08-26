@@ -111,6 +111,7 @@ export const LocationFormTab = ({
             mapRef.current.flyTo({
               center: [data.general?.longitude,data.general?.latitude]
             });
+            setCoordinates([`Longitude: ${Number(data.general?.longitude).toFixed(6)}`, `Latitude: ${Number(data.general?.latitude).toFixed(6)}`]);
           }
         }
         if(name == 'general.longitude'){
@@ -120,6 +121,7 @@ export const LocationFormTab = ({
             mapRef.current.flyTo({
               center: [data.general?.longitude,data.general?.latitude]
             });
+            setCoordinates([`Longitude: ${Number(data.general?.longitude).toFixed(6)}`, `Latitude: ${Number(data.general?.latitude).toFixed(6)}`]);
           }
         }
       }
@@ -249,22 +251,7 @@ export const LocationFormTab = ({
 
   useEffect(() => {
     if (statusForm === "review"){
-
-      if (Array.isArray(documentsType)) {
-          const docsWithLink =
-            documentsType
-              ?.filter((f) => data?.documents?.find((d) => d.id === f.id))
-              .map((f) => ({
-                ...f,
-                file:  undefined,
-                link: data?.documents?.find((d) => d.id === f.id)?.template,
-                expirationDate: dayjs(
-                  data?.documents?.find((d) => d.id === f.id)?.expiration_date
-                )
-              })) || [];
-          setSelectedFiles(docsWithLink);
-      }
-
+      setIsOpenModal(false)
       setLatitude(data?.latitude)
       setLongitude(data?.longitude)
       markerRef.current.setLngLat([data?.longitude,data?.latitude])
@@ -273,8 +260,9 @@ export const LocationFormTab = ({
       });
     
       setTimeout(()=>{
-        
-        setValue("general.group_location_id", data?.group_location_id);
+                
+        //const group_location:number = Number(data?.group_location?.valueOf());
+        setValue("general.group_location", data?.group_location);
 
         const location_type:number = Number(data?.location_type?.valueOf());
         setValue("general.location_type", location_type);
@@ -288,10 +276,25 @@ export const LocationFormTab = ({
           const city_id:number = Number(data?.city_id?.valueOf());
           setValue("general.city_id", city_id);
         },500)
+
+        setTimeout(()=>{
+          const docsWithLink =
+            documentsType
+              ?.filter((f) => data?.documents?.find((d) => d.id === f.id))
+              .map((f) => ({
+                ...f,
+                file:  undefined,
+                link: data?.documents?.find((d) => d.id === f.id)?.template,
+                expirationDate: dayjs(
+                  data?.documents?.find((d) => d.id === f.id)?.expiration_date
+                )
+              })) || [];
+          setSelectedFiles(docsWithLink);
+        },500)
       },500);
 
     }
-  }, [statusForm]);
+  }, [statusForm,documentsType, data, groupLocationData]);
 
 
   //add file 
@@ -381,7 +384,7 @@ export const LocationFormTab = ({
               </Button>
             </Link>
               <Flex gap={"1rem"}>
-              {(statusForm === "review") && (
+              {(statusForm === "review" || statusForm === "edit") && (
                 <Button
                   className="buttons"
                   htmlType="button"
@@ -556,7 +559,7 @@ export const LocationFormTab = ({
                     render={({ field }) => (
                       <SelectInputForm
                       placeholder="Seleccionar"
-                      error={errors?.general?.city_id}
+                      error={errors?.general?.location_type}
                       field={field}
                       loading={isLoadingLocationTypes}
                       options={convertLocationTypesToSelectOptions((locationTypesData?.data.data as any) || [])}                                          
@@ -569,14 +572,14 @@ export const LocationFormTab = ({
                     Grupo de ubicación
                   </Title>
                    <Controller
-                    name="general.group_location_id"
+                    name="general.group_location"
                     control={control}
                     disabled={statusForm === "review"} 
                     rules={{ required: false }}
                     render={({ field }) => (
                       <SelectInputForm
                       placeholder="Seleccionar"
-                      error={errors?.general?.group_location_id}
+                      error={errors?.general?.group_location}
                       field={field}
                       loading={isLoadingGroupLocation}
                       options={convertGroupLocationsToSelectOptions((groupLocationData?.data.data as any) || [])}                                          
@@ -625,8 +628,9 @@ export const LocationFormTab = ({
                     placeholder="Ingrese teléfono"
                     titleInput="Teléfono"
                     nameInput="general.contact_number"
+                    typeInput="number"
                     control={control}
-                    validationRules={{required: false}}
+                    validationRules={{required: false, maxLength:10}}
                     disabled={statusForm === "review"} 
                     error={errors.general?.contact_number}
                   />
@@ -678,6 +682,7 @@ export const LocationFormTab = ({
             {["edit", "create"].includes(statusForm) && (
               <Row justify={"end"}>
                 <SubmitFormButton
+                    loading={loading}
                     text={validationButtonText(statusForm)}
                     disabled={!isSubmitButtonEnabled}
                     onClick={handleSubmit(onSubmit)}

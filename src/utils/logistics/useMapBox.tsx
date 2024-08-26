@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
+import { getTravelDuration } from "./maps";
 
 interface UseMapboxHookProps {
   mapsAccessToken: string;
@@ -26,7 +27,7 @@ export const useMapbox = ({
   const [routeGeometry, setRouteGeometry] = useState<any>(null);
   const [distance, setDistance] = useState<string | null>(null);
   const [timetravel, setTimetravel] = useState<string | null>(null);
-  const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/streets-v12");
+  const mapStyle = "mapbox://styles/mapbox/streets-v12";
 
   useEffect(() => {
     loadTravelData();
@@ -40,10 +41,8 @@ export const useMapbox = ({
       const { distance, duration, geometry } = routes[0];
       setRouteGeometry(geometry); // Set the route geometry
       setDistance(parseFloat((distance / 1000).toFixed(0)) + " Km");
-      let date = new Date();
-      date.setSeconds(duration);
-      let hrs = date.toISOString().slice(11, 16);
-      setTimetravel(hrs);
+      const hrs = getTravelDuration(duration);
+      setTimetravel(hrs + " Hrs");
     }
   };
 

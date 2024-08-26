@@ -45,15 +45,15 @@ const MultiSelectTags = <T extends FieldValues>({
 
   useEffect(() => {
     if (field.value) {
-        const newSelectedOptions = options?.filter(option =>
-          field.value.some((selected: any) => selected.value === option.value)
-        ) || [];
-        setSelectedOptions(newSelectedOptions);
-      }
-
-    if (Array.isArray(defaultValue)){
-      const newSelectedOptions = defaultValue as unknown as OptionType[];
+      const newSelectedOptions = options?.filter(option =>
+        field.value.some((selected: any) => selected.value === option.value)
+      ) || [];
       setSelectedOptions(newSelectedOptions);
+    }
+
+    if (Array.isArray(defaultValue) && defaultValue.length > 0){
+     const newSelectedOptions = defaultValue as unknown as OptionType[];
+     setSelectedOptions(newSelectedOptions);
     }
     
   }, [field.value, options]);

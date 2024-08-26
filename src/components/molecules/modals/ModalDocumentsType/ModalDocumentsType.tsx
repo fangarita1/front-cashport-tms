@@ -13,8 +13,9 @@ import { SelectInputForm } from "../../logistics/SelectInputForm/SelectInputForm
 import { InputCreateDocument } from "@/components/atoms/inputs/inputCreate/InputCreateDocument";
 import SecondaryButton from "@/components/atoms/buttons/secondaryButton/SecondaryButton";
 import { useEffect, useState } from "react";
-import { ICertificates, IDocumentsType } from "@/types/logistics/schema";
-import { addDocumentsType } from "@/services/logistics/locations";
+import { ICertificates, IDocumentsType, IEntityType } from "@/types/logistics/schema";
+import { addDocumentsType, getAllEntityType } from "@/services/logistics/locations";
+import useSWR from "swr";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -72,6 +73,22 @@ export default function ModalDocuments(props: PropsModalDocuments) {
     fileList,
   };
 
+  const { data: entityTypeData, isLoading: isLoadingEntity } = useSWR(
+    "entity",
+    getAllEntityType,
+    { revalidateIfStale:false,
+      revalidateOnFocus:false,
+      revalidateOnReconnect:false
+    }
+  );
+  
+  const convertEntityTypeToSelectOptions = (entityTypes: IEntityType[]) => {
+    return entityTypes?.map((entityType) => ({
+      value: entityType.description,
+      id: entityType.id,
+    }));
+  };
+
   const handleCreate = async () => {
     const data: IDocumentsType ={
       id: "",
@@ -107,6 +124,7 @@ export default function ModalDocuments(props: PropsModalDocuments) {
       const newvalue : CertificateType = result.data.data;
       documentsType?.push(newvalue);
       const newdoccomplete: DocumentCompleteType =result.data.data;
+      entityTypeData?.filter((f)=> f.id == documentType).map((m)=>  newdoccomplete.entity_type_desc = m.description);
       mockFiles.push(newdoccomplete);
 
       messageApi.success('Tipo de documento creado exitosamente!')
@@ -220,12 +238,9 @@ export default function ModalDocuments(props: PropsModalDocuments) {
                       <SelectInputForm
                         placeholder="Seleccionar"
                         field={field}
-                        loading={undefined}
-                        options={[
-                          { id:1, value:"Vehículo"},
-                          { id:2, value:"Conductor"},
-                          { id:3, value:"Proveedor"}
-                        ]} error={undefined} 
+                        loading={isLoadingEntity}
+                        options={convertEntityTypeToSelectOptions((entityTypeData as any) || [])}       
+                        error={undefined} 
                         />
                       )}                    
                     /> 

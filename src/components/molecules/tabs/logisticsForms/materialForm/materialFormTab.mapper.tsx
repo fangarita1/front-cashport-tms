@@ -14,8 +14,8 @@ export interface MaterialFormTabProps {
   disabled?: boolean;
   onEditProject?: () => void;
   onSubmitForm?: (data: any) => void;
-  onActiveProject?: () => void;
-  onDesactivateProject?: () => void;
+  onActiveMaterial?: () => void;
+  onDesactivateMaterial?: () => void;
   statusForm: "create" | "edit" | "review";
   params: {
     id: string;
