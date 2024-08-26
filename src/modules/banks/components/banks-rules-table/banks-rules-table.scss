@@ -1,0 +1,46 @@
+@import "@/styles/variables.scss";
+
+.banksRulesTable {
+    margin-top: 0.5rem;
+
+    .ant-table-container {
+        .ant-table-thead {
+            font-size: 1rem;
+            th {
+                font-weight: 500;
+            }
+        }
+    }
+    .tableColumn {
+        border: none !important;
+        padding: 0.375rem 0.75rem !important;
+        height: fit-content !important;
+
+        &.-equalSign {
+            padding: 0 !important;
+        }
+    }
+
+    .ant-table-selection-column {
+        border: none !important;
+    }
+
+    .tableInfo {
+        background-color: $dark-gray;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 300;
+        padding: 1rem 0.875rem;
+    }
+
+    .editButton {
+        background-color: $dark-gray;
+        height: 54px;
+        box-shadow: -4px 4px 10px 0px #00000014;
+
+        &:hover {
+            opacity: 0.8;
+            background-color: $dark-gray !important;
+        }
+    }
+}
