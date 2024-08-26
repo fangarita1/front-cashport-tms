@@ -75,9 +75,6 @@ const ResolveNoveltyModal: React.FC<ResolveNoveltyModalProps> = ({
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    console.log("file", file);
-  }, [file]);
 
   const handleAdjustmentTypeSelect = (type: string) => {
     setAdjustmentType(type);
