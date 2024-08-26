@@ -3,7 +3,7 @@ import { Flex, Skeleton } from "antd";
 import { useEffect, useState } from "react";
 import styles from "./UploadInvoice.module.scss";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { FieldError, useFieldArray, useForm, useWatch } from "react-hook-form";
 import UploadFileButton from "../UploadFileButton/UploadFileButton";
 import FooterButtons from "../FooterButtons/FooterButtons";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
@@ -15,6 +15,8 @@ import { defaultUploadInvoiceForm } from "./controllers/createDefault";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 import { MessageInstance } from "antd/es/message/interface";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { uploadInvoiceFormSchema } from "./controllers/formSchema";
 
 interface UploadInvoice {
   idTR: number;
@@ -28,8 +30,26 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
   const [preauthorizeds, setPreauthorizeds] = useState<PreAuthorizationRequestData[]>([]);
   const [defaultValues, setDefaultValues] = useState<UploadInvoiceForm>(defaultUploadInvoiceForm);
 
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    reset,
+    watch,
+    trigger
+  } = useForm<UploadInvoiceForm>({
+    defaultValues,
+    resolver: yupResolver(uploadInvoiceFormSchema) as any
+  });
+  const { fields } = useFieldArray({
+    control,
+    name: "pas"
+  });
+
+  //Create default with api data
   function createDefaultValues(pasData: PreAuthorizationRequestData[]): UploadInvoiceForm {
-    const defaultValues: PA[] = pasData.map((pa, index) => ({
+    const defaultValues: PA[] = pasData.map((pa) => ({
       info: {
         id: pa.id,
         idAuthorization: pa.idAuthorization,
@@ -38,8 +58,8 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
         link: pa.link
       },
       invoice: {
-        id: index + 1,
-        date: dayjs(),
+        id: "",
+        date: null,
         value: pa.authorizationFare,
         pdfFile: undefined,
         xmlFile: undefined
@@ -49,41 +69,20 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
       pas: defaultValues
     };
   }
-  async function sendForm(form: UploadInvoiceForm) {
-    try {
-      setIsLoading(true);
-      const response = await sendInvoices(form, idTR);
-      console.log(response);
-      if (response) {
-        messageApi?.open({
-          type: "success",
-          content: "Creado correactamente",
-          duration: 3
-        });
-      } else {
-        messageApi?.open({
-          type: "error",
-          content: "Hubo un error",
-          duration: 3
-        });
-      }
-    } catch (error: any) {
-      console.log("ERROR", error);
-      messageApi?.open({
-        type: "error",
-        content: error?.message ?? "Hubo un error",
-        duration: 3
-      });
-    } finally {
-      setIsLoading(false);
-      onClose();
-    }
-  }
-  const getPreauthorized = async () => {
+
+  const formValues = useWatch({ control });
+  const pasCodes = fields.map((field) => `PA-${field.info.idAuthorization}`);
+
+  // Calculate total pre-authorized value
+  const getTotalInfoValue = (data: PA[]): number =>
+    data.reduce((total, pa) => total + pa.info.value, 0);
+  const totalPreAuthorized = getTotalInfoValue(fields);
+
+  // Fetch pre-authorized info
+  async function getPreauthorized() {
     try {
       setIsLoading(true);
       const response = await getPreauthorizedInfo(idTR);
-      console.log(response);
       if (response) {
         setPreauthorizeds(response);
       }
@@ -95,63 +94,43 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    if (!isInitialized) {
-      getPreauthorized();
-      setIsInitialized(true);
+  }
+  // Handle form submission
+  async function sendForm(form: UploadInvoiceForm) {
+    try {
+      setIsLoading(true);
+      const response = await sendInvoices(form, idTR);
+      if (response) {
+        messageApi?.open({
+          type: "success",
+          content: "Creado correctamente",
+          duration: 3
+        });
+      } else {
+        messageApi?.open({
+          type: "error",
+          content: "Hubo un error",
+          duration: 3
+        });
+      }
+    } catch (error: any) {
+      messageApi?.open({
+        type: "error",
+        content: error?.message ?? "Hubo un error",
+        duration: 3
+      });
+    } finally {
+      setIsLoading(false);
+      onClose();
     }
-  }, [isInitialized]);
+  }
 
   const onSubmit = (data: UploadInvoiceForm) => {
-    console.log("onSubmit", data);
     sendForm(data);
   };
-  const { control, handleSubmit, setValue, reset, watch, trigger } = useForm<UploadInvoiceForm>({
-    defaultValues
-  });
-  const { fields } = useFieldArray({
-    control,
-    name: "pas"
-  });
 
-  const pasCodes = fields.map((field) => `PA-${field.info.id}`);
-  const formValues = useWatch({ control });
-
-  console.log("FORM VALUES", formValues);
-
-  function getTotalInfoValue(data: PA[]): number {
-    return data.reduce((total, pa) => total + pa.info.value, 0);
-  }
-  const totalPreAuthorized = getTotalInfoValue(fields);
-
-  useEffect(() => {
-    if (preauthorizeds && preauthorizeds.length > 0) {
-      const newDefaultValues = createDefaultValues(preauthorizeds);
-      setDefaultValues(newDefaultValues);
-      reset(newDefaultValues);
-    }
-  }, [preauthorizeds, reset]);
-
-  function getPendingInvoiceValue(): number {
-    const currentInvoiceTotal = formValues?.pas
-      ? formValues?.pas.reduce((total: number, pa: any) => {
-          if (pa.invoice.pdfFile?.file) {
-            return total + Number(pa.invoice.value);
-          }
-          return total;
-        }, 0)
-      : 0;
-    return totalPreAuthorized - currentInvoiceTotal;
-  }
-
-  const pendingInvoiceValue = formValues?.pas ? getPendingInvoiceValue() : 0;
-
-  const currentInvoice = watch(`pas.${selectedTab}.invoice`);
-  const currentInfo = watch(`pas.${selectedTab}.info`);
-
-  function handleOnChangeDocument(type: "pdfFile" | "xmlFile", fileToSave: any) {
+  // Handle document changes
+  const handleOnChangeDocument = (type: "pdfFile" | "xmlFile", fileToSave: any) => {
     const { file: rawFile } = fileToSave;
     if (rawFile) {
       const fileSizeInMB = rawFile.size / (1024 * 1024);
@@ -164,15 +143,52 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
       setValue(`pas.${selectedTab}.invoice.${type}.file`, rawFile);
       trigger(`pas.${selectedTab}.invoice.${type}`);
     }
-  }
+  };
+
   const handleOnDeleteDocument = (type: "pdfFile" | "xmlFile") => {
     setValue(`pas.${selectedTab}.invoice.${type}.file`, undefined);
     trigger(`pas.${selectedTab}.invoice.${type}`);
   };
 
+  // Calculate pending invoice value
+  const getPendingInvoiceValue = (): number => {
+    const currentInvoiceTotal =
+      formValues?.pas?.reduce((total: number, pa: any) => {
+        if (pa.invoice.pdfFile?.file) {
+          return total + Number(pa.invoice.value);
+        }
+        return total;
+      }, 0) ?? 0;
+    return totalPreAuthorized - currentInvoiceTotal;
+  };
+
+  const pendingInvoiceValue = formValues?.pas ? getPendingInvoiceValue() : 0;
+
+  useEffect(() => {
+    if (!isInitialized) {
+      getPreauthorized();
+      setIsInitialized(true);
+    }
+  }, [isInitialized]);
+
+  useEffect(() => {
+    if (preauthorizeds && preauthorizeds.length > 0) {
+      const newDefaultValues = createDefaultValues(preauthorizeds);
+      setDefaultValues(newDefaultValues);
+      reset(newDefaultValues);
+    }
+  }, [preauthorizeds, reset]);
+
+  const currentInvoice = watch(`pas.${selectedTab}.invoice`);
+  const currentInfo = watch(`pas.${selectedTab}.info`);
+  const currentErrors = errors ? errors?.pas?.[selectedTab] : undefined;
+
+  const isConfirmDisabled = pendingInvoiceValue !== 0;
+
   if (isLoading || preauthorizeds.length === 0) {
     return <Skeleton active loading={isLoading} />;
   }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex vertical gap={24} style={{ paddingBottom: 24 }}>
@@ -199,8 +215,8 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
         <Flex vertical gap={16}>
           <Flex gap={16}>
             <InputForm
-              key={`info.id-${selectedTab}`}
-              nameInput={`pas.${selectedTab}.info.id`}
+              key={`info.idAuthorization-${selectedTab}`}
+              nameInput={`pas.${selectedTab}.info.idAuthorization`}
               placeholder="Id"
               control={control}
               error={undefined}
@@ -251,7 +267,7 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
               placeholder="Id Factura"
               nameInput={`pas.${selectedTab}.invoice.id`}
               control={control}
-              error={undefined}
+              error={currentErrors?.invoice?.id}
               titleInput="Id Factura"
             />
             <InputDateForm
@@ -259,7 +275,7 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
               titleInput="Fecha"
               nameInput={`pas.${selectedTab}.invoice.date`}
               control={control}
-              error={undefined}
+              error={(currentErrors?.invoice?.date as FieldError) ?? undefined}
             />
             <InputForm
               key={`invoice.value-${selectedTab}`}
@@ -292,7 +308,7 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
         </Flex>
       </Flex>
       <FooterButtons
-        isConfirmDisabled={pendingInvoiceValue !== 0}
+        isConfirmDisabled={isConfirmDisabled}
         titleConfirm="Cargar facturas"
         onClose={onClose}
         handleOk={handleSubmit(onSubmit)}

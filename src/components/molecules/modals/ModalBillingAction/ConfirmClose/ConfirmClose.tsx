@@ -20,20 +20,22 @@ const ConfirmClose = ({ setSelectedView, onClose, totalValue, idTR, messageApi }
     try {
       setIsLoading(true);
       const response = await getAceptBilling(idTR);
-      console.log(response);
+      console.log("aceptBilling", response);
       if (response) {
         messageApi?.open({
           type: "success",
-          content: "Se aceptó el cierre correctamente"
+          content: "Se aceptó el cierre correctamente",
+          duration: 3
         });
-        onClose();
       }
     } catch (error) {
       messageApi?.open({
         type: "error",
-        content: "Hubo un problema, vuelve a intentarlo"
+        content: "Hubo un problema, vuelve a intentarlo",
+        duration: 3
       });
     } finally {
+      onClose();
       setIsLoading(false);
     }
   };

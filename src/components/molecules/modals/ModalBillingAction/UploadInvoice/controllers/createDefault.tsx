@@ -3,8 +3,8 @@ import { Invoice, PA, PreAutorizationInfo, UploadInvoiceForm } from "./uploadinv
 
 // Valor por defecto para un objeto de tipo `Invoice`
 const defaultInvoice: Invoice = {
-  id: 0,
-  date: dayjs(), // Fecha actual como valor por defecto
+  id: "",
+  date: null, // Fecha actual como valor por defecto
   value: 0,
   pdfFile: undefined,
   xmlFile: undefined

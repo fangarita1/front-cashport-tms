@@ -2,8 +2,8 @@ import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocume
 import { Dayjs } from "dayjs";
 
 export interface Invoice {
-  id: number;
-  date: Dayjs;
+  id?: string;
+  date?: Dayjs | null;
   value: number;
   pdfFile?: FileObject;
   xmlFile?: FileObject;
