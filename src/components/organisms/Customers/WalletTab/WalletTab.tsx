@@ -78,12 +78,6 @@ export const WalletTab = () => {
     }
   }, [data]);
 
-  useEffect(() => {
-   console.log(filters);
-   
-  }, [filters]);
-
-
   const handleisGenerateActionOpen = () => {
     setisGenerateActionOpen(!isGenerateActionOpen);
     mutate(`/invoice/client/${clientId}/project/${projectId}`);
