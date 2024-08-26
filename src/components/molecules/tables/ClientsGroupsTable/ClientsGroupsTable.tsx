@@ -10,6 +10,11 @@ import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
 
 import "./ClientsGroupsTable.scss";
 import { ModalChangeStatus } from "../../modals/ModalChangeStatus/ModalChangeStatus";
+import { useDebounce } from "@/hooks/useDeabouce";
+import UiSearchInput from "@/components/ui/search-input/search-input";
+import GenericCascaderFilter, {
+  FilterOption
+} from "@/components/atoms/Filters/GeneralFilter/GeneralFilter";
 
 const { Text, Link } = Typography;
 
@@ -29,6 +34,13 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<any>([]);
   const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState({
+    clients: [] as string[],
+    subscribers: [] as string[],
+    status: "all" as "all" | "active" | "inactive"
+  });
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   useEffect(() => {
     const handleResize = () => {
@@ -44,17 +56,12 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     setIsOpenModal(true);
   };
 
-  const selectedFilters = {
-    clients: [] as any,
-    subscribers: [] as any,
-    status: "all" as "all" | "active" | "inactive"
-  };
-
   const { data, loading, deleteSelectedGroups, changeGroupsState } = useClientsGroups({
     page,
-    clients: selectedFilters.clients,
-    subscribers: selectedFilters.subscribers,
-    activeUsers: selectedFilters.status
+    clients: filters.clients,
+    subscribers: filters.subscribers,
+    activeUsers: filters.status,
+    searchQuery: debouncedSearchQuery
   });
 
   function handleSeeGroupDetails(groupId: number) {
@@ -116,6 +123,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
       title: "Nombre Grupo",
       dataIndex: "group_name",
       key: "group_name",
+      sorter: (a, b) => a.group_name.localeCompare(b.group_name),
       render: (text, row) => (
         <Link onClick={() => handleSeeGroupDetails(row.id)} underline>
           {text}
@@ -126,24 +134,28 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
       title: "Clientes",
       dataIndex: "clients_count",
       key: "clients_count",
+      sorter: (a, b) => (a.clients?.length || 0) - (b.clients?.length || 0),
       render: (clients, row) => <Text>{row?.clients?.length}</Text>
     },
     {
       title: "Suscritos",
       key: "subcribers",
       dataIndex: "subcribers",
+      sorter: (a, b) => (a.subscribers || 0) - (b.subscribers || 0),
       render: (text) => <Text>{text}</Text>
     },
     {
       title: "Ship To",
       key: "shipto_count",
       dataIndex: "shipto_count",
+      sorter: (a, b) => (a.shipto_count || 0) - (b.shipto_count || 0),
       render: (text) => <Text>{text}</Text>
     },
     {
       title: "Estado",
       key: "active",
       dataIndex: "active",
+      sorter: (a, b) => (a.active === b.active ? 0 : a.active ? -1 : 1),
       render: (_, { active }) => (
         <>
           {active ? (
@@ -182,10 +194,42 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     }
   ];
 
+  const getFilters = async (): Promise<FilterOption[]> => {
+    return [
+      { id: "status", name: "Estado" }
+    ];
+  };
+
+  const apiCallbacks = {
+    status: async () => {
+      return [
+        { id: "active", name: "Activo" },
+        { id: "inactive", name: "Inactivo" }
+      ];
+    }
+  };
+  const handleFilterChange = (filteredData: { [key: string]: string[] }) => {
+    setFilters({
+      clients: filteredData.clients || [],
+      subscribers: filteredData.subscribers || [],
+      status:
+        ((filteredData.status && filteredData.status[0]) as "all" | "active" | "inactive") || "all"
+    });
+  };
+
   return (
     <main className="mainClientsGroupsTable">
       <Flex justify="space-between" className="mainClientsGroupsTable_header">
         <Flex gap={"1.75rem"}>
+          <UiSearchInput
+            placeholder="Buscar grupos de clientes"
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <GenericCascaderFilter
+            getFilters={getFilters}
+            apiCallbacks={apiCallbacks}
+            onFilterChange={handleFilterChange}
+          />
           <DotsDropdown items={items} />
         </Flex>
         <Button

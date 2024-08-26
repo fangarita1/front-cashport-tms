@@ -22,6 +22,12 @@ import redirectModal from "@/components/molecules/modals/redirectModal/RedirectM
 import useStore from "@/lib/hook/useStore";
 import { STORAGE_TOKEN } from "@/utils/constants/globalConstants";
 import "./ClientsViewTable.scss";
+import { useDebounce } from "@/hooks/useDeabouce";
+import UiSearchInput from "@/components/ui/search-input/search-input";
+import {
+  FilterPortfolio,
+  SelectedFilters
+} from "@/components/atoms/Filters/FilterPortfolio/FilterPortfolio";
 
 const { Text } = Typography;
 
@@ -31,10 +37,14 @@ export const ClientsViewTable = () => {
   const [tableData, setTableData] = useState<IClientsPortfolio[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const loader = useRef(null);
-
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const project = useStore(useAppStore, (projects) => projects.selectedProject);
   const ID = project?.ID;
-
+  const [filters, setFilters] = useState<SelectedFilters>({
+    holding: [],
+    clientGroup: []
+  });
   useEffect(() => {
     setIsComponentLoading(false);
   }, []);
@@ -51,20 +61,33 @@ export const ClientsViewTable = () => {
     loadingId: 0
   });
 
-  const { data, loading } = usePortfolios({ page: page });
+  const { data, loading, error } = usePortfolios({
+    page: page,
+    searchQuery: debouncedSearchQuery,
+    holding: filters.holding,
+    client_group:   filters.clientGroup
+  });
 
   useEffect(() => {
     if (data?.data?.clientsPortfolio) {
       setTableData((prevData) => [...prevData, ...data.data.clientsPortfolio]);
-      setHasMore(data.data.clientsPortfolio.length > 0);
+      setHasMore(data.data.clientsPortfolio.length > 449);
+    } else if (data?.status === 200 && data?.message === "no rows") {
+      setHasMore(false);
     }
   }, [data]);
 
+  useEffect(() => {
+    setPage(1);
+    setTableData([]);
+    setHasMore(true);
+  }, [debouncedSearchQuery, filters]);
+
   const loadMoreData = useCallback(() => {
-    if (!loading && hasMore) {
+    if (!loading && hasMore && !error) {
       setPage((prevPage) => prevPage + 1);
     }
-  }, [loading, hasMore]);
+  }, [loading, hasMore, error]);
 
   useEffect(() => {
     const options = {
@@ -74,21 +97,23 @@ export const ClientsViewTable = () => {
     };
 
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
+      if (entry.isIntersecting && !loading) {
         loadMoreData();
       }
     }, options);
 
-    if (loader.current) {
-      observer.observe(loader.current);
+    const currentLoader = loader.current;
+
+    if (currentLoader) {
+      observer.observe(currentLoader);
     }
 
     return () => {
-      if (loader.current) {
-        observer.unobserve(loader.current);
+      if (currentLoader) {
+        observer.unobserve(currentLoader);
       }
     };
-  }, [loadMoreData]);
+  }, [loadMoreData, loading]);
 
   const columns: TableProps<IClientsPortfolio>["columns"] = [
     {
@@ -100,7 +125,8 @@ export const ClientsViewTable = () => {
           <Text className="text">{row.client_name}</Text>
         </Link>
       ),
-      width: "20%"
+      width: "20%",
+      sorter: (a, b) => a.client_name.localeCompare(b.client_name)
     },
     {
       align: "right",
@@ -108,7 +134,8 @@ export const ClientsViewTable = () => {
       dataIndex: "total_portfolio",
       key: "total_portfolio",
       render: (text) => <Text>{formatMoney(text)}</Text>,
-      width: "10%"
+      width: "10%",
+      sorter: (a, b) => a.total_portfolio - b.total_portfolio
     },
     {
       align: "right",
@@ -116,7 +143,8 @@ export const ClientsViewTable = () => {
       dataIndex: "past_due_ammount",
       key: "past_due_ammount",
       render: (text) => <Text>{formatMoney(text)}</Text>,
-      width: "10%"
+      width: "10%",
+      sorter: (a, b) => a.past_due_ammount - b.past_due_ammount
     },
     {
       align: "right",
@@ -124,7 +152,8 @@ export const ClientsViewTable = () => {
       key: "budget_ammount",
       dataIndex: "budget_ammount",
       render: (text) => <Text>{formatMoney(text)}</Text>,
-      width: "10%"
+      width: "10%",
+      sorter: (a, b) => a.budget_ammount - b.budget_ammount
     },
     {
       align: "right",
@@ -153,13 +182,15 @@ export const ClientsViewTable = () => {
       title: "Saldos",
       key: "total_balances",
       dataIndex: "total_balances",
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => a.total_balances - b.total_balances
     },
     {
       title: "Holding",
       key: "holding_name",
       dataIndex: "holding_name",
-      render: (text) => <Text className="text">{text}</Text>
+      render: (text) => <Text className="text">{text}</Text>,
+      sorter: (a, b) => a.holding_name?.localeCompare(b.holding_name)
     },
     {
       title: "",
@@ -184,12 +215,18 @@ export const ClientsViewTable = () => {
       )
     }
   ];
+  const handelSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPage(1);
+    setSearchQuery(e.target.value);
+  };
 
   return (
     <main className="mainClientsTable">
       <div>
         <Flex justify="space-between" className="mainClientsTable_header">
           <Flex gap={"10px"}>
+            <UiSearchInput placeholder="Buscar clientes" onChange={(e) => handelSearch(e)} />
+            <FilterPortfolio setSelectedFilters={setFilters} />
             <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
           </Flex>
         </Flex>
@@ -258,7 +295,7 @@ export const ClientsViewTable = () => {
         </Row>
       </div>
       <Table
-        loading={loading}
+        loading={loading && page === 1}
         scroll={{ x: 1350 }}
         columns={columns as TableProps<any>["columns"]}
         dataSource={tableData.map((data) => ({ ...data, key: data.client_id }))}
@@ -272,7 +309,12 @@ export const ClientsViewTable = () => {
       />
       {hasMore && !loading && (
         <div ref={loader} style={{ textAlign: "center", padding: "20px" }}>
-          <Spin />
+          {loading && page > 1 && <Spin />}
+        </div>
+      )}
+      {!hasMore && !loading && tableData.length > 0 && (
+        <div style={{ textAlign: "center", padding: "20px" }}>
+          <Text>No hay más datos para cargar</Text>
         </div>
       )}
     </main>

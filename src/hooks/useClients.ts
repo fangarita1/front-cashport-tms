@@ -14,6 +14,7 @@ interface PropsUseClients {
   radication_type: number[];
   status: number[];
   messageApi?: any;
+  searchQuery: string;
 }
 
 export const useClients = ({
@@ -30,12 +31,12 @@ export const useClients = ({
   const cityQuery = city.length > 0 ? `&city=${city.join(",")}` : "";
   const riskQuery = risk.length > 0 ? `&risk=${risk.join(",")}` : "";
   const paymentConditionQuery =
-  payment_condition && payment_condition.length > 0
-    ? `&payment_condition=${payment_condition}`
-    : "";
+    payment_condition && payment_condition.length > 0
+      ? `&payment_condition=${payment_condition}`
+      : "";
   const radicationTypeQuery =
     radication_type.length > 0 ? `&radication_type=${radication_type.join(",")}` : "";
-    const statusQuery = status && status.length > 0 ? `&status=${status}` : "";
+  const statusQuery = status && status.length > 0 ? `&status=${status}` : "";
 
   const pathKey = `/client/project/${idProject}?page=${page}${holdingQuery}${cityQuery}${riskQuery}${paymentConditionQuery}${radicationTypeQuery}${statusQuery}`;
 
@@ -54,7 +55,8 @@ export const useClientsTable = ({
   risk,
   payment_condition,
   radication_type,
-  status
+  status,
+  searchQuery
 }: PropsUseClients): {
   data: { data: IClient[]; message: string; pagination: Pagination };
   isLoading: boolean;
@@ -67,10 +69,13 @@ export const useClientsTable = ({
     payment_condition && payment_condition.length > 0
       ? `&payment_condition=${payment_condition}`
       : "";
+  const searchQueryParam = searchQuery
+    ? `&searchQuery=${encodeURIComponent(searchQuery.toLowerCase().trim())}`
+    : "";
   const radicationTypeQuery =
     radication_type.length > 0 ? `&radication_type=${radication_type.join(",")}` : "";
   const statusQuery = status && status.length > 0 ? `&status=${status}` : "";
-  const pathKey = `/client/project/${idProject}?page=${page}${holdingQuery}${cityQuery}${riskQuery}${paymentConditionQuery}${radicationTypeQuery}${statusQuery}`;
+  const pathKey = `/client/project/${idProject}?page=${page}${holdingQuery}${cityQuery}${riskQuery}${paymentConditionQuery}${radicationTypeQuery}${statusQuery}${searchQueryParam}`;
   const { data, error, isLoading } = useSWR<{
     data: IClient[];
     message: string;

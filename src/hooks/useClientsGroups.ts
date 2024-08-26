@@ -6,27 +6,37 @@ import { changeGroupState, deleteGroups } from "@/services/groupClients/groupCli
 
 interface Props {
   page?: number;
-  clients?: any[];
-  subscribers?: any[];
+  clients?: string[];
+  subscribers?: string[];
   activeUsers?: "all" | "active" | "inactive";
   noLimit?: boolean;
+  searchQuery?: string;
 }
 
-export const useClientsGroups = ({ page, clients, subscribers, activeUsers, noLimit }: Props) => {
+export const useClientsGroups = ({
+  page,
+  clients,
+  subscribers,
+  activeUsers,
+  noLimit,
+  searchQuery
+}: Props) => {
   const { ID: projectId } = useAppStore((state) => state.selectedProject);
 
-  const clientsQuery = (clients?.length ?? 0) > 0 ? `&zone=${clients?.join(",")}` : "";
-  const subsQuery = (subscribers?.length ?? 0) > 0 ? `&rol=${subscribers?.join(",")}` : "";
-
+  const clientsQuery = clients && clients.length > 0 ? `&clients=${clients.join(",")}` : "";
+  const subsQuery =
+    subscribers && subscribers.length > 0 ? `&subscribers=${subscribers.join(",")}` : "";
   const statusQuery =
     activeUsers === "active" || activeUsers === "inactive"
-      ? `&active=${activeUsers === "active" ? 1 : 0}`
+      ? `&status=${activeUsers === "active" ? 1 : 0}`
       : "";
-
   const pageQuery = page ? `&page=${page}` : "";
   const limitQuery = noLimit ? "&noLimit=true" : "";
+  const searchQueryParam = searchQuery
+    ? `&searchQuery=${encodeURIComponent(searchQuery.toLowerCase().trim())}`
+    : "";
 
-  const pathKey = `/group-client/?project_id=${projectId}${pageQuery}${clientsQuery}${subsQuery}${statusQuery}${limitQuery}`;
+  const pathKey = `/group-client/?project_id=${projectId}${pageQuery}${clientsQuery}${subsQuery}${statusQuery}${limitQuery}${searchQueryParam}`;
 
   const { data, error, isLoading, mutate } = useSWR<IClientsGroupsFull>(pathKey, fetcher, {});
 
