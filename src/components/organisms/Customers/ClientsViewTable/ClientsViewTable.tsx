@@ -71,7 +71,7 @@ export const ClientsViewTable = () => {
   useEffect(() => {
     if (data?.data?.clientsPortfolio) {
       setTableData((prevData) => [...prevData, ...data.data.clientsPortfolio]);
-      setHasMore(data.data.clientsPortfolio.length > 0);
+      setHasMore(data.data.clientsPortfolio.length > 449);
     } else if (data?.status === 200 && data?.message === "no rows") {
       setHasMore(false);
     }

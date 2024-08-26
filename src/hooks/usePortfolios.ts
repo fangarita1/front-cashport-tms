@@ -13,7 +13,7 @@ interface Props {
 
 export const usePortfolios = ({
   page = 1,
-  limit = 200,
+  limit = 450,
   holding,
   searchQuery,
   client_group
