@@ -345,11 +345,13 @@ export const shortenFileName = (fileName: string, maxChars: number = 10): string
  * @param {number|string} num - El número a formatear, puede ser un número o una cadena.
  * @returns {string} El número formateado como una cadena.
  */
-export function formatNumber(num: number | string) {
+export function formatNumber(num: number | string, decimals = 0) {
   const parsedNum = typeof num === "string" ? parseFloat(num) : num;
 
-  const roundedNum = Math.round(parsedNum);
+  const entireNumber = Math.floor(parsedNum);
+  const formattedThousands = entireNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  const rest = (parsedNum - entireNumber);
 
   // Convertir el número a una cadena y usar el método replace para añadir separadores de miles
-  return roundedNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return decimals ? `${formattedThousands},${Math.floor(Math.pow(10, decimals) * rest)}` : formattedThousands;
 }
