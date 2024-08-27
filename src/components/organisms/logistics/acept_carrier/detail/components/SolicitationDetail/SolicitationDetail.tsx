@@ -1,9 +1,7 @@
 "use client";
 import { Col, Flex } from "antd";
-import TravelData from "../TravelData/TravelData";
 import AditionalInfo from "../AditionalInfo/AditionalInfo";
 import Materials from "../Materials/Materials";
-import { ProviderDetail } from "@/types/acept_carrier/acept_carrier";
 import styles from "./solicitationDetail.module.scss";
 import {
   ICarrierRequestContacts,
@@ -11,7 +9,6 @@ import {
   IMaterial
 } from "@/types/logistics/schema";
 import { Dispatch, SetStateAction } from "react";
-import Persons from "../Persons/Persons";
 import { RouteMap } from "@/components/organisms/logistics/orders/DetailsOrderView/components/RouteMap/RouteMap";
 import { SummaryData } from "@/components/organisms/logistics/orders/DetailsOrderView/components/SummaryData/SummaryData";
 import dayjs from "dayjs";
