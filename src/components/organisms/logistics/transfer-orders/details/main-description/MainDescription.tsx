@@ -1,7 +1,7 @@
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { FC, useEffect, useRef } from "react";
-import styles from './mainDescription.module.scss';
+import styles from "./mainDescription.module.scss";
 import { ConfigProvider, Dropdown, Timeline, Typography } from "antd";
 import { CaretDown, Shuffle, WarningCircle } from "phosphor-react";
 import { MenuProps } from "antd/lib";
@@ -13,32 +13,32 @@ import { formatMoney } from "@/utils/utils";
 const Text = Typography;
 
 const mapStyles = {
-  width: '100%',
-  height: '100%',
-  borderRadius: '16px',
+  width: "100%",
+  height: "100%",
+  borderRadius: "16px"
 };
 
-const items: MenuProps['items'] = [
+const items: MenuProps["items"] = [
   {
-    key: '1',
-    label: 'Cargando',
+    key: "1",
+    label: "Cargando"
   },
   {
-    key: '2',
-    label: 'En curso',
+    key: "2",
+    label: "En curso"
   },
   {
-    key: '3',
-    label: 'Descargando',
+    key: "3",
+    label: "Descargando"
   },
   {
-    key: '4',
-    label: 'Detenido',
+    key: "4",
+    label: "Detenido"
   },
   {
-    key: '5',
-    label: 'Stand by',
-  },
+    key: "5",
+    label: "Stand by"
+  }
 ];
 
 interface IMainDescriptionProps {
@@ -48,21 +48,24 @@ interface IMainDescriptionProps {
 export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
 
-  const mapsAccessToken = 'pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA';
+  const mapsAccessToken =
+    "pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA";
 
   const getState = (stateId: string) => {
     let getState = TransferOrdersState.find((f) => f.id === stateId);
     if (!getState) {
-      getState = TransferOrdersState.find((f) => f.id === 'd33e062f-51a5-457e-946e-a45cbbffbf95');
+      getState = TransferOrdersState.find((f) => f.id === "d33e062f-51a5-457e-946e-a45cbbffbf95");
     }
-    
+
     return (
       <div className={styles.trackStateContainer}>
-        <Text className={styles.trackState} style={{ backgroundColor: getState?.bgColor }}>{getState?.name}</Text>
+        <Text className={styles.trackState} style={{ backgroundColor: getState?.bgColor }}>
+          {getState?.name}
+        </Text>
         <CaretDown size={16} />
       </div>
-    )
-  }
+    );
+  };
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -73,27 +76,23 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
       style: "mapbox://styles/mapbox/streets-v12",
       center: { lon: -74.07231699675322, lat: 4.66336863727521 },
       zoom: 12,
-      attributionControl: false,
+      attributionControl: false
     });
 
     map.on("style.load", () => {
       const compassControl = new mapboxgl.NavigationControl({
-        showCompass: true,
+        showCompass: true
       });
       map.addControl(compassControl, "top-right");
 
-      new mapboxgl.Marker()
-        .setLngLat([-77.634865, 0.823004])
-        .addTo(map);
+      new mapboxgl.Marker().setLngLat([-77.634865, 0.823004]).addTo(map);
 
-      new mapboxgl.Marker()
-        .setLngLat([-74.232675, 11.117206])
-        .addTo(map);
+      new mapboxgl.Marker().setLngLat([-74.232675, 11.117206]).addTo(map);
 
       const datajson: GeoJSON.Feature = {
-        type: 'Feature',
+        type: "Feature",
         geometry: transferRequest?.geometry.geometry,
-        properties: {},
+        properties: {}
       };
 
       map.addSource("route", {
@@ -107,12 +106,12 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
         source: "route",
         layout: {
           "line-join": "round",
-          "line-cap": "round",
+          "line-cap": "round"
         },
         paint: {
           "line-color": "#3FB1CE",
-          "line-width": 6,
-        },
+          "line-width": 6
+        }
       });
 
       const bounds = transferRequest?.geometry.geometry.coordinates.reduce(
@@ -122,7 +121,7 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
 
       // Zoom out to fit the route within the map view
       map.fitBounds(bounds, {
-        padding: 50,
+        padding: 50
       });
       // map.setCenter([-77.634865, 0.823004]);
       // map.setZoom(14)
@@ -133,53 +132,63 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
     // };
   }, [transferRequest]);
 
-  const timeLineItems = transferRequest ? transferRequest?.timeLine.map((item, index) => {
-    if (index === 0 || index + 1 === transferRequest?.timeLine.length) {
-      return {
-        dot: <div className={styles.bigDot}><div className={styles.littleDot} /></div>,
-        children: (
-          <div className={styles.dotChildrenContainer}>
-            <div className={styles.leftChildren}>
-              <Text className={styles.dotTitle}>{item.description}</Text>
-              <Text className={styles.dotText}>{item.location}</Text>
+  const timeLineItems = transferRequest
+    ? transferRequest?.timeLine.map((item, index) => {
+        if (index === 0 || index + 1 === transferRequest?.timeLine.length) {
+          return {
+            dot: (
+              <div className={styles.bigDot}>
+                <div className={styles.littleDot} />
+              </div>
+            ),
+            children: (
+              <div className={styles.dotChildrenContainer}>
+                <div className={styles.leftChildren}>
+                  <Text className={styles.dotTitle}>{item.description}</Text>
+                  <Text className={styles.dotText}>{item.location}</Text>
+                </div>
+                <Text className={styles.dotText}>
+                  {dayjs(item.end_date).format("DD MMMM YYYY - HH:mm")}
+                </Text>
+              </div>
+            )
+          };
+        }
+        return {
+          dot: <div className={styles.dot} />,
+          children: (
+            <div className={styles.dotChildrenContainer}>
+              <div className={styles.leftChildren}>
+                <Text className={styles.dotTitle}>{item.description}</Text>
+                <Text className={styles.dotText}>{item.location}</Text>
+              </div>
+              <Text className={styles.dotText}>
+                {dayjs(item.end_date).format("DD MMMM YYYY - HH:mm")}
+              </Text>
             </div>
-            <Text className={styles.dotText}>{dayjs(item.end_date).format('DD MMMM YYYY - HH:mm')}</Text>
-          </div>
-        ),
-      }
-    }
-    return {
-      dot: <div className={styles.dot} />,
-      children: (
-        <div className={styles.dotChildrenContainer}>
-          <div className={styles.leftChildren}>
-            <Text className={styles.dotTitle}>{item.description}</Text>
-            <Text className={styles.dotText}>{item.location}</Text>
-          </div>
-          <Text className={styles.dotText}>{dayjs(item.end_date).format('DD MMMM YYYY - HH:mm')}</Text>
-        </div>
-      ),
-    }
-  }) : []
+          )
+        };
+      })
+    : [];
 
   const date = new Date();
-  date.setSeconds(transferRequest ? transferRequest.geometry.duration : 0);
+  date.setSeconds(transferRequest?.geometry?.duration ?? 0);
 
   return (
     <div className={styles.mainDescription}>
       <div className={styles.trackContainer}>
         <div className={styles.trackComponent}>
           <div className={styles.trackTitleContainer}>
-            <Text className={styles.trackTitle}>ID  - {transferRequest?.id}</Text>
+            <Text className={styles.trackTitle}>ID - {transferRequest?.id}</Text>
             <ConfigProvider
               theme={{
                 components: {
                   Dropdown: {
-                    colorBgElevated: '#FFFFFF',
-                    controlItemBgActive: '#CBE71E',
-                    controlItemBgActiveHover: '#CBE71E'
+                    colorBgElevated: "#FFFFFF",
+                    controlItemBgActive: "#CBE71E",
+                    controlItemBgActiveHover: "#CBE71E"
                   }
-                },
+                }
               }}
             >
               <Dropdown
@@ -187,10 +196,10 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
                 menu={{
                   items,
                   selectable: true,
-                  defaultSelectedKeys: [transferRequest?.status_id || ''],
+                  defaultSelectedKeys: [transferRequest?.status_id || ""]
                 }}
               >
-                {getState(transferRequest?.status_id || '')}
+                {getState(transferRequest?.status_id || "")}
               </Dropdown>
             </ConfigProvider>
           </div>
@@ -199,15 +208,13 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
               theme={{
                 components: {
                   Timeline: {
-                    tailColor: '#CBE71E',
-                    dotBg: 'none'
-                  },
-                },
+                    tailColor: "#CBE71E",
+                    dotBg: "none"
+                  }
+                }
               }}
             >
-              <Timeline
-                items={timeLineItems || []}
-              />
+              <Timeline items={timeLineItems || []} />
             </ConfigProvider>
           </div>
         </div>
@@ -218,18 +225,26 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
               <Shuffle size={16} />
             </div>
             <div className={styles.titleCardContainer}>
-              <Text className={styles.subtitleCard}>{formatMoney(transferRequest?.total_fare) || '-'}</Text>
+              <Text className={styles.subtitleCard}>
+                {formatMoney(transferRequest?.total_fare) || "-"}
+              </Text>
               <WarningCircle size={13} />
             </div>
           </div>
           <div className={styles.card}>
             <Text className={styles.titleCard}>Sobrecosto</Text>
-            <Text className={styles.subtitleCard}>{transferRequest && transferRequest.surcharge ? formatMoney(transferRequest?.surcharge) : '-'}</Text>
+            <Text className={styles.subtitleCard}>
+              {transferRequest && transferRequest.surcharge
+                ? formatMoney(transferRequest?.surcharge)
+                : "-"}
+            </Text>
           </div>
           {transferRequest && transferRequest.geometry.distance && (
             <div className={styles.card}>
               <Text className={styles.titleCard}>Distancia</Text>
-              <Text className={styles.subtitleCard}>{parseFloat((transferRequest.geometry.distance/1000).toFixed(2))} Km</Text>
+              <Text className={styles.subtitleCard}>
+                {parseFloat((transferRequest.geometry.distance / 1000).toFixed(2))} Km
+              </Text>
             </div>
           )}
           {transferRequest && transferRequest.geometry.duration && (
@@ -244,5 +259,5 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
         <div ref={mapContainerRef} style={mapStyles} />
       </div>
     </div>
-  )
-}
+  );
+};
