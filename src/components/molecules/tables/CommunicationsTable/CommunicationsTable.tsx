@@ -154,7 +154,7 @@ export const CommunicationsTable = ({
         <Table
           className="communicationsTable"
           columns={columns}
-          dataSource={communications.map((data) => ({ ...data, key: data.id }))}
+          dataSource={communications?.map((data) => ({ ...data, key: data.id }))}
           rowSelection={rowSelection}
           pagination={{
             current: page,
