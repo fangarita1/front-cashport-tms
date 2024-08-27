@@ -43,6 +43,8 @@ export default function TabTransferOrder({ orderRequest }: PricingStepOneProps) 
               timetravel={timetravel}
               needLiftingOrigin={orderRequest?.start_freight_equipment}
               needLiftingDestination={orderRequest?.end_freight_equipment}
+              freight_destination_time={orderRequest?.freight_destination_time}
+              freight_origin_time={orderRequest?.freight_origin_time}
               travelTypeDesc={orderRequest?.service_type_desc ?? ""}
               vehiclesSuggested={orderRequest?.transfer_order_vehicles}
               start_location={orderRequest?.start_location?.description ?? ""}
