@@ -161,16 +161,6 @@ export default function AditionalInfo({
                   Instrucciones especiales
                 </p>
                 {specialInstructions && <p className={styles.bodyReg}>{specialInstructions}</p>}
-                <Flex style={{ marginTop: "1rem" }}>
-                  <UploadDocumentButton
-                    key={1}
-                    title={"Nombre del documento"}
-                    isMandatory
-                    aditionalData={1}
-                    setFiles={() => {}}
-                    disabled
-                  />
-                </Flex>
               </Col>
             </Row>
           </Flex>

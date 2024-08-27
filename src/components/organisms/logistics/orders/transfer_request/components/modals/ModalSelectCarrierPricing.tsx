@@ -235,8 +235,10 @@ export default function ModalSelectCarrierPricing({
                 {new Date(journey?.start_date || 0).toLocaleDateString("es", {
                   day: "2-digit",
                   month: "short",
-                  year: "numeric"
-                })}
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit"
+                })?.replace(",", " -")}
               </Text>
               <div className={styles.stBox}>
                 {serviceType(journey?.id_type_service || 0).icon}

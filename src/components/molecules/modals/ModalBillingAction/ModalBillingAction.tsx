@@ -6,13 +6,8 @@ import ActionList from "./ActionList/ActionList";
 import ConfirmClose from "./ConfirmClose/ConfirmClose";
 import UploadInvoice from "./UploadInvoice/UploadInvoice";
 import { MessageInstance } from "antd/es/message/interface";
+import { BillingStatusEnum } from "@/types/logistics/schema";
 
-export enum BillingStatusEnum {
-  PorAceptar = "Por aceptar",
-  Aceptadas = "Aceptadas",
-  Preautorizado = "Preautorizado",
-  Facturado = "Facturado"
-}
 export enum ViewEnum {
   "SELECT" = "SELECT",
   "CONFIRM_CLOSE" = "CONFIRM_CLOSE",

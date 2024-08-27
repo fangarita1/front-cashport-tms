@@ -1,17 +1,26 @@
 "use client";
 import { Col, Flex, Row, Table, TableProps, Typography } from "antd";
 import { ICarrierRequestContacts } from "@/types/logistics/schema";
-import styles from "./materials.module.scss";
+import styles from "./persons.module.scss";
 
+interface IContact {
+  contact_number: string;
+  cost_center_desc: string;
+  id: number;
+  id_cost_center: number;
+  id_psl: number;
+  id_user: number;
+  name: string;
+  psl_desc: string;
+}
 interface PersonsDataProps {
-  persons: ICarrierRequestContacts[];
+  persons: IContact[];
 }
 
 const { Text } = Typography;
 
 export default function Persons({ persons }: PersonsDataProps) {
-
-  const columns: TableProps<ICarrierRequestContacts>["columns"] = [
+  const columns: TableProps<IContact>["columns"] = [
     {
       title: "Nombre",
       dataIndex: "name",
@@ -25,35 +34,35 @@ export default function Persons({ persons }: PersonsDataProps) {
       dataIndex: "contact_number",
       key: "phone",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => a.contact_number - b.contact_number,
+      sorter: (a, b) => Number(a.contact_number) - Number(b.contact_number),
       showSorterTooltip: false
     },
     {
       title: "PSL",
-      dataIndex: "id_psl",
+      dataIndex: "psl_desc",
       key: "psl",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => a.id_psl - b.id_psl,
+      sorter: (a, b) => a.psl_desc.localeCompare(b.psl_desc),
       showSorterTooltip: false
     },
     {
       title: "CC",
-      dataIndex: "id_contact",
+      dataIndex: "cost_center_desc",
       key: "typeid",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => a.id_contact - b.id_contact,
+      sorter: (a, b) => a.cost_center_desc.localeCompare(b.cost_center_desc),
       showSorterTooltip: false
     }
   ];
 
   return (
-    <Flex style={{ marginTop: "1rem" }} className={styles.wrapper}>
+    <Flex>
       <Row style={{ width: "100%" }}>
         <Col span={24}>
-          <Flex vertical className={styles.table} style={{ width: "99%", marginTop: "2rem" }}>
-            <h3>Personas</h3>
+          <Flex vertical style={{ width: "100%" }}>
+            <p className={styles.title}>Personas</p>
             <Row>
-              <Col span={24} style={{ paddingTop: "1rem" }}>
+              <Col span={24} style={{ paddingTop: "0.5rem" }}>
                 <Table
                   style={{ width: "100%" }}
                   columns={columns}

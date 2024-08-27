@@ -32,7 +32,11 @@ export const InputDateForm = ({
 }: InputDateFormProps) => {
   return (
     <Flex vertical className={`datePickerContainer ${className}`}>
-      {!hiddenTitle && <p className="input-date-custom-title">{titleInput}</p>}
+      {!hiddenTitle && (
+        <Typography.Title className="input-date-custom-title" level={5}>
+          {titleInput}
+        </Typography.Title>
+      )}
       <Controller
         name={nameInput}
         rules={{ required: true, ...validationRules }}
@@ -51,7 +55,7 @@ export const InputDateForm = ({
         )}
       />
       {error && (
-        <Typography.Text className="textError" type="danger">
+        <Typography.Text className="textError">
           {error?.message || `${titleInput} es obligatorio *`}
         </Typography.Text>
       )}

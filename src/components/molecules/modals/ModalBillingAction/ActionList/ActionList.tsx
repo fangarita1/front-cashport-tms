@@ -1,8 +1,9 @@
 import { Dispatch, SetStateAction } from "react";
-import { BillingStatusEnum, ViewEnum } from "../ModalBillingAction";
+import { ViewEnum } from "../ModalBillingAction";
 import { Flex } from "antd";
 import { ButtonGenerateAction } from "@/components/atoms/ButtonGenerateAction/ButtonGenerateAction";
 import { MapPinLine, Receipt } from "phosphor-react";
+import { BillingStatusEnum } from "@/types/logistics/schema";
 
 const ActionList = ({
   setSelectedView,

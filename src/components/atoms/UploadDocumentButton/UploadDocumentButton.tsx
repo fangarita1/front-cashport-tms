@@ -6,7 +6,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 export interface FileObject {
   docReference?: string;
-  file: File | undefined;
+  file?: File;
   aditionalData?: any;
 }
 interface infoObject {

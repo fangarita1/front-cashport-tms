@@ -19,6 +19,7 @@ import { NoveltyTable } from "@/components/molecules/tables/NoveltyTable/Novelty
 import { number } from "yup";
 import Link from "next/link";
 import ModalBillingAction from "@/components/molecules/modals/ModalBillingAction/ModalBillingAction";
+import { BillingStatusEnum } from "@/types/logistics/schema";
 
 const Text = Typography;
 
@@ -31,26 +32,33 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
   const [key, setKey] = useState<number | null>(null);
   const [billingData, setBillingData] = useState<any>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [billingStatus, setBillingStatus] = useState<BillingStatusEnum | null>(null);
+
+  const canMakeAnAction = billingStatus
+    ? billingStatus == BillingStatusEnum.PorAceptar ||
+      billingStatus == BillingStatusEnum.Preautorizado
+    : false;
   const [messageApi, contextHolder] = message.useMessage();
   console.log("billingData", billingData);
-  useEffect(() => {
-    const fetchBillingDetails = async () => {
-      try {
-        const response = await getBillingDetailsById(params.id);
+  const fetchBillingDetails = async () => {
+    try {
+      const response = await getBillingDetailsById(params.id);
+      console.log(response);
+      if (response && response.journeys) {
+        setBillingData(response);
+        setBillingStatus(response.billing.statusDesc);
         console.log(response);
-        if (response && response.journeys) {
-          setBillingData(response);
-          console.log(response);
-        } else {
-          console.error("No se encontraron detalles de facturación.");
-        }
-      } catch (error) {
-        console.error("Error fetching billing details:", error);
+      } else {
+        console.error("No se encontraron detalles de facturación.");
       }
-    };
+    } catch (error) {
+      console.error("Error fetching billing details:", error);
+    }
+  };
+  useEffect(() => {
+    if (params.id && !isModalVisible) fetchBillingDetails();
+  }, [params.id, isModalVisible]);
 
-    fetchBillingDetails();
-  }, [params.id]);
   const TitleComponent = ({ state, id }: { state: string; id: number }) => (
     <div className={styles.header}>
       <div className={styles.stateContainer}>
@@ -137,16 +145,17 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
             <CaretLeft size={20} weight="bold" />
             <div>Detalle de TR {params.id}</div>
           </Link>
-
-          <Button
-            className={styles.actionBtn}
-            type="text"
-            size="large"
-            onClick={() => setIsModalVisible(true)}
-          >
-            <DotsThree size={24} />
-            <Text className={styles.text}>Generar acción</Text>
-          </Button>
+          {canMakeAnAction && (
+            <Button
+              className={styles.actionBtn}
+              type="text"
+              size="large"
+              onClick={() => setIsModalVisible(true)}
+            >
+              <DotsThree size={24} />
+              <Text className={styles.text}>Generar acción</Text>
+            </Button>
+          )}
         </div>
 
         <Flex className={styles.boxContainer} vertical gap={16}>

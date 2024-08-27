@@ -1309,7 +1309,7 @@ export interface ILocationByGrouplocationWithDefaults {
 
 export interface IEntityType {
   id: number;
-  description : string;
+  description: string;
   active: string;
   created_at: Date;
   created_by: string;
@@ -1974,7 +1974,7 @@ export interface CarriersPricing {
 export interface ITransferOrder {
   id: number;
   id_service_type: string;
-  service_type_desc: string;
+  service_type_desc: TripType;
   id_user: number;
   user: string | null | undefined;
   id_start_location: number;
@@ -3316,6 +3316,13 @@ export interface IBillingsRequestList {
   billings: IBillingRequestsListDetail[];
 }
 
+export enum BillingStatusEnum {
+  PorAceptar = "Por aceptar",
+  Aceptadas = "Aceptadas",
+  Preautorizado = "Preautorizado",
+  Facturado = "Facturado"
+}
+
 export interface IBillingRequestsListDetail {
   id: number;
   idTransferRequest: number;
@@ -3327,7 +3334,7 @@ export interface IBillingRequestsListDetail {
   endDate: string;
   serviceTypes: string;
   fare: number;
-  status_desc: string;
+  statusDesc: BillingStatusEnum;
   id_status: string;
   status_color: string;
 }
@@ -3420,7 +3427,7 @@ export interface PreAuthorizationRequestData {
   createdBy: string;
 }
 export interface IBillingRequestDetail extends IBillingRequestsListDetail {
-  statusDesc: string; // Sobrescribe 'status_desc'
+  statusDesc: BillingStatusEnum; // Sobrescribe 'status_desc'
   idStatus: string; // Sobrescribe 'id_status'
   statusColor: string; // Sobrescribe 'status_color'
 }
@@ -3463,4 +3470,10 @@ export interface IFormGeneralUser {
   birth_date: Date;
   photo?: string;
   company_id?: string;
+}
+
+export enum TripType {
+  Personas = "Personas",
+  Carga = "Carga",
+  Izaje = "Izaje"
 }
