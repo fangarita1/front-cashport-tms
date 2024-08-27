@@ -30,19 +30,11 @@ export interface MaterialImage {
   url_archive?: string,
   file?: FileObject
 }
-export type MaterialData = IMaterial & { documents?: ICertificates[] }  & {images?: MaterialImage[]};
-
+export type MaterialData = IMaterial & {images?: MaterialImage[]};
 
 export const dataToProjectFormData = (data: any): any => {
 
   if (!data) return {};
-
-  const documents = data.documents?.map((doc: any) => ({
-    file: {
-      name: doc.url_archive.split("/").pop(),
-      url: doc.url_archive
-    }
-  }));
 
   const images = data.images?.map((image: any) => {
     const fileData = image.data;
@@ -73,18 +65,15 @@ export const dataToProjectFormData = (data: any): any => {
       modified_by: data.created_by,
       icon: data.icon,
       restriction: data.restriction,
-      code_sku:data.code_sku,
-      material_transport:data.material_transport
+      code_sku:data.code_sku
     },
     images: images,
-    files: documents,
     IS_ACTIVE: data.active
   };
 };
 
 export const _onSubmit = (
   data: any,
-  selectedFiles: DocumentCompleteType[],
   imageFiles: { docReference: string; file: File }[],
   setImageError: (value: SetStateAction<boolean>) => void,
   setloading: (value: SetStateAction<boolean>) => void,
@@ -93,18 +82,12 @@ export const _onSubmit = (
   setloading(true);
   try {
     setImageError(false);
-    onSubmitForm({...data, images: imageFiles, files: selectedFiles});
+    onSubmitForm({...data, images: imageFiles});
   } catch (error) {
     console.warn({ error });
   } finally{
     setloading(false);
   }
-};
-
-export const effectFunction = (
-  setValue: UseFormSetValue<IFormProject>
-) => {
-
 };
 
 export const validationButtonText = (statusForm: "create" | "edit" | "review") => {

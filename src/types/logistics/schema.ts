@@ -1367,7 +1367,6 @@ export interface IMaterial {
 
 export interface IFormMaterial {
   general: IMaterial;
-  files?: DocumentCompleteType[];
   images: CustomFile[];
 }
 

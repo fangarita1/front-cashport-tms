@@ -5,8 +5,7 @@ import {
   Flex,
   Form,
   Row,
-  Typography,
-  Image
+  Typography
 } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
@@ -23,21 +22,17 @@ import {
   validationButtonText,
   MaterialFormTabProps
 } from "./materialFormTab.mapper";
-import {  IFormMaterial, IMaterialType, IMaterialTransportType, IMaterialTransportByMaterial, CustomFile } from "@/types/logistics/schema";
-import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
+import {  IFormMaterial, IMaterialType, IMaterialTransportType, IMaterialTransportByMaterial, IMaterialTypeByMaterial } from "@/types/logistics/schema";
 
 import {
-  FileObject,
-  UploadDocumentButton
+  FileObject
 } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 
 import useSWR from "swr";
 import { getDocumentsByEntityType } from "@/services/logistics/certificates";
-import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
-import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
 import { getAllMaterialType, getAllMaterialTransportType } from "@/services/logistics/materials";
+
 import Link from "next/link";
-import dayjs from "dayjs";
 import SubmitFormButton from "@/components/atoms/SubmitFormButton/SubmitFormButton";
 import MultiSelectTags from "@/components/ui/multi-select-tags/MultiSelectTags";
 
@@ -60,27 +55,29 @@ export const MaterialFormTab = ({
 }: MaterialFormTabProps) => {
 
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
-  const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
-    "2",
-    getDocumentsByEntityType
-  );
 
   const { data: materialsTypesData, isLoading: loadingMaterialsTypes } = useSWR(
     "materialtypes",
-    getAllMaterialType
+    getAllMaterialType,
+    { revalidateIfStale:false,
+      revalidateOnFocus:false,
+      revalidateOnReconnect:false
+    }
   );
 
   const { data: materialsTransportTypesData, isLoading: loadingMaterialsTransportTypes } = useSWR(
     "materialtransporttypes",
-    getAllMaterialTransportType
+    getAllMaterialTransportType,
+    { revalidateIfStale:false,
+      revalidateOnFocus:false,
+      revalidateOnReconnect:false
+    }
   );
 
-  const [imageFile, setImageFile] = useState<any | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
+  //const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
 
   interface ImageState {
     file: File | undefined;
@@ -114,66 +111,6 @@ export const MaterialFormTab = ({
   };
 
   const isSubmitButtonEnabled = isFormCompleted() && !loading;
-  /*archivos*/
-
-  const [files, setFiles] = useState<(FileObject & { aditionalData?: any })[]>([]);
-
-  useEffect(() => {
-    if (Array.isArray(documentsType)) {
-      const isFirstLoad = data?.documents?.length && selectedFiles.length === 0;
-      if (isFirstLoad) {
-        const docsWithLink =
-          documentsType
-            ?.filter((f) => data.documents?.find((d) => d.id_document_type === f.id))
-            .map((f) => ({
-              ...f,
-              file: undefined,
-              link: data.documents?.find((d) => d.id_document_type === f.id)?.url_archive,
-              expirationDate: dayjs(
-                data.documents?.find((d) => d.id_document_type === f.id)?.expiration_date
-              )
-            })) || [];
-        setSelectedFiles(docsWithLink);
-      } else {
-        const documentsFiltered = documentsType?.filter(
-          (f) => !f?.optional || selectedFiles?.find((f2) => f2.id === f.id)
-        );
-        const docsWithFile = documentsFiltered.map((f) => {
-          const prevFile = selectedFiles.find((f2) => f2.id === f.id);
-          return {
-            ...f,
-            link: prevFile?.link || undefined,
-            file: prevFile?.link ? undefined : files.find((f2) => f2.aditionalData === f.id)?.file,
-            expirationDate: prevFile?.expirationDate
-          };
-        });
-        if (docsWithFile?.length) {
-          setSelectedFiles([...docsWithFile]);
-        } else {
-          setSelectedFiles([]);
-        }
-      }
-    }
-  }, [files, documentsType]);
-
-  useEffect(() => {
-    if (statusForm === "review"){
-      if (Array.isArray(documentsType)) {
-        const docsWithLink =
-          documentsType
-            ?.filter((f) => data?.documents?.find((d) => d.id_document_type === f.id))
-            .map((f) => ({
-              ...f,
-              file: undefined,
-              link: data?.documents?.find((d) => d.id_document_type === f.id)?.url_archive,
-              expirationDate: dayjs(
-                data?.documents?.find((d) => d.id_document_type === f.id)?.expiration_date
-              )
-            })) || [];
-        setSelectedFiles(docsWithLink);
-      }
-    }
-  }, [statusForm]);
 
   const convertToSelectOptions = (materialTypes: IMaterialType[]) => {
     if (!Array.isArray(materialTypes)) return [];
@@ -219,31 +156,6 @@ export const MaterialFormTab = ({
     return results;
   };
 
-  const handleChangeExpirationDate = (index: number, value: any) => {
-    setSelectedFiles((prevState: any[]) => {
-      const updatedFiles = [...prevState];
-      updatedFiles[index].expirationDate = value;
-      return updatedFiles;
-    });
-  };
-
-  const handleChange = (value: string[]) => {
-    const sf = documentsType?.filter((file) => value.includes(file.id.toString()));
-    if (sf) {
-      setSelectedFiles((prevState) => {
-        return sf.map((file) => {
-          const prevFile = prevState.find((f) => f.id === file.id);
-          return {
-            ...file,
-            file: prevFile?.link ? undefined : prevFile?.file,
-            link: prevFile?.link || undefined,
-            expirationDate: prevFile?.expirationDate
-          };
-        });
-      });
-    }
-  };
-
   const onSubmit = async (data: any) => {
 
     const hasImage = data.images.length > 0;
@@ -256,7 +168,6 @@ export const MaterialFormTab = ({
     setImages(Array(5).fill({ file: undefined }));
     _onSubmit(
       data,
-      selectedFiles,
       formImages,
       setImageError,
       setLoading,
@@ -467,11 +378,11 @@ export const MaterialFormTab = ({
                   Características
                 </Title>
                 <Row style={{ width: "100%", marginTop: "2rem" }}>
-                  <Col span={24}>
+                  <Col span={12}>
                     <Controller
                       name="general.material_transport"
                       control={control}
-                      rules={{ required: true }}
+                      rules={{ required: false }}
                       render={({ field }) => 
                         <MultiSelectTags
                           field={field}
@@ -481,15 +392,16 @@ export const MaterialFormTab = ({
                           defaultValue={convertToSelectOptionsTransportData((materialsTransportTypesData?.data.data as any) || [])}
                           options={convertToSelectOptionsTransport((materialsTransportTypesData?.data.data as any) || [])}
                           disabled={statusForm === "review"} 
+                          layout="vertical"
                         />
                       }
                     />
                   </Col>
-                  <Col span={24}>
+                  <Col span={12}>
                     <Controller
                       name="general.material_type"
                       control={control}
-                      rules={{ required: true }}
+                      rules={{ required: false }}
                       render={({ field }) => 
                         <MultiSelectTags
                           field={field}
@@ -499,6 +411,7 @@ export const MaterialFormTab = ({
                           defaultValue={convertToSelectOptionsData((materialsTypesData?.data.data as any) || [])}
                           options={convertToSelectOptions((materialsTypesData?.data.data as any) || [])}
                           disabled={statusForm === "review"} 
+                          layout="vertical"
                         />
                       }
                     />
@@ -508,7 +421,7 @@ export const MaterialFormTab = ({
           </Row>
 
           {["edit", "create"].includes(statusForm) && (
-            <Row justify={"end"}>
+            <Row justify={"end"} style={{marginTop:'2rem'}}>
               <SubmitFormButton
                 text={validationButtonText(statusForm)}
                 disabled={!isSubmitButtonEnabled}
@@ -525,7 +438,7 @@ export const MaterialFormTab = ({
         onActive={onActiveMaterial}
         onDesactivate={onDesactivateMaterial}
       />
-      <ModalDocuments
+      {/* <ModalDocuments
         isOpen={isOpenModalDocuments}
         mockFiles={selectedFiles}
         setFiles={setFiles}
@@ -535,7 +448,7 @@ export const MaterialFormTab = ({
         handleChange={handleChange}
         handleChangeExpirationDate={handleChangeExpirationDate}
         setSelectedFiles={setSelectedFiles}
-      />
+      /> */}
     </>
   );
 };

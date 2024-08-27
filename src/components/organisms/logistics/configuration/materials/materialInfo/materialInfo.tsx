@@ -23,7 +23,6 @@ export const MaterialInfoView = ({ params }: Props) => {
   const [statusForm, setStatusForm]= useState<StatusForm>("review")
   const { push } = useRouter();
 
-  console.log(params)
   const handleFormState = useCallback((newFormState:StatusForm) => {
     setStatusForm(newFormState);
   }, []);
@@ -43,7 +42,6 @@ export const MaterialInfoView = ({ params }: Props) => {
     try {
       const response = await updateMaterial(
         data.general,
-        data?.files as DocumentCompleteType[],
         data?.images as CustomFile[]
       );
       if (response.status === 200) {
@@ -101,6 +99,7 @@ export const MaterialInfoView = ({ params }: Props) => {
     }
   };
 
+  console.log(data)
   return (
     <>
       {contextHolder}

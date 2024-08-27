@@ -93,7 +93,6 @@ export const getMaterialById = async (id:string): Promise<IListData> => {
 
 export const createMaterialForm =( 
   data: IMaterial,
-  files: DocumentCompleteType[],
   formImages: CustomFile[]
 ) => {
   const form = new FormData();
@@ -109,8 +108,6 @@ export const createMaterialForm =(
     url_archive: file?.url_archive,
   }));
 
-  body.files = files;
-
   form.append("body", JSON.stringify(body));
 
   formImages.forEach((file: CustomFile, index: number) => {
@@ -121,24 +118,15 @@ export const createMaterialForm =(
     }
   });
 
-  files.forEach((file) => {
-    if (file.file) {
-      form.append(`file-for-${file.id}`, file.file);
-    } else {
-      console.warn(`File with id ${file.id} is undefined.`);
-    }
-  });
-
   return form
 }
 
 export const addMaterial = async (
   data: IMaterial,
-  files: DocumentCompleteType[],
   formImages: CustomFile[]
 ): Promise<AxiosResponse<any, any>> => {
   try {
-   const form = createMaterialForm(data, files, formImages)
+   const form = createMaterialForm(data, formImages)
     const response = await axios.post(`${config.API_HOST}/material/create`, form, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -153,11 +141,10 @@ export const addMaterial = async (
 };
 export const updateMaterial = async (
   data: IMaterial,
-  files: DocumentCompleteType[],
   formImages: CustomFile[]
 ): Promise<AxiosResponse<any, any>> => {
   try {
-    const form = createMaterialForm(data, files, formImages)
+    const form = createMaterialForm(data, formImages)
     const response = await axios.put(`${config.API_HOST}/material/update`, form, {
       headers: {
         "Content-Type": "multipart/form-data",
