@@ -449,8 +449,6 @@ export interface ICarrierRequestDetail {
   start_longitude: number;
   end_latitude: number;
   end_longitude: number;
-  volume: number;
-  weight: number;
   //geometry
   geometry: any;
   //datos de contacto!

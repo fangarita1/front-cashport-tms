@@ -107,6 +107,7 @@ import { getTravelDuration } from "@/utils/logistics/maps";
 import CustomTimeSelector from "@/components/molecules/logistics/HourPicker/HourPicker";
 import { formatNumber } from "@/utils/utils";
 import MaterialTableFooter from "./components/MaterialTableFooter/MaterialTableFooter";
+import AddRemoveButton from "../../acept_carrier/detail/components/VehicleAndDriverAsignation/components/AddRemoveButton/AddRemoveButton";
 
 const { Title, Text } = Typography;
 const { useToken } = theme;
@@ -1021,6 +1022,26 @@ export const CreateOrderView = () => {
     if (numericValue !== undefined && !isNaN(numericValue)) {
       handleCcPercentChange(numericValue, pslIndex, ccIndex);
     }
+  };
+
+  const handleDeletePsl = (currentPslIndex: number) => {
+    setDataPsl((prevData) => {
+      return prevData.filter((pv, index) => currentPslIndex !== index);
+    });
+  };
+
+  const handleDeleteCC = (currentPslIndex: number, currentCCIndex: number) => {
+    setDataPsl((prevData) => {
+      const newPsls = prevData.map((psl, pslindex) => {
+        if (pslindex === currentPslIndex) {
+          const filteredCostcenters = psl.costcenters.filter(
+            (_, ccindex) => currentCCIndex !== ccindex
+          );
+          return { ...psl, costcenters: filteredCostcenters };
+        } else return psl;
+      });
+      return newPsls;
+    });
   };
 
   const handleChangeExpirationDate = (index: number, value: any) => {
@@ -2072,7 +2093,10 @@ export const CreateOrderView = () => {
             {dataPsl.map((psl, pslIndex) => (
               <div
                 className="divdistance"
-                style={{ marginBottom: pslIndex + 1 === dataPsl.length ? 0 : "1rem" }}
+                style={{
+                  marginBottom: pslIndex + 1 === dataPsl.length ? 0 : "1rem",
+                  position: "relative"
+                }}
                 key={`PSL-${pslIndex}-${psl.key}`}
               >
                 <Row>
@@ -2180,8 +2204,23 @@ export const CreateOrderView = () => {
                     </Col>
                     <Col
                       span={8}
-                      style={{ display: "flex", justifyContent: "center", alignItems: "flex-end" }}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-evenly",
+                        alignItems: "flex-end"
+                      }}
                     >
+                      {ccIndex + 1 === psl.costcenters.length && psl.costcenters.length > 1 && (
+                        <Flex align="center" justify="center">
+                          <button
+                            key={`delete-cc-${ccIndex}`}
+                            onClick={() => handleDeleteCC(pslIndex, ccIndex)}
+                            className="btnTrash"
+                          >
+                            <Trash size={24} />
+                          </button>
+                        </Flex>
+                      )}
                       {ccIndex + 1 === psl.costcenters.length && (
                         <Flex align="center" justify="center">
                           <PlusCircle size={24} />
@@ -2196,6 +2235,16 @@ export const CreateOrderView = () => {
                     </Col>
                   </Row>
                 ))}
+                {pslIndex + 1 === dataPsl.length && dataPsl.length > 1 && (
+                  <div
+                    style={{ display: "flex", position: "absolute", top: "1rem", right: "1rem" }}
+                    key={`delete-psl-${pslIndex}`}
+                  >
+                    <button onClick={() => handleDeletePsl(pslIndex)} className="btnTrash">
+                      <Trash size={24} />
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
             <Row style={{ marginTop: "2rem" }}>

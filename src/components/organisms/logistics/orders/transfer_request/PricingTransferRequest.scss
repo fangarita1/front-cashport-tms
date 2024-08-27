@@ -632,4 +632,8 @@
             gap: 4px;
         }
     }
+    .sectionContainer {
+        border: 1px solid $dark-gray;
+        border-radius: 0.25rem;
+    }
 }

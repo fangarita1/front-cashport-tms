@@ -3,7 +3,7 @@ import mapboxgl from "mapbox-gl";
 import { getTravelDuration } from "./maps";
 
 interface UseMapboxHookProps {
-  mapsAccessToken: string;
+  mapsAccessToken?: string;
   geometry: any;
   start_longitude: number;
   start_latitude: number;
@@ -18,7 +18,7 @@ export const useMapbox = ({
   start_latitude,
   end_longitude,
   end_latitude,
-  mapsAccessToken,
+  mapsAccessToken = "pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA",
   centerMap
 }: UseMapboxHookProps) => {
   const origin = useRef<[number, number] | null>(null);
@@ -103,7 +103,7 @@ export const useMapbox = ({
     return () => {
       map.remove();
     };
-  }, [mapStyle, routeGeometry, origin, destination]);
+  }, [mapStyle, routeGeometry, origin, destination, centerMap]);
 
   return { routeGeometry, distance, timetravel, mapContainerRef };
 };

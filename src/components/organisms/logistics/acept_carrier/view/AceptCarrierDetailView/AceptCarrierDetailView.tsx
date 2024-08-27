@@ -24,6 +24,7 @@ import {
 import { Confirmation } from "../../detail/components/Confirmation/Confirmation";
 import { useMapbox } from "@/utils/logistics/useMapBox";
 import { CustomStepper } from "../../detail/components/Stepper/Stepper";
+import { getTravelDuration, getTravelFreightDuration } from "@/utils/logistics/maps";
 
 interface AceptCarrierDetailProps {
   params: { id: string };
@@ -55,7 +56,7 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
     end_longitude: carrier?.end_longitude ?? 0,
     end_latitude: carrier?.end_latitude ?? 0,
     geometry: carrier?.geometry,
-    centerMap: carrier?.id_service_type == 3,
+    centerMap: carrier?.id_service_type == 2,
     mapsAccessToken
   });
 
@@ -92,6 +93,7 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
         setDrivers(driversResult.data.data);
         const vehiclesResult = await getVehiclesByCarrierId(to?.id_carrier);
         setVehicles(vehiclesResult.data.data);
+        console.log("to", to);
         setCarrier(to);
         to.carrier_request_material_by_trip?.forEach(async (mat) => {
           mat?.material?.forEach(async (m) => {
@@ -159,7 +161,6 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
   };
 
   const handleReject = async () => {
-    console.log("handleReject", "id carrier", carrier?.id_carrier, "id", carrier?.id);
     try {
       setIsLoading(true);
       const res = await postCarrierReject(String(carrier?.id_carrier), String(carrier?.id));
@@ -199,7 +200,11 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
             service_type={carrier?.service_type}
             geometry={routeGeometry}
             distance={distance}
-            timetravel={timetravel}
+            timetravel={
+              carrier?.id_service_type !== 2
+                ? timetravel
+                : getTravelFreightDuration(carrier?.start_date, carrier?.end_date)
+            }
             mapContainerRef={mapContainerRef}
           />
         );
