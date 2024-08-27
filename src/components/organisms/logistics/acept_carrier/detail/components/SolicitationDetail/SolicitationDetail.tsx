@@ -14,6 +14,9 @@ import { Dispatch, SetStateAction } from "react";
 import Persons from "../Persons/Persons";
 import { RouteMap } from "@/components/organisms/logistics/orders/DetailsOrderView/components/RouteMap/RouteMap";
 import { SummaryData } from "@/components/organisms/logistics/orders/DetailsOrderView/components/SummaryData/SummaryData";
+import dayjs from "dayjs";
+import "dayjs/locale/es";
+dayjs.locale("es");
 
 
 interface SolicitationDetailProps {
@@ -51,8 +54,8 @@ export default function SolicitationDetail({
             routeGeometry={geometry}
             distance={distance}
             timetravel={timetravel}
-            weight={providerDetail?.weight}
-            volume={providerDetail?.volume}
+            weight={providerDetail?.carrier_request_material_by_trip?.reduce((acc, curr) => acc + curr.material[0].kg_weight, 0)}
+            volume={providerDetail?.carrier_request_material_by_trip?.reduce((acc, curr) => acc + curr.material[0].m3_volume, 0)}
             needLiftingOrigin={false}
             needLiftingDestination={false}
             travelTypeDesc={providerDetail?.service_type ?? ""}
@@ -60,10 +63,10 @@ export default function SolicitationDetail({
             end_location={providerDetail?.end_location?? "" }
             start_date_flexible={"Exacto"}
             end_date_flexible={"Exacto"}
-            start_date={providerDetail?.start_date?.split(" ")[0] ?? ""}
-            start_date_hour={providerDetail?.start_date?.split(" ")[1] ?? ""}
-            end_date={providerDetail?.end_date?.split(" ")[0] ?? ""}
-            end_date_hour={providerDetail?.end_date?.split(" ")[1] ?? ""}
+            start_date={dayjs(providerDetail?.start_date).format("YYYY-MM-DD")}
+            start_date_hour={dayjs(providerDetail?.start_date).format("HH:mm") ?? ""}
+            end_date={dayjs(providerDetail?.end_date).format("YYYY-MM-DD")}
+            end_date_hour={dayjs(providerDetail?.end_date).format("HH:mm") ?? ""}
           />
         </Col>
         <Col span={12} >

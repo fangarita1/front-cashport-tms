@@ -103,7 +103,7 @@ export const useMapbox = ({
     return () => {
       map.remove();
     };
-  }, [mapStyle, routeGeometry, origin, destination]);
+  }, [mapStyle, routeGeometry, origin, destination, centerMap]);
 
   return { routeGeometry, distance, timetravel, mapContainerRef };
 };

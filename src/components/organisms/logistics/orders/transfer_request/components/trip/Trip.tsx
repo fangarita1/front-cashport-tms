@@ -48,7 +48,6 @@ export default function Trip(props: TripProps) {
   const [persons, setPersons] = useState<ITransferOrderRequestContacts[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    console.log(newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
   const columnsVehiclesPerson: TableProps<ITransferOrderRequestContacts>["columns"] = [
