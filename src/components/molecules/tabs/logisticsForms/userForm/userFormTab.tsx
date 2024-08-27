@@ -39,9 +39,13 @@ export const UserFormTab = ({
 }: UserFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
 
-  const { data: rolesType, isLoading: isLoadingRoles } = useSWR("getAllRoles", getAllRoles );
+  const { data: rolesType, isLoading: isLoadingRoles, } = useSWR("getAllRoles", getAllRoles );
   const { data: carriersType, isLoading: isLoadingCarriers } = useSWR("getAllCarriers", getAllCarriers );
-  const { data: pslsType, isLoading: isLoadingPsls } = useSWR("getAllPsl", getAllPsl );
+  const { data: pslsType, isLoading: isLoadingPsls } = useSWR("getAllPsl", getAllPsl,{ 
+    revalidateIfStale:false,
+    revalidateOnFocus:false,
+    revalidateOnReconnect:false
+  } );
 
   const [imageFile, setImageFile] = useState<any | undefined>(undefined);
   const [loading, setLoading] = useState(false);
@@ -90,10 +94,8 @@ export const UserFormTab = ({
     }));
   };
 
-  const [psls, setPsls] = useState<ITransferOrderPsls[]>([]);
   const converPslstToSelectOptions = (pslTypes: ITransferOrderPsls[]) => {
     if (!Array.isArray(pslTypes)) return [];
-    //setPsls(pslTypes);
     return pslTypes?.map((pslType) => ({
       value: pslType.description,
       id: pslType.id
@@ -101,30 +103,26 @@ export const UserFormTab = ({
   };
 
   const [costCenters, setCostCenters] = useState<any[]>([]);
-  const filterPsl =(id_psl: number) => {
-    console.log(psls)
-    const psl = psls.filter((f)=> { return f.id = id_psl}).at(0) as ITransferOrderPsls;
-    console.log(psl)
-    const cc = psl.transfer_order_cost_center;
-    setCostCenters(convertCostCenterToSelectOptions(cc));
-  }
-  const convertCostCenterToSelectOptions = (costcenters: ITransferOrderCostCenter[]) => {
+
+  const convertCostCenterToSelectOptions = (costcenters: any[]) => {
     return costcenters?.map((costcenter) => ({
-      value: costcenter.cost_center_desc,
+      value: costcenter.description,
       id: costcenter.id,
     }));
   };
 
   useEffect(() => {
     const subscription = watch((data, {name, type}) =>{
-        console.log(data, name, type);
+        //console.log(data, name, type);
         if(name == 'general.psl_id'){
-          filterPsl(Number(data.general?.psl_id))
+          const psl = pslsType?.data.data.filter((f)=> { return f.id = Number(data.general?.psl_id)}).at(0);          
+          const cc = psl.cost_center;
+          setCostCenters(convertCostCenterToSelectOptions(cc));
         }
       }
     )
     return () => subscription.unsubscribe()
-  }, []);
+  }, [pslsType]);
 
   const onSubmit = (data: any) => {
 
@@ -323,7 +321,7 @@ export const UserFormTab = ({
                     />
                   </Flex>
                 </Col>
-                <Col span={8}>
+                <Col span={16}>
                   <Flex vertical className="selectButton">
                     <Title className="title" level={5}>
                       Centro de costos

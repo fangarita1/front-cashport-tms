@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import "../../../../../../styles/_variables_logistics.css";
 import "./createUser.scss";
 import { UserFormTab } from "@/components/molecules/tabs/logisticsForms/userForm/userFormTab";
-import { addLocation } from "@/services/logistics/locations";
+import { addUser } from "@/services/logistics/users";
 
 type Props = {
   params: {
@@ -19,16 +19,16 @@ export const CreateUserView = ({ params }: Props) => {
 
   const handleSubmit = async (data: any) => {
     try {
-        const response = await addLocation(
+        const response = await addUser(
           {...data}, 
-          data.files
+          data.logo
         );  
       if (response && response.status === 200) {
         messageApi.open({
           type: "success",
-          content: `La ubicación fue creada exitosamente.`
+          content: `El usuario fue creado exitosamente.`
         });
-        push(`/logistics/configuration/locations/${response.data.data.id}`);
+        push(`/logistics/configuration/users/${response.data.data.id}`);
       }
     } catch (error) {
       if (error instanceof Error) {

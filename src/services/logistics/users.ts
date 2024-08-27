@@ -74,7 +74,7 @@ export const getAllPsl = async (): Promise<IListData> => {
 
 export const getUserById = async (id: string): Promise<IListData> => {
   try {
-    const response: IListData = await axios.get(`${config.API_HOST}/User/${id}`, {
+    const response: IListData = await axios.get(`${config.API_HOST}/logistic-user/${id}`, {
       headers: {
         Accept: "application/json, text/plain, */*"
       }
@@ -87,8 +87,7 @@ export const getUserById = async (id: string): Promise<IListData> => {
 };
 export const createUserForm = (
   generalData: IFormGeneralUser,
-  logo: FileObject[],
-  files: DocumentCompleteType[]
+  logo: FileObject[]
 ) => {
   const form = new FormData();
   const body: any = generalData;
@@ -98,34 +97,19 @@ export const createUserForm = (
     uid: file?.file?.uid,
   })): undefined
 
-  const expiration = files.find(f=>!f.expirationDate && f.expiry);
-
-  if(expiration){
-    throw new Error(`El documento ${expiration.description} debe tener una fecha de vencimiento`);
-  }
-
-  body.files = files
   form.append("body", JSON.stringify({...body, rh: body.rhval as any}));
   logo && form.append("logo", logo[0].file as unknown as File);
 
-  files.forEach((file) => {
-    if (file.file) {
-      form.append(`file-for-${file.id}`, file.file);
-    } else {
-      console.warn(`File with id ${file.id} is undefined.`);
-    }
-  });
   return form
 }
 
 export const updateUser = async (
   generalData: IFormGeneralUser,
   logo: FileObject[],
-  files: DocumentCompleteType[]
 ): Promise<AxiosResponse<any, any>> => {
   try {
-    const form = createUserForm(generalData, logo, files)
-    const response = await axios.put(`${config.API_HOST}/User/update`, form, {
+    const form = createUserForm(generalData, logo)
+    const response = await axios.put(`${config.API_HOST}/logistic-user/update`, form, {
       headers: {
         Accept: "application/json, text/plain, */*"
       }
@@ -139,12 +123,11 @@ export const updateUser = async (
 
 export const addUser = async (
   generalData: IFormGeneralUser,
-  logo: FileObject[],
-  files: DocumentCompleteType[]
+  logo: FileObject[]
 ): Promise<AxiosResponse<any, any>> => {
   try {
-    const form = createUserForm(generalData, logo, files)
-    const response = await axios.post(`${config.API_HOST}/User/create`, form, {
+    const form = createUserForm(generalData, logo)
+    const response = await axios.post(`${config.API_HOST}/logistic-user/create`, form, {
       headers: {
         "content-type": "multipart/form-data",
         Accept: "application/json, text/plain, */*"
