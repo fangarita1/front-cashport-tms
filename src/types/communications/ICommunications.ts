@@ -81,3 +81,17 @@ export interface ICreateCommunication {
     };
   };
 }
+
+export interface ICommunication {
+  name: string;
+  id: number;
+  via: string;
+  reason: string;
+  frequency: string;
+  clients: number;
+  projectId: number;
+  rules: null;
+  created_at: string;
+  updated_at: string;
+  IS_DELETED: boolean;
+}

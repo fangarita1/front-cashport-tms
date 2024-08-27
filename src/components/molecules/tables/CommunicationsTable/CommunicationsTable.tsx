@@ -1,14 +1,16 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Flex, Table, TableProps, Typography, Spin } from "antd";
 import { Eye, Plus, Triangle } from "phosphor-react";
 
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
-import useScreenHeight from "@/components/hooks/useScreenHeight";
 import UiSearchInput from "@/components/ui/search-input";
 import UiFilterDropdown from "@/components/ui/ui-filter-dropdown";
 
 import "./communicationsTable.scss";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
+import { getAllCommunications } from "@/services/communications/communications";
+import { useAppStore } from "@/lib/store/store";
+import { ICommunication } from "@/types/communications/ICommunications";
 
 const { Text, Link } = Typography;
 
@@ -26,13 +28,23 @@ export const CommunicationsTable = ({
   setShowCommunicationDetails,
   onCreateCommunication
 }: PropsCommunicationsTable) => {
+  const [communications, setCommunications] = useState<ICommunication[]>([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<any>([]);
-  const height = useScreenHeight();
+  const { ID: projectId } = useAppStore((state) => state.selectedProject);
 
   const loading = false;
+
+  useEffect(() => {
+    const fetchCommunications = async () => {
+      const response = await getAllCommunications(projectId);
+      console.log("coms: ", response);
+      setCommunications(response.data);
+    };
+    fetchCommunications();
+  }, [projectId]);
 
   function handleSeeCommunicationDetails(communicationId: number) {
     setShowCommunicationDetails({ communicationId, active: true });
@@ -44,7 +56,7 @@ export const CommunicationsTable = ({
   };
 
   const rowSelection = {
-    columnWidth: 40,
+    columnWidth: 20,
     selectedRowKeys,
     onChange: onSelectChange
   };
@@ -68,10 +80,10 @@ export const CommunicationsTable = ({
     },
     {
       title: "Motivo",
-      dataIndex: "motive",
-      key: "motive",
+      dataIndex: "reason",
+      key: "reason",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => b.motive.localeCompare(a.motive),
+      sorter: (a, b) => b.reason.localeCompare(a.reason),
       showSorterTooltip: false
     },
     {
@@ -92,16 +104,16 @@ export const CommunicationsTable = ({
     },
     {
       title: "Cantidad clientes",
-      key: "clientsCount",
-      dataIndex: "clientsCount",
+      key: "clients",
+      dataIndex: "clients",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => b.clientsCount - a.clientsCount,
+      sorter: (a, b) => b.clients - a.clients,
       showSorterTooltip: false
     },
     {
       title: "",
       key: "seeProject",
-      width: 110,
+      width: 50,
       dataIndex: "",
       render: (_, row) => (
         <Button
@@ -142,14 +154,10 @@ export const CommunicationsTable = ({
         <Table
           className="communicationsTable"
           columns={columns}
-          dataSource={mockData.map((data) => ({ ...data, key: data.id }))}
+          dataSource={communications.map((data) => ({ ...data, key: data.id }))}
           rowSelection={rowSelection}
-          rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
-          virtual
-          scroll={{ y: height - 400, x: 100 }}
           pagination={{
             current: page,
-            pageSize: 25,
             showSizeChanger: false,
             position: ["none", "bottomRight"],
             onChange: onChangePage,
@@ -169,38 +177,3 @@ export const CommunicationsTable = ({
     </main>
   );
 };
-
-const mockData = [
-  {
-    id: 1,
-    name: "Comunicación 1",
-    motive: "Circularizacion",
-    via: "Correo electronico",
-    frequency: "El segundo viernes",
-    clientsCount: 10
-  },
-  {
-    id: 2,
-    name: "Comunicación 2",
-    motive: "Conciliacion",
-    via: "Correo electronico",
-    frequency: "El segundo viernes",
-    clientsCount: 14
-  },
-  {
-    id: 3,
-    name: "Comunicación 3",
-    motive: "Ajustes contables",
-    via: "Correo electronico",
-    frequency: "El segundo viernes",
-    clientsCount: 23
-  },
-  {
-    id: 4,
-    name: "Comunicación 4",
-    motive: "Cierre de novedades",
-    via: "Correo electronico",
-    frequency: "El segundo viernes",
-    clientsCount: 45
-  }
-];

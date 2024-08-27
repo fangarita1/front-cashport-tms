@@ -2,11 +2,21 @@ import config from "@/config";
 import { MessageType } from "@/context/MessageContext";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 import {
+  ICommunication,
   ICommunicationForm,
   ICreateCommunication,
   IPeriodicityModalForm
 } from "@/types/communications/ICommunications";
-import { API } from "@/utils/api/api";
+import { GenericResponse } from "@/types/global/IGlobal";
+import { API, getIdToken } from "@/utils/api/api";
+import axios from "axios";
+
+export const getAllCommunications = async (projectId: number) => {
+  const response: GenericResponse<ICommunication[]> = await API.get(
+    `${config.API_HOST}/comunication/get_comunications?projectId=${projectId}`
+  );
+  return response;
+};
 
 export const getForwardEvents = async (): Promise<string[]> => {
   const response: string[] = await API.get(`${config.API_HOST}/comunication/get_events`);
@@ -43,6 +53,7 @@ export const createCommunication = async ({
   projectId,
   showMessage
 }: ICreateCommunicationProps) => {
+  const token = await getIdToken();
   const now = new Date();
   const timeString = now.toLocaleString("es-CO");
   const modelData: ICreateCommunication = {
@@ -58,11 +69,11 @@ export const createCommunication = async ({
           init_date: selectedPeriodicity?.init_date.toISOString().split("T")[0],
           end_date: selectedPeriodicity?.end_date.toISOString().split("T")[0],
           repeat: selectedPeriodicity?.frequency_number,
-          frequency: selectedPeriodicity?.frequency?.value,
+          frequency: selectedPeriodicity?.frequency?.value.toLowerCase(),
           days:
             data.trigger.type === "evento"
               ? data.trigger?.settings?.days
-              : selectedPeriodicity?.days?.map((day) => day.value),
+              : selectedPeriodicity?.days?.map((day) => day.value.toLowerCase()),
           values: data.trigger.settings.values?.map((value) => value.value),
           event_type: data.trigger.settings.event_type?.value
         }
@@ -82,7 +93,7 @@ export const createCommunication = async ({
         time: timeString,
         message: data.template.message,
         // Where does title should come from?
-        title: data.template?.title || "",
+        title: data.template?.title || "titulo",
         subject: data.template.subject,
         files: data.template.files.map((file) => file.value)
       }
@@ -90,12 +101,18 @@ export const createCommunication = async ({
   };
 
   try {
-    const response: string = await API.post(`${config.API_HOST}/comunication/create`, modelData);
+    const response: any = await axios.post(`${config.API_HOST}/comunication/create`, modelData, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token}`
+      }
+    });
     showMessage("success", response);
 
     return response;
   } catch (error) {
+    console.error("Error creating communication", error);
     showMessage("error", "Ocurrió un error al crear la comunicación");
-    return Promise.reject(error);
+    return error;
   }
 };
