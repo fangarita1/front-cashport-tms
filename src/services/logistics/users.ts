@@ -1,16 +1,76 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { API } from "@/utils/api/api";
+import { getIdToken } from "@/utils/api/api";
 import { IFormGeneralUser, IListData } from "@/types/logistics/schema";
 import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { GenericResponse } from "@/types/global/IGlobal";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 
-export const getAllUsers = async ({ providerId }: { providerId: number }): Promise<any[]> => {
-  const response: GenericResponse<any[]> = await API.get(`/User/provider/${providerId}`);
-  if (response.success) return response.data;
-  throw response;
+export const getAllUsers = async (): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const response: IListData = await axios.get(`${config.API_HOST}/logistic-user/all`, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error getAllUsers: ", error);
+    return error as any;
+  }
 };
+
+export const getAllRoles = async (): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const response: IListData = await axios.get(`${config.API_HOST}/logistic-user/all/roles`, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error getAllRoles: ", error);
+    return error as any;
+  }
+};
+
+export const getAllCarriers = async (): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const response: IListData = await axios.get(`${config.API_HOST}/logistic-user/all/carriers`, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error getAllCarriers: ", error);
+    return error as any;
+  }
+};
+
+export const getAllPsl = async (): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const response: IListData = await axios.get(`${config.API_HOST}/logistic-user/all/psl`, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error getAllPsl: ", error);
+    return error as any;
+  }
+};
+
 
 export const getUserById = async (id: string): Promise<IListData> => {
   try {

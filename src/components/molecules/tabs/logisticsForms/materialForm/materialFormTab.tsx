@@ -122,10 +122,10 @@ export const MaterialFormTab = ({
 
   const convertToSelectOptionsData = (materialTypes: IMaterialType[]) => {
     if (materialTypes.length == 0) return [];
-    let results:OptionType[] = []
+    const results:OptionType[] = []
     data?.material_type.forEach(matty => {
-      let matfilter = materialTypes?.filter(f => f.id == matty.id_material_type);
-      let option: OptionType={
+      const matfilter = materialTypes?.filter(f => f.id == matty.id_material_type);
+      const option: OptionType={
         value: matfilter[0].id,
         label: matfilter[0].description
       }
@@ -144,10 +144,10 @@ export const MaterialFormTab = ({
 
   const convertToSelectOptionsTransportData = (materialTransportTypes: IMaterialTransportType[]) => {
     if (materialTransportTypes.length == 0) return [];
-    let results:OptionType[] = []
+    const results:OptionType[] = []
     data?.material_transport.forEach(mattr => {
-      let matfilter = materialTransportTypes?.filter(f => f.id == mattr.id_material_transport_type);
-      let option: OptionType={
+      const matfilter = materialTransportTypes?.filter(f => f.id == mattr.id_material_transport_type);
+      const option: OptionType={
         value: matfilter[0].id,
         label: matfilter[0].description
       }

@@ -3477,3 +3477,28 @@ export enum TripType {
   Carga = "Carga",
   Izaje = "Izaje"
 }
+
+/**
+ * Exposes all fields present in location as a typescript
+ * interface.
+ */
+export interface IUser {
+  id: number;
+  email: string;
+  user_name: string;
+  phone: string;
+  rol_id: string;
+  carrier_id: string;
+  psl_id: string;
+  cost_center_id: string;
+  position: string;
+  active: string;
+  photo?: string;
+  firebaseguid?: string;
+  carrier: any;
+}
+
+export interface IFormUser {
+  general: IUser;
+  logo?: FileObject[];
+}

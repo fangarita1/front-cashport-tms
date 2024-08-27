@@ -2,33 +2,33 @@
 import { message } from "antd";
 import { useRouter } from "next/navigation";
 import "../../../../../../styles/_variables_logistics.css";
-import "./createMaterial.scss";
-import { MaterialFormTab } from "@/components/molecules/tabs/logisticsForms/materialForm/materialFormTab";
-import { addMaterial } from "@/services/logistics/materials";
+import "./createUser.scss";
+import { UserFormTab } from "@/components/molecules/tabs/logisticsForms/userForm/userFormTab";
+import { addLocation } from "@/services/logistics/locations";
 
 type Props = {
   params: {
     id: string;
-    materialId: string;
+    userId: string;
   };
 };
 
-export const CreateMaterialView = ({ params }: Props) => {
+export const CreateUserView = ({ params }: Props) => {
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleSubmit = async (data: any) => {
     try {
-        const response = await addMaterial(
+        const response = await addLocation(
           {...data}, 
-          data.images
+          data.files
         );  
       if (response && response.status === 200) {
         messageApi.open({
           type: "success",
-          content: `El material fue creada exitosamente.`
+          content: `La ubicación fue creada exitosamente.`
         });
-        push(`/logistics/configuration/materials/${response.data.data.id}`);
+        push(`/logistics/configuration/locations/${response.data.data.id}`);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -47,7 +47,7 @@ export const CreateMaterialView = ({ params }: Props) => {
   return (
     <>
       {contextHolder}
-      <MaterialFormTab
+      <UserFormTab
         onSubmitForm={handleSubmit}
         statusForm={"create"}
         params={params}
