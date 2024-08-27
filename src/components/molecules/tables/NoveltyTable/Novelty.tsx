@@ -71,9 +71,13 @@ export const NoveltyTable: FC<INoveltyTableProps> = ({ novelties, openDrawer, ha
       render: (text: string) => <Text className='row-text'>{text}</Text>,
     },
     {
-      title: 'Soportes',
-      dataIndex: 'support',
-      render: (text: string) => <Text className='row-text id clicked'>{text}</Text>,
+      title: "Soportes",
+      dataIndex: "support",
+      render: (url: string) => (
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Ver soportes
+        </a>
+      ),
     },
     {
       title: 'Valor',
@@ -95,18 +99,15 @@ export const NoveltyTable: FC<INoveltyTableProps> = ({ novelties, openDrawer, ha
       ),
     },
     {
-      title: '',
-      dataIndex: 'id',
-      render: (text) => (
-        <div className='btnContainer'>
+      title: "",
+      dataIndex: "support",
+      render: (url) => (
+        <div className="btnContainer">
           <Button
             className="btn"
             type="text"
             size="middle"
-            onClick={() => {
-              handleShowDetails(text)
-              openDrawer()
-            }}
+            onClick={() => window.open(url, "_blank")}
             icon={<Eye size={24} />}
           />
         </div>
@@ -114,19 +115,22 @@ export const NoveltyTable: FC<INoveltyTableProps> = ({ novelties, openDrawer, ha
     },
   ];
   
-  return <Table
-    columns={columns}
-    pagination={false}
-    dataSource={novelties.map((novelty) => {
-      return {
-        key: novelty.id,
-        id: String(novelty.id),
-        noveltyType: novelty.novelty_type,
-        observation: novelty.observation,
-        support: 'Ver soportes',
-        value: formatMoney(novelty.value),
-        state: novelty.status,
-      }
-    })}
-  />
+  return (
+    <Table
+      columns={columns}
+      pagination={false}
+      dataSource={novelties.map((novelty) => {
+        const firstEvidenceUrl = novelty.evidences.length > 0 ? novelty.evidences[0].url : "#";
+        return {
+          key: novelty.id,
+          id: String(novelty.id),
+          noveltyType: novelty.novelty_type,
+          observation: novelty.observation,
+          support: firstEvidenceUrl,
+          value: formatMoney(novelty.value),
+          state: novelty.status,
+        };
+      })}
+    />
+  );
 };
