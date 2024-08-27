@@ -283,3 +283,13 @@
     display: flex !important;
     align-items: center !important;
 }
+
+.btnTrash{
+    padding: 6px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    border: none;
+    background: none !important;
+    cursor: pointer;
+}
