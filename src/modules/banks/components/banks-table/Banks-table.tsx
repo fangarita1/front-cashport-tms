@@ -11,19 +11,14 @@ const { Text } = Typography;
 interface PropsBanksTable {
   clientsByStatus: any[];
   setSelectedRows: Dispatch<SetStateAction<ISingleBank[] | undefined>>;
-  setShowBankDetail: Dispatch<
-    SetStateAction<{
-      isOpen: boolean;
-      clientId: number;
-    }>
-  >;
+  handleOpenPaymentDetail?: (payment: any) => void;
   bankStatusId: number;
 }
 
 export const BanksTable = ({
   clientsByStatus,
   setSelectedRows,
-  setShowBankDetail,
+  handleOpenPaymentDetail,
   bankStatusId
 }: PropsBanksTable) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -124,10 +119,18 @@ export const BanksTable = ({
       key: "seeProject",
       width: "40px",
       dataIndex: "",
-      render: () => (
+      render: (_, recoder) => (
         <Flex gap={"0.5rem"}>
           <Button className="buttonSeeEvidence" icon={<Receipt size={"1.3rem"} />} />
-          <Button className="buttonSeeClient" icon={<Eye size={"1.3rem"} />} />
+          <Button
+            className="buttonSeeClient"
+            icon={
+              <Eye
+                size={"1.3rem"}
+                onClick={() => handleOpenPaymentDetail && handleOpenPaymentDetail(recoder.id)}
+              />
+            }
+          />
         </Flex>
       )
     }
