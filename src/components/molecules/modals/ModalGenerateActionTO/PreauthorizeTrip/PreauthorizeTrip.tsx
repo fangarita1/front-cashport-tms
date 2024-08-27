@@ -1,11 +1,10 @@
 import { Divider, Flex, Skeleton } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "./PreauthorizeTrip.module.scss";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { FieldError, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
-import { Dayjs } from "dayjs";
-import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+
 import { MessageInstance } from "antd/es/message/interface";
 import { yupResolver } from "@hookform/resolvers/yup";
 
@@ -16,8 +15,8 @@ import { Plus, Trash } from "phosphor-react";
 import { Preauthorization, PreauthorizeTripForm } from "./controllers/preauthorizetrip.types";
 import { preautorizationsFormSchema } from "./controllers/formSchema";
 
-interface UploadInvoice {
-  idTR: number;
+interface PAtrip {
+  idTR: string;
   carrier: ICarrier;
   onClose: () => void;
   messageApi: MessageInstance;
@@ -31,7 +30,7 @@ const defaultPA: Preauthorization = {
 const defaultValueForm = {
   preauthorizations: [defaultPA]
 };
-const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: UploadInvoice) => {
+const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: PAtrip) => {
   const { totalValue, id: carrierId, name: carrierName } = carrier;
   const [isLoading, setIsLoading] = useState(false);
   const [defaultValues, setDefaultValues] = useState<any>(defaultValueForm);

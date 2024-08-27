@@ -30,7 +30,7 @@ type PropsModalGenerateActionTO = {
 };
 
 export default function ModalGenerateActionTO(props: Readonly<PropsModalGenerateActionTO>) {
-  const { isOpen, onClose, idTR, carriersData } = props;
+  const { isOpen, onClose, idTR, carriersData, messageApi } = props;
   const [selectedView, setSelectedView] = useState<ViewEnum>(ViewEnum.SELECT_ACTION);
   const [selectedCarrier, setSelectedCarrier] = useState<number | null>(null);
 
@@ -49,10 +49,10 @@ export default function ModalGenerateActionTO(props: Readonly<PropsModalGenerate
       case ViewEnum.PREAUTHORIZE_TRIP:
         return (
           <PreauthorizeTrip
-            carrier={carriersData.find((cd) => cd.id == selectedCarrier)}
-            setSelectedCarrier={setSelectedCarrier}
-            carriers={carriersData}
-            setSelectedView={setSelectedView}
+            idTR={idTR}
+            carrier={carriersData.find((cd) => cd.id == selectedCarrier) as ICarrier}
+            messageApi={messageApi}
+            onClose={onClose}
           />
         );
       default:
