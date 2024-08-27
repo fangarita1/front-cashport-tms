@@ -22,7 +22,6 @@ export const CreateMaterialView = ({ params }: Props) => {
         const response = await addMaterial(
           {...data}, 
           data.files, 
-          data.images
         );  
       if (response && response.status === 200) {
         messageApi.open({
