@@ -37,3 +37,12 @@ export const STATUS = {
     RECHAZADA: "da258586-c04b-4603-bea5-f9bce49687e0"
   }
 };
+
+export const TMSMODULES = {
+  "TMS-Proveedores": "/logistics/providers/all",
+  "TMS-Dashboard": "/map",
+  "TMS-Viajes": "/logistics/transfer-orders",
+  "TMS-AceptacionProveedor": "/logistics/acept_carrier",
+  "TMS-Facturacion": "/facturacion",
+  "TMS-Configuracion": "/logistics/configuration"
+};

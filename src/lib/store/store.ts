@@ -3,13 +3,24 @@ import { ProjectSlice, createProjectSlice } from "@/lib/slices/createProjectSlic
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-interface AppStore extends ProjectSlice, UserSlice {}
+interface AppStore extends ProjectSlice, UserSlice {
+  resetStore: () => void;
+}
 
 export const useAppStore = create<AppStore>()(
   persist(
     (set) => ({
       ...createUserSlice(set),
-      ...createProjectSlice(set)
+      ...createProjectSlice(set),
+      resetStore: () => {
+        // Clear the session storage
+        sessionStorage.removeItem("project");
+        // Reset the Zustand store to initial state
+        set({
+          ...createUserSlice(set),
+          ...createProjectSlice(set)
+        });
+      }
     }),
     {
       name: "project",
