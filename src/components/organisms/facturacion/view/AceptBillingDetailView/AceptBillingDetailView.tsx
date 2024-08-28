@@ -19,9 +19,7 @@ import { NoveltyTable } from "@/components/molecules/tables/NoveltyTable/Novelty
 import { number } from "yup";
 import Link from "next/link";
 import ModalBillingAction from "@/components/molecules/modals/ModalBillingAction/ModalBillingAction";
-import { BillingStatusEnum, IJourney, IIncident  } from "@/types/logistics/schema";
-import { ItemType } from "rc-collapse/es/interface";
-import { INovelty, IEvidence } from "@/types/novelty/INovelty";
+import { BillingStatusEnum } from "@/types/logistics/schema";
 
 const Text = Typography;
 
@@ -37,8 +35,8 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
   const [billingStatus, setBillingStatus] = useState<BillingStatusEnum | null>(null);
 
   const canMakeAnAction = billingStatus
-    ? billingStatus === BillingStatusEnum.PorAceptar ||
-      billingStatus === BillingStatusEnum.Preautorizado
+    ? billingStatus == BillingStatusEnum.PorAceptar ||
+      billingStatus == BillingStatusEnum.Preautorizado
     : false;
   const [messageApi, contextHolder] = message.useMessage();
   console.log("billingData", billingData);
@@ -57,20 +55,11 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
       console.error("Error fetching billing details:", error);
     }
   };
-  
   useEffect(() => {
     if (params.id && !isModalVisible) fetchBillingDetails();
   }, [params.id, isModalVisible]);
 
-  const TitleComponent = ({
-    state,
-    id,
-    journey,
-  }: {
-    state: string;
-    id: number;
-    journey: IJourney;
-  }) => (
+  const TitleComponent = ({ state, id }: { state: string; id: number }) => (
     <div className={styles.header}>
       <div className={styles.stateContainer}>
         <Truck size={27} color="#FFFFFF" weight="fill" />
@@ -79,12 +68,12 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
       <div className={styles.fromto}>
         <div className={styles.fromtoContainer}>
           <Text className={styles.title}>Origen</Text>
-          <Text className={styles.subtitle}>{journey.start_location_desc}</Text>
+          <Text className={styles.subtitle}>CENTRO EMPRESARIAL DORADO PLAZA</Text>
         </div>
         <div className={`${styles.fromtoContainer} ${styles.right}`}>
           <div>
             <Text className={styles.title}>Destino</Text>
-            <Text className={styles.subtitle}>{journey.end_location_desc}</Text>
+            <Text className={styles.subtitle}>BASE BARRANCABERMEJA</Text>
           </div>
           <CaretDown className={`${styles.caret} ${id === key && styles.rotate}`} size={24} />
         </div>
@@ -93,80 +82,59 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
         <div className={styles.resum}>
           <div className={styles.resumItem}>
             <Text className={styles.text}>Vehículo</Text>
-            <Text className={`${styles.text} ${styles.bold}`}>{journey.trips[0]?.vehicle_type_desc} | {journey.trips[0]?.plate_number ?? 'N/A'}</Text>
+            <Text className={`${styles.text} ${styles.bold}`}>C-350</Text>
           </div>
           <div className={styles.resumItem}>
             <Text className={styles.text}>Proveedor</Text>
-            <Text className={`${styles.text} ${styles.bold}`}>{billingData?.billing.carrier ?? 'N/A'}</Text>
+            <Text className={`${styles.text} ${styles.bold}`}>Coltanques</Text>
           </div>
           <div className={styles.resumItem}>
             <Text className={styles.text}>Conductor</Text>
-            <Text className={`${styles.text} ${styles.bold}`}>{journey.trips[0]?.drivers ?? 'N/A'}</Text>
+            <Text className={`${styles.text} ${styles.bold}`}>Miguel Martinez</Text>
           </div>
         </div>
         <div className={`${styles.resum} ${styles.right}`}>
           <div className={`${styles.resumItem} ${styles.right}`}>
             <Text className={styles.text}>Tarifa base</Text>
-            <Text className={styles.text}>{`$ ${journey.trips[0]?.fare ?? 0}`}</Text>
+            <Text className={styles.text}>$ 17.000.000</Text>
           </div>
           <div className={`${styles.resumItem} ${styles.right}`}>
             <Text className={styles.text}>Sobrecosto</Text>
-            <Text className={styles.text}>{`$ ${journey.trips[0]?.overcost ?? 0}`}</Text>
+            <Text className={styles.text}>$ 0</Text>
           </div>
           <div className={`${styles.resumItem} ${styles.right}`}>
             <Text className={`${styles.text} ${styles.bold}`}>Total</Text>
-            <Text className={`${styles.text} ${styles.bold}`}>{`$ ${journey.trips[0]?.total ?? 0}`}</Text>
+            <Text className={`${styles.text} ${styles.bold}`}>$ 0</Text>
           </div>
         </div>
       </div>
     </div>
   );
 
-  function convertIncidentToNovelty(incident: IIncident): INovelty {
-    const evidence: IEvidence = {
-        id: incident.id, 
-        novelty_id: incident.id,
-        name: incident.url_image.split('/').pop() || 'Evidencia', 
-        url: incident.url_image,
-        created_at: new Date(), 
-        updated_at: new Date(),
-    };
-
-    return {
-        id: incident.id,
-        trip_id: incident.id_trip,
-        novelty_type: incident.id_incident_type.toString(),
-        observation: incident.description,
-        value: incident.fare,
-        status: incident.status_description,
-        status_id: incident.status,
-        created_by: incident.user,
-        quantity: incident.units,
-        evidences: [evidence] 
-    };
-}
-
-
-  const collapseItems = billingData?.journeys.map((journey: IJourney, index: number) => {
-    const allIncidents = journey.trips.reduce((acc: INovelty[], trip) => {
-      return [...acc, ...trip.incidents.map(convertIncidentToNovelty)];
-    }, []);
-
-    return {
-      key: journey.id.toString(),
-      label: <TitleComponent state="Carga" id={index + 1} journey={journey} />,
+  const items: CollapseProps["items"] = [
+    {
+      key: "1",
+      label: <TitleComponent state="Carga" id={1} />,
       children: (
         <div>
-          <NoveltyTable
-            novelties={allIncidents}
-            openDrawer={() => {}}
-            handleShowDetails={() => {}}
-          />
+          <NoveltyTable novelties={[]} openDrawer={() => {}} handleShowDetails={() => {}} />
         </div>
       ),
       showArrow: false
-    };
-  }) || [];
+    }
+  ];
+  const items2: CollapseProps["items"] = [
+    {
+      key: "2",
+      label: <TitleComponent state="Carga" id={2} />,
+      children: (
+        <div>
+          <NoveltyTable novelties={[]} openDrawer={() => {}} handleShowDetails={() => {}} />
+        </div>
+      ),
+      showArrow: false
+    }
+  ];
 
   return (
     <>
@@ -192,38 +160,39 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
 
         <Flex className={styles.boxContainer} vertical gap={16}>
           <Row>
-            <div className={styles.headingText}>
-              {billingData?.billing?.carrier ?? 'N/A'}
-            </div>
+            <div className={styles.headingText}>Coltanques</div>
           </Row>
           <Row>
             <Col span={12}>
-              <div className={styles.headingText}>
-              Total servicio
-              </div>
+              <div className={styles.headingText}>Total servicio</div>
             </Col>
             <Col
               span={12}
               style={{ display: "flex", justifyContent: "flex-end", borderLeft: "1px solid #DDD" }}
             >
-              <div className={styles.titleText}>${billingData?.billing?.fare ?? 0}</div>
+              <div className={styles.titleText}>$19.000.000</div>
             </Col>
           </Row>
         </Flex>
 
         <div className={styles.collapsableContainer}>
-          {collapseItems.map((item: ItemType) => (
-            <div key={item.key} className={styles.collapsable}>
-              <Collapse
-                onChange={(item) => setKey(Number(item[0]))}
-                expandIconPosition="end"
-                ghost
-                items={[item]}
-              />
-            </div>
-          ))}
+          <div className={styles.collapsable}>
+            <Collapse
+              onChange={(item) => setKey(Number(item[0]))}
+              expandIconPosition="end"
+              ghost
+              items={items}
+            />
+          </div>
+          <div className={styles.collapsable}>
+            <Collapse
+              onChange={(item) => setKey(Number(item[0]))}
+              expandIconPosition="end"
+              ghost
+              items={items2}
+            />
+          </div>
         </div>
-
         <ModalBillingAction
           isOpen={isModalVisible}
           onClose={() => setIsModalVisible(false)}
