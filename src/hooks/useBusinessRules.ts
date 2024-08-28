@@ -13,7 +13,7 @@ import {
 } from "@/services/businessRules/BR";
 
 export const useStructureBR = () => {
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
   const { data, isLoading, mutate } = useSWR<IBRE>(`/bussines-rule/project/${ID}`, fetcher, {});
 
   const addChannel = async (channelDescription: string, messageApi: MessageInstance) => {

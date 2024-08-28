@@ -13,8 +13,8 @@ export interface UserFormTabProps {
   disabled?: boolean;
   onEditProject?: () => void;
   onSubmitForm?: (data: any) => void;
-  onActiveProject?: () => void;
-  onDesactivateProject?: () => void;
+  onActiveUser?: () => void;
+  onDesactivateUser?: () => void;
   statusForm: "create" | "edit" | "review";
   params: {
     id: string;
@@ -31,22 +31,23 @@ export const dataToProjectFormData = (
   data: any
 ): IFormUser => {
 
+  console.log(data)
   return {
     logo: [],
     general: {
-      id: data.id,
-      email: data.email,
-      user_name: data.user_name,
-      phone: data.phone,
-      rol_id: data.rol_id,
+      id: data.ID,
+      email: data.EMAIL,
+      user_name: data.USER_NAME,
+      phone: data.PHONE,
+      rol_id: data.ROL_ID,
       carrier_id: data.carrier_id,
       psl_id: data.psl_id,
       cost_center_id: data.cost_center_id,
-      active: data.active,
-      photo: data.photo,
-      firebaseguid: data.firebaseguid,
+      active: data.ACTIVE,
+      photo: data.PHOTO,
+      firebaseguid: data.UUID,
       carrier: data.carrier,
-      position: data.position
+      position: data.POSITION
     }
   };
 };

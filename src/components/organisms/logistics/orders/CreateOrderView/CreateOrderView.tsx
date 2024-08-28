@@ -420,6 +420,19 @@ export const CreateOrderView = () => {
     typeactive == "2" && calculateDuration(duration);
   }, [typeactive, fechaInicial, fechaFinal, horaInicial, horaFinal]);
 
+  useEffect(() => {
+    if (typeactive == "2") {
+      if (fechaInicial && horaInicial) {
+        const fechaFin = fechaInicial.hour(horaInicial.get("h")).add(horasOrigenIzaje, "h");
+        setHoraFinal(fechaFin);
+        setFechaFinal(fechaFin);
+      } else {
+        setHoraFinal(undefined);
+        setFechaFinal(undefined);
+      }
+    }
+  }, [typeactive, fechaInicial, horaInicial, horasOrigenIzaje]);
+
   const calculateDuration = (duration: number) => {
     const hrs = getTravelDuration(duration);
     setTimeTravel(hrs + " Hrs");
@@ -730,12 +743,17 @@ export const CreateOrderView = () => {
 
   let vehiclesIdx = 0;
 
-  const loadSuggestedVehicles = async () => {
-    const res = await getSuggestedVehicles(typeactive);
+  const loadSuggestedVehicles = async (typesActive: string[]) => {
+    const promises = typesActive.map((type) => getSuggestedVehicles(type));
+    const results = await Promise.all(promises);
+
+    const combinedResults = results
+      .map((result) => result?.data?.data)
+      .reduce((acc, data) => acc.concat(data), []);
     const result: any = [];
-    //console.log (res);
-    if (res?.data?.data?.length > 0) {
-      res.data.data.forEach((item) => {
+
+    if (combinedResults?.length > 0) {
+      combinedResults.forEach((item) => {
         const strlabel = (
           <div style={{ display: "flex", alignItems: "center" }}>
             <Col span={20}>
@@ -764,13 +782,16 @@ export const CreateOrderView = () => {
   };
 
   useEffect(() => {
-    loadSuggestedVehicles();
+    loadSuggestedVehicles([typeactive]);
   }, []);
 
   useEffect(() => {
     setDataVehicles([]);
-    loadSuggestedVehicles();
-  }, [typeactive]);
+    const needLifting = origenIzaje || destinoIzaje;
+    if (typeactive == "2" || (typeactive == "1" && needLifting)) {
+      loadSuggestedVehicles(["1", "2"]);
+    } else loadSuggestedVehicles([typeactive]);
+  }, [typeactive, origenIzaje, destinoIzaje]);
 
   const filteredVehiclesOptions = optionsVehicles.filter(
     (option: any) => !dataVehicles.some((vehicle) => vehicle.description === option.value)
@@ -1765,10 +1786,7 @@ export const CreateOrderView = () => {
                     <DatePicker
                       placeholder="Seleccione fecha"
                       disabledDate={disabledDate}
-                      onChange={(value, dateString) => {
-                        //console.log('Selected Time: ', value);
-                        //console.log('Formatted Selected Time: ', dateString);
-                        //setFechaInicial(value);
+                      onChange={(value) => {
                         setFechaInicial(value);
                         setFechaInicialValid(true);
                       }}
@@ -1840,7 +1858,9 @@ export const CreateOrderView = () => {
                     <DatePicker
                       placeholder="Seleccione fecha"
                       disabledDate={disabledDate}
-                      onChange={(value, dateString) => {
+                      disabled={typeactive == "2"}
+                      value={fechaFinal}
+                      onChange={(value) => {
                         //console.log('Selected Time: ', value);
                         //console.log('Formatted Selected Time: ', dateString);
                         //setFechaFinal(value);
@@ -1862,9 +1882,11 @@ export const CreateOrderView = () => {
                       format={"HH:mm"}
                       minuteStep={15}
                       needConfirm={false}
+                      disabled={typeactive == "2"}
                       hourStep={1}
                       type={"time"}
                       variant="filled"
+                      value={horaFinal}
                       onChange={(value) => {
                         setHoraFinal(value);
                         setHoraFinalValid(true);

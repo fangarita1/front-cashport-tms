@@ -2,23 +2,22 @@
 import { Typography, message, Spin } from "antd";
 import React, { useCallback, useState } from "react";
 import "../../../../../../styles/_variables_logistics.css";
-import "./locationInfo.scss";
+import "./userInfo.scss";
 import { getLocationById, updateLocation, updateLocationStatus } from "@/services/logistics/locations";
-import { IFormLocation, ILocation } from "@/types/logistics/schema";
+import { IFormUser, IUser } from "@/types/logistics/schema";
 import { StatusForm } from "@/components/molecules/tabs/logisticsForms/locationForm/locationFormTab.mapper";
 import { useRouter } from "next/navigation";
-import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 import useSWR from "swr";
-import { LocationFormTab } from "@/components/molecules/tabs/logisticsForms/locationForm/locationFormTab";
-
+import { UserFormTab } from "@/components/molecules/tabs/logisticsForms/userForm/userFormTab";
+import { getUserById, updateUser} from "@/services/logistics/users";
 interface Props {
   params: {
     id: string;
-    locationId: string;
+    userId: string;
   };
 }
 
-export const LocationInfoView = ({ params }: Props) => {
+export const UserInfoView = ({ params }: Props) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [statusForm, setStatusForm]= useState<StatusForm>("review")
   const { push } = useRouter();
@@ -29,7 +28,7 @@ export const LocationInfoView = ({ params }: Props) => {
   }, []);
 
   const fetcher = async ({ id, key }: { id: string; key: string }) => {
-    return getLocationById(params.id);
+    return getUserById(params.id);
   };
 
   const { data, isLoading } = useSWR({ id: params, key: "1" }, fetcher,     
@@ -38,18 +37,22 @@ export const LocationInfoView = ({ params }: Props) => {
     revalidateOnReconnect:false
   });
 
-  const handleSubmitForm = async (dataform: IFormLocation) => {
-    const sendata:IFormLocation={
-      general: dataform as unknown as ILocation,
-      images: [],
-      IS_ACTIVE: true
+  const handleSubmitForm = async (dataform: any) => {
+    const sendata:IFormUser={
+      general: dataform as unknown as IUser,
+      logo: dataform.logo
     }
     sendata.general.id = Number(params.id);
     try {
-      const response = await updateLocation(
-        sendata.general,
-        dataform?.files as DocumentCompleteType[]
-      );
+      // const response = await updateUser(
+      //   sendata.general,
+      //   dataform?.logo
+      // );
+
+      const response = await updateUser(
+        {...dataform}, 
+        dataform.logo
+      );  
       if (response.status === 200) {
         messageApi.open({
           type: "success",
@@ -106,6 +109,7 @@ export const LocationInfoView = ({ params }: Props) => {
     }
   };
 
+  console.log(data)
   return (
     <>
       {contextHolder}
@@ -113,14 +117,14 @@ export const LocationInfoView = ({ params }: Props) => {
       {isLoading ? (
           <Spin/>
         ) : (
-          <LocationFormTab
+          <UserFormTab
             onSubmitForm={handleSubmitForm}
-            data={data?.data?.data[0]}
+            data={data?.data?.data as unknown as IUser}
             params={params}
             statusForm={statusForm}
             handleFormState={handleFormState}
-            onActiveLocation={handleActivation}
-            onDesactivateLocation={handleDesactivation}
+            onActiveUser={handleActivation}
+            onDesactivateUser={handleDesactivation}
           />
         )}
       </>

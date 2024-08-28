@@ -8,9 +8,6 @@
     font-weight: 500;  
   }
 }
-.inputForm {
-  width: 206px !important;
-}
 .inputsContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -39,4 +36,12 @@
 .divider{
   border: 0.0625rem solid #DDDDDD;
   margin:  0 !important;
+}
+.buttonDownload {
+  cursor: pointer;
+  color: #1E8FF3;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 18px;
+  text-decoration: underline;
 }

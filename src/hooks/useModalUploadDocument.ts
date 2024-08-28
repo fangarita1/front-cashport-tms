@@ -4,7 +4,7 @@ import { API } from "@/utils/api/api";
 import useSWR from "swr";
 
 const useModalUploadDocument = (clientTypeId: string | number | undefined) => {
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
 
   const { data, isLoading, error } = useSWR<IDocumentsByClientId>(
     `/client/documents/bytype/${clientTypeId}/project/${ID}`,

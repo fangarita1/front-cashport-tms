@@ -1,3 +1,4 @@
+import { ISelectedProject } from "@/lib/slices/createProjectSlice";
 import { IChanel } from "@/types/bre/IBRE";
 import { CountryCode } from "@/types/global/IGlobal";
 
@@ -355,3 +356,22 @@ export function formatNumber(num: number | string, decimals = 0) {
   // Convertir el número a una cadena y usar el método replace para añadir separadores de miles
   return decimals ? `${formattedThousands},${Math.floor(Math.pow(10, decimals) * rest)}` : formattedThousands;
 }
+
+
+export const checkUserViewPermissions = (
+  selectedProject: ISelectedProject | undefined,
+  view?: string
+): boolean => {
+  if (!selectedProject) return false;
+  if (selectedProject.isSuperAdmin) {
+    return true;
+  }
+
+  const viewPermissions = selectedProject.views_permissions;
+  if (!viewPermissions) {
+    return false;
+  }
+
+
+  return viewPermissions.some((permission) => permission.page_name === view);
+};

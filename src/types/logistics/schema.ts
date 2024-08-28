@@ -3486,7 +3486,7 @@ export interface IUser {
   user_name: string;
   phone: string;
   rol_id: string;
-  carrier_id: string;
+  carrier_id?: string;
   psl_id: string;
   cost_center_id: string;
   position: string;

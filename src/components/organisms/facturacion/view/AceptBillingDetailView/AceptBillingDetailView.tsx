@@ -23,7 +23,7 @@ import { BillingStatusEnum, IJourney, IIncident  } from "@/types/logistics/schem
 import { ItemType } from "rc-collapse/es/interface";
 import { INovelty, IEvidence } from "@/types/novelty/INovelty";
 
-const Text = Typography;
+const { Text } = Typography;
 
 interface AceptBillingDetailProps {
   params: { id: string };
@@ -42,6 +42,7 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
     : false;
   const [messageApi, contextHolder] = message.useMessage();
   console.log("billingData", billingData);
+
   const fetchBillingDetails = async () => {
     try {
       const response = await getBillingDetailsById(params.id);
@@ -57,7 +58,7 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
       console.error("Error fetching billing details:", error);
     }
   };
-  
+
   useEffect(() => {
     if (params.id && !isModalVisible) fetchBillingDetails();
   }, [params.id, isModalVisible]);
@@ -86,36 +87,44 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
             <Text className={styles.title}>Destino</Text>
             <Text className={styles.subtitle}>{journey.end_location_desc}</Text>
           </div>
-          <CaretDown className={`${styles.caret} ${id === key && styles.rotate}`} size={24} />
+          <CaretDown className={`${styles.caret} ${id === key ? styles.rotate : ''}`} size={24} />
         </div>
       </div>
       <div className={styles.resumContainer}>
         <div className={styles.resum}>
           <div className={styles.resumItem}>
             <Text className={styles.text}>Vehículo</Text>
-            <Text className={`${styles.text} ${styles.bold}`}>{journey.trips[0]?.vehicle_type_desc} | {journey.trips[0]?.plate_number ?? 'N/A'}</Text>
+            <Text className={`${styles.text} ${styles.bold}`}>
+              {journey.trips[0]?.vehicle_type_desc} | {journey.trips[0]?.plate_number ?? 'N/A'}
+            </Text>
           </div>
           <div className={styles.resumItem}>
             <Text className={styles.text}>Proveedor</Text>
-            <Text className={`${styles.text} ${styles.bold}`}>{billingData?.billing.carrier ?? 'N/A'}</Text>
+            <Text className={`${styles.text} ${styles.bold}`}>
+              {billingData?.billing.carrier ?? 'N/A'}
+            </Text>
           </div>
           <div className={styles.resumItem}>
             <Text className={styles.text}>Conductor</Text>
-            <Text className={`${styles.text} ${styles.bold}`}>{journey.trips[0]?.drivers ?? 'N/A'}</Text>
+            <Text className={`${styles.text} ${styles.bold}`}>
+              {journey.trips[0]?.drivers ?? 'N/A'}
+            </Text>
           </div>
         </div>
         <div className={`${styles.resum} ${styles.right}`}>
           <div className={`${styles.resumItem} ${styles.right}`}>
             <Text className={styles.text}>Tarifa base</Text>
-            <Text className={styles.text}>{`$ ${journey.trips[0]?.fare ?? 0}`}</Text>
+            <Text className={styles.text}>${journey.trips[0]?.fare ?? 0}</Text>
           </div>
           <div className={`${styles.resumItem} ${styles.right}`}>
             <Text className={styles.text}>Sobrecosto</Text>
-            <Text className={styles.text}>{`$ ${journey.trips[0]?.overcost ?? 0}`}</Text>
+            <Text className={styles.text}>${journey.trips[0]?.overcost ?? 0}</Text>
           </div>
           <div className={`${styles.resumItem} ${styles.right}`}>
             <Text className={`${styles.text} ${styles.bold}`}>Total</Text>
-            <Text className={`${styles.text} ${styles.bold}`}>{`$ ${journey.trips[0]?.total ?? 0}`}</Text>
+            <Text className={`${styles.text} ${styles.bold}`}>
+              ${journey.trips[0]?.total ?? 0}
+            </Text>
           </div>
         </div>
       </div>
@@ -124,28 +133,27 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
 
   function convertIncidentToNovelty(incident: IIncident): INovelty {
     const evidence: IEvidence = {
-        id: incident.id, 
-        novelty_id: incident.id,
-        name: incident.url_image.split('/').pop() || 'Evidencia', 
-        url: incident.url_image,
-        created_at: new Date(), 
-        updated_at: new Date(),
+      id: incident.id,
+      novelty_id: incident.id, 
+      name: incident.url_image.split('/').pop() || 'Evidencia', 
+      url: incident.url_image,
+      created_at: new Date(),
+      updated_at: new Date(), 
     };
 
     return {
-        id: incident.id,
-        trip_id: incident.id_trip,
-        novelty_type: incident.id_incident_type.toString(),
-        observation: incident.description,
-        value: incident.fare,
-        status: incident.status_description,
-        status_id: incident.status,
-        created_by: incident.user,
-        quantity: incident.units,
-        evidences: [evidence] 
+      id: incident.id,
+      trip_id: incident.id_trip,
+      novelty_type: incident.id_incident_type.toString(),
+      observation: incident.description,
+      value: incident.fare,
+      status: incident.status_description,
+      status_id: incident.status,
+      created_by: incident.user,
+      quantity: incident.units,
+      evidences: [evidence]
     };
-}
-
+  }
 
   const collapseItems = billingData?.journeys.map((journey: IJourney, index: number) => {
     const allIncidents = journey.trips.reduce((acc: INovelty[], trip) => {
@@ -199,7 +207,7 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
           <Row>
             <Col span={12}>
               <div className={styles.headingText}>
-              Total servicio
+                Total servicio
               </div>
             </Col>
             <Col

@@ -37,7 +37,7 @@ export default function AnnualDiscountDefinition({
   loadingMain,
   handleUpdateContract
 }: Props) {
-  const { ID: projectId } = useAppStore((project) => project.selectProject);
+  const { ID: projectId } = useAppStore((project) => project.selectedProject);
   const [loading, setLoading] = useState(false);
 
   const fetchClients = async () => {

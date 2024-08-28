@@ -6,7 +6,7 @@ import { fetcher } from "@/utils/api/api";
 import useSWR from "swr";
 
 export const useClientGroup = (groupId: number) => {
-  const { ID: projectId } = useAppStore((state) => state.selectProject);
+  const { ID: projectId } = useAppStore((state) => state.selectedProject);
 
   const pathKey = `${config.API_HOST}/group-client/${groupId}/project/${projectId}`;
 

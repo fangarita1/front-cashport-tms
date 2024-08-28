@@ -18,7 +18,7 @@ export const SelectStructure = ({
   selectedBusinessRules,
   setSelectedBusinessRules
 }: Props) => {
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
   const { data: response, isLoading } = useSWR<IBRE>(`/bussines-rule/project/${ID}`, fetcher, {});
 
   return (
