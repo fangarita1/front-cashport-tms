@@ -114,7 +114,7 @@ export const TransferOrderDetails = () => {
   };
 
   const findNovelties = async () => {
-    const data = await getTransferJourney(Number(transferRequest?.id));
+    const data = await getTransferJourney(Number(transferRequest?.id || id));
     if (Object.keys(data).length) {
       setTransferJournies(data as ITransferJourney[]);
     }
