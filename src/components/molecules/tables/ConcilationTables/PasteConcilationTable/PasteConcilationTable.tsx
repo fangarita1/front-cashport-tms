@@ -32,7 +32,7 @@ export const PasteConcilationTable = ({
   invoices,
   clientId
 }: Props) => {
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
   const [dataSource, setDataSource] = useState<DataType[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
   const [messageApi, contextHolder] = message.useMessage();

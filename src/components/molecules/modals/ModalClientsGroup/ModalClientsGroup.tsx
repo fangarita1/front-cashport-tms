@@ -33,7 +33,7 @@ export const ModalClientsGroup = ({
   updateClientsGroup
 }: CreateGroupProps) => {
   const [groupName, setGroupName] = useState("");
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
   const [selectedRows, setSelectedRows] = useState<IClient[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
   const {

@@ -13,7 +13,7 @@ interface Props {
 }
 
 export const useClientsGroups = ({ page, clients, subscribers, activeUsers, noLimit }: Props) => {
-  const { ID: projectId } = useAppStore((state) => state.selectProject);
+  const { ID: projectId } = useAppStore((state) => state.selectedProject);
 
   const clientsQuery = (clients?.length ?? 0) > 0 ? `&zone=${clients?.join(",")}` : "";
   const subsQuery = (subscribers?.length ?? 0) > 0 ? `&rol=${subscribers?.join(",")}` : "";

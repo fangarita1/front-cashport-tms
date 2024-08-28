@@ -9,7 +9,7 @@ import { useCallback } from "react";
 import { MessageType } from "@/context/MessageContext";
 
 export const useLocations = () => {
-  const { ID: projectId } = useAppStore((state) => state.selectProject);
+  const { ID: projectId } = useAppStore((state) => state.selectedProject);
   const { data, isLoading, error } = useSWR<ILocation[]>(`/location/project/${projectId}`, API, {});
 
   const createLocation = async (

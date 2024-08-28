@@ -9,7 +9,7 @@ import {
 import { MessageInstance } from "antd/es/message/interface";
 
 export const useDocumentByClient = (clientTypeId: number) => {
-  const { ID } = useAppStore((state) => state.selectProject);
+  const { ID } = useAppStore((state) => state.selectedProject);
   const { data, isLoading, mutate } = useSWR<IDocumentsByClientId>(
     `/client/documents/bytype/${clientTypeId}/project/${ID}`,
     API
