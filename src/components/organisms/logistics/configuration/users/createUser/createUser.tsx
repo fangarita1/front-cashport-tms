@@ -28,7 +28,7 @@ export const CreateUserView = ({ params }: Props) => {
           type: "success",
           content: `El usuario fue creado exitosamente.`
         });
-        push(`/logistics/configuration/users/${response.data.data.id}`);
+        push(`/logistics/configuration/users/all`); //${response.data.data.id}
       }
     } catch (error) {
       if (error instanceof Error) {

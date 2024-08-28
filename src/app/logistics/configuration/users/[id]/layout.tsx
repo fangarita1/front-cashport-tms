@@ -1,10 +1,10 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Ubicacion",
-  description: "Ubicacion"
+  title: "User",
+  description: "User"
 };
 
-export default function LocationLayout({ children }: { children: React.ReactNode }) {
+export default function UserLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
