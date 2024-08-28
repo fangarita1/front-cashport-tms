@@ -25,7 +25,7 @@ export default function useDiscount({ messageApi }: Props) {
   const [active, setActive] = useState<number | undefined>(undefined);
   const [data, setData] = useState<DiscountBasicsState[]>([]);
   const { searchQuery, handleChangeSearch } = useSearch();
-  const { ID } = useAppStore((projects) => projects.selectProject);
+  const { ID } = useAppStore((projects) => projects.selectedProject);
 
   const {
     data: res,

@@ -18,7 +18,7 @@ export default function useCreateDiscountView({ params }: Props) {
   const discountId = !!Number(params?.id) ? Number(params?.id) : undefined;
   const [messageApi, contextHolder] = message.useMessage();
   const [selectedType, setSelectedType] = useState<number>(1);
-  const { ID } = useAppStore((project) => project.selectProject);
+  const { ID } = useAppStore((project) => project.selectedProject);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<FileObject[]>([]);
