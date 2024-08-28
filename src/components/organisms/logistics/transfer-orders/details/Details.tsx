@@ -123,7 +123,7 @@ export const TransferOrderDetails = () => {
   const approbeOrReject = async (id: number, isApprobe: boolean) => {
     const data = await aprobeOrRejectDetail(id, isApprobe);
     if (data) {
-      await findNovelties();
+      findNovelties();
       findDetails();
       setOpenDrawer(false);
     }
