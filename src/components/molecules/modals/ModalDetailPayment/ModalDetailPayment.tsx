@@ -15,7 +15,8 @@ const mockPaymentData = {
   status: "Aplicado",
   transferType: "Transferencia",
   consignation: "Consignación Cooperativa Nacional de Droguistas",
-  bankAccount: "723846523 Bancolombia",
+  bankAccount: "723846523",
+  bank: "Bancolombia",
   traceability: [
     {
       id: 1,
@@ -102,7 +103,7 @@ const ModalDetailPayment: FC<ModalDetailPaymentProps> = ({ isOpen, onClose }) =>
           <h4 className={styles.numberInvoice}>ID pago {mockPaymentData.id}</h4>
           <Flex gap="8px">
             <Flex className={styles.viewInvoice}>
-              <Article/>
+              <Article />
               Ver tirilla
             </Flex>
             <Button
@@ -118,7 +119,10 @@ const ModalDetailPayment: FC<ModalDetailPaymentProps> = ({ isOpen, onClose }) =>
         <div className={styles.idOrder}>
           <p>{mockPaymentData.transferType}</p>
           <p>{mockPaymentData.consignation}</p>
-          <p>{mockPaymentData.bankAccount}</p>
+          <Flex gap={"8px"}>
+            <p className={styles.id}>{mockPaymentData.bankAccount}</p>
+            <p className={styles.bank}>Bancolombia</p>
+          </Flex>
         </div>
 
         <div className={styles.body}>
@@ -149,12 +153,12 @@ const ModalDetailPayment: FC<ModalDetailPaymentProps> = ({ isOpen, onClose }) =>
                           {item.event_name === "Aplicación" && (
                             <div>
                               {item.cp_id && (
-                                <Flex gap="4px">
+                                <Flex gap="4px" className={styles.name}>
                                   Aplicación {item.ammount} a la sucursal{" "}
                                   <div className={styles.idAdjustment}>{item.cp_id}</div>
                                 </Flex>
                               )}
-                              <Flex wrap gap="2px">
+                              <Flex wrap gap="2px" className={styles.name}>
                                 Aplicado a las facturas:
                                 {item.invoices?.map((invoice, index) => (
                                   <div key={invoice} className={styles.text_blue}>

@@ -170,8 +170,17 @@ export const formatDateBars = (dateString: string): string => {
   return `${utcYear}-${utcMonth}-${utcDay}`;
 };
 
-export const formatDatePlane = (date: string): string => {
-  const d = new Date(date);
+export const formatDatePlane = (dateString: string): string => {
+  if (!dateString || dateString === "0000-00-00") {
+    return "Fecha no disponible";
+  }
+
+  const d = new Date(dateString);
+
+  if (isNaN(d.getTime())) {
+    return "Fecha inválida";
+  }
+
   const year = d.getUTCFullYear();
   const month = new Intl.DateTimeFormat("es-ES", { month: "long", timeZone: "UTC" }).format(d);
   const day = d.getUTCDate();

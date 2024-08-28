@@ -95,9 +95,9 @@ export const InvoicesTable = ({
       title: "ID",
       dataIndex: "id",
       key: "id",
-      render: (invoiceId, record) => (
+      render: (_, record) => (
         <Text onClick={() => handleOpenDetail(record)} className="invoicesTable__id">
-          {invoiceId}
+          {record.id_erp}
         </Text>
       ),
       sorter: (a, b) => a.id - b.id,

@@ -102,6 +102,7 @@ export const WalletTab = () => {
   const handleOpenInvoiceDetail = (invoice: IInvoice) => {
     openModal("invoice", {
       invoiceId: invoice.id,
+      showId: invoice.id_erp,
       clientId: clientId,
       projectId: projectId,
       selectInvoice: invoice,

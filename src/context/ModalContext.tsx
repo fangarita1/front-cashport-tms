@@ -6,15 +6,14 @@ import { FinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscount
 import InvoiceDetailModal from "@/modules/clients/containers/invoice-detail-modal";
 import ModalDetailAdjustment from "@/components/molecules/modals/ModalDetailAdjustment/ModalDetailAdjustment";
 import MoldalNoveltyDetail from "@/components/molecules/modals/MoldalNoveltyDetail/MoldalNoveltyDetail";
-import ModalDetailPayment, {
-  ModalDetailPaymentProps
-} from "@/components/molecules/modals/ModalDetailPayment/ModalDetailPayment";
+import ModalDetailPayment from "@/components/molecules/modals/ModalDetailPayment/ModalDetailPayment";
 
 type ModalType = "invoice" | "novelty" | "adjustment" | "payment" | null;
 
 interface InvoiceModalProps {
   invoiceId: number;
   clientId: number;
+  showId: string;
   hiddenActions?: boolean;
   handleActionInDetail?: (invoice: IInvoice) => void;
   selectInvoice?: IInvoice;
@@ -30,6 +29,7 @@ interface AdjustmentModalProps {
   selectAdjusment?: FinancialDiscount;
   projectId: number;
   legalized?: boolean;
+  adjusmentId?: number;
 }
 
 interface ModalDetailPaymentProps {
