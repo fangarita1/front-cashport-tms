@@ -15,6 +15,7 @@ interface InputDateFormProps {
   disabled?: boolean;
   validationRules?: RegisterOptions;
   className?: string;
+  readOnly?: boolean;
 }
 
 export const InputDateForm = ({
@@ -27,31 +28,37 @@ export const InputDateForm = ({
   disabled,
   validationRules,
   className,
+  readOnly = false
 }: InputDateFormProps) => {
-    return (
-      <Flex vertical className={`datePickerContainer ${className}`}>
-        {!hiddenTitle && <p className="input-date-custom-title">{titleInput}</p>}
-        <Controller
-          name={nameInput}
-          rules={{ required: true, ...validationRules }}
-          control={control}
-          render={({ field }) => (
-            <DatePicker
-              {...field}
-              onChange={(date) => field.onChange(date)}
-              size="large"
-              disabled={disabled}
-              placeholder={placeholder || `Selecciona una fecha`}
-              suffixIcon={<Calendar className="dateInputForm__icon" />}
-              className={error ?  "dateInputFormError" : "dateInputForm"}
-            />
-          )}
-        />
-        {error && (
-          <Typography.Text className="textError" type="danger">
-            {error?.message || `${titleInput} es obligatorio *`}
-          </Typography.Text>
+  return (
+    <Flex vertical className={`datePickerContainer ${className}`}>
+      {!hiddenTitle && (
+        <Typography.Title className="input-date-custom-title" level={5}>
+          {titleInput}
+        </Typography.Title>
+      )}
+      <Controller
+        name={nameInput}
+        rules={{ required: true, ...validationRules }}
+        control={control}
+        render={({ field }) => (
+          <DatePicker
+            readOnly={readOnly}
+            {...field}
+            onChange={(date) => field.onChange(date)}
+            size="large"
+            disabled={disabled}
+            placeholder={placeholder || `Selecciona una fecha`}
+            suffixIcon={<Calendar className="dateInputForm__icon" />}
+            className={error ? "dateInputFormError" : "dateInputForm"}
+          />
         )}
-      </Flex>
-    );
+      />
+      {error && (
+        <Typography.Text className="textError">
+          {error?.message || `${titleInput} es obligatorio *`}
+        </Typography.Text>
+      )}
+    </Flex>
+  );
 };

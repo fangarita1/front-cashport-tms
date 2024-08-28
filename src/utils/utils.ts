@@ -179,7 +179,7 @@ export const formatDatePlane = (date: string): string => {
 };
 
 export const formatDatePlaneWithoutComma = (date: string): string => {
-  const [day, month, year] = date.split('/');
+  const [day, month, year] = date.split("/");
   const formattedDate = new Date(`${year}-${month}-${day}`);
   const formattedYear = formattedDate.getFullYear();
   const formattedMonth = formattedDate.toLocaleString("es-ES", { month: "long" });
@@ -322,8 +322,7 @@ export const formatMillionNumber = (number: number | undefined | null): string =
   return formatNumber.toFixed();
 };
 export const shortenFileName = (fileName: string, maxChars: number = 10): string => {
-
-  const dotIndex = fileName.lastIndexOf('.');
+  const dotIndex = fileName.lastIndexOf(".");
 
   if (dotIndex === -1) {
     return fileName.length <= maxChars ? fileName : fileName.substring(0, maxChars);
@@ -335,8 +334,24 @@ export const shortenFileName = (fileName: string, maxChars: number = 10): string
   const maxBaseNameLength = maxChars - extension.length;
 
   if (baseName.length > maxBaseNameLength) {
-    return baseName.substring(0, maxBaseNameLength) +  extension;
+    return baseName.substring(0, maxBaseNameLength) + extension;
   }
   return fileName;
 };
 
+/**
+ * Formatea un número para que no tenga decimales y tenga separador de miles con un punto.
+ *
+ * @param {number|string} num - El número a formatear, puede ser un número o una cadena.
+ * @returns {string} El número formateado como una cadena.
+ */
+export function formatNumber(num: number | string, decimals = 0) {
+  const parsedNum = typeof num === "string" ? parseFloat(num) : num;
+
+  const entireNumber = Math.floor(parsedNum);
+  const formattedThousands = entireNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  const rest = (parsedNum - entireNumber);
+
+  // Convertir el número a una cadena y usar el método replace para añadir separadores de miles
+  return decimals ? `${formattedThousands},${Math.floor(Math.pow(10, decimals) * rest)}` : formattedThousands;
+}

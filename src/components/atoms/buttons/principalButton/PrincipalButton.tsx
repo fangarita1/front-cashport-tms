@@ -41,7 +41,7 @@ export default function PrincipalButton({
         type="primary"
         size="large"
         {...rest}
-        className={fullWidth ? styles.button__fullWidth : styles.button}
+        className={`${rest.className ? rest.className : ""} ${fullWidth ? styles.button__fullWidth : styles.button}`}
         style={{ ...customStyles }}
         onClick={onClick}
       >

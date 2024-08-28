@@ -1,9 +1,7 @@
 "use client";
-import { Flex } from "antd";
-import TravelData from "../TravelData/TravelData";
+import { Col, Flex } from "antd";
 import AditionalInfo from "../AditionalInfo/AditionalInfo";
 import Materials from "../Materials/Materials";
-import { ProviderDetail } from "@/types/acept_carrier/acept_carrier";
 import styles from "./solicitationDetail.module.scss";
 import {
   ICarrierRequestContacts,
@@ -11,7 +9,12 @@ import {
   IMaterial
 } from "@/types/logistics/schema";
 import { Dispatch, SetStateAction } from "react";
-import Persons from "../Persons/Persons";
+import { RouteMap } from "@/components/organisms/logistics/orders/DetailsOrderView/components/RouteMap/RouteMap";
+import { SummaryData } from "@/components/organisms/logistics/orders/DetailsOrderView/components/SummaryData/SummaryData";
+import dayjs from "dayjs";
+import "dayjs/locale/es";
+dayjs.locale("es");
+
 
 interface SolicitationDetailProps {
   providerDetail: ICarrierRequestDetail | undefined;
@@ -19,6 +22,10 @@ interface SolicitationDetailProps {
   persons?: ICarrierRequestContacts[];
   setIsNextStepActive: Dispatch<SetStateAction<boolean>>;
   service_type: string | undefined;
+  geometry: any,
+  distance: any,
+  timetravel: any,
+  mapContainerRef: any
 }
 
 export default function SolicitationDetail({
@@ -26,11 +33,44 @@ export default function SolicitationDetail({
   dataCarga,
   setIsNextStepActive,
   service_type,
-  persons
-}: SolicitationDetailProps) {
+  persons,
+  geometry,
+  distance, 
+  timetravel,
+  mapContainerRef
+}: Readonly<SolicitationDetailProps>) {
   return (
     <Flex className={styles.wrapper}>
-      <TravelData travelData={providerDetail} />
+      <Flex className={styles.sectionWrapper} vertical>
+        <Flex >
+          <p className={styles.sectionTitle} style={{ marginLeft: "1.5rem"}}>Datos del viaje</p>
+        </Flex>
+        <Flex>
+        <Col span={12} style={{paddingRight: "0.625rem"}}>
+          <SummaryData
+            routeGeometry={geometry}
+            distance={distance}
+            timetravel={timetravel}
+            weight={providerDetail?.carrier_request_material_by_trip?.reduce((acc, curr) => acc + curr.material[0].kg_weight, 0)}
+            volume={providerDetail?.carrier_request_material_by_trip?.reduce((acc, curr) => acc + curr.material[0].m3_volume, 0)}
+            needLiftingOrigin={false}
+            needLiftingDestination={false}
+            travelTypeDesc={providerDetail?.service_type ?? ""}
+            start_location={providerDetail?.start_location ?? "" }
+            end_location={providerDetail?.end_location?? "" }
+            start_date_flexible={"Exacto"}
+            end_date_flexible={"Exacto"}
+            start_date={dayjs(providerDetail?.start_date).format("YYYY-MM-DD")}
+            start_date_hour={dayjs(providerDetail?.start_date).format("HH:mm") ?? ""}
+            end_date={dayjs(providerDetail?.end_date).format("YYYY-MM-DD")}
+            end_date_hour={dayjs(providerDetail?.end_date).format("HH:mm") ?? ""}
+          />
+        </Col>
+        <Col span={12} >
+          <RouteMap mapContainerRef={mapContainerRef}/>
+        </Col>
+        </Flex>
+      </Flex>
       <AditionalInfo 
         title="Información adicional"
         documents={providerDetail?.carrier_request_documents ?? []}
@@ -38,7 +78,7 @@ export default function SolicitationDetail({
         setIsNextStepActive={setIsNextStepActive}
         />
       {/*{service_type !== "3" ? <Materials materials={dataCarga} /> : <Persons persons={persons} />}*/}
-      <Flex vertical className={styles.sectionWrapper} style={{width: '100%'}}>
+      <Flex vertical className={styles.materialsWrapper} style={{width: '100%'}}>
         <h3>Materiales</h3>
         <p>&nbsp;</p>
         <Materials materials={dataCarga}/>

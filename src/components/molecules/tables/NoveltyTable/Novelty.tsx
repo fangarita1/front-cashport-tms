@@ -3,6 +3,9 @@ import type { TableColumnsType } from "antd";
 
 import "./novelty.scss";
 import { Eye } from "phosphor-react";
+import { INovelty } from "@/types/novelty/INovelty";
+import { FC } from "react";
+import { formatMoney } from "@/utils/utils";
 
 const { Text } = Typography;
 
@@ -41,99 +44,93 @@ const getColor = (state: string) => {
       return '#FFFFFF'
   }
 }
+interface INoveltyTableProps {
+  novelties: INovelty[];
+  openDrawer: () => void;
+  handleShowDetails: (id: number) => void;
+}
 
-const columns: TableColumnsType<DataType> = [
-  {
-    title: 'ID',
-    dataIndex: 'id',
-    render: (text: string) => <Text className='row-text id'>{text}</Text>,
-    sorter: {
-      multiple: 1,
+export const NoveltyTable: FC<INoveltyTableProps> = ({ novelties, openDrawer, handleShowDetails }) => {
+  const columns: TableColumnsType<DataType> = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      render: (text: string) => <Text className='row-text id'>{text}</Text>,
+      sorter: {
+        multiple: 1,
+      },
     },
-  },
-  {
-    title: 'Tipo de novedad',
-    dataIndex: 'noveltyType',
-    render: (text: string) => <Text className='row-text'>{text}</Text>,
-  },
-  {
-    title: 'Observaciones',
-    dataIndex: 'observation',
-    render: (text: string) => <Text className='row-text'>{text}</Text>,
-  },
-  {
-    title: 'Soportes',
-    dataIndex: 'support',
-    render: (text: string) => <Text className='row-text id'>{text}</Text>,
-  },
-  {
-    title: 'Valor',
-    dataIndex: 'value',
-    render: (text: string) => <Text className='row-text'>{text}</Text>,
-    sorter: {
-      multiple: 1,
+    {
+      title: 'Tipo de novedad',
+      dataIndex: 'noveltyType',
+      render: (text: string) => <Text className='row-text'>{text}</Text>,
     },
-  },
-  {
-    title: 'Status',
-    dataIndex: 'state',
-    render: (text: string) => (
-      <div className='stateContainer'>
-        <div style={{ backgroundColor: getBgColor(text) }} className='stateContent'>
-          <Text style={{ color: getColor(text) }} className='text'>{text}</Text>
+    {
+      title: 'Observaciones',
+      dataIndex: 'observation',
+      render: (text: string) => <Text className='row-text'>{text}</Text>,
+    },
+    {
+      title: "Soportes",
+      dataIndex: "support",
+      render: (url: string) => (
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Ver soportes
+        </a>
+      ),
+    },
+    {
+      title: 'Valor',
+      dataIndex: 'value',
+      render: (text: string) => <Text className='row-text'>{text}</Text>,
+      sorter: {
+        multiple: 1,
+      },
+    },
+    {
+      title: 'Status',
+      dataIndex: 'state',
+      render: (text: string) => (
+        <div className='stateContainer'>
+          <div style={{ backgroundColor: getBgColor(text) }} className='stateContent'>
+            <Text style={{ color: getColor(text) }} className='text'>{text}</Text>
+          </div>
         </div>
-      </div>
-    ),
-  },
-  {
-    title: '',
-    dataIndex: '',
-    render: (text: string) => (
-      <div className='btnContainer'>
-        <Button
-          className="btn"
-          type="text"
-          size="middle"
-          icon={<Eye size={24} />}
-        />
-      </div>
-    ),
-  },
-];
-
-const data: DataType[] = [
-  {
-    key: '1',
-    id: '0000000',
-    noveltyType: 'Kilometros adicionales',
-    observation: 'Descripción de na novedad',
-    support: 'Ver soportes',
-    value: '$0.000',
-    state: 'Pendiente',
-  },
-  {
-    key: '2',
-    id: '0000000',
-    noveltyType: 'Stand By',
-    observation: 'Descripción de na novedad',
-    support: 'Ver soportes',
-    value: '$0.000',
-    state: 'Aceptada',
-  },
-  {
-    key: '3',
-    id: '0000000',
-    noveltyType: 'Doble conductor',
-    observation: 'Descripción de na novedad',
-    support: 'Ver soportes',
-    value: '$0.000',
-    state: 'Rechazada',
-  },
-];
-
-export const NoveltyTable = () => {
-  return <Table
-    columns={columns}
-    dataSource={data}
-  />
+      ),
+    },
+    {
+      title: "",
+      dataIndex: "support",
+      render: (url) => (
+        <div className="btnContainer">
+          <Button
+            className="btn"
+            type="text"
+            size="middle"
+            onClick={() => window.open(url, "_blank")}
+            icon={<Eye size={24} />}
+          />
+        </div>
+      ),
+    },
+  ];
+  
+  return (
+    <Table
+      columns={columns}
+      pagination={false}
+      dataSource={novelties.map((novelty) => {
+        const firstEvidenceUrl = novelty.evidences.length > 0 ? novelty.evidences[0].url : "#";
+        return {
+          key: novelty.id,
+          id: String(novelty.id),
+          noveltyType: novelty.novelty_type,
+          observation: novelty.observation,
+          support: firstEvidenceUrl,
+          value: formatMoney(novelty.value),
+          state: novelty.status,
+        };
+      })}
+    />
+  );
 };

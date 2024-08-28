@@ -1,0 +1,159 @@
+@import "../../../../../styles/variables.scss";
+
+.collapseInformationWrapper {
+    .collapseInformationContainer {
+        display: flex;
+        flex-direction: column;
+        padding: 24px;
+        margin-bottom: 32px;
+        gap: 32px;
+        border-radius: 8px;
+        border: 1px solid $dark-gray;
+
+        .collapseResumeWrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+
+            .collapseTopSection {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .collapseResumeContainer {
+                width: 100%;
+                padding: 16px;
+                gap: 32px;
+                border-radius: 4px;
+                background: #f7f7f7;
+
+                .collapseResum {
+                    display: flex;
+                    align-items: center;
+                    gap: 32px;
+
+                    .collapseResumItem {
+                        display: flex;
+                        column-gap: 8px;
+                        width: 25%;
+
+                        .collapseText {
+                            color: #141414;
+                            font-size: 16px;
+                            font-weight: 400;
+                            letter-spacing: -1px;
+
+                            &.collapseBold {
+                                font-weight: 600;
+                            }
+                        }
+
+                        &.collapseBorder {
+                            border-right: 1px solid #ddd;
+                        }
+
+                        .collapseBaggageButton {
+                            width: 100%;
+                            height: 44px;
+                            padding: 10px;
+                            gap: 8px;
+                            border-radius: 8px;
+                            border: 1px;
+                            background-color: $white;
+                            border: 1px solid $dark-gray;
+                        }
+                    }
+                }
+            }
+            .collapsePersonsResumeContainer {
+                width: 100%;
+                padding: 16px;
+                gap: 32px;
+                border-radius: 4px;
+                background: #f7f7f7;
+
+                .collapsePersonsResum {
+                    display: flex;
+                    align-items: center;
+                    gap: 32px;
+
+                    .collapsePersonsResumItem {
+                        display: flex;
+                        column-gap: 8px;
+                        width: 50%;
+
+                        .collapsePersonsText {
+                            color: #141414;
+                            font-size: 16px;
+                            font-weight: 400;
+                            letter-spacing: -1px;
+
+                            &.collapsePersonsBold {
+                                font-weight: 600;
+                            }
+                        }
+
+                        &.collapsePersonsBorder {
+                            height: 45px;
+                            align-items: center;
+                            border-right: 1px solid #ddd;
+                        }
+
+                        .collapsePersonsAcomodationButton {
+                            width: 100%;
+                            height: 44px;
+                            padding: 10px;
+                            gap: 8px;
+                            border-radius: 8px;
+                            border: 1px;
+                            background-color: $white;
+                            border: 1px solid $dark-gray;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.collapseButtons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    .collapseAddVehicleButton {
+        height: 45px;
+        padding: 16px;
+        gap: 16px;
+        border-radius: 4px;
+        background-color: $black;
+        font-family: Poppins;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 21px;
+        color: $white;
+    }
+    .collapseSaveButton {
+        height: 45px;
+        padding: 16px;
+        gap: 16px;
+        border-radius: 4px;
+        background-color: $green;
+        font-family: Poppins;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 21px;
+    }
+    .collapseCancelButton {
+        height: 45px;
+        padding: 16px;
+        gap: 16px;
+        border-radius: 4px;
+        background-color: $green;
+        font-family: Poppins;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 21px;
+    }
+}

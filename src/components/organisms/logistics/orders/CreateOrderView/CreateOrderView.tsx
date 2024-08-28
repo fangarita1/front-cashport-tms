@@ -1,11 +1,32 @@
-import { Flex, Typography, message, Collapse, Row, Col, Select, Switch, DatePicker, TimePicker, Table, TableProps,AutoComplete, Input, InputNumber, Button, Popconfirm, Divider, Space } from "antd";
+import {
+  Flex,
+  Typography,
+  message,
+  Collapse,
+  Row,
+  Col,
+  Select,
+  Switch,
+  DatePicker,
+  TimePicker,
+  Table,
+  TableProps,
+  AutoComplete,
+  Input,
+  InputNumber,
+  Button,
+  Popconfirm,
+  Divider,
+  Space,
+  theme
+} from "antd";
 import React, { useRef, useEffect, useState } from "react";
-import { runes } from 'runes2';
+import { runes } from "runes2";
 
 // dayjs locale
-import dayjs, { Dayjs } from 'dayjs';
-import 'dayjs/locale/es-us';
-dayjs.locale('es');
+import dayjs, { Dayjs } from "dayjs";
+import "dayjs/locale/es";
+dayjs.locale("es");
 
 // mapbox
 import mapboxgl from "mapbox-gl";
@@ -18,13 +39,29 @@ import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 
 //schemas
-import { CustomOptionType, IClient, ICompanyCode, IFormTransferOrder, ILocation, IMaterial, IOrderPsl, IOrderPslCostCenter, ITransferOrder, ITransferOrderContacts, ITransferOrderOtherRequirements, ITransferOrderPersons, IVehicleType, PSLOptionType } from "@/types/logistics/schema";
+import {
+  CustomOptionType,
+  IClient,
+  ICompanyCode,
+  IFormTransferOrder,
+  ILocation,
+  IMaterial,
+  IOrderPsl,
+  IOrderPslCostCenter,
+  ITransferOrder,
+  ITransferOrderContacts,
+  ITransferOrderOtherRequirements,
+  ITransferOrderPersons,
+  IVehicleType,
+  PSLOptionType,
+  TripType
+} from "@/types/logistics/schema";
 
 //locations
 import { getAllLocations } from "@/services/logistics/locations";
 
 //materials
-import { getAllMaterials} from "@/services/logistics/materials";
+import { getAllMaterials } from "@/services/logistics/materials";
 
 //materials
 import { getSuggestedVehicles } from "@/services/logistics/vehicles";
@@ -40,15 +77,19 @@ import {
   NewspaperClipping,
   Trash,
   CaretLeft,
-  CaretRight
+  CaretRight,
+  Phone
 } from "@phosphor-icons/react";
 
 import "../../../../../styles/_variables_logistics.css";
 
 import "./createorder.scss";
-import { FileObject, UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+import {
+  FileObject,
+  UploadDocumentButton
+} from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import TextArea from "antd/es/input/TextArea";
-import { addTransferOrder } from "@/services/logistics/transfer-orders";
+import { addTransferOrder, getAllUsers } from "@/services/logistics/transfer-orders";
 import { getOtherRequirements } from "@/services/logistics/other-requirements";
 import { getPsl } from "@/services/logistics/psl";
 import { auth } from "../../../../../../firebase";
@@ -64,8 +105,12 @@ import { getCompanyCodes } from "@/services/logistics/company-codes";
 import { getClients } from "@/services/logistics/clients";
 import { getTravelDuration } from "@/utils/logistics/maps";
 import CustomTimeSelector from "@/components/molecules/logistics/HourPicker/HourPicker";
+import { formatNumber } from "@/utils/utils";
+import MaterialTableFooter from "./components/MaterialTableFooter/MaterialTableFooter";
+import AddRemoveButton from "../../acept_carrier/detail/components/VehicleAndDriverAsignation/components/AddRemoveButton/AddRemoveButton";
 
 const { Title, Text } = Typography;
+const { useToken } = theme;
 
 export const CreateOrderView = () => {
   const { push } = useRouter();
@@ -92,35 +137,36 @@ export const CreateOrderView = () => {
   const [client, setClient] = useState(-1);
   const [observation, setObservation] = useState<any>(null);
 
-  const [originValid,setOriginValid] = useState(true);
-  const [destinationValid,setdestinationValid] = useState(true);
-  const [fechaInicialValid,setFechaInicialValid] = useState(true);
-  const [horaInicialValid,setHoraInicialValid] = useState(true);
-  const [fechaFinalValid,setFechaFinalValid] = useState(true);
-  const [horaFinalValid,setHoraFinalValid] = useState(true);
-  const [fechaInicialFlexibleValid,setFechaInicialFlexibleValid] = useState(true);
-  const [fechaFinalFlexibleValid,setFechaFinalFlexibleValid] = useState(true);
-  
-  const [clientValid,setClientValid] = useState(true);
-  const [companyValid,setCompanyValid] = useState(true);
+  const [originValid, setOriginValid] = useState(true);
+  const [destinationValid, setdestinationValid] = useState(true);
+  const [fechaInicialValid, setFechaInicialValid] = useState(true);
+  const [horaInicialValid, setHoraInicialValid] = useState(true);
+  const [fechaFinalValid, setFechaFinalValid] = useState(true);
+  const [horaFinalValid, setHoraFinalValid] = useState(true);
+  const [fechaInicialFlexibleValid, setFechaInicialFlexibleValid] = useState(true);
+  const [fechaFinalFlexibleValid, setFechaFinalFlexibleValid] = useState(true);
 
-  const disabledDate: RangePickerProps['disabledDate'] = (current:any) => {
+  const [clientValid, setClientValid] = useState(true);
+  const [companyValid, setCompanyValid] = useState(true);
+
+  const disabledDate: RangePickerProps["disabledDate"] = (current: any) => {
     // Can not select days before today
-    return current && current < dayjs().startOf('day');
+    return current && current < dayjs().startOf("day");
   };
 
-    useEffect(() => {
-      if (!destinoIzaje) {
-          setHorasDestinoIzaje(1);
-      } 
-      if(!origenIzaje){
-        setHorasOrigenIzaje(1);
-      }
+  useEffect(() => {
+    if (!destinoIzaje) {
+      setHorasDestinoIzaje(1);
+    }
+    if (!origenIzaje) {
+      setHorasOrigenIzaje(1);
+    }
   }, [origenIzaje, destinoIzaje]);
 
   const { data: documentsType, isLoading: isLoadingDocuments } = useSWRInmutable(
     "0",
-    getDocumentsByEntityType);
+    getDocumentsByEntityType
+  );
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
   const [isOpenModalContacts, setIsOpenModalContacts] = useState(false);
 
@@ -128,10 +174,11 @@ export const CreateOrderView = () => {
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
 
   /* MAPBOX */
-  const mapsAccessToken = 'pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA';//import.meta.env.VITE_MAP_BOX_ACCESS_TOKEN,
+  const mapsAccessToken =
+    "pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA"; //import.meta.env.VITE_MAP_BOX_ACCESS_TOKEN,
 
   const mapContainerRef = useRef(null);
-  const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/streets-v12");   
+  const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/streets-v12");
   const [routeGeometry, setRouteGeometry] = useState<any>(null);
   const [routeInfo, setRouteInfo] = useState([]);
   const [distance, setDistance] = useState<any>(null);
@@ -164,17 +211,17 @@ export const CreateOrderView = () => {
   }, []);
 
   const loadLocations = async () => {
-    if(locations.length >0 ) return;
+    if (locations.length > 0) return;
     const result = await getAllLocations();
-    if(result?.data?.data?.length > 0){
+    if (result?.data?.data?.length > 0) {
       //console.log(result.data.data);
-      
+
       const listlocations: any[] | ((prevState: ILocation[]) => ILocation[]) = [];
-      const listlocationoptions: { label: any; value: any; }[] = [];
+      const listlocationoptions: { label: any; value: any }[] = [];
 
       result.data.data.forEach((item) => {
         listlocations.push(item);
-        listlocationoptions.push({label: item.description, value: item.id})
+        listlocationoptions.push({ label: item.description, value: item.id });
       });
 
       setLocations(listlocations);
@@ -184,34 +231,31 @@ export const CreateOrderView = () => {
 
   useEffect(() => {
     if (Array.isArray(documentsType)) {
-        const fileSelected = documentsType
-          ?.filter(
-            (f) => selectedFiles?.find((f2) => f2.id === f.id)
-          )
-          ?.map((f) => ({
-            ...f,
-            file: files.find((f2) => f2.aditionalData === f.id)?.file,
-            expirationDate: undefined
-          }));
-        if (fileSelected?.length) {
-          setSelectedFiles([...fileSelected]);
-        } else {
-          setSelectedFiles([]);
-        }
+      const fileSelected = documentsType
+        ?.filter((f) => selectedFiles?.find((f2) => f2.id === f.id))
+        ?.map((f) => ({
+          ...f,
+          file: files.find((f2) => f2.aditionalData === f.id)?.file,
+          expirationDate: undefined
+        }));
+      if (fileSelected?.length) {
+        setSelectedFiles([...fileSelected]);
+      } else {
+        setSelectedFiles([]);
       }
+    }
   }, [files, documentsType]);
 
-
-  // Cambia origen 
-  const onChangeOrigin = (value:any) =>{
+  // Cambia origen
+  const onChangeOrigin = (value: any) => {
     //console.log('origen:'+value);
     locations.forEach(async (item, index) => {
-      if(item.id == value){
+      if (item.id == value) {
         //console.log(item);
         setLocationOrigin(item);
         origin.current = [item.longitude, item.latitude];
         setOriginValid(true);
-        if(typeactive == '2'){
+        if (typeactive == "2") {
           setLocationDestination(item);
           destination.current = [item.longitude, item.latitude];
           setdestinationValid(true);
@@ -219,13 +263,13 @@ export const CreateOrderView = () => {
         calcRouteDirection();
       }
     });
-  }
+  };
 
-  // Cambia destino 
-  const onChangeDestino = async (value:any) =>{
-    console.log('destino:'+value);
+  // Cambia destino
+  const onChangeDestino = async (value: any) => {
+    console.log("destino:" + value);
     locations.forEach(async (item, index) => {
-      if(item.id == value){
+      if (item.id == value) {
         //console.log(item);
         setLocationDestination(item);
         destination.current = [item.longitude, item.latitude];
@@ -233,49 +277,44 @@ export const CreateOrderView = () => {
         calcRouteDirection();
       }
     });
-  }
+  };
 
   /* MAPBOX */
-  
+
   useEffect(() => {
-    if(!mapContainerRef.current) return;
-    
+    if (!mapContainerRef.current) return;
+
     mapboxgl.accessToken = mapsAccessToken;
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: mapStyle,
-      center: {lon:-74.07231699675322, lat:4.66336863727521}, // longitude and latitude
+      center: { lon: -74.07231699675322, lat: 4.66336863727521 }, // longitude and latitude
       zoom: 12,
-      attributionControl: false,
+      attributionControl: false
     });
-    
+
     map.on("style.load", () => {
       // Add the compass control
       const compassControl = new mapboxgl.NavigationControl({
-        showCompass: true,
+        showCompass: true
       });
       map.addControl(compassControl, "top-right");
 
       // Create a marker at the starting position
-      if(origin){
-        const startMarker = new mapboxgl.Marker()
-          .setLngLat(origin.current)
-          .addTo(map);
+      if (origin) {
+        const startMarker = new mapboxgl.Marker().setLngLat(origin.current).addTo(map);
       }
 
       // Create a marker at the finish position
-      if(destination){
-        const finalMarker = new mapboxgl.Marker()      
-          .setLngLat(destination.current)
-          .addTo(map);
+      if (destination) {
+        const finalMarker = new mapboxgl.Marker().setLngLat(destination.current).addTo(map);
       }
 
       if (routeGeometry) {
-        
         const datajson: GeoJSON.Feature = {
-            type: 'Feature',
-            geometry: routeGeometry,
-            properties: {},
+          type: "Feature",
+          geometry: routeGeometry,
+          properties: {}
         };
 
         map.addSource("route", {
@@ -289,30 +328,28 @@ export const CreateOrderView = () => {
           source: "route",
           layout: {
             "line-join": "round",
-            "line-cap": "round",
+            "line-cap": "round"
           },
           paint: {
             "line-color": "#3FB1CE",
-            "line-width": 6,
-          },
+            "line-width": 6
+          }
         });
       }
 
-      if(locationOrigin?.id == locationDestination?.id)
-      {
+      if (locationOrigin?.id == locationDestination?.id) {
         map.setCenter(origin.current);
-        map.setZoom(14)
-
-      }else{
+        map.setZoom(14);
+      } else {
         // Get the route bounds
         const bounds = routeGeometry.coordinates.reduce(
-          (bounds:any, coord:any) => bounds.extend(coord),
+          (bounds: any, coord: any) => bounds.extend(coord),
           new mapboxgl.LngLatBounds()
         );
 
         // Zoom out to fit the route within the map view
         map.fitBounds(bounds, {
-          padding: 50,
+          padding: 50
         });
       }
     });
@@ -324,39 +361,33 @@ export const CreateOrderView = () => {
 
   // calculate direction
   const calcRouteDirection = async () => {
-
     if (origin.current.length == 0 || destination.current.length == 0) return;
 
     try {
-      //console.log(origin);        
+      //console.log(origin);
       //console.log(destination);
 
       const response = await axios.get(
-        `https://api.mapbox.com/directions/v5/mapbox/driving/${origin.current[0]},${origin.current[1]};${
-          destination.current[0]
-        },${destination.current[1]}?steps=true&geometries=geojson&access_token=${
-          mapsAccessToken
-        }`
+        `https://api.mapbox.com/directions/v5/mapbox/driving/${origin.current[0]},${origin.current[1]};${destination.current[0]},${destination.current[1]}?steps=true&geometries=geojson&access_token=${mapsAccessToken}`
       );
 
-      const routes = response.data.routes;      
+      const routes = response.data.routes;
       console.log("routes=>", routes);
-      if(routes != undefined && routes.length> 0){
+      if (routes != undefined && routes.length > 0) {
         routes[0].legs = [];
       }
       setRouteInfo(routes);
       // Check if any routes are returned
       if (routes.length > 0) {
-
         const { distance, duration, geometry } = routes[0];
 
         // Valid directions, use the distance and duration for further processing
         const directions = {
           distance,
-          duration,
-        };        
+          duration
+        };
         setRouteGeometry(geometry); // Set the route geometry
-        setDistance(parseFloat((distance/1000).toFixed(2)) + " Km");
+        setDistance(parseFloat((distance / 1000).toFixed(2)) + " Km");
         calculateDuration(duration);
         return directions;
       } else {
@@ -368,141 +399,184 @@ export const CreateOrderView = () => {
       console.error("Error calculating directions:", error as any);
       if (error instanceof Error) {
         messageApi.error("Error calculando direcciones: " + error.message);
-      }
-      else {
+      } else {
         messageApi.error("Error calculando direcciones: " + error);
       }
     }
   };
 
   useEffect(() => {
-    const init = fechaInicial?.hour(horaInicial?.get('hour') || 0).minute(horaInicial?.get('minute') || 0).toDate() || new Date();
-    const finish = fechaFinal?.hour(horaFinal?.get('hour') || 0).minute(horaFinal?.get('minute') || 0).toDate() || new Date();
-    const duration = (finish.getTime()  - init.getTime() ) / 1000 ;
-    typeactive == '2' &&
-    calculateDuration(duration);
+    const init =
+      fechaInicial
+        ?.hour(horaInicial?.get("hour") || 0)
+        .minute(horaInicial?.get("minute") || 0)
+        .toDate() || new Date();
+    const finish =
+      fechaFinal
+        ?.hour(horaFinal?.get("hour") || 0)
+        .minute(horaFinal?.get("minute") || 0)
+        .toDate() || new Date();
+    const duration = (finish.getTime() - init.getTime()) / 1000;
+    typeactive == "2" && calculateDuration(duration);
   }, [typeactive, fechaInicial, fechaFinal, horaInicial, horaFinal]);
 
   const calculateDuration = (duration: number) => {
     const hrs = getTravelDuration(duration);
-    setTimeTravel(hrs + " Hrs")
-  }
+    setTimeTravel(hrs + " Hrs");
+  };
   /* Tipo de viaje */
-  const handleTypeClick = (event:any) => {
+  const handleTypeClick = (event: any) => {
     //console.log(event);
     setTypeActive(event.target.id);
     origin.current = [];
     destination.current = [];
-    setRouteGeometry(null)
+    setRouteGeometry(null);
     setRouteInfo([]);
     setDistance(null);
     setTimeTravel(null);
-    if(event.target.id == "2"){
+    if (event.target.id == "2") {
       setOrigenIzaje(true);
-    }else{
+    } else {
       setOrigenIzaje(false);
     }
-  }
+  };
 
   /* Carga */
-  
-  const columnsCarga : TableProps<IMaterial>['columns'] = [
+
+  const columnsCarga: TableProps<IMaterial>["columns"] = [
     {
-      title: 'Cantidad',
-      dataIndex: 'quantity',
-      key: 'quantity',
+      title: "Cantidad",
+      dataIndex: "quantity",
+      key: "quantity",
       render: (_, record) =>
         dataCarga.length >= 1 ? (
           <Flex align="center">
-            <CaretLeft onClick={() => handleQuantityMaterial(record.key,'-')}/>&nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;<CaretRight onClick={() => handleQuantityMaterial(record.key,'+')}/>
+            <CaretLeft onClick={() => handleQuantityMaterial(record.key, "-")} />
+            &nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;
+            <CaretRight onClick={() => handleQuantityMaterial(record.key, "+")} />
           </Flex>
-        ) : null,
+        ) : null
     },
     {
-      title: 'SKU',
-      dataIndex: 'sku',
-      key: 'sku',
+      title: "SKU",
+      dataIndex: "sku",
+      key: "sku"
     },
     {
-      title: 'Nombre',
-      dataIndex: 'description',
-      key: 'description',
+      title: "Nombre",
+      dataIndex: "description",
+      key: "description"
     },
     {
-      title: 'Volumen',
-      dataIndex: 'm3_volume',
-      key: 'm3_volume',
-      render: (_, record) =>{
-        return record.m3_volume + ' m3';
+      title: "Volumen",
+      dataIndex: "m3_volume",
+      key: "m3_volume",
+      render: (_, record) => {
+        return record.m3_volume + " m3";
       }
     },
     {
-      title: 'Alto',
-      dataIndex: 'mt_height',
-      key: 'mt_height',
-      render: (_, record) =>{
-        return record.mt_height + ' m';
+      title: "Alto",
+      dataIndex: "mt_height",
+      key: "mt_height",
+      render: (_, record) => {
+        return record.mt_height + " m";
       }
     },
     {
-      title: 'Ancho',
-      dataIndex: 'mt_width',
-      key: 'mt_width',
-      render: (_, record) =>{
-        return record.mt_width + ' m';
+      title: "Ancho",
+      dataIndex: "mt_width",
+      key: "mt_width",
+      render: (_, record) => {
+        return record.mt_width + " m";
       }
     },
     {
-      title: 'Largo',
-      dataIndex: 'mt_length',
-      key: 'mt_length',
-      render: (_, record) =>{
-        return record.mt_length + ' m';
+      title: "Largo",
+      dataIndex: "mt_length",
+      key: "mt_length",
+      render: (_, record) => {
+        return record.mt_length + " m";
       }
     },
     {
-      title: 'Peso',
-      dataIndex: 'kg_weight',
-      key: 'kg_weight',
-      render: (_, record) =>{
-        return record.kg_weight + ' kg';
+      title: "Peso",
+      dataIndex: "kg_weight",
+      key: "kg_weight",
+      render: (_, record) => {
+        return record.kg_weight + " kg";
       }
     },
     {
-      title: '',
-      dataIndex: 'alerts',
-      key: 'alerts',
+      title: "",
+      dataIndex: "alerts",
+      key: "alerts",
       render: (_, record) =>
         dataCarga.length >= 1 ? (
-          <Popconfirm title="Esta seguro de eliminar?" onConfirm={() => handleDeleteMaterial(record.key)} >
-            <div style={{ display:"flex", justifyContent:"center",alignItems:"center", height:32, width: 32}}>
-              <Trash size={24}/>
+          <Popconfirm
+            title="Esta seguro de eliminar?"
+            onConfirm={() => handleDeleteMaterial(record.key)}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: 32,
+                width: 32
+              }}
+            >
+              <Trash size={24} />
             </div>
           </Popconfirm>
-        ) : null,
-    },
+        ) : null
+    }
   ];
 
-  const columnsCargaPersonas = [
+  const columnsCargaPersonas: TableProps<ITransferOrderPersons>["columns"] = [
     {
-      title: 'Nombre',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Nombre",
+      dataIndex: "name",
+      key: "name"
     },
     {
-      title: 'Teléfono',
-      dataIndex: 'phone',
-      key: 'phone',
+      title: "Teléfono",
+      dataIndex: "contact_number",
+      key: "contact_number"
     },
     {
-      title: 'PSL',
-      dataIndex: 'psl',
-      key: 'psl',
+      title: "PSL",
+      dataIndex: "psl_desc",
+      key: "psl_desc"
     },
     {
-      title: 'CC',
-      dataIndex: 'typeid',
-      key: 'typeid',
+      title: "CC",
+      dataIndex: "cost_center_desc",
+      key: "cost_center_desc"
+    },
+    {
+      title: "",
+      dataIndex: "alerts",
+      key: "alerts",
+      render: (_, record) =>
+        dataPersons.length >= 1 ? (
+          <Popconfirm
+            title="Esta seguro de eliminar?"
+            onConfirm={() => handleDeletePerson(record.key)}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: 32,
+                width: 32
+              }}
+            >
+              <Trash size={24} />
+            </div>
+          </Popconfirm>
+        ) : null
     }
   ];
 
@@ -512,127 +586,143 @@ export const CreateOrderView = () => {
   let cargaIdx = 0;
 
   const loadMaterials = async () => {
-    if(optionsMaterial !== undefined && optionsMaterial.length >0 ) return;
+    if (optionsMaterial !== undefined && optionsMaterial.length > 0) return;
 
     const res = await getAllMaterials();
-    const result:any = [];
+    const result: any = [];
     //console.log (res);
-    if(res?.data?.data?.length > 0){
+    if (res?.data?.data?.length > 0) {
       res.data.data.forEach((item) => {
-        const strlabel = <div style={{ display: 'flex', alignItems: "center"}}>
-                            <Col span={20}>
-                              <Text>
-                                  {item.type_description} - {item.description}
-                                  <br></br>
-                                  Volumen {item.m3_volume} m3 - Peso {item.kg_weight} Kg
-                              </Text>
-                            </Col>
-                            <Col span={4} style={{ display: 'flex', justifyContent: "flex-end"}}>
-                              <button className="btnagregar active" onClick={() => addMaterial(item)}>Agregar</button>
-                            </Col>
-                          </div>;
+        const strlabel = (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Col span={20}>
+              <Text>
+                {item.type_description} - {item.description}
+                <br></br>
+                Volumen {item.m3_volume} m3 - Peso {item.kg_weight} Kg
+              </Text>
+            </Col>
+            <Col span={4} style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button className="btnagregar active" onClick={() => addMaterial(item)}>
+                Agregar
+              </button>
+            </Col>
+          </div>
+        );
 
-        result.push({label: strlabel,value:item.description })
-      });      
+        result.push({ label: strlabel, value: item.description });
+      });
     }
 
-    setOptionsMaterial(result);    
+    setOptionsMaterial(result);
   };
-  
+
   useEffect(() => {
     loadMaterials();
   }, []);
 
   const filteredMaterialOptions = optionsMaterial.filter(
-    (option:any) => !dataCarga.some(material => material.description === option.value)
+    (option: any) => !dataCarga.some((material) => material.description === option.value)
   );
 
-  const addMaterial = async (value:any) =>{
+  const addMaterial = async (value: any) => {
     cargaIdx = cargaIdx + 1;
     console.log(cargaIdx);
-    
+
     value.quantity = 1;
     value.key = cargaIdx;
 
-    const newvalue : IMaterial = value;
+    const newvalue: IMaterial = value;
     //busca si ya se selecciono previamente
-    let newData:IMaterial[] = [];
-    setDataCarga((prevdata)=>{
-      newData =[...prevdata];
+    let newData: IMaterial[] = [];
+    setDataCarga((prevdata) => {
+      newData = [...prevdata];
       return prevdata;
-    })
+    });
     let found = false;
-    newData.forEach(item => {
-      if(item.id === newvalue.id){
+    newData.forEach((item) => {
+      if (item.id === newvalue.id) {
         item.quantity = item.quantity + 1;
         found = true;
       }
-    });    
+    });
 
-    if(found){
+    if (found) {
       setDataCarga(newData);
-    }else{
-      setDataCarga(dataCarga => [...dataCarga, newvalue]);
+    } else {
+      setDataCarga((dataCarga) => [...dataCarga, newvalue]);
     }
-
   };
 
   const handleDeleteMaterial = (key: React.Key) => {
-    console.log(key)
+    console.log(key);
     cargaIdx = cargaIdx - 1;
     const newData = dataCarga.filter((item) => item.key !== key);
     setDataCarga(newData);
   };
 
   const handleQuantityMaterial = (key: React.Key, sign: string) => {
-    console.log(key)
+    console.log(key);
     const newData = [...dataCarga];
-    newData.forEach(item => {
-      if(item.key === key){
-        if(sign=='+'){
+    newData.forEach((item) => {
+      if (item.key === key) {
+        if (sign == "+") {
           item.quantity = item.quantity + 1;
         }
-        if(sign=='-'){
-          if(item.quantity === 1) return item.quantity
+        if (sign == "-") {
+          if (item.quantity === 1) return item.quantity;
           item.quantity = item.quantity - 1;
         }
       }
-    });    
-    
+    });
+
     setDataCarga(newData);
   };
 
   /* Vehiculos sugeridos */
-  const columnsCargaVehiculo: TableProps<IVehicleType>['columns'] = [
+  const columnsCargaVehiculo: TableProps<IVehicleType>["columns"] = [
     {
-      title: 'Vehículo',
-      dataIndex: 'description',
-      key: 'description',
+      title: "Vehículo",
+      dataIndex: "description",
+      key: "description"
     },
     {
-      title: 'Cantidad',
-      dataIndex: 'quantity',
-      key: 'quantity',
+      title: "Cantidad",
+      dataIndex: "quantity",
+      key: "quantity",
       render: (_, record) =>
         dataVehicles.length >= 1 ? (
           <Flex align="center">
-            <CaretLeft onClick={() => handleQuantityVehicle(record.key,'-')}/>&nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;<CaretRight onClick={() => handleQuantityVehicle(record.key,'+')}/>
+            <CaretLeft onClick={() => handleQuantityVehicle(record.key, "-")} />
+            &nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;
+            <CaretRight onClick={() => handleQuantityVehicle(record.key, "+")} />
           </Flex>
-        ) : null,
+        ) : null
     },
     {
-      title: '',
-      dataIndex: 'alerts',
-      key: 'alerts',
+      title: "",
+      dataIndex: "alerts",
+      key: "alerts",
       render: (_, record) =>
         dataVehicles.length >= 1 ? (
-          <Popconfirm title="Esta seguro de eliminar?" onConfirm={() => handleDeleteVehicle(record.key)}>
-            <div style={{ display:"flex", justifyContent:"center",alignItems:"center", height:32, width: 32}}>
-              <Trash size={24}/>
+          <Popconfirm
+            title="Esta seguro de eliminar?"
+            onConfirm={() => handleDeleteVehicle(record.key)}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: 32,
+                width: 32
+              }}
+            >
+              <Trash size={24} />
             </div>
           </Popconfirm>
-        ) : null,
-    },
+        ) : null
+    }
   ];
 
   const [optionsVehicles, setOptionsVehicles] = useState<CustomOptionType[]>([]);
@@ -642,78 +732,83 @@ export const CreateOrderView = () => {
 
   const loadSuggestedVehicles = async () => {
     const res = await getSuggestedVehicles(typeactive);
-    const result:any = [];
+    const result: any = [];
     //console.log (res);
-    if(res?.data?.data?.length > 0){
+    if (res?.data?.data?.length > 0) {
       res.data.data.forEach((item) => {
-        const strlabel = <div style={{ display: 'flex', alignItems: "center"}}>
-                            <Col span={20}>
-                                <Text><b>{item.description}</b>
-                                <br/>
-                                Largo {item.length}m - Ancho {item.width}m - Alto {item.height}m - Máximo {item.kg_capacity}Tn
-                                <br/>
-                                Cantidad disponibles: {item.available}
-                                </Text>
-                            </Col>
-                            <Col span={4} style={{ display: 'flex', justifyContent: "flex-end"}}>
-                              <button className="btnagregar active" onClick={() => addVehicle(item)}>Agregar</button>
-                            </Col>
-                        </div>;
+        const strlabel = (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Col span={20}>
+              <Text>
+                <b>{item.description}</b>
+                <br />
+                Largo {item.length}m - Ancho {item.width}m - Alto {item.height}m - Máximo{" "}
+                {item.kg_capacity}Tn
+                <br />
+                Cantidad disponibles: {item.available}
+              </Text>
+            </Col>
+            <Col span={4} style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button className="btnagregar active" onClick={() => addVehicle(item)}>
+                Agregar
+              </button>
+            </Col>
+          </div>
+        );
 
-        result.push({value:item.description, label: strlabel})
-      });      
+        result.push({ value: item.description, label: strlabel });
+      });
     }
 
-    setOptionsVehicles(result); 
+    setOptionsVehicles(result);
   };
-  
+
   useEffect(() => {
     loadSuggestedVehicles();
   }, []);
 
   useEffect(() => {
-    setDataVehicles([])
+    setDataVehicles([]);
     loadSuggestedVehicles();
   }, [typeactive]);
 
   const filteredVehiclesOptions = optionsVehicles.filter(
-    (option:any) => !dataVehicles.some(vehicle => vehicle.description === option.value)
+    (option: any) => !dataVehicles.some((vehicle) => vehicle.description === option.value)
   );
 
-  const addVehicle = async (value:any) =>{
+  const addVehicle = async (value: any) => {
     vehiclesIdx = vehiclesIdx + 1;
-    
+
     value.quantity = 1;
     value.key = vehiclesIdx;
 
-    const newvalue : IVehicleType = value;
+    const newvalue: IVehicleType = value;
     console.log(newvalue);
-    await setDataVehicles(dataVehicles => [...dataVehicles, newvalue]);
+    await setDataVehicles((dataVehicles) => [...dataVehicles, newvalue]);
   };
 
-
   const handleDeleteVehicle = (key: React.Key) => {
-    console.log(key)
+    console.log(key);
     vehiclesIdx = vehiclesIdx - 1;
     const newData = dataVehicles.filter((item) => item.key !== key);
     setDataVehicles(newData);
   };
 
   const handleQuantityVehicle = (key: React.Key, sign: string) => {
-    console.log(key)
+    console.log(key);
     const newData = [...dataVehicles];
-    newData.forEach(item => {
-      if(item.key === key){
-        if(sign=='+'){
+    newData.forEach((item) => {
+      if (item.key === key) {
+        if (sign == "+") {
           item.quantity = item.quantity + 1;
         }
-        if(sign=='-'){
-          if(item.quantity === 1) return item.quantity
+        if (sign == "-") {
+          if (item.quantity === 1) return item.quantity;
           item.quantity = item.quantity - 1;
         }
       }
-    });    
-    
+    });
+
     setDataVehicles(newData);
   };
 
@@ -722,33 +817,33 @@ export const CreateOrderView = () => {
     {
       key: 1,
       idpsl: 1,
-      descpsl: '',
+      descpsl: "",
       percent: 100,
       costcenters: [
         {
           key: 1,
           idpslcostcenter: 1,
-          descpslcostcenter: '',
+          descpslcostcenter: "",
           percent: 100
         }
       ]
-    },
-  ]
+    }
+  ];
 
   const [optionsPSL, setOptionsPSL] = useState<PSLOptionType[]>([]);
   const [dataPsl, setDataPsl] = useState<IOrderPsl[]>(dataPslDefault);
 
   const loadPSL = async () => {
-    if(optionsPSL !== undefined && optionsPSL.length >0 ) return;
+    if (optionsPSL !== undefined && optionsPSL.length > 0) return;
 
     const res = await getPsl();
-    const result:any = [];
-    if(res?.data?.data?.length > 0){
+    const result: any = [];
+    if (res?.data?.data?.length > 0) {
       res.data.data.forEach((item) => {
-        result.push({value: item.id, label: item.description, costcenters: item.cost_center})
-      });      
+        result.push({ value: item.id, label: item.description, costcenters: item.cost_center });
+      });
     }
-    setOptionsPSL(result); 
+    setOptionsPSL(result);
   };
 
   useEffect(() => {
@@ -756,69 +851,79 @@ export const CreateOrderView = () => {
   }, []);
 
   const setOptionsCostCenter = (idPsl: number) => {
-    const pslFinded = optionsPSL?.find(option => option.value === idPsl);
+    const pslFinded = optionsPSL?.find((option) => option.value === idPsl);
     if (!pslFinded) return [];
 
-    const pslInData = dataPsl.find(psl => psl.idpsl === idPsl);
+    const pslInData = dataPsl.find((psl) => psl.idpsl === idPsl);
 
-    const selectedCostCenterIds = pslInData?.costcenters.map(costCenter => costCenter.idpslcostcenter) || [];
+    const selectedCostCenterIds =
+      pslInData?.costcenters.map((costCenter) => costCenter.idpslcostcenter) || [];
 
     const newCcArray = pslFinded.costcenters
-        .map(c => ({ value: c.id, label: c.description }))
-        .filter(c => !selectedCostCenterIds.includes(c.value));
+      .map((c) => ({ value: c.id, label: c.description }))
+      .filter((c) => !selectedCostCenterIds.includes(c.value));
 
     return newCcArray;
-};
-
-
-  const filteredPsls = optionsPSL ? optionsPSL.filter(
-    option => !dataPsl.some(req => req.idpsl === option.value)
-  ): []
-  
-
-  const addPsl = async () =>{
-    const createNewPsl = (key:number) => {
-      return {
-          key,
-          idpsl: 1,
-          descpsl: '',
-          percent:0,
-          costcenters: [{
-            key: 1,
-            idpslcostcenter: 1,
-            descpslcostcenter: '',
-            percent: 0
-          }]  
-        }}
-    setDataPsl(dataPsl => [...dataPsl, createNewPsl(dataPsl?.length ? dataPsl?.length+1 : 1)]);
   };
 
-  const addPslCostCenter = (key: React.Key) => {  
-    const createNewCC = (key:number) => {
+  const filteredPsls = optionsPSL
+    ? optionsPSL.filter((option) => !dataPsl.some((req) => req.idpsl === option.value))
+    : [];
+
+  const addPsl = async () => {
+    const createNewPsl = (key: number) => {
       return {
-            key,
+        key,
+        idpsl: 1,
+        descpsl: "",
+        percent: 0,
+        costcenters: [
+          {
+            key: 1,
             idpslcostcenter: 1,
-            descpslcostcenter: '',
+            descpslcostcenter: "",
             percent: 0
-          
-        }}
-    setDataPsl(prevDataPsl => 
-      prevDataPsl.map(item => 
-        item.key === key ? 
-        { ...item, costcenters: [...item.costcenters, createNewCC(item.costcenters.length + 1)] } 
-        : item
+          }
+        ]
+      };
+    };
+    setDataPsl((dataPsl) => [...dataPsl, createNewPsl(dataPsl?.length ? dataPsl?.length + 1 : 1)]);
+  };
+
+  const addPslCostCenter = (key: React.Key) => {
+    const createNewCC = (key: number) => {
+      return {
+        key,
+        idpslcostcenter: 1,
+        descpslcostcenter: "",
+        percent: 0
+      };
+    };
+    console.log(dataPsl);
+    setDataPsl((prevDataPsl) =>
+      prevDataPsl.map((item) =>
+        item.key === key
+          ? {
+              ...item,
+              costcenters: [...item.costcenters, createNewCC(item.costcenters.length + 1)]
+            }
+          : item
       )
     );
   };
-  
-  const adjustCostCenterPercentages = (costcenters: IOrderPslCostCenter[], oldPsdPercent:number, newPslPercent:number) =>{
-    const newCCs = costcenters.map((cc)=>{
-      const oldCCPercent =cc.percent/oldPsdPercent
-      const newCCValue = newPslPercent*oldCCPercent
-      return {...cc, percent: newCCValue}
-    })
-    return newCCs
-  }
+
+  const adjustCostCenterPercentages = (
+    costcenters: IOrderPslCostCenter[],
+    oldPsdPercent: number,
+    newPslPercent: number
+  ) => {
+    const newCCs = costcenters.map((cc) => {
+      const oldCCPercent = cc.percent / oldPsdPercent;
+      const newCCValue = newPslPercent * oldCCPercent;
+      return { ...cc, percent: newCCValue };
+    });
+    return newCCs;
+  };
 
   const handlePslPercentChange = (value: number, pslIndex: number) => {
     setDataPsl((prevDataPsl) => {
@@ -826,13 +931,13 @@ export const CreateOrderView = () => {
       const totalPercentExcludingCurrent = prevDataPsl.reduce((total, psl, index) => {
         return index !== pslIndex ? total + psl.percent : total;
       }, 0);
-  
+
       // Verifica si la suma total con el nuevo valor es mayor a 100
       const isOverTotal = totalPercentExcludingCurrent + value > 100;
-  
+
       const remainingPercent = 100 - value;
       const otherPslCount = prevDataPsl.length - 1;
-  
+
       // Actualiza los PSLs con la lógica correspondiente
       const updatedPsl = prevDataPsl.map((psl, i) => {
         if (i === pslIndex) {
@@ -844,69 +949,100 @@ export const CreateOrderView = () => {
             percent: adjustedPercent,
             costcenters: isOverTotal
               ? adjustCostCenterPercentages(psl.costcenters, psl.percent, adjustedPercent)
-              : psl.costcenters,
+              : psl.costcenters
           };
         }
       });
-  
+
       return updatedPsl;
     });
   };
-    
+
   const handleCcPercentChange = (value: number, pslIndex: number, ccIndex: number) => {
-    setDataPsl((prevDataPsl) => 
+    setDataPsl((prevDataPsl) =>
       prevDataPsl.map((psl, i) => {
         if (i !== pslIndex) return psl;
-  
+
         const currentPslPercent = psl.percent;
-  
+
         if (value > currentPslPercent) {
           return psl;
         }
-  
-        const totalCCPercent = psl.costcenters.reduce((total, cc, index) => 
-          index !== ccIndex ? total + cc.percent : total, 0);
-  
+
+        const totalCCPercent = psl.costcenters.reduce(
+          (total, cc, index) => (index !== ccIndex ? total + cc.percent : total),
+          0
+        );
+
         const otherCcCount = psl.costcenters.length - 1;
         let updatedCostCenters;
-  
+
         if (value === 0) {
           updatedCostCenters = psl.costcenters.map((cc, j) =>
-            j === ccIndex ? { ...cc, percent: value } : { ...cc, percent: currentPslPercent / otherCcCount }
+            j === ccIndex
+              ? { ...cc, percent: value }
+              : { ...cc, percent: currentPslPercent / otherCcCount }
           );
         } else if (totalCCPercent + value > currentPslPercent) {
           const remainingPercent = currentPslPercent - value;
           updatedCostCenters = psl.costcenters.map((cc, j) =>
-            j === ccIndex ? { ...cc, percent: value } : { ...cc, percent: remainingPercent / otherCcCount }
+            j === ccIndex
+              ? { ...cc, percent: value }
+              : { ...cc, percent: remainingPercent / otherCcCount }
           );
         } else {
           updatedCostCenters = psl.costcenters.map((cc, j) =>
             j === ccIndex ? { ...cc, percent: value } : cc
           );
         }
-  
+
         return { ...psl, costcenters: updatedCostCenters };
       })
     );
   };
-  
-    const parser = (value: string | undefined) => Number(value?.replace('%', '')) as unknown as number;
 
-    const handleBlurPSL = (e: React.FocusEvent<HTMLInputElement>, pslIndex:number) => {
-      const formattedValue = e.target.value;
-      const numericValue = parser(formattedValue);
-      if (numericValue !== undefined && !isNaN(numericValue)) {
-        handlePslPercentChange(numericValue, pslIndex);
-      }
-    };
-  
-    const handleBlurCC = (e: React.FocusEvent<HTMLInputElement>, pslIndex:number, ccIndex: number) => {
-      const formattedValue = e.target.value;
-      const numericValue = parser(formattedValue);
-      if (numericValue !== undefined && !isNaN(numericValue)) {
-        handleCcPercentChange(numericValue, pslIndex, ccIndex);
-      }
-    };
+  const parser = (value: string | undefined) =>
+    Number(value?.replace("%", "")) as unknown as number;
+
+  const handleBlurPSL = (e: React.FocusEvent<HTMLInputElement>, pslIndex: number) => {
+    const formattedValue = e.target.value;
+    const numericValue = parser(formattedValue);
+    if (numericValue !== undefined && !isNaN(numericValue)) {
+      handlePslPercentChange(numericValue, pslIndex);
+    }
+  };
+
+  const handleBlurCC = (
+    e: React.FocusEvent<HTMLInputElement>,
+    pslIndex: number,
+    ccIndex: number
+  ) => {
+    const formattedValue = e.target.value;
+    const numericValue = parser(formattedValue);
+    if (numericValue !== undefined && !isNaN(numericValue)) {
+      handleCcPercentChange(numericValue, pslIndex, ccIndex);
+    }
+  };
+
+  const handleDeletePsl = (currentPslIndex: number) => {
+    setDataPsl((prevData) => {
+      return prevData.filter((pv, index) => currentPslIndex !== index);
+    });
+  };
+
+  const handleDeleteCC = (currentPslIndex: number, currentCCIndex: number) => {
+    setDataPsl((prevData) => {
+      const newPsls = prevData.map((psl, pslindex) => {
+        if (pslindex === currentPslIndex) {
+          const filteredCostcenters = psl.costcenters.filter(
+            (_, ccindex) => currentCCIndex !== ccindex
+          );
+          return { ...psl, costcenters: filteredCostcenters };
+        } else return psl;
+      });
+      return newPsls;
+    });
+  };
 
   const handleChangeExpirationDate = (index: number, value: any) => {
     setSelectedFiles((prevState: any[]) => {
@@ -931,36 +1067,49 @@ export const CreateOrderView = () => {
 
   /*requerimientos adicionales*/
 
-  const columnsRequerimientosAdicionales: TableProps<ITransferOrderOtherRequirements>['columns']= [
+  const columnsRequerimientosAdicionales: TableProps<ITransferOrderOtherRequirements>["columns"] = [
     {
-      title: 'Nombre',
-      dataIndex: 'description',
-      key: 'description',
+      title: "Nombre",
+      dataIndex: "description",
+      key: "description"
     },
     {
-      title: 'Cantidad',
-      dataIndex: 'quantity',
-      key: 'quantity',
+      title: "Cantidad",
+      dataIndex: "quantity",
+      key: "quantity",
       render: (_, record) =>
         dataRequirements.length >= 1 ? (
           <Flex align="center">
-            <CaretLeft onClick={() => handleQuantityRequirement(record.key,'-')}/>&nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;<CaretRight onClick={() => handleQuantityRequirement(record.key,'+')}/>
+            <CaretLeft onClick={() => handleQuantityRequirement(record.key, "-")} />
+            &nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;
+            <CaretRight onClick={() => handleQuantityRequirement(record.key, "+")} />
           </Flex>
-        ) : null,
+        ) : null
     },
     {
-      title: '',
-      dataIndex: 'alerts',
-      key: 'alerts',
+      title: "",
+      dataIndex: "alerts",
+      key: "alerts",
       render: (_, record) =>
         dataRequirements.length >= 1 ? (
-          <Popconfirm title="Esta seguro de eliminar?" onConfirm={() => handleDeleteRequirement(record.key)}>
-            <div style={{ display:"flex", justifyContent:"center",alignItems:"center", height:32, width: 32}}>
-              <Trash size={24}/>
+          <Popconfirm
+            title="Esta seguro de eliminar?"
+            onConfirm={() => handleDeleteRequirement(record.key)}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: 32,
+                width: 32
+              }}
+            >
+              <Trash size={24} />
             </div>
           </Popconfirm>
-        ) : null,
-    },
+        ) : null
+    }
   ];
 
   const [optionsRequirements, setOptionsRequirements] = useState<CustomOptionType[]>([]);
@@ -969,110 +1118,116 @@ export const CreateOrderView = () => {
   let requirementsIdx = 0;
 
   const loadRequirements = async () => {
-    if(optionsRequirements !== undefined && optionsRequirements.length >0 ) return;
+    if (optionsRequirements !== undefined && optionsRequirements.length > 0) return;
 
     const res = await getOtherRequirements();
-    const result:any = [];
+    const result: any = [];
     //console.log (res);
-    if(res?.data?.data?.length > 0){
+    if (res?.data?.data?.length > 0) {
       res.data.data.forEach((item) => {
-        const strlabel = <div style={{ display: 'flex', alignItems: "center"}}>
-                          <Col span={20}>
-                              <Text>
-                                  <b>{item.description}</b>
-                              </Text>
-                          </Col>
-                          <Col span={4} style={{ display: 'flex', justifyContent: "flex-end"}}>
-                            <button className="btnagregar active" onClick={() => addRequeriment(item)}>Agregar</button>
-                          </Col>
-                        </div>;
-        result.push({value:item.description, label: strlabel})
-      });      
+        const strlabel = (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Col span={20}>
+              <Text>
+                <b>{item.description}</b>
+              </Text>
+            </Col>
+            <Col span={4} style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button className="btnagregar active" onClick={() => addRequeriment(item)}>
+                Agregar
+              </button>
+            </Col>
+          </div>
+        );
+        result.push({ value: item.description, label: strlabel });
+      });
     }
 
-    setOptionsRequirements(result); 
+    setOptionsRequirements(result);
   };
 
   useEffect(() => {
     loadRequirements();
   }, []);
 
-  const filteredOptionalRequirementssOptions = optionsRequirements ? optionsRequirements.filter(
-    option => !dataRequirements.some(req => req.description === option.value)
-  ): []
+  const filteredOptionalRequirementssOptions = optionsRequirements
+    ? optionsRequirements.filter(
+        (option) => !dataRequirements.some((req) => req.description === option.value)
+      )
+    : [];
 
-  const addRequeriment = async (value:any) =>{
+  const addRequeriment = async (value: any) => {
     requirementsIdx = requirementsIdx + 1;
-    
+
     value.quantity = 1;
     value.key = requirementsIdx;
 
-    const newvalue : ITransferOrderOtherRequirements = value;
+    const newvalue: ITransferOrderOtherRequirements = value;
     //console.log(newvalue);
-    await setDataRequirements(dataRequirements => [...dataRequirements, newvalue]);
+    await setDataRequirements((dataRequirements) => [...dataRequirements, newvalue]);
   };
 
   const handleDeleteRequirement = (key: React.Key) => {
-    console.log(key)
+    console.log(key);
     requirementsIdx = requirementsIdx - 1;
     const newData = dataRequirements.filter((item) => item.key !== key);
     setDataRequirements(newData);
   };
 
   const handleQuantityRequirement = (key: React.Key, sign: string) => {
-    console.log(key)
+    console.log(key);
     const newData = [...dataRequirements];
-    newData.forEach(item => {
-      if(item.key === key){
-        if(sign=='+'){
+    newData.forEach((item) => {
+      if (item.key === key) {
+        if (sign == "+") {
           item.quantity = item.quantity + 1;
         }
-        if(sign=='-'){
-          if(item.quantity === 1) return item.quantity
+        if (sign == "-") {
+          if (item.quantity === 1) return item.quantity;
           else item.quantity = item.quantity - 1;
         }
       }
-    });    
-    
+    });
+
     setDataRequirements(newData);
   };
 
   /* Datos de contacto */
   const [dataContacts, setDataContacts] = useState<ITransferOrderContacts[]>([]);
   //default data
-  const loadContacts = () =>{
-    if(dataContacts !== undefined && dataContacts.length >0 ) return;
+  const loadContacts = () => {
+    if (dataContacts !== undefined && dataContacts.length > 0) return;
 
-    const defaultorigin : ITransferOrderContacts ={
+    const defaultorigin: ITransferOrderContacts = {
       key: 1,
       contact_type: 1,
       id: 0,
       id_transfer_order: 0,
       id_contact: 0,
       name: "",
-      contact_number: '',
+      contact_number: "",
       active: "",
       created_at: new Date(),
       created_by: ""
-    }
-    
-    setDataContacts(dataContacts => [...dataContacts, defaultorigin]);
+    };
 
-    const defaultdestiny : ITransferOrderContacts ={
+    setDataContacts((dataContacts) => [...dataContacts, defaultorigin]);
+
+    const defaultdestiny: ITransferOrderContacts = {
       key: 2,
       contact_type: 2,
       id: 0,
       id_transfer_order: 0,
       id_contact: 0,
       name: "",
-      contact_number: '',
+      contact_number: "",
       active: "",
       created_at: new Date(),
       created_by: ""
-    }
-    
-    setDataContacts(dataContacts => [...dataContacts, defaultdestiny]);
-  } 
+    };
+
+    setDataContacts((dataContacts) => [...dataContacts, defaultdestiny]);
+  };
 
   useEffect(() => {
     loadContacts();
@@ -1081,192 +1236,246 @@ export const CreateOrderView = () => {
   const updateContacts = (key: React.Key, field: "name" | "contact_number", ndata: string) => {
     //console.log(key)
     const newData = [...dataContacts];
-    newData.forEach(item => {
-      if(item.key === key){
-        item[field] = ndata
+    newData.forEach((item) => {
+      if (item.key === key) {
+        item[field] = ndata;
       }
-    });    
-    
+    });
+
     setDataContacts(newData);
   };
 
+  /* Company Code */
+  const [optionsCompanyCodes, setOptionsCompanyCodes] = useState<ICompanyCode[]>([]);
 
+  const loadCompanyCodes = async () => {
+    if (optionsCompanyCodes !== undefined && optionsCompanyCodes.length > 0) return;
 
-   /* Company Code */
-    const [optionsCompanyCodes, setOptionsCompanyCodes] = useState<ICompanyCode[]>([]);
-  
-    const loadCompanyCodes= async () => {
-      if(optionsCompanyCodes !== undefined && optionsCompanyCodes.length >0 ) return;
-  
-      const res = await getCompanyCodes();
-      let result: any = [];
-      if(res?.data?.data?.length > 0){
-        result = res.data.data.map((item) => ({value: item.id.toString(), label: item.description}));      
-      }
-      setOptionsCompanyCodes(result); 
-    };
-  
-    useEffect(() => {
-      loadCompanyCodes();
-    }, []);
+    const res = await getCompanyCodes();
+    let result: any = [];
+    if (res?.data?.data?.length > 0) {
+      result = res.data.data.map((item) => ({
+        value: item.id.toString(),
+        label: item.description
+      }));
+    }
+    setOptionsCompanyCodes(result);
+  };
 
+  useEffect(() => {
+    loadCompanyCodes();
+  }, []);
 
-    /* Clients */
-    const [optionsClients, setOptionsClients] = useState<IClient[]>([]);
+  /* Clients */
+  const [optionsClients, setOptionsClients] = useState<IClient[]>([]);
 
-    const loadClients= async () => {
-      if(optionsClients !== undefined && optionsClients.length >0 ) return;
-  
-      const res = await getClients();
-      let result: any = [];
-      if(res?.data?.data?.length > 0){
-        result = res.data.data.map((item) => ({value: item.id, label: item.description}));      
-      }
-      setOptionsClients(result); 
-    };
-  
-    useEffect(() => {
-      loadClients();
-    }, []);
+  const loadClients = async () => {
+    if (optionsClients !== undefined && optionsClients.length > 0) return;
 
+    const res = await getClients();
+    let result: any = [];
+    if (res?.data?.data?.length > 0) {
+      result = res.data.data.map((item) => ({ value: item.id, label: item.description }));
+    }
+    setOptionsClients(result);
+  };
 
+  useEffect(() => {
+    loadClients();
+  }, []);
 
   /* Datos de personas */
   const [dataPersons, setDataPersons] = useState<ITransferOrderPersons[]>([]);
+  const [optionsPersons, setOptionsPersons] = useState<CustomOptionType[]>([]);
 
+  const loadPersons = async () => {
+    if (optionsPersons !== undefined && optionsPersons.length > 0) return;
+
+    const res = await getAllUsers();
+    let result: any = [];
+    if (res?.data?.data?.length > 0) {
+      res.data.data.forEach((item) => {
+        const strlabel = (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Col span={20}>
+              <Text>
+                <b>{item.name}</b>
+                <br />
+                <Phone size={12} /> {item.contact_number}
+                <br />
+                {item.psl_desc} - {item.cost_center_desc}
+              </Text>
+            </Col>
+            <Col span={4} style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button className="btnagregar active" onClick={() => addPerson(item)}>
+                Agregar
+              </button>
+            </Col>
+          </div>
+        );
+
+        result.push({ value: item.description, label: strlabel });
+      });
+    }
+    setOptionsPersons(result);
+  };
+
+  useEffect(() => {
+    setDataPersons([]);
+    loadPersons();
+  }, [typeactive]);
+
+  const filteredPersonsOptions = optionsPersons.filter(
+    (option: any) => !dataPersons.some((person) => person.name === option.value)
+  );
+
+  let personsIdx = 0;
+  const addPerson = async (value: any) => {
+    personsIdx = personsIdx + 1;
+
+    value.key = requirementsIdx;
+
+    const newvalue: ITransferOrderPersons = value;
+    //console.log(newvalue);
+    await setDataPersons((dataPersons) => [...dataPersons, newvalue]);
+  };
+
+  const handleDeletePerson = (key: React.Key) => {
+    console.log(key);
+    personsIdx = personsIdx - 1;
+    const newData = dataPersons.filter((item) => item.key !== key);
+    setDataPersons(newData);
+  };
 
   /* Form Event Handlers */
   const onCreateOrder = async () => {
-    
     //validate fields
     let isformvalid = true;
     //carga - izaje - personas
-    if(typeactive == '1' || typeactive == '2'  || typeactive == '3'){
-
-      if(origin.current.length == 0){
+    if (typeactive == "1" || typeactive == "2" || typeactive == "3") {
+      if (origin.current.length == 0) {
         setOriginValid(false);
         isformvalid = false;
         messageApi.error("Punto Origen es obligatorio");
       }
-      if(typeactive == '1'){
-        if(destination.current.length == 0){
+      if (typeactive == "1") {
+        if (destination.current.length == 0) {
           setdestinationValid(false);
           isformvalid = false;
           messageApi.error("Punto Destino es obligatorio");
         }
       }
-      if(fechaInicial == undefined || fechaInicial == null){
+      if (fechaInicial == undefined || fechaInicial == null) {
         setFechaInicialValid(false);
         isformvalid = false;
         messageApi.error("Fecha Inicial es obligatorio");
       }
-      if(horaInicial == undefined || horaInicial == null){
+      if (horaInicial == undefined || horaInicial == null) {
         setHoraInicialValid(false);
         isformvalid = false;
-        messageApi.error("Hora Inicial es obligatorio")
+        messageApi.error("Hora Inicial es obligatorio");
       }
-      if(fechaFinal == undefined || fechaFinal == null){
+      if (fechaFinal == undefined || fechaFinal == null) {
         setFechaFinalValid(false);
         isformvalid = false;
         messageApi.error("Fecha Final es obligatorio");
       }
-      if(horaFinal == undefined || horaFinal == null){
+      if (horaFinal == undefined || horaFinal == null) {
         setHoraFinalValid(false);
         isformvalid = false;
-        messageApi.error("Hora Final es obligatorio")
+        messageApi.error("Hora Final es obligatorio");
       }
-      if(fechaInicialFlexible == -1){
+      if (fechaInicialFlexible == -1) {
         setFechaInicialFlexibleValid(false);
         isformvalid = false;
-        messageApi.error("Fecha Inicial Flexible es obligatorio")
-      }else{
+        messageApi.error("Fecha Inicial Flexible es obligatorio");
+      } else {
         setFechaInicialFlexibleValid(true);
       }
-      if(fechaFinalFlexible == -1){
+      if (fechaFinalFlexible == -1) {
         setFechaFinalFlexibleValid(false);
         isformvalid = false;
-        messageApi.error("Fecha Final Flexible es obligatorio")
-      }else{
+        messageApi.error("Fecha Final Flexible es obligatorio");
+      } else {
         setFechaFinalFlexibleValid(true);
       }
 
-      if(company == -1){
+      if (company == -1) {
         setCompanyValid(false);
         isformvalid = false;
-        messageApi.error("Company code es obligatorio")
-      }else{
+        messageApi.error("Company code es obligatorio");
+      } else {
         setCompanyValid(true);
       }
 
-      if(client == -1){
+      if (client == -1) {
         setClientValid(false);
         isformvalid = false;
-        messageApi.error("Cliente final es obligatorio")
-      }else{
+        messageApi.error("Cliente final es obligatorio");
+      } else {
         setClientValid(true);
       }
 
       //validacion grids
       //personal
-      if(typeactive == '3'){
-        if(dataPersons.length==0){
+      if (typeactive == "3") {
+        if (dataPersons.length == 0) {
           isformvalid = false;
-          messageApi.error("Debe agregar por lo menos una persona")
-        }  
-      }else{
-        if(dataCarga.length==0){
+          messageApi.error("Debe agregar por lo menos una persona");
+        }
+      } else {
+        if (dataCarga.length == 0) {
           isformvalid = false;
-          messageApi.error("Debe agregar por lo menos un material")
-        }  
+          messageApi.error("Debe agregar por lo menos un material");
+        }
       }
-      if(dataVehicles.length==0){
+      if (dataVehicles.length == 0) {
         isformvalid = false;
-        messageApi.error("Debe agregar por lo menos un vehículo sugerido")
+        messageApi.error("Debe agregar por lo menos un vehículo sugerido");
       }
-      if(dataPsl.length==0){
+      if (dataPsl.length == 0) {
         isformvalid = false;
-        messageApi.error("Debe agregar por lo menos un PSL")
+        messageApi.error("Debe agregar por lo menos un PSL");
       }
       const checkPercentages = (psls: IOrderPsl[]) => {
         const totalPslPercent = psls.reduce((total, psl) => total + psl.percent, 0);
         if (totalPslPercent !== 100) {
           isformvalid = false;
-          messageApi.error("La totalidad de los PSLs debe ser 100%")
+          messageApi.error("La totalidad de los PSLs debe ser 100%");
         }
         for (const psl of psls) {
           const totalCcPercent = psl.costcenters.reduce((total, cc) => total + cc.percent, 0);
           if (totalCcPercent !== psl.percent) {
             isformvalid = false;
-            messageApi.error("La suma de los centros de costos debe ser igual al del PSL asociado")
+            messageApi.error("La suma de los centros de costos debe ser igual al del PSL asociado");
           }
         }
-      
       };
-      checkPercentages(dataPsl)
+      checkPercentages(dataPsl);
       //datos de contacto
-      dataContacts.forEach((contact)=>{
+      dataContacts.forEach((contact) => {
         //console.log(contact)
-        if((contact.contact_number == "" || contact.name == "") && contact.contact_type == 1){
+        if ((contact.contact_number == "" || contact.name == "") && contact.contact_type == 1) {
           isformvalid = false;
-          messageApi.error("Debe registrar información del contacto de origen")
+          messageApi.error("Debe registrar información del contacto de origen");
         }
-        if((contact.contact_number == "" || contact.name == "") && contact.contact_type == 2){
+        if ((contact.contact_number == "" || contact.name == "") && contact.contact_type == 2) {
           isformvalid = false;
-          messageApi.error("Debe registrar información del contacto de destino")
+          messageApi.error("Debe registrar información del contacto de destino");
         }
-      })
+      });
     }
 
-    if(isformvalid == false){
+    if (isformvalid == false) {
       return;
     }
 
     const cuser = auth.currentUser;
 
-    const inihour = horaInicial?horaInicial.get('hour'):0;
-    const inimin = horaInicial?horaInicial.get('minute'):0;
-    const finhour = horaFinal?horaFinal.get('hour'):0;
-    const finmin = horaFinal?horaFinal.get('minute'):0;
+    const inihour = horaInicial ? horaInicial.get("hour") : 0;
+    const inimin = horaInicial ? horaInicial.get("minute") : 0;
+    const finhour = horaFinal ? horaFinal.get("hour") : 0;
+    const finmin = horaFinal ? horaFinal.get("minute") : 0;
     const fechaInicialToBody = fechaInicial?.hour(inihour).minute(inimin);
     const fechaFinalToBody = fechaFinal?.hour(finhour).minute(finmin);
 
@@ -1274,17 +1483,17 @@ export const CreateOrderView = () => {
     //console.log(fechaFinal);
 
     const datato: ITransferOrder = {
-      id_start_location: (locationOrigin ? locationOrigin.id : 0),
-      id_end_location: (locationDestination ? locationDestination?.id : 0),
+      id_start_location: locationOrigin ? locationOrigin.id : 0,
+      id_end_location: locationDestination ? locationDestination?.id : 0,
       id: 0,
       id_user: 1,
       user: cuser?.email,
       start_date: fechaInicialToBody?.toDate().toISOString(),
       end_date: fechaFinalToBody?.toDate().toISOString(),
-      start_freight_equipment: String(origenIzaje?1:0),
-      end_freight_equipment: String(destinoIzaje?1:0),
-      freight_origin_time: origenIzaje? horasOrigenIzaje : undefined,
-      freight_destination_time: destinoIzaje? horasDestinoIzaje : undefined,
+      start_freight_equipment: String(origenIzaje ? 1 : 0),
+      end_freight_equipment: String(destinoIzaje ? 1 : 0),
+      freight_origin_time: origenIzaje ? horasOrigenIzaje : undefined,
+      freight_destination_time: destinoIzaje ? horasDestinoIzaje : undefined,
       rotation: "0",
       start_date_flexible: fechaInicialFlexible,
       end_date_flexible: fechaFinalFlexible,
@@ -1298,16 +1507,16 @@ export const CreateOrderView = () => {
       id_client: client,
       status: "",
       observation: observation,
-      service_type_desc: "",
+      service_type_desc: TripType.Carga,
       client_desc: ""
-    }
+    };
 
     //contactos
     datato.transfer_order_contacts = dataContacts;
-    
+
     //materiales
     datato.transfer_order_material = [];
-    dataCarga.forEach(material => {
+    dataCarga.forEach((material) => {
       datato.transfer_order_material?.push({
         id: 0,
         id_transfer_order: 0,
@@ -1317,18 +1526,18 @@ export const CreateOrderView = () => {
         created_by: cuser?.email,
         modified_at: new Date(),
         modified_by: ""
-      });  
+      });
     });
-    
+
     //otrosrequerimientos
     datato.transfer_order_other_requeriments = dataRequirements;
-    
+
     //productos
     datato.transfer_order_products = [];
     //centros de costo
     datato.transfer_order_cost_center = [];
 
-    dataPsl.forEach(psl => {
+    dataPsl.forEach((psl) => {
       datato.transfer_order_products?.push({
         id: 0,
         id_transfer_order: 0,
@@ -1342,7 +1551,7 @@ export const CreateOrderView = () => {
         product_desc: ""
       });
 
-      psl.costcenters.forEach(cost=>{
+      psl.costcenters.forEach((cost) => {
         datato.transfer_order_cost_center?.push({
           id: 0,
           id_transfer_order: 0,
@@ -1359,7 +1568,7 @@ export const CreateOrderView = () => {
 
     //vehiculos
     datato.transfer_order_vehicles = [];
-    dataVehicles.forEach(vehicle => {
+    dataVehicles.forEach((vehicle) => {
       datato.transfer_order_vehicles?.push({
         id: 0,
         id_transfer_order: 0,
@@ -1370,17 +1579,15 @@ export const CreateOrderView = () => {
         modified_at: new Date(),
         modified_by: "",
         vehicle_type_desc: ""
-      });  
+      });
     });
 
     //personas
-    datato.transfer_order_persons =[];
+    datato.transfer_order_persons = dataPersons || [];
 
     //documentos
-    datato.transfer_order_documents =[];
+    datato.transfer_order_documents = [];
 
-
-    
     // archivos
     const data: IFormTransferOrder = {
       body: datato,
@@ -1388,19 +1595,19 @@ export const CreateOrderView = () => {
     };
 
     console.log("DATA PARA POST: ", data);
-    
+
     try {
       const response = await addTransferOrder(
         datato,
-        data?.files || [] as DocumentCompleteType[]
-      );      
+        data?.files || ([] as DocumentCompleteType[])
+      );
       if (response.status === SUCCESS) {
         //console.log(response);
         messageApi.open({
           type: "success",
           content: "El viaje fue creado exitosamente."
         });
-        push("/logistics/orders/details/"+ response.data.data.id);
+        push("/logistics/orders/details/" + response.data.data.id);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -1423,255 +1630,316 @@ export const CreateOrderView = () => {
         </div>
       ),
       children: (
-          <Row >
-            <Col span={12} style={{ padding:'1.5rem'}}>
-              <Row>
-                <Text className="locationLabels">
-                  Punto Origen
-                </Text>
-                <Select
-                  showSearch
-                  placeholder="Buscar dirección inicial"                  
-                  className={originValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
-                  style={{ width:'100%' }}
-                  onChange={onChangeOrigin}
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    option!.children!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }                  
-                >
-                  { locationOptions.map(((option: { value: React.Key | null | undefined; label: string  | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
-                </Select>
-                {(!originValid) &&
-                    <>
-                      <br/><label className="textError">* Campo obligatorio</label><br/>
-                    </>
-                  }
-                { typeactive != "3" &&
-                  <Flex style={{marginTop:"0.5rem", width:"100%"}} align="center">
-                    <Col span={12} >
-                      <Flex gap={"0.5rem"} > 
-                        <Switch disabled={typeactive === "2"}  checked={origenIzaje} onChange={event =>{
-                          setOrigenIzaje(event)
-                        }} />
-                        <Text>Requiere Izaje</Text>
+        <Row>
+          <Col span={12} style={{ padding: "1.5rem" }}>
+            <Row>
+              <Text className="locationLabels">Punto Origen</Text>
+              <Select
+                showSearch
+                placeholder="Buscar dirección inicial"
+                className={
+                  originValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"
+                }
+                style={{ width: "100%" }}
+                onChange={onChangeOrigin}
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  option!.children!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                {locationOptions.map(
+                  (option: {
+                    value: React.Key | null | undefined;
+                    label: string | null | undefined;
+                  }) => (
+                    <Select.Option value={option.value} key={option.value}>
+                      {option.label}
+                    </Select.Option>
+                  )
+                )}
+              </Select>
+              {!originValid && (
+                <>
+                  <br />
+                  <label className="textError">* Campo obligatorio</label>
+                  <br />
+                </>
+              )}
+              {typeactive != "3" && (
+                <Flex style={{ marginTop: "0.5rem", width: "100%" }} align="center">
+                  <Col span={12}>
+                    <Flex gap={"0.5rem"}>
+                      <Switch
+                        disabled={typeactive === "2"}
+                        checked={origenIzaje}
+                        onChange={(event) => {
+                          setOrigenIzaje(event);
+                        }}
+                      />
+                      <Text>Requiere Izaje</Text>
+                    </Flex>
+                  </Col>
+                  {origenIzaje && (
+                    <Col span={12}>
+                      <Flex gap={"0.5rem"} align="center" justify="end">
+                        <Text>Cuantas horas de izaje</Text>
+                        <CustomTimeSelector
+                          initialValue={horasOrigenIzaje}
+                          onTimeChange={(value) => setHorasOrigenIzaje(value)}
+                        />
                       </Flex>
                     </Col>
-                    {origenIzaje && 
-                    <Col span={12} >
-                      <Flex gap={"0.5rem"} align="center" justify="end"> 
-                          <Text>Cuantas horas de izaje</Text>
-                          <CustomTimeSelector initialValue={horasOrigenIzaje} onTimeChange={(value)=>setHorasOrigenIzaje(value)}/>
-                      </Flex>
-                    </Col>}
-                  </Flex>
-                }
-              </Row>
-              { typeactive != "2" &&
-              <Row style={{marginTop:'1rem'}}>
-                <label className="locationLabels">
-                  Punto Destino
-                </label>
+                  )}
+                </Flex>
+              )}
+            </Row>
+            {typeactive != "2" && (
+              <Row style={{ marginTop: "1rem" }}>
+                <label className="locationLabels">Punto Destino</label>
                 <Select
                   showSearch
-                  placeholder="Buscar dirección final"                  
-                  className={destinationValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
-                  style={{ width:'100%' }}
+                  placeholder="Buscar dirección final"
+                  className={
+                    destinationValid
+                      ? "puntoOrigen dateInputForm"
+                      : "puntoOrigen dateInputFormError"
+                  }
+                  style={{ width: "100%" }}
                   onChange={onChangeDestino}
                   optionFilterProp="children"
                   filterOption={(input, option) =>
                     option!.children!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  { locationOptions.map(((option: { value: React.Key | null | undefined; label: string | null | undefined; }) => <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)) }
+                  {locationOptions.map(
+                    (option: {
+                      value: React.Key | null | undefined;
+                      label: string | null | undefined;
+                    }) => (
+                      <Select.Option value={option.value} key={option.value}>
+                        {option.label}
+                      </Select.Option>
+                    )
+                  )}
                 </Select>
-                {(!destinationValid) &&
-                    <>
-                      <br/><label className="textError">* Campo obligatorio</label><br/>
-                    </>
-                  }
-                { typeactive != "3" &&
-                  <Flex style={{marginTop:"0.5rem", width:"100%"}} align="center">
-                  <Col span={12} >
-                    <Flex gap={"0.5rem"} > 
-                      <Switch  checked={destinoIzaje} onChange={event =>{
-                        setDestinoIzaje(event)
-                      }} />
-                      <Text>Requiere Izaje</Text>
-                    </Flex>
+                {!destinationValid && (
+                  <>
+                    <br />
+                    <label className="textError">* Campo obligatorio</label>
+                    <br />
+                  </>
+                )}
+                {typeactive != "3" && (
+                  <Flex style={{ marginTop: "0.5rem", width: "100%" }} align="center">
+                    <Col span={12}>
+                      <Flex gap={"0.5rem"}>
+                        <Switch
+                          checked={destinoIzaje}
+                          onChange={(event) => {
+                            setDestinoIzaje(event);
+                          }}
+                        />
+                        <Text>Requiere Izaje</Text>
+                      </Flex>
+                    </Col>
+                    {destinoIzaje && (
+                      <Col span={12}>
+                        <Flex gap={"0.5rem"} align="center" justify="end">
+                          <Text>Cuantas horas de izaje</Text>
+                          <CustomTimeSelector
+                            initialValue={horasDestinoIzaje}
+                            onTimeChange={(value) => setHorasDestinoIzaje(value)}
+                          />
+                        </Flex>
+                      </Col>
+                    )}
+                  </Flex>
+                )}
+              </Row>
+            )}
+            <Row style={{ marginTop: "1rem" }}>
+              <Col span={24}>
+                <label className="locationLabels">Fecha y hora inicial</label>
+                <Row gutter={[16, 16]} style={{ marginTop: "0.5rem" }}>
+                  <Col span={8}>
+                    <DatePicker
+                      placeholder="Seleccione fecha"
+                      disabledDate={disabledDate}
+                      onChange={(value, dateString) => {
+                        //console.log('Selected Time: ', value);
+                        //console.log('Formatted Selected Time: ', dateString);
+                        //setFechaInicial(value);
+                        setFechaInicial(value);
+                        setFechaInicialValid(true);
+                      }}
+                      className={fechaInicialValid ? "dateInputForm" : "dateInputFormError"}
+                    />
+                    {!fechaInicialValid && (
+                      <>
+                        <br />
+                        <label className="textError">* Campo obligatorio</label>
+                      </>
+                    )}
                   </Col>
-                  {destinoIzaje && 
-                  <Col span={12} >
-                    <Flex gap={"0.5rem"} align="center" justify="end"> 
-                        <Text>Cuantas horas de izaje</Text>
-                        <CustomTimeSelector initialValue={horasDestinoIzaje} onTimeChange={(value)=>setHorasDestinoIzaje(value)}/>
-                    </Flex>
-                  </Col>}
-                </Flex>
-                }
-              </Row>
-              }
-              <Row style={{marginTop:'1rem'}}>
-                <Col span={24}>
-                  <label className="locationLabels">
-                    Fecha y hora inicial
-                  </label>
-                  <Row gutter={[16,16]} style={{marginTop: "0.5rem"}}>
-                    <Col span={8}>
-                      <DatePicker 
-                        placeholder="Seleccione fecha"
-                        disabledDate={disabledDate}
-                        onChange={(value, dateString) => {                      
-                          //console.log('Selected Time: ', value);
-                          //console.log('Formatted Selected Time: ', dateString);
-                          //setFechaInicial(value);
-                          setFechaInicial(value);
-                          setFechaInicialValid(true);
-                        }}
-                        className={fechaInicialValid ? "dateInputForm" : "dateInputFormError"}
-                      /> 
-                      {(!fechaInicialValid) &&
-                        <>
-                          <br/><label className="textError">* Campo obligatorio</label>
-                        </>
-                      }
-                    </Col>                
-                    <Col span={8}>
-                      <TimePicker 
-                        placeholder="Seleccione hora"
-                        format={'HH:mm'}
-                        minuteStep={15} 
-                        hourStep={1}
-                        type={'time'} 
-                        onChange={(value) => {
-                          setHoraInicial(value);
-                          setHoraInicialValid(true);
-                        }}
-                        className={horaInicialValid ? "dateInputForm" : "dateInputFormError"}
-                      />
-                      {(!horaInicialValid) &&
-                        <>
-                          <br/><label className="textError">* Campo obligatorio</label>
-                        </>
-                      }                  
-                    </Col>
-                    <Col span={8}>
-                    <Select
-                        placeholder="Seleccione"                  
-                        className={fechaInicialFlexibleValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
-                        options={[
-                          { value: '0', label: 'Exacto' },
-                          { value: '1', label: '+/- 1 día' },
-                          { value: '2', label: '+/- 2 días' },
-                          { value: '3', label: '+/- 3 días' },
-                        ]}
-                        onChange={(value)=>{
-                          setFechaInicialFlexible(value);
-                          setFechaInicialFlexibleValid(true);
-                        }}
-                      />
-                      {(!fechaInicialFlexibleValid) &&
-                        <>
-                          <br/><label className="textError">* Campo obligatorio</label><br/>
-                        </>
-                      }                  
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-              <Row style={{marginTop:'1rem'}}>
-                <Col span={24}>
-                  <Text className="locationLabels">
-                    Fecha y hora final
-                  </Text>
-                  <Row gutter={[16,16]} style={{marginTop: "0.5rem"}}>
-                    <Col span={8}>
-                      <DatePicker
-                        placeholder="Seleccione fecha"
-                        disabledDate={disabledDate}
-                        onChange={(value, dateString) => {
-                          //console.log('Selected Time: ', value);
-                          //console.log('Formatted Selected Time: ', dateString);
-                          //setFechaFinal(value);
-                          setFechaFinal(value);
-                          setFechaFinalValid(true);
-                        }}
-                        className={fechaFinalValid ? "dateInputForm" : "dateInputFormError"}
-                      />
-                      {(!fechaFinalValid) &&
-                        <>
-                          <br/><label className="textError">* Campo obligatorio</label>
-                        </>
-                      }
-                    </Col>
-                    <Col span={8}>
-                      <TimePicker 
-                      placeholder="Seleccione hora"   
-                      format={'HH:mm'}
-                      minuteStep={15} 
+                  <Col span={8}>
+                    <TimePicker
+                      placeholder="Seleccione hora"
+                      format={"HH:mm"}
+                      minuteStep={15}
                       hourStep={1}
-                      type={'time'} 
+                      needConfirm={false}
+                      type={"time"}
+                      onChange={(value) => {
+                        setHoraInicial(value);
+                        setHoraInicialValid(true);
+                      }}
+                      className={horaInicialValid ? "dateInputForm" : "dateInputFormError"}
+                    />
+                    {!horaInicialValid && (
+                      <>
+                        <br />
+                        <label className="textError">* Campo obligatorio</label>
+                      </>
+                    )}
+                  </Col>
+                  <Col span={8}>
+                    <Select
+                      placeholder="Seleccione"
+                      className={
+                        fechaInicialFlexibleValid
+                          ? "puntoOrigen dateInputForm"
+                          : "puntoOrigen dateInputFormError"
+                      }
+                      options={[
+                        { value: "0", label: "Exacto" },
+                        { value: "1", label: "+/- 1 día" },
+                        { value: "2", label: "+/- 2 días" },
+                        { value: "3", label: "+/- 3 días" }
+                      ]}
+                      onChange={(value) => {
+                        setFechaInicialFlexible(value);
+                        setFechaInicialFlexibleValid(true);
+                      }}
+                    />
+                    {!fechaInicialFlexibleValid && (
+                      <>
+                        <br />
+                        <label className="textError">* Campo obligatorio</label>
+                        <br />
+                      </>
+                    )}
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            <Row style={{ marginTop: "1rem" }}>
+              <Col span={24}>
+                <Text className="locationLabels">Fecha y hora final</Text>
+                <Row gutter={[16, 16]} style={{ marginTop: "0.5rem" }}>
+                  <Col span={8}>
+                    <DatePicker
+                      placeholder="Seleccione fecha"
+                      disabledDate={disabledDate}
+                      onChange={(value, dateString) => {
+                        //console.log('Selected Time: ', value);
+                        //console.log('Formatted Selected Time: ', dateString);
+                        //setFechaFinal(value);
+                        setFechaFinal(value);
+                        setFechaFinalValid(true);
+                      }}
+                      className={fechaFinalValid ? "dateInputForm" : "dateInputFormError"}
+                    />
+                    {!fechaFinalValid && (
+                      <>
+                        <br />
+                        <label className="textError">* Campo obligatorio</label>
+                      </>
+                    )}
+                  </Col>
+                  <Col span={8}>
+                    <TimePicker
+                      placeholder="Seleccione hora"
+                      format={"HH:mm"}
+                      minuteStep={15}
+                      needConfirm={false}
+                      hourStep={1}
+                      type={"time"}
+                      variant="filled"
                       onChange={(value) => {
                         setHoraFinal(value);
                         setHoraFinalValid(true);
-                      }} 
+                      }}
                       className={horaFinalValid ? "dateInputForm" : "dateInputFormError"}
-                      />
-                      {(!horaFinalValid) &&
-                        <>
-                          <br/><label className="textError">* Campo obligatorio</label>
-                        </>
-                      } 
-                    </Col>
-                    <Col span={8}>
-                      <Select
-                          placeholder="Seleccione"                  
-                          className={fechaFinalFlexibleValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
-                          options={[
-                            { value: '0', label: 'Exacto' },
-                            { value: '1', label: '+/- 1 día' },
-                            { value: '2', label: '+/- 2 días' },
-                            { value: '3', label: '+/- 3 días' },
-                          ]}
-                          onChange={(value)=>{
-                            setFechaFinalFlexible(value);
-                            setFechaFinalFlexibleValid(true);
-                          }}
-                        />
-                        {(!fechaFinalFlexibleValid) &&
-                          <>
-                            <br/><label className="textError">* Campo obligatorio</label><br/>
-                          </>
-                        }   
-                    </Col>
-
-                  </Row>
-                </Col>
-              </Row>
-              {routeGeometry &&
+                    />
+                    {!horaFinalValid && (
+                      <>
+                        <br />
+                        <label className="textError">* Campo obligatorio</label>
+                      </>
+                    )}
+                  </Col>
+                  <Col span={8}>
+                    <Select
+                      placeholder="Seleccione"
+                      className={
+                        fechaFinalFlexibleValid
+                          ? "puntoOrigen dateInputForm"
+                          : "puntoOrigen dateInputFormError"
+                      }
+                      options={[
+                        { value: "0", label: "Exacto" },
+                        { value: "1", label: "+/- 1 día" },
+                        { value: "2", label: "+/- 2 días" },
+                        { value: "3", label: "+/- 3 días" }
+                      ]}
+                      onChange={(value) => {
+                        setFechaFinalFlexible(value);
+                        setFechaFinalFlexibleValid(true);
+                      }}
+                    />
+                    {!fechaFinalFlexibleValid && (
+                      <>
+                        <br />
+                        <label className="textError">* Campo obligatorio</label>
+                        <br />
+                      </>
+                    )}
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            {routeGeometry && (
               <Row className="divdistance" style={{ marginTop: "1rem" }}>
-                <Col span={12} style={{display: "flex", flexDirection:"column", gap:"0.75rem"}}>
-                    <Text>Distancia Total</Text>
-                    <Text>Tiempo Estimado</Text>
+                <Col span={12} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                  <Text>Distancia Total</Text>
+                  <Text>Tiempo Estimado</Text>
                 </Col>
-                <Col span={12} style={{display: "flex", flexDirection:"column", gap:"0.75rem", alignItems:"flex-end"}}>
-                    <Text>{distance}</Text>
-                    <Text>{timetravel}</Text>         
+                <Col
+                  span={12}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.75rem",
+                    alignItems: "flex-end"
+                  }}
+                >
+                  <Text>{formatNumber(distance)} km</Text>
+                  <Text>{timetravel}</Text>
                 </Col>
               </Row>
-              }
-            </Col>
-            <Col span={12} style={{ padding:'1.5rem'}}>
-              <div
-                ref={mapContainerRef}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  border: "1px #F7F7F7 solid",
-                }}
-              />
-            </Col> 
-          </Row>
+            )}
+          </Col>
+          <Col span={12} style={{ padding: "1.5rem" }}>
+            <div
+              ref={mapContainerRef}
+              style={{
+                width: "100%",
+                height: "100%",
+                border: "1px #F7F7F7 solid"
+              }}
+            />
+          </Col>
+        </Row>
       )
     },
     {
@@ -1686,21 +1954,21 @@ export const CreateOrderView = () => {
       ),
       children: (
         <Row>
-          <Col span={24}  style={{ padding:'1.5rem'}}>
-            {(typeactive == "1" || typeactive == "2") &&
-              <Row style={{marginBottom: "2rem"}}>
+          <Col span={24} style={{ padding: "1.5rem" }}>
+            {(typeactive == "1" || typeactive == "2") && (
+              <Row style={{ marginBottom: "2rem" }}>
                 <Col span={24}>
                   <Col span={12}>
-                  <Text className="locationLabels" style={{ display: 'flex' }}>
-                    Material
-                  </Text>
-                  <Select
+                    <Text className="locationLabels" style={{ display: "flex" }}>
+                      Material
+                    </Text>
+                    <Select
                       showSearch
                       allowClear
-                      placeholder="Buscar material"                 
+                      placeholder="Buscar material"
                       options={filteredMaterialOptions}
                       value={null}
-                      style={{ width:'100%', height: "2.5rem" }}
+                      style={{ width: "100%", height: "2.5rem" }}
                       optionFilterProp="value"
                       filterOption={(input: string, option) => {
                         if (option) {
@@ -1710,99 +1978,78 @@ export const CreateOrderView = () => {
                       }}
                     />
                   </Col>
-                  <Col span={12}/>
+                  <Col span={12} />
                   <Col span={24}>
-                    <Table columns={columnsCarga} dataSource={dataCarga} pagination={false} footer={() => {
-                    return (
-                      <Flex align="center" justify="flex-end" >
-                        <Row style={{width: "100%"}} >
-                          <Col span={16}/>
-                          <Col span={8} style={{background: "#F7F7F7", padding: 16}}>
-                            <Flex align="center" justify="space-around">
-                              <Flex>
-                                <Space>
-                                  <Text >
-                                    Volumen total
-                                  </Text>
-                                  <Text className="text-footer-table">
-                                    {dataCarga.reduce((sum, material) => sum + (material.m3_volume * material.quantity), 0)} m3
-                                  </Text>
-                                </Space>
-                              </Flex>
-                              <Divider type="vertical" style={{border: '1px solid #DDDDDD', fontSize:24}}/>
-                              <Flex>
-                                <Space>
-                                  <Text >
-                                    Peso total
-                                  </Text>
-                                  <Text className="text-footer-table">
-                                    {dataCarga.reduce((sum, material) => sum + (material.kg_weight * material.quantity), 0)} kg
-                                  </Text>
-                                </Space>
-                              </Flex>
-                            </Flex>
-                          </Col>
-                        </Row>
-                      </Flex>
-                    )
-                    }}/>
+                    <Table
+                      columns={columnsCarga}
+                      dataSource={dataCarga}
+                      pagination={false}
+                      footer={() => <MaterialTableFooter dataCarga={dataCarga} />}
+                    />
                   </Col>
                 </Col>
               </Row>
-            }
-            {typeactive == "3" &&        
-              <Row style={{marginBottom: "2rem"}}>
+            )}
+            {typeactive == "3" && (
+              <Row style={{ marginBottom: "2rem" }}>
                 <Col span={24}>
                   <Col span={12}>
-                    <Text className="locationLabels" style={{ display: 'flex' }}>
+                    <Text className="locationLabels" style={{ display: "flex" }}>
                       Personas
                     </Text>
-                    <AutoComplete
-                      className="puntoOrigen dateInputForm"
-                      popupMatchSelectWidth={500}
-                      style={{ width:'100%', height: "2.5rem" }}
-                      size="large"
-                      placeholder="Buscar persona"
-                    />  
-                  </Col>
-                  <Col span={12}/>
-                  <Col span={24}>
-                    <Table columns={columnsCargaPersonas} />
-                  </Col>
-                </Col>
-              </Row>
-            }            
-              <Row >
-                <Col span={24}>
-                  <Col span={12}>
-                    <Text className="locationLabels" style={{ display: 'flex' }}>
-                      Vehículo Sugerido
-                    </Text>
                     <Select
-                        showSearch
-                        allowClear
-                        placeholder="Agregar vehículo"                  
-                        options={filteredVehiclesOptions}
-                        value={null}
-                        style={{ width:"100%", height: "2.5rem" }}
-                        optionFilterProp="value"
-                        filterOption={(input: string, option) => {
-                          if (option) {
-                            return option.value.toLowerCase().includes(input.toLowerCase());
-                          }
-                          return false; 
-                        }}
-                      />
+                      showSearch
+                      allowClear
+                      placeholder="Buscar persona"
+                      options={filteredPersonsOptions}
+                      value={null}
+                      style={{ width: "100%", height: "2.5rem" }}
+                      optionFilterProp="label"
+                      filterOption={(input: string, option) => {
+                        if (option) {
+                          return option.label.props.toLowerCase().includes(input.toLowerCase());
+                        }
+                        return false;
+                      }}
+                    />
                   </Col>
-                  <Col span={12}/>
+                  <Col span={12} />
                   <Col span={24}>
-                    <Table columns={columnsCargaVehiculo} dataSource={dataVehicles} />
+                    <Table columns={columnsCargaPersonas} dataSource={dataPersons} />
                   </Col>
                 </Col>
               </Row>
-          </Col>          
+            )}
+            <Row>
+              <Col span={24}>
+                <Col span={12}>
+                  <Text className="locationLabels" style={{ display: "flex" }}>
+                    Vehículo Sugerido
+                  </Text>
+                  <Select
+                    showSearch
+                    allowClear
+                    placeholder="Agregar vehículo"
+                    options={filteredVehiclesOptions}
+                    value={null}
+                    style={{ width: "100%", height: "2.5rem" }}
+                    optionFilterProp="value"
+                    filterOption={(input: string, option) => {
+                      if (option) {
+                        return option.value.toLowerCase().includes(input.toLowerCase());
+                      }
+                      return false;
+                    }}
+                  />
+                </Col>
+                <Col span={12} />
+                <Col span={24}>
+                  <Table columns={columnsCargaVehiculo} dataSource={dataVehicles} />
+                </Col>
+              </Col>
+            </Row>
+          </Col>
         </Row>
-        
       )
     },
     {
@@ -1817,148 +2064,201 @@ export const CreateOrderView = () => {
       ),
       children: (
         <Row>
-          <Col span={24} style={{ padding:'1.5rem'}}>
-            <Row style={{marginBottom: "1.5rem"}}>
+          <Col span={24} style={{ padding: "1.5rem" }}>
+            <Row style={{ marginBottom: "1.5rem" }}>
               <Col span={12}>
-                <Text className="locationLabels" style={{ display: 'flex' }}>
+                <Text className="locationLabels" style={{ display: "flex" }}>
                   Company Code
                 </Text>
                 <Select
-                  className={companyValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
+                  className={
+                    companyValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"
+                  }
                   options={optionsCompanyCodes}
-                  onChange={(value)=>{
+                  onChange={(value) => {
                     setCompany(value);
                     setCompanyValid(true);
                   }}
                 />
-              {(!companyValid) &&
-                <>
-                  <br/><label className="textError">* Campo obligatorio</label><br/>
-                </>
-              }
+                {!companyValid && (
+                  <>
+                    <br />
+                    <label className="textError">* Campo obligatorio</label>
+                    <br />
+                  </>
+                )}
               </Col>
-              <Col span={12}/>
+              <Col span={12} />
             </Row>
             {dataPsl.map((psl, pslIndex) => (
-              <div className="divdistance" style={{marginBottom: pslIndex+1 === dataPsl.length ? 0 : "1rem"}} key={`PSL-${pslIndex}-${psl.key}`}>
+              <div
+                className="divdistance"
+                style={{
+                  marginBottom: pslIndex + 1 === dataPsl.length ? 0 : "1rem",
+                  position: "relative"
+                }}
+                key={`PSL-${pslIndex}-${psl.key}`}
+              >
                 <Row>
                   <Col span={10}>
-                    <Text className="locationLabels" style={{ display: 'flex' }}>
+                    <Text className="locationLabels" style={{ display: "flex" }}>
                       Product Service Line (PSL)
                     </Text>
                     <Select
-                        showSearch
-                        placeholder={"Selecciona PSL"}
-                        options={filteredPsls}
-                        className="puntoOrigen dateInputForm" 
-                        onChange={(e)=> {
-                          setDataPsl(prevDataPsl => 
-                            prevDataPsl.map((item, i) => 
-                              i === pslIndex ? { ...item, idpsl: e, key: pslIndex+1 } : item
-                            )
-                          );
-                        }}
-                        optionFilterProp="label"
-                        filterOption={(input: string, option) => {
-                          if (option) {
-                            return option.label?.toLowerCase().includes(input.toLowerCase());
-                          }
-                          return false;
-                        }}
+                      showSearch
+                      placeholder={"Selecciona PSL"}
+                      options={filteredPsls}
+                      className="puntoOrigen dateInputForm"
+                      onChange={(e) => {
+                        setDataPsl((prevDataPsl) =>
+                          prevDataPsl.map((item, i) =>
+                            i === pslIndex ? { ...item, idpsl: e, key: pslIndex + 1 } : item
+                          )
+                        );
+                      }}
+                      optionFilterProp="label"
+                      filterOption={(input: string, option) => {
+                        if (option) {
+                          return option.label?.toLowerCase().includes(input.toLowerCase());
+                        }
+                        return false;
+                      }}
                     />
                   </Col>
-                  <Col span={6} style={{paddingLeft:'30px'}}>
-                    <Text className="locationLabels" style={{ display: 'flex' }}>
+                  <Col span={6} style={{ paddingLeft: "30px" }}>
+                    <Text className="locationLabels" style={{ display: "flex" }}>
                       Porcentaje PSL
                     </Text>
                     <InputNumber<number>
-                      className="puntoOrigen dateInputForm" 
+                      className="puntoOrigen dateInputForm"
                       defaultValue={psl.percent}
                       min={0}
                       max={100}
                       addonAfter="%"
-                      formatter={(value) => `${Math.floor(value || 0)}`} 
+                      formatter={(value) => `${Math.floor(value || 0)}`}
                       value={psl.percent}
                       onBlur={(e) => handleBlurPSL(e, pslIndex)}
                       step={1}
                     />
                   </Col>
-                  <Col span={8}/>
+                  <Col span={8} />
                 </Row>
-                {psl.costcenters.map((cc, ccIndex:number) => (
+                {psl.costcenters.map((cc, ccIndex: number) => (
                   <Row key={cc.key}>
-                    <Col span={10} style={{paddingLeft:'30px'}}>
-                      <Text className="locationLabels" style={{ display: 'flex', marginTop: '0.5rem' }}>
+                    <Col span={10} style={{ paddingLeft: "30px" }}>
+                      <Text
+                        className="locationLabels"
+                        style={{ display: "flex", marginTop: "0.5rem" }}
+                      >
                         Centro de costos
                       </Text>
                       <Select
-                          showSearch
-                          placeholder={"Selecciona Centro de costos"}
-                          options={setOptionsCostCenter(psl.idpsl)}
-                          className="puntoOrigen dateInputForm" 
-                          onChange={(e)=> {
-                            setDataPsl(prevDataPsl => 
-                              prevDataPsl.map((psl, pslIndexMap) => {
-                                if (pslIndexMap === pslIndex) {
-                                  return {
-                                    ...psl,
-                                    costcenters: psl.costcenters.map((cc, ccIndexMap) => 
-                                      ccIndexMap === ccIndex ? { ...cc, idpslcostcenter: e, key: ccIndex+1 } : cc
-                                    )
-                                  };
-                                }
-                                return psl;
-                              })
-                            );
-                          }}
-                          optionFilterProp="label"
-                          filterOption={(input: string, option) => {
-                            if (option) {
-                              return option?.label?.toLowerCase().includes(input.toLowerCase());
-                            }
-                            return false; 
-                          }}
+                        showSearch
+                        placeholder={"Selecciona Centro de costos"}
+                        options={setOptionsCostCenter(psl.idpsl)}
+                        className="puntoOrigen dateInputForm"
+                        onChange={(e) => {
+                          setDataPsl((prevDataPsl) =>
+                            prevDataPsl.map((psl, pslIndexMap) => {
+                              if (pslIndexMap === pslIndex) {
+                                return {
+                                  ...psl,
+                                  costcenters: psl.costcenters.map((cc, ccIndexMap) =>
+                                    ccIndexMap === ccIndex
+                                      ? { ...cc, idpslcostcenter: e, key: ccIndex + 1 }
+                                      : cc
+                                  )
+                                };
+                              }
+                              return psl;
+                            })
+                          );
+                        }}
+                        optionFilterProp="label"
+                        filterOption={(input: string, option) => {
+                          if (option) {
+                            return option?.label?.toLowerCase().includes(input.toLowerCase());
+                          }
+                          return false;
+                        }}
                       />
-                    </Col>  
-                    <Col span={6} style={{paddingLeft:'30px'}}>
-                      <Text className="locationLabels" style={{ display: 'flex', marginTop: '0.5rem' }}>
+                    </Col>
+                    <Col span={6} style={{ paddingLeft: "30px" }}>
+                      <Text
+                        className="locationLabels"
+                        style={{ display: "flex", marginTop: "0.5rem" }}
+                      >
                         Porcentaje CC
                       </Text>
                       <InputNumber<number>
-                        className="puntoOrigen dateInputForm" 
+                        className="puntoOrigen dateInputForm"
                         defaultValue={cc.percent}
                         value={cc.percent}
                         min={0}
                         max={psl.percent}
                         addonAfter="%"
-                        step={1}                        
-                        formatter={(value) => `${Math.floor(value || 0)}`}  
+                        step={1}
+                        formatter={(value) => `${Math.floor(value || 0)}`}
                         onBlur={(e) => handleBlurCC(e, pslIndex, ccIndex)}
                       />
-                    </Col>  
-                    <Col span={8} style={{display:"flex", justifyContent: "center", alignItems:"flex-end"}}>
-                      {ccIndex+1 === psl.costcenters.length && 
-                      <Flex align="center" justify="center">
-                        <PlusCircle size={24}/>
-                        <button onClick={() => addPslCostCenter(psl.key)} className="btnagregarpsl">
-                          Agregar centro de costos
-                        </button>
-                      </Flex>}
-                    </Col>                
+                    </Col>
+                    <Col
+                      span={8}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-evenly",
+                        alignItems: "flex-end"
+                      }}
+                    >
+                      {ccIndex + 1 === psl.costcenters.length && psl.costcenters.length > 1 && (
+                        <Flex align="center" justify="center">
+                          <button
+                            key={`delete-cc-${ccIndex}`}
+                            onClick={() => handleDeleteCC(pslIndex, ccIndex)}
+                            className="btnTrash"
+                          >
+                            <Trash size={24} />
+                          </button>
+                        </Flex>
+                      )}
+                      {ccIndex + 1 === psl.costcenters.length && (
+                        <Flex align="center" justify="center">
+                          <PlusCircle size={24} />
+                          <button
+                            onClick={() => addPslCostCenter(psl.key)}
+                            className="btnagregarpsl"
+                          >
+                            Agregar centro de costos
+                          </button>
+                        </Flex>
+                      )}
+                    </Col>
                   </Row>
                 ))}
+                {pslIndex + 1 === dataPsl.length && dataPsl.length > 1 && (
+                  <div
+                    style={{ display: "flex", position: "absolute", top: "1rem", right: "1rem" }}
+                    key={`delete-psl-${pslIndex}`}
+                  >
+                    <button onClick={() => handleDeletePsl(pslIndex)} className="btnTrash">
+                      <Trash size={24} />
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
-            <Row style={{marginTop: "2rem"}}>
-              <Col span={24} style={{display:"flex", justifyContent: "flex-end"}}>
+            <Row style={{ marginTop: "2rem" }}>
+              <Col span={24} style={{ display: "flex", justifyContent: "flex-end" }}>
                 <Flex align="center" justify="center">
-                  <PlusCircle size={24}/>
-                  <button onClick={() => addPsl()} className="btnagregarpsl">Agregar PSL</button>
+                  <PlusCircle size={24} />
+                  <button onClick={() => addPsl()} className="btnagregarpsl">
+                    Agregar PSL
+                  </button>
                 </Flex>
               </Col>
             </Row>
           </Col>
-        </Row >
+        </Row>
       )
     },
     {
@@ -1973,175 +2273,234 @@ export const CreateOrderView = () => {
       ),
       children: (
         <Row>
-          <Col span={24} style={{ padding:'1.5rem'}}>
-          <Text className="locationLabels" style={{ display: 'flex' }}> 
-            Documentos
-          </Text>
-          <Row className="mainUploadDocuments">
-            {selectedFiles.map((file) => (
-              <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
-                <UploadDocumentButton
-                  key={file.id}
-                  title={file.description}
-                  isMandatory={!file.optional}
-                  aditionalData={file.id}
-                  setFiles={() => {}}
-                  files={file.file}
-                  disabled
+          <Col span={24} style={{ padding: "1.5rem" }}>
+            <Text className="locationLabels" style={{ display: "flex" }}>
+              Documentos
+            </Text>
+            <Row className="mainUploadDocuments">
+              {selectedFiles.map((file) => (
+                <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
+                  <UploadDocumentButton
+                    key={file.id}
+                    title={file.description}
+                    isMandatory={!file.optional}
+                    aditionalData={file.id}
+                    setFiles={() => {}}
+                    files={file.file}
+                    disabled
+                  >
+                    {file?.link ? (
+                      <UploadDocumentChild
+                        linkFile={file.link}
+                        nameFile={file.link.split("-").pop() || ""}
+                        onDelete={() => {}}
+                        showTrash={false}
+                      />
+                    ) : undefined}
+                  </UploadDocumentButton>
+                </Col>
+              ))}
+            </Row>
+            <Row>
+              <Col span={24} className="text-right">
+                <Button
+                  type="text"
+                  onClick={() => setIsOpenModalDocuments(true)}
+                  icon={<FileText size={24} />}
                 >
-                  {file?.link ? (
-                    <UploadDocumentChild
-                      linkFile={file.link}
-                      nameFile={file.link.split("-").pop() || ""}
-                      onDelete={() => {}}
-                      showTrash={false}
-                    />
-                  ) : undefined}
-                </UploadDocumentButton>
+                  {" "}
+                  <Text style={{ fontWeight: "bold" }}>Agregar otro documento</Text>
+                </Button>
               </Col>
-            ))}
-          </Row>
-          <Row >
-            <Col span={24} className="text-right">
-              <Button type="text" onClick={() => setIsOpenModalDocuments(true)} icon={<FileText size={24}/>} > <Text style={{fontWeight:'bold'}}>Agregar otro documento</Text></Button>
-            </Col>
-          </Row>
-          <Row style={{marginBottom: "1rem"}}         >
-            <Col span={12}>
-              <Text className="locationLabels" style={{ display: 'flex'}}>
-                Cliente final
-              </Text>
-              <Select
-                placeholder = 'Seleccione cliente final'
-                style={{ width: '100%' }}
-                className={clientValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"}
-                options={optionsClients}
-                onChange={(value)=>{
-                  setClient(value);
-                  setClientValid(true);
-                }}
-              />
-              {(!clientValid) &&
-                <>
-                  <br/><label className="textError">* Campo obligatorio</label><br/>
-                </>
-              }              
-            </Col>   
-            <Col span={12}/>
-          </Row>
-          <Row style={{marginBottom: "1rem"}}>
-            <Col span={12}>
-              <Text className="locationLabels" style={{ display: 'flex' }}>
-                Requerimientos adicionales
-              </Text>
-              <Select
+            </Row>
+            <Row style={{ marginBottom: "1rem" }}>
+              <Col span={12}>
+                <Text className="locationLabels" style={{ display: "flex" }}>
+                  Cliente final
+                </Text>
+                <Select
+                  placeholder="Seleccione cliente final"
+                  style={{ width: "100%" }}
+                  className={
+                    clientValid ? "puntoOrigen dateInputForm" : "puntoOrigen dateInputFormError"
+                  }
+                  options={optionsClients}
+                  onChange={(value) => {
+                    setClient(value);
+                    setClientValid(true);
+                  }}
+                />
+                {!clientValid && (
+                  <>
+                    <br />
+                    <label className="textError">* Campo obligatorio</label>
+                    <br />
+                  </>
+                )}
+              </Col>
+              <Col span={12} />
+            </Row>
+            <Row style={{ marginBottom: "1rem" }}>
+              <Col span={12}>
+                <Text className="locationLabels" style={{ display: "flex" }}>
+                  Requerimientos adicionales
+                </Text>
+                <Select
                   showSearch
                   allowClear
-                  placeholder='Seleccione requerimiento adicional'
+                  placeholder="Seleccione requerimiento adicional"
                   options={filteredOptionalRequirementssOptions}
                   value={null}
-                  className={"puntoOrigen dateInputForm"}   
+                  className={"puntoOrigen dateInputForm"}
                   optionFilterProp="value"
                   filterOption={(input: string, option) => {
                     if (option) {
                       return option.value.toLowerCase().includes(input.toLowerCase());
                     }
-                    return false; 
+                    return false;
                   }}
-              />
-              <Col span={12}/>
-            </Col>   
-          </Row>
-          <Row style={{marginBottom: "1rem"}}>
-            <Col span={24}>
-              <Table columns={columnsRequerimientosAdicionales} dataSource={dataRequirements} />
-            </Col>
-          </Row>
-          <Row style={{marginBottom: "1rem"}}>
-            <Col span={24}>
-              <Text className="locationLabels" style={{ display: 'flex'}}>
-                Instrucciones especiales
-              </Text>
-              <TextArea placeholder="Escribir las instrucciones" rows={4} className="custom-textarea" autoSize={{ minRows: 2, maxRows: 6 }} onChange={(event)=>{
-                setObservation(event.target.value);
-              }}/>
-            </Col>   
-          </Row>
-          <Row style={{marginBottom: "1rem"}}>
-            <Col span={24}>
-              <Text className="locationLabels" style={{ display: 'flex'}}>
-                Datos de Contacto
-              </Text>
-              <Row style={{rowGap: "1rem"}}>
-                <Col span={24}>
-                  <Text className="locationLabels" style={{ display: 'flex'}}>
-                    Contacto punto origen
-                  </Text>
-                  {dataContacts.filter(f => f.contact_type == 1).map((contact, index)=>(
-                  <Row key={`contacto-origen-${index}-${contact.key}`} gutter={32}>
-                    <Col span={12} >
-                      <Input placeholder="Nombre del contacto" className="puntoOrigen dateInputForm" key={contact.key} value={contact.name} onChange={(e)=>{ updateContacts(contact.key,'name', e.target.value)}}/>
-                    </Col>
-                    <Col span={12} >
-                      <Input placeholder="Teléfono: 000 000 0000" className="puntoOrigen dateInputForm" key={contact.key} value={contact.contact_number} onChange={(e)=>{ updateContacts(contact.key,'contact_number', e.target.value)}}
-                      onKeyPress={(event) => {
-                        if (!/[0-9]/.test(event.key)) {
-                          event.preventDefault();
-                        }
-                      }}
-                      count={{
-                        show: true,
-                        max: 10,
-                        strategy: (txt) => runes(txt).length,
-                        exceedFormatter: (txt, { max }) => runes(txt).slice(0, max).join(''),              
-                      }}/>
-                    </Col>                  
-                  </Row>
-                  ))}
-                </Col>
-                <Col span={24}>
-                  <Text className="locationLabels" style={{ display: 'flex'}}>
-                    Contacto punto destino
-                  </Text>
-                  {dataContacts.filter((f) => f.contact_type == 2).map((contact, index)=>(
-                  <Row key={`contacto-destino-${index}-${contact.key}`} gutter={32}>
-                    <Col span={12}>
-                      <Input placeholder="Nombre del contacto" className="puntoOrigen dateInputForm"  key={contact.key}  value={contact.name} onChange={(e)=>{ updateContacts(contact.key,'name', e.target.value)}}/>
-                    </Col>
-                    <Col span={12}>
-                      <Input placeholder="Teléfono: 000 000 0000" className="puntoOrigen dateInputForm"  key={contact.key} value={contact.contact_number} onChange={(e)=>{ updateContacts(contact.key,'contact_number', e.target.value)}}
-                      onKeyPress={(event) => {
-                        if (!/[0-9]/.test(event.key)) {
-                          event.preventDefault();
-                        }
-                      }}
-                      count={{
-                        show: true,
-                        max: 10,
-                        strategy: (txt) => runes(txt).length,
-                        exceedFormatter: (txt, { max }) => runes(txt).slice(0, max).join(''),              
-                      }}/>
-                    </Col>                  
-                  </Row>
-                  ))}
-                </Col>
-              </Row>
-              <Row style={{marginTop:'1rem'}}>
-                <Col span={24} style={{display:"flex", justifyContent: "flex-end", alignItems:"flex-end"}}>
-                <Flex align="center" justify="center">
-                  <UserPlus size={24}/>
-                  <button onClick={() =>setIsOpenModalContacts(true)} className="btnagregarpsl">
-                    Agregar otro contacto
-                  </button>
-                </Flex>
-                </Col>
-              </Row>
-            </Col>   
-          </Row>                         
+                />
+                <Col span={12} />
+              </Col>
+            </Row>
+            <Row style={{ marginBottom: "1rem" }}>
+              <Col span={24}>
+                <Table columns={columnsRequerimientosAdicionales} dataSource={dataRequirements} />
+              </Col>
+            </Row>
+            <Row style={{ marginBottom: "1rem" }}>
+              <Col span={24}>
+                <Text className="locationLabels" style={{ display: "flex" }}>
+                  Instrucciones especiales
+                </Text>
+                <TextArea
+                  placeholder="Escribir las instrucciones"
+                  rows={4}
+                  className="custom-textarea"
+                  autoSize={{ minRows: 2, maxRows: 6 }}
+                  onChange={(event) => {
+                    setObservation(event.target.value);
+                  }}
+                />
+              </Col>
+            </Row>
+            <Row style={{ marginBottom: "1rem" }}>
+              <Col span={24}>
+                <Text className="locationLabels" style={{ display: "flex" }}>
+                  Datos de Contacto
+                </Text>
+                <Row style={{ rowGap: "1rem" }}>
+                  <Col span={24}>
+                    <Text className="locationLabels" style={{ display: "flex" }}>
+                      Contacto punto origen
+                    </Text>
+                    {dataContacts
+                      .filter((f) => f.contact_type == 1)
+                      .map((contact, index) => (
+                        <Row key={`contacto-origen-${index}-${contact.key}`} gutter={32}>
+                          <Col span={12}>
+                            <Input
+                              placeholder="Nombre del contacto"
+                              className="puntoOrigen dateInputForm"
+                              key={contact.key}
+                              value={contact.name}
+                              onChange={(e) => {
+                                updateContacts(contact.key, "name", e.target.value);
+                              }}
+                            />
+                          </Col>
+                          <Col span={12}>
+                            <Input
+                              placeholder="Teléfono: 000 000 0000"
+                              className="puntoOrigen dateInputForm"
+                              key={contact.key}
+                              value={contact.contact_number}
+                              onChange={(e) => {
+                                updateContacts(contact.key, "contact_number", e.target.value);
+                              }}
+                              onKeyPress={(event) => {
+                                if (!/[0-9]/.test(event.key)) {
+                                  event.preventDefault();
+                                }
+                              }}
+                              count={{
+                                show: true,
+                                max: 10,
+                                strategy: (txt) => runes(txt).length,
+                                exceedFormatter: (txt, { max }) => runes(txt).slice(0, max).join("")
+                              }}
+                            />
+                          </Col>
+                        </Row>
+                      ))}
+                  </Col>
+                  <Col span={24}>
+                    <Text className="locationLabels" style={{ display: "flex" }}>
+                      Contacto punto destino
+                    </Text>
+                    {dataContacts
+                      .filter((f) => f.contact_type == 2)
+                      .map((contact, index) => (
+                        <Row key={`contacto-destino-${index}-${contact.key}`} gutter={32}>
+                          <Col span={12}>
+                            <Input
+                              placeholder="Nombre del contacto"
+                              className="puntoOrigen dateInputForm"
+                              key={contact.key}
+                              value={contact.name}
+                              onChange={(e) => {
+                                updateContacts(contact.key, "name", e.target.value);
+                              }}
+                            />
+                          </Col>
+                          <Col span={12}>
+                            <Input
+                              placeholder="Teléfono: 000 000 0000"
+                              className="puntoOrigen dateInputForm"
+                              key={contact.key}
+                              value={contact.contact_number}
+                              onChange={(e) => {
+                                updateContacts(contact.key, "contact_number", e.target.value);
+                              }}
+                              onKeyPress={(event) => {
+                                if (!/[0-9]/.test(event.key)) {
+                                  event.preventDefault();
+                                }
+                              }}
+                              count={{
+                                show: true,
+                                max: 10,
+                                strategy: (txt) => runes(txt).length,
+                                exceedFormatter: (txt, { max }) => runes(txt).slice(0, max).join("")
+                              }}
+                            />
+                          </Col>
+                        </Row>
+                      ))}
+                  </Col>
+                </Row>
+                <Row style={{ marginTop: "1rem" }}>
+                  <Col
+                    span={24}
+                    style={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-end" }}
+                  >
+                    <Flex align="center" justify="center">
+                      <UserPlus size={24} />
+                      <button
+                        onClick={() => setIsOpenModalContacts(true)}
+                        className="btnagregarpsl"
+                      >
+                        Agregar otro contacto
+                      </button>
+                    </Flex>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
           </Col>
         </Row>
       )
-    },
+    }
   ];
 
   return (
@@ -2162,45 +2521,99 @@ export const CreateOrderView = () => {
           </Flex>
           {/* ------------Main Info Order-------------- */}
           <Flex className="orderContainer">
-            <Row style={{width:'100%'}}>
-              <Col span={24} style={{marginBottom:'1.5rem'}}>
+            <Row style={{ width: "100%" }}>
+              <Col span={24} style={{ marginBottom: "1.5rem" }}>
                 <Flex gap="middle">
-                  <button type="button" id={"1"} className={["tripTypes", (typeactive === "1" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
-                    <div className="tripTypeIcons" >
-                      <img className="icon" loading="lazy" alt="" src="/images/logistics/truck.svg" id={"1"} onClick={handleTypeClick}/>
-                      <div className="text" id={"1"} onClick={handleTypeClick}>Carga</div>
+                  <button
+                    type="button"
+                    id={"1"}
+                    className={["tripTypes", typeactive === "1" ? "active" : undefined].join(" ")}
+                    onClick={handleTypeClick}
+                  >
+                    <div className="tripTypeIcons">
+                      <img
+                        className="icon"
+                        loading="lazy"
+                        alt=""
+                        src="/images/logistics/truck.svg"
+                        id={"1"}
+                        onClick={handleTypeClick}
+                      />
+                      <div className="text" id={"1"} onClick={handleTypeClick}>
+                        Carga
+                      </div>
                     </div>
                   </button>
-                  <button type="button" id={"2"} className={["tripTypes", (typeactive === "2" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
+                  <button
+                    type="button"
+                    id={"2"}
+                    className={["tripTypes", typeactive === "2" ? "active" : undefined].join(" ")}
+                    onClick={handleTypeClick}
+                  >
                     <div className="tripTypeIcons">
-                      <img className="icon" loading="lazy" alt="" src="/images/logistics/izaje.svg" id={"2"} onClick={handleTypeClick}/>
-                      <div className="text" id={"2"} onClick={handleTypeClick}>Izaje</div>
+                      <img
+                        className="icon"
+                        loading="lazy"
+                        alt=""
+                        src="/images/logistics/izaje.svg"
+                        id={"2"}
+                        onClick={handleTypeClick}
+                      />
+                      <div className="text" id={"2"} onClick={handleTypeClick}>
+                        Izaje
+                      </div>
                     </div>
                   </button>
-                  <button type="button" id={"3"} className={["tripTypes", (typeactive === "3" ? "active" : undefined)].join(" ")} onClick={handleTypeClick}>
+                  <button
+                    type="button"
+                    id={"3"}
+                    className={["tripTypes", typeactive === "3" ? "active" : undefined].join(" ")}
+                    onClick={handleTypeClick}
+                  >
                     <div className="tripTypeIcons">
-                      <img className="icon" loading="lazy" alt="" src="/images/logistics/users.svg" id={"3"} onClick={handleTypeClick}/>
-                      <div className="text" id={"3"} onClick={handleTypeClick}>Personal</div>
+                      <img
+                        className="icon"
+                        loading="lazy"
+                        alt=""
+                        src="/images/logistics/users.svg"
+                        id={"3"}
+                        onClick={handleTypeClick}
+                      />
+                      <div className="text" id={"3"} onClick={handleTypeClick}>
+                        Personal
+                      </div>
                     </div>
                   </button>
                 </Flex>
               </Col>
               <Col span={24}>
                 <Collapse
-                className="collapseByAction"
-                expandIconPosition="end"
-                accordion={false}
-                ghost              
-                items={actionsOptions}
-                defaultActiveKey={['2']}
-                />            
+                  className="collapseByAction"
+                  expandIconPosition="end"
+                  accordion={false}
+                  ghost
+                  items={actionsOptions}
+                  defaultActiveKey={["2"]}
+                />
               </Col>
-              <Col span={24} style={{marginTop:'1.5rem', marginBottom:'1.5rem', display:"flex", justifyContent:"flex-end"}}>
+              <Col
+                span={24}
+                style={{
+                  marginTop: "1.5rem",
+                  marginBottom: "1.5rem",
+                  display: "flex",
+                  justifyContent: "flex-end"
+                }}
+              >
                 <Flex gap="middle" align="flex-end">
-                  <Button onClick={() => onCreateOrder()} style={{fontWeight:"bold"}}>
-                    Guardar como draft
-                  </Button>
-                  <Button disabled={isButtonDisabled} className="active" style={{fontWeight:"bold"}}  onClick={()=>{onCreateOrder()}} >
+                  <Button
+                    disabled={isButtonDisabled}
+                    className="active"
+                    style={{ fontWeight: "bold" }}
+                    onClick={() => {
+                      onCreateOrder();
+                    }}
+                  >
                     Confirmar
                   </Button>
                 </Flex>
