@@ -21,54 +21,58 @@ interface DataType {
 
 const getBgColor = (state: string) => {
   switch (state) {
-    case 'Pendiente':
-      return '#969696'
-    case 'Aceptada':
-      return '#E0F07E'
-    case 'Rechazada':
-      return '#ED161E'
+    case "Pendiente":
+      return "#969696";
+    case "Aceptada":
+      return "#E0F07E";
+    case "Rechazada":
+      return "#ED161E";
     default:
-      return '#969696'
+      return "#969696";
   }
-}
+};
 
 const getColor = (state: string) => {
   switch (state) {
-    case 'Pendiente':
-      return '#FFFFFF'
-    case 'Aceptada':
-      return '#141414'
-    case 'Rechazada':
-      return '#FFFFFF'
+    case "Pendiente":
+      return "#FFFFFF";
+    case "Aceptada":
+      return "#141414";
+    case "Rechazada":
+      return "#FFFFFF";
     default:
-      return '#FFFFFF'
+      return "#FFFFFF";
   }
-}
+};
 interface INoveltyTableProps {
   novelties: INovelty[];
   openDrawer: () => void;
   handleShowDetails: (id: number) => void;
 }
 
-export const NoveltyTable: FC<INoveltyTableProps> = ({ novelties, openDrawer, handleShowDetails }) => {
+export const NoveltyTable: FC<INoveltyTableProps> = ({
+  novelties,
+  openDrawer,
+  handleShowDetails
+}) => {
   const columns: TableColumnsType<DataType> = [
     {
-      title: 'ID',
-      dataIndex: 'id',
-      render: (text: string) => <Text className='row-text id'>{text}</Text>,
+      title: "ID",
+      dataIndex: "id",
+      render: (text: string) => <Text className="row-text id">{text}</Text>,
       sorter: {
-        multiple: 1,
-      },
+        multiple: 1
+      }
     },
     {
-      title: 'Tipo de novedad',
-      dataIndex: 'noveltyType',
-      render: (text: string) => <Text className='row-text'>{text}</Text>,
+      title: "Tipo de novedad",
+      dataIndex: "noveltyType",
+      render: (text: string) => <Text className="row-text">{text}</Text>
     },
     {
-      title: 'Observaciones',
-      dataIndex: 'observation',
-      render: (text: string) => <Text className='row-text'>{text}</Text>,
+      title: "Observaciones",
+      dataIndex: "observation",
+      render: (text: string) => <Text className="row-text">{text}</Text>
     },
     {
       title: "Soportes",
@@ -77,26 +81,28 @@ export const NoveltyTable: FC<INoveltyTableProps> = ({ novelties, openDrawer, ha
         <a href={url} target="_blank" rel="noopener noreferrer">
           Ver soportes
         </a>
-      ),
+      )
     },
     {
-      title: 'Valor',
-      dataIndex: 'value',
-      render: (text: string) => <Text className='row-text'>{text}</Text>,
+      title: "Valor",
+      dataIndex: "value",
+      render: (text: string) => <Text className="row-text">{text}</Text>,
       sorter: {
-        multiple: 1,
-      },
+        multiple: 1
+      }
     },
     {
-      title: 'Status',
-      dataIndex: 'state',
+      title: "Status",
+      dataIndex: "state",
       render: (text: string) => (
-        <div className='stateContainer'>
-          <div style={{ backgroundColor: getBgColor(text) }} className='stateContent'>
-            <Text style={{ color: getColor(text) }} className='text'>{text}</Text>
+        <div className="stateContainer">
+          <div style={{ backgroundColor: getBgColor(text) }} className="stateContent">
+            <Text style={{ color: getColor(text) }} className="text">
+              {text}
+            </Text>
           </div>
         </div>
-      ),
+      )
     },
     {
       title: "",
@@ -111,16 +117,15 @@ export const NoveltyTable: FC<INoveltyTableProps> = ({ novelties, openDrawer, ha
             icon={<Eye size={24} />}
           />
         </div>
-      ),
-    },
+      )
+    }
   ];
-  
   return (
     <Table
       columns={columns}
       pagination={false}
       dataSource={novelties.map((novelty) => {
-        const firstEvidenceUrl = novelty.evidences.length > 0 ? novelty.evidences[0].url : "#";
+        const firstEvidenceUrl = novelty?.evidences?.length > 0 ? novelty?.evidences[0].url : "#";
         return {
           key: novelty.id,
           id: String(novelty.id),
@@ -128,7 +133,7 @@ export const NoveltyTable: FC<INoveltyTableProps> = ({ novelties, openDrawer, ha
           observation: novelty.observation,
           support: firstEvidenceUrl,
           value: formatMoney(novelty.value),
-          state: novelty.status,
+          state: novelty.status
         };
       })}
     />
