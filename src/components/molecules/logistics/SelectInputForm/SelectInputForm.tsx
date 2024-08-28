@@ -9,9 +9,10 @@ interface Props {
     selected?: any;
     options: { id: number; value: string }[]
     loading?: boolean
+    allowClear?: boolean
 }
 
-export const SelectInputForm = ({ placeholder = "Selecciona", error, field, selected, options, loading = false }: Props) => {
+export const SelectInputForm = ({ placeholder = "Selecciona", error, field, selected, options, loading = false, allowClear= false }: Props) => {
   const optionsFormated = options.map((option: {id: number, value: string}) => {
     return {
       value: option.id,
@@ -31,6 +32,7 @@ export const SelectInputForm = ({ placeholder = "Selecciona", error, field, sele
         {...field}
         options={optionsFormated}
         loading={loading}
+        allowClear={allowClear}
       />
       {error && (
         <Typography.Text type="danger" className="textMessageError">Campo es obligatorio *</Typography.Text>

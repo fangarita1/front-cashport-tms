@@ -78,7 +78,7 @@ export const UsersTable = () => {
           <Flex
             align="center"
           >
-            <Text key={carrier.id}>{carrier.description}</Text>
+            <Text key={carrier?.id}>{carrier?.description}</Text>
           </Flex>
         </Flex>
       ),

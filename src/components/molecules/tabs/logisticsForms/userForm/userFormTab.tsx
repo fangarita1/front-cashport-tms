@@ -32,8 +32,8 @@ export const UserFormTab = ({
   onSubmitForm = () => {},
   statusForm = "review",
   data,
-  onActiveProject = () => {},
-  onDesactivateProject = () => {},
+  onActiveUser = () => {},
+  onDesactivateUser = () => {},
   params,
   handleFormState = () => {}
 }: UserFormTabProps) => {
@@ -68,7 +68,7 @@ export const UserFormTab = ({
   });
 
   const isFormCompleted = () => {
-    return isValid && (imageFile || getValues("general.photo"));
+    return isValid; // && (imageFile || getValues("general.photo"));
   };
   const isSubmitButtonEnabled = isFormCompleted() && !loading;
 
@@ -295,6 +295,7 @@ export const UserFormTab = ({
                           field={field}
                           loading={isLoadingCarriers}
                           options={converCarrierstToSelectOptions((carriersType?.data.data as any) || [])}
+                          allowClear={true}
                         />
                       )}
                     />
@@ -360,8 +361,8 @@ export const UserFormTab = ({
         isActiveStatus={true}
         isOpen={isOpenModal}
         onClose={() => setIsOpenModal(false)}
-        onActive={onActiveProject}
-        onDesactivate={onDesactivateProject}
+        onActive={onActiveUser}
+        onDesactivate={onDesactivateUser}
       />
     </>
   );

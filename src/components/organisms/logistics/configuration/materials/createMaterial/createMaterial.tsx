@@ -28,7 +28,7 @@ export const CreateMaterialView = ({ params }: Props) => {
           type: "success",
           content: `El material fue creada exitosamente.`
         });
-        push(`/logistics/configuration/materials/${response.data.data.id}`);
+        push(`/logistics/configuration/materials/all`);//${response.data.data.id}
       }
     } catch (error) {
       if (error instanceof Error) {

@@ -28,7 +28,7 @@ export const CreateLocationView = ({ params }: Props) => {
           type: "success",
           content: `La ubicación fue creada exitosamente.`
         });
-        push(`/logistics/configuration/locations/${response.data.data.id}`);
+        push(`/logistics/configuration/locations/all`); //${response.data.data.id}
       }
     } catch (error) {
       if (error instanceof Error) {
