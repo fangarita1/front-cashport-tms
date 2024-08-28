@@ -1,17 +1,21 @@
+"use client";
 import { ConfigProvider } from "antd";
 import theme from "@/theme/themeConfig";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { Poppins } from "@next/font/google";
-import esES from 'antd/locale/es_ES';
+import esES from "antd/locale/es_ES";
 
 import "../styles/globals.scss";
+import { useAppStore } from "@/lib/store/store";
+import Loader from "@/components/atoms/loaders/loader";
 
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
-  display: "swap",
+  display: "swap"
 });
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const { isHy } = useAppStore((state) => state);
   return (
     <ConfigProvider theme={theme} locale={esES}>
       <html lang="es" className={poppins.className}>
@@ -19,9 +23,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.css" rel="stylesheet" />
         </head>
         <body>
-          <AntdRegistry>{children}</AntdRegistry>
-          <script id="ze-snippet" async src="https://static.zdassets.com/ekr/snippet.js?key=df419fa3-ccdd-477b-8d9a-5ce2c02b2812">
-          </script>
+          <AntdRegistry>{isHy ? children : <Loader />}</AntdRegistry>
+          <script
+            id="ze-snippet"
+            async
+            src="https://static.zdassets.com/ekr/snippet.js?key=df419fa3-ccdd-477b-8d9a-5ce2c02b2812"
+          ></script>
         </body>
       </html>
     </ConfigProvider>
