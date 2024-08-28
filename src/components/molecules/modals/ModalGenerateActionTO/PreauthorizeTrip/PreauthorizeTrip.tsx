@@ -14,6 +14,7 @@ import FooterButtons from "../../ModalBillingAction/FooterButtons/FooterButtons"
 import { Plus, Trash } from "phosphor-react";
 import { Preauthorization, PreauthorizeTripForm } from "./controllers/preauthorizetrip.types";
 import { preautorizationsFormSchema } from "./controllers/formSchema";
+import { formatNumber } from "@/utils/utils";
 
 interface PAtrip {
   idTR: string;
@@ -112,15 +113,19 @@ const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: PAtrip) => {
   const getAlreadyPreautorized = (): number => {
     const preauthorizedValue =
       formValues.preauthorizations?.reduce((total: number, pa: any) => {
-        if (pa.evidence) {
+        if (pa.value) {
           return total + Number(pa.value);
         }
         return total;
       }, 0) ?? 0;
     return preauthorizedValue;
   };
+  function getAllPAHaveEvidence() {
+    return formValues.preauthorizations?.every((pa: any) => pa.evidence !== undefined);
+  }
+  const allPAHaveEvidence = getAllPAHaveEvidence();
   const pendingPAValue = totalValue - getAlreadyPreautorized();
-  const isConfirmDisabled = pendingPAValue !== 0;
+  const isFormCompleted = pendingPAValue === 0 && allPAHaveEvidence;
 
   if (isLoading) {
     return <Skeleton active loading={isLoading} />;
@@ -135,17 +140,21 @@ const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: PAtrip) => {
               Total servicio <b>{carrierName}</b>
             </p>
             <p className={styles.subtitle}>
-              <b>{`$${totalValue}`}</b>
+              <b>{`$${formatNumber(totalValue, 2)}`}</b>
             </p>
           </Flex>
           <Flex justify="space-between">
             <p className={styles.subtitle}>Pendiente preautorización</p>
-            <p className={styles.subtitle}>{`$${pendingPAValue}`}</p>
+            <p className={styles.subtitle}>{`$${formatNumber(pendingPAValue, 2)}`}</p>
+          </Flex>
+          <Flex justify="flex-end">
+            <a className={styles.buttonDownload} href={"/"} target="_blank">
+              Descargar CSV
+            </a>
           </Flex>
         </Flex>
         {fields.map((field, index) => {
           const currentPA = formValues?.preauthorizations?.[index];
-          console.log("FIELD index", index, "valores", field);
           return (
             <Flex vertical key={`preauthorizacion-${index}-${field.id}`}>
               <Flex vertical gap={16} style={{ paddingBottom: 24 }}>
@@ -163,39 +172,36 @@ const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: PAtrip) => {
                 </Flex>
                 <Flex gap={16}>
                   <InputForm
-                    key={`pa-${index}-id`}
-                    className={styles.inputForm}
-                    placeholder="Id Preautorización"
+                    key={`pa-${index}-id-${field.id}`}
+                    titleInput="Id Preautorización"
                     nameInput={`preauthorizations.${index}.idPA`}
                     control={control}
                     error={errors?.preauthorizations?.[index]?.idPA}
-                    titleInput="Id Preautorización"
                   />
                   <InputDateForm
-                    key={`pa-${index}-date`}
+                    key={`pa-${index}-date-${field.id}`}
                     titleInput="Fecha"
                     nameInput={`preauthorizations.${index}.date`}
                     control={control}
                     error={(errors?.preauthorizations?.[index]?.date as FieldError) ?? undefined}
                   />
                   <InputForm
-                    key={`pa-${index}-value`}
-                    placeholder="Valor"
+                    key={`pa-${index}-value-${field.id}`}
+                    titleInput="Valor"
                     nameInput={`preauthorizations.${index}.value`}
                     control={control}
                     error={errors?.preauthorizations?.[index]?.value}
-                    titleInput="Valor"
                     typeInput="number"
                   />
                 </Flex>
                 <UploadFileButton
-                  isMandatory={true}
                   key={`pa-${index}-doc-${field.id}`}
                   title={"Evidencia"}
                   handleOnDelete={() => handleOnDeleteDocument(index)}
                   handleOnChange={(file) => handleOnChangeDocument(file, index)}
                   fileName={currentPA?.evidence?.file?.name}
                   fileSize={currentPA?.evidence?.file?.size}
+                  isMandatory={true}
                 />
               </Flex>
               {index + 1 === fields.length ? (
@@ -213,7 +219,7 @@ const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: PAtrip) => {
         })}
       </Flex>
       <FooterButtons
-        isConfirmDisabled={isConfirmDisabled}
+        isConfirmDisabled={!isFormCompleted}
         titleConfirm="Cargar Preautorización"
         onClose={onClose}
         handleOk={handleSubmit(onSubmit)}
