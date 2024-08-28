@@ -17,10 +17,7 @@ import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
 import { formatMoney } from "@/utils/utils";
-import { useAppStore } from "@/lib/store/store";
-import redirectModal from "@/components/molecules/modals/redirectModal/RedirectModal";
-import useStore from "@/lib/hook/useStore";
-import { STORAGE_TOKEN } from "@/utils/constants/globalConstants";
+
 import "./ClientsViewTable.scss";
 import { useDebounce } from "@/hooks/useDeabouce";
 import UiSearchInput from "@/components/ui/search-input/search-input";
@@ -39,8 +36,6 @@ export const ClientsViewTable = () => {
   const loader = useRef(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
-  const project = useStore(useAppStore, (projects) => projects.selectedProject);
-  const ID = project?.ID;
   const [filters, setFilters] = useState<SelectedFilters>({
     holding: [],
     clientGroup: []
@@ -48,13 +43,6 @@ export const ClientsViewTable = () => {
   useEffect(() => {
     setIsComponentLoading(false);
   }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem(STORAGE_TOKEN);
-    if (!isComponentLoading && !ID && !!token) {
-      redirectModal();
-    }
-  }, [isComponentLoading, ID]);
 
   const [loadingOpenPortfolio, setLoadingOpenPortfolio] = useState({
     isLoading: false,
@@ -65,7 +53,7 @@ export const ClientsViewTable = () => {
     page: page,
     searchQuery: debouncedSearchQuery,
     holding: filters.holding,
-    client_group:   filters.clientGroup
+    client_group: filters.clientGroup
   });
 
   useEffect(() => {
