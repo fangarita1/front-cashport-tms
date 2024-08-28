@@ -5,17 +5,36 @@ import {
   ICommunication,
   ICommunicationForm,
   ICreateCommunication,
-  IPeriodicityModalForm
+  IPeriodicityModalForm,
+  ISingleCommunication
 } from "@/types/communications/ICommunications";
 import { GenericResponse } from "@/types/global/IGlobal";
 import { API, getIdToken } from "@/utils/api/api";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 export const getAllCommunications = async (projectId: number) => {
   const response: GenericResponse<ICommunication[]> = await API.get(
     `${config.API_HOST}/comunication/get_comunications?projectId=${projectId}`
   );
   return response;
+};
+
+export const getCommunicationById = async (
+  communicationId: number
+): Promise<ISingleCommunication | null> => {
+  try {
+    const response: AxiosResponse<ISingleCommunication> = await API.get(
+      `${config.API_HOST}/comunication/detail_comunicaction?comunication_consolidated_id=${communicationId}`
+    );
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error(`Error getting communication by id. Status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error getting communication by id", error);
+    return null;
+  }
 };
 
 export const getForwardEvents = async (): Promise<string[]> => {
@@ -66,8 +85,8 @@ export const createCommunication = async ({
       trigger: {
         type: data.trigger.type,
         settings: {
-          init_date: selectedPeriodicity?.init_date.toISOString().split("T")[0],
-          end_date: selectedPeriodicity?.end_date.toISOString().split("T")[0],
+          init_date: selectedPeriodicity?.init_date?.toISOString().split("T")[0],
+          end_date: selectedPeriodicity?.end_date?.toISOString().split("T")[0],
           repeat: selectedPeriodicity?.frequency_number,
           frequency: selectedPeriodicity?.frequency?.value.toLowerCase(),
           days:
@@ -88,12 +107,12 @@ export const createCommunication = async ({
       template: {
         via: data.template.via.value,
         send_to: data.template.send_to.map((mail) => mail.value),
-        copy_to: data.template.copy_to.map((mail) => mail.value),
+        copy_to: data.template.copy_to?.map((mail) => mail.value),
         tags: data.template.tags.map((tag) => tag.value),
         time: timeString,
         message: data.template.message,
         // Where does title should come from?
-        title: data.template?.title || "titulo",
+        title: data.template?.title || "titulo quemado",
         subject: data.template.subject,
         files: data.template.files.map((file) => file.value)
       }
@@ -107,8 +126,8 @@ export const createCommunication = async ({
         Authorization: `Bearer ${token}`
       }
     });
-    showMessage("success", response);
 
+    if (response.status === 200) showMessage("success", "Comunicación creada correctamente");
     return response;
   } catch (error) {
     console.error("Error creating communication", error);

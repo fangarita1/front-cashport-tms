@@ -15,12 +15,17 @@ import GeneralSearchSelect from "@/components/ui/general-search-select";
 import SelectOuterTags from "@/components/ui/select-outer-tags";
 import InputClickable from "@/components/ui/input-clickable";
 import { ModalPeriodicity } from "@/components/molecules/modals/ModalPeriodicity/ModalPeriodicity";
-import { ICommunicationForm, IPeriodicityModalForm } from "@/types/communications/ICommunications";
+import {
+  ICommunicationForm,
+  IPeriodicityModalForm,
+  ISingleCommunication
+} from "@/types/communications/ICommunications";
 import { InputExpirationNoticeDays } from "@/components/atoms/inputs/InputExpirationNoticeDays/InputExpirationNoticeDays";
 import { OptionType } from "@/components/ui/select-outer-tags/select-outer-tags";
 import { CustomTextArea } from "@/components/atoms/CustomTextArea/CustomTextArea";
 import {
   createCommunication,
+  getCommunicationById,
   getForwardEvents,
   getForwardToEmails,
   getTemplateTags
@@ -38,7 +43,7 @@ interface Props {
   };
   onGoBackTable: () => void;
 }
-export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
+export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetails }: Props) => {
   const [loadingRequest, setLoadingRequest] = useState(false);
   const [radioValue, setRadioValue] = useState<any>();
   const [zones, setZones] = useState([] as number[]);
@@ -46,6 +51,10 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
   const [selectedBusinessRules, setSelectedBusinessRules] = useState<ISelectedBussinessRules>(
     initDatSelectedBusinessRules
   );
+  const [communicationData, setCommunicationData] = useState({
+    data: {} as ISingleCommunication,
+    isLoading: false
+  });
   const [customFieldsError, setCustomFieldsError] = useState({
     zone: false,
     channel: false,
@@ -75,11 +84,14 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
     watch,
     setValue,
     getValues
-  } = useForm<ICommunicationForm>({});
+  } = useForm<ICommunicationForm>({
+    values: showCommunicationDetails.active ? dataToDataForm(communicationData.data) : undefined
+  });
   const watchEventType = watch("trigger.settings.event_type");
   const watchTemplateTagsLabels = watch("template.tags")?.map((tag) => `\[${tag.label}\]`);
 
   useEffect(() => {
+    //set values for selects
     const fecthEvents = async () => {
       const events = await getForwardEvents();
       setEvents(events);
@@ -95,6 +107,32 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
       setForwardToEmails(emails);
     };
     fetchEmails();
+
+    // set values for communication detail
+    const fetchSingleCommunication = async () => {
+      if (!showCommunicationDetails.communicationId) return;
+      setCommunicationData({ data: {} as ISingleCommunication, isLoading: true });
+      const res = await getCommunicationById(showCommunicationDetails.communicationId);
+      if (res) {
+        setCommunicationData({ data: res, isLoading: false });
+        setRadioValue(res.type);
+        setSelectedBusinessRules({
+          channels: res.rules.channel,
+          lines: res.rules.line,
+          sublines: res.rules.subline
+        });
+        setZones(res.rules.zone);
+        setAssignedGroups(res.rules.groups_id);
+        setSelectedPeriodicity({
+          init_date: new Date(res.date_init_frequency),
+          frequency_number: res.repeats,
+          frequency: { value: res.frequency, label: res.frequency },
+          days: res.frequency_days.map((day) => ({ value: day, label: day })),
+          end_date: new Date(res.date_end_frequency)
+        });
+      }
+    };
+    fetchSingleCommunication();
   }, []);
 
   const handleAddTagToBody = (value: OptionType[], deletedValue: OptionType[]) => {
@@ -398,7 +436,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
         <Controller
           name="template.copy_to"
           control={control}
-          rules={{ required: true }}
+          rules={{ required: false }}
           render={({ field }) => (
             <GeneralSearchSelect
               errors={errors.template?.copy_to}
@@ -415,7 +453,7 @@ export const CommunicationProjectForm = ({ onGoBackTable }: Props) => {
           <Controller
             name="template.tags"
             control={control}
-            rules={{ required: true }}
+            rules={{ required: false }}
             render={({ field }) => (
               <SelectOuterTags
                 title="Tags"
@@ -509,4 +547,31 @@ const initDatSelectedBusinessRules: ISelectedBussinessRules = {
   channels: [],
   lines: [],
   sublines: []
+};
+
+const dataToDataForm = (data: ISingleCommunication): ICommunicationForm => {
+  return {
+    name: data.COMUNICATION_NAME,
+    description: data.reason,
+    trigger: {
+      type: data.type,
+      settings: {
+        days: ["test"],
+        values: undefined,
+        subValues: undefined,
+        event_type: undefined
+      }
+    },
+    template: {
+      via: { value: data.via, label: data.via },
+      send_to: data.send_to?.map((mail) => ({ value: mail, label: mail })),
+      copy_to: data.copy_to?.map((mail) => ({ value: mail, label: mail })),
+      tags: data.tags?.map((tag) => ({ value: tag, label: tag })),
+      time: data.updated_at,
+      message: data.BODY,
+      title: data.TITLE,
+      subject: data.TEMPLATE_SUBJECT,
+      files: []
+    }
+  };
 };

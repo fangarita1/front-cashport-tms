@@ -65,6 +65,7 @@ export const ModalPeriodicity = ({
           control={control}
           error={errors.init_date}
           minDate={dayjs(new Date().toLocaleDateString())}
+          validationRules={{ required: true }}
         />
         <p className="modalPeriodicity__inputs__name">Repetir cada</p>
         <div className="modalPeriodicity__inputs__repeat">

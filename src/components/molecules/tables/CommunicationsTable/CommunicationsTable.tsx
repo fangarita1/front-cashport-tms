@@ -40,7 +40,6 @@ export const CommunicationsTable = ({
   useEffect(() => {
     const fetchCommunications = async () => {
       const response = await getAllCommunications(projectId);
-      console.log("coms: ", response);
       setCommunications(response.data);
     };
     fetchCommunications();
