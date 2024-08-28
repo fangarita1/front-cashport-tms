@@ -730,12 +730,17 @@ export const CreateOrderView = () => {
 
   let vehiclesIdx = 0;
 
-  const loadSuggestedVehicles = async () => {
-    const res = await getSuggestedVehicles(typeactive);
+  const loadSuggestedVehicles = async (typesActive: string[]) => {
+    const promises = typesActive.map((type) => getSuggestedVehicles(type));
+    const results = await Promise.all(promises);
+
+    const combinedResults = results
+      .map((result) => result?.data?.data)
+      .reduce((acc, data) => acc.concat(data), []);
     const result: any = [];
-    //console.log (res);
-    if (res?.data?.data?.length > 0) {
-      res.data.data.forEach((item) => {
+
+    if (combinedResults?.length > 0) {
+      combinedResults.forEach((item) => {
         const strlabel = (
           <div style={{ display: "flex", alignItems: "center" }}>
             <Col span={20}>
@@ -764,13 +769,16 @@ export const CreateOrderView = () => {
   };
 
   useEffect(() => {
-    loadSuggestedVehicles();
+    loadSuggestedVehicles([typeactive]);
   }, []);
 
   useEffect(() => {
     setDataVehicles([]);
-    loadSuggestedVehicles();
-  }, [typeactive]);
+    const needLifting = origenIzaje || destinoIzaje;
+    if (typeactive == "2" || (typeactive == "1" && needLifting)) {
+      loadSuggestedVehicles(["1", "2"]);
+    } else loadSuggestedVehicles([typeactive]);
+  }, [typeactive, origenIzaje, destinoIzaje]);
 
   const filteredVehiclesOptions = optionsVehicles.filter(
     (option: any) => !dataVehicles.some((vehicle) => vehicle.description === option.value)
