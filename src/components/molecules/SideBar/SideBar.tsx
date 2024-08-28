@@ -80,12 +80,12 @@ export const SideBar = () => {
           };
           setSelectedProject(project);
           // eslint-disable-next-line no-unused-vars
-          /* Object.entries(TMSMODULES).some(([key, value]) => {
+          Object.entries(TMSMODULES).some(([key, value]) => {
             if (checkUserViewPermissions(project, key)) {
               router.push(value);
               return true;
             }
-          }); */
+          });
         }
       }
     };
