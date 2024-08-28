@@ -21,54 +21,58 @@ interface DataType {
 
 const getBgColor = (state: string) => {
   switch (state) {
-    case 'Pendiente':
-      return '#969696'
-    case 'Aceptada':
-      return '#E0F07E'
-    case 'Rechazada':
-      return '#ED161E'
+    case "Pendiente":
+      return "#969696";
+    case "Aceptada":
+      return "#E0F07E";
+    case "Rechazada":
+      return "#ED161E";
     default:
-      return '#969696'
+      return "#969696";
   }
-}
+};
 
 const getColor = (state: string) => {
   switch (state) {
-    case 'Pendiente':
-      return '#FFFFFF'
-    case 'Aceptada':
-      return '#141414'
-    case 'Rechazada':
-      return '#FFFFFF'
+    case "Pendiente":
+      return "#FFFFFF";
+    case "Aceptada":
+      return "#141414";
+    case "Rechazada":
+      return "#FFFFFF";
     default:
-      return '#FFFFFF'
+      return "#FFFFFF";
   }
-}
+};
 interface INoveltyTableProps {
   novelties: INovelty[];
   openDrawer: () => void;
   handleShowDetails: (id: number) => void;
 }
 
-export const NoveltyTable: FC<INoveltyTableProps> = ({ novelties, openDrawer, handleShowDetails }) => {
+export const NoveltyTable: FC<INoveltyTableProps> = ({
+  novelties,
+  openDrawer,
+  handleShowDetails
+}) => {
   const columns: TableColumnsType<DataType> = [
     {
-      title: 'ID',
-      dataIndex: 'id',
-      render: (text: string) => <Text className='row-text id'>{text}</Text>,
+      title: "ID",
+      dataIndex: "id",
+      render: (text: string) => <Text className="row-text id">{text}</Text>,
       sorter: {
-        multiple: 1,
-      },
+        multiple: 1
+      }
     },
     {
-      title: 'Tipo de novedad',
-      dataIndex: 'noveltyType',
-      render: (text: string) => <Text className='row-text'>{text}</Text>,
+      title: "Tipo de novedad",
+      dataIndex: "noveltyType",
+      render: (text: string) => <Text className="row-text">{text}</Text>
     },
     {
-      title: 'Observaciones',
-      dataIndex: 'observation',
-      render: (text: string) => <Text className='row-text'>{text}</Text>,
+      title: "Observaciones",
+      dataIndex: "observation",
+      render: (text: string) => <Text className="row-text">{text}</Text>
     },
     {
       title: 'Soportes',
@@ -76,23 +80,25 @@ export const NoveltyTable: FC<INoveltyTableProps> = ({ novelties, openDrawer, ha
       render: (text: string) => <Text className='row-text id clicked'>{text}</Text>,
     },
     {
-      title: 'Valor',
-      dataIndex: 'value',
-      render: (text: string) => <Text className='row-text'>{text}</Text>,
+      title: "Valor",
+      dataIndex: "value",
+      render: (text: string) => <Text className="row-text">{text}</Text>,
       sorter: {
-        multiple: 1,
-      },
+        multiple: 1
+      }
     },
     {
-      title: 'Status',
-      dataIndex: 'state',
+      title: "Status",
+      dataIndex: "state",
       render: (text: string) => (
-        <div className='stateContainer'>
-          <div style={{ backgroundColor: getBgColor(text) }} className='stateContent'>
-            <Text style={{ color: getColor(text) }} className='text'>{text}</Text>
+        <div className="stateContainer">
+          <div style={{ backgroundColor: getBgColor(text) }} className="stateContent">
+            <Text style={{ color: getColor(text) }} className="text">
+              {text}
+            </Text>
           </div>
         </div>
-      ),
+      )
     },
     {
       title: '',
@@ -110,8 +116,8 @@ export const NoveltyTable: FC<INoveltyTableProps> = ({ novelties, openDrawer, ha
             icon={<Eye size={24} />}
           />
         </div>
-      ),
-    },
+      )
+    }
   ];
   
   return <Table

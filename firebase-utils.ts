@@ -3,6 +3,7 @@ import { auth } from "./firebase";
 import { STORAGE_TOKEN } from "@/utils/constants/globalConstants";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import config from "@/config";
+import { useAppStore } from "@/lib/store/store";
 
 const { isLogistics } = config;
 
@@ -45,7 +46,7 @@ const getAuth = async (
         }).then((response) => {
           localStorage.setItem(STORAGE_TOKEN, token);
           if (response.status === 200) {
-            isLogistics ? router.push("/logistics/providers/all") : router.push("/");
+            isLogistics ? router.push("/landing") : router.push("/");
           }
         });
       })
@@ -56,8 +57,11 @@ const getAuth = async (
   }
 };
 const logOut = (router: AppRouterInstance) => {
+  const { resetStore } = useAppStore.getState();
+  resetStore();
   signOut(auth);
   localStorage.removeItem(STORAGE_TOKEN);
+  sessionStorage.removeItem("project");
   router.replace("/auth/login");
 };
 export { getAuth, logOut };

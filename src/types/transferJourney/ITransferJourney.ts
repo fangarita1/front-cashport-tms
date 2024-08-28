@@ -9,6 +9,9 @@ export interface ITripJourney {
   fare: number;
   surcharge: number;
   total: number;
+  trip_status: string;
+  trip_status_id: string;
+  trip_status_color: string;
   novelties: INovelty[];
 }
 

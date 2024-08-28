@@ -1,4 +1,4 @@
-import { Button, Collapse, Typography } from "antd";
+import { Button, Collapse, Flex, Tag, Typography } from "antd";
 import { CaretDown, Truck } from "phosphor-react";
 import styles from './novelty.module.scss';
 import { FC, useState } from "react";
@@ -27,6 +27,9 @@ export const Novelty: FC<INoveltyProps> = ({ openDrawer, handleShowDetails, tran
         <div className={styles.resumItem}>
           <Text className={styles.text}>Vehículo</Text>
           <Text className={`${styles.text} ${styles.bold}`}>{trip.plate_number || '-'}</Text>
+          <Flex style={{ marginLeft: 'auto' }}>
+          <Tag color={trip.trip_status_color}>{trip.trip_status}</Tag>
+          </Flex>
         </div>
         <div className={styles.resumItem}>
           <Text className={styles.text}>Proveedor</Text>

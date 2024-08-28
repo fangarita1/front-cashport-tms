@@ -9,7 +9,7 @@ import {
   IVehiclesPricing
 } from "@/types/logistics/schema";
 import { useEffect, useState } from "react";
-import { formatMoney } from "@/utils/utils";
+import { formatMoney, formatNumber } from "@/utils/utils";
 
 const { Text } = Typography;
 
@@ -265,7 +265,7 @@ export default function Trip(props: TripProps) {
               <div>{formatMoney(item.price)}</div>
             </Flex>
             <Text>
-              Ocupación Volumen {item.m3_volume} - Peso {item.kg_capacity}
+              Ocupación Volumen {formatNumber(item.m3_volume)} - Peso {formatNumber(item.kg_capacity)}
             </Text>
             <Text>Cantidad disponibles: {item.disponibility || 0}</Text>
           </div>
@@ -304,22 +304,22 @@ export default function Trip(props: TripProps) {
                 <div className="collapseResumItem collapseBorder">
                   <Text className="collapseText">Volumen utilizado</Text>
                   <Text className="collapseText collapseBold">
-                    {volumeUsedPercentage.toFixed(2)} %
+                    {formatNumber(volumeUsedPercentage, 2)} %
                   </Text>
                 </div>
                 <div className="collapseResumItem collapseBorder">
                   <Text className="collapseText">Volumen máximo</Text>
-                  <Text className="collapseText collapseBold">{totalVolume.toFixed(2)} m3</Text>
+                  <Text className="collapseText collapseBold">{formatNumber(totalVolume)} m3</Text>
                 </div>
                 <div className="collapseResumItem collapseBorder">
                   <Text className="collapseText">Peso utilizado</Text>
                   <Text className="collapseText collapseBold">
-                    {weightUsedPercentage.toFixed(2)} %
+                    {formatNumber(weightUsedPercentage, 2)} %
                   </Text>
                 </div>
                 <div className="collapseResumItem">
                   <Text className="collapseText">Peso máximo</Text>
-                  <Text className="collapseText collapseBold">{totalWeight.toFixed(2)} kg</Text>
+                  <Text className="collapseText collapseBold">{formatNumber(totalWeight)} kg</Text>
                 </div>
               </div>
             </div>
@@ -327,11 +327,11 @@ export default function Trip(props: TripProps) {
               <div className="collapseResum">
                 <div className="collapseResumItem collapseBorder">
                   <Text className="collapseText">Volumen productos</Text>
-                  <Text className="collapseText collapseBold">{volumeUsed.toFixed(2)} m3</Text>
+                  <Text className="collapseText collapseBold">{formatNumber(volumeUsed)} m3</Text>
                 </div>
                 <div className="collapseResumItem collapseBorder">
                   <Text className="collapseText">Peso productos</Text>
-                  <Text className="collapseText collapseBold">{weightUsed.toFixed(2)} kg</Text>
+                  <Text className="collapseText collapseBold">{formatNumber(weightUsed)} kg</Text>
                 </div>
                 <div className="collapseResumItem collapseBorder">
                   <Text className="collapseText">Productos</Text>
