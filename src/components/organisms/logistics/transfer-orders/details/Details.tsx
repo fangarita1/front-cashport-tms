@@ -23,6 +23,8 @@ import { getTransferJourney } from "@/services/logistics/transfer-journey";
 import { ITransferJourney } from "@/types/transferJourney/ITransferJourney";
 import { DrawerCreateBody } from "./drawer-create-body/DrawerCreateBody";
 import ModalGenerateActionTO from "@/components/molecules/modals/ModalGenerateActionTO/ModalGenerateActionTO";
+import { BillingTable } from "./billing-table/BillingTable";
+import { supplierBillingsMockData } from "./billing-table/mockData";
 const mockData = [
   {
     name: "Coltanques",
@@ -100,7 +102,9 @@ export const TransferOrderDetails = () => {
       case NavEnum.PSL:
         return <div>Psl view</div>;
       case NavEnum.BILLING:
-        return <div>Billing view</div>;
+        return (
+          <BillingTable supplierBillings={supplierBillingsMockData} handleShowDetails={() => {}} />
+        );
       default:
         return <div />;
     }
