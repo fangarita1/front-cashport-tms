@@ -372,7 +372,6 @@ export const checkUserViewPermissions = (
     return false;
   }
 
-  console.log(viewPermissions.map((permission) => permission.page_name));
 
   return viewPermissions.some((permission) => permission.page_name === view);
 };
