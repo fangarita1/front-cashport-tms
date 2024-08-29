@@ -67,6 +67,11 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
     },
     {
       key: "5",
+      label: "Aplicación",
+      children: <PaymentsTab />
+    },
+    {
+      key: "6",
       label: "Contactos",
       children: <ContactsTab />
     }
