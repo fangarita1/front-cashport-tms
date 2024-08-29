@@ -278,7 +278,7 @@ export const TransferOrderDetails = () => {
         isOpen={isModalVisible}
         onClose={() => setIsModalVisible(false)}
         idTR={id as string}
-        carriersData={mockData}
+        carriersData={billingList}
         messageApi={messageApi}
       />
     </div>

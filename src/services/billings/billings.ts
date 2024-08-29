@@ -10,6 +10,8 @@ import {
   IPreauthorizedRequest,
   PreAuthorizationRequestData
 } from "@/types/logistics/billing/billing";
+import { PreauthorizeTripForm } from "@/components/molecules/modals/ModalGenerateActionTO/PreauthorizeTrip/controllers/preauthorizetrip.types";
+import createPreauthorizationsFormData from "@/components/molecules/modals/ModalGenerateActionTO/PreauthorizeTrip/controllers/createFormData";
 
 export const getAllBillingList = async (): Promise<IBillingsRequestList[]> => {
   try {
@@ -80,6 +82,30 @@ export const sendInvoices = async (
     const response: any = await axios.post(
       `${config.API_HOST}/logistic-billing/invoice/${idBilling}`,
       createFormData(dataForm),
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    if (response.data) return true;
+    return false;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const sendPreauthorizations = async (
+  dataForm: PreauthorizeTripForm,
+  idBilling: number
+): Promise<boolean | undefined> => {
+  try {
+    const token = await getIdToken();
+    const response: any = await axios.post(
+      `${config.API_HOST}/logistic-billing/preauthorize/${idBilling}`,
+      createPreauthorizationsFormData(dataForm),
       {
         headers: {
           Accept: "application/json, text/plain, */*",

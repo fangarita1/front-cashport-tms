@@ -6,9 +6,11 @@ import { ViewEnum } from "../ModalGenerateActionTO";
 import { Gavel } from "@phosphor-icons/react";
 
 const ActionList = ({
-  setSelectedView
+  setSelectedView,
+  canPreauthorize
 }: {
   setSelectedView: Dispatch<SetStateAction<ViewEnum>>;
+  canPreauthorize: boolean;
 }) => {
   return (
     <Flex style={{ width: "100%", height: "100%" }} gap={12} vertical>
@@ -37,7 +39,7 @@ const ActionList = ({
         onClick={() => setSelectedView(ViewEnum.MODIFY_REQUEST)}
       />
       <ButtonGenerateAction
-        disabled={false}
+        disabled={!canPreauthorize}
         icon={<Gavel size={20} />}
         title="Preautorizar viaje"
         onClick={() => setSelectedView(ViewEnum.SELECT_CARRIER)}

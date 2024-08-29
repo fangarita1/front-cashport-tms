@@ -4,21 +4,21 @@ import styles from "./PreauthorizeTrip.module.scss";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
 import { FieldError, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
-
 import { MessageInstance } from "antd/es/message/interface";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-import { ICarrier } from "../ModalGenerateActionTO";
 import UploadFileButton from "../../ModalBillingAction/UploadFileButton/UploadFileButton";
 import FooterButtons from "../../ModalBillingAction/FooterButtons/FooterButtons";
 import { Plus, Trash } from "phosphor-react";
 import { Preauthorization, PreauthorizeTripForm } from "./controllers/preauthorizetrip.types";
 import { preautorizationsFormSchema } from "./controllers/formSchema";
 import { formatNumber } from "@/utils/utils";
+import { BillingByCarrier } from "@/types/logistics/billing/billing";
+import { downloadCSVFromEndpoint } from "@/services/logistics/download_csv";
+import { sendPreauthorizations } from "@/services/billings/billings";
 
 interface PAtrip {
   idTR: string;
-  carrier: ICarrier;
+  carrier: BillingByCarrier;
   onClose: () => void;
   messageApi: MessageInstance;
 }
@@ -32,17 +32,15 @@ const defaultValueForm = {
   preauthorizations: [defaultPA]
 };
 const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: PAtrip) => {
-  const { totalValue, id: carrierId, name: carrierName } = carrier;
+  const { subtotal: totalValue, id: billingId, carrier: carrierName } = carrier;
   const [isLoading, setIsLoading] = useState(false);
-  const [defaultValues, setDefaultValues] = useState<any>(defaultValueForm);
+  const [defaultValues, setDefaultValues] = useState<PreauthorizeTripForm>(defaultValueForm);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
     setValue,
-    reset,
-    watch,
     trigger
   } = useForm<PreauthorizeTripForm>({
     defaultValues,
@@ -55,37 +53,35 @@ const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: PAtrip) => {
 
   const formValues = useWatch({ control });
 
-  console.log("formValues", formValues);
-
-  // Handle form submission
-  // async function sendForm(form: UploadInvoiceForm) {
-  //   try {
-  //     setIsLoading(true);
-  //     const response = await sendInvoices(form, idTR);
-  //     if (response) {
-  //       messageApi?.open({
-  //         type: "success",
-  //         content: "Creado correctamente",
-  //         duration: 3
-  //       });
-  //     } else {
-  //       messageApi?.open({
-  //         type: "error",
-  //         content: "Hubo un error",
-  //         duration: 3
-  //       });
-  //     }
-  //   } catch (error: any) {
-  //     messageApi?.open({
-  //       type: "error",
-  //       content: error?.message ?? "Hubo un error",
-  //       duration: 3
-  //     });
-  //   } finally {
-  //     setIsLoading(false);
-  //     onClose();
-  //   }
-  // }
+  //Handle form submission
+  async function sendForm(form: PreauthorizeTripForm) {
+    try {
+      setIsLoading(true);
+      const response = await sendPreauthorizations(form, billingId);
+      if (response) {
+        messageApi?.open({
+          type: "success",
+          content: "Enviado correctamente",
+          duration: 3
+        });
+      } else {
+        messageApi?.open({
+          type: "error",
+          content: "Hubo un error",
+          duration: 3
+        });
+      }
+    } catch (error: any) {
+      messageApi?.open({
+        type: "error",
+        content: error?.message ?? "Hubo un error",
+        duration: 3
+      });
+    } finally {
+      setIsLoading(false);
+      onClose();
+    }
+  }
   // Handle document changes
   const handleOnChangeDocument = (fileToSave: any, index: number) => {
     const { file: rawFile } = fileToSave;
@@ -107,7 +103,8 @@ const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: PAtrip) => {
     trigger(`preauthorizations.${index}.evidence`);
   };
   const onSubmit = (data: any) => {
-    console.log(data);
+    console.log("onSubmit", data);
+    sendForm(data);
   };
 
   const getAlreadyPreautorized = (): number => {
@@ -126,6 +123,11 @@ const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: PAtrip) => {
   const allPAHaveEvidence = getAllPAHaveEvidence();
   const pendingPAValue = totalValue - getAlreadyPreautorized();
   const isFormCompleted = pendingPAValue === 0 && allPAHaveEvidence;
+
+  const handleDownloadCsv = () => {
+    const endpoint = `logistic-billing/export-csv/${billingId}`;
+    downloadCSVFromEndpoint(endpoint, "billing.csv");
+  };
 
   if (isLoading) {
     return <Skeleton active loading={isLoading} />;
@@ -148,9 +150,9 @@ const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: PAtrip) => {
             <p className={styles.subtitle}>{`$${formatNumber(pendingPAValue, 2)}`}</p>
           </Flex>
           <Flex justify="flex-end">
-            <a className={styles.buttonDownload} href={"/"} target="_blank">
+            <button className={styles.buttonDownload} onClick={handleDownloadCsv}>
               Descargar CSV
-            </a>
+            </button>
           </Flex>
         </Flex>
         {fields.map((field, index) => {
