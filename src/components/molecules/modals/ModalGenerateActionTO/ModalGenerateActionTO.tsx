@@ -6,6 +6,7 @@ import { MessageInstance } from "antd/es/message/interface";
 import ActionList from "./ActionList/ActionList";
 import CarrierList from "./CarrierList/CarrierList";
 import PreauthorizeTrip from "./PreauthorizeTrip/PreauthorizeTrip";
+import { BillingByCarrier, BillingStatusEnum } from "@/types/logistics/billing/billing";
 
 export enum ViewEnum {
   "SELECT_ACTION" = "SELECT_ACTION",
@@ -16,14 +17,9 @@ export enum ViewEnum {
   "MODIFY_REQUEST" = "MODIFY_REQUEST",
   "PREAUTHORIZE_TRIP" = "PREAUTHORIZE_TRIP"
 }
-export interface ICarrier {
-  name: string;
-  id: number;
-  totalValue: number;
-}
 type PropsModalGenerateActionTO = {
   idTR: string;
-  carriersData: ICarrier[];
+  carriersData: BillingByCarrier[];
   isOpen: boolean;
   onClose: () => void;
   messageApi: MessageInstance;
@@ -33,16 +29,24 @@ export default function ModalGenerateActionTO(props: Readonly<PropsModalGenerate
   const { isOpen, onClose, idTR, carriersData, messageApi } = props;
   const [selectedView, setSelectedView] = useState<ViewEnum>(ViewEnum.SELECT_ACTION);
   const [selectedCarrier, setSelectedCarrier] = useState<number | null>(null);
+  const billingsInStatusAcepted = carriersData.filter(
+    (billing) => billing.statusDesc === BillingStatusEnum.Aceptadas
+  );
 
   const renderView = () => {
     switch (selectedView) {
       case ViewEnum.SELECT_ACTION:
-        return <ActionList setSelectedView={setSelectedView} />;
+        return (
+          <ActionList
+            setSelectedView={setSelectedView}
+            canPreauthorize={billingsInStatusAcepted.length > 0}
+          />
+        );
       case ViewEnum.SELECT_CARRIER:
         return (
           <CarrierList
             setSelectedCarrier={setSelectedCarrier}
-            carriers={carriersData}
+            carriers={billingsInStatusAcepted}
             setSelectedView={setSelectedView}
           />
         );
@@ -50,13 +54,13 @@ export default function ModalGenerateActionTO(props: Readonly<PropsModalGenerate
         return (
           <PreauthorizeTrip
             idTR={idTR}
-            carrier={carriersData.find((cd) => cd.id == selectedCarrier) as ICarrier}
+            carrier={carriersData.find((cd) => cd.id == selectedCarrier) as BillingByCarrier}
             messageApi={messageApi}
             onClose={onClose}
           />
         );
       default:
-        return <ActionList setSelectedView={setSelectedView} />;
+        return <ActionList setSelectedView={setSelectedView} canPreauthorize={false} />;
     }
   };
 
