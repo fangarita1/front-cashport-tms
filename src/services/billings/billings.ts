@@ -1,15 +1,15 @@
 import axios from "axios";
 import { API, getIdToken } from "@/utils/api/api";
 import config from "@/config";
-import {
-  IBillingsRequestList,
-  IBillingDetails,
-  IPreauthorizedRequest,
-  PreAuthorizationRequestData
-} from "@/types/logistics/schema";
 import { GenericResponse } from "@/types/global/IGlobal";
 import { UploadInvoiceForm } from "@/components/molecules/modals/ModalBillingAction/UploadInvoice/controllers/uploadinvoice.types";
 import createFormData from "@/components/molecules/modals/ModalBillingAction/UploadInvoice/controllers/createFormData";
+import {
+  IBillingDetails,
+  IBillingsRequestList,
+  IPreauthorizedRequest,
+  PreAuthorizationRequestData
+} from "@/types/logistics/billing/billing";
 
 export const getAllBillingList = async (): Promise<IBillingsRequestList[]> => {
   try {

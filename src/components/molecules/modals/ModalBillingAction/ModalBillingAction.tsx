@@ -6,7 +6,7 @@ import ActionList from "./ActionList/ActionList";
 import ConfirmClose from "./ConfirmClose/ConfirmClose";
 import UploadInvoice from "./UploadInvoice/UploadInvoice";
 import { MessageInstance } from "antd/es/message/interface";
-import { BillingStatusEnum } from "@/types/logistics/schema";
+import { BillingStatusEnum } from "@/types/logistics/billing/billing";
 
 export enum ViewEnum {
   "SELECT" = "SELECT",

@@ -4,7 +4,7 @@ import { Collapse, Flex } from "antd";
 import LabelCollapse from "@/components/ui/label-collapse";
 import BillingTable from "@/components/molecules/tables/BillingTable/BillingTable";
 import styles from "./AceptBillingView.module.scss";
-import { IBillingsRequestList } from "@/types/logistics/schema";
+import { IBillingsRequestList } from "@/types/logistics/billing/billing";
 
 interface AceptBillingViewProps {
   billings: IBillingsRequestList[];
@@ -19,25 +19,29 @@ export default function AceptBillingView({ billings, loading }: AceptBillingView
       <Collapse
         className={styles.collapses}
         defaultActiveKey={"0"}
-        items={billings ? Object.entries(billings).map(([key, billingsState]) => ({
-          key: key,
-          label: (
-            <LabelCollapse
-              status={billingsState.statusDesc}
-              quantity={billingsState.billings.length}
-              color={billingsState.statusColor}
-              quantityText="TR"
-              removeIcons
-            />
-          ),
-          children: (
-            <BillingTable
-              billingData={billingsState.billings}
-              setSelectedRows={setSelectedRows}
-              loading={loading}
-            />
-          )
-        })): []}
+        items={
+          billings
+            ? Object.entries(billings).map(([key, billingsState]) => ({
+                key: key,
+                label: (
+                  <LabelCollapse
+                    status={billingsState.statusDesc}
+                    quantity={billingsState.billings.length}
+                    color={billingsState.statusColor}
+                    quantityText="TR"
+                    removeIcons
+                  />
+                ),
+                children: (
+                  <BillingTable
+                    billingData={billingsState.billings}
+                    setSelectedRows={setSelectedRows}
+                    loading={loading}
+                  />
+                )
+              }))
+            : []
+        }
       />
     </Flex>
   );

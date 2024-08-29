@@ -234,12 +234,12 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
           <div className={styles.card}>
             <Text className={styles.titleCard}>Sobrecosto</Text>
             <Text className={styles.subtitleCard}>
-              {transferRequest && transferRequest.surcharge
+              {transferRequest && transferRequest?.surcharge
                 ? formatMoney(transferRequest?.surcharge)
                 : "-"}
             </Text>
           </div>
-          {transferRequest && transferRequest.geometry.distance && (
+          {transferRequest && transferRequest?.geometry?.distance && (
             <div className={styles.card}>
               <Text className={styles.titleCard}>Distancia</Text>
               <Text className={styles.subtitleCard}>
@@ -247,7 +247,7 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
               </Text>
             </div>
           )}
-          {transferRequest && transferRequest.geometry.duration && (
+          {transferRequest && transferRequest?.geometry?.duration && (
             <div className={styles.card}>
               <Text className={styles.titleCard}>Tiempo</Text>
               <Text className={styles.subtitleCard}>{date.toISOString().substr(11, 5)} h</Text>
