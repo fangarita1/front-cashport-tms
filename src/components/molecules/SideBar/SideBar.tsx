@@ -37,7 +37,7 @@ export const SideBar = () => {
   const project = useStore(useAppStore, (state) => state.selectedProject);
   const setProjectsBasicInfo = useAppStore((state) => state.setProjectsBasicInfo);
   const setSelectedProject = useAppStore((state) => state.setSelectedProject);
-  const projects = useAppStore((state) => state.projectsBasicInfo);
+  const { projectsBasicInfo: projects, isHy } = useAppStore((state) => state);
 
   const LOGO = project?.LOGO;
 
@@ -90,11 +90,10 @@ export const SideBar = () => {
       }
     };
 
-    if (projects?.length === 0) {
-      console.log("projects", projects);
+    if (projects?.length === 0 && isHy) {
       fetchProjects();
     }
-  }, []);
+  }, [isHy]);
 
   return (
     <div className={isSideBarLarge ? "mainLarge" : "main"}>

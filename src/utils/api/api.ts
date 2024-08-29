@@ -55,6 +55,13 @@ const API = axios.create({
   baseURL: config.API_HOST
 });
 
+export const setProjectInApi = (projectId: number) => {
+  API.interceptors.request.use(async (request) => {
+    request.headers.set("projectId", `${projectId}`);
+    return request;
+  });
+};
+
 API.interceptors.request.use(async (request) => {
   request.headers.set("Accept", "application/json, text/plain, */*");
   request.headers.set("Content-Type", "application/json; charset=utf-8");
