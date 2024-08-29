@@ -9,7 +9,6 @@ import FooterButtons from "../FooterButtons/FooterButtons";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 import dayjs from "dayjs";
 import { getPreauthorizedInfo, sendInvoices } from "@/services/billings/billings";
-import { PreAuthorizationRequestData } from "@/types/logistics/schema";
 import { PA, UploadInvoiceForm } from "./controllers/uploadinvoice.types";
 import { defaultUploadInvoiceForm } from "./controllers/createDefault";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
@@ -17,6 +16,7 @@ import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDo
 import { MessageInstance } from "antd/es/message/interface";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { uploadInvoiceFormSchema } from "./controllers/formSchema";
+import { PreAuthorizationRequestData } from "@/types/logistics/billing/billing";
 
 interface UploadInvoice {
   idTR: number;

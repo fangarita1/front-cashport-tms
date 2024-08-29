@@ -24,7 +24,8 @@ import { ITransferJourney } from "@/types/transferJourney/ITransferJourney";
 import { DrawerCreateBody } from "./drawer-create-body/DrawerCreateBody";
 import ModalGenerateActionTO from "@/components/molecules/modals/ModalGenerateActionTO/ModalGenerateActionTO";
 import { BillingTable } from "./billing-table/BillingTable";
-import { supplierBillingsMockData } from "./billing-table/mockData";
+import { getBillingByTransferRequest } from "@/services/logistics/billing_list";
+import { BillingByCarrier } from "@/types/logistics/billing/billing";
 const mockData = [
   {
     name: "Coltanques",
@@ -62,6 +63,8 @@ export const TransferOrderDetails = () => {
   const [transferRequest, setTransferRequest] = useState<ITransferRequestDetail | null>(null);
   const [transferJournies, setTransferJournies] = useState<ITransferJourney[]>();
   const [novelty, setNovelty] = useState<INovelty | null>(null);
+  const [billingList, setBillingList] = useState<BillingByCarrier[]>([]);
+
   const [tripId, setTripId] = useState<number | null>(null);
   const [form, setForm] = useState({
     noeltyTypeId: null,
@@ -102,9 +105,7 @@ export const TransferOrderDetails = () => {
       case NavEnum.PSL:
         return <div>Psl view</div>;
       case NavEnum.BILLING:
-        return (
-          <BillingTable supplierBillings={supplierBillingsMockData} handleShowDetails={() => {}} />
-        );
+        return <BillingTable supplierBillings={billingList} handleShowDetails={() => {}} />;
       default:
         return <div />;
     }
@@ -121,6 +122,13 @@ export const TransferOrderDetails = () => {
     const data = await getTransferJourney(Number(transferRequest?.id || id));
     if (Object.keys(data).length) {
       setTransferJournies(data as ITransferJourney[]);
+    }
+  };
+
+  const findBilling = async () => {
+    const data = await getBillingByTransferRequest(Number(transferRequest?.id || id));
+    if (Object.keys(data).length) {
+      setBillingList(data as BillingByCarrier[]);
     }
   };
 
@@ -178,6 +186,7 @@ export const TransferOrderDetails = () => {
 
   useEffect(() => {
     findDetails();
+    findBilling();
   }, []);
 
   useEffect(() => {

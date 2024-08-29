@@ -4,24 +4,23 @@ import { formatMoney } from "@/utils/utils";
 import { Eye, Warning } from "phosphor-react";
 import { Button, Flex, Table, TableProps, Typography } from "antd";
 import { Radioactive } from "@phosphor-icons/react";
-import { IBillingRequestsListDetail } from "@/types/logistics/schema";
+
 import Link from "next/link";
 import { useProjects } from "@/hooks/useProjects";
+import { IBillingRequestsListDetail } from "@/types/logistics/billing/billing";
 
 function formatDate(dateString: string) {
   const options: Intl.DateTimeFormatOptions = {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
     hour12: false,
-    timeZone: 'America/Bogota',
+    timeZone: "America/Bogota"
   };
-  return new Date(dateString).toLocaleDateString('es-ES', options).replace(',', '');
+  return new Date(dateString).toLocaleDateString("es-ES", options).replace(",", "");
 }
-
-
 
 const { Text } = Typography;
 
@@ -31,7 +30,11 @@ interface PropsBillingTable {
   loading: boolean;
 }
 
-export default function BillingTable({ billingData: data, setSelectedRows, loading }: PropsBillingTable) {
+export default function BillingTable({
+  billingData: data,
+  setSelectedRows,
+  loading
+}: PropsBillingTable) {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
