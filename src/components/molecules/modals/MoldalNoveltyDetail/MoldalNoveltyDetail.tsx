@@ -20,7 +20,7 @@ interface MoldalNoveltyDetailProps {
 }
 
 const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({ isOpen, onClose, noveltyId }) => {
-  const { data, isLoading } = useIncidentDetail({ incidentId: 169110 }); // TODO CAMBIAR ESTO
+  const { data, isLoading } = useIncidentDetail({ incidentId: 227712 }); // TODO CAMBIAR ESTO
   const [incidentData, setIncidentData] = useState<IIncidentDetail | null>(null);
   const [openResolveModal, setOpenResolveModal] = useState(false);
   const [isResolving, setIsResolving] = useState(true);
@@ -47,10 +47,10 @@ const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({ isOpen, onClose, no
 
     try {
       if (isResolving) {
-        await approveIncident(incidentData.invoice_id, 169170, actionData); // TODO CAMBIAR ESTO
+        await approveIncident(incidentData.invoice_id, 227712, actionData); // TODO CAMBIAR ESTO
         messageShow.success("Incidente aprobado exitosamente");
       } else {
-        await rejectIncident(incidentData.invoice_id, 169170, actionData); // TODO CAMBIAR ESTO
+        await rejectIncident(incidentData.invoice_id, 227712, actionData); // TODO CAMBIAR ESTO
         messageShow.success("Incidente rechazado exitosamente");
       }
       setOpenResolveModal(false);
