@@ -22,6 +22,7 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
 
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [IdErp, setIderp] = useState<string>("");
   const [_, setIsDetailInvoiceModalOpen] = useState(false);
   const [isRegisterNewsOpen, setIsRegisterNewsOpen] = useState(false);
   const [isValid, setIsValid] = useState(false);
@@ -161,6 +162,7 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
                     dataSingleInvoice={filteredInvoices(invoiceState)?.invoices}
                     setShowInvoiceDetailModal={setShowInvoiceDetailModal}
                     addSelectMotive={addSelectMotive}
+                    setIderp={setIderp}
                   />
                 )
               }))
@@ -173,6 +175,7 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
           isOpen={showInvoiceDetailModal?.isOpen || false}
           onClose={() => setShowInvoiceDetailModal({ isOpen: false, invoiceId: 0 })}
           invoiceId={showInvoiceDetailModal?.invoiceId || 0}
+          showId={IdErp}
           clientId={clientId}
           projectId={ID}
         />

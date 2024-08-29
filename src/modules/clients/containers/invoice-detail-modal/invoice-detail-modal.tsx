@@ -113,6 +113,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
       projectId,
     });
   };
+
   return (
     <aside className={`${styles.wrapper} ${isOpen ? styles.show : styles.hide}`}>
       <InvoiceDownloadModal

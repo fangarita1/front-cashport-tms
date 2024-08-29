@@ -23,6 +23,7 @@ export interface IInvoiceConcilation {
   observation: null | string;
   difference_amount: number | null;
   accept_date: Date;
+  id_erp: string;
   motive_id?: number | null;
 }
 
