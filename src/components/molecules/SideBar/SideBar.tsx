@@ -91,6 +91,7 @@ export const SideBar = () => {
     };
 
     if (projects?.length === 0) {
+      console.log("projects", projects);
       fetchProjects();
     }
   }, []);

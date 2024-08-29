@@ -420,6 +420,19 @@ export const CreateOrderView = () => {
     typeactive == "2" && calculateDuration(duration);
   }, [typeactive, fechaInicial, fechaFinal, horaInicial, horaFinal]);
 
+  useEffect(() => {
+    if (typeactive == "2") {
+      if (fechaInicial && horaInicial) {
+        const fechaFin = fechaInicial.hour(horaInicial.get("h")).add(horasOrigenIzaje, "h");
+        setHoraFinal(fechaFin);
+        setFechaFinal(fechaFin);
+      } else {
+        setHoraFinal(undefined);
+        setFechaFinal(undefined);
+      }
+    }
+  }, [typeactive, fechaInicial, horaInicial, horasOrigenIzaje]);
+
   const calculateDuration = (duration: number) => {
     const hrs = getTravelDuration(duration);
     setTimeTravel(hrs + " Hrs");
@@ -1773,10 +1786,7 @@ export const CreateOrderView = () => {
                     <DatePicker
                       placeholder="Seleccione fecha"
                       disabledDate={disabledDate}
-                      onChange={(value, dateString) => {
-                        //console.log('Selected Time: ', value);
-                        //console.log('Formatted Selected Time: ', dateString);
-                        //setFechaInicial(value);
+                      onChange={(value) => {
                         setFechaInicial(value);
                         setFechaInicialValid(true);
                       }}
@@ -1848,7 +1858,9 @@ export const CreateOrderView = () => {
                     <DatePicker
                       placeholder="Seleccione fecha"
                       disabledDate={disabledDate}
-                      onChange={(value, dateString) => {
+                      disabled={typeactive == "2"}
+                      value={fechaFinal}
+                      onChange={(value) => {
                         //console.log('Selected Time: ', value);
                         //console.log('Formatted Selected Time: ', dateString);
                         //setFechaFinal(value);
@@ -1870,9 +1882,11 @@ export const CreateOrderView = () => {
                       format={"HH:mm"}
                       minuteStep={15}
                       needConfirm={false}
+                      disabled={typeactive == "2"}
                       hourStep={1}
                       type={"time"}
                       variant="filled"
+                      value={horaFinal}
                       onChange={(value) => {
                         setHoraFinal(value);
                         setHoraFinalValid(true);

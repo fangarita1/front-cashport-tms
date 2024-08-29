@@ -61,26 +61,6 @@ export const BillingTable: FC<IBillingTableProps> = ({ supplierBillings, handleS
       render: (text: string) => <Text className={styles.rowtext}>{text}</Text>
     },
     {
-      title: "Tarifa base",
-      dataIndex: "baseFare",
-      render: (value: number) => <Text className={styles.rowtext}>${formatNumber(value, 2)}</Text>
-    },
-    {
-      title: "Sobre costos",
-      dataIndex: "surcharges",
-      render: (value: number) => <Text className={styles.rowtext}>${formatNumber(value, 2)}</Text>
-    },
-    {
-      title: "Subtotal",
-      dataIndex: "subtotal",
-      render: (value: number) => <Text className={styles.rowtext}>${formatNumber(value, 2)}</Text>
-    },
-    {
-      title: "Vehículos",
-      dataIndex: "vehicles",
-      render: (value: number) => <Text className={styles.rowtext}>{value}</Text>
-    },
-    {
       title: "Estado",
       dataIndex: "status",
       render: (text: string) => (
@@ -91,7 +71,32 @@ export const BillingTable: FC<IBillingTableProps> = ({ supplierBillings, handleS
             </Text>
           </div>
         </div>
-      )
+      ),
+      align: "center"
+    },
+    {
+      title: "Vehículos",
+      dataIndex: "vehicles",
+      render: (value: number) => <Text className={styles.rowtext}>{value}</Text>,
+      align: "right"
+    },
+    {
+      title: "Tarifa base",
+      dataIndex: "baseFare",
+      render: (value: number) => <Text className={styles.rowtext}>${formatNumber(value, 2)}</Text>,
+      align: "right"
+    },
+    {
+      title: "Sobre costos",
+      dataIndex: "surcharges",
+      render: (value: number) => <Text className={styles.rowtext}>${formatNumber(value, 2)}</Text>,
+      align: "right"
+    },
+    {
+      title: "Subtotal",
+      dataIndex: "subtotal",
+      render: (value: number) => <Text className={styles.rowtext}>${formatNumber(value, 2)}</Text>,
+      align: "right"
     },
     {
       title: "",

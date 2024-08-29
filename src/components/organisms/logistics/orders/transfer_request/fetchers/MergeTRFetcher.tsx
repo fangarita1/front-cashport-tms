@@ -15,7 +15,7 @@ export default function MergeTRFetcher({ transferOrders }: { transferOrders: num
       onError: (error) => {
         if (error instanceof Error) message.error(error.message);
         console.error("error", error);
-        router.push("/logistics/orders");
+        router.push("/logistics/transfer-orders");
       }
     }
   );
