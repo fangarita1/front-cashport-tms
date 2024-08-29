@@ -1,13 +1,9 @@
-"use client";
 import { ConfigProvider } from "antd";
 import theme from "@/theme/themeConfig";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { Poppins } from "@next/font/google";
 import esES from "antd/locale/es_ES";
-
 import "../styles/globals.scss";
-import { useAppStore } from "@/lib/store/store";
-import Loader from "@/components/atoms/loaders/loader";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -15,7 +11,6 @@ const poppins = Poppins({
   display: "swap"
 });
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const { isHy } = useAppStore((state) => state);
   return (
     <ConfigProvider theme={theme} locale={esES}>
       <html lang="es" className={poppins.className}>
@@ -23,7 +18,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.css" rel="stylesheet" />
         </head>
         <body>
-          <AntdRegistry>{isHy ? children : <Loader />}</AntdRegistry>
+          <AntdRegistry>{ children }</AntdRegistry>
           <script
             id="ze-snippet"
             async

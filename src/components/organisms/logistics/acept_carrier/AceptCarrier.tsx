@@ -1,5 +1,5 @@
 "use client";
-import { Flex } from "antd";
+import { Flex, message } from "antd";
 import UiSearchInput from "@/components/ui/search-input/search-input";
 import AceptCarrierView from "./view/AceptCarrierView/AceptCarrierView";
 import styles from "./AceptCarrier.module.scss";
@@ -22,9 +22,11 @@ export default function AceptCarrier() {
   const loadCarrierRequestTransferList = async () => {
     setLoading(true);
     try {
-      const result = await getAceptCarrierRequestList("3");
-      setCarriers(result.data.data);
+      const data = await getAceptCarrierRequestList();
+      setCarriers(data);
     } catch (error) {
+      if (error instanceof Error) message.error(error.message);
+      else message.error("Error al obtener la lista de solicitudes de carga");
       console.error("Error loading transfer requests", error);
     } finally {
       setLoading(false);

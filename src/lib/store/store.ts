@@ -3,6 +3,7 @@ import { ProjectSlice, createProjectSlice } from "@/lib/slices/createProjectSlic
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { createHidrationSlice, Hidration } from "../slices/hidratationSlice";
+import { setProjectInApi } from "@/utils/api/api";
 
 interface AppStore extends ProjectSlice, UserSlice, Hidration {
   resetStore: () => void;
@@ -32,6 +33,7 @@ export const useAppStore = create<AppStore>()(
       onRehydrateStorage: () => (state, error) => {
         if (error) console.error(error);
         if (state) state.setHydrated();
+        setProjectInApi(state?.selectedProject?.ID || 0);
       }
     }
   )
