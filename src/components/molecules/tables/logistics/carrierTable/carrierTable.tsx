@@ -15,7 +15,9 @@ export const CarrierTable = () => {
   const [search, setSearch] = useState("");
   const [datasource, setDatasource] = useState<any[]>([]);
 
-  const { data: carriers, isLoading } = useSWR({}, getAllCarriers, {
+  const { data: carriers, isLoading } = useSWR({
+    key: "carriers",
+  }, getAllCarriers, {
     onError: (error: any) => {
       console.error(error);
       message.error(error.message);
