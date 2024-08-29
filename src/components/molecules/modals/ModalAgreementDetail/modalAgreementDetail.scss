@@ -1,0 +1,85 @@
+.agreement-detail-modal {
+    .ant-modal-content {
+        padding: 24px;
+    }
+
+    .agreement-form {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        width: 100%;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+        width: 100%;
+    }
+
+    .evidence-section {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .evidence-value {
+        background-color: #f0f0f0;
+        padding: 8px;
+        border-radius: 4px;
+    }
+
+    .submit-button {
+        align-self: flex-end;
+    }
+
+    .modal-actions-dots {
+        background-color: #f0f0f0;
+        height: 32px;
+        width: 32px;
+        border-radius: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .evidence-section {
+        margin-top: 24px;
+    }
+
+    .evidence-list {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .evidence-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        gap: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        background-color: #f0f0f0;
+
+        &:hover {
+            background-color: #e8e8e8;
+        }
+
+
+        .evidence-time {
+            color: #8c8c8c;
+            font-size: 12px;
+        }
+
+        .evidence-icon {
+
+            margin-bottom: auto;
+        }
+    }
+
+
+}
