@@ -248,6 +248,8 @@ export const UserFormTab = ({
                     nameInput="general.phone"
                     control={control}
                     error={errors?.general?.phone}
+                    typeInput="number"
+                    validationRules={{required: true, maxLength:10}}
                   />
                 </Col>
                 <Col span={8}>
@@ -287,7 +289,7 @@ export const UserFormTab = ({
                     <Controller
                       name="general.carrier_id"
                       control={control}
-                      rules={{ required: true }}
+                      rules={{ required: false }}
                       render={({ field }) => (
                         <SelectInputForm
                           placeholder="Selecciona Proveedor"

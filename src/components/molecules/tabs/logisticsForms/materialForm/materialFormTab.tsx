@@ -107,7 +107,7 @@ export const MaterialFormTab = ({
     return images.some((img) => img.file) || (formImages && formImages.length > 0);
   };
   const isFormCompleted = () => {
-    return isValid && hasImages();
+    return isValid; //&& hasImages();
   };
 
   const isSubmitButtonEnabled = isFormCompleted() && !loading;
@@ -158,13 +158,13 @@ export const MaterialFormTab = ({
 
   const onSubmit = async (data: any) => {
 
-    const hasImage = data.images.length > 0;
-    if (!hasImage){
-      setImageError(true);
-      return;
-    } 
+    // const hasImage = data.images.length > 0;
+    // if (!hasImage){
+    //   setImageError(true);
+    //   return;
+    // } 
 
-    const formImages = [...data.images]
+    const  formImages:any[] = (data.images ? [...data.images] : [])
     setImages(Array(5).fill({ file: undefined }));
     _onSubmit(
       data,

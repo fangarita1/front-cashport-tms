@@ -61,8 +61,8 @@ export const _onSubmit = (
 ) => {
   setloading(true);
   try {
-    const hasImage = imageFile || data.general.photo;
-    if (!hasImage) return setImageError(true);
+    // const hasImage = imageFile || data.general.photo;
+    // if (!hasImage) return setImageError(true);
     onSubmitForm({ ...data, logo: imageFile });
   } catch (error) {
     console.warn({ error });

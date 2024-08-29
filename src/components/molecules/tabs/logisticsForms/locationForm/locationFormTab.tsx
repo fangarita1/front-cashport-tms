@@ -582,7 +582,8 @@ export const LocationFormTab = ({
                       error={errors?.general?.group_location}
                       field={field}
                       loading={isLoadingGroupLocation}
-                      options={convertGroupLocationsToSelectOptions((groupLocationData?.data.data as any) || [])}                                          
+                      options={convertGroupLocationsToSelectOptions((groupLocationData?.data.data as any) || [])}
+                      allowClear={true}                
                       />
                     )}                    
                   /> 
@@ -633,6 +634,7 @@ export const LocationFormTab = ({
                     validationRules={{required: false, maxLength:10}}
                     disabled={statusForm === "review"} 
                     error={errors.general?.contact_number}
+                    
                   />
                 </Col> 
               </Row>          
