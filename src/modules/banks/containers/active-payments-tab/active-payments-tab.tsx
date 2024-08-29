@@ -12,17 +12,24 @@ import BanksTable from "../../components/banks-table/Banks-table";
 
 import styles from "./active-payments-tab.module.scss";
 import BanksRules from "../bank-rules";
+import { useModalDetail } from "@/context/ModalContext";
+import { useAppStore } from "@/lib/store/store";
 
 export const ActivePaymentsTab: FC = () => {
   const [selectedRows, setSelectedRows] = useState<any[] | undefined>();
-  const [showBankDetail, setShowBankDetail] = useState<{
-    isOpen: boolean;
-    clientId: number;
-  }>({} as { isOpen: boolean; clientId: number });
   const [showBankRules, setShowBankRules] = useState<boolean>(false);
 
+  const { ID } = useAppStore((state) => state.selectedProject);
+  const { openModal } = useModalDetail();
   const handleOpenBankRules = () => {
     setShowBankRules(true);
+  };
+
+  const handleOpenPaymentDetail = (payment: any) => {
+    openModal("payment", {
+      paymentId: payment.id,
+      projectId: ID
+    });
   };
 
   return (
@@ -67,8 +74,8 @@ export const ActivePaymentsTab: FC = () => {
                       client_status_id: status.status_id
                     };
                   })}
+                  handleOpenPaymentDetail={handleOpenPaymentDetail}
                   setSelectedRows={setSelectedRows}
-                  setShowBankDetail={setShowBankDetail}
                   bankStatusId={status.status_id}
                 />
               )

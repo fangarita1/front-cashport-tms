@@ -6,12 +6,14 @@ import { FinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscount
 import InvoiceDetailModal from "@/modules/clients/containers/invoice-detail-modal";
 import ModalDetailAdjustment from "@/components/molecules/modals/ModalDetailAdjustment/ModalDetailAdjustment";
 import MoldalNoveltyDetail from "@/components/molecules/modals/MoldalNoveltyDetail/MoldalNoveltyDetail";
+import ModalDetailPayment from "@/components/molecules/modals/ModalDetailPayment/ModalDetailPayment";
 
-type ModalType = "invoice" | "novelty" | "adjustment" | null;
+type ModalType = "invoice" | "novelty" | "adjustment" | "payment" | null;
 
 interface InvoiceModalProps {
   invoiceId: number;
   clientId: number;
+  showId: string;
   hiddenActions?: boolean;
   handleActionInDetail?: (invoice: IInvoice) => void;
   selectInvoice?: IInvoice;
@@ -27,9 +29,19 @@ interface AdjustmentModalProps {
   selectAdjusment?: FinancialDiscount;
   projectId: number;
   legalized?: boolean;
+  adjusmentId?: number;
 }
 
-type ModalProps = InvoiceModalProps | NoveltyModalProps | AdjustmentModalProps;
+interface ModalDetailPaymentProps {
+  paymentId: number;
+  projectId: number;
+}
+
+type ModalProps =
+  | InvoiceModalProps
+  | NoveltyModalProps
+  | AdjustmentModalProps
+  | ModalDetailPaymentProps;
 
 interface ModalContextType {
   openModal: (type: ModalType, props: ModalProps) => void;
@@ -75,6 +87,13 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
           isOpen={true}
           onClose={closeModal}
           {...(modalProps as AdjustmentModalProps)}
+        />
+      )}
+      {modalType === "payment" && modalProps && (
+        <ModalDetailPayment
+          isOpen={true}
+          onClose={closeModal}
+          {...(modalProps as ModalDetailPaymentProps)}
         />
       )}
     </ModalContext.Provider>

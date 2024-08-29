@@ -16,12 +16,14 @@ import { IInvoice } from "@/types/invoices/IInvoices";
 import { formatDatePlane, formatMoney } from "@/utils/utils";
 import { useSWRConfig } from "swr";
 import StepperContentSkeleton from "./skeleton/skeleton-invoid-detail";
+import { useModalDetail } from "@/context/ModalContext";
 
 interface InvoiceDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   invoiceId: number;
   clientId: number;
+  showId: string;
   hiddenActions?: boolean;
   // eslint-disable-next-line no-unused-vars
   handleActionInDetail?: (invoice: IInvoice) => void;
@@ -32,10 +34,11 @@ interface InvoiceDetailModalProps {
 const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
   isOpen,
   onClose,
+  showId,
   invoiceId,
   clientId,
   hiddenActions,
-  projectId,
+  projectId = 0,
   selectInvoice,
   handleActionInDetail
 }) => {
@@ -46,6 +49,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(0);
 
+  const { openModal } = useModalDetail();
   const statusClass = (status: string): string => {
     switch (status) {
       case "Identificado" || "coinciliada":
@@ -102,6 +106,13 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
       alert("Formato de archivo no soportado");
     }
   };
+  const handelOpenAdjusmentDetail = (adjusmentId: number) => {
+    openModal("adjustment", {
+      adjusmentId: adjusmentId,
+      clientId: clientId,
+      projectId,
+    });
+  };
 
   return (
     <aside className={`${styles.wrapper} ${isOpen ? styles.show : styles.hide}`}>
@@ -117,7 +128,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
           </button>
         </div>
         <div className={styles.header}>
-          <h4 className={styles.numberInvoice}>Factura {invoiceId}</h4>
+          <h4 className={styles.numberInvoice}>Factura {showId}</h4>
           <div className={styles.viewInvoice}>
             <Receipt size={20} />
             Ver factura
@@ -216,7 +227,12 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   >{`Valor: ${formatMoney(item.ammount ?? "0")}`}</div>
                                   <div className={styles.adjustment}>
                                     ID del ajuste:
-                                    <div className={styles.idAdjustment}>{item.id ?? "N/A"}</div>
+                                    <div
+                                      className={styles.idAdjustment}
+                                      onClick={() => item.id && handelOpenAdjusmentDetail(item.id)}
+                                    >
+                                      {item.id ?? "N/A"}
+                                    </div>
                                   </div>
                                 </div>
                               ) : (

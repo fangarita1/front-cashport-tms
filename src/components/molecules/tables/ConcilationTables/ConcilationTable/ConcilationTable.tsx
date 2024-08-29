@@ -16,17 +16,19 @@ interface PropsInvoicesTable {
       invoiceId: number;
     }>
   >;
-
+  setIderp: Dispatch<SetStateAction<string>>;
   // eslint-disable-next-line no-unused-vars
   addSelectMotive: (invoiceId: number, motiveId: number) => void;
 }
 
 export const ConcilationTable = ({
+  setIderp,
   dataSingleInvoice: data,
   addSelectMotive,
   setShowInvoiceDetailModal
 }: PropsInvoicesTable) => {
-  const openInvoiceDetail = (invoiceId: number) => {
+  const openInvoiceDetail = (invoiceId: number, id_erp?: string) => {
+    setIderp(id_erp || "");
     setShowInvoiceDetailModal({ isOpen: true, invoiceId });
   };
 
@@ -36,9 +38,12 @@ export const ConcilationTable = ({
       title: "Factura",
       dataIndex: "id",
       key: "id",
-      render: (invoiceId) => (
-        <Text onClick={() => openInvoiceDetail(invoiceId)} className="invoicesTable__id">
-          {invoiceId}
+      render: (invoiceId, record) => (
+        <Text
+          onClick={() => openInvoiceDetail(invoiceId, record.id_erp)}
+          className="invoicesTable__id"
+        >
+          {record.id_erp}
         </Text>
       ),
       sorter: (a, b) => a.id - b.id,
@@ -129,7 +134,10 @@ export const ConcilationTable = ({
             </Tooltip>
           ) : null}
 
-          <Button onClick={() => openInvoiceDetail(record.id)} icon={<Eye size={"1.2rem"} />} />
+          <Button
+            onClick={() => openInvoiceDetail(record.id, record.id_erp)}
+            icon={<Eye size={"1.2rem"} />}
+          />
         </div>
       ),
       width: 100,
