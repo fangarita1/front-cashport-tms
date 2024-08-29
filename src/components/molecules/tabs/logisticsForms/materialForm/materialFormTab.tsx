@@ -164,7 +164,7 @@ export const MaterialFormTab = ({
     //   return;
     // } 
 
-    const formImages = [...data.images]
+    const  formImages:any[] = (data.images ? [...data.images] : [])
     setImages(Array(5).fill({ file: undefined }));
     _onSubmit(
       data,

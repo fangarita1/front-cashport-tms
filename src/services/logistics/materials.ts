@@ -97,10 +97,10 @@ export const createMaterialForm =(
 ) => {
   const form = new FormData();
   const body: any = { ...data };
-  const hasImage = formImages.length > 0
-  if (!hasImage) {
-    throw new Error("At least one image file is required.");
-  }
+  // const hasImage = formImages.length > 0
+  // if (!hasImage) {
+  //   throw new Error("At least one image file is required.");
+  // }
 
   body.images = formImages?.map((file: any, index) => ({
     docReference: file.docReference || `image${index + 1}`,
