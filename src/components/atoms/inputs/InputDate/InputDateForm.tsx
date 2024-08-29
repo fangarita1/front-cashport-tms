@@ -1,8 +1,15 @@
 import React from "react";
 import { DatePicker, Flex, Typography } from "antd";
-import { Control, Controller, FieldError, RegisterOptions } from "react-hook-form";
-import { Calendar } from "phosphor-react";
 import dayjs from "dayjs";
+import {
+  Control,
+  Controller,
+  FieldError,
+  FieldErrorsImpl,
+  Merge,
+  RegisterOptions
+} from "react-hook-form";
+import { Calendar } from "phosphor-react";
 
 import "./inputDateFormStyle.scss";
 
@@ -10,7 +17,7 @@ interface InputDateFormProps {
   titleInput: string;
   nameInput: string;
   control: Control<any> | undefined;
-  error: FieldError | undefined;
+  error: Merge<FieldError, FieldErrorsImpl<NonNullable<Date | dayjs.Dayjs>>> | undefined;
   hiddenTitle?: boolean;
   placeholder?: string;
   disabled?: boolean;

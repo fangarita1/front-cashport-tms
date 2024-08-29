@@ -28,12 +28,14 @@ export const ModalPeriodicity = ({
     watch,
     formState: { errors, isValid }
   } = useForm<IPeriodicityModalForm>({
-    defaultValues: selectedPeriodicity
-      ? {
-          ...selectedPeriodicity,
-          days: selectedPeriodicity.days
-        }
-      : { days: [] }
+    defaultValues: { days: [] },
+    values: selectedPeriodicity && {
+      init_date: selectedPeriodicity.init_date,
+      frequency_number: selectedPeriodicity.frequency_number,
+      frequency: selectedPeriodicity.frequency,
+      days: selectedPeriodicity.days,
+      end_date: selectedPeriodicity.end_date
+    }
   });
 
   const watchInitDate = watch("init_date");
@@ -149,7 +151,7 @@ export const ModalPeriodicity = ({
         />
       </div>
       <p className="modalPeriodicity__inputs__name">
-        Se produce cada {watchDays.map((day) => `${day.value} `)} empezando el
+        Se produce cada {watchDays?.map((day) => `${day.value} `)} empezando el
         {watchInitDate && ` ${dayjs(watchInitDate, "YYYY-MM-DD").format("DD/MM/YYYY")}`}
       </p>
       <div className="modalPeriodicity__footer">

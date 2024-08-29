@@ -346,3 +346,7 @@ export const checkUserViewPermissions = (
 
   return viewPermissions.some((permission) => permission.page_name === view);
 };
+
+export function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

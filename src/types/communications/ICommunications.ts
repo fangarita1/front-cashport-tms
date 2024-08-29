@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 interface TriggerSettingsForm {
   days?: string[];
   values?: ISelectStringType[];
@@ -36,11 +38,11 @@ export interface ISelectStringType {
 }
 
 export interface IPeriodicityModalForm {
-  init_date: Date | undefined;
+  init_date: Date | undefined | dayjs.Dayjs;
   frequency_number: number | undefined;
   frequency: ISelectStringType;
   days: ISelectStringType[];
-  end_date: Date;
+  end_date: Date | undefined | dayjs.Dayjs;
 }
 
 export interface ICreateCommunication {

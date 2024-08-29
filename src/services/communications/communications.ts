@@ -108,7 +108,7 @@ export const createCommunication = async ({
         via: data.template.via.value,
         send_to: data.template.send_to.map((mail) => mail.value),
         copy_to: data.template.copy_to?.map((mail) => mail.value),
-        tags: data.template.tags.map((tag) => tag.value),
+        tags: data.template.tags?.map((tag) => tag.value),
         time: timeString,
         message: data.template.message,
         // Where does title should come from?

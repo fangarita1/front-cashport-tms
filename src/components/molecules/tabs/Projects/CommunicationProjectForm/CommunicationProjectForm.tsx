@@ -31,8 +31,9 @@ import {
   getTemplateTags
 } from "@/services/communications/communications";
 import { useAppStore } from "@/lib/store/store";
-import { stringFromArrayOfSelect } from "@/utils/utils";
+import { capitalize, stringFromArrayOfSelect } from "@/utils/utils";
 import { useMessageApi } from "@/context/MessageContext";
+import dayjs from "dayjs";
 
 const { Title } = Typography;
 
@@ -124,17 +125,16 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
         setZones(res.rules.zone);
         setAssignedGroups(res.rules.groups_id);
         setSelectedPeriodicity({
-          init_date: new Date(res.date_init_frequency),
+          init_date: dayjs(new Date(res.date_init_frequency)).add(1, "day"),
           frequency_number: res.repeats,
-          frequency: { value: res.frequency, label: res.frequency },
-          days: res.frequency_days.map((day) => ({ value: day, label: day })),
-          end_date: new Date(res.date_end_frequency)
+          frequency: { value: capitalize(res.frequency), label: capitalize(res.frequency) },
+          days: res.frequency_days.map((day) => ({ value: capitalize(day), label: day })),
+          end_date: dayjs(new Date(res.date_end_frequency)).add(1, "day")
         });
       }
     };
     fetchSingleCommunication();
   }, []);
-
   const handleAddTagToBody = (value: OptionType[], deletedValue: OptionType[]) => {
     const valueBody = getValues("template.message");
 
