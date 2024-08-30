@@ -3,7 +3,7 @@ import { ViewEnum } from "../ModalBillingAction";
 import { Flex } from "antd";
 import { ButtonGenerateAction } from "@/components/atoms/ButtonGenerateAction/ButtonGenerateAction";
 import { MapPinLine, Receipt } from "phosphor-react";
-import { BillingStatusEnum } from "@/types/logistics/schema";
+import { BillingStatusEnum } from "@/types/logistics/billing/billing";
 
 const ActionList = ({
   setSelectedView,

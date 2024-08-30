@@ -7,7 +7,7 @@ const fileObjectSchema = Yup.object().shape({
 });
 
 const preAutorizationSchema = Yup.object().shape({
-  id: Yup.string().required("El ID es obligatorio"),
+  idPA: Yup.string().required("El ID es obligatorio"),
   date: Yup.date().required("La fecha es obligatoria"),
   value: Yup.number().required("El valor es obligatiorio").nullable(),
   evidence: fileObjectSchema.notRequired()

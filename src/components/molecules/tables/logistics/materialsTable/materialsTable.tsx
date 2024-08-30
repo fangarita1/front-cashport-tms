@@ -15,7 +15,9 @@ export const MaterialsTable = () => {
   const [search, setSearch] = useState("");
   const [datasource, setDatasource] = useState<any[]>([]);
 
-  const { data: materials, isLoading } = useSWR({}, getAllMaterials, {
+  const { data: materials, isLoading } = useSWR({
+    key: "materials",
+  }, getAllMaterials, {
     onError: (error: any) => {
       console.error(error);
       message.error(error.message);

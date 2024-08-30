@@ -5,29 +5,18 @@ import { FC } from "react";
 import styles from "./BillingTable.module.scss";
 import { formatNumber } from "@/utils/utils";
 import TotalFooter from "./components/TotalFooter/TotalFooter";
+import { BillingByCarrier, BillingStatusEnum } from "@/types/logistics/billing/billing";
 const { Text } = Typography;
 
-export interface DataType {
-  key: React.Key;
-  id: number;
-  name: string;
-  baseFare: number;
-  surcharges: number;
-  subtotal: number;
-  vehicles: number;
-  status: string;
-  url: string;
-}
-
-const getBgColor = (state: string) => {
+const getBgColor = (state: BillingStatusEnum) => {
   switch (state) {
-    case "Preautorizado":
+    case BillingStatusEnum.Preautorizado:
       return "#CBE71E";
-    case "Facturado":
+    case BillingStatusEnum.Facturado:
       return "#FF6B00";
-    case "Aceptadas":
+    case BillingStatusEnum.Aceptadas:
       return "#0085FF";
-    case "Por aceptar":
+    case BillingStatusEnum.PorAceptar:
       return "#969696";
     default:
       return "#969696";
@@ -36,34 +25,34 @@ const getBgColor = (state: string) => {
 
 const getColor = (state: string) => {
   switch (state) {
-    case "Preautorizado":
+    case BillingStatusEnum.Preautorizado:
       return "#141414";
-    case "Facturado":
+    case BillingStatusEnum.Facturado:
       return "#141414";
-    case "Aceptadas":
+    case BillingStatusEnum.Aceptadas:
       return "#FFFFFF";
-    case "Por aceptar":
+    case BillingStatusEnum.PorAceptar:
       return "#FFFFFF";
     default:
       return "#FFFFFF";
   }
 };
 interface IBillingTableProps {
-  supplierBillings: DataType[];
+  supplierBillings: BillingByCarrier[];
   handleShowDetails: (id: number) => void;
 }
 
 export const BillingTable: FC<IBillingTableProps> = ({ supplierBillings, handleShowDetails }) => {
-  const columns: TableColumnsType<DataType> = [
+  const columns: TableColumnsType<BillingByCarrier> = [
     {
       title: "Nombre",
-      dataIndex: "name",
+      dataIndex: "carrier",
       render: (text: string) => <Text className={styles.rowtext}>{text}</Text>
     },
     {
       title: "Estado",
-      dataIndex: "status",
-      render: (text: string) => (
+      dataIndex: "statusDesc",
+      render: (text: BillingStatusEnum) => (
         <div className={styles.stateContainer}>
           <div style={{ backgroundColor: getBgColor(text) }} className={styles.stateContent}>
             <Text style={{ color: getColor(text) }} className={styles.text}>
@@ -76,19 +65,19 @@ export const BillingTable: FC<IBillingTableProps> = ({ supplierBillings, handleS
     },
     {
       title: "Vehículos",
-      dataIndex: "vehicles",
+      dataIndex: "vehicle_quantity",
       render: (value: number) => <Text className={styles.rowtext}>{value}</Text>,
       align: "right"
     },
     {
       title: "Tarifa base",
-      dataIndex: "baseFare",
+      dataIndex: "fare",
       render: (value: number) => <Text className={styles.rowtext}>${formatNumber(value, 2)}</Text>,
       align: "right"
     },
     {
       title: "Sobre costos",
-      dataIndex: "surcharges",
+      dataIndex: "overcost",
       render: (value: number) => <Text className={styles.rowtext}>${formatNumber(value, 2)}</Text>,
       align: "right"
     },
