@@ -5,7 +5,7 @@ import { CaretLeft } from "phosphor-react";
 import styles from "./communicationProjectForm.module.scss";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ISelectedBussinessRules } from "@/types/bre/IBRE";
 import { SelectZone } from "@/components/molecules/selects/SelectZone/SelectZone";
 import { SelectStructure } from "@/components/molecules/selects/SelectStructure/SelectStructure";
@@ -34,6 +34,7 @@ import { useAppStore } from "@/lib/store/store";
 import { capitalize, stringFromArrayOfSelect } from "@/utils/utils";
 import { useMessageApi } from "@/context/MessageContext";
 import dayjs from "dayjs";
+import { selectDayOptions } from "@/components/atoms/SelectDay/SelectDay";
 
 const { Title } = Typography;
 
@@ -42,10 +43,16 @@ interface Props {
     communicationId: number;
     active: boolean;
   };
+  setIsCreateCommunication: Dispatch<SetStateAction<boolean>>;
   onGoBackTable: () => void;
 }
-export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetails }: Props) => {
+export const CommunicationProjectForm = ({
+  onGoBackTable,
+  showCommunicationDetails,
+  setIsCreateCommunication
+}: Props) => {
   const [loadingRequest, setLoadingRequest] = useState(false);
+  const [isEditAvailable, setIsEditAvailable] = useState(false);
   const [radioValue, setRadioValue] = useState<any>();
   const [zones, setZones] = useState([] as number[]);
   const [selectedPeriodicity, setSelectedPeriodicity] = useState<IPeriodicityModalForm>();
@@ -128,13 +135,24 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
           init_date: dayjs(new Date(res.date_init_frequency)).add(1, "day"),
           frequency_number: res.repeats,
           frequency: { value: capitalize(res.frequency), label: capitalize(res.frequency) },
-          days: res.frequency_days.map((day) => ({ value: capitalize(day), label: day })),
+          days: res.frequency_days.map((day) => ({
+            value: capitalize(day),
+            label: dayToLabel(day)
+          })),
           end_date: dayjs(new Date(res.date_end_frequency)).add(1, "day")
         });
       }
     };
     fetchSingleCommunication();
   }, []);
+
+  const dayToLabel = (day: string) => {
+    const dayObj = selectDayOptions.find((option) => option.value === day);
+    if (!dayObj) return day;
+    console.log("dayOBj:", dayObj);
+    return dayObj.label;
+  };
+
   const handleAddTagToBody = (value: OptionType[], deletedValue: OptionType[]) => {
     const valueBody = getValues("template.message");
 
@@ -180,6 +198,7 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
       showMessage
     });
 
+    setIsCreateCommunication(false);
     setLoadingRequest(false);
   };
 
@@ -219,12 +238,19 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
         </Button>
       </Flex>
       <div className={styles.generalInfo}>
-        <InputForm titleInput="Nombre" control={control} nameInput="name" error={errors.name} />
+        <InputForm
+          titleInput="Nombre"
+          control={control}
+          nameInput="name"
+          error={errors.name}
+          readOnly={!showCommunicationDetails.communicationId ? false : !isEditAvailable}
+        />
         <InputForm
           titleInput="Descripción"
           control={control}
           nameInput="description"
           error={errors.description}
+          readOnly={!showCommunicationDetails.communicationId ? false : !isEditAvailable}
         />
       </div>
 
@@ -255,6 +281,7 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
                   onChange={() => handleChangeRadio("frecuencia", field)}
                   className={styles.radioGroup__frequency__radio}
                   value={"frecuencia"}
+                  disabled={!!showCommunicationDetails.communicationId && !isEditAvailable}
                 >
                   <InputClickable
                     title="Frecuencia"
@@ -284,9 +311,10 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
                     name="test"
                     className={styles.radioGroup__event__radio}
                     value={"evento"}
+                    disabled={!!showCommunicationDetails.communicationId && !isEditAvailable}
                   />
                   <Controller
-                    disabled={radioValue !== "evento"}
+                    disabled={radioValue !== "evento" && !isEditAvailable}
                     name="trigger.settings.event_type"
                     control={control}
                     rules={{ required: radioValue === "evento" }}
@@ -320,9 +348,10 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
                     checked={radioValue === "accion"}
                     onChange={() => handleChangeRadio("accion", field)}
                     value={"accion"}
+                    disabled={!!showCommunicationDetails.communicationId && !isEditAvailable}
                   />
                   <Controller
-                    disabled={radioValue !== "accion"}
+                    disabled={radioValue !== "accion" && !isEditAvailable}
                     name="trigger.settings.values"
                     control={control}
                     rules={{ required: radioValue === "accion" }}
@@ -340,7 +369,7 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
                 </div>
 
                 <Controller
-                  disabled={radioValue !== "accion"}
+                  disabled={radioValue !== "accion" && !isEditAvailable}
                   name="trigger.settings.subValues"
                   control={control}
                   rules={{ required: radioValue === "accion" }}
@@ -376,7 +405,11 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
             customFieldsError.zone ? { border: "1px dashed red", borderRadius: "4px" } : undefined
           }
         >
-          <SelectZone zones={zones} setZones={setZones} />
+          <SelectZone
+            zones={zones}
+            setZones={setZones}
+            disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
+          />
           <p className={styles.textError}>{customFieldsError.zone && `La Zona es obligatoria *`}</p>
         </Flex>
         <Flex
@@ -390,13 +423,17 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
           <SelectStructure
             selectedBusinessRules={selectedBusinessRules}
             setSelectedBusinessRules={setSelectedBusinessRules}
-            disabled={false}
+            disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
           />
           <p className={styles.textError}>
             {customFieldsError.channel && `Las Reglas de negocio  son obligatorias *`}
           </p>
         </Flex>
-        <SelectClientsGroup assignedGroups={assignedGroups} setAssignedGroups={setAssignedGroups} />
+        <SelectClientsGroup
+          assignedGroups={assignedGroups}
+          setAssignedGroups={setAssignedGroups}
+          disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
+        />
       </div>
 
       <div className={styles.communicationTemplate}>
@@ -406,6 +443,7 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
         <Controller
           name="template.via"
           control={control}
+          disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
           rules={{ required: true }}
           render={({ field }) => (
             <GeneralSelect
@@ -430,6 +468,7 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
               placeholder="Enviar a"
               options={forwardToEmails}
               suffixIcon={null}
+              disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
             />
           )}
         />
@@ -445,6 +484,7 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
               placeholder="Copia a"
               options={forwardToEmails}
               suffixIcon={null}
+              disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
             />
           )}
         />
@@ -454,6 +494,7 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
             name="template.tags"
             control={control}
             rules={{ required: false }}
+            disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
             render={({ field }) => (
               <SelectOuterTags
                 title="Tags"
@@ -473,12 +514,14 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
             control={control}
             nameInput="template.subject"
             error={errors.template?.subject}
+            readOnly={!isEditAvailable && !!showCommunicationDetails.communicationId}
           />
         </Flex>
         <Controller
           name="template.message"
           control={control}
           rules={{ required: true }}
+          disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
           render={({ field }) => (
             <div className={styles.textArea}>
               <p className={styles.textArea__label}>Cuerpo</p>
@@ -489,6 +532,7 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
                 customStyles={errors.template?.message ? { borderColor: "red" } : {}}
                 value={field.value}
                 highlightWords={watchTemplateTagsLabels}
+                disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
               />
             </div>
           )}
@@ -497,6 +541,7 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
           name="template.files"
           control={control}
           rules={{ required: true }}
+          disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
           render={({ field }) => (
             <SelectOuterTags
               title="Adjunto"
@@ -511,16 +556,24 @@ export const CommunicationProjectForm = ({ onGoBackTable, showCommunicationDetai
         />
       </div>
 
-      <Flex justify="end">
-        <PrincipalButton loading={loadingRequest} onClick={handleSubmit(handleCreateCommunication)}>
-          Crear comunicación
-        </PrincipalButton>
-      </Flex>
+      {!showCommunicationDetails.active && (
+        <Flex justify="end">
+          <PrincipalButton
+            loading={loadingRequest}
+            onClick={handleSubmit(handleCreateCommunication)}
+          >
+            Crear comunicación
+          </PrincipalButton>
+        </Flex>
+      )}
+
       <ModalPeriodicity
         isOpen={isFrequencyModalOpen}
         onClose={() => setIsFrequencyModalOpen(false)}
         selectedPeriodicity={selectedPeriodicity}
         setSelectedPeriodicity={setSelectedPeriodicity}
+        isEditAvailable={isEditAvailable}
+        showCommunicationDetails={showCommunicationDetails}
       />
     </main>
   );

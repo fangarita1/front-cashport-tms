@@ -17,7 +17,10 @@ interface InputDateFormProps {
   titleInput: string;
   nameInput: string;
   control: Control<any> | undefined;
-  error: Merge<FieldError, FieldErrorsImpl<NonNullable<Date | dayjs.Dayjs>>> | undefined;
+  error:
+    | Merge<FieldError, FieldErrorsImpl<NonNullable<Date | dayjs.Dayjs>>>
+    | undefined
+    | FieldError;
   hiddenTitle?: boolean;
   placeholder?: string;
   disabled?: boolean;

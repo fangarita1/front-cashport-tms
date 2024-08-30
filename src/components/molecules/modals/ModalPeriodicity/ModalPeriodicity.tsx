@@ -15,12 +15,19 @@ interface Props {
   onClose: () => void;
   selectedPeriodicity: IPeriodicityModalForm | undefined;
   setSelectedPeriodicity: Dispatch<SetStateAction<IPeriodicityModalForm | undefined>>;
+  isEditAvailable?: boolean;
+  showCommunicationDetails: {
+    communicationId: number;
+    active: boolean;
+  };
 }
 export const ModalPeriodicity = ({
   isOpen,
   onClose,
   selectedPeriodicity,
-  setSelectedPeriodicity
+  setSelectedPeriodicity,
+  isEditAvailable,
+  showCommunicationDetails
 }: Props) => {
   const {
     control,
@@ -60,7 +67,6 @@ export const ModalPeriodicity = ({
         <p className="modalPeriodicity__inputs__name">Inicio</p>
         <InputDateForm
           titleInput=""
-          customStyleContainer={{ maxWidth: "fit-content" }}
           hiddenIcon
           nameInput="init_date"
           placeholder="Seleccionar fecha"
@@ -68,6 +74,7 @@ export const ModalPeriodicity = ({
           error={errors.init_date}
           minDate={dayjs(new Date().toLocaleDateString())}
           validationRules={{ required: true }}
+          disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
         />
         <p className="modalPeriodicity__inputs__name">Repetir cada</p>
         <div className="modalPeriodicity__inputs__repeat">
@@ -81,6 +88,7 @@ export const ModalPeriodicity = ({
                 value: /^(3[0-1]|[12][0-9]|[1-9]|0[1-9])$/
               }
             }}
+            disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
             render={({ field }) => (
               <div className="inputNumber">
                 <input
@@ -89,6 +97,7 @@ export const ModalPeriodicity = ({
                   name={field.name}
                   onChange={field.onChange}
                   value={field.value}
+                  readOnly={!isEditAvailable && !!showCommunicationDetails.communicationId}
                 />
                 {errors.frequency_number && (
                   <p className="error">{errors.frequency_number.message}</p>
@@ -100,6 +109,7 @@ export const ModalPeriodicity = ({
             name="frequency"
             control={control}
             rules={{ required: true }}
+            disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
             render={({ field }) => (
               <GeneralSelect
                 errors={errors.frequency}
@@ -107,6 +117,7 @@ export const ModalPeriodicity = ({
                 placeholder="Semanal"
                 options={repeatOptions}
                 errorSmall
+                customStyleContainer={{ width: "100%" }}
               />
             )}
           />
@@ -121,6 +132,7 @@ export const ModalPeriodicity = ({
                 {...field}
                 onChange={(options) => field.onChange(options)}
                 disabled={watchFrequency?.value === "Mensual"}
+                readonly={!isEditAvailable && !!showCommunicationDetails.communicationId}
                 value={field.value}
               />
             )}
@@ -128,9 +140,10 @@ export const ModalPeriodicity = ({
         </div>
         <p className="modalPeriodicity__inputs__name">Fin</p>
         <InputDateForm
-          disabled={!watchInitDate}
+          disabled={
+            (!isEditAvailable && !!showCommunicationDetails.communicationId) || !watchInitDate
+          }
           titleInput=""
-          customStyleContainer={{ maxWidth: "fit-content" }}
           hiddenTitle
           hiddenIcon
           nameInput="end_date"
@@ -151,15 +164,18 @@ export const ModalPeriodicity = ({
         />
       </div>
       <p className="modalPeriodicity__inputs__name">
-        Se produce cada {watchDays?.map((day) => `${day.value} `)} empezando el
+        Se produce {watchFrequency?.value}{" "}
+        {watchDays && `cada ${watchDays?.map((day) => `${day.value} `)}`} iniciando el
         {watchInitDate && ` ${dayjs(watchInitDate, "YYYY-MM-DD").format("DD/MM/YYYY")}`}
       </p>
-      <div className="modalPeriodicity__footer">
-        <SecondaryButton onClick={() => onClose()}>Cancelar</SecondaryButton>
-        <PrincipalButton disabled={!isValid} onClick={handleSubmit(handleOnSave)}>
-          Guardar
-        </PrincipalButton>
-      </div>
+      {!isEditAvailable && !!showCommunicationDetails.communicationId ? null : (
+        <div className="modalPeriodicity__footer">
+          <SecondaryButton onClick={() => onClose()}>Cancelar</SecondaryButton>
+          <PrincipalButton disabled={!isValid} onClick={handleSubmit(handleOnSave)}>
+            Guardar
+          </PrincipalButton>
+        </div>
+      )}
     </Modal>
   );
 };
