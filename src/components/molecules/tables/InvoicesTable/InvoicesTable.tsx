@@ -188,7 +188,7 @@ export const InvoicesTable = ({
       className: "logosWrapper",
       render: (_, record) => (
         <div className="logos">
-          {record?.agreement_info && (
+          {record?.agreement_info?.Fecha && (
             <Tooltip
               title={
                 <div className="toolTip -paymentAgreement">
