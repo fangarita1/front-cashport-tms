@@ -34,7 +34,7 @@ export default function ModalSelectCarrierPricing({
   const id = parseInt(params.id as string);
   const [selectedTab, setSelectedTab] = useState("0");
   const [journey, setJourney] = useState<Omit<JourneyTripPricing, "trips">>();
-  const { data, isLoading } = useSWR(
+  const { data, isLoading, isValidating } = useSWR(
     { idTransferRequest: id, open },
     ({ idTransferRequest, open }) =>
       open ? getTransferRequestPricing({ idTransferRequest }) : undefined,
@@ -119,10 +119,14 @@ export default function ModalSelectCarrierPricing({
     setJourney(dataFlated.find((x) => x.trip.id_trip.toString() === selectedTab)?.journey);
   }, [selectedTab]);
 
-  const handleCheck = (id_trip: number, id_carrier: number) => {
-    const index = fields.findIndex((x) => x.id_trip === id_trip && x.id_carrier === id_carrier);
+  const handleCheck = (id_trip: number, id_carrier_pricing: number, id_carrier: number) => {
+    console.log(id_trip, id_carrier_pricing, id_carrier);
+    const index = fields.findIndex(
+      (x) => x.id_trip === id_trip && x.id_pricing === id_carrier_pricing
+    );
     const trip = dataFlated.find((x) => x.trip.id_trip === id_trip);
-    const price = trip?.trip.carriers_pricing.find((x) => x.id_carrier === id_carrier);
+    const price = trip?.trip.carriers_pricing.find((x) => x.id_carrier_pricing === id_carrier_pricing);
+    console.log(price);
     if (index === -1 && trip) {
       append({
         id_trip,
@@ -180,24 +184,26 @@ export default function ModalSelectCarrierPricing({
             className={styles.checks}
             justify="space-between"
             gap={24}
-            key={`carrrier-${carrier.id_carrier}-${trip.id_trip}`}
+            key={`carrrier-${carrier.id_carrier_pricing}-${trip.id_trip}`}
           >
             <Flex align="center" gap={8} justify="center">
               <Checkbox
-                id={`checkbox-${carrier.id_carrier}-${trip.id_trip}`}
+                id={`checkbox-${carrier.id_carrier_pricing}-${trip.id_trip}`}
                 checked={fields.some(
-                  (x) => x.id_trip === trip.id_trip && x.id_carrier === carrier.id_carrier
+                  (x) => x.id_trip === trip.id_trip && x.id_pricing === carrier.id_carrier_pricing
                 )}
-                onChange={() => handleCheck(trip.id_trip, carrier.id_carrier)}
+                onChange={() =>
+                  handleCheck(trip.id_trip, carrier.id_carrier_pricing, carrier.id_carrier)
+                }
               ></Checkbox>
-              <Text style={{ fontWeight: "500" }}>
-                <label
-                  htmlFor={`checkbox-${carrier.id_carrier}-${trip.id_trip}`}
-                  style={{ cursor: "pointer" }}
-                >
-                  {carrier.description}
-                </label>
-              </Text>
+              <label htmlFor={`checkbox-${carrier.id_carrier_pricing}-${trip.id_trip}`}>
+                <Flex vertical style={{ cursor: "pointer" }}>
+                  <Text style={{ fontWeight: "600", fontSize: "1rem" }}>{carrier.description}</Text>
+                  <Text style={{ fontSize: "1rem", fontWeight: "500", color: "#666666" }}>
+                    {carrier.fee_description}
+                  </Text>
+                </Flex>
+              </label>
             </Flex>
             <Flex gap={8} vertical align="end" justify="center">
               <Text style={{ fontSize: "1.2rem" }}>${carrier.price?.toLocaleString("es-CO")}</Text>
@@ -224,21 +230,25 @@ export default function ModalSelectCarrierPricing({
       width={686}
       footer={<Footer />}
     >
-      {isLoading ? (
-        <Spin />
+      {isLoading || isValidating ? (
+        <Flex justify="center" align="center" style={{ minHeight: "300px" }}>
+          <Spin size="large" />
+        </Flex>
       ) : (
         <div className="scrollableTabGlobalCss">
           <Flex gap={24} className={styles.header} vertical align="center">
             <Flex gap={24} align="center" justify="space-between" style={{ width: "100%" }}>
               <Text>
                 <strong>Fecha inicio</strong>{" "}
-                {new Date(journey?.start_date || 0).toLocaleDateString("es", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit"
-                })?.replace(",", " -")}
+                {new Date(journey?.start_date || 0)
+                  .toLocaleDateString("es", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                  })
+                  ?.replace(",", " -")}
               </Text>
               <div className={styles.stBox}>
                 {serviceType(journey?.id_type_service || 0).icon}
