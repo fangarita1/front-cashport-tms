@@ -1,47 +1,96 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./notificationsView.scss";
-import { Flex, Tabs } from "antd";
+import { Flex, Tabs, Spin } from "antd";
 import UiSearchInput from "@/components/ui/search-input/search-input";
 import FiltersNotifications from "@/components/atoms/Filters/FiltersNotifications/FiltersNotifications";
-import { formatDateAndTime } from "@/utils/utils";
+
 import { Check, Eye, X } from "phosphor-react";
-import { notifications } from "./mockdata";
 import { useModalDetail } from "@/context/ModalContext";
+import { useNotificationOpen } from "@/hooks/useNotificationOpen";
+import { useRejectedNotifications } from "@/hooks/useNotificationReject";
 
 const ListPanel = [
-  { key: "pending", value: "Pendientes" },
   { key: "opens", value: "Abiertas" },
   { key: "closed", value: "Cerradas" }
 ];
 
 interface Notification {
-  title: string;
-  name: string;
-  time: Date;
-  description: string;
+  create_at: string;
+  notification_type_name: string;
+  client_name: string;
+  incident_id: number | null;
+  is_client_change: number;
+  client_update_changes: Record<string, any>;
+  days: string;
 }
 
-interface Notifications {
-  opens: Notification[];
-  pending: Notification[];
-  closed: Notification[];
-}
 export const NotificationsView = () => {
   const { openModal } = useModalDetail();
-  const renderNotifications = (type: keyof Notifications) => {
-    const currentNotifications = notifications[type];
-    return currentNotifications?.map((item, index) => (
+  const projectId = 81; // Asegúrate de obtener el ID del proyecto correctamente
+  const {
+    data: openNotifications,
+    isLoading: isLoadingOpen,
+    isError: isErrorOpen
+  } = useNotificationOpen(projectId);
+  const {
+    data: closedNotifications,
+    isLoading: isLoadingClosed,
+    isError: isErrorClosed
+  } = useRejectedNotifications(projectId);
+  const [filteredOpenNotifications, setFilteredOpenNotifications] = useState<Notification[]>([]);
+  const [filteredClosedNotifications, setFilteredClosedNotifications] = useState<Notification[]>(
+    []
+  );
+
+  useEffect(() => {
+    if (openNotifications) setFilteredOpenNotifications(openNotifications);
+    if (closedNotifications) setFilteredClosedNotifications(closedNotifications);
+  }, [openNotifications, closedNotifications]);
+
+  const handleSearch = (searchTerm: string) => {
+    if (openNotifications) {
+      setFilteredOpenNotifications(
+        openNotifications.filter(
+          (notification) =>
+            notification.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            notification.notification_type_name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    }
+    if (closedNotifications) {
+      setFilteredClosedNotifications(
+        closedNotifications.filter(
+          (notification) =>
+            notification.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            notification.notification_type_name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    }
+  };
+
+  const renderNotifications = (type: "opens" | "closed") => {
+    const currentNotifications =
+      type === "opens" ? filteredOpenNotifications : filteredClosedNotifications;
+    const isLoading = type === "opens" ? isLoadingOpen : isLoadingClosed;
+    const isError = type === "opens" ? isErrorOpen : isErrorClosed;
+
+    if (isLoading) return <Spin size="large" />;
+    if (isError) return <div>Error al cargar las notificaciones</div>;
+
+    return currentNotifications.map((item, index) => (
       <Flex className="notifications__container" key={index}>
         <div className="notifications__list">
           <div className="list-item">
             <div>
               <Flex gap="1rem">
-                <p className="item__title">{item.title}</p>
-                <p className="item__name">{item.name}</p>
-                <p className="item__date">{formatDateAndTime(item.time.toString())}</p>
+                <p className="item__title">{item.notification_type_name}</p>
+                <p className="item__name">{item.client_name}</p>
+                <p className="item__date">{item.days}</p>
               </Flex>
-              <p className="item__description">{item.description}</p>
+              <p className="item__description">
+                {item.is_client_change === 1 ? "Cambios en el cliente" : "Novedad"}
+              </p>
             </div>
             <Flex gap="1rem">
               {type === "closed" && (
@@ -56,7 +105,10 @@ export const NotificationsView = () => {
                   </div>
                 </>
               )}
-              <div className="eyeIcon" onClick={() => openModal("novelty", { noveltyId: item.id })}>
+              <div
+                className="eyeIcon"
+                onClick={() => openModal("novelty", { noveltyId: item.incident_id ?? 0 })}
+              >
                 <Eye size={28} />
               </div>
             </Flex>
@@ -69,7 +121,7 @@ export const NotificationsView = () => {
   return (
     <div className="notificationView">
       <Tabs
-        defaultActiveKey="1"
+        defaultActiveKey="0"
         style={{ width: "100%", height: "100%" }}
         items={ListPanel.map((item, i) => {
           return {
@@ -82,13 +134,13 @@ export const NotificationsView = () => {
                     placeholder="Buscar"
                     onChange={(event) => {
                       setTimeout(() => {
-                        console.info(event.target.value);
-                      }, 1000);
+                        handleSearch(event.target.value);
+                      }, 300);
                     }}
                   />
                   <FiltersNotifications />
                 </Flex>
-                {renderNotifications(item.key as keyof Notifications)}
+                {renderNotifications(item.key as "opens" | "closed")}
               </Flex>
             )
           };
