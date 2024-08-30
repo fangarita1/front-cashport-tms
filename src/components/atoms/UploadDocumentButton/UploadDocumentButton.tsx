@@ -24,6 +24,7 @@ interface DocumentProps {
   aditionalData?: any;
   files?: File;
   column?: boolean;
+  showTitleAndMandatory?: boolean;
 }
 
 export const UploadDocumentButton = ({
@@ -36,7 +37,8 @@ export const UploadDocumentButton = ({
   children,
   aditionalData,
   files,
-  column
+  column,
+  showTitleAndMandatory = true
 }: DocumentProps) => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(files || null);
 
@@ -130,7 +132,11 @@ export const UploadDocumentButton = ({
       style={{ display: displayFlex, flexDirection: columnDirection }}
     >
       {title && (
-        <Flex vertical justify="center">
+        <Flex
+          vertical
+          justify="center"
+          style={{ visibility: showTitleAndMandatory ? "visible" : "hidden" }}
+        >
           <Text className="titleDocument">{title}</Text>
           <Text className="descriptionDocument">*{isMandatory ? "Obligatorio" : "Opcional"}</Text>
         </Flex>
