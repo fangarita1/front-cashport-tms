@@ -2,20 +2,20 @@ import { useEffect, useState } from "react";
 import { Button, Flex, message, Spin, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import { DotsThree, Eye, Plus, Triangle } from "phosphor-react";
-import "./materialsTable.scss";
+import "./grouplocationsTable.scss";
 import UiSearchInput from "@/components/ui/search-input";
-import { IMaterial } from "@/types/logistics/schema";
-import { getAllMaterials } from "@/services/logistics/materials";
+import { IGroupLocation} from "@/types/logistics/schema";
+import { getAllGroupByLocation } from "@/services/logistics/locations";
 import useSWR from "swr";
 
 const { Text } = Typography;
 
-export const MaterialsTable = () => {
+export const GroupLocationsTable = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [datasource, setDatasource] = useState<any[]>([]);
 
-  const { data: materials, isLoading } = useSWR({}, getAllMaterials, {
+  const { data: grouplocations, isLoading} = useSWR({}, getAllGroupByLocation, {
     onError: (error: any) => {
       console.error(error);
       message.error(error.message);
@@ -28,7 +28,7 @@ export const MaterialsTable = () => {
   };
 
   useEffect(() => {
-    const data = materials
+    const data = grouplocations
       ?.data.data.filter((element: any) => {
         if (!search) return true;
         return (
@@ -38,17 +38,12 @@ export const MaterialsTable = () => {
       .map((element: any) => ({
         id: element.id,
         description: element.description,
-        m3_volume: element.m3_volume,
-        mt_height: element.mt_height,
-        mt_width: element.mt_width,
-        mt_length: element.mt_length,
-        kg_weight: element.kg_weight,
-        active: element.active,
+        active: element.active
       })) || [];
     setDatasource(data);
-  }, [materials, search]);
+  }, [grouplocations, search]);
 
-  const columns: TableProps<IMaterial>["columns"] = [
+  const columns: TableProps<IGroupLocation>["columns"] = [
     {
       title: "Código",
       dataIndex: "id",
@@ -58,46 +53,6 @@ export const MaterialsTable = () => {
       title: "Nombre",
       dataIndex: "description",
       key: "description",
-    },
-    {
-      title: 'Volumen',
-      dataIndex: 'm3_volume',
-      key: 'm3_volume',
-      render: (_, record) =>{
-        return (record.m3_volume? record.m3_volume:'') + ' m3';
-      }
-    },
-    {
-      title: "Alto",
-      dataIndex: "mt_height",
-      key: "mt_height",
-      render: (_, record) =>{
-        return (record.mt_height? record.mt_height:'') + ' m';
-      }
-    },
-    {
-      title: "Ancho",
-      dataIndex: "mt_width",
-      key: "mt_width",
-      render: (_, record) =>{
-        return (record.mt_width? record.mt_width:'') + ' m';
-      }
-    },
-    {
-      title: "Largo",
-      dataIndex: "mt_length",
-      key: "mt_length",
-      render: (_, record) =>{
-        return (record.mt_length? record.mt_length:'') + ' m';
-      }
-    },
-    {
-      title: "Peso",
-      dataIndex: "kg_weight",
-      key: "kg_weight",
-      render: (_, record) =>{
-        return (record.kg_weight? record.kg_weight:'') + ' kg';
-      }
     },
     {
       title: "Estado",
@@ -123,11 +78,11 @@ export const MaterialsTable = () => {
       width: "54px",
       dataIndex: "",
       render: (_, { id }) => (
-        <Button
-          href={`/logistics/configuration/materials/${id}`}
+       {/* <Button
+          href={`/logistics/configuration/grouplocations/${id}`}
           className="icon-detail"
           icon={<Eye size={20} />}
-        />
+        /> */}
       ),
     },
   ];
@@ -156,7 +111,7 @@ export const MaterialsTable = () => {
             size="large"
             href="/logistics/configuration/materials/new"
           >
-            Nuevo material
+            Nuevo grupo de ubicaciones
             {<Plus weight="bold" size={14} />}
           </Button>
         </Flex>

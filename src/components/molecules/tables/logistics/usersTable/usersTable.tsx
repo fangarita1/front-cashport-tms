@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Flex, message, Table, Typography } from "antd";
+import { Button, Flex, message, Spin, Table, Typography } from "antd";
 import type { TableProps } from "antd";
 import { DotsThree, Eye, Plus, Triangle } from "phosphor-react";
 import "./usersTable.scss";
@@ -145,6 +145,7 @@ export const UsersTable = () => {
           </Button>
         </Flex>
       </Flex>
+      {!isLoading ? (
       <Table
         scroll={{ y: "61dvh", x: undefined }}
         columns={columns as TableProps<any>["columns"]}
@@ -166,6 +167,9 @@ export const UsersTable = () => {
         }}
         dataSource={datasource}
       />
+    ) : (
+      <Spin />
+    )}
     </div>
   );
 };

@@ -103,6 +103,22 @@ export const getAllGroupByLocation = async (): Promise<IListData> => {
   }
 };
 
+export const getAllSecureRoutes = async (): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const response: IListData = await axios.get(`${config.API_HOST}/logistic-location/all/secure-routes`, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error getAllSecureRoutes: ", error);
+    return error as any;
+  }
+};
+
 export const getAllEntityType = async (): Promise<IEntityType[]> => {
   const token = await getIdToken();
   try {

@@ -43,7 +43,7 @@ const ConfigurationLayout = ({ children, params }: Props) => {
     if (path.includes("carriers")) {
       return "carriers";
     }
-    if (path.includes("locations")) {
+    if (path.includes("locations") && !path.includes("grouplocations")) {
       return "locations";
     }
     if (path.includes("grouplocations")) {

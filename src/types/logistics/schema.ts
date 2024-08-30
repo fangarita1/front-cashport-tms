@@ -1112,6 +1112,34 @@ export interface IGroupLocation {
   locations: Location[];
 }
 
+export interface IRouteSecure {
+  id: number;
+  id_start_location?: number;
+  id_end_location?: number;
+  id_start_group_location?: number;
+  id_end_group_location?: number;
+  active: boolean;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+  waypoints:RouteSecureWayPoints[]
+}
+
+export interface RouteSecureWayPoints {
+  id: number;
+  id_route_secure: number;
+  description: string;
+  latitude: string;
+  longitude: string;
+  order: number;
+  active: boolean;
+  created_at: Date;
+  created_by: string;
+  modified_at: Date;
+  modified_by: string;
+}
+
 /**
  * Exposes all fields present in location as a typescript
  * interface.
