@@ -75,6 +75,7 @@ export const createCommunication = async ({
   const token = await getIdToken();
   const now = new Date();
   const timeString = now.toLocaleString("es-CO");
+  const eventTriggerDays = data?.trigger?.settings?.noticeDaysEvent?.split(" ")[0];
   const modelData: ICreateCommunication = {
     // Where does invoice should come from?
     invoice_id: 1,
@@ -91,7 +92,9 @@ export const createCommunication = async ({
           frequency: selectedPeriodicity?.frequency?.value.toLowerCase(),
           days:
             data.trigger.type === "evento"
-              ? data.trigger?.settings?.days
+              ? eventTriggerDays
+                ? parseInt(eventTriggerDays)
+                : undefined
               : selectedPeriodicity?.days?.map((day) => day.value.toLowerCase()),
           values: data.trigger.settings.values?.map((value) => value.value),
           event_type: data.trigger.settings.event_type?.value
@@ -118,6 +121,8 @@ export const createCommunication = async ({
       }
     }
   };
+
+  console.log("modelData", modelData);
 
   try {
     const response: any = await axios.post(`${config.API_HOST}/comunication/create`, modelData, {

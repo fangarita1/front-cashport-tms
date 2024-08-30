@@ -33,6 +33,10 @@
                 color: $black !important;
             }
         }
+
+        &.-readOnly {
+            background-color: $background !important;
+        }
     }
     .selectInputError {
         width: 100%;

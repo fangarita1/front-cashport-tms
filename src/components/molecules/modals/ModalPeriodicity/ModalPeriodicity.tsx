@@ -48,6 +48,7 @@ export const ModalPeriodicity = ({
   const watchInitDate = watch("init_date");
   const watchFrequency = watch("frequency");
   const watchDays = watch("days");
+  const watchFrequencyNumber = watch("frequency_number");
 
   const handleOnSave = (data: IPeriodicityModalForm) => {
     setSelectedPeriodicity(data);
@@ -88,15 +89,16 @@ export const ModalPeriodicity = ({
                 value: /^(3[0-1]|[12][0-9]|[1-9]|0[1-9])$/
               }
             }}
-            disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
+            defaultValue={selectedPeriodicity?.frequency_number}
             render={({ field }) => (
-              <div className="inputNumber">
+              <div className="inputNumberContainer">
                 <input
                   type="number"
-                  className="input"
+                  className="inputNumberContainer__input"
                   name={field.name}
                   onChange={field.onChange}
                   value={field.value}
+                  defaultValue={undefined}
                   readOnly={!isEditAvailable && !!showCommunicationDetails.communicationId}
                 />
                 {errors.frequency_number && (
@@ -109,7 +111,6 @@ export const ModalPeriodicity = ({
             name="frequency"
             control={control}
             rules={{ required: true }}
-            disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
             render={({ field }) => (
               <GeneralSelect
                 errors={errors.frequency}
@@ -118,6 +119,7 @@ export const ModalPeriodicity = ({
                 options={repeatOptions}
                 errorSmall
                 customStyleContainer={{ width: "100%" }}
+                readOnly={!isEditAvailable && !!showCommunicationDetails.communicationId}
               />
             )}
           />
@@ -165,8 +167,11 @@ export const ModalPeriodicity = ({
       </div>
       <p className="modalPeriodicity__inputs__name">
         Se produce {watchFrequency?.value}{" "}
-        {watchDays && `cada ${watchDays?.map((day) => `${day.value} `)}`} iniciando el
-        {watchInitDate && ` ${dayjs(watchInitDate, "YYYY-MM-DD").format("DD/MM/YYYY")}`}
+        {watchDays.length > 0
+          ? `cada ${watchDays?.map((day) => `${day.value} `)}`
+          : `${watchFrequencyNumber ? watchFrequencyNumber : "n"} veces `}
+        iniciando el
+        {watchInitDate ? ` ${dayjs(watchInitDate, "YYYY-MM-DD").format("DD/MM/YYYY")}` : "..."}
       </p>
       {!isEditAvailable && !!showCommunicationDetails.communicationId ? null : (
         <div className="modalPeriodicity__footer">

@@ -37,15 +37,8 @@
 
         &.ant-select-disabled {
             background-color: $dark-gray !important;
-
-            color: $black !important;
             .ant-select-selection-placeholder {
-                color: $black;
-                font-weight: 300;
-            }
-
-            &::placeholder {
-                color: $black !important;
+                color: $darker-gray;
             }
         }
     }

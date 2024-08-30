@@ -58,7 +58,7 @@ export interface ICreateCommunication {
         end_date?: string | null;
         repeat?: number;
         frequency?: string;
-        days?: string[];
+        days?: string[] | number;
         values?: string[];
         event_type?: string;
       };

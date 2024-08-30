@@ -52,7 +52,7 @@ export const CommunicationProjectForm = ({
   setIsCreateCommunication
 }: Props) => {
   const [loadingRequest, setLoadingRequest] = useState(false);
-  const [isEditAvailable, setIsEditAvailable] = useState(false);
+  const [isEditAvailable] = useState(false);
   const [radioValue, setRadioValue] = useState<any>();
   const [zones, setZones] = useState([] as number[]);
   const [selectedPeriodicity, setSelectedPeriodicity] = useState<IPeriodicityModalForm>();
@@ -169,6 +169,7 @@ export const CommunicationProjectForm = ({
 
   const handleCreateCommunication = async (data: any) => {
     setLoadingRequest(true);
+    console.log("data:", data);
     if (
       zones.length === 0 ||
       selectedBusinessRules?.channels.length === 0 ||
@@ -314,7 +315,7 @@ export const CommunicationProjectForm = ({
                     disabled={!!showCommunicationDetails.communicationId && !isEditAvailable}
                   />
                   <Controller
-                    disabled={radioValue !== "evento" && !isEditAvailable}
+                    disabled={radioValue !== "evento"}
                     name="trigger.settings.event_type"
                     control={control}
                     rules={{ required: radioValue === "evento" }}
