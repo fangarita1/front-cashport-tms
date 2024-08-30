@@ -7,6 +7,7 @@ import { timeAgo } from "@/utils/utils";
 import TabPane from "antd/es/tabs/TabPane";
 import { notifications } from "./mockData";
 import { useModalDetail } from "@/context/ModalContext";
+import { useNotificationStore } from "@/context/CountNotification";
 interface PopoverUserNotificationsProps {
   setIsPopoverVisible: React.Dispatch<React.SetStateAction<boolean>>;
   isPopoverVisible: boolean;
@@ -16,10 +17,15 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
   setIsPopoverVisible,
   isPopoverVisible
 }) => {
+  const { notificationCount, updateNotificationCount } = useNotificationStore();
+  const { openModal } = useModalDetail();
+
   const handleVisibleChange = (visible: boolean) => {
     setIsPopoverVisible(visible);
+    if (visible) {
+      updateNotificationCount();
+    }
   };
-  const { openModal } = useModalDetail();
 
   const content = (
     <div className="notificationsPopoverContent">
@@ -100,11 +106,9 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
       arrow={false}
     >
       <div className="notificationsWrapper">
-        <div
-          className={`notifications ${notifications?.pending.length > 0 ? "notifications_active" : ""}`}
-        >
-          {notifications?.pending.length > 0 ? (
-            <Badge size="small" color="black" count={notifications?.pending.length}>
+        <div className={`notifications ${notificationCount > 0 ? "notifications_active" : ""}`}>
+          {notificationCount > 0 ? (
+            <Badge size="small" color="black" count={notificationCount}>
               <BellSimpleRinging size={18} />
             </Badge>
           ) : (
