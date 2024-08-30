@@ -223,7 +223,7 @@ export default function Trip(props: TripProps) {
       title: "Volumen",
       key: "m3_volume",
       dataIndex: "material",
-      render: (materials) => <Text>{materials[0]?.m3_volume}</Text>,
+      render: (materials) => <Text>{formatNumber(materials[0]?.m3_volume)}</Text>,
       sorter: (a, b) => Number(a.material[0].m3_volume) - Number(b.material[0].m3_volume),
       showSorterTooltip: false,
       align: "center"
@@ -232,7 +232,7 @@ export default function Trip(props: TripProps) {
       title: "Peso",
       key: "kg_weight",
       dataIndex: "material",
-      render: (materials) => <Text>{materials[0]?.kg_weight}</Text>,
+      render: (materials) => <Text>{formatNumber(materials[0]?.kg_weight)}</Text>,
       sorter: (a, b) => a.material[0].kg_weight - b.material[0].kg_weight,
       showSorterTooltip: false,
       align: "center"
@@ -304,7 +304,7 @@ export default function Trip(props: TripProps) {
                 <div className="collapseResumItem collapseBorder">
                   <Text className="collapseText">Volumen utilizado</Text>
                   <Text className="collapseText collapseBold">
-                    {formatNumber(volumeUsedPercentage, 2)} %
+                    {formatNumber(volumeUsedPercentage)} %
                   </Text>
                 </div>
                 <div className="collapseResumItem collapseBorder">
@@ -314,7 +314,7 @@ export default function Trip(props: TripProps) {
                 <div className="collapseResumItem collapseBorder">
                   <Text className="collapseText">Peso utilizado</Text>
                   <Text className="collapseText collapseBold">
-                    {formatNumber(weightUsedPercentage, 2)} %
+                    {formatNumber(weightUsedPercentage)} %
                   </Text>
                 </div>
                 <div className="collapseResumItem">
