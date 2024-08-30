@@ -26,6 +26,7 @@ import ModalGenerateActionTO from "@/components/molecules/modals/ModalGenerateAc
 import { BillingTable } from "./billing-table/BillingTable";
 import { getBillingByTransferRequest } from "@/services/logistics/billing_list";
 import { BillingByCarrier } from "@/types/logistics/billing/billing";
+import ModalBillingMT from "@/components/molecules/modals/ModalBillingMT/ModalBillingMT";
 const mockData = [
   {
     name: "Coltanques",
@@ -58,6 +59,7 @@ export const TransferOrderDetails = () => {
   const [nav, setNav] = useState<NavEnum>(NavEnum.NOVELTY);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalMTVisible, setIsModalMTVisible] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [isCreateNovelty, setIsCreateNovelty] = useState<boolean>(false);
   const [transferRequest, setTransferRequest] = useState<ITransferRequestDetail | null>(null);
@@ -94,6 +96,7 @@ export const TransferOrderDetails = () => {
             handleShowDetails={findNoveltyDetail}
             transferJournies={transferJournies || []}
             setTripId={(id: number) => setTripId(id)}
+            handleOpenMTModal={handleOpenMTModal}
           />
         );
       case NavEnum.VEHICLES:
@@ -183,7 +186,9 @@ export const TransferOrderDetails = () => {
     setIsCreateNovelty(true);
     setOpenDrawer(true);
   };
-
+  const handleOpenMTModal = () => {
+    setIsModalMTVisible(true);
+  };
   useEffect(() => {
     findDetails();
     findBilling();
@@ -279,6 +284,14 @@ export const TransferOrderDetails = () => {
         onClose={() => setIsModalVisible(false)}
         idTR={id as string}
         carriersData={billingList}
+        messageApi={messageApi}
+      />
+      <ModalBillingMT
+        isOpen={isModalMTVisible}
+        onClose={() => setIsModalMTVisible(false)}
+        idTR={id as string}
+        idCarrier={0}
+        idVehicle={0}
         messageApi={messageApi}
       />
     </div>

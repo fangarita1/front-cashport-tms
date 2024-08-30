@@ -15,7 +15,7 @@ const ActionList = ({
   return (
     <Flex style={{ width: "100%", height: "100%" }} gap={12} vertical>
       <ButtonGenerateAction
-        disabled={true}
+        disabled={false}
         icon={<MapPinLine size={20} />}
         title="Finalización de viaje"
         onClick={() => setSelectedView(ViewEnum.FINALIZE_TRIP)}

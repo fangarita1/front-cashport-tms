@@ -1,5 +1,5 @@
-import { Modal } from "antd";
-import { X } from "phosphor-react";
+import { Flex, Modal } from "antd";
+import { CaretLeft, X } from "phosphor-react";
 import { useEffect, useState } from "react";
 import styles from "./ModalGenerateActionTO.module.scss";
 import { MessageInstance } from "antd/es/message/interface";
@@ -7,6 +7,7 @@ import ActionList from "./ActionList/ActionList";
 import CarrierList from "./CarrierList/CarrierList";
 import PreauthorizeTrip from "./PreauthorizeTrip/PreauthorizeTrip";
 import { BillingByCarrier, BillingStatusEnum } from "@/types/logistics/billing/billing";
+import FinalizeTrip from "./FinalizeTrip/FinalizeTrip";
 
 export enum ViewEnum {
   "SELECT_ACTION" = "SELECT_ACTION",
@@ -59,6 +60,8 @@ export default function ModalGenerateActionTO(props: Readonly<PropsModalGenerate
             onClose={onClose}
           />
         );
+      case ViewEnum.FINALIZE_TRIP:
+        return <FinalizeTrip idTR={idTR} messageApi={messageApi} onClose={onClose} />;
       default:
         return <ActionList setSelectedView={setSelectedView} canPreauthorize={false} />;
     }
@@ -72,6 +75,13 @@ export default function ModalGenerateActionTO(props: Readonly<PropsModalGenerate
         return <p className={styles.selectTitle}>Selecciona el proveedor a preautorizar</p>;
       case ViewEnum.PREAUTHORIZE_TRIP:
         return <p className={styles.actionTitle}>Cargar preautorización</p>;
+      case ViewEnum.FINALIZE_TRIP:
+        return (
+          <Flex gap={8} align="center">
+            <CaretLeft size={20} onClick={() => setSelectedView(ViewEnum.SELECT_ACTION)} />
+            <p className={styles.actionTitle}>Finalización de viaje</p>
+          </Flex>
+        );
       default:
         return "";
     }

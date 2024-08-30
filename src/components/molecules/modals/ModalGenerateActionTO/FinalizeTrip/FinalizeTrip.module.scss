@@ -1,0 +1,76 @@
+.scrollableTabsUI {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap; // Evita el salto de línea
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    border-radius: 10px;
+  }
+
+  .tab {
+    flex-shrink: 0;
+    padding: 10px 20px; // Ajusta el padding según la necesidad
+    cursor: pointer; // Hace que el ratón cambie a mano cuando se pasa sobre las pestañas
+    box-sizing: border-box; // Incluye el padding en el cálculo del ancho del elemento
+    border: 1px solid transparent;
+
+    &:hover {
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+.subtitle {
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 300;
+  b{
+    font-weight: 500;  
+  }
+}
+.vehicleName {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: -1px;
+}
+.comments {
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 400;
+  letter-spacing: -1px;
+}
+.inputForm {
+  width: 206px !important;
+}
+.inputsContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 1rem 0;
+  gap: 1rem;
+}
+
+.uploaddocumentbutton {
+  display: grid;
+  grid-template-columns: 1fr minmax(1px, 3fr);
+  justify-content: space-between;
+  gap: 20px;
+
+  .titleDocument {
+      font-size: 0.9rem;
+  }
+
+  .descriptionDocument {
+      font-size: 0.8rem;
+      font-style: italic;
+  }
+}
+
+.uploadDocBtn {
+  width: 100%;
+}
