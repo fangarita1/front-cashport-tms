@@ -56,16 +56,27 @@ const API = axios.create({
 });
 
 export const setProjectInApi = (projectId: number) => {
-  API.interceptors.request.use(async (request) => {
+  API.interceptors.request.use((request) => {
     request.headers.set("projectId", `${projectId}`);
     return request;
   });
+};
+
+const getProjectId = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  const project = JSON.parse(sessionStorage.getItem("project") || "{}");
+  const projectId = (project?.state?.projectsBasicInfo?.find(() => true)?.ID as number) || 0;
+  return projectId;
 };
 
 API.interceptors.request.use(async (request) => {
   request.headers.set("Accept", "application/json, text/plain, */*");
   request.headers.set("Content-Type", "application/json; charset=utf-8");
   request.headers.set("Authorization", `Bearer ${await getIdToken()}`);
+  if (!request.headers.get("projectId") || request.headers.get("projectId") === "0") {
+    const projectId = await getProjectId();
+    request.headers.set("projectId", `${projectId}`);
+  }
   return request;
 });
 
