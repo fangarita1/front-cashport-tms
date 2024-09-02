@@ -19,11 +19,11 @@ interface DataType {
     ismaterialsproblem: boolean;
     ispeopleproblem: boolean;
     tr: string;
-  }
+  };
   origendestino: {
     origin: string;
     destination: string;
-  }
+  };
   fechas: {
     origin: string;
     destination: string;
@@ -42,59 +42,63 @@ interface DataType {
 }
 
 const columns = (showColumn: boolean, redirect?: string): TableColumnsType<DataType> => {
-  const timeToTrip = showColumn ? {
-    title: 'Tiempo de viaje',
-      dataIndex: 'tiempodeviaje',
-      render: (text: string) => <Text className='row-text'>{calculateMinutesDifference(text)} min</Text>,
-      sorter: {
-        multiple: 1,
-      },
-  } : {};
+  const timeToTrip = showColumn
+    ? {
+        title: "Tiempo de viaje",
+        dataIndex: "tiempodeviaje",
+        render: (text: string) => (
+          <Text className="row-text">{calculateMinutesDifference(text)} min</Text>
+        ),
+        sorter: {
+          multiple: 1
+        }
+      }
+    : {};
   return [
     {
-      title: 'TR',
-      dataIndex: 'tr',
-      render: (text: string) => <Text className='row-text id'>{text}</Text>,
+      title: "TR",
+      dataIndex: "tr",
+      render: (text: string) => <Text className="row-text id">{text}</Text>
     },
     {
-      title: 'Origen y destino',
-      dataIndex: 'origendestino',
-      render: (text: { origin: string, destination: string }) => (
-        <div className='titleContainer'>
-          <div className='textContainer'>
-            <Text className='title'>Origen</Text>
-            <Text className='title'>Destino</Text>
+      title: "Origen y destino",
+      dataIndex: "origendestino",
+      render: (text: { origin: string; destination: string }) => (
+        <div className="titleContainer">
+          <div className="textContainer">
+            <Text className="title">Origen</Text>
+            <Text className="title">Destino</Text>
           </div>
-          <div className='textContainer'>
-            <Text className='row-text'>{text.origin}</Text>
-            <Text className='row-text'>{text.destination}</Text>
+          <div className="textContainer">
+            <Text className="row-text">{text.origin}</Text>
+            <Text className="row-text">{text.destination}</Text>
           </div>
         </div>
       ),
       sorter: {
-        multiple: 1,
-      },
+        multiple: 1
+      }
     },
     {
-      title: 'Fechas',
-      dataIndex: 'fechas',
-      render: (text: { origin: string, destination: string }) => (
-        <div className='textContainer'>
-          <Text className='row-text'>{text.origin}</Text>
-          <Text className='row-text'>{text.destination}</Text>
+      title: "Fechas",
+      dataIndex: "fechas",
+      render: (text: { origin: string; destination: string }) => (
+        <div className="textContainer">
+          <Text className="row-text">{text.origin}</Text>
+          <Text className="row-text">{text.destination}</Text>
         </div>
       ),
       sorter: {
-        multiple: 1,
-      },
+        multiple: 1
+      }
     },
     {
-      title: 'Tipo de viaje',
-      dataIndex: 'tipodeviaje',
-      render: (text: string) => <Text className='row-text'>{text}</Text>,
+      title: "Tipo de viaje",
+      dataIndex: "tipodeviaje",
+      render: (text: string) => <Text className="row-text">{text}</Text>,
       sorter: {
-        multiple: 1,
-      },
+        multiple: 1
+      }
     },
     // {
     //   title: 'Vehículo(s)',
@@ -125,47 +129,32 @@ const columns = (showColumn: boolean, redirect?: string): TableColumnsType<DataT
     // },
     timeToTrip,
     {
-      title: 'Valor',
-      dataIndex: 'valor',
-      render: (text: string) => <Text className='row-text value'>{text}</Text>,
+      title: "Valor",
+      dataIndex: "valor",
+      render: (text: string) => <Text className="row-text value">{text}</Text>,
       sorter: {
-        multiple: 1,
-      },
+        multiple: 1
+      }
     },
     {
-      title: '',
-      dataIndex: 'validator',
-      render: (text: { tr: string, ismaterialsproblem: boolean, ispeopleproblem: boolean }) => (
-        <div className='btnContainer'>
+      title: "",
+      dataIndex: "validator",
+      render: (text: { tr: string; ismaterialsproblem: boolean; ispeopleproblem: boolean }) => (
+        <div className="btnContainer">
           {!!text.ismaterialsproblem && (
-            <Button
-              className="btn"
-              type="text"
-              size="middle"
-              icon={<Radioactive size={24} />}
-            />
+            <Button className="btn" type="text" size="middle" icon={<Radioactive size={24} />} />
           )}
           {!!text.ismaterialsproblem && (
-            <Button
-              className="btn"
-              type="text"
-              size="middle"
-              icon={<Warning size={24} />}
-            />
+            <Button className="btn" type="text" size="middle" icon={<Warning size={24} />} />
           )}
-          <Link href={`${redirect ? redirect : '/logistics/transfer-orders/details'}/${text.tr}`}>
-            <Button
-              className="btn"
-              type="text"
-              size="middle"
-              icon={<Eye size={24} />}
-            />
+          <Link href={`${redirect ? redirect : "/logistics/transfer-orders/details"}/${text.tr}`}>
+            <Button className="btn" type="text" size="middle" icon={<Eye size={24} />} />
           </Link>
         </div>
-      ),
-    },
+      )
+    }
   ];
-}
+};
 
 interface ITransferOrdersTable {
   items: ITransferRequest[];
@@ -174,7 +163,12 @@ interface ITransferOrdersTable {
   redirect?: string;
 }
 
-export const TransferOrdersTable: FC<ITransferOrdersTable> = ({ items, showColumn = true, aditionalRow, redirect }) => {
+export const TransferOrdersTable: FC<ITransferOrdersTable> = ({
+  items,
+  showColumn = true,
+  aditionalRow,
+  redirect
+}) => {
   let data: DataType[] = [];
   if (items) {
     data = items.map((item, index) => {
@@ -183,11 +177,11 @@ export const TransferOrdersTable: FC<ITransferOrdersTable> = ({ items, showColum
         tr: String(item.id),
         origendestino: {
           origin: item.start_location,
-          destination: item.end_location,
+          destination: item.end_location
         },
         fechas: {
-          origin: `${dayjs(item.start_date).format('DD/MM/YY - HH:mm')} h`,
-          destination: `${dayjs(item.end_date).format('DD/MM/YY - HH:mm')} h`
+          origin: `${dayjs(item.start_date).format("DD/MM/YY - HH:mm")} h`,
+          destination: `${dayjs(item.end_date).format("DD/MM/YY - HH:mm")} h`
         },
         tipodeviaje: item.type,
         // vehiculos: {
@@ -199,25 +193,32 @@ export const TransferOrdersTable: FC<ITransferOrdersTable> = ({ items, showColum
         //   destination: '318 645 2849'
         // },
         tiempodeviaje: String(item.created_at),
-        valor: '$0.000.000',
+        valor: "$0.000.000",
         validator: {
           ismaterialsproblem: item.is_materials_problem,
           ispeopleproblem: item.is_people_problem,
-          tr: String(item.id),
+          tr: String(item.id)
         }
-      }
-    })
+      };
+    });
   }
   const columnsShow = columns(showColumn, redirect);
-  if (aditionalRow){
+  if (aditionalRow) {
     columnsShow.unshift(aditionalRow);
   }
 
-  return <Table
-    rowSelection={!aditionalRow ? {
-      type: 'checkbox',
-    } : undefined}
-    columns={columnsShow}
-    dataSource={data}
-  />
+  return (
+    <Table
+      rowSelection={
+        !aditionalRow
+          ? {
+              type: "checkbox"
+            }
+          : undefined
+      }
+      columns={columnsShow}
+      dataSource={data}
+      pagination={false}
+    />
+  );
 };
