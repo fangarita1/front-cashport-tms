@@ -10,6 +10,7 @@ import {
 } from "@/types/logistics/schema";
 import { useEffect, useState } from "react";
 import { formatMoney, formatNumber } from "@/utils/utils";
+import RadioButtonIcon from "@/components/atoms/RadioButton/RadioButton";
 
 const { Text } = Typography;
 
@@ -254,9 +255,14 @@ export default function Trip(props: TripProps) {
   useEffect(() => {
     const result: any = [];
     sugestedVehicles?.forEach((item) => {
+      const active = section.id_vehicle_type !== 0 && section.id_vehicle_type === item.id;
       const strlabel = (
         <Flex align="center" gap={12}>
-          <Circle size={24} />
+          {active ? (
+            <RadioButtonIcon size={24} weight="fill" style={{ color: "var(--green)" }} />
+          ) : (
+            <Circle size={24} style={{ color: "var(--dark-grey)" }} />
+          )}
           <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "4px" }}>
             <Flex justify="space-between">
               <Text>
@@ -265,9 +271,12 @@ export default function Trip(props: TripProps) {
               <div>{formatMoney(item.price)}</div>
             </Flex>
             <Text>
-              Ocupación Volumen {formatNumber(item.m3_volume)} - Peso {formatNumber(item.kg_capacity)}
+              Ocupación Volumen {formatNumber(item.m3_volume)} - Peso{" "}
+              {formatNumber(item.kg_capacity)}
             </Text>
-            <Text>Cantidad disponibles: {item.disponibility || 0}</Text>
+            <Text>
+              Vehiculos {item.disponibility || 0} | Tarifas {item.rates || 0}
+            </Text>
           </div>
         </Flex>
       );
@@ -276,11 +285,15 @@ export default function Trip(props: TripProps) {
         value: item.description,
         label: strlabel,
         key: item.id,
-        searchParam: item.description
+        searchParam: item.description,
+        disabled:
+          item.disponibility === 0 ||
+          item.disponibility === undefined ||
+          item.disponibility === null
       });
     });
     setOptionsVehicles(result);
-  }, [sugestedVehicles]);
+  }, [sugestedVehicles, section.id_vehicle_type]);
 
   return (
     <div className="collapseInformationContainer">
@@ -378,7 +391,7 @@ export default function Trip(props: TripProps) {
             pagination={false}
             rowSelection={{
               onChange: (a, b, c) => {
-                  handleSelectPerson(b);
+                handleSelectPerson(b);
               },
               selectedRowKeys: section?.personByTrip?.map((p: any) => p.id_person_transfer_request)
             }}

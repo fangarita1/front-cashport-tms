@@ -3040,6 +3040,7 @@ export interface IVehiclesPricing {
   valid_to: string;
   description: string;
   disponibility: number;
+  rates: number;
   price: number;
   id: number;
   m3_volume: number;
