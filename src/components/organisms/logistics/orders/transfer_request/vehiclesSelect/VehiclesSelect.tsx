@@ -3,7 +3,13 @@ import { Select } from "antd";
 interface VehiclesSelectProps {
   id_journey: number;
   vehiclesSelected: string | undefined;
-  optionsVehicles: { value: any; label: any; key: number; searchParam: string }[];
+  optionsVehicles: {
+    value: any;
+    label: any;
+    key: number;
+    searchParam: string;
+    disabled: boolean;
+  }[];
   isLoadingVehicles: boolean;
   // eslint-disable-next-line no-unused-vars
   selectVehicle: (key: number) => void;
@@ -27,13 +33,20 @@ const VehiclesSelect: React.FC<VehiclesSelectProps> = ({
         value: option.value,
         key: option.key,
         label: option.label,
-        searchParam: option.searchParam
+        searchParam: option.searchParam,
+        disabled: option.disabled
       }))}
       onSelect={(_, { key }) => selectVehicle(key)}
       listHeight={510}
       dropdownStyle={{ width: "600px" }}
       loading={isLoadingVehicles}
-    />
+    >
+      {optionsVehicles.map((option) => (
+        <Select.Option key={option.value} value={option.value}>
+          {option.label}
+        </Select.Option>
+      ))}
+    </Select>
   );
 };
 
