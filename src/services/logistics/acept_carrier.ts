@@ -28,13 +28,13 @@ export const getAceptCarrierRequestList = async (): Promise<any> => {
   throw new Error(response?.message || "Error al obtener la lista de solicitudes de carga");
 };
 
-export const getAceptCarrierRequestById = async (id: string): Promise<IListData> => {
+export const getAceptCarrierRequestById = async (id: string): Promise<any> => {
   const token = await getIdToken();
   try {
     const form = new FormData();
     form.append("id", id);
 
-    const response: IListData = await axios.post(`${config.API_HOST}/carrier/request/id`, form, {
+    const response: any = await axios.post(`${config.API_HOST}/carrier/request/id`, form, {
       headers: {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "multipart/form-data",

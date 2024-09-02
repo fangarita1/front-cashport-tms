@@ -84,8 +84,8 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
     setIsLoading(true);
     try {
       const result = await getAceptCarrierRequestById(params.id);
-      if (result?.data?.data?.length > 0) {
-        const to: ICarrierRequestDetailAPI = result.data.data[0];
+      if (result?.data?.data) {
+        const to: ICarrierRequestDetailAPI = result.data.data;
         setCurrentData(to);
         const canEdit = to?.statusdesc === "Por confirmar";
         setFormMode(canEdit ? "edit" : "view");
