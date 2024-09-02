@@ -30,6 +30,9 @@
         width: 24px;
         height: 100%;
         box-shadow: none;
+        &:hover {
+            background-color: #b4b4b442 !important;
+        }
     }
 
     .input {
@@ -48,6 +51,12 @@
         &::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
+        }
+
+        &:disabled {
+            opacity: 0.9;
+            color: $gray;
+            cursor: not-allowed;
         }
     }
 }

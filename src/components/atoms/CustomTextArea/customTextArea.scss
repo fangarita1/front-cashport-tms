@@ -5,6 +5,7 @@
     width: 100%;
     background-color: $background;
     border-radius: 0.25rem;
+    height: 18rem;
 }
 .container__textarea {
     background: transparent;
@@ -23,6 +24,11 @@
 
     &::placeholder {
         color: $dark-gray;
+    }
+
+    &:disabled {
+        background-color: $dark-gray;
+        color: $darker-gray;
     }
 }
 .container__mirror {

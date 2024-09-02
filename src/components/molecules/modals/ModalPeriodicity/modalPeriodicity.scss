@@ -14,7 +14,7 @@
 
     &__inputs {
         display: grid;
-        grid-template-columns: 1fr 3fr;
+        grid-template-columns: 1fr 215px 1fr;
         gap: 1rem;
         align-items: center;
 
@@ -32,10 +32,10 @@
             flex-wrap: nowrap;
             gap: 0.5rem;
 
-            .inputNumber {
+            .inputNumberContainer {
                 position: relative;
                 height: 100%;
-                input {
+                &__input {
                     background-color: $background;
                     border: none;
                     border-radius: 4px;
@@ -51,6 +51,11 @@
                         -webkit-appearance: none;
                         margin: 0;
                     }
+
+                    &:read-only {
+                        font-weight: 300;
+                        color: rgba(0, 0, 0, 0.25);
+                    }
                 }
             }
 
@@ -62,6 +67,7 @@
 
         &__days {
             grid-column: 2;
+            width: fit-content;
         }
     }
 

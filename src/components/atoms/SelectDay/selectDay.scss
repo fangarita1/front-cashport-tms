@@ -29,6 +29,11 @@
             opacity: 0.5;
         }
 
+        &.-readOnly {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
         &__label {
             text-align: center;
             font-size: 1rem;
