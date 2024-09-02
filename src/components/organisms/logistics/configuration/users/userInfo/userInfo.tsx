@@ -9,7 +9,7 @@ import { StatusForm } from "@/components/molecules/tabs/logisticsForms/locationF
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { UserFormTab } from "@/components/molecules/tabs/logisticsForms/userForm/userFormTab";
-import { getUserById, updateUser} from "@/services/logistics/users";
+import { getUserById, updateUser, updateUserStatus} from "@/services/logistics/users";
 interface Props {
   params: {
     id: string;
@@ -44,10 +44,6 @@ export const UserInfoView = ({ params }: Props) => {
     }
     sendata.general.id = Number(params.id);
     try {
-      // const response = await updateUser(
-      //   sendata.general,
-      //   dataform?.logo
-      // );
 
       const response = await updateUser(
         {...dataform}, 
@@ -59,7 +55,7 @@ export const UserInfoView = ({ params }: Props) => {
           content: "La ubicación fue editada exitosamente."
         });
         setStatusForm('review');
-        push(`/logistics/configuration/locations/${params.id}`);
+        push(`/logistics/configuration/users/all`);
       }
     } catch (error) {
       messageApi.open({
@@ -72,14 +68,14 @@ export const UserInfoView = ({ params }: Props) => {
   const handleActivation= async() =>{
     console.log('active')
     try {
-      const response = await updateLocationStatus(params.id,'1');
+      const response = await updateUserStatus(params.id,'1');
       if (response.status === 200) {
         messageApi.open({
           type: "success",
-          content: "La ubicación fue editada exitosamente."
+          content: "El usuario fue editado exitosamente."
         });
         setStatusForm('review');
-        push(`/logistics/configuration/locations/${params.id}`);
+        push(`/logistics/configuration/users/${params.id}`);
       }
     } catch (error) {
       messageApi.open({
@@ -92,14 +88,14 @@ export const UserInfoView = ({ params }: Props) => {
   const handleDesactivation= async() =>{
     console.log('desactive')
     try {
-      const response = await updateLocationStatus(params.id,'0');
+      const response = await updateUserStatus(params.id,'0');
       if (response.status === 200) {
         messageApi.open({
           type: "success",
-          content: "La ubicación fue editada exitosamente."
+          content: "El usuario fue editado exitosamente."
         });
         setStatusForm('review');
-        push(`/logistics/configuration/locations/${params.id}`);
+        push(`/logistics/configuration/users/${params.id}`);
       }
     } catch (error) {
       messageApi.open({
@@ -109,7 +105,6 @@ export const UserInfoView = ({ params }: Props) => {
     }
   };
 
-  console.log(data)
   return (
     <>
       {contextHolder}

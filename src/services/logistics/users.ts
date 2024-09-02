@@ -71,6 +71,21 @@ export const getAllPsl = async (): Promise<IListData> => {
   }
 };
 
+export const getAllCostCenterByPsl = async (id: string): Promise<IListData> => {
+  const token = await getIdToken();
+  try {
+    const response: IListData = await axios.get(`${config.API_HOST}/logistic-user/all/psl/${id}`, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error getAllCostCenterByPsl: ", error);
+    return error as any;
+  }
+};
 
 export const getUserById = async (id: string): Promise<IListData> => {
   try {
@@ -136,6 +151,26 @@ export const addUser = async (
     return response;
   } catch (error) {
     console.log("Error create User: ", error);
+    throw error as any;
+  }
+};
+
+export const updateUserStatus = async (
+  user_id:string, active:string
+): Promise<AxiosResponse<any, any>> => {
+  try {
+    const form = new FormData();
+    const body: any = { "user_id":user_id, "active":active };
+    form.append("body", JSON.stringify(body));  
+    const response = await axios.put(`${config.API_HOST}/logistic-user/updatestatus`, form, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Accept: "application/json, text/plain, */*"
+      }
+    });
+    return response;
+  } catch (error) {
+    console.log("Error updating user: ", error);
     throw error as any;
   }
 };

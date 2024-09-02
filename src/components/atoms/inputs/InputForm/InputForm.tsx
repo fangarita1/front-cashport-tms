@@ -19,6 +19,8 @@ interface Props {
   readOnly?: boolean;
   // eslint-disable-next-line no-unused-vars
   changeInterceptor?: (value: any) => void;
+  // eslint-disable-next-line no-unused-vars
+  oninputInterceptor?: (e: any) => void;
 }
 
 export const InputForm = ({
@@ -34,7 +36,8 @@ export const InputForm = ({
   validationRules,
   className,
   readOnly,
-  changeInterceptor
+  changeInterceptor,
+  oninputInterceptor
 }: Props) => {
   return (
     <Flex vertical className={`containerInput ${className}`} style={customStyle}>
@@ -58,6 +61,9 @@ export const InputForm = ({
             onChange={(e) => {
               onChange(e);
               changeInterceptor?.(e.target.value);
+            }}
+            onInput={(e) =>{
+              oninputInterceptor?.(e);
             }}
             {...field}
           />

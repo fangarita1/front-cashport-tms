@@ -634,7 +634,7 @@ export const LocationFormTab = ({
                     validationRules={{required: false, maxLength:10}}
                     disabled={statusForm === "review"} 
                     error={errors.general?.contact_number}
-                    
+                    oninputInterceptor={(e) => e.target.value = e.target.value.slice(0, 10)}
                   />
                 </Col> 
               </Row>          

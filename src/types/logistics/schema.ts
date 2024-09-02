@@ -3467,6 +3467,7 @@ export interface IUser {
   photo?: string;
   firebaseguid?: string;
   carrier: any;
+  psl: any;
 }
 
 export interface IFormUser {

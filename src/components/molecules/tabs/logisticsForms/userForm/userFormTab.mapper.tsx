@@ -31,7 +31,7 @@ export const dataToProjectFormData = (
   data: any
 ): IFormUser => {
 
-  console.log(data)
+  //console.log(data)
   return {
     logo: [],
     general: {
@@ -47,7 +47,8 @@ export const dataToProjectFormData = (
       photo: data.PHOTO,
       firebaseguid: data.UUID,
       carrier: data.carrier,
-      position: data.POSITION
+      position: data.POSITION,
+      psl: data.psl
     }
   };
 };
