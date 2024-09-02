@@ -75,7 +75,7 @@ export const createCommunication = async ({
   const token = await getIdToken();
   const now = new Date();
   const timeString = now.toLocaleString("es-CO");
-  const eventTriggerDays = data?.trigger?.settings?.noticeDaysEvent?.split(" ")[0];
+  const eventTriggerDays = data?.trigger?.settings?.noticeDaysEvent;
   const modelData: ICreateCommunication = {
     // Where does invoice should come from?
     invoice_id: 1,

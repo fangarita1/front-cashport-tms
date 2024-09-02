@@ -140,4 +140,5 @@ export interface ISingleCommunication {
   repeats: number | undefined;
   copy_to: string[] | null;
   send_to: string[];
+  EVENT_TYPE: string;
 }
