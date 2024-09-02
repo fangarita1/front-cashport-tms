@@ -459,6 +459,7 @@ export interface ICarrierRequestDetail {
   carrier_request_material_by_trip?: ICarrierRequestMaterialByTrip[] | null;
   //personas -- aplica para viaje tipo persona!
   carrier_request_persons?: ICarrierRequestPersons[] | null;
+  fee_description?: string;
 }
 
 /**
@@ -1123,7 +1124,7 @@ export interface IRouteSecure {
   created_by: string;
   modified_at: Date;
   modified_by: string;
-  waypoints:RouteSecureWayPoints[]
+  waypoints: RouteSecureWayPoints[];
 }
 
 export interface RouteSecureWayPoints {
