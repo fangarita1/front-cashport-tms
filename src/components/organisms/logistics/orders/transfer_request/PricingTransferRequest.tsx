@@ -737,7 +737,7 @@ export default function PricingTransferRequest({
           ))}
           <div className="collapseButtons">
             <Button className="collapseAddVehicleButton" onClick={addVehiclesSections}>
-              Agregar vehíchulo
+              Agregar vehículo
             </Button>
             <Button className="collapseSaveButton">Guardar</Button>
           </div>

@@ -234,7 +234,7 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
           onClick={addVehiclesSections}
           loading={isLoadingVehicles}
         >
-          Agregar vehíchulo
+          Agregar vehículo
         </Button>
         <Flex gap={5}>
           {formState.dirtyFields?.trips?.length && (
