@@ -95,13 +95,6 @@ export const UserFormTab = ({
           setCostCenters(convertCostCenterToSelectOptions(cc.data.data));
           setValue("general.cost_center_id", data.psl.id_cost_center);  
         })
-        // getAllPsl().then((pslst)=>{
-        //   const psl = pslst?.data.data.filter((f)=> { return f.id = Number(psl_id)}).at(0);          
-        //   const cc = psl.cost_center;
-        //   setCostCenters(convertCostCenterToSelectOptions(cc));           
-        //   setValue("general.cost_center_id", data.psl.id_cost_center);  
-
-        // })
       }      
     }
   }, [statusForm]);
@@ -141,17 +134,12 @@ export const UserFormTab = ({
 
   useEffect(() => {
     const subscription = watch((data, {name, type}) =>{
-        console.log(data, name, type);
+        //console.log(data, name, type);
         if(name == 'general.psl_id'){
           const psl_id:any = data.general?.psl_id?.toString();
           getAllCostCenterByPsl(psl_id).then((cc)=>{
             setCostCenters(convertCostCenterToSelectOptions(cc.data.data));
           })
-          // console.log(pslsType)
-          // const psl = pslsType?.data.data.filter((f)=> { return f.id = Number(data.general?.psl_id)}).at(0);          
-          // console.log(psl)
-          // const cc = psl.cost_center;
-          // setCostCenters(convertCostCenterToSelectOptions(cc));
         }
       }
     )
