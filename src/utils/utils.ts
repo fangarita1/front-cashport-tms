@@ -1,3 +1,4 @@
+import config from "@/config";
 import { ISelectedProject } from "@/lib/slices/createProjectSlice";
 import { IChanel } from "@/types/bre/IBRE";
 import { CountryCode } from "@/types/global/IGlobal";
@@ -362,6 +363,7 @@ export const checkUserViewPermissions = (
   selectedProject: ISelectedProject | undefined,
   view?: string
 ): boolean => {
+  if (config.isLogistics && !view?.includes("TMS")) return false;
   if (!selectedProject) return false;
   if (selectedProject.isSuperAdmin) {
     return true;

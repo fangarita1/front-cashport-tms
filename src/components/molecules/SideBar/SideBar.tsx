@@ -27,6 +27,7 @@ import { getUserPermissions } from "@/services/permissions/userPermissions";
 import { checkUserViewPermissions } from "@/utils/utils";
 import { ModalProjectSelector } from "../modals/ModalProjectSelector/ModalProjectSelector";
 import { TMSMODULES } from "@/utils/constants/globalConstants";
+import { setProjectInApi } from "@/utils/api/api";
 
 export const SideBar = () => {
   const [isSideBarLarge, setIsSideBarLarge] = useState(false);
@@ -78,6 +79,7 @@ export const SideBar = () => {
             action_permissions: response?.data[0].action_permissions,
             isSuperAdmin: response?.data[0].is_super_admin
           };
+          setProjectInApi(project.ID);
           setSelectedProject(project);
           // eslint-disable-next-line no-unused-vars
           Object.entries(TMSMODULES).some(([key, value]) => {

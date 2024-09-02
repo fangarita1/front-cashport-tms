@@ -7,11 +7,18 @@ const { Text } = Typography;
 import styles from "./UploadFileButton.module.scss";
 
 interface UploadFileButton extends DocumentButtonProps {
-  title: string;
+  title?: string;
   isMandatory: boolean;
   column?: boolean;
+  showTitleAndMandatory?: boolean;
 }
-const UploadFileButton = ({ isMandatory, title, column = false, ...props }: UploadFileButton) => {
+const UploadFileButton = ({
+  isMandatory,
+  title,
+  column = false,
+  showTitleAndMandatory = true,
+  ...props
+}: UploadFileButton) => {
   const displayFlex = column ? "flex" : "";
   const columnDirection = column ? "column" : "column-reverse";
   return (
@@ -19,8 +26,15 @@ const UploadFileButton = ({ isMandatory, title, column = false, ...props }: Uplo
       className={styles.uploaddocumentbutton}
       style={{ display: displayFlex, flexDirection: columnDirection }}
     >
-      <Flex vertical justify="center">
+      <Flex
+        vertical
+        justify="center"
+        style={{
+          visibility: showTitleAndMandatory ? "visible" : "hidden"
+        }}
+      >
         <Text className={styles.titleDocument}>{title}</Text>
+
         <Text className={styles.descriptionDocument}>
           *{isMandatory ? "Obligatorio" : "Opcional"}
         </Text>

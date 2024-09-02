@@ -6,6 +6,7 @@ import { Warning } from "phosphor-react";
 import TabPane from "antd/es/tabs/TabPane";
 import { Responsibles } from "../../../DetailsOrderView/components/Responsibles/Responsibles";
 import AditionalInfo from "@/components/organisms/logistics/acept_carrier/detail/components/AditionalInfo/AditionalInfo";
+import { formatNumber } from "@/utils/utils";
 
 const { Title, Text } = Typography;
 
@@ -43,7 +44,7 @@ export default function PricingStepOne({ ordersId, orders }: Readonly<PricingSte
       title: "Volumen",
       dataIndex: "m3_volume",
       key: "address",
-      render: (amount) => <Text>{amount}</Text>,
+      render: (amount) => <Text>{formatNumber(amount)}</Text>,
       sorter: (a, b) => a.m3_volume - b.m3_volume,
       showSorterTooltip: false
     },
@@ -75,7 +76,7 @@ export default function PricingStepOne({ ordersId, orders }: Readonly<PricingSte
       title: "Peso",
       key: "address",
       dataIndex: "kg_weight",
-      render: (amount) => <Text>{amount} kg</Text>,
+      render: (amount) => <Text>{formatNumber(amount)} kg</Text>,
       sorter: (a, b) => a.kg_weight - b.kg_weight,
       showSorterTooltip: false
     },

@@ -25,9 +25,7 @@ function VehicleRenderOption({ data, index, selectedVehicle }: Readonly<IVehicle
           <p className={styles.textStrong}>{data.vehicle_type}</p>
           <Flex gap={4}>
             <Col span={12}>
-              <Text ellipsis>
-                {data.brand} {data.line} {data.color}
-              </Text>
+              <Text ellipsis>{data.brand}</Text>
             </Col>
             <Col span={2} style={{ display: "flex", justifyContent: "center" }}>
               <p color="black">•</p>
