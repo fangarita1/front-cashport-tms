@@ -17,7 +17,7 @@ const DashboardExpiredPortfolio: FC<DashboardExpiredPortfolioProps> = ({ classNa
   const pastDuePortfolio = formatMoney(formattedPastDuePortfolio);
   return (
     <div className={`${styles.wrapper} ${className}`}>
-      <DashboardGenericItem name="C. vencida" badgeText="12%" value={pastDuePortfolio} unit="M" />
+      <DashboardGenericItem name="C. vencida" badgeText="-%" value={pastDuePortfolio} unit="M" />
       <Image src="/images/graph-2.svg" alt="Graph" className={styles.img} width={78} height={48} />
     </div>
   );

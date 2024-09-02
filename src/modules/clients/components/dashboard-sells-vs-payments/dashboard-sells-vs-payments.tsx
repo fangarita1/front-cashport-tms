@@ -24,7 +24,6 @@ dayjs.extend(utcPlugin);
 
 const DashboardSellsVsPayments: FC<DashboardSellsVsPaymentsProps> = ({ className }) => {
   const { portfolioData } = useContext(ClientDetailsContext);
-  console.log("portfolioData:", portfolioData);
 
   const data2 = portfolioData?.payments_vs_invoices?.map((item) => {
     return {
