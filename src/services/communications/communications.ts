@@ -122,8 +122,6 @@ export const createCommunication = async ({
     }
   };
 
-  console.log("modelData", modelData);
-
   try {
     const response: any = await axios.post(`${config.API_HOST}/comunication/create`, modelData, {
       headers: {

@@ -36,13 +36,15 @@ export const ModalPeriodicity = ({
     formState: { errors, isValid }
   } = useForm<IPeriodicityModalForm>({
     defaultValues: { days: [] },
-    values: selectedPeriodicity && {
-      init_date: selectedPeriodicity.init_date,
-      frequency_number: selectedPeriodicity.frequency_number,
-      frequency: selectedPeriodicity.frequency,
-      days: selectedPeriodicity.days,
-      end_date: selectedPeriodicity.end_date
-    }
+    values: selectedPeriodicity
+      ? {
+          init_date: selectedPeriodicity.init_date,
+          frequency_number: selectedPeriodicity.frequency_number,
+          frequency: selectedPeriodicity.frequency,
+          days: selectedPeriodicity.days,
+          end_date: selectedPeriodicity.end_date
+        }
+      : ({} as IPeriodicityModalForm)
   });
 
   const watchInitDate = watch("init_date");

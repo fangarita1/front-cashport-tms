@@ -95,7 +95,6 @@ export const CommunicationProjectForm = ({
   } = useForm<ICommunicationForm>({
     values: showCommunicationDetails.active ? dataToDataForm(communicationData.data) : undefined
   });
-  const watchEventType = watch("trigger.settings.event_type");
   const watchTemplateTagsLabels = watch("template.tags")?.map((tag) => `\[${tag.label}\]`);
 
   useEffect(() => {
@@ -149,7 +148,6 @@ export const CommunicationProjectForm = ({
   const dayToLabel = (day: string) => {
     const dayObj = selectDayOptions.find((option) => option.value === day);
     if (!dayObj) return day;
-    console.log("dayOBj:", dayObj);
     return dayObj.label;
   };
 
@@ -169,7 +167,6 @@ export const CommunicationProjectForm = ({
 
   const handleCreateCommunication = async (data: any) => {
     setLoadingRequest(true);
-    console.log("data:", data);
     if (
       zones.length === 0 ||
       selectedBusinessRules?.channels.length === 0 ||
@@ -294,7 +291,7 @@ export const CommunicationProjectForm = ({
                     }
                     value={
                       selectedPeriodicity
-                        ? `${selectedPeriodicity.frequency.value === "Mensual" ? selectedPeriodicity.frequency.value : `Cada ${stringFromArrayOfSelect(selectedPeriodicity.days)}, ${selectedPeriodicity.frequency.value}`}`
+                        ? `${selectedPeriodicity.frequency.value === "Mensual" ? `${selectedPeriodicity.frequency.value}, ${selectedPeriodicity.frequency_number} veces` : `Cada ${stringFromArrayOfSelect(selectedPeriodicity.days)}, ${selectedPeriodicity.frequency.value}`}`
                         : ""
                     }
                   />
@@ -315,7 +312,10 @@ export const CommunicationProjectForm = ({
                     disabled={!!showCommunicationDetails.communicationId && !isEditAvailable}
                   />
                   <Controller
-                    disabled={radioValue !== "evento"}
+                    disabled={
+                      radioValue !== "evento" ||
+                      (!isEditAvailable && !!showCommunicationDetails.communicationId)
+                    }
                     name="trigger.settings.event_type"
                     control={control}
                     rules={{ required: radioValue === "evento" }}
@@ -331,13 +331,21 @@ export const CommunicationProjectForm = ({
                     )}
                   />
                 </div>
-                {watchEventType?.value?.startsWith("Vencimiento") && (
-                  <InputExpirationNoticeDays
-                    nameInput="trigger.settings.noticeDaysEvent"
-                    setValue={setValue}
+                {radioValue === "evento" && (
+                  <Controller
+                    name="trigger.settings.noticeDaysEvent"
                     control={control}
-                    error={errors.trigger?.settings?.noticeDaysEvent}
-                    validationRules={{ required: true }}
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <InputExpirationNoticeDays
+                        nameInput="trigger.settings.noticeDaysEvent"
+                        setValue={setValue}
+                        error={errors.trigger?.settings?.noticeDaysEvent}
+                        field={field}
+                        event_days_before={communicationData.data.event_days_before}
+                        disabled={!isEditAvailable && !!showCommunicationDetails.communicationId}
+                      />
+                    )}
                   />
                 )}
               </div>

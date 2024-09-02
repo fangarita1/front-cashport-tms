@@ -1,24 +1,27 @@
 import { Button } from "antd";
-import { Control, Controller, FieldError, RegisterOptions, UseFormSetValue } from "react-hook-form";
+import { ControllerRenderProps, FieldError, UseFormSetValue } from "react-hook-form";
 import { Minus, Plus } from "phosphor-react";
 
 import styles from "./inputExpirationNoticeDays.module.scss";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ICommunicationForm } from "@/types/communications/ICommunications";
 
 type InputExpirationNoticeDaysProps = {
   nameInput: string;
-  control: Control<any> | undefined;
-  validationRules?: RegisterOptions;
+  field?: ControllerRenderProps<ICommunicationForm, "trigger.settings.noticeDaysEvent">;
   error?: FieldError | undefined;
   setValue: UseFormSetValue<any>;
+  event_days_before?: number | null;
+  disabled?: boolean;
 };
 
 export const InputExpirationNoticeDays = ({
   nameInput,
-  control,
-  validationRules,
+  field,
   error,
-  setValue
+  setValue,
+  event_days_before,
+  disabled
 }: InputExpirationNoticeDaysProps) => {
   // eslint-disable-next-line no-unused-vars
   const [noticeDays, setNoticeDays] = useState<{ days: number; suffix: "días" }>({
@@ -26,18 +29,34 @@ export const InputExpirationNoticeDays = ({
     suffix: "días"
   });
 
+  useEffect(() => {
+    setNoticeDays({ days: event_days_before || 0, suffix: "días" });
+  }, []);
+
+  useEffect(() => {
+    if (disabled) return;
+    const newDays = { ...noticeDays, days: noticeDays.days + 1 };
+    setValue(nameInput, `${newDays.days}`, { shouldValidate: true });
+  }, [disabled, noticeDays, setValue, nameInput]);
+
+  useEffect(() => {
+    if (disabled) return;
+    const newDays = { ...noticeDays, days: noticeDays.days - 1 };
+    setValue(nameInput, `${newDays.days}`, { shouldValidate: true });
+  }, [disabled, noticeDays, setValue, nameInput]);
+
   const handleDecrementNotice = () => {
+    if (disabled) return;
     setNoticeDays((prev) => {
       const newDays = { ...prev, days: prev.days - 1 };
-      setValue(nameInput, `${newDays.days} ${newDays.suffix}`, { shouldValidate: true });
       return newDays;
     });
   };
 
   const handleIncrementNotice = () => {
+    if (disabled) return;
     setNoticeDays((prev) => {
       const newDays = { ...prev, days: prev.days + 1 };
-      setValue(nameInput, `${newDays.days} ${newDays.suffix}`, { shouldValidate: true });
       return newDays;
     });
   };
@@ -45,25 +64,28 @@ export const InputExpirationNoticeDays = ({
     <div className={styles.noticeDaysContainer}>
       <div className={styles.noticeDays}>
         <p className={styles.noticeDays__title}>Aviso de vencimiento</p>
-        <Button className={styles.buttonMinus} onClick={() => handleDecrementNotice()}>
+        <Button
+          disabled={disabled}
+          className={styles.buttonMinus}
+          onClick={() => handleDecrementNotice()}
+        >
           <Minus size={14} weight="light" />
         </Button>
-        <Controller
-          name={nameInput}
-          control={control}
-          rules={validationRules}
-          render={({ field }) => (
-            <input
-              readOnly
-              className={styles.input}
-              value={field.value}
-              onChange={field.onChange}
-              onBlur={field.onBlur}
-              ref={field.ref}
-            />
-          )}
+
+        <input
+          readOnly
+          className={styles.input}
+          value={`${noticeDays.days} ${noticeDays.suffix}`}
+          onChange={field?.onChange}
+          onBlur={field?.onBlur}
+          ref={field?.ref}
+          disabled={disabled}
         />
-        <Button className={styles.buttonPlus} onClick={() => handleIncrementNotice()}>
+        <Button
+          disabled={disabled}
+          className={styles.buttonPlus}
+          onClick={() => handleIncrementNotice()}
+        >
           <Plus size={14} weight="light" />
         </Button>
       </div>
