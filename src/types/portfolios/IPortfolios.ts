@@ -1,16 +1,3 @@
-// Define the type for a single historic DSO record
-interface IHistoricDSORecord {
-  dso: number;
-  date: string;
-}
-
-// Define the type for the history DSO
-interface IHistoryDSO {
-  id: number;
-  client_id: number;
-  historic: IHistoricDSORecord[];
-}
-
 // Define the type for the application payments
 interface IApplicationPayments {
   applied_payments_ammount: number;
@@ -48,7 +35,22 @@ export interface IDataSection {
   invoice_ages: IInvoiceAges[];
   quota: number;
   aplication_payments: IApplicationPayments;
-  history_dso: IHistoryDSO;
+  payments_vs_invoices: IPaymentsVsInvoices[];
+}
+
+interface IPaymentsVsInvoices {
+  id: number;
+  project_id: number;
+  client_id: number;
+  month: string;
+  sales: number;
+  payments: number;
+  budget: number;
+  applied_payments: number;
+  not_applied_payments: number;
+  collections: string;
+  residue: number;
+  dso: number;
 }
 
 // Define the type for the full API response

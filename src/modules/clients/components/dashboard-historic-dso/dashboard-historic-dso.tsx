@@ -20,7 +20,10 @@ type historic_dso = {
 
 const DashboardHistoricDso: FC<DashboardHistoricDsoProps> = ({ className }) => {
   const { portfolioData } = useContext(ClientDetailsContext);
-  const history_dso = portfolioData?.history_dso.historic;
+  const history_dso = portfolioData?.payments_vs_invoices.map((month) => ({
+    dso: month.dso,
+    date: month.month
+  }));
 
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();

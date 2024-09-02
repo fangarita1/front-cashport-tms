@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Modal, Table, TableProps, InputNumber, DatePicker, Input } from "antd";
+import { Button, Modal, Table, TableProps, DatePicker, Input } from "antd";
 import "./wallet-tab-payment-agreement-modal.scss";
 import { CaretLeft } from "phosphor-react";
 import EvidenceModal from "../wallet-tab-evidence-modal";
@@ -9,7 +9,6 @@ import { formatCurrencyMoney, formatDate } from "@/utils/utils";
 
 import { createPaymentAgreement } from "@/services/accountingAdjustment/accountingAdjustment";
 import { MessageInstance } from "antd/es/message/interface";
-import { RangePickerProps } from "antd/es/date-picker";
 
 interface Props {
   isOpen: boolean;
@@ -154,9 +153,9 @@ const PaymentAgreementModal: React.FC<Props> = ({
   const parseNumber = (value: string): number => {
     return parseInt(value.replace(/[^\d]/g, ""), 10) || 0;
   };
-  const disabledDate = (current: dayjs.Dayjs): boolean => {
+  const disabledDate: any = (current: dayjs.Dayjs): boolean => {
     // Can not select days before today and today
-    return current && current < dayjs().startOf("day");
+    return current && current < dayjs().utc().startOf("day");
   };
 
   const columns: TableProps<any>["columns"] = [
