@@ -17,7 +17,8 @@ import { INovelty } from "@/types/novelty/INovelty";
 import {
   aprobeOrRejectDetail,
   createNovelty,
-  getNoveltyDetail
+  getNoveltyDetail,
+  updateNovelty
 } from "@/services/logistics/novelty";
 import { getTransferJourney } from "@/services/logistics/transfer-journey";
 import { ITransferJourney } from "@/types/transferJourney/ITransferJourney";
@@ -55,6 +56,13 @@ export enum NavEnum {
   BILLING = "BILLING"
 }
 
+export interface IForm {
+  noeltyTypeId: number | null;
+  quantity: number;
+  observation: string;
+  value: number;
+}
+
 export const TransferOrderDetails = () => {
   const [nav, setNav] = useState<NavEnum>(NavEnum.NOVELTY);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
@@ -68,8 +76,8 @@ export const TransferOrderDetails = () => {
   const [billingList, setBillingList] = useState<BillingByCarrier[]>([]);
 
   const [tripId, setTripId] = useState<number | null>(null);
-  const [form, setForm] = useState({
-    noeltyTypeId: null,
+  const [form, setForm] = useState<IForm>({
+    noeltyTypeId: null || 0,
     quantity: 0,
     observation: "",
     value: 0
@@ -156,11 +164,33 @@ export const TransferOrderDetails = () => {
       evidences: []
     };
     try {
+      if (novelty && novelty.id) {
+        const update = await updateNovelty({
+          id: novelty.id,
+          observation: form.observation,
+          quantity: form.quantity,
+          value: form.value,
+          evidences: [],
+          novelty_type_id: Number(form.noeltyTypeId),
+          trip_id: novelty.trip_id,
+          created_by: novelty.created_by
+        });
+        if (update) {
+          setOpenDrawer(false);
+          setForm({
+            noeltyTypeId: null || 0,
+            quantity: 0,
+            observation: "",
+            value: 0
+          });
+          findNovelties();
+        }
+      }
       const create = await createNovelty(body);
       if (create) {
         setOpenDrawer(false);
         setForm({
-          noeltyTypeId: null,
+          noeltyTypeId: null || 0,
           quantity: 0,
           observation: "",
           value: 0
@@ -176,7 +206,7 @@ export const TransferOrderDetails = () => {
     setOpenDrawer(false);
     setNovelty(null);
     setForm({
-      noeltyTypeId: null,
+      noeltyTypeId: null || 0,
       quantity: 0,
       observation: "",
       value: 0
@@ -187,9 +217,15 @@ export const TransferOrderDetails = () => {
     setIsCreateNovelty(true);
     setOpenDrawer(true);
   };
+
   const handleOpenMTModal = () => {
     setIsModalMTVisible(true);
   };
+
+  const handleEdit = () => {
+    setIsCreateNovelty(true);
+  }
+
   useEffect(() => {
     findDetails();
     findBilling();
@@ -269,11 +305,13 @@ export const TransferOrderDetails = () => {
           <DrawerBody
             onClose={handleCloseDrawer}
             novelty={novelty}
+            handleEdit={handleEdit}
             approbeOrReject={approbeOrReject}
           />
         ) : (
           <DrawerCreateBody
             onClose={handleCloseDrawer}
+            novelty={novelty}
             handleCreateNovelty={handleCreateNovelty}
             form={form}
             setForm={setForm}
