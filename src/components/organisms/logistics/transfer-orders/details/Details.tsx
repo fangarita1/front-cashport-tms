@@ -79,6 +79,7 @@ export const TransferOrderDetails = () => {
   const router = useRouter();
 
   const findNoveltyDetail = async (id: number) => {
+    setIsCreateNovelty(false);
     const data = await getNoveltyDetail(id);
     if (Object.keys(data).length) {
       setNovelty(data as INovelty);
