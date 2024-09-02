@@ -10,13 +10,15 @@ type SelecDayProps = {
   // eslint-disable-next-line no-unused-vars
   onChange: (options: Option[]) => void;
   disabled?: boolean;
+  readonly?: boolean;
 };
 
-export const SelectDay = ({ value, onChange, disabled }: SelecDayProps) => {
+export const SelectDay = ({ value, onChange, disabled, readonly }: SelecDayProps) => {
   const [selectedOptions, setSelectedOptions] = useState<Option[]>(value);
 
   const handleSelected = (option: Option) => {
     if (disabled) return;
+    if (readonly) return;
     if (selectedOptions?.some((selected) => selected.value === option.value)) {
       setSelectedOptions(selectedOptions?.filter((selected) => selected !== option));
       return;
@@ -37,9 +39,9 @@ export const SelectDay = ({ value, onChange, disabled }: SelecDayProps) => {
 
   return (
     <div className={`selectDayContainer`}>
-      {options.map((option) => (
+      {selectDayOptions.map((option) => (
         <div
-          className={`selectDayContainer__day ${selectedOptions.some((selected) => selected.value === option.value) ? "-selected" : ""} ${disabled ? "-disabled" : ""}`.trim()}
+          className={`selectDayContainer__day ${selectedOptions.some((selected) => selected.value === option.value) ? "-selected" : ""} ${disabled ? "-disabled" : ""} ${readonly ? "-readOnly" : ""}`.trim()}
           onClick={() => handleSelected(option)}
           key={option.value}
         >
@@ -50,7 +52,7 @@ export const SelectDay = ({ value, onChange, disabled }: SelecDayProps) => {
   );
 };
 
-const options: Option[] = [
+export const selectDayOptions: Option[] = [
   { value: "Domingo", label: "D" },
   { value: "Lunes", label: "L" },
   { value: "Martes", label: "M" },

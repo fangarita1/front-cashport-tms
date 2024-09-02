@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CommunicationsTable } from "@/components/molecules/tables/CommunicationsTable/CommunicationsTable";
 import { CommunicationProjectForm } from "@/components/molecules/tabs/Projects/CommunicationProjectForm/CommunicationProjectForm";
 
-type showCommunicationDetails = {
+export type showCommunicationDetails = {
   communicationId: number;
   active: boolean;
 };
@@ -27,6 +27,7 @@ export const CommunicationsProjectView = () => {
         <CommunicationProjectForm
           onGoBackTable={goBackToCommunicationsTable}
           showCommunicationDetails={showCommunicationDetails}
+          setIsCreateCommunication={setIsCreateCommunication}
         />
       ) : (
         <CommunicationsTable

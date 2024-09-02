@@ -17,6 +17,7 @@ import { formatDatePlane, formatMoney } from "@/utils/utils";
 import { useSWRConfig } from "swr";
 import StepperContentSkeleton from "./skeleton/skeleton-invoid-detail";
 import { useModalDetail } from "@/context/ModalContext";
+import { ModalAgreementDetail } from "@/components/molecules/modals/ModalAgreementDetail/ModalAgreementDetail";
 
 interface InvoiceDetailModalProps {
   isOpen: boolean;
@@ -45,7 +46,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
   const { mutate } = useSWRConfig();
   const { data: invoiceData, loading } = useInvoiceDetail({ invoiceId, clientId, projectId });
   const [urlStep, setUrlStep] = useState<string | undefined>(undefined);
-
+  const [isModalAgreenOpen, setIsModalAgreenOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(0);
 
@@ -110,7 +111,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
     openModal("adjustment", {
       adjusmentId: adjusmentId,
       clientId: clientId,
-      projectId,
+      projectId
     });
   };
 
@@ -291,6 +292,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   >{`Valor: ${formatMoney(item.ammount)}`}</div>
                                   <div
                                     className={styles.name}
+                                    onClick={() => {
+                                      setIsModalAgreenOpen(true);
+                                    }}
                                   >{`Fecha de pago acordada: ${formatDatePlane(item.event_date?.toString())}`}</div>
                                 </div>
                               ) : (
@@ -420,6 +424,11 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
           </div>
         </div>
       </div>
+      <ModalAgreementDetail
+        id={invoiceId}
+        isOpen={isModalAgreenOpen}
+        onClose={() => setIsModalAgreenOpen(false)}
+      />
     </aside>
   );
 };

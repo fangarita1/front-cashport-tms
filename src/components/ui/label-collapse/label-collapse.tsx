@@ -1,6 +1,6 @@
 import { Flex } from "antd";
 import { Files, Money } from "phosphor-react";
-import { formatMoney } from "@/utils/utils";
+import { capitalize, formatMoney } from "@/utils/utils";
 import styles from "./label-collapse.module.scss";
 
 interface PropsLabelCollapseInvoice {
@@ -37,7 +37,7 @@ const LabelCollapse = ({
         className={styles.labelCollapse__status}
         style={{ background: color ? color : randomColor }}
       >
-        {capitalizeFirstLetter(status)}
+        {capitalize(status)}
       </h5>
       {!!total && (
         <Flex className={styles.labelCollapse__total}>
@@ -56,9 +56,5 @@ const LabelCollapse = ({
     </Flex>
   );
 };
-
-function capitalizeFirstLetter(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
 
 export default LabelCollapse;
