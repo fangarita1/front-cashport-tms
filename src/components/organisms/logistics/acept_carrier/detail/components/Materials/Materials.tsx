@@ -1,20 +1,17 @@
 "use client";
 import { Button, Col, Flex, Row, Table, TableProps, Typography } from "antd";
-import { ProviderDetailMaterials } from "@/types/acept_carrier/acept_carrier";
 import { Radioactive, Warning } from "@phosphor-icons/react";
-import { IMaterial, ITransferRequestDetail } from "@/types/logistics/schema";
 import styles from "./materials.module.scss";
-import { useEffect, useState } from "react";
+import { DataCarga } from "@/types/logistics/carrier/carrier";
 
 interface MaterialsDataProps {
-  materials: IMaterial[];
+  materials: DataCarga[];
 }
 
 const { Text } = Typography;
 
-export default function Materials({ materials }: MaterialsDataProps) {
-
-  const columns: TableProps<IMaterial>["columns"] = [
+export default function Materials({ materials }: Readonly<MaterialsDataProps>) {
+  const columns: TableProps<DataCarga>["columns"] = [
     {
       title: "Cantidad",
       dataIndex: "quantity",
@@ -94,10 +91,10 @@ export default function Materials({ materials }: MaterialsDataProps) {
   ];
 
   return (
-    <Flex >
+    <Flex>
       <Row style={{ width: "100%" }}>
         <Col span={24}>
-          <Flex vertical style={{ width: "100%"  }}>
+          <Flex vertical style={{ width: "100%" }}>
             <p className={styles.title}>Materiales</p>
             <Row>
               <Col span={24} style={{ paddingTop: "0.5rem" }}>

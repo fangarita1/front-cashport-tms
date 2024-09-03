@@ -4,6 +4,7 @@ import { API, getIdToken } from "@/utils/api/api";
 import config from "@/config";
 import { IListData } from "@/types/logistics/schema";
 import { GenericResponse } from "@/types/global/IGlobal";
+import { IAPIResponse } from "@/types/logistics/carrier/carrier";
 
 export const getAllTransferRequestList = async (): Promise<IListData> => {
   const token = await getIdToken();
@@ -41,6 +42,7 @@ export const getAceptCarrierRequestById = async (id: string): Promise<any> => {
         Authorization: `Bearer ${token}`
       }
     });
+    console.log("RESPONSE getAceptCarrierRequestById", response);
     return response;
   } catch (error) {
     console.log("Error get all getAllTransferRequestList: ", error);
