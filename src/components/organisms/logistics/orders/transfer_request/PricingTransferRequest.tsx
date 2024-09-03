@@ -32,7 +32,8 @@ import {
   ITransferOrdersRequest,
   IVehicleType,
   ITransferRequestJourneyReview,
-  ITrackingPartial
+  ITrackingPartial,
+  ITrackingResponse
 } from "@/types/logistics/schema";
 
 import {
@@ -72,6 +73,7 @@ import PrincipalButton from "@/components/atoms/buttons/principalButton/Principa
 import { TransferRequestFinish } from "@/types/logistics/transferRequest/transferRequest";
 import { useForm } from "react-hook-form";
 import ModalSelectCarrierPricing from "./components/modals/ModalSelectCarrierPricing";
+import TrackingDrawer from "./components/tracking/TrackingDrawer";
 
 const { Title, Text } = Typography;
 
@@ -80,7 +82,7 @@ interface PricingTransferOrderRequestProps {
   mode: MODE_PRICING;
   // eslint-disable-next-line no-unused-vars
   mutateStepthree: (journey: ITransferRequestJourneyReview[]) => void;
-  tracking: ITrackingPartial[];
+  tracking: ITrackingResponse[];
 }
 
 export default function PricingTransferRequest({
@@ -737,7 +739,7 @@ export default function PricingTransferRequest({
           ))}
           <div className="collapseButtons">
             <Button className="collapseAddVehicleButton" onClick={addVehiclesSections}>
-              Agregar vehíchulo
+              Agregar vehículo
             </Button>
             <Button className="collapseSaveButton">Guardar</Button>
           </div>
@@ -794,7 +796,9 @@ export default function PricingTransferRequest({
                       </label>
                       {transferRequest.general?.transferRequestVehiclesSugest?.map((veh) => (
                         <div className="vehiclesSubtitleInformation" key={veh.id}>
-                          <p className="vehiclesSubtitleInformationVehicle">{veh.vehicle_type_desc}</p>
+                          <p className="vehiclesSubtitleInformationVehicle">
+                            {veh.vehicle_type_desc}
+                          </p>
                           <label className="vehiclesSubtitleInformationQuantity">
                             <p className="vehiclesSubtitleInformationQuantityNumber">
                               {veh.units.toString().padStart(2, "0")}
@@ -837,94 +841,14 @@ export default function PricingTransferRequest({
                   }}
                   closable={true}
                   key="right"
-                  footer={
-                    <>
-                      <button
-                        onClick={() => {
-                          setIsModalOpen(true);
-                        }}
-                        className="active"
-                        style={{
-                          borderRadius: "10px",
-                          padding: "10px",
-                          border: "none",
-                          float: "right"
-                        }}
-                      >
-                        Agregar
-                      </button>
-                    </>
-                  }
+                  footer={<></>}
                 >
-                  <Card style={{ width: "100%", padding: "0px" }}>
-                    <Row>
-                      <Col span={2}>
-                        <DotsSixVertical style={{ fontSize: "20px" }} />
-                      </Col>
-                      <Col span={18}>
-                        <p>Izaje</p>
-                        <p>Bogotá Centro</p>
-                        <p>
-                          <b>Inicio</b> 27 Junio 2024 - 02:15
-                        </p>
-                        <p>
-                          <b>Inicio</b> 28 Junio 2024 - 14:30
-                        </p>
-                      </Col>
-                      <Col span={4} style={{ textAlign: "right" }}>
-                        <p>
-                          <button
-                            className="active"
-                            style={{ width: "24px", border: "none", borderRadius: "5px" }}
-                          >
-                            1
-                          </button>{" "}
-                        </p>
-                        <p>&nbsp;</p>
-                        <p>&nbsp;</p>
-                        <p>
-                          <Pencil style={{ fontSize: "20px" }} />
-                          <Trash style={{ fontSize: "20px" }} />
-                        </p>
-                      </Col>
-                    </Row>
-                  </Card>
-                  <div className="carddivider"></div>
-                  <Card style={{ width: "100%", padding: "0px" }}>
-                    <Row>
-                      <Col span={2}>
-                        <DotsSixVertical style={{ fontSize: "20px" }} />
-                      </Col>
-                      <Col span={18}>
-                        <p>Carga</p>
-                        <p>Bogotá Centro</p>
-                        <p>Cajica Plaza</p>
-                        <p>
-                          <b>Inicio</b> 27 Junio 2024 - 02:15
-                        </p>
-                        <p>
-                          <b>Inicio</b> 28 Junio 2024 - 14:30
-                        </p>
-                      </Col>
-                      <Col span={4} style={{ textAlign: "right" }}>
-                        <p>
-                          <button
-                            className="active"
-                            style={{ width: "24px", border: "none", borderRadius: "5px" }}
-                          >
-                            2
-                          </button>{" "}
-                        </p>
-                        <p>&nbsp;</p>
-                        <p>&nbsp;</p>
-                        <p>&nbsp;</p>
-                        <p>
-                          <Pencil style={{ fontSize: "20px" }} />
-                          <Trash style={{ fontSize: "20px" }} />
-                        </p>
-                      </Col>
-                    </Row>
-                  </Card>
+                  {tracking?.map((t, i) => (
+                    <>
+                      <TrackingDrawer key={`tracking-order-${t.order_to}`} trip={t} />
+                      {i !== tracking.length - 1 ? <div className="carddivider"></div> : null}
+                    </>
+                  ))}
                 </Drawer>
               </Flex>
             </Flex>

@@ -15,6 +15,7 @@ interface INoveltyProps {
   handleShowDetails: (id: number) => void;
   handleOpenCreateDrawer: () => void;
   transferJournies: ITransferJourney[];
+  // eslint-disable-next-line no-unused-vars
   setTripId: (id: number) => void;
   handleOpenMTModal: () => void;
 }
@@ -25,7 +26,6 @@ export const Novelty: FC<INoveltyProps> = ({
   transferJournies,
   handleOpenCreateDrawer,
   setTripId,
-  transferRequestId,
   handleOpenMTModal
 }) => {
   const [key, setKey] = useState<number | null>(null);

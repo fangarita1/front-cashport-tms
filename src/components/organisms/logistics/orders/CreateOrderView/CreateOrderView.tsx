@@ -26,7 +26,11 @@ import { runes } from "runes2";
 // dayjs locale
 import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/es";
+import utc from "dayjs/plugin/utc";
+import tz from "dayjs/plugin/timezone";
 dayjs.locale("es");
+dayjs.extend(utc);
+dayjs.extend(tz);
 
 // mapbox
 import mapboxgl from "mapbox-gl";
@@ -1313,7 +1317,7 @@ export const CreateOrderView = () => {
     if (optionsPersons !== undefined && optionsPersons.length > 0) return;
 
     const res = await getAllUsers();
-    let result: any = [];
+    const result: any = [];
     if (res?.data?.data?.length > 0) {
       res.data.data.forEach((item) => {
         const strlabel = (
@@ -1500,17 +1504,14 @@ export const CreateOrderView = () => {
     const fechaInicialToBody = fechaInicial?.hour(inihour).minute(inimin);
     const fechaFinalToBody = fechaFinal?.hour(finhour).minute(finmin);
 
-    //console.log(fechaInicial);
-    //console.log(fechaFinal);
-
     const datato: ITransferOrder = {
       id_start_location: locationOrigin ? locationOrigin.id : 0,
       id_end_location: locationDestination ? locationDestination?.id : 0,
       id: 0,
       id_user: 1,
       user: cuser?.email,
-      start_date: fechaInicialToBody?.toDate().toISOString(),
-      end_date: fechaFinalToBody?.toDate().toISOString(),
+      start_date: fechaInicialToBody?.tz("GMT", true).toISOString(),
+      end_date: fechaFinalToBody?.tz("GMT", true).toISOString(),
       start_freight_equipment: String(origenIzaje ? 1 : 0),
       end_freight_equipment: String(destinoIzaje ? 1 : 0),
       freight_origin_time: origenIzaje ? horasOrigenIzaje : undefined,
@@ -1623,7 +1624,6 @@ export const CreateOrderView = () => {
         data?.files || ([] as DocumentCompleteType[])
       );
       if (response.status === SUCCESS) {
-        //console.log(response);
         messageApi.open({
           type: "success",
           content: "El viaje fue creado exitosamente."

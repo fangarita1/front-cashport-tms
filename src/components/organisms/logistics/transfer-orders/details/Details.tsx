@@ -3,21 +3,21 @@ import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import styles from "./details.module.scss";
 import Header from "@/components/organisms/header";
 import { CaretDoubleRight, CaretLeft, DotsThree } from "phosphor-react";
-import { Button, Drawer, message, Modal, Typography } from "antd";
+import { Button, Drawer, message, Typography } from "antd";
 import { MainDescription } from "./main-description/MainDescription";
 import { Step } from "./step/Step";
 import { useEffect, useState } from "react";
 import { Novelty } from "./novelty/Novelty";
 import { getTransferRequestDetail } from "@/services/logistics/transfer-request";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ITransferRequestDetail } from "@/types/transferRequest/ITransferRequest";
-import { useRouter } from "next/navigation";
 import { DrawerBody } from "./drawer-body/DrawerBody";
 import { INovelty } from "@/types/novelty/INovelty";
 import {
   aprobeOrRejectDetail,
   createNovelty,
-  getNoveltyDetail
+  getNoveltyDetail,
+  updateNovelty
 } from "@/services/logistics/novelty";
 import { getTransferJourney } from "@/services/logistics/transfer-journey";
 import { ITransferJourney } from "@/types/transferJourney/ITransferJourney";
@@ -27,23 +27,7 @@ import { BillingTable } from "./billing-table/BillingTable";
 import { getBillingByTransferRequest } from "@/services/logistics/billing_list";
 import { BillingByCarrier } from "@/types/logistics/billing/billing";
 import ModalBillingMT from "@/components/molecules/modals/ModalBillingMT/ModalBillingMT";
-const mockData = [
-  {
-    name: "Coltanques",
-    id: 1,
-    totalValue: 20000
-  },
-  {
-    name: "Cocoras",
-    id: 2,
-    totalValue: 10000
-  },
-  {
-    name: "RH",
-    id: 3,
-    totalValue: 13000
-  }
-];
+
 const Text = Typography;
 
 export enum NavEnum {
@@ -53,6 +37,13 @@ export enum NavEnum {
   DOCUMENTS = "DOCUMENTS",
   PSL = "PSL",
   BILLING = "BILLING"
+}
+
+export interface IForm {
+  noeltyTypeId: number | null;
+  quantity: number;
+  observation: string;
+  value: number;
 }
 
 export const TransferOrderDetails = () => {
@@ -68,8 +59,8 @@ export const TransferOrderDetails = () => {
   const [billingList, setBillingList] = useState<BillingByCarrier[]>([]);
 
   const [tripId, setTripId] = useState<number | null>(null);
-  const [form, setForm] = useState({
-    noeltyTypeId: null,
+  const [form, setForm] = useState<IForm>({
+    noeltyTypeId: null || 0,
     quantity: 0,
     observation: "",
     value: 0
@@ -79,11 +70,26 @@ export const TransferOrderDetails = () => {
   const router = useRouter();
 
   const findNoveltyDetail = async (id: number) => {
+    setIsCreateNovelty(false);
     const data = await getNoveltyDetail(id);
     if (Object.keys(data).length) {
       setNovelty(data as INovelty);
     }
   };
+
+  function canFinalizeJourney(journeys: ITransferJourney[]): boolean {
+    for (const journey of journeys) {
+      for (const trip of journey.trips) {
+        for (const novelty of trip.novelties) {
+          if (novelty.status === "Pendiente") {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+  const canFinalizeTrip = transferJournies ? canFinalizeJourney(transferJournies) : false;
 
   const renderView = () => {
     switch (nav) {
@@ -155,11 +161,33 @@ export const TransferOrderDetails = () => {
       evidences: []
     };
     try {
+      if (novelty && novelty.id) {
+        const update = await updateNovelty({
+          id: novelty.id,
+          observation: form.observation,
+          quantity: form.quantity,
+          value: form.value,
+          evidences: [],
+          novelty_type_id: Number(form.noeltyTypeId),
+          trip_id: novelty.trip_id,
+          created_by: novelty.created_by
+        });
+        if (update) {
+          setOpenDrawer(false);
+          setForm({
+            noeltyTypeId: null || 0,
+            quantity: 0,
+            observation: "",
+            value: 0
+          });
+          findNovelties();
+        }
+      }
       const create = await createNovelty(body);
       if (create) {
         setOpenDrawer(false);
         setForm({
-          noeltyTypeId: null,
+          noeltyTypeId: null || 0,
           quantity: 0,
           observation: "",
           value: 0
@@ -175,7 +203,7 @@ export const TransferOrderDetails = () => {
     setOpenDrawer(false);
     setNovelty(null);
     setForm({
-      noeltyTypeId: null,
+      noeltyTypeId: null || 0,
       quantity: 0,
       observation: "",
       value: 0
@@ -186,9 +214,15 @@ export const TransferOrderDetails = () => {
     setIsCreateNovelty(true);
     setOpenDrawer(true);
   };
+
   const handleOpenMTModal = () => {
     setIsModalMTVisible(true);
   };
+
+  const handleEdit = () => {
+    setIsCreateNovelty(true);
+  }
+
   useEffect(() => {
     findDetails();
     findBilling();
@@ -268,11 +302,13 @@ export const TransferOrderDetails = () => {
           <DrawerBody
             onClose={handleCloseDrawer}
             novelty={novelty}
+            handleEdit={handleEdit}
             approbeOrReject={approbeOrReject}
           />
         ) : (
           <DrawerCreateBody
             onClose={handleCloseDrawer}
+            novelty={novelty}
             handleCreateNovelty={handleCreateNovelty}
             form={form}
             setForm={setForm}
@@ -285,13 +321,13 @@ export const TransferOrderDetails = () => {
         idTR={id as string}
         carriersData={billingList}
         messageApi={messageApi}
+        canFinalizeTrip={canFinalizeTrip}
       />
       <ModalBillingMT
         isOpen={isModalMTVisible}
         onClose={() => setIsModalMTVisible(false)}
         idTR={id as string}
-        idCarrier={0}
-        idVehicle={0}
+        idTrip={tripId ?? 0}
         messageApi={messageApi}
       />
     </div>

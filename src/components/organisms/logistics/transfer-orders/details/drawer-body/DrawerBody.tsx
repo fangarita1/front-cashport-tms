@@ -12,9 +12,10 @@ interface IDrawerBodyProps {
   novelty: INovelty | null;
   // eslint-disable-next-line no-unused-vars
   approbeOrReject: (id: number, isApprobe: boolean) => void;
+  handleEdit: () => void;
 }
 
-export const DrawerBody: FC<IDrawerBodyProps> = ({ onClose, novelty, approbeOrReject }) => {
+export const DrawerBody: FC<IDrawerBodyProps> = ({ onClose, novelty, approbeOrReject, handleEdit }) => {
   return (
     <div className={styles.mainDrawerBody}>
       <div onClick={onClose} className={styles.closeContainer}>
@@ -84,7 +85,7 @@ export const DrawerBody: FC<IDrawerBodyProps> = ({ onClose, novelty, approbeOrRe
         <div className={styles.rightSection}>
           <div className={styles.editContainer}>
             <Text className={styles.text}>{novelty?.created_by}</Text>
-            <div className={styles.editBtn}>
+            <div onClick={() => handleEdit()} className={styles.editBtn}>
               <PencilLine color='#666666' size={20} />
             </div>
           </div>

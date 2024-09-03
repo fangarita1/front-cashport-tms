@@ -48,3 +48,14 @@ export const createNovelty = async (body: INoveltyBody): Promise<boolean> => {
     throw error as any;
   }
 }
+
+export const updateNovelty = async (body: INoveltyBody) => {
+  try {
+    const { success }: GenericResponse<boolean> = await API.post('/novelty/update', body);
+    if (success) return true;
+    return false;
+  } catch (error) {
+    console.error("Error update novelty/: ", error);
+    throw error as any;
+  }
+}

@@ -70,7 +70,19 @@ export const Request: FC<IRequestProps> = ({ search, handleCheckboxChange, order
     })
     .filter((status) => status.items.length > 0);
 
-  const renderItems: CollapseProps["items"] = filteredData.map((item, index) => {
+  // Array con los IDs de estado en el orden deseado
+  const ORDERED_STATE_IDS = [
+    "9f5ba87c-8736-4367-8077-3b914d2ee711", // Sin procesar
+    "00ce0b06-71b8-4981-861f-b4fa100dbd25", // Procesando
+    "a48b8b32-8699-4b6f-b56c-277238a656bc", // Procesado
+    "a312eb37-9a20-4e46-a010-3ee8d5cb2d94" // Esperando proveedor
+  ];
+
+  const sortedFilteredData = filteredData.toSorted((a, b) => {
+    return ORDERED_STATE_IDS.indexOf(a.statusId) - ORDERED_STATE_IDS.indexOf(b.statusId);
+  });
+
+  const renderItems: CollapseProps["items"] = sortedFilteredData.map((item, index) => {
     let aditionalRow = undefined;
     let redirect = undefined;
     if (item.statusId === TransferOrdersState.find((f) => f.name === "Sin procesar")?.id) {

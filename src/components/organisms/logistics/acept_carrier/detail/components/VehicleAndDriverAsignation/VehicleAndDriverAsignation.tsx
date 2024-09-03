@@ -75,6 +75,7 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
   });
   const selectedVehicle = watch("vehicleForm");
   const selectedDrivers = watch("driverForm");
+
   const formCurrentValues = getValues();
 
   const DRIVERS_MAX_QUANTITY = 5;
@@ -85,7 +86,6 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
   }, []);
 
   useEffect(() => {
-    console.log("formCurrentValues", formCurrentValues);
     const { vehicleForm, driverForm } = formCurrentValues;
     if (vehicleForm && driverForm[0].driverId !== null) {
       setIsNextStepActive(true);

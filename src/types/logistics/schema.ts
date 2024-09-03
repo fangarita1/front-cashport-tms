@@ -459,6 +459,7 @@ export interface ICarrierRequestDetail {
   carrier_request_material_by_trip?: ICarrierRequestMaterialByTrip[] | null;
   //personas -- aplica para viaje tipo persona!
   carrier_request_persons?: ICarrierRequestPersons[] | null;
+  fee_description?: string;
 }
 
 /**
@@ -1123,7 +1124,7 @@ export interface IRouteSecure {
   created_by: string;
   modified_at: Date;
   modified_by: string;
-  waypoints:RouteSecureWayPoints[]
+  waypoints: RouteSecureWayPoints[];
 }
 
 export interface RouteSecureWayPoints {
@@ -1574,7 +1575,7 @@ export interface IPsl {
  */
 export interface ITransferOrdersRequest {
   orders: ITransferOrderRequest[];
-  tracking: ITrackingPartial[];
+  tracking: ITrackingResponse[];
 }
 /**
  * Exposes all fields present in transfer_request_tracking as a typescript
@@ -1588,6 +1589,13 @@ export interface ITrackingPartial {
   start_date: string;
   id_type_service: number;
 }
+
+export interface ITrackingResponse extends ITrackingPartial {
+  start_location_desc: string;
+  end_location_desc: string;
+  type_service_desc: string;
+}
+
 /**
  * Exposes all fields present in transfer_order_request as a typescript
  * interface.
@@ -3040,6 +3048,7 @@ export interface IVehiclesPricing {
   valid_to: string;
   description: string;
   disponibility: number;
+  rates: number;
   price: number;
   id: number;
   m3_volume: number;

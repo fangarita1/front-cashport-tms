@@ -4,7 +4,9 @@ import React, { useEffect, useState } from "react";
 // dayjs locale
 import dayjs from "dayjs";
 import "dayjs/locale/es-us";
+import utc from "dayjs/plugin/utc";
 dayjs.locale("es");
+dayjs.extend(utc);
 
 // mapbox
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -27,6 +29,7 @@ import Materials from "../../acept_carrier/detail/components/Materials/Materials
 import styles from "./DetailsOrderView.module.scss";
 import { useMapbox } from "@/utils/logistics/useMapBox";
 import Persons from "../../acept_carrier/detail/components/Persons/Persons";
+import { DataCarga } from "@/types/logistics/carrier/carrier";
 
 interface Props {
   idOrder: string;
@@ -49,7 +52,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
     { value: 3, label: "+/- 3 días" }
   ];
 
-  const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
+  const [dataCarga, setDataCarga] = useState<DataCarga[]>([]);
 
   /* MAPBOX */
   const mapsAccessToken =
@@ -96,7 +99,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
         setTripType(to.service_type_desc);
         to.transfer_order_material?.forEach(async (mat) => {
           mat?.material?.forEach(async (m) => {
-            const newvalue: IMaterial = m;
+            const newvalue: any = m;
             newvalue.quantity = mat.quantity;
             setDataCarga((prevData) => [...prevData, newvalue]);
           });
@@ -148,10 +151,10 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
                     optionsFlexible.find((x) => x.value == transferOrder?.end_date_flexible)
                       ?.label ?? ""
                   }
-                  start_date={dayjs(transferOrder?.start_date).format("YYYY-MM-DD")}
-                  start_date_hour={dayjs(transferOrder?.start_date).format("HH:mm") ?? ""}
-                  end_date={dayjs(transferOrder?.end_date).format("YYYY-MM-DD")}
-                  end_date_hour={dayjs(transferOrder?.end_date).format("HH:mm") ?? ""}
+                  start_date={dayjs.utc(transferOrder?.start_date).format("YYYY-MM-DD")}
+                  start_date_hour={dayjs.utc(transferOrder?.start_date).format("HH:mm") ?? ""}
+                  end_date={dayjs.utc(transferOrder?.end_date).format("YYYY-MM-DD")}
+                  end_date_hour={dayjs.utc(transferOrder?.end_date).format("HH:mm") ?? ""}
                   freight_origin_time={transferOrder?.freight_origin_time}
                   freight_destination_time={transferOrder?.freight_destination_time}
                   volume={materialsTotalVolume}
