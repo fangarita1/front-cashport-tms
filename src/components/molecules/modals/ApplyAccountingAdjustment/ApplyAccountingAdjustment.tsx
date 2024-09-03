@@ -23,6 +23,7 @@ interface Props {
 }
 interface IcurrentInvoices {
   id: number;
+  id_erp?: string;
   current_value: number;
   newBalance: number;
 }
@@ -72,6 +73,7 @@ export const ApplyAccountingAdjustment = ({
     setCurrentInvoices(
       invoiceSelected.map((invoice) => ({
         id: invoice.id,
+        id_erp: invoice.id_erp,
         current_value: invoice.current_value,
         newBalance: invoice.current_value
       }))
@@ -221,7 +223,7 @@ export const ApplyAccountingAdjustment = ({
       title: "ID Factura",
       dataIndex: "id",
       key: "id",
-      render: (text) => <a target="_blank">{text}</a>
+      render: (text, record) => <a target="_blank">{record.id_erp}</a>
     },
     {
       title: "Pendiente",

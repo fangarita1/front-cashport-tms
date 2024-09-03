@@ -118,7 +118,6 @@ const PaymentAgreementModal: React.FC<Props> = ({
 
   const onChangeDate = (date: string | null) => {
     setGlobalDate(date);
-    console.log(date);
 
     if (date) {
       const dateString = date;
@@ -139,8 +138,6 @@ const PaymentAgreementModal: React.FC<Props> = ({
   };
 
   const handleCellChange = (key: string, index: number, value: string) => {
-    console.log(key, value);
-
     setTableData((prevData) => {
       const newData = [...prevData];
       newData[index][key] = value;

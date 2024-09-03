@@ -10,6 +10,8 @@ type CustomTextAreProps = {
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   value?: string;
   highlightWords?: string[];
+  readOnly?: boolean;
+  disabled?: boolean;
 };
 
 export const CustomTextArea = ({
@@ -18,7 +20,9 @@ export const CustomTextArea = ({
   customStyles,
   onChange,
   value,
-  highlightWords
+  highlightWords,
+  readOnly,
+  disabled
 }: CustomTextAreProps) => {
   //
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -103,6 +107,8 @@ export const CustomTextArea = ({
         placeholder={placeholder}
         onChange={handleOnChange}
         value={value}
+        readOnly={readOnly}
+        disabled={disabled}
       />
     </div>
   );

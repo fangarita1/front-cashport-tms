@@ -1,13 +1,11 @@
 import { Avatar, Modal } from "antd";
 import { Clipboard } from "phosphor-react";
-
-import "./modalProjectSelector.scss";
-import { useEffect } from "react";
-import { getUserPermissions } from "@/services/permissions/userPermissions";
-import { useAppStore } from "@/lib/store/store";
-import { ISelectedProject } from "@/lib/slices/createProjectSlice";
 import { usePathname, useRouter } from "next/navigation";
 
+import { useAppStore } from "@/lib/store/store";
+import { ISelectedProject } from "@/lib/slices/createProjectSlice";
+
+import "./modalProjectSelector.scss";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -18,39 +16,15 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
   const selectedProject = useAppStore((state) => state.selectedProject);
   const setSelectedProject = useAppStore((state) => state.setSelectedProject);
   const projects = useAppStore((state) => state.projectsBasicInfo);
-  const setProjectsBasicInfo = useAppStore((state) => state.setProjectsBasicInfo);
-
-  useEffect(() => {
-    //useEffect to call userPermissions and get the projects
-    const fetchProjects = async () => {
-      const response = await getUserPermissions();
-      setProjectsBasicInfo(
-        response?.data?.map((project) => ({
-          ID: project.project_id,
-          NAME: project.name,
-          LOGO: project.logo ? project.logo : ""
-        }))
-      );
-
-      if (response?.data?.length === 1) {
-        setSelectedProject({
-          ID: response?.data[0].project_id,
-          NAME: response?.data[0].name,
-          LOGO: response?.data[0].logo ? response?.data[0].logo : ""
-        });
-      }
-    };
-
-    if (projects?.length === 0) {
-      fetchProjects();
-    }
-  }, []);
 
   const handleSelectProject = (project: ISelectedProject) => {
     const projectInfo: ISelectedProject = {
       ID: project.ID,
       NAME: project.NAME,
-      LOGO: project.LOGO
+      LOGO: project.LOGO,
+      views_permissions: project.views_permissions,
+      action_permissions: project.action_permissions,
+      isSuperAdmin: project.isSuperAdmin
     };
     setSelectedProject(projectInfo);
     if (path.startsWith("/proyectos/review")) {

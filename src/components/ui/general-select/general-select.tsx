@@ -14,7 +14,7 @@ type ExtendedFieldError =
   | Merge<OriginalFieldError, FieldErrorsImpl<{ value: number | string; label: string }>>;
 
 interface PropsGeneralSelect<T extends FieldValues> {
-  errors: ExtendedFieldError | undefined;
+  errors?: ExtendedFieldError | undefined;
   field: ControllerRenderProps<T, any>;
   title?: string;
   placeholder: string;
@@ -23,6 +23,7 @@ interface PropsGeneralSelect<T extends FieldValues> {
   customStyleContainer?: React.CSSProperties;
   titleAbsolute?: boolean;
   errorSmall?: boolean;
+  readOnly?: boolean;
 }
 
 const GeneralSelect = <T extends FieldValues>({
@@ -34,7 +35,8 @@ const GeneralSelect = <T extends FieldValues>({
   loading,
   customStyleContainer,
   titleAbsolute,
-  errorSmall
+  errorSmall,
+  readOnly
 }: PropsGeneralSelect<T>) => {
   const [usedOptions, setUsedOptions] = useState<
     {
@@ -71,7 +73,7 @@ const GeneralSelect = <T extends FieldValues>({
       {title && <h4 className={`inputTitle ${titleAbsolute && "-absolute"}`}>{title}</h4>}
       <Select
         placeholder={placeholder}
-        className={errors ? "selectInputError" : "selectInputCustom"}
+        className={`${errors ? "selectInputError" : "selectInputCustom"} ${readOnly ? "-readOnly" : ""}`}
         loading={loading}
         variant="borderless"
         optionLabelProp="label"
@@ -79,6 +81,7 @@ const GeneralSelect = <T extends FieldValues>({
         popupClassName="selectDrop"
         options={usedOptions}
         labelInValue
+        disabled={readOnly || field.disabled}
       />
       {errors && (
         <Typography.Text className={`textError ${errorSmall && "-smallFont"}`}>

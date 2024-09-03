@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { ArrowLineDown, CaretDoubleRight, DotsThree, Receipt } from "phosphor-react";
+import { ArrowLineDown, CaretDoubleRight, DotsThree } from "phosphor-react";
 import styles from "./modalDetailAdjustment.module.scss";
 import { formatDatePlane, formatMoney } from "@/utils/utils";
 import { FileDownloadModal } from "../FileDownloadModal/FileDownloadModal";
@@ -8,6 +8,7 @@ import { useFinancialDiscountDetail } from "@/hooks/useDetailAdjustment";
 import { ModalActionAdjusment } from "../modalActionAdjusment/ModalActionAdjusment";
 import { Button, Flex } from "antd";
 import { it } from "node:test";
+import { useModalDetail } from "@/context/ModalContext";
 
 interface ModalDetailAdjustmentProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface ModalDetailAdjustmentProps {
   selectAdjusment?: FinancialDiscount;
   projectId: number;
   legalized?: boolean;
+  adjusmentId?: number;
 }
 
 const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
@@ -24,10 +26,11 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
   clientId,
   projectId,
   selectAdjusment,
+  adjusmentId = 1,
   legalized = false
 }) => {
   const { data: adjusmentData } = useFinancialDiscountDetail({
-    financialDiscountId: selectAdjusment?.id ?? 0,
+    financialDiscountId: selectAdjusment?.id ?? adjusmentId,
     projectId,
     clientId
   });
@@ -35,6 +38,7 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
   const [isModalSelectOpen, setIsModalSelectOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const { openModal } = useModalDetail();
   const getEventTitle = (item: string) => {
     switch (item) {
       case "Generar nota de credito":
@@ -78,6 +82,14 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
     } else {
       alert("Formato de archivo no soportado");
     }
+  };
+  const handelOpenInvoiceDetail = (invoice: number) => {
+    openModal("invoice", {
+      invoiceId: invoice,
+      projectId: projectId,
+      clientId: clientId,
+      hiddenActions: true
+    });
   };
 
   return (
@@ -208,7 +220,11 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                                 <Flex wrap gap={"2px"}>
                                   {item?.invoices?.map((invoice, index, arr) => {
                                     return (
-                                      <div key={invoice} className={styles.text_blue}>
+                                      <div
+                                        key={invoice}
+                                        className={styles.text_blue}
+                                        onClick={() => handelOpenInvoiceDetail(invoice)}
+                                      >
                                         {invoice}
                                         {index < arr.length - 1 ? "," : ""}
                                       </div>

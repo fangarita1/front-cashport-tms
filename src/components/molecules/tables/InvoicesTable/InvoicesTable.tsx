@@ -95,9 +95,9 @@ export const InvoicesTable = ({
       title: "ID",
       dataIndex: "id",
       key: "id",
-      render: (invoiceId, record) => (
+      render: (_, record) => (
         <Text onClick={() => handleOpenDetail(record)} className="invoicesTable__id">
-          {invoiceId}
+          {record.id_erp}
         </Text>
       ),
       sorter: (a, b) => a.id - b.id,
@@ -188,7 +188,7 @@ export const InvoicesTable = ({
       className: "logosWrapper",
       render: (_, record) => (
         <div className="logos">
-          {record?.agreement_info && (
+          {record?.agreement_info?.Fecha && (
             <Tooltip
               title={
                 <div className="toolTip -paymentAgreement">

@@ -4,7 +4,7 @@ import { MessageInstance } from "antd/es/message/interface";
 import { getIdToken } from "@/utils/api/api";
 import { SUCCESS } from "@/utils/constants/globalConstants";
 
-import { IBRE } from "@/types/bre/IBRE";
+import { channeles, IBRE } from "@/types/bre/IBRE";
 
 export const getBusinessRulesByProjectId = async (
   idProject: number
@@ -26,6 +26,27 @@ export const getBusinessRulesByProjectId = async (
     return error as any;
   }
 };
+export const getChannelByProjectId = async (
+  idProject: number
+): Promise<AxiosResponse<channeles>> => {
+  const token = await getIdToken();
+  try {
+    const response: AxiosResponse<channeles> = await axios.get(
+      `${config.API_HOST}/bussines-rule/project/${idProject}/channel`,
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json; charset=utf-8",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    return response;
+  } catch (error) {
+    return error as any;
+  }
+};
+
 export const addChannelBR = async (
   project_id: number,
   channelDescription: string,

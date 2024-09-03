@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import config from "@/config";
 import { API, getIdToken } from "@/utils/api/api";
 import { GenericResponse } from "@/types/global/IGlobal";
-import { IClientsGroup } from "@/types/clientsGroups/IClientsGroups";
+import { IClientsGroup, IClientsGroupsFull } from "@/types/clientsGroups/IClientsGroups";
 
 export const getOneGroup = async (groupId: number, projectId: number) => {
   try {
@@ -111,6 +111,32 @@ export const changeGroupState = async (
       }
     );
 
+    return response;
+  } catch (error) {
+    return error as any;
+  }
+};
+
+
+export const getClientGroups = async (
+  projectId: number,
+  name?: string,
+  status?: number
+): Promise<AxiosResponse<IClientsGroupsFull>> => {
+  const token = await getIdToken();
+  try {
+    let url = `${config.API_HOST}/group-client/?project_id=${projectId}`;
+    if (name) url += `&name=${encodeURIComponent(name)}`;
+    if (status !== undefined) url += `&status=${status}`;
+
+    const response: AxiosResponse<IClientsGroupsFull> = await axios.get(
+      url,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
     return response;
   } catch (error) {
     return error as any;

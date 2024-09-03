@@ -5,15 +5,37 @@ import { useAppStore } from "@/lib/store/store";
 
 interface Props {
   page?: number;
+  limit?: number;
+  holding?: string[];
+  searchQuery?: string;
+  client_group?: string[];
 }
-export const usePortfolios = ({ page }: Props) => {
+
+export const usePortfolios = ({
+  page = 1,
+  limit = 450,
+  holding,
+  searchQuery,
+  client_group
+}: Props) => {
   const { ID } = useAppStore((state) => state.selectedProject);
-  const limit = 250;
-  const pathKey = `/portfolio/client/project/${ID}?page=${page}&limit=${limit}`;
-  const { data, isLoading } = useSWR<IViewClientsTable>(pathKey, fetcher);
+
+  const pageQuery = `page=${page}`;
+  const limitQuery = `&limit=${limit}`;
+  const holdingQuery = holding && holding.length > 0 ? `&holding=${holding.join(",")}` : "";
+  const searchQueryParam = searchQuery
+    ? `&searchQuery=${encodeURIComponent(searchQuery.toLowerCase().trim())}`
+    : "";
+  const clientGroupQuery =
+    client_group && client_group.length > 0 ? `&client_group=${client_group.join(",")}` : "";
+
+  const pathKey = `/portfolio/client/project/${ID}?${pageQuery}${limitQuery}${holdingQuery}${searchQueryParam}${clientGroupQuery}`;
+
+  const { data, error } = useSWR<IViewClientsTable>(pathKey, fetcher);
 
   return {
-    data: data,
-    loading: isLoading
+    data,
+    loading: !error && !data,
+    error
   };
 };

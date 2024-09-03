@@ -1,3 +1,4 @@
+import { ISelectedProject } from "@/lib/slices/createProjectSlice";
 import { IChanel } from "@/types/bre/IBRE";
 import { ISelectStringType } from "@/types/communications/ICommunications";
 import { CountryCode } from "@/types/global/IGlobal";
@@ -169,8 +170,17 @@ export const formatDateBars = (dateString: string): string => {
   return `${utcYear}-${utcMonth}-${utcDay}`;
 };
 
-export const formatDatePlane = (date: string): string => {
-  const d = new Date(date);
+export const formatDatePlane = (dateString: string): string => {
+  if (!dateString || dateString === "0000-00-00") {
+    return "Fecha no disponible";
+  }
+
+  const d = new Date(dateString);
+
+  if (isNaN(d.getTime())) {
+    return "Fecha inválida";
+  }
+
   const year = d.getUTCFullYear();
   const month = new Intl.DateTimeFormat("es-ES", { month: "long", timeZone: "UTC" }).format(d);
   const day = d.getUTCDate();
@@ -328,3 +338,25 @@ export const formatDateDMY = (dateString: string): string => {
   const date = dayjs(dateString);
   return date.format("DD/MM/YYYY");
 };
+
+export const checkUserViewPermissions = (
+  selectedProject: ISelectedProject | undefined,
+  view?: string
+): boolean => {
+  if (!selectedProject) return false;
+  if (selectedProject.isSuperAdmin) {
+    return true;
+  }
+
+  const viewPermissions = selectedProject.views_permissions;
+  if (!viewPermissions) {
+    return false;
+  }
+
+  return viewPermissions.some((permission) => permission.page_name === view);
+};
+
+export function capitalize(str: string): string {
+  if (typeof str !== "string" || str.length === 0) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

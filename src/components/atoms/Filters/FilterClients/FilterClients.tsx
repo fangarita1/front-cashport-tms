@@ -38,7 +38,8 @@ export const FilterClients = ({ setFilterClients }: FilterClientsProps) => {
     risk: [] as number[],
     payment_condition: [] as number[],
     radication_type: [] as number[],
-    status: [] as number[]
+    status: [] as number[],
+    searchQuery: ""
   });
 
   const onChange = (selectedValue: any[]) => {

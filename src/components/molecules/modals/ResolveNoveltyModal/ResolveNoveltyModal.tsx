@@ -75,9 +75,6 @@ const ResolveNoveltyModal: React.FC<ResolveNoveltyModalProps> = ({
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    console.log("file", file);
-  }, [file]);
 
   const handleAdjustmentTypeSelect = (type: string) => {
     setAdjustmentType(type);
@@ -143,7 +140,8 @@ const ResolveNoveltyModal: React.FC<ResolveNoveltyModalProps> = ({
       footer={null}
       width={"40%"}
       bodyStyle={{
-        height: currentView === "selectNote" ? "calc(80vh - 20px)" : "auto"
+        height: currentView === "selectNote" ? "calc(80vh - 20px)" : "auto",
+        zIndex: 100000
       }}
       className="resolve-novelty-modal"
     >

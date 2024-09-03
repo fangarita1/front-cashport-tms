@@ -16,12 +16,15 @@ import { IInvoice } from "@/types/invoices/IInvoices";
 import { formatDatePlane, formatMoney } from "@/utils/utils";
 import { useSWRConfig } from "swr";
 import StepperContentSkeleton from "./skeleton/skeleton-invoid-detail";
+import { useModalDetail } from "@/context/ModalContext";
+import { ModalAgreementDetail } from "@/components/molecules/modals/ModalAgreementDetail/ModalAgreementDetail";
 
 interface InvoiceDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   invoiceId: number;
   clientId: number;
+  showId: string;
   hiddenActions?: boolean;
   // eslint-disable-next-line no-unused-vars
   handleActionInDetail?: (invoice: IInvoice) => void;
@@ -32,20 +35,22 @@ interface InvoiceDetailModalProps {
 const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
   isOpen,
   onClose,
+  showId,
   invoiceId,
   clientId,
   hiddenActions,
-  projectId,
+  projectId = 0,
   selectInvoice,
   handleActionInDetail
 }) => {
   const { mutate } = useSWRConfig();
   const { data: invoiceData, loading } = useInvoiceDetail({ invoiceId, clientId, projectId });
   const [urlStep, setUrlStep] = useState<string | undefined>(undefined);
-
+  const [isModalAgreenOpen, setIsModalAgreenOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(0);
 
+  const { openModal } = useModalDetail();
   const statusClass = (status: string): string => {
     switch (status) {
       case "Identificado" || "coinciliada":
@@ -102,6 +107,13 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
       alert("Formato de archivo no soportado");
     }
   };
+  const handelOpenAdjusmentDetail = (adjusmentId: number) => {
+    openModal("adjustment", {
+      adjusmentId: adjusmentId,
+      clientId: clientId,
+      projectId
+    });
+  };
 
   return (
     <aside className={`${styles.wrapper} ${isOpen ? styles.show : styles.hide}`}>
@@ -117,7 +129,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
           </button>
         </div>
         <div className={styles.header}>
-          <h4 className={styles.numberInvoice}>Factura {invoiceId}</h4>
+          <h4 className={styles.numberInvoice}>Factura {showId}</h4>
           <div className={styles.viewInvoice}>
             <Receipt size={20} />
             Ver factura
@@ -161,12 +173,8 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                     (invoiceData?.results ?? []).map((item, index, arr) => {
                       return (
                         <div key={item.id} className={styles.mainStep}>
-                          <div
-                            className={`${styles.stepLine} ${item.status_name && (index === arr.length - 1 ? styles.inactive : styles.active)}`}
-                          />
-                          <div
-                            className={`${styles.stepCircle} ${item.status_name && styles.active}`}
-                          />
+                          <div className={`${styles.stepLine} ${styles.active}`} />
+                          <div className={`${styles.stepCircle} ${styles.active}`} />
                           <div className={styles.stepLabel}>
                             <div className={styles.cardInvoiceFiling}>
                               <h5 className={styles.title}>
@@ -220,7 +228,12 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   >{`Valor: ${formatMoney(item.ammount ?? "0")}`}</div>
                                   <div className={styles.adjustment}>
                                     ID del ajuste:
-                                    <div className={styles.idAdjustment}>{item.id ?? "N/A"}</div>
+                                    <div
+                                      className={styles.idAdjustment}
+                                      onClick={() => item.id && handelOpenAdjusmentDetail(item.id)}
+                                    >
+                                      {item.id ?? "N/A"}
+                                    </div>
                                   </div>
                                 </div>
                               ) : (
@@ -279,6 +292,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   >{`Valor: ${formatMoney(item.ammount)}`}</div>
                                   <div
                                     className={styles.name}
+                                    onClick={() => {
+                                      setIsModalAgreenOpen(true);
+                                    }}
                                   >{`Fecha de pago acordada: ${formatDatePlane(item.event_date?.toString())}`}</div>
                                 </div>
                               ) : (
@@ -408,6 +424,11 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
           </div>
         </div>
       </div>
+      <ModalAgreementDetail
+        id={invoiceId}
+        isOpen={isModalAgreenOpen}
+        onClose={() => setIsModalAgreenOpen(false)}
+      />
     </aside>
   );
 };

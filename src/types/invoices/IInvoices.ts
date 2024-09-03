@@ -38,6 +38,7 @@ export interface IInvoice {
   earlypay_date: string;
   financial_status: string;
   ajust_value: number;
+  id_erp: string;
   expiration_days: number;
   acceptance_info: {
     accept_date: null | string;
