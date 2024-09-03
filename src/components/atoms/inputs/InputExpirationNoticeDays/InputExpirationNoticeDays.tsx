@@ -35,14 +35,7 @@ export const InputExpirationNoticeDays = ({
 
   useEffect(() => {
     if (disabled) return;
-    const newDays = { ...noticeDays, days: noticeDays.days + 1 };
-    setValue(nameInput, `${newDays.days}`, { shouldValidate: true });
-  }, [disabled, noticeDays, setValue, nameInput]);
-
-  useEffect(() => {
-    if (disabled) return;
-    const newDays = { ...noticeDays, days: noticeDays.days - 1 };
-    setValue(nameInput, `${newDays.days}`, { shouldValidate: true });
+    setValue(nameInput, `${noticeDays.days}`, { shouldValidate: true });
   }, [disabled, noticeDays, setValue, nameInput]);
 
   const handleDecrementNotice = () => {
