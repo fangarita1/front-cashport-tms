@@ -6,13 +6,13 @@ export interface FileWithLink extends FileObject {
 
 export interface EvidenceByVehicleForm {
   plate: string;
-  idVehicle: number;
+  idTrip: number;
   documents: FileWithLink[];
 }
 // Empty structure based on the provided interfaces
 export const emptyForm: EvidenceByVehicleForm = {
   plate: "",
-  idVehicle: 0,
+  idTrip: 0,
   documents: [
     {
       docReference: "",
@@ -22,22 +22,18 @@ export const emptyForm: EvidenceByVehicleForm = {
   ]
 };
 
-// Mock data based on the provided interfaces
-export const mockData: EvidenceByVehicleForm = {
-  plate: "ABC1234",
-  idVehicle: 177,
-  documents: [
-    {
-      docReference: "doc-123",
-      aditionalData: undefined,
-      file: undefined,
-      link: "https://cashport-tms.s3.us-east-2.amazonaws.com/develop/billing/c546c9bc2cd720e3-PDF-prueba-2.pdf"
-    },
-    {
-      docReference: "doc-124",
-      aditionalData: undefined,
-      file: undefined,
-      link: "https://cashport-tms.s3.us-east-2.amazonaws.com/develop/billing/c546c9bc2cd720e3-PDF-prueba-2.pdf"
-    }
-  ]
+export interface IVehicleAPI {
+  id: number;
+  carrier_id: number;
+  plate_number: string;
+  provider: string;
+  MT: string[];
+}
+
+export const emptyVehicle = {
+  id: 0,
+  carrier_id: 0,
+  plate_number: "",
+  provider: "",
+  MT: []
 };

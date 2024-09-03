@@ -3,15 +3,14 @@ import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import styles from "./details.module.scss";
 import Header from "@/components/organisms/header";
 import { CaretDoubleRight, CaretLeft, DotsThree } from "phosphor-react";
-import { Button, Drawer, message, Modal, Typography } from "antd";
+import { Button, Drawer, message, Typography } from "antd";
 import { MainDescription } from "./main-description/MainDescription";
 import { Step } from "./step/Step";
 import { useEffect, useState } from "react";
 import { Novelty } from "./novelty/Novelty";
 import { getTransferRequestDetail } from "@/services/logistics/transfer-request";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ITransferRequestDetail } from "@/types/transferRequest/ITransferRequest";
-import { useRouter } from "next/navigation";
 import { DrawerBody } from "./drawer-body/DrawerBody";
 import { INovelty } from "@/types/novelty/INovelty";
 import {
@@ -27,23 +26,7 @@ import { BillingTable } from "./billing-table/BillingTable";
 import { getBillingByTransferRequest } from "@/services/logistics/billing_list";
 import { BillingByCarrier } from "@/types/logistics/billing/billing";
 import ModalBillingMT from "@/components/molecules/modals/ModalBillingMT/ModalBillingMT";
-const mockData = [
-  {
-    name: "Coltanques",
-    id: 1,
-    totalValue: 20000
-  },
-  {
-    name: "Cocoras",
-    id: 2,
-    totalValue: 10000
-  },
-  {
-    name: "RH",
-    id: 3,
-    totalValue: 13000
-  }
-];
+
 const Text = Typography;
 
 export enum NavEnum {
@@ -85,6 +68,20 @@ export const TransferOrderDetails = () => {
       setNovelty(data as INovelty);
     }
   };
+
+  function canFinalizeJourney(journeys: ITransferJourney[]): boolean {
+    for (const journey of journeys) {
+      for (const trip of journey.trips) {
+        for (const novelty of trip.novelties) {
+          if (novelty.status === "Pendiente") {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+  const canFinalizeTrip = transferJournies ? canFinalizeJourney(transferJournies) : false;
 
   const renderView = () => {
     switch (nav) {
@@ -286,13 +283,13 @@ export const TransferOrderDetails = () => {
         idTR={id as string}
         carriersData={billingList}
         messageApi={messageApi}
+        canFinalizeTrip={canFinalizeTrip}
       />
       <ModalBillingMT
         isOpen={isModalMTVisible}
         onClose={() => setIsModalMTVisible(false)}
         idTR={id as string}
-        idCarrier={0}
-        idVehicle={0}
+        idTrip={tripId ?? 0}
         messageApi={messageApi}
       />
     </div>
