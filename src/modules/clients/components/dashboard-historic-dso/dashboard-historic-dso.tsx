@@ -20,7 +20,7 @@ type historic_dso = {
 
 const DashboardHistoricDso: FC<DashboardHistoricDsoProps> = ({ className }) => {
   const { portfolioData } = useContext(ClientDetailsContext);
-  const history_dso = portfolioData?.history_dso.historic;
+  const history_dso = portfolioData?.history_dso?.historic;
 
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
