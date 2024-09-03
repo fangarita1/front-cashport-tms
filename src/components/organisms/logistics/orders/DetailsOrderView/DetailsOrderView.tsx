@@ -4,7 +4,10 @@ import React, { useEffect, useState } from "react";
 // dayjs locale
 import dayjs from "dayjs";
 import "dayjs/locale/es-us";
+import utc from "dayjs/plugin/utc";
 dayjs.locale("es");
+dayjs.extend(utc);
+
 
 // mapbox
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -148,10 +151,10 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
                     optionsFlexible.find((x) => x.value == transferOrder?.end_date_flexible)
                       ?.label ?? ""
                   }
-                  start_date={dayjs(transferOrder?.start_date).format("YYYY-MM-DD")}
-                  start_date_hour={dayjs(transferOrder?.start_date).format("HH:mm") ?? ""}
-                  end_date={dayjs(transferOrder?.end_date).format("YYYY-MM-DD")}
-                  end_date_hour={dayjs(transferOrder?.end_date).format("HH:mm") ?? ""}
+                  start_date={dayjs.utc(transferOrder?.start_date).format("YYYY-MM-DD")}
+                  start_date_hour={dayjs.utc(transferOrder?.start_date).format("HH:mm") ?? ""}
+                  end_date={dayjs.utc(transferOrder?.end_date).format("YYYY-MM-DD")}
+                  end_date_hour={dayjs.utc(transferOrder?.end_date).format("HH:mm") ?? ""}
                   freight_origin_time={transferOrder?.freight_origin_time}
                   freight_destination_time={transferOrder?.freight_destination_time}
                   volume={materialsTotalVolume}

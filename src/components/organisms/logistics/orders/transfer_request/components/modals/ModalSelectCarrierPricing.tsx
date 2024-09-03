@@ -12,6 +12,9 @@ import { Truck, User } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import useSWR from "swr";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 const { Title, Text } = Typography;
 type Props = {
@@ -125,7 +128,9 @@ export default function ModalSelectCarrierPricing({
       (x) => x.id_trip === id_trip && x.id_pricing === id_carrier_pricing
     );
     const trip = dataFlated.find((x) => x.trip.id_trip === id_trip);
-    const price = trip?.trip.carriers_pricing.find((x) => x.id_carrier_pricing === id_carrier_pricing);
+    const price = trip?.trip.carriers_pricing.find(
+      (x) => x.id_carrier_pricing === id_carrier_pricing
+    );
     console.log(price);
     if (index === -1 && trip) {
       append({
@@ -169,7 +174,7 @@ export default function ModalSelectCarrierPricing({
     ),
     key: trip.id_trip.toString(),
     children: (
-      <Flex vertical gap={24}>
+      <Flex vertical gap={24} className={styles.tripCarrierPricing}>
         <Checkbox
           checked={
             fields.filter((x) => x.id_trip === trip.id_trip).length === trip.carriers_pricing.length
@@ -238,18 +243,38 @@ export default function ModalSelectCarrierPricing({
         <div className="scrollableTabGlobalCss">
           <Flex gap={24} className={styles.header} vertical align="center">
             <Flex gap={24} align="center" justify="space-between" style={{ width: "100%" }}>
-              <Text>
-                <strong>Fecha inicio</strong>{" "}
-                {new Date(journey?.start_date || 0)
-                  .toLocaleDateString("es", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit"
-                  })
-                  ?.replace(",", " -")}
-              </Text>
+              <Flex gap={16} vertical>
+                <Text>
+                  <strong>Fecha inicio</strong>{" "}
+                  {dayjs
+                    .utc(journey?.start_date)
+                    .toDate()
+                    .toLocaleDateString("es", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      timeZone: "GMT"
+                    })
+                    ?.replace(",", " -")}
+                </Text>
+                <Text>
+                  <strong>Fecha final</strong>{" "}
+                  {dayjs
+                    .utc(journey?.end_date)
+                    .toDate()
+                    .toLocaleDateString("es", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      timeZone: "GMT"
+                    })
+                    ?.replace(",", " -")}
+                </Text>
+              </Flex>
               <div className={styles.stBox}>
                 {serviceType(journey?.id_type_service || 0).icon}
                 <Text className={styles.stContent}>
