@@ -34,6 +34,7 @@ export interface INoveltyEvidenceBody {
 }
 
 export interface INoveltyBody {
+  id?: number; 
   observation: string;
   novelty_type_id: number;
   trip_id: number;

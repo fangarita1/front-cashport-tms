@@ -2,30 +2,28 @@ import { Button, Input, Select, Typography } from 'antd';
 import styles from './drawerCreateBody.module.scss';
 import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
 import { CaretDoubleRight, ChartBar, ChartLineUp, Check, Money, User } from 'phosphor-react';
-import { createNovelty, getNoveltyTypes } from '@/services/logistics/novelty';
-import { INoveltyType } from '@/types/novelty/INovelty';
+import { getNoveltyTypes } from '@/services/logistics/novelty';
+import { INovelty, INoveltyType } from '@/types/novelty/INovelty';
 import { noveltyQuantity } from '@/utils/constants/novelties';
+import { IForm } from '../Details';
 
 const Text = Typography;
 
 interface IDrawerBodyProps {
   onClose: () => void;
   handleCreateNovelty: () => void;
-  form: {
-    noeltyTypeId: null;
-    quantity: number;
-    observation: string;
-    value: number;
-  };
-  setForm: Dispatch<SetStateAction<{
-    noeltyTypeId: null;
-    quantity: number;
-    observation: string;
-    value: number;
-  }>>
+  novelty: INovelty | null;
+  form: IForm;
+  setForm: Dispatch<SetStateAction<IForm>>;
 }
 
-export const DrawerCreateBody: FC<IDrawerBodyProps> = ({ onClose, handleCreateNovelty, form, setForm }) => {
+export const DrawerCreateBody: FC<IDrawerBodyProps> = ({
+  onClose,
+  handleCreateNovelty,
+  form,
+  setForm,
+  novelty
+}) => {
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [novelties, setNovelties] = useState<INoveltyType[]>([]);
 
@@ -41,12 +39,25 @@ export const DrawerCreateBody: FC<IDrawerBodyProps> = ({ onClose, handleCreateNo
   }, [])
 
   useEffect(() => {
+    if (novelty && novelty.id) {
+      const getNovelty = novelties.find((f) => f.name === novelty.novelty_type);
+      setForm({
+        noeltyTypeId: getNovelty?.id || null,
+        quantity: novelty.quantity,
+        observation: novelty.observation,
+        value: novelty.value,
+      });
+    }
+  }, [novelties])
+
+  useEffect(() => {
     if (form.noeltyTypeId && form.observation && form.value) {
       setIsDisabled(false);
       return;
     }
     setIsDisabled(true);
   }, [form])
+  
 
   return (
     <div className={styles.mainDrawerBody}>
@@ -65,7 +76,7 @@ export const DrawerCreateBody: FC<IDrawerBodyProps> = ({ onClose, handleCreateNo
             disabled={isDisabled}
           >
             <Check color='#141414' size={12} />
-            <Text className={styles.approbeLabel}>Crear novedad</Text>
+            <Text className={styles.approbeLabel}>{novelty && novelty.id ? 'Actualizar novedad' : 'Crear novedad'}</Text>
           </Button>
         </div>
       </div>
