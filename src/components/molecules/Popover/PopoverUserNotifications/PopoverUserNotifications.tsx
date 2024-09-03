@@ -93,8 +93,6 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
               className="eyeIcon"
               onClick={() => {
                 if (item.notification_type_name === "Novedad") {
-                  console.log("mira que si entra ");
-
                   openModal("novelty", { noveltyId: item.incident_id });
                 }
                 handleVisibleChange(false);
