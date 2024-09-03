@@ -1,8 +1,8 @@
-import { Badge, List, Popover, Tabs, Spin } from "antd";
+import { Badge, List, Popover, Tabs, Spin, Flex } from "antd";
 import React from "react";
 import "./popoverUserNotifications.scss";
 import Link from "next/link";
-import { BellSimpleRinging, Eye } from "phosphor-react";
+import { BellSimpleRinging, Envelope, Eye } from "phosphor-react";
 import { timeAgo } from "@/utils/utils";
 import TabPane from "antd/es/tabs/TabPane";
 import { useModalDetail } from "@/context/ModalContext";
@@ -10,7 +10,6 @@ import { useNotificationStore } from "@/context/CountNotification";
 import { useNotificationOpen } from "@/hooks/useNotificationOpen";
 import { useRejectedNotifications } from "@/hooks/useNotificationReject";
 import { markNotificationAsRead } from "@/services/notifications/notification";
-
 
 interface PopoverUserNotificationsProps {
   setIsPopoverVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,7 +24,7 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
 }) => {
   const { notificationCount, updateNotificationCount } = useNotificationStore();
   const { openModal } = useModalDetail();
-  
+
   const {
     data: openNotifications,
     isLoading: isLoadingOpen,
@@ -47,22 +46,26 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
 
   const markNotificationsAsRead = async () => {
     const allNotifications = [...(openNotifications || []), ...(rejectedNotifications || [])];
-    for (const notification of allNotifications) {
-      try {
-        const response = await markNotificationAsRead(notification.id);
-        if (response.data.status !== 200) {
-          console.warn(
-            `Failed to mark notification ${notification.id} as read:`,
-            response.data.message
-          );
-        }
-      } catch (error) {
-        console.error(`Error marking notification ${notification.id} as read:`, error);
-      }
-    }
+
+    const markPromises = allNotifications.map((notification) =>
+      markNotificationAsRead(notification.id)
+        .then((response) => {
+          if (response.data.status !== 200) {
+            console.warn(
+              `Failed to mark notification ${notification.id} as read:`,
+              response.data.message
+            );
+          }
+        })
+        .catch((error) => {
+          console.error(`Error marking notification ${notification.id} as read:`, error);
+        })
+    );
+
+    await Promise.allSettled(markPromises);
+
     // Refresh the notification lists after marking as read
-    mutateOpenNotifications();
-    mutateRejectedNotifications();
+    await Promise.all([mutateOpenNotifications(), mutateRejectedNotifications()]);
   };
 
   const renderList = (data: any[], isLoading: boolean) => {
@@ -74,15 +77,27 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
         renderItem={(item) => (
           <List.Item>
             <div>
-              <p className="item__title">{item.notification_type_name}</p>
+              <Flex gap={"8px"} align="center">
+                <p className="item__title">{item.notification_type_name} </p>
+
+                {item.is_read === 0 ? (
+                  <div className="item__read">
+                    <Envelope size={11} />
+                  </div>
+                ) : null}
+              </Flex>
               <p className="item__name">{item.client_name}</p>
               <p className="item__date">{timeAgo(item.create_at)}</p>
             </div>
             <div
               className="eyeIcon"
               onClick={() => {
+                if (item.notification_type_name === "Novedad") {
+                  console.log("mira que si entra ");
+
+                  openModal("novelty", { noveltyId: item.incident_id });
+                }
                 handleVisibleChange(false);
-                openModal("novelty", { noveltyId: item.id });
               }}
             >
               <Eye size={28} />

@@ -10,6 +10,7 @@ interface Notification {
   client_update_changes: Record<string, any>;
   days: string;
   id: number;
+  is_read : number;
 }
 
 interface GetNotificationsResponse {
