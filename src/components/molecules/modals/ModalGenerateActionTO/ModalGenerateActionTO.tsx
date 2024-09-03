@@ -24,10 +24,11 @@ type PropsModalGenerateActionTO = {
   isOpen: boolean;
   onClose: () => void;
   messageApi: MessageInstance;
+  canFinalizeTrip: boolean;
 };
 
 export default function ModalGenerateActionTO(props: Readonly<PropsModalGenerateActionTO>) {
-  const { isOpen, onClose, idTR, carriersData, messageApi } = props;
+  const { isOpen, onClose, idTR, carriersData, messageApi, canFinalizeTrip } = props;
   const [selectedView, setSelectedView] = useState<ViewEnum>(ViewEnum.SELECT_ACTION);
   const [selectedCarrier, setSelectedCarrier] = useState<number | null>(null);
   const billingsInStatusAcepted = carriersData.filter(
@@ -41,6 +42,7 @@ export default function ModalGenerateActionTO(props: Readonly<PropsModalGenerate
           <ActionList
             setSelectedView={setSelectedView}
             canPreauthorize={billingsInStatusAcepted.length > 0}
+            canFinalizeTrip={canFinalizeTrip}
           />
         );
       case ViewEnum.SELECT_CARRIER:

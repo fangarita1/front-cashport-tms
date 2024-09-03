@@ -2,41 +2,42 @@ import UiTabs from "@/components/ui/ui-tabs";
 import { Flex, Skeleton } from "antd";
 import { useEffect, useState } from "react";
 import styles from "./FinalizeTrip.module.scss";
-import { FieldError, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { MessageInstance } from "antd/es/message/interface";
-import { yupResolver } from "@hookform/resolvers/yup";
-
 import FooterButtons from "../../ModalBillingAction/FooterButtons/FooterButtons";
-import { emptyForm, FinalizeTripForm, mockData } from "./controllers/finalizetrip.types";
+import { emptyForm, FinalizeTripForm } from "./controllers/finalizetrip.types";
 import TextArea from "antd/es/input/TextArea";
 import { VehicleFields } from "./components/VehicleFields";
+import { getCarriersTripsDetails, sendFinalizeTripAllCarriers } from "@/services/trips/trips";
 
 interface FinalizeTrip {
   idTR: string;
   onClose: () => void;
   messageApi: MessageInstance;
 }
+
+export interface IVehicleAPI {
+  id: number;
+  plate_number: string;
+  MT: string[];
+}
+export interface ICarrierAPI {
+  carrier_id: number;
+  provider: string;
+  vehicles: IVehicleAPI[];
+}
+
 const FinalizeTrip = ({ idTR, onClose, messageApi }: FinalizeTrip) => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [carriersInfo, setCarriersInfo] = useState<FinalizeTripForm>(emptyForm);
+  const [carriersInfo, setCarriersInfo] = useState<ICarrierAPI[]>([]);
   const [defaultValues, setDefaultValues] = useState<FinalizeTripForm>(emptyForm);
-  console.log("selectedTab", selectedTab);
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    reset,
-    watch,
-    trigger,
-    register,
-    getValues
-  } = useForm<FinalizeTripForm>({
-    defaultValues
-    //resolver: yupResolver(uploadInvoiceFormSchema) as any
-  });
+
+  const { control, handleSubmit, setValue, reset, watch, trigger, register } =
+    useForm<FinalizeTripForm>({
+      defaultValues
+    });
   const { fields: carriersFields } = useFieldArray({
     control,
     name: "carriers"
@@ -44,86 +45,87 @@ const FinalizeTrip = ({ idTR, onClose, messageApi }: FinalizeTrip) => {
   const tabsNames = carriersFields.map((c) => `${c.carrier}`);
   const formValues = useWatch({ control });
 
-  const { fields: vehiclesFields } = useFieldArray({
-    control,
-    name: `carriers.${selectedTab}.vehicles`
-  });
-  console.log("FORMVALUES", formValues);
-  console.log("vehiclesFields cuurent", vehiclesFields);
-
   // //Create default with api data
-  // function createDefaultValues(pasData: PreAuthorizationRequestData[]): FinalizeTrip {
-  //   const defaultValues: PA[] = pasData.map((pa) => ({
-  //     info: {
-  //       id: pa.id,
-  //       idAuthorization: pa.idAuthorization,
-  //       date: dayjs(pa.dateAuthorization),
-  //       value: pa.authorizationFare,
-  //       link: pa.link
-  //     },
-  //     invoice: {
-  //       id: "",
-  //       date: null,
-  //       value: pa.authorizationFare,
-  //       pdfFile: undefined,
-  //       xmlFile: undefined
-  //     }
-  //   }));
-  //   return {
-  //     pas: defaultValues
-  //   };
-  // }
+  function createDefaultValues(carriersAPI: ICarrierAPI[]): FinalizeTripForm {
+    const defaultValues: any = carriersAPI.map((c, carrierIndex) => ({
+      carrier: c.provider,
+      idCarrier: c.carrier_id,
+      vehicles: c.vehicles.map((v) => ({
+        plate: v.plate_number,
+        tripId: v.id,
+        documents:
+          v.MT?.length > 0
+            ? v.MT.map((MTlink) => {
+                return {
+                  link: MTlink ?? undefined,
+                  file: undefined,
+                  docReference: carrierIndex
+                };
+              })
+            : [
+                {
+                  link: undefined,
+                  file: undefined,
+                  docReference: carrierIndex
+                }
+              ]
+      })),
+      adittionalComment: ""
+    }));
+    return {
+      carriers: defaultValues
+    };
+  }
 
-  // Fetch pre-authorized info
-  // async function getFormInfo() {
-  //   try {
-  //     setIsLoading(true);
-  //     const response = await getTripMts(idTR);
-  //     if (response) {
-  //       setPreauthorizeds(response);
-  //     }
-  //   } catch (error) {
-  //     messageApi?.open({
-  //       type: "error",
-  //       content: "Hubo un problema, vuelve a intentarlo"
-  //     });
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }
+  //Fetch pre-authorized info
+  async function getFormInfo() {
+    try {
+      setIsLoading(true);
+      const response = await getCarriersTripsDetails(Number(idTR));
+      if (response) {
+        setCarriersInfo(response);
+      }
+    } catch (error) {
+      messageApi?.open({
+        type: "error",
+        content: "Hubo un problema, vuelve a intentarlo"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
   // Handle form submission
-  // async function sendForm(form: FinalizeTrip) {
-  //   try {
-  //     setIsLoading(true);
-  //     const response = await sendInvoices(form, idTR);
-  //     if (response) {
-  //       messageApi?.open({
-  //         type: "success",
-  //         content: "Creado correctamente",
-  //         duration: 3
-  //       });
-  //     } else {
-  //       messageApi?.open({
-  //         type: "error",
-  //         content: "Hubo un error",
-  //         duration: 3
-  //       });
-  //     }
-  //   } catch (error: any) {
-  //     messageApi?.open({
-  //       type: "error",
-  //       content: error?.message ?? "Hubo un error",
-  //       duration: 3
-  //     });
-  //   } finally {
-  //     setIsLoading(false);
-  //     onClose();
-  //   }
-  // }
+  async function sendForm(form: FinalizeTripForm) {
+    try {
+      setIsLoading(true);
+      const response = await sendFinalizeTripAllCarriers(form, Number(idTR));
+      if (response) {
+        messageApi?.open({
+          type: "success",
+          content: "Viaje finalizado correctamente",
+          duration: 3
+        });
+      } else {
+        messageApi?.open({
+          type: "error",
+          content: "Hubo un error finalizando el viaje",
+          duration: 3
+        });
+      }
+    } catch (error: any) {
+      messageApi?.open({
+        type: "error",
+        content: error?.message ?? "Hubo un error",
+        duration: 3
+      });
+    } finally {
+      setIsLoading(false);
+      onClose();
+    }
+  }
 
   const onSubmit = (data: FinalizeTripForm) => {
-    console.log("submit", data);
-    //sendForm(data);
+    sendForm(data);
   };
 
   //Handle document changes
@@ -155,16 +157,15 @@ const FinalizeTrip = ({ idTR, onClose, messageApi }: FinalizeTrip) => {
 
   useEffect(() => {
     if (!isInitialized) {
-      //getFormInfo();
-      setCarriersInfo(mockData);
+      getFormInfo();
       setIsInitialized(true);
     }
   }, [isInitialized]);
   useEffect(() => {
     if (carriersInfo) {
-      // const newDefaultValues = createDefaultValues(preauthorizeds);
-      setDefaultValues(carriersInfo);
-      reset(carriersInfo);
+      const newDefaultValues = createDefaultValues(carriersInfo);
+      setDefaultValues(newDefaultValues);
+      reset(newDefaultValues);
     }
   }, [carriersInfo, reset]);
 
@@ -185,7 +186,7 @@ const FinalizeTrip = ({ idTR, onClose, messageApi }: FinalizeTrip) => {
   }
 
   const allVehiclesHaveDocs = validateVehiclesWithDocuments(formValues);
-  console.log("allVehiclesHaveDocs", allVehiclesHaveDocs);
+
   const isConfirmDisabled = !allVehiclesHaveDocs;
 
   if (isLoading) {
@@ -209,7 +210,7 @@ const FinalizeTrip = ({ idTR, onClose, messageApi }: FinalizeTrip) => {
           className={styles.scrollableTabsUI}
         />
         <Flex vertical>
-          <div key={currentCarrier.idCarrier}>
+          <div key={currentCarrier?.idCarrier}>
             <VehicleFields
               control={control}
               register={register}
@@ -225,7 +226,7 @@ const FinalizeTrip = ({ idTR, onClose, messageApi }: FinalizeTrip) => {
           <div>
             <TextArea
               placeholder="Escribe los comentarios adicionales"
-              value={currentCarrier.adittionalComment}
+              value={currentCarrier?.adittionalComment}
               style={{ minHeight: "40px" }}
               disabled={false}
               autoSize={{ minRows: 1, maxRows: 4 }}

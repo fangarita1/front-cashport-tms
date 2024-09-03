@@ -21,6 +21,7 @@ const AddRemoveButton: React.FC<AddRemoveButtonProps> = ({
       className={`${styles.buttonTransparent} ${styles.addOrRemove}`}
       onClick={onClick}
       disabled={disabled}
+      type="button"
     >
       {type === "add" ? <PlusCircle size={24} /> : <Trash size={24} />}
       {type === "add" ? <p>{text}</p> : <></>}

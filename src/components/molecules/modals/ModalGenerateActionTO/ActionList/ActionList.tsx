@@ -7,15 +7,17 @@ import { Gavel } from "@phosphor-icons/react";
 
 const ActionList = ({
   setSelectedView,
-  canPreauthorize
+  canPreauthorize,
+  canFinalizeTrip = true
 }: {
   setSelectedView: Dispatch<SetStateAction<ViewEnum>>;
   canPreauthorize: boolean;
+  canFinalizeTrip?: boolean;
 }) => {
   return (
     <Flex style={{ width: "100%", height: "100%" }} gap={12} vertical>
       <ButtonGenerateAction
-        disabled={false}
+        disabled={!canFinalizeTrip}
         icon={<MapPinLine size={20} />}
         title="Finalización de viaje"
         onClick={() => setSelectedView(ViewEnum.FINALIZE_TRIP)}
