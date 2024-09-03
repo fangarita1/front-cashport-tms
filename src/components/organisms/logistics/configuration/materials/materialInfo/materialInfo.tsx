@@ -47,9 +47,9 @@ export const MaterialInfoView = ({ params }: Props) => {
       if (response.status === 200) {
         messageApi.open({
           type: "success",
-          content: "La ubicación fue editada exitosamente."
+          content: "El material fue editado exitosamente."
         });
-        push(`/logistics/configuration/materials/${params.id}`);
+        push(`/logistics/configuration/materials/all`);
       }
     } catch (error) {
       messageApi.open({
@@ -69,7 +69,7 @@ export const MaterialInfoView = ({ params }: Props) => {
           content: "El material fue editado exitosamente."
         });
         setStatusForm('review');
-        push(`/logistics/configuration/materials/${params.id}`);
+        push(`/logistics/configuration/materials/all`);
       }
     } catch (error) {
       messageApi.open({
@@ -89,7 +89,7 @@ export const MaterialInfoView = ({ params }: Props) => {
           content: "El material fue editado exitosamente."
         });
         setStatusForm('review');
-        push(`/logistics/configuration/materials/${params.id}`);
+        push(`/logistics/configuration/materials/all`);
       }
     } catch (error) {
       messageApi.open({

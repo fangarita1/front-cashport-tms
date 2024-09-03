@@ -23,15 +23,22 @@ export const CreateUserView = ({ params }: Props) => {
           {...data}, 
           data.logo
         );  
-      if (response && response.status === 200) {
+      if (response && response.status === 200) {        
         messageApi.open({
           type: "success",
           content: `El usuario fue creado exitosamente.`
         });
         push(`/logistics/configuration/users/all`); //${response.data.data.id}
       }
-    } catch (error) {
-      if (error instanceof Error) {
+    } catch (error:any) {
+     
+      if(error?.response?.data?.message){
+        console.log(error?.response?.data)
+        messageApi.open({
+          type: "error",
+          content: error?.response?.data?.message
+        });
+      }else if (error instanceof Error) {
         messageApi.open({
           type: "error",
           content: error.message

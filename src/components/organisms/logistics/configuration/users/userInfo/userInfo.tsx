@@ -52,7 +52,7 @@ export const UserInfoView = ({ params }: Props) => {
       if (response.status === 200) {
         messageApi.open({
           type: "success",
-          content: "La ubicación fue editada exitosamente."
+          content: "El usuario fue editado exitosamente."
         });
         setStatusForm('review');
         push(`/logistics/configuration/users/all`);
@@ -75,7 +75,7 @@ export const UserInfoView = ({ params }: Props) => {
           content: "El usuario fue editado exitosamente."
         });
         setStatusForm('review');
-        push(`/logistics/configuration/users/${params.id}`);
+        push(`/logistics/configuration/users/all`);
       }
     } catch (error) {
       messageApi.open({
@@ -95,7 +95,7 @@ export const UserInfoView = ({ params }: Props) => {
           content: "El usuario fue editado exitosamente."
         });
         setStatusForm('review');
-        push(`/logistics/configuration/users/${params.id}`);
+        push(`/logistics/configuration/users/all`);
       }
     } catch (error) {
       messageApi.open({

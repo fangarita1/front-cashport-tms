@@ -56,7 +56,7 @@ export const LocationInfoView = ({ params }: Props) => {
           content: "La ubicación fue editada exitosamente."
         });
         setStatusForm('review');
-        push(`/logistics/configuration/locations/${params.id}`);
+        push(`/logistics/configuration/locations/all`);
       }
     } catch (error) {
       messageApi.open({
@@ -76,7 +76,7 @@ export const LocationInfoView = ({ params }: Props) => {
           content: "La ubicación fue editada exitosamente."
         });
         setStatusForm('review');
-        push(`/logistics/configuration/locations/${params.id}`);
+        push(`/logistics/configuration/locations/all`);
       }
     } catch (error) {
       messageApi.open({
@@ -96,7 +96,7 @@ export const LocationInfoView = ({ params }: Props) => {
           content: "La ubicación fue editada exitosamente."
         });
         setStatusForm('review');
-        push(`/logistics/configuration/locations/${params.id}`);
+        push(`/logistics/configuration/locations/all`);
       }
     } catch (error) {
       messageApi.open({
