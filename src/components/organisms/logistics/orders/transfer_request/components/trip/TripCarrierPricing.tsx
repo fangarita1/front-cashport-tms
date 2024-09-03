@@ -4,6 +4,9 @@ import style from "./TripCarrierPricing.module.scss";
 import CarrierRequestProposal from "../carrierRequest/CarrierRequestProposal";
 import { useState } from "react";
 import { CarrierPricingFinish } from "@/types/logistics/transferRequest/transferRequest";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 const { Text, Title } = Typography;
 type Props = {
@@ -29,19 +32,21 @@ export default function TripCarrierPricing({ trip, handleSelectCarrier, fields }
             <Text>
               <strong>Fecha inicio</strong>
               <>&nbsp;&nbsp;</>
-              {new Date(trip.start_date).toLocaleDateString("es", {
+              {dayjs.utc(trip.start_date).toDate().toLocaleDateString("es", {
                 day: "2-digit",
                 month: "short",
-                year: "numeric"
+                year: "numeric",
+                timeZone: "GMT"
               })}
             </Text>
             <Text>
               <strong>Fecha fin</strong>
               <>&nbsp;&nbsp;</>
-              {new Date(trip.end_date).toLocaleDateString("es", {
+              {dayjs.utc(trip.end_date).toDate().toLocaleDateString("es", {
                 day: "2-digit",
                 month: "short",
-                year: "numeric"
+                year: "numeric",
+                timeZone: "GMT"
               })}
             </Text>
           </Flex>
@@ -52,9 +57,10 @@ export default function TripCarrierPricing({ trip, handleSelectCarrier, fields }
             <>&nbsp;&nbsp;</>
             {trip.start_location_desc}
             <>&nbsp;&nbsp;</>
-            {new Date(trip.start_date).toLocaleTimeString("es", {
+            {dayjs.utc(trip.start_date).toDate().toLocaleTimeString("es", {
               hour: "2-digit",
-              minute: "2-digit"
+              minute: "2-digit",
+              timeZone: "GMT"
             })}
           </Text>
           <Text>
@@ -62,9 +68,10 @@ export default function TripCarrierPricing({ trip, handleSelectCarrier, fields }
             <>&nbsp;&nbsp;</>
             {trip.end_location_desc}
             <>&nbsp;&nbsp;</>
-            {new Date(trip.end_date).toLocaleTimeString("es", {
+            {dayjs.utc(trip.end_date).toDate().toLocaleTimeString("es", {
               hour: "2-digit",
-              minute: "2-digit"
+              minute: "2-digit",
+              timeZone: "GMT"
             })}
           </Text>
         </Flex>

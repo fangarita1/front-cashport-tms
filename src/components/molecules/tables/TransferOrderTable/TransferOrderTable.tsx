@@ -9,6 +9,8 @@ import { ITransferRequest } from "@/types/transferRequest/ITransferRequest";
 import { FC } from "react";
 import dayjs from "dayjs";
 import { calculateMinutesDifference } from "@/utils/logistics/calculateMinutesDifference";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 const { Text } = Typography;
 
@@ -186,8 +188,8 @@ export const TransferOrdersTable: FC<ITransferOrdersTable> = ({ items, showColum
           destination: item.end_location,
         },
         fechas: {
-          origin: `${dayjs(item.start_date).format('DD/MM/YY - HH:mm')} h`,
-          destination: `${dayjs(item.end_date).format('DD/MM/YY - HH:mm')} h`
+          origin: `${dayjs.utc(item.start_date).format('DD/MM/YY - HH:mm')} h`,
+          destination: `${dayjs.utc(item.end_date).format('DD/MM/YY - HH:mm')} h`
         },
         tipodeviaje: item.type,
         // vehiculos: {

@@ -9,6 +9,8 @@ import { ITransferRequestDetail } from "@/types/transferRequest/ITransferRequest
 import { TransferOrdersState } from "@/utils/constants/transferOrdersState";
 import dayjs from "dayjs";
 import { formatMoney } from "@/utils/utils";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 const Text = Typography;
 
@@ -148,7 +150,7 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
                   <Text className={styles.dotText}>{item.location}</Text>
                 </div>
                 <Text className={styles.dotText}>
-                  {dayjs(item.end_date).format("DD MMMM YYYY - HH:mm")}
+                  {dayjs.utc(item.end_date).format("DD MMMM YYYY - HH:mm")}
                 </Text>
               </div>
             )
@@ -163,7 +165,7 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
                 <Text className={styles.dotText}>{item.location}</Text>
               </div>
               <Text className={styles.dotText}>
-                {dayjs(item.end_date).format("DD MMMM YYYY - HH:mm")}
+                {dayjs.utc(item.end_date).format("DD MMMM YYYY - HH:mm")}
               </Text>
             </div>
           )

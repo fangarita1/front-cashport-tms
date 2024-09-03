@@ -3,6 +3,21 @@
     width: 100%;
 }
 
+.tripCarrierPricing {
+    max-height: 35vh;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+        height: 4px;
+        width: 7px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: darkgrey;
+        border-radius: 10px;
+        width: 5px;
+        height: 5px;
+      }
+}
+
 .checks {
     width: 100%;
     background-color: $background;

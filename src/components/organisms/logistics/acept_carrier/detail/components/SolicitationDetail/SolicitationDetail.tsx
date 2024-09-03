@@ -13,7 +13,9 @@ import { RouteMap } from "@/components/organisms/logistics/orders/DetailsOrderVi
 import { SummaryData } from "@/components/organisms/logistics/orders/DetailsOrderView/components/SummaryData/SummaryData";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
+import utc from "dayjs/plugin/utc";
 dayjs.locale("es");
+dayjs.extend(utc);
 
 interface SolicitationDetailProps {
   providerDetail: ICarrierRequestDetail | undefined;
@@ -68,10 +70,10 @@ export default function SolicitationDetail({
               end_location={providerDetail?.end_location ?? ""}
               start_date_flexible={"Exacto"}
               end_date_flexible={"Exacto"}
-              start_date={dayjs(providerDetail?.start_date).format("YYYY-MM-DD")}
-              start_date_hour={dayjs(providerDetail?.start_date).format("HH:mm") ?? ""}
-              end_date={dayjs(providerDetail?.end_date).format("YYYY-MM-DD")}
-              end_date_hour={dayjs(providerDetail?.end_date).format("HH:mm") ?? ""}
+              start_date={dayjs.utc(providerDetail?.start_date).format("YYYY-MM-DD")}
+              start_date_hour={dayjs.utc(providerDetail?.start_date).format("HH:mm") ?? ""}
+              end_date={dayjs.utc(providerDetail?.end_date).format("YYYY-MM-DD")}
+              end_date_hour={dayjs.utc(providerDetail?.end_date).format("HH:mm") ?? ""}
             />
           </Col>
           <Col span={12}>
