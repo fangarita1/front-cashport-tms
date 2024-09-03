@@ -794,7 +794,9 @@ export default function PricingTransferRequest({
                       </label>
                       {transferRequest.general?.transferRequestVehiclesSugest?.map((veh) => (
                         <div className="vehiclesSubtitleInformation" key={veh.id}>
-                          <p className="vehiclesSubtitleInformationVehicle">{veh.vehicle_type_desc}</p>
+                          <p className="vehiclesSubtitleInformationVehicle">
+                            {veh.vehicle_type_desc}
+                          </p>
                           <label className="vehiclesSubtitleInformationQuantity">
                             <p className="vehiclesSubtitleInformationQuantityNumber">
                               {veh.units.toString().padStart(2, "0")}
