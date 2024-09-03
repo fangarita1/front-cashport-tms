@@ -8,7 +8,6 @@ import utc from "dayjs/plugin/utc";
 dayjs.locale("es");
 dayjs.extend(utc);
 
-
 // mapbox
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -30,6 +29,7 @@ import Materials from "../../acept_carrier/detail/components/Materials/Materials
 import styles from "./DetailsOrderView.module.scss";
 import { useMapbox } from "@/utils/logistics/useMapBox";
 import Persons from "../../acept_carrier/detail/components/Persons/Persons";
+import { DataCarga } from "@/types/logistics/carrier/carrier";
 
 interface Props {
   idOrder: string;
@@ -52,7 +52,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
     { value: 3, label: "+/- 3 días" }
   ];
 
-  const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
+  const [dataCarga, setDataCarga] = useState<DataCarga[]>([]);
 
   /* MAPBOX */
   const mapsAccessToken =
@@ -99,7 +99,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
         setTripType(to.service_type_desc);
         to.transfer_order_material?.forEach(async (mat) => {
           mat?.material?.forEach(async (m) => {
-            const newvalue: IMaterial = m;
+            const newvalue: any = m;
             newvalue.quantity = mat.quantity;
             setDataCarga((prevData) => [...prevData, newvalue]);
           });

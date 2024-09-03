@@ -16,15 +16,18 @@ import {
   postCarrierReject,
   postCarrierRequest
 } from "@/services/logistics/acept_carrier";
-import {
-  ICarrierRequestDetail,
-  ICarrierRequestDetailAPI,
-  IMaterial
-} from "@/types/logistics/schema";
+
 import { Confirmation } from "../../detail/components/Confirmation/Confirmation";
 import { useMapbox } from "@/utils/logistics/useMapBox";
 import { CustomStepper } from "../../detail/components/Stepper/Stepper";
 import { getTravelDuration, getTravelFreightDuration } from "@/utils/logistics/maps";
+import {
+  DataCarga,
+  DriverDocument,
+  IAceptCarrierAPI,
+  Material,
+  VehicleDocument
+} from "@/types/logistics/carrier/carrier";
 
 interface AceptCarrierDetailProps {
   params: { id: string };
@@ -40,10 +43,13 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
   const [driversSelected, setDriversSelected] = useState<Array<number | null>>([]);
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [drivers, setDrivers] = useState<any[]>([]);
+  //const [driversMandatoryDocs, setDriversMandatoryDocs] = useState<DriverDocument[]>([]);
+  //const [vehicleMandatoryDocs, setVehicleMandatoryDocs] = useState<VehicleDocument[]>([]);
+
   const [observation, setObservation] = useState<any>(null);
   const router = useRouter();
 
-  const [carrier, setCarrier] = useState<ICarrierRequestDetail>();
+  const [carrier, setCarrier] = useState<IAceptCarrierAPI>();
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -60,7 +66,7 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
     mapsAccessToken
   });
 
-  const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
+  const [dataCarga, setDataCarga] = useState<DataCarga[]>([]);
 
   useEffect(() => {
     return () => {
@@ -72,8 +78,9 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
     loadTransferRequests();
   }, []);
 
-  const setCurrentData = (data: ICarrierRequestDetailAPI) => {
+  const setCurrentData = (data: IAceptCarrierAPI) => {
     const { drivers, vehicle, observation } = data;
+
     setVehicleSelected(vehicle?.id ?? null);
     setDriversSelected(drivers.map((d) => d.id ?? null));
     observation && setObservation(observation);
@@ -85,7 +92,7 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
     try {
       const result = await getAceptCarrierRequestById(params.id);
       if (result?.data?.data) {
-        const to: ICarrierRequestDetailAPI = result.data.data;
+        const to: IAceptCarrierAPI = result.data.data;
         setCurrentData(to);
         const canEdit = to?.statusdesc === "Por confirmar";
         setFormMode(canEdit ? "edit" : "view");
@@ -93,14 +100,15 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
         setDrivers(driversResult.data.data);
         const vehiclesResult = await getVehiclesByCarrierId(to?.id_carrier);
         setVehicles(vehiclesResult.data.data);
-        console.log("to", to);
         setCarrier(to);
         to.carrier_request_material_by_trip?.forEach(async (mat) => {
           mat?.material?.forEach(async (m) => {
-            const newvalue: IMaterial = m;
+            const newvalue: Material = m;
             setDataCarga((dataCarga) => [...dataCarga, { ...newvalue, quantity: mat.units }]);
           });
         });
+        // setDriversMandatoryDocs(to?.driver_documents);
+        // setVehicleMandatoryDocs(to?.vehicle_documents);
       }
     } catch (error) {
       console.error("Error loading transfer requests", error);
@@ -220,6 +228,8 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
             currentDrivers={driversSelected}
             currentVehicle={vehicleSelected}
             formMode={formMode}
+            // driversMandatoryDocs={driversMandatoryDocs}
+            // vehicleMandatoryDocs={vehicleMandatoryDocs}
           />
         );
       case "confirmation":
