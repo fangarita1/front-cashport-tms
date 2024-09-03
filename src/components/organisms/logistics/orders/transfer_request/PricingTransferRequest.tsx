@@ -846,7 +846,7 @@ export default function PricingTransferRequest({
                   {tracking?.map((t, i) => (
                     <>
                       <TrackingDrawer key={`tracking-order-${t.order_to}`} trip={t} />
-                      {i === tracking.length ? <div className="carddivider"></div> : null}
+                      {i !== tracking.length - 1 ? <div className="carddivider"></div> : null}
                     </>
                   ))}
                 </Drawer>
