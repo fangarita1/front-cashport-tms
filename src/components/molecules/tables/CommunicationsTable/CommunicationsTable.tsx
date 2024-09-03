@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Button, Flex, Table, TableProps, Typography, Spin } from "antd";
+import { Button, Flex, Table, TableProps, Typography, Spin, MenuProps } from "antd";
 import { Eye, Plus, Triangle } from "phosphor-react";
 
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
@@ -40,7 +40,6 @@ export const CommunicationsTable = ({
   useEffect(() => {
     const fetchCommunications = async () => {
       const response = await getAllCommunications(projectId);
-      console.log("coms: ", response);
       setCommunications(response.data);
     };
     fetchCommunications();
@@ -63,6 +62,13 @@ export const CommunicationsTable = ({
 
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);
+  };
+
+  const handleDeleteCommunications = () => {
+    console.info(
+      "deleteComms with id: ",
+      selectedRows.map((row: any) => row.id)
+    );
   };
 
   const columns: TableProps<any>["columns"] = [
@@ -124,6 +130,17 @@ export const CommunicationsTable = ({
     }
   ];
 
+  const items: MenuProps["items"] = [
+    {
+      key: "discount-option-1",
+      label: (
+        <Button className="buttonOutlined" onClick={handleDeleteCommunications}>
+          Eliminar
+        </Button>
+      )
+    }
+  ];
+
   return (
     <main className="mainCommunicationsTable">
       <Flex justify="space-between">
@@ -138,7 +155,7 @@ export const CommunicationsTable = ({
             }}
           />
           <UiFilterDropdown />
-          <DotsDropdown />
+          <DotsDropdown items={items} />
         </Flex>
         <PrincipalButton onClick={onCreateCommunication}>
           Crear Comunicación

@@ -23,6 +23,19 @@
             }
         }
 
+        &.ant-select-disabled {
+            background-color: $dark-gray !important;
+
+            .ant-select-selector {
+                background-color: inherit !important;
+            }
+
+            .customTag {
+                color: $darker-gray;
+                border: 1px solid $gray;
+            }
+        }
+
         .customTag {
             background-color: transparent;
             border-radius: 8px;

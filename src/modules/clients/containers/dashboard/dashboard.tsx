@@ -51,19 +51,19 @@ const Dashboard: FC<DashboardProps> = () => {
               name="R. aplicado"
               value={appliedPayments}
               unit="M"
-              badgeText="12%"
+              badgeText="-%"
             />
             <DashboardGenericItem
               name="Pagos no ap."
               value={unappliedPayments}
               unit="M"
-              badgeText="12%"
+              badgeText="-%"
             />
           </div>
         </div>
         <div className={styles.item}>
           <div className={styles.list}>
-            <DashboardGenericItem name="Cupo" value={quota} unit="M" badgeText="12%" />
+            <DashboardGenericItem name="Cupo" value={quota} unit="M" badgeText="-%" />
           </div>
         </div>
         <div className={styles.dso}>

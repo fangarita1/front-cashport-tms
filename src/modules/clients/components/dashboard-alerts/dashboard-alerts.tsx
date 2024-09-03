@@ -12,15 +12,15 @@ const DashboardAlerts: FC<DashboardAlertsProps> = ({ className }) => {
   const { portfolioData } = useContext(ClientDetailsContext);
 
   const formattedOpenAlerts = formatMillionNumber(
-    portfolioData?.invoice_alerts.accounting_updates.total_value
+    portfolioData?.invoice_alerts?.accounting_updates?.total_value
   );
   const openAlerts = formatMoney(formattedOpenAlerts);
   const formattedDiscounts = formatMillionNumber(
-    portfolioData?.invoice_alerts.financial_discounts.discount.total_value
+    portfolioData?.invoice_alerts?.financial_discounts?.discount.total_value
   );
   const discount = formatMoney(formattedDiscounts);
   const formattedCreditNotes = formatMillionNumber(
-    portfolioData?.invoice_alerts.financial_discounts.creditNote.total_value
+    portfolioData?.invoice_alerts?.financial_discounts?.creditNote.total_value
   );
   const creditNotes = formatMoney(formattedCreditNotes);
 

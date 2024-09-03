@@ -85,7 +85,13 @@ const SelectOuterTags = <T extends FieldValues>({
 
       setUsedOptions(formattedOptions);
     }
-  }, [options]);
+  }, [options, field.value]);
+
+  useEffect(() => {
+    if (field.value) {
+      setSelectedOptions(field.value);
+    }
+  }, [field.value]);
 
   const handleDeleteSelected = (option: OptionType) => {
     const newSelectedOptions = selectedOptions.filter(

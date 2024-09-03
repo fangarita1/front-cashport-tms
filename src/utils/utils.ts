@@ -204,6 +204,7 @@ export const insertPeriodEveryThreeDigits = (number: number) => {
 
 export function formatMoney(
   amount: string | number | undefined | null,
+  hideCurrencySymbol?: boolean,
   countryCode?: CountryCode
 ): string {
   if (!amount) {
@@ -216,6 +217,10 @@ export function formatMoney(
     currency,
     minimumFractionDigits: 0
   });
+
+  if (hideCurrencySymbol) {
+    return formatter.format(number).replace(/[^\d.,]/g, "");
+  }
 
   return formatter.format(number);
 }
@@ -355,3 +360,8 @@ export const checkUserViewPermissions = (
 
   return viewPermissions.some((permission) => permission.page_name === view);
 };
+
+export function capitalize(str: string): string {
+  if (typeof str !== "string" || str.length === 0) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
