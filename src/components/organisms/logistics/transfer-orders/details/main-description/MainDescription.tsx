@@ -1,6 +1,7 @@
+import { FC, useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
+import io from 'socket.io-client';
 import "mapbox-gl/dist/mapbox-gl.css";
-import { FC, useEffect, useRef } from "react";
 import styles from "./mainDescription.module.scss";
 import { ConfigProvider, Dropdown, Timeline, Typography } from "antd";
 import { CaretDown, Shuffle, WarningCircle } from "phosphor-react";
@@ -43,15 +44,30 @@ const items: MenuProps["items"] = [
   }
 ];
 
+interface ISocketData {
+  userId: string;
+  latitude: number;
+  longitude: number;
+  timestamp: Date;
+}
+
+interface IMark {
+  socketInfo: ISocketData,
+  mark: mapboxgl.Marker | null
+}
+
 interface IMainDescriptionProps {
   transferRequest: ITransferRequestDetail | null;
 }
 
 export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) => {
+  const [socketInfo, setSocketInfo] = useState<IMark[]>([]);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
 
   const mapsAccessToken =
     "pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA";
+  const socket = io('https://ppdaeqfxju.us-east-2.awsapprunner.com');
 
   const getState = (stateId: string) => {
     let getState = TransferOrdersState.find((f) => f.id === stateId);
@@ -69,7 +85,48 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
     );
   };
 
+  const updateUserLocation = (data: ISocketData) => {
+    if (!mapRef.current) {
+      return;
+    }
+
+    setSocketInfo((prevSocketInfo) => {
+      const getUser = prevSocketInfo.find(f => f.socketInfo.userId === data.userId);
+
+      if (getUser) {
+        return prevSocketInfo.map((item) => {
+          if (getUser.socketInfo.userId === item.socketInfo.userId) {
+            item.mark!.remove();
+            return {
+              mark: item.mark!.setLngLat([data.longitude, data.latitude]).addTo(mapRef.current!),
+              socketInfo: {
+                ...item.socketInfo,
+                latitude: data.latitude,
+                longitude: data.longitude,
+                timestamp: data.timestamp,
+              },
+            };
+          }
+          return item;
+        });
+      } else {
+        let mark: mapboxgl.Marker | null = null;
+        if (mapRef.current) {
+          mark = new mapboxgl.Marker()
+            .setLngLat([data.longitude, data.latitude])
+            .addTo(mapRef.current);
+        }
+        return [...prevSocketInfo, { mark, socketInfo: data }];
+      }
+    });
+  };
+
   useEffect(() => {
+    socket.on('changeLocation', (data) => {
+      console.log('Ubicación recibida:', data);
+      updateUserLocation(data)
+    });
+
     if (!mapContainerRef.current) return;
 
     mapboxgl.accessToken = mapsAccessToken;
@@ -81,15 +138,13 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
       attributionControl: false
     });
 
+    mapRef.current = map;
+
     map.on("style.load", () => {
       const compassControl = new mapboxgl.NavigationControl({
         showCompass: true
       });
       map.addControl(compassControl, "top-right");
-
-      new mapboxgl.Marker().setLngLat([-77.634865, 0.823004]).addTo(map);
-
-      new mapboxgl.Marker().setLngLat([-74.232675, 11.117206]).addTo(map);
 
       const datajson: GeoJSON.Feature = {
         type: "Feature",

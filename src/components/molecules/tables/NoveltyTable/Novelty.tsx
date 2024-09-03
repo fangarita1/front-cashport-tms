@@ -75,9 +75,9 @@ export const NoveltyTable: FC<INoveltyTableProps> = ({
       render: (text: string) => <Text className="row-text">{text}</Text>
     },
     {
-      title: 'Soportes',
-      dataIndex: 'support',
-      render: (text: string) => <Text className='row-text id clicked'>{text}</Text>,
+      title: 'Cantidad',
+      dataIndex: 'quantity',
+      render: (text: string) => <Text className='row-text'>{text}</Text>,
     },
     {
       title: "Valor",
@@ -132,6 +132,7 @@ export const NoveltyTable: FC<INoveltyTableProps> = ({
         support: 'Ver soportes',
         value: formatMoney(novelty.value),
         state: novelty.status,
+        quantity: novelty.quantity,
       }
     })}
   />
