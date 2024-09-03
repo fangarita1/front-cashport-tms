@@ -7,7 +7,7 @@ import { getAllBillingList } from "@/services/billings/billings";
 import { useEffect, useState } from "react";
 import { FilterProjects } from "@/components/atoms/Filters/FilterProjects/FilterProjects";
 
-export default function AceptBIlling() {
+export default function AceptBilling() {
   const [billings, setBillings] = useState<any[]>([]);
   const [selectFilters, setSelectFilters] = useState({
     country: [] as string[],

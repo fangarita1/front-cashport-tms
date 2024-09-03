@@ -8,6 +8,9 @@ import { Radioactive } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useProjects } from "@/hooks/useProjects";
 import { IBillingRequestsListDetail } from "@/types/logistics/billing/billing";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 function formatDate(dateString: string) {
   const options: Intl.DateTimeFormatOptions = {
@@ -17,9 +20,9 @@ function formatDate(dateString: string) {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-    timeZone: "America/Bogota"
+    timeZone: "GMT"
   };
-  return new Date(dateString).toLocaleDateString("es-ES", options).replace(",", "");
+  return dayjs.utc(dateString).toDate().toLocaleDateString("es-ES", options).replace(",", "");
 }
 
 const { Text } = Typography;

@@ -91,8 +91,8 @@ export const addDriver = async (
       }
     });
     return response;
-  } catch (error) {
+  } catch (error: any) {
     console.log("Error create Driver: ", error);
-    throw error as any;
+    throw new Error(error?.response?.data?.message || "Error al crear el conductor");
   }
 };

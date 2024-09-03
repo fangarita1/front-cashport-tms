@@ -272,9 +272,9 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
               }}
             >
               <p className={styles.heading}>{formatMoney(carrier?.amount)}</p>
-              <p className={styles.text}>
-                {distance} KM contrato #{/*carrier?.id_pricing*/}
-              </p>
+              {carrier?.fee_description && (
+                <p className={styles.text}>{carrier?.fee_description}</p>
+              )}
             </Col>
           </Flex>
           {renderView()}

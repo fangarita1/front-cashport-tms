@@ -5,6 +5,9 @@ import { useMapbox } from "@/utils/logistics/useMapBox";
 import { RouteMap } from "../../../DetailsOrderView/components/RouteMap/RouteMap";
 import { SummaryData } from "../../../DetailsOrderView/components/SummaryData/SummaryData";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
+
 type PricingStepOneProps = {
   orderRequest: ITransferOrderRequest | undefined;
 };
@@ -56,10 +59,10 @@ export default function TabTransferOrder({ orderRequest }: PricingStepOneProps) 
               end_date_flexible={
                 optionsFlexible.find((x) => x.value == orderRequest?.end_date_flexible)?.label ?? ""
               }
-              start_date={dayjs(orderRequest?.start_date).format("YYYY-MM-DD")}
-              start_date_hour={dayjs(orderRequest?.start_date).format("HH:mm") ?? ""}
-              end_date={dayjs(orderRequest?.end_date).format("YYYY-MM-DD")}
-              end_date_hour={dayjs(orderRequest?.end_date).format("HH:mm") ?? ""}
+              start_date={dayjs.utc(orderRequest?.start_date).format("YYYY-MM-DD")}
+              start_date_hour={dayjs.utc(orderRequest?.start_date).format("HH:mm") ?? ""}
+              end_date={dayjs.utc(orderRequest?.end_date).format("YYYY-MM-DD")}
+              end_date_hour={dayjs.utc(orderRequest?.end_date).format("HH:mm") ?? ""}
               volume={orderRequest?.transfer_order_material?.reduce((acc, curr) => acc + curr.material[0].m3_volume, 0)}
               weight={orderRequest?.transfer_order_material?.reduce((acc, curr) => acc + curr.material[0].kg_weight, 0)}
             />

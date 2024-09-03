@@ -81,13 +81,15 @@ export const SideBar = () => {
           };
           setProjectInApi(project.ID);
           setSelectedProject(project);
-          // eslint-disable-next-line no-unused-vars
-          Object.entries(TMSMODULES).some(([key, value]) => {
-            if (checkUserViewPermissions(project, key)) {
-              router.push(value);
-              return true;
-            }
-          });
+          if (path.startsWith("/landing")) {
+            // eslint-disable-next-line no-unused-vars
+            Object.entries(TMSMODULES).some(([key, value]) => {
+              if (checkUserViewPermissions(project, key)) {
+                router.push(value);
+                return true;
+              }
+            });
+          }
         }
       }
     };
