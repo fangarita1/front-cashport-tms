@@ -93,7 +93,7 @@ export const SummaryData = ({
         >
           <p className={styles.bodyStrong}>{travelTypeDesc}</p>
           {vehiclesSuggested && (
-            <p className={styles.bodyStrong}>
+            <p className={styles.bodyStrong} style={{ textAlign: "right" }}>
               {vehiclesSuggested?.map((v: any) => v.vehicle_type_desc).join(",")}
             </p>
           )}

@@ -86,7 +86,7 @@ export const Novelty: FC<INoveltyProps> = ({
           <Text className={styles.subtitle}>{journey.start_location}</Text>
         </div>
         <div className={`${styles.fromtoContainer} ${styles.right}`}>
-          <div>
+          <div className={styles.fromtoContainer}>
             <Text className={styles.title}>Destino</Text>
             <Text className={styles.subtitle}>{journey.end_location}</Text>
           </div>
