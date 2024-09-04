@@ -10,6 +10,7 @@ import { FC } from "react";
 import dayjs from "dayjs";
 import { calculateMinutesDifference } from "@/utils/logistics/calculateMinutesDifference";
 import utc from "dayjs/plugin/utc";
+import { formatMoney } from "@/utils/utils";
 dayjs.extend(utc);
 
 const { Text } = Typography;
@@ -195,7 +196,7 @@ export const TransferOrdersTable: FC<ITransferOrdersTable> = ({
         //   destination: '318 645 2849'
         // },
         tiempodeviaje: String(item.created_at),
-        valor: "$0.000.000",
+        valor: formatMoney(item?.total_value) || "$0",
         validator: {
           ismaterialsproblem: item.is_materials_problem,
           ispeopleproblem: item.is_people_problem,

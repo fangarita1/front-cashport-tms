@@ -30,24 +30,11 @@ export const getAceptCarrierRequestList = async (): Promise<any> => {
 };
 
 export const getAceptCarrierRequestById = async (id: string): Promise<any> => {
-  const token = await getIdToken();
-  try {
     const form = new FormData();
     form.append("id", id);
-
-    const response: any = await axios.post(`${config.API_HOST}/carrier/request/id`, form, {
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`
-      }
-    });
-    console.log("RESPONSE getAceptCarrierRequestById", response);
-    return response;
-  } catch (error) {
-    console.log("Error get all getAllTransferRequestList: ", error);
-    return error as any;
-  }
+    const response: GenericResponse = await API.post(`/carrier/request/id`, form);
+    if (response.success) return response.data;
+    throw new Error(response?.message || "Error al obtener la lista de solicitudes de carga");
 };
 
 export const getVehiclesByCarrierId = async (id: number): Promise<IListData> => {

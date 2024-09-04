@@ -50,8 +50,8 @@ export const DriverFormTab = ({
   onSubmitForm = () => {},
   statusForm = "review",
   data,
-  onActiveProject = () => {},
-  onDesactivateProject = () => {},
+  onActiveProject = async () => {},
+  onDesactivateProject = async () => {},
   params,
   handleFormState = () => {}
 }: DriverFormTabProps) => {
@@ -189,9 +189,12 @@ export const DriverFormTab = ({
 
   const onSubmit = (data: any) => {
     data.general.license_categorie = licencesOptions.find(
-      (item) => item.id === data.general.license_category
+      (item) =>
+        item.id === data.general.license_category || item.value === data.general.license_category
     )?.value;
-    data.general.rhval = bloodTypesOptions.find((item) => item.id === data.general.rh)?.value;
+    data.general.rhval = bloodTypesOptions.find(
+      (item) => item.id === data.general.rh || item.value === data.general.rh
+    )?.value;
     data.general.vehicle_type = data.general.vehicle_type.map((v: any) => v.value);
     _onSubmit(
       data,
@@ -401,6 +404,7 @@ export const DriverFormTab = ({
                           error={errors?.general?.glasses}
                           field={field}
                           options={glassesOptions}
+                          selected={watch("general.glasses")}
                         />
                       )}
                     />
@@ -568,11 +572,19 @@ export const DriverFormTab = ({
         </Flex>
       </Form>
       <ModalChangeStatus
-        isActiveStatus={true}
+        isActiveStatus={watch("general.active")}
         isOpen={isOpenModal}
         onClose={() => setIsOpenModal(false)}
-        onActive={onActiveProject}
-        onDesactivate={onDesactivateProject}
+        onActive={async () => {
+          await onActiveProject();
+          setIsOpenModal(false);
+          handleFormState("review");
+        }}
+        onDesactivate={async () => {
+          await onDesactivateProject();
+          setIsOpenModal(false);
+          handleFormState("review");
+        }}
       />
       <ModalDocuments
         isOpen={isOpenModalDocuments}
