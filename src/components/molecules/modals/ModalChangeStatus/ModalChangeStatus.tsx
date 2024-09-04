@@ -29,7 +29,8 @@ export const ModalChangeStatus = ({
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
-    if (isActiveStatus) return setIsActive(isActiveStatus);
+    //if (isActiveStatus) 
+      return setIsActive(Boolean(isActiveStatus));
   }, [isActiveStatus]);
 
   const onOk = async () => {

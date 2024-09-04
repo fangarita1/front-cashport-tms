@@ -59,6 +59,7 @@ export const UserFormTab = ({
   const [imageFile, setImageFile] = useState<any | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [isActive, setIsActive] = useState(true);
 
   const defaultValues =
     statusForm === "create"
@@ -96,6 +97,7 @@ export const UserFormTab = ({
           setValue("general.cost_center_id", data.psl.id_cost_center);  
         })
       }      
+      setIsActive(Boolean(data?.ACTIVE == '0'?false:true));
     }
   }, [statusForm]);
 
@@ -391,7 +393,7 @@ export const UserFormTab = ({
         </Flex>
       </Form>
       <ModalChangeStatus
-        isActiveStatus={true}
+        isActiveStatus={isActive}
         isOpen={isOpenModal}
         onClose={() => setIsOpenModal(false)}
         onActive={onActiveUser}

@@ -3477,6 +3477,7 @@ export interface IUser {
   firebaseguid?: string;
   carrier: any;
   psl: any;
+  ACTIVE:string;
 }
 
 export interface IFormUser {
