@@ -1,4 +1,4 @@
-import { IMaterial, ITransferOrderRequest, ITransferOrdersRequest } from "@/types/logistics/schema";
+import { IMaterial, ITransferOrderPersons, ITransferOrderRequest, ITransferOrdersRequest } from "@/types/logistics/schema";
 import { Button, Col, Collapse, Flex, Row, Table, TableProps, Tabs, Typography } from "antd";
 import TabTransferOrder from "../tabMap/TabTransferOrder";
 import { Radioactive } from "@phosphor-icons/react";
@@ -94,7 +94,7 @@ export default function PricingStepOne({ ordersId, orders }: Readonly<PricingSte
     }
   ];
 
-  const columnsCargaPersonas: TableProps<any>["columns"] = [
+  const columnsCargaPersonas: TableProps<ITransferOrderPersons>["columns"] = [
     {
       title: "Nombre",
       dataIndex: "name",
@@ -105,26 +105,26 @@ export default function PricingStepOne({ ordersId, orders }: Readonly<PricingSte
     },
     {
       title: "Telefono",
-      dataIndex: "phone",
-      key: "phone",
+      dataIndex: "contact_number",
+      key: "contact_number",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => a.contact_number - b.contact_number,
+      sorter: (a, b) => a.contact_number.localeCompare(b.contact_number),
       showSorterTooltip: false
     },
     {
       title: "PSL",
-      dataIndex: "psl",
-      key: "psl",
+      dataIndex: "psl_desc",
+      key: "psl_desc",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => a.id_psl - b.id_psl,
+      sorter: (a, b) => a.psl_desc.localeCompare(b.psl_desc),
       showSorterTooltip: false
     },
     {
       title: "CC",
-      dataIndex: "typeid",
-      key: "typeid",
+      dataIndex: "cost_center_desc",
+      key: "cost_center_desc",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => a.id_contact - b.id_contact,
+      sorter: (a, b) => a.cost_center_desc.localeCompare(b.cost_center_desc),
       showSorterTooltip: false
     }
   ];
@@ -230,6 +230,7 @@ export default function PricingStepOne({ ordersId, orders }: Readonly<PricingSte
           )}
           {orderRequest?.id_service_type == 3 && (
             <>
+            {console.log(orderRequest.transfer_order_persons)}
               <Table
                 columns={columnsCargaPersonas}
                 dataSource={

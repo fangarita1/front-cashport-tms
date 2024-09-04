@@ -1662,7 +1662,9 @@ export interface ITransferOrderRequestContacts {
   id_contact: number;
   contact_type: number;
   name: string;
-  contact_number: number;
+  contact_number: string;
+  cost_center_desc: string;
+  psl_desc: string;
   id_psl: string;
   id_cost_center: string;
   active: number;

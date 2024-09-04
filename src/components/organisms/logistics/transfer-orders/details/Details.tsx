@@ -16,6 +16,7 @@ import { INovelty } from "@/types/novelty/INovelty";
 import {
   aprobeOrRejectDetail,
   createNovelty,
+  createNoveltyEvidences,
   getNoveltyDetail,
   updateNovelty
 } from "@/services/logistics/novelty";
@@ -27,6 +28,7 @@ import { BillingTable } from "./billing-table/BillingTable";
 import { getBillingByTransferRequest } from "@/services/logistics/billing_list";
 import { BillingByCarrier } from "@/types/logistics/billing/billing";
 import ModalBillingMT from "@/components/molecules/modals/ModalBillingMT/ModalBillingMT";
+import { UploadFile } from "antd/lib";
 import ModalBillingAction from "@/components/molecules/modals/ModalBillingAction/ModalBillingAction";
 
 const Text = Typography;
@@ -69,6 +71,7 @@ export const TransferOrderDetails = () => {
     observation: "",
     value: 0
   });
+  const [formEvidences, setFormEvidences] = useState<File[]>([]);
 
   const { id } = useParams();
   const router = useRouter();
@@ -201,6 +204,7 @@ export const TransferOrderDetails = () => {
       }
       const create = await createNovelty(body);
       if (create) {
+        await createNoveltyEvidences(create.id, formEvidences);
         setOpenDrawer(false);
         setForm({
           noeltyTypeId: null || 0,
@@ -208,6 +212,7 @@ export const TransferOrderDetails = () => {
           observation: "",
           value: 0
         });
+        setFormEvidences([]);
         findNovelties();
       }
     } catch (error) {
@@ -224,6 +229,7 @@ export const TransferOrderDetails = () => {
       observation: "",
       value: 0
     });
+    setFormEvidences([]);
   };
 
   const handleOpenCreateDrawer = () => {
@@ -327,6 +333,8 @@ export const TransferOrderDetails = () => {
             novelty={novelty}
             handleCreateNovelty={handleCreateNovelty}
             form={form}
+            formEvidences={formEvidences}
+            setFormEvidences={setFormEvidences}
             setForm={setForm}
           />
         )}

@@ -1,11 +1,14 @@
-import { Button, Input, Select, Typography } from 'antd';
+import { Button, Input, Select, Typography, Upload } from 'antd';
 import styles from './drawerCreateBody.module.scss';
 import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
-import { CaretDoubleRight, ChartBar, ChartLineUp, Check, Money, User } from 'phosphor-react';
+import { CaretDoubleRight, ChartBar, ChartLineUp, Check, FileArrowDown, Files, Money, PlusCircle, User } from 'phosphor-react';
 import { getNoveltyTypes } from '@/services/logistics/novelty';
 import { INovelty, INoveltyType } from '@/types/novelty/INovelty';
 import { noveltyQuantity } from '@/utils/constants/novelties';
 import { IForm } from '../Details';
+import { UploadFile } from 'antd/lib';
+import { UploadChangeParam } from 'antd/es/upload';
+import { FileDownloadModal } from '@/components/molecules/modals/FileDownloadModal/FileDownloadModal';
 
 const Text = Typography;
 
@@ -15,6 +18,8 @@ interface IDrawerBodyProps {
   novelty: INovelty | null;
   form: IForm;
   setForm: Dispatch<SetStateAction<IForm>>;
+  formEvidences: File[];
+  setFormEvidences: Dispatch<SetStateAction<File[]>>
 }
 
 export const DrawerCreateBody: FC<IDrawerBodyProps> = ({
@@ -22,7 +27,9 @@ export const DrawerCreateBody: FC<IDrawerBodyProps> = ({
   handleCreateNovelty,
   form,
   setForm,
-  novelty
+  novelty,
+  formEvidences,
+  setFormEvidences
 }) => {
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [novelties, setNovelties] = useState<INoveltyType[]>([]);
@@ -57,7 +64,40 @@ export const DrawerCreateBody: FC<IDrawerBodyProps> = ({
     }
     setIsDisabled(true);
   }, [form])
-  
+
+  const updateFiles = (newFile: File) => {
+    setFormEvidences((prevState: File[]) => {
+      const existingFileIndex = prevState.findIndex(
+        (file) => file.name === newFile.name
+      );
+
+      if (existingFileIndex !== -1) {
+        const updatedFiles = [...prevState];
+        updatedFiles[existingFileIndex] = newFile;
+        return updatedFiles;
+      } else {
+        return [...prevState, newFile];
+      }
+    });
+  };
+
+  const handleUploadFile = (info: UploadChangeParam<UploadFile<File>>) => {
+    const { file: rawFile } = info;
+    if (rawFile) {
+      const fileSizeInMB = rawFile.size && rawFile.size / (1024 * 1024);
+
+      if (fileSizeInMB && fileSizeInMB > 30) {
+        alert("El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB.");
+        return;
+      }
+
+      if (rawFile.originFileObj) {
+        updateFiles(rawFile.originFileObj);
+      } else {
+        console.warn("El archivo no contiene un File válido:", rawFile);
+      }
+    }
+  }
 
   return (
     <div className={styles.mainDrawerBody}>
@@ -137,6 +177,31 @@ export const DrawerCreateBody: FC<IDrawerBodyProps> = ({
           onChange={(e) => setForm({ ...form, observation: e.target.value })}
           placeholder='Escribir nombre'
         />
+      </div>
+      <div className={styles.divider} />
+      <div className={styles.evidenceContainer}>
+        <div className={styles.evidenceTitleContainer}>
+          <Files size={20} color='#666666' />
+          <Text className={styles.evidenceTitle}>Evidencia</Text>
+        </div>
+        <div className={styles.evidences}>
+          {formEvidences.map((file, index) => (
+            <div key={`evidence-${index}`} className={styles.evidence}>
+              <Text className={styles.evidenceTitle}>{file.name}</Text>
+              <FileArrowDown color='#141414' size={20} />
+            </div>
+          ))}
+          <Upload
+            accept='.pdf, .png, .doc, .docx'
+            showUploadList={false}
+            onChange={handleUploadFile}
+          >
+            <div className={styles.createEvidenceContainer}>
+              <PlusCircle size={24} color='#141414' />
+              <Text className={styles.createEvidence}>Agregar documento</Text>
+            </div>
+          </Upload>
+        </div>
       </div>
     </div>
   )
