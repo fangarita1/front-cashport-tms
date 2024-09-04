@@ -188,7 +188,7 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
         <div className={styles.linkButtonsContainer}>
           <Link href="/facturacion" className={styles.link}>
             <CaretLeft size={20} weight="bold" />
-            <div>Detalle de TR {params.id}</div>
+            <div>Detalle de TR {billingData?.billing?.idTransferRequest}</div>
           </Link>
           {canMakeAnAction && (
             <Button
@@ -247,7 +247,7 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
         <ModalBillingAction
           isOpen={isModalVisible}
           onClose={() => setIsModalVisible(false)}
-          idTR={billingData?.billing?.id ?? 0}
+          idTR={billingData?.billing?.idTransferRequest ?? 0}
           totalValue={billingData?.billing?.fare ?? 0}
           billingStatus={billingData?.billing?.statusDesc}
           messageApi={messageApi}
