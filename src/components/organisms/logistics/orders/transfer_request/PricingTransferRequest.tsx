@@ -532,7 +532,7 @@ export default function PricingTransferRequest({
       dataIndex: "contact_number",
       key: "contact_number",
       render: () => <Text>a</Text>,
-      sorter: (a, b) => a.contact_number - b.contact_number,
+      sorter: (a, b) => a.contact_number.localeCompare(b.contact_number),
       showSorterTooltip: false
     },
     {
