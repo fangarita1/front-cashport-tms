@@ -1,6 +1,9 @@
+import config from "@/config";
 import { GenericResponse } from "@/types/global/IGlobal";
 import { INovelty, INoveltyBody, INoveltyType } from "@/types/novelty/INovelty";
-import { API } from "@/utils/api/api";
+import { API, getIdToken } from "@/utils/api/api";
+import { UploadFile } from "antd/lib";
+import axios from "axios";
 
 export const getNoveltyDetail = async (id: number): Promise<INovelty | {}> => {
   try {
@@ -38,11 +41,11 @@ export const getNoveltyTypes = async (): Promise<INoveltyType[]> => {
   }
 }
 
-export const createNovelty = async (body: INoveltyBody): Promise<boolean> => {
+export const createNovelty = async (body: INoveltyBody): Promise<{ id: number } | null> => {
   try {
-    const { success }: GenericResponse<boolean> = await API.post('/novelty/create', body);
-    if (success) return true;
-    return false;
+    const { success, data }: GenericResponse<{ id: number }> = await API.post('/novelty/create', body);
+    if (success) return data;
+    return null;
   } catch (error) {
     console.error("Error get novelty/aprobe-or-reject/: ", error);
     throw error as any;
@@ -56,6 +59,29 @@ export const updateNovelty = async (body: INoveltyBody) => {
     return false;
   } catch (error) {
     console.error("Error update novelty/: ", error);
+    throw error as any;
+  }
+}
+
+export const createNoveltyEvidences = async (noveltyId: number, files: File[]) => {
+  const token = await getIdToken();
+  try {
+    const formData = new FormData();
+    formData.append('noveltyId', String(noveltyId));
+
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
+    const { success }: GenericResponse<boolean> = await axios.post(`${config.API_HOST}/novelty-evidence/upload`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    })
+    if (success) return true;
+    return false;
+  } catch (error) {
+    console.error("Error upload novelty-evidence/upload: ", error);
     throw error as any;
   }
 }
