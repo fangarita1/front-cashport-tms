@@ -10,10 +10,12 @@ const ActionList = ({
   billingStatus
 }: {
   setSelectedView: Dispatch<SetStateAction<ViewEnum>>;
-  billingStatus: BillingStatusEnum;
+  billingStatus?: BillingStatusEnum;
 }) => {
-  const canAccept = billingStatus === BillingStatusEnum.PorAceptar;
-  const canUploadInvoices = billingStatus === BillingStatusEnum.Preautorizado;
+  const canAccept = billingStatus ? billingStatus === BillingStatusEnum.PorAceptar : false;
+  const canUploadInvoices = billingStatus
+    ? billingStatus === BillingStatusEnum.Preautorizado
+    : false;
   return (
     <Flex style={{ width: "100%", height: "100%" }} gap={12} vertical>
       <ButtonGenerateAction

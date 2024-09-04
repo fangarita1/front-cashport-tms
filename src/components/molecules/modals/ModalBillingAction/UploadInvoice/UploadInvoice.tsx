@@ -19,17 +19,25 @@ import { uploadInvoiceFormSchema } from "./controllers/formSchema";
 import { PreAuthorizationRequestData } from "@/types/logistics/billing/billing";
 
 interface UploadInvoice {
+  idBilling: number;
   idTR: number;
   onClose: () => void;
   messageApi: MessageInstance;
+  canEditForm?: boolean;
 }
-const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
+const UploadInvoice = ({
+  idTR,
+  idBilling,
+  onClose,
+  messageApi,
+  canEditForm = true
+}: UploadInvoice) => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
   const [preauthorizeds, setPreauthorizeds] = useState<PreAuthorizationRequestData[]>([]);
   const [defaultValues, setDefaultValues] = useState<UploadInvoiceForm>(defaultUploadInvoiceForm);
-
+  const [isEditable, setIsEditable] = useState(canEditForm);
   const {
     control,
     handleSubmit,
@@ -82,7 +90,7 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
   async function getPreauthorized() {
     try {
       setIsLoading(true);
-      const response = await getPreauthorizedInfo(idTR);
+      const response = await getPreauthorizedInfo(idBilling);
       if (response) {
         setPreauthorizeds(response);
       }
@@ -99,7 +107,7 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
   async function sendForm(form: UploadInvoiceForm) {
     try {
       setIsLoading(true);
-      const response = await sendInvoices(form, idTR);
+      const response = await sendInvoices(form, idBilling);
       if (response) {
         messageApi?.open({
           type: "success",
@@ -167,7 +175,7 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
   useEffect(() => {
     if (!isInitialized) {
       getPreauthorized();
-      setIsInitialized(true);
+      setIsInitialized(false);
     }
   }, [isInitialized]);
 
@@ -183,7 +191,7 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
   const currentInfo = watch(`pas.${selectedTab}.info`);
   const currentErrors = errors ? errors?.pas?.[selectedTab] : undefined;
 
-  const isConfirmDisabled = pendingInvoiceValue !== 0;
+  const isConfirmDisabled = pendingInvoiceValue !== 0 || !isEditable;
 
   if (isLoading || preauthorizeds.length === 0) {
     return <Skeleton active loading={isLoading} />;
@@ -269,6 +277,7 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
               control={control}
               error={currentErrors?.invoice?.id}
               titleInput="Id Factura"
+              readOnly={!isEditable}
             />
             <InputDateForm
               key={`invoice.date-${selectedTab}`}
@@ -276,6 +285,7 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
               nameInput={`pas.${selectedTab}.invoice.date`}
               control={control}
               error={(currentErrors?.invoice?.date as FieldError) ?? undefined}
+              disabled={!isEditable}
             />
             <InputForm
               key={`invoice.value-${selectedTab}`}
@@ -295,6 +305,7 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
             handleOnChange={(file) => handleOnChangeDocument("pdfFile", file)}
             fileName={currentInvoice?.pdfFile?.file?.name ?? undefined}
             fileSize={currentInvoice?.pdfFile?.file?.size ?? undefined}
+            disabled={!isEditable}
           />
           <UploadFileButton
             isMandatory={false}
@@ -304,6 +315,7 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
             handleOnChange={(file) => handleOnChangeDocument("xmlFile", file)}
             fileName={currentInvoice?.xmlFile?.file?.name ?? undefined}
             fileSize={currentInvoice?.xmlFile?.file?.size ?? undefined}
+            disabled={!isEditable}
           />
         </Flex>
       </Flex>

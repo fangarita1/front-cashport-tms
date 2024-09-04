@@ -224,7 +224,9 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
                     borderLeft: "1px solid #DDD"
                   }}
                 >
-                  <div className={styles.titleText}>${formatNumber(billingData?.billing?.fare)}</div>
+                  <div className={styles.titleText}>
+                    ${formatNumber(billingData?.billing?.fare)}
+                  </div>
                 </Col>
               </Row>
             </Flex>
@@ -251,6 +253,7 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
           totalValue={billingData?.billing?.fare ?? 0}
           billingStatus={billingData?.billing?.statusDesc}
           messageApi={messageApi}
+          idBilling={billingData?.billing?.id}
         />
       </div>
     </>

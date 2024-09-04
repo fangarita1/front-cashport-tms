@@ -15,17 +15,32 @@ export enum ViewEnum {
 }
 
 type PropsModal = {
+  idBilling: number;
   idTR: number;
   totalValue: number;
-  billingStatus: BillingStatusEnum;
+  billingStatus?: BillingStatusEnum;
   isOpen: boolean;
   onClose: () => void;
   messageApi: MessageInstance;
+  canEditForm?: boolean;
 };
 
 export default function ModalBillingAction(props: Readonly<PropsModal>) {
-  const { isOpen, onClose, idTR, totalValue, billingStatus, messageApi } = props;
+  const {
+    isOpen,
+    onClose,
+    idBilling,
+    idTR,
+    totalValue,
+    billingStatus,
+    messageApi,
+    canEditForm = true
+  } = props;
   const [selectedView, setSelectedView] = useState<ViewEnum>(ViewEnum.SELECT);
+
+  useEffect(() => {
+    if (isOpen && !canEditForm) setSelectedView(ViewEnum.UPLOAD_INVOICE);
+  }, [isOpen, canEditForm]);
 
   const renderView = () => {
     switch (selectedView) {
@@ -42,7 +57,15 @@ export default function ModalBillingAction(props: Readonly<PropsModal>) {
           />
         );
       case ViewEnum.UPLOAD_INVOICE:
-        return <UploadInvoice idTR={idTR} onClose={onClose} messageApi={messageApi} />;
+        return (
+          <UploadInvoice
+            idTR={idTR}
+            idBilling={idBilling}
+            onClose={onClose}
+            messageApi={messageApi}
+            canEditForm={canEditForm}
+          />
+        );
       default:
         return <ActionList setSelectedView={setSelectedView} billingStatus={billingStatus} />;
     }

@@ -6,7 +6,7 @@ import { NoveltyTable } from "@/components/molecules/tables/NoveltyTable/Novelty
 import { ITransferJourney, ITripJourney } from "@/types/transferJourney/ITransferJourney";
 import { formatMoney } from "@/utils/utils";
 
-const Text = Typography;
+const { Text } = Typography;
 
 interface INoveltyProps {
   transferRequestId: number | null;
@@ -35,7 +35,15 @@ export const Novelty: FC<INoveltyProps> = ({
       <div className={styles.resum}>
         <div className={styles.resumItem}>
           <Text className={styles.text}>Vehículo</Text>
-          <Text className={`${styles.text} ${styles.bold}`}>{trip.plate_number || "-"}</Text>
+          <Text className={`${styles.text} ${styles.bold}`}>
+            {trip.vehicle_type && (
+              <>
+                <Text ellipsis>{trip.vehicle_type}</Text>
+                <span> / </span>
+              </>
+            )}
+            <Text ellipsis>{trip.plate_number}</Text>
+          </Text>
           <Flex style={{ marginLeft: "auto" }}>
             <Tag color={trip.trip_status_color}>{trip.trip_status}</Tag>
           </Flex>
