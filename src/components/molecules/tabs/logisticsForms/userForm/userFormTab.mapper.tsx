@@ -48,7 +48,8 @@ export const dataToProjectFormData = (
       firebaseguid: data.UUID,
       carrier: data.carrier,
       position: data.POSITION,
-      psl: data.psl
+      psl: data.psl,
+      ACTIVE: data.ACTIVE,
     }
   };
 };
