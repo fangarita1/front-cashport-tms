@@ -25,14 +25,19 @@ const Dashboard: FC<DashboardProps> = () => {
     portfolioData?.data_wallet?.applied_payments_ammount
   );
   const appliedPayments = formatMoney(formattedAppliedPayments);
+  const appliedPaymentPercentage = portfolioData?.percentages?.applied_payments_percentage;
+
   const formattedUnappliedPayments = formatMillionNumber(
     portfolioData?.data_wallet?.unapplied_payments_ammount
   );
   const unappliedPayments = formatMoney(formattedUnappliedPayments);
+  const unnappliedPaymentPercentage = portfolioData?.percentages?.unapplied_payments_percentage;
+
   const dsoValue = portfolioData?.dso;
 
   const formattedQuota = formatMillionNumber(portfolioData?.quota);
   const quota = formatMoney(formattedQuota);
+  const quotaPercentage = portfolioData?.percentages?.quota_percentage;
 
   return (
     <div className={styles.wrapper}>
@@ -51,19 +56,32 @@ const Dashboard: FC<DashboardProps> = () => {
               name="R. aplicado"
               value={appliedPayments}
               unit="M"
-              badgeText="-%"
+              badgeText={
+                appliedPaymentPercentage && appliedPaymentPercentage > 0
+                  ? `${appliedPaymentPercentage}%`
+                  : ""
+              }
             />
             <DashboardGenericItem
               name="Pagos no ap."
               value={unappliedPayments}
               unit="M"
-              badgeText="-%"
+              badgeText={
+                unnappliedPaymentPercentage && unnappliedPaymentPercentage > 0
+                  ? `${unnappliedPaymentPercentage}%`
+                  : ""
+              }
             />
           </div>
         </div>
         <div className={styles.item}>
           <div className={styles.list}>
-            <DashboardGenericItem name="Cupo" value={quota} unit="M" badgeText="-%" />
+            <DashboardGenericItem
+              name="Cupo"
+              value={quota}
+              unit="M"
+              badgeText={`${quotaPercentage}%`}
+            />
           </div>
         </div>
         <div className={styles.dso}>
