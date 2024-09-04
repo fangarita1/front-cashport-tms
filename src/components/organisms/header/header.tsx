@@ -6,6 +6,7 @@ import { Avatar, Button, Popover } from "antd";
 import { logOut } from "../../../../firebase-utils";
 import { useRouter } from "next/navigation";
 import { PopoverUserNotifications } from "@/components/molecules/Popover/PopoverUserNotifications/PopoverUserNotifications";
+import { useAppStore } from "@/lib/store/store";
 
 interface HeaderProps {
   title: string;
@@ -14,6 +15,7 @@ interface HeaderProps {
 const Header: FC<HeaderProps> = ({ title }) => {
   const router = useRouter();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const { ID } = useAppStore((state) => state.selectedProject);
 
   const handleLogOut = useCallback(() => {
     logOut(router);
@@ -26,6 +28,7 @@ const Header: FC<HeaderProps> = ({ title }) => {
         <PopoverUserNotifications
           setIsPopoverVisible={setIsModalVisible}
           isPopoverVisible={isModalVisible}
+          projectId={ID}
         />
         <div className={styles.profile}>
           <Avatar icon={<User />} />

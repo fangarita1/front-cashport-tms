@@ -1,25 +1,110 @@
-import { Badge, List, Popover, Tabs } from "antd";
+import { Badge, List, Popover, Tabs, Spin, Flex } from "antd";
 import React from "react";
 import "./popoverUserNotifications.scss";
 import Link from "next/link";
-import { BellSimpleRinging, Eye } from "phosphor-react";
+import { BellSimpleRinging, Envelope, Eye } from "phosphor-react";
 import { timeAgo } from "@/utils/utils";
 import TabPane from "antd/es/tabs/TabPane";
-import { notifications } from "./mockData";
 import { useModalDetail } from "@/context/ModalContext";
+import { useNotificationStore } from "@/context/CountNotification";
+import { useNotificationOpen } from "@/hooks/useNotificationOpen";
+import { useRejectedNotifications } from "@/hooks/useNotificationReject";
+import { markNotificationAsRead } from "@/services/notifications/notification";
+
 interface PopoverUserNotificationsProps {
   setIsPopoverVisible: React.Dispatch<React.SetStateAction<boolean>>;
   isPopoverVisible: boolean;
+  projectId: number;
 }
 
 export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> = ({
   setIsPopoverVisible,
-  isPopoverVisible
+  isPopoverVisible,
+  projectId
 }) => {
-  const handleVisibleChange = (visible: boolean) => {
-    setIsPopoverVisible(visible);
-  };
+  const { notificationCount, updateNotificationCount } = useNotificationStore();
   const { openModal } = useModalDetail();
+
+  const {
+    data: openNotifications,
+    isLoading: isLoadingOpen,
+    mutate: mutateOpenNotifications
+  } = useNotificationOpen(projectId);
+  const {
+    data: rejectedNotifications,
+    isLoading: isLoadingRejected,
+    mutate: mutateRejectedNotifications
+  } = useRejectedNotifications(projectId);
+
+  const handleVisibleChange = async (visible: boolean) => {
+    setIsPopoverVisible(visible);
+    if (visible) {
+      updateNotificationCount();
+      await markNotificationsAsRead();
+    }
+  };
+
+  const markNotificationsAsRead = async () => {
+    const allNotifications = [...(openNotifications || []), ...(rejectedNotifications || [])];
+
+    const markPromises = allNotifications.map((notification) =>
+      markNotificationAsRead(notification.id)
+        .then((response) => {
+          if (response.data.status !== 200) {
+            console.warn(
+              `Failed to mark notification ${notification.id} as read:`,
+              response.data.message
+            );
+          }
+        })
+        .catch((error) => {
+          console.error(`Error marking notification ${notification.id} as read:`, error);
+        })
+    );
+
+    await Promise.allSettled(markPromises);
+
+    // Refresh the notification lists after marking as read
+    await Promise.all([mutateOpenNotifications(), mutateRejectedNotifications()]);
+  };
+
+  const renderList = (data: any[], isLoading: boolean) => {
+    if (isLoading) return <Spin />;
+    return (
+      <List
+        itemLayout="horizontal"
+        dataSource={data}
+        renderItem={(item) => (
+          <List.Item>
+            <div>
+              <Flex gap={"8px"} align="center">
+                <p className="item__title">{item.notification_type_name} </p>
+
+                {item.is_read === 0 ? (
+                  <div className="item__read">
+                    <Envelope size={11} />
+                  </div>
+                ) : null}
+              </Flex>
+              <p className="item__name">{item.client_name}</p>
+              <p className="item__date">{timeAgo(item.create_at)}</p>
+            </div>
+            <div
+              className="eyeIcon"
+              onClick={() => {
+                if (item.notification_type_name === "Novedad") {
+                  openModal("novelty", { noveltyId: item.incident_id });
+                }
+                handleVisibleChange(false);
+              }}
+            >
+              <Eye size={28} />
+            </div>
+          </List.Item>
+        )}
+      />
+    );
+  };
 
   const content = (
     <div className="notificationsPopoverContent">
@@ -33,57 +118,19 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
           </Link>
         </div>
       </div>
-      {/* por tabs  pendiente , abiertos, rechazados*/}
       <Tabs defaultActiveKey="1">
         <TabPane
-          tab={`Pendientes ${notifications?.opens.length > 0 ? `(${notifications?.opens.length})` : ""}`}
+          tab={`Abiertos ${openNotifications && openNotifications?.length > 0 ? `(${openNotifications?.length})` : ""}`}
           key="1"
         >
-          <List
-            itemLayout="horizontal"
-            dataSource={notifications.opens}
-            renderItem={(item) => (
-              <List.Item>
-                <div>
-                  <p className="item__title">{item.title}</p>
-                  <p className="item__name">{item.name}</p>
-                  <p className="item__date">{timeAgo(item.time.toString())}</p>
-                </div>
-                <div
-                  className="eyeIcon"
-                  onClick={() => {
-                    handleVisibleChange(false);
-                    openModal("novelty", { noveltyId: item.id });
-                  }}
-                >
-                  <Eye size={28} />
-                </div>
-              </List.Item>
-            )}
-          />
+          {renderList(openNotifications || [], isLoadingOpen)}
         </TabPane>
         <TabPane
-          tab={`Abiertos ${notifications?.pending.length > 0 ? `(${notifications?.pending.length})` : ""}`}
+          tab={`Cerradas ${rejectedNotifications && rejectedNotifications?.length > 0 ? `(${rejectedNotifications.length})` : ""}`}
           key="2"
         >
-          <List
-            itemLayout="horizontal"
-            dataSource={notifications.pending}
-            renderItem={(item) => (
-              <List.Item>
-                <div>
-                  <p className="item__title">{item.title}</p>
-                  <p className="item__name">{item.name}</p>
-                  <p className="item__date">{timeAgo(item.time.toString())}</p>
-                </div>
-                <div className="eyeIcon">
-                  <Eye size={28} />
-                </div>
-              </List.Item>
-            )}
-          />
+          {renderList(rejectedNotifications || [], isLoadingRejected)}
         </TabPane>
-        <TabPane tab="Cerradas" key="3"></TabPane>
       </Tabs>
     </div>
   );
@@ -100,11 +147,9 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
       arrow={false}
     >
       <div className="notificationsWrapper">
-        <div
-          className={`notifications ${notifications?.pending.length > 0 ? "notifications_active" : ""}`}
-        >
-          {notifications?.pending.length > 0 ? (
-            <Badge size="small" color="black" count={notifications?.pending.length}>
+        <div className={`notifications ${notificationCount > 0 ? "notifications_active" : ""}`}>
+          {notificationCount > 0 ? (
+            <Badge size="small" color="black" count={notificationCount}>
               <BellSimpleRinging size={18} />
             </Badge>
           ) : (

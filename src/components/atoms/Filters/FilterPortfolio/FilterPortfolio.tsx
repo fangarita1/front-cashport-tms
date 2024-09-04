@@ -100,7 +100,7 @@ export const FilterPortfolio = ({ setSelectedFilters }: Props) => {
       size="large"
       removeIcon
       maxTagCount="responsive"
-      placeholder="Filtrar Portfolio"
+      placeholder="Filtrar"
       placement="bottomRight"
       onClear={() => setSelectedFilters({ holding: [], clientGroup: [] })}
       options={optionsList}
