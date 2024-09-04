@@ -29,6 +29,7 @@ import { getBillingByTransferRequest } from "@/services/logistics/billing_list";
 import { BillingByCarrier } from "@/types/logistics/billing/billing";
 import ModalBillingMT from "@/components/molecules/modals/ModalBillingMT/ModalBillingMT";
 import { UploadFile } from "antd/lib";
+import ModalBillingAction from "@/components/molecules/modals/ModalBillingAction/ModalBillingAction";
 
 const Text = Typography;
 
@@ -53,6 +54,9 @@ export const TransferOrderDetails = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalMTVisible, setIsModalMTVisible] = useState(false);
+  const [isModalBillingVisible, setIsModalBillingVisible] = useState(false);
+  const [billingId, setBillingId] = useState<number | null>(null);
+
   const [messageApi, contextHolder] = message.useMessage();
   const [isCreateNovelty, setIsCreateNovelty] = useState<boolean>(false);
   const [transferRequest, setTransferRequest] = useState<ITransferRequestDetail | null>(null);
@@ -83,6 +87,9 @@ export const TransferOrderDetails = () => {
   function canFinalizeJourney(journeys: ITransferJourney[]): boolean {
     for (const journey of journeys) {
       for (const trip of journey.trips) {
+        if (trip.trip_status !== "Terminado") {
+          return false;
+        }
         for (const novelty of trip.novelties) {
           if (novelty.status === "Pendiente") {
             return false;
@@ -93,6 +100,10 @@ export const TransferOrderDetails = () => {
     return true;
   }
   const canFinalizeTrip = transferJournies ? canFinalizeJourney(transferJournies) : false;
+  const handleBillingTableViewDetails = (id: number) => {
+    setIsModalBillingVisible(true);
+    setBillingId(id);
+  };
 
   const renderView = () => {
     switch (nav) {
@@ -117,7 +128,12 @@ export const TransferOrderDetails = () => {
       case NavEnum.PSL:
         return <div>Psl view</div>;
       case NavEnum.BILLING:
-        return <BillingTable supplierBillings={billingList} handleShowDetails={() => {}} />;
+        return (
+          <BillingTable
+            supplierBillings={billingList}
+            handleShowDetails={handleBillingTableViewDetails}
+          />
+        );
       default:
         return <div />;
     }
@@ -227,7 +243,7 @@ export const TransferOrderDetails = () => {
 
   const handleEdit = () => {
     setIsCreateNovelty(true);
-  }
+  };
 
   useEffect(() => {
     findDetails();
@@ -330,12 +346,22 @@ export const TransferOrderDetails = () => {
         carriersData={billingList}
         messageApi={messageApi}
         canFinalizeTrip={canFinalizeTrip}
+        statusTR={transferRequest?.status}
       />
       <ModalBillingMT
         isOpen={isModalMTVisible}
         onClose={() => setIsModalMTVisible(false)}
         idTR={id as string}
         idTrip={tripId ?? 0}
+        messageApi={messageApi}
+      />
+      <ModalBillingAction
+        isOpen={isModalBillingVisible}
+        onClose={() => setIsModalBillingVisible(false)}
+        idBilling={billingId ?? 0}
+        idTR={Number(id)}
+        canEditForm={false}
+        totalValue={billingList?.find((b) => b.id == billingId)?.subtotal ?? 0}
         messageApi={messageApi}
       />
     </div>

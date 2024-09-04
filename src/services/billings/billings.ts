@@ -60,8 +60,6 @@ export const getPreauthorizedInfo = async (
     const response: GenericResponse<IPreauthorizedRequest> = await API.get(
       `/logistic-billing/modal-invoice/${idBilling}`
     );
-
-    console.log("response getPreauthorizedInfo", response);
     if (response.data) {
       return response?.data?.authorizations;
     } else {

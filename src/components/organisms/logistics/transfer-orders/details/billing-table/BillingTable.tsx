@@ -90,7 +90,7 @@ export const BillingTable: FC<IBillingTableProps> = ({ supplierBillings, handleS
     {
       title: "",
       dataIndex: "id",
-      render: (id: number) => (
+      render: (id, record) => (
         <div className={styles.btnContainer}>
           <Button
             className={styles.btn}
@@ -98,6 +98,7 @@ export const BillingTable: FC<IBillingTableProps> = ({ supplierBillings, handleS
             size="middle"
             onClick={() => handleShowDetails(id)}
             icon={<Eye size={24} />}
+            disabled={record.statusDesc !== "Preautorizado"}
           />
         </div>
       )

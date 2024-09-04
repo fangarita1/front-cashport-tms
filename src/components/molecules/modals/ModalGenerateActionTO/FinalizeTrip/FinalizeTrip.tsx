@@ -14,6 +14,7 @@ interface FinalizeTrip {
   idTR: string;
   onClose: () => void;
   messageApi: MessageInstance;
+  statusTR?: string;
 }
 
 export interface IVehicleAPI {
@@ -27,13 +28,13 @@ export interface ICarrierAPI {
   vehicles: IVehicleAPI[];
 }
 
-const FinalizeTrip = ({ idTR, onClose, messageApi }: FinalizeTrip) => {
+const FinalizeTrip = ({ idTR, onClose, messageApi, statusTR = "" }: FinalizeTrip) => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
   const [carriersInfo, setCarriersInfo] = useState<ICarrierAPI[]>([]);
   const [defaultValues, setDefaultValues] = useState<FinalizeTripForm>(emptyForm);
-
+  const hasAlreadyFinalized = statusTR == "Legalizado";
   const { control, handleSubmit, setValue, reset, watch, trigger, register } =
     useForm<FinalizeTripForm>({
       defaultValues
@@ -187,7 +188,7 @@ const FinalizeTrip = ({ idTR, onClose, messageApi }: FinalizeTrip) => {
 
   const allVehiclesHaveDocs = validateVehiclesWithDocuments(formValues);
 
-  const isConfirmDisabled = !allVehiclesHaveDocs;
+  const isConfirmDisabled = !allVehiclesHaveDocs || hasAlreadyFinalized;
 
   if (isLoading) {
     return <Skeleton active loading={isLoading} />;
