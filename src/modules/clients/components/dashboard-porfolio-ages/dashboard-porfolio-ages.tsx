@@ -14,7 +14,7 @@ interface DashboardPortfolioAgesProps {
 const DashboardPortfolioAges: FC<DashboardPortfolioAgesProps> = ({ className }) => {
   const { portfolioData } = useContext(ClientDetailsContext);
   const invoiceAges = portfolioData?.invoice_ages
-    .map((item) => ({
+    ?.map((item) => ({
       name: item.days_range,
       data: [item.total]
     }))

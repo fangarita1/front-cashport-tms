@@ -12,17 +12,17 @@ const DashboardInvoiceStatus: FC<DashboardInvoiceStatusProps> = ({ className }) 
   const { portfolioData } = useContext(ClientDetailsContext);
 
   const formattedTotalUnreconciled = formatMillionNumber(
-    portfolioData?.info_invioce.total_invoice_unreconciled.total_value
+    portfolioData?.info_invioce?.total_invoice_unreconciled?.total_value
   );
   const totalUnreconciled = formatMoney(formattedTotalUnreconciled);
 
   const formattedTotalReconciled = formatMillionNumber(
-    portfolioData?.info_invioce.total_invoice_reconciled.total_value
+    portfolioData?.info_invioce?.total_invoice_reconciled?.total_value
   );
   const totalReconciled = formatMoney(formattedTotalReconciled);
 
   const formattedTotalBalance = formatMillionNumber(
-    portfolioData?.info_invioce.total_balances.total_value
+    portfolioData?.info_invioce?.total_balances?.total_value
   );
   const totalBalance = formatMoney(formattedTotalBalance);
 
@@ -34,19 +34,19 @@ const DashboardInvoiceStatus: FC<DashboardInvoiceStatusProps> = ({ className }) 
           name="Sin conciliar"
           value={totalUnreconciled}
           unit="M"
-          quantity={portfolioData?.info_invioce.total_invoice_unreconciled.count}
+          quantity={portfolioData?.info_invioce?.total_invoice_unreconciled?.count}
         />
         <DashboardGenericItem
           name="Conciliadas"
           value={totalReconciled}
           unit="M"
-          quantity={portfolioData?.info_invioce.total_invoice_reconciled.count}
+          quantity={portfolioData?.info_invioce?.total_invoice_reconciled?.count}
         />
         <DashboardGenericItem
           name="Saldos"
           value={totalBalance}
           unit="M"
-          quantity={portfolioData?.info_invioce.total_balances.count}
+          quantity={portfolioData?.info_invioce?.total_balances?.count}
         />
       </div>
     </div>
