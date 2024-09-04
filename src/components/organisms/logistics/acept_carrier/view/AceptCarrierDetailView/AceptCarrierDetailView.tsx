@@ -20,7 +20,7 @@ import {
 import { Confirmation } from "../../detail/components/Confirmation/Confirmation";
 import { useMapbox } from "@/utils/logistics/useMapBox";
 import { CustomStepper } from "../../detail/components/Stepper/Stepper";
-import { getTravelDuration, getTravelFreightDuration } from "@/utils/logistics/maps";
+import { getTravelFreightDuration } from "@/utils/logistics/maps";
 import {
   DataCarga,
   DriverDocument,
@@ -34,21 +34,66 @@ interface AceptCarrierDetailProps {
 }
 export type FormMode = "edit" | "view";
 
+export interface IDocumentAPI {
+  id_document_type: number;
+  description: string;
+  entity_type: number;
+  optional: boolean;
+  url: string | null;
+}
+
+export interface IDriverAPI {
+  id: number;
+  name: string;
+  last_name: string;
+  phone: string;
+  licence: string;
+  licence_category: string;
+  document_complete: number;
+  company_id: number;
+  company: string;
+  driver_documents: IDocumentAPI[];
+}
+export interface IVehicleAPI {
+  id: number;
+  plate_number: string;
+  brand: string;
+  line: string;
+  active: boolean;
+  created_at: string;
+  created_by: string;
+  modified_at: string;
+  modified_by: string;
+  id_carrier: number;
+  id_vehicle_type: number;
+  model: string;
+  year: number;
+  color: string;
+  country: string;
+  aditional_info: string;
+  gps_link: string;
+  gps_user: string;
+  gps_password: string;
+  has_gps: boolean;
+  vehicle_documents: IDocumentAPI[];
+}
+
 export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrierDetailProps>) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [view, setView] = useState<"detail" | "asignation" | "confirmation">("detail");
   const [formMode, setFormMode] = useState<FormMode>("view");
   const [isNextStepActive, setIsNextStepActive] = useState<boolean>(true);
-  const [vehicleSelected, setVehicleSelected] = useState<number | null>(null);
-  const [driversSelected, setDriversSelected] = useState<Array<number | null>>([]);
-  const [vehicles, setVehicles] = useState<any[]>([]);
-  const [drivers, setDrivers] = useState<any[]>([]);
-  //const [driversMandatoryDocs, setDriversMandatoryDocs] = useState<DriverDocument[]>([]);
-  //const [vehicleMandatoryDocs, setVehicleMandatoryDocs] = useState<VehicleDocument[]>([]);
+  const [vehicleSelectedId, setVehicleSelectedId] = useState<number | null>(null);
+  const [driversSelectedIds, setDriversSelectedIds] = useState<number[]>([]);
+  const [vehiclesOptions, setVehiclesOptions] = useState<any[]>([]);
+  const [driversOptions, setDriversOptions] = useState<any[]>([]);
+  const [driversMandatoryDocs, setDriversMandatoryDocs] = useState<DriverDocument[]>([]);
+  const [vehicleMandatoryDocs, setVehicleMandatoryDocs] = useState<VehicleDocument[]>([]);
+  const [currentDrivers, setCurrentDrivers] = useState<IDriverAPI[]>([]);
+  const [currentVehicle, setCurrentVehicle] = useState<IVehicleAPI | null>(null);
 
   const [observation, setObservation] = useState<any>(null);
   const router = useRouter();
-
   const [carrier, setCarrier] = useState<IAceptCarrierAPI>();
 
   const [messageApi, contextHolder] = message.useMessage();
@@ -80,9 +125,8 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
 
   const setCurrentData = (data: IAceptCarrierAPI) => {
     const { drivers, vehicle, observation } = data;
-
-    setVehicleSelected(vehicle?.id ?? null);
-    setDriversSelected(drivers.map((d) => d.id ?? null));
+    setVehicleSelectedId(vehicle?.id ?? null);
+    setDriversSelectedIds(drivers.map((d) => d.id ?? null));
     observation && setObservation(observation);
   };
 
@@ -93,13 +137,14 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
       const result = await getAceptCarrierRequestById(params.id);
       if (result?.data?.data) {
         const to: IAceptCarrierAPI = result.data.data;
+        console.log("TO", to);
         setCurrentData(to);
         const canEdit = to?.statusdesc === "Por confirmar";
         setFormMode(canEdit ? "edit" : "view");
         const driversResult = await getDriverByCarrierId(to?.id_carrier);
-        setDrivers(driversResult.data.data);
+        setDriversOptions(driversResult.data.data);
         const vehiclesResult = await getVehiclesByCarrierId(to?.id_carrier);
-        setVehicles(vehiclesResult.data.data);
+        setVehiclesOptions(vehiclesResult.data.data);
         setCarrier(to);
         to.carrier_request_material_by_trip?.forEach(async (mat) => {
           mat?.material?.forEach(async (m) => {
@@ -107,8 +152,10 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
             setDataCarga((dataCarga) => [...dataCarga, { ...newvalue, quantity: mat.units }]);
           });
         });
-        // setDriversMandatoryDocs(to?.driver_documents);
-        // setVehicleMandatoryDocs(to?.vehicle_documents);
+        setDriversMandatoryDocs(to?.driver_documents);
+        setVehicleMandatoryDocs(to?.vehicle_documents);
+        setCurrentDrivers(to?.drivers);
+        setCurrentVehicle(to?.vehicle);
       }
     } catch (error) {
       console.error("Error loading transfer requests", error);
@@ -154,8 +201,8 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
       await submitCarrierRequest(
         String(carrier?.id_carrier),
         params.id,
-        String(vehicleSelected),
-        driversSelected.map(String),
+        String(vehicleSelectedId),
+        driversSelectedIds.map(String),
         "1",
         observation
       );
@@ -220,16 +267,18 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
         return (
           <VehicleAndDriverAsignation
             setIsNextStepActive={setIsNextStepActive}
-            drivers={drivers}
-            vehicles={vehicles}
-            setDrivers={setDriversSelected}
-            setVehicle={setVehicleSelected}
+            driversOptions={driversOptions}
+            vehiclesOptions={vehiclesOptions}
+            setDriversSelectedIds={setDriversSelectedIds}
+            setVehicleSelectedId={setVehicleSelectedId}
             ref={vehicleAndDriverRef}
-            currentDrivers={driversSelected}
-            currentVehicle={vehicleSelected}
+            driversSelectedIds={driversSelectedIds}
+            vehicleSelectedId={vehicleSelectedId}
             formMode={formMode}
-            // driversMandatoryDocs={driversMandatoryDocs}
-            // vehicleMandatoryDocs={vehicleMandatoryDocs}
+            driversMandatoryDocs={driversMandatoryDocs}
+            vehicleMandatoryDocs={vehicleMandatoryDocs}
+            currentDrivers={currentDrivers}
+            currentVehicle={currentVehicle}
           />
         );
       case "confirmation":
@@ -237,8 +286,10 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
         return (
           <Confirmation
             setIsNextStepActive={setIsNextStepActive}
-            driverSelected={drivers?.filter((driver) => driversSelected.includes(driver.id))}
-            vehicleSelected={vehicles.find((a) => a.id === vehicleSelected)}
+            driverSelected={driversOptions?.filter((driver) =>
+              driversSelectedIds.includes(driver.id)
+            )}
+            vehicleSelected={vehiclesOptions.find((a) => a.id === vehicleSelectedId)}
             setObservation={setObservation}
             isNextStepActive={isNextStepActive}
             formMode={formMode}

@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Flex, Select } from "antd";
-import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { ICarrierRequestDrivers, ICarrierRequestVehicles } from "@/types/logistics/schema";
 import styles from "./vehicleAndDriverAsignation.module.scss";
 import DriverRenderOption from "./components/DriverRenderOption/DriverRenderOption";
@@ -17,66 +17,109 @@ import DriverRenderLabel from "./components/DriverRenderLabel/DriverRenderLabel"
 import VehicleRenderOption from "./components/VehicleRenderOption/VehicleRenderOption";
 import VehicleRenderLabel from "./components/VehicleRenderLabel/VehicleRenderLabel";
 import AddRemoveButton from "./components/AddRemoveButton/AddRemoveButton";
-import EditDocsButton from "./components/EditDocsButton/EditDocsButton";
-import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
-import { documentsTypes } from "../../mockdata";
-import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
-import dayjs from "dayjs";
-import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
+import { DriverDocument, VehicleDocument } from "@/types/logistics/carrier/carrier";
+import { DocumentFields } from "./components/DocumentFields/DocumentFields";
+import {
+  IDriverAPI,
+  IVehicleAPI
+} from "../../../view/AceptCarrierDetailView/AceptCarrierDetailView";
+import { VehicleDocumentFields } from "./components/VehicleDocumentsFields/VehicleDocumentsFields";
 
 const { Option } = Select;
 
 interface VehicleAndDriverAsignationProps {
   setIsNextStepActive: Dispatch<SetStateAction<boolean>>;
-  setVehicle: Dispatch<SetStateAction<number | null>>;
-  setDrivers: Dispatch<SetStateAction<(number | null)[]>>;
-  drivers: ICarrierRequestDrivers[] | null | undefined;
-  vehicles: ICarrierRequestVehicles[] | null | undefined;
-  currentDrivers: (number | null)[];
-  currentVehicle: number | null;
+  setVehicleSelectedId: Dispatch<SetStateAction<number | null>>;
+  setDriversSelectedIds: Dispatch<SetStateAction<number[]>>;
+  driversOptions: ICarrierRequestDrivers[] | null | undefined;
+  vehiclesOptions: ICarrierRequestVehicles[] | null | undefined;
+  driversSelectedIds: number[];
+  vehicleSelectedId: number | null;
   formMode: "edit" | "view";
+  driversMandatoryDocs: DriverDocument[];
+  vehicleMandatoryDocs: VehicleDocument[];
+  currentVehicle: IVehicleAPI | null;
+  currentDrivers: IDriverAPI[];
 }
-interface FormValues {
-  vehicleForm: number | null;
-  driverForm: { driverId: number | null }[];
+
+export interface FileComplete extends FileObject {
+  link?: string;
+  id_document_type?: number;
+  description?: string;
+  entity_type?: number;
+}
+export interface IDriverForm {
+  driverId: number | null;
+  documents: FileComplete[];
+}
+
+export interface IVehicleForm {
+  vehicleId: number | null;
+  documents: FileComplete[];
+}
+export interface FormValues {
+  vehicleForm: IVehicleForm;
+  driversForm: IDriverForm[];
 }
 
 const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignation(
   {
-    drivers,
-    vehicles,
+    driversOptions,
+    vehiclesOptions,
     setIsNextStepActive,
-    setVehicle,
-    setDrivers,
-    currentDrivers,
+    setVehicleSelectedId,
+    setDriversSelectedIds,
+    driversSelectedIds,
+    vehicleSelectedId,
+    formMode,
+    driversMandatoryDocs,
+    vehicleMandatoryDocs,
     currentVehicle,
-    formMode
+    currentDrivers
   }: VehicleAndDriverAsignationProps,
   ref
 ) {
-  const MANDATORY_DRIVERS_DOCS = [7];
-  const MANDATORY_VEHICLE_DOCS = [3, 4];
+  const createDefaultDocuments = (type: "driver" | "vehicle") => {
+    if (type === "driver") return driversMandatoryDocs;
+    else return vehicleMandatoryDocs;
+  };
 
-  const createDefault = () => {
-    const defaultDrivers = currentDrivers.length
-      ? currentDrivers.map((cd) => ({ driverId: cd }))
-      : [{ driverId: null }];
+  const createDocuments = (type: "driver" | "vehicle", id: number) => {
+    if (type === "driver") return currentDrivers.find((cd) => cd.id === id)?.driver_documents;
+    else return currentVehicle?.vehicle_documents;
+  };
+  const createDrivers = () => {
+    const defaultDrivers = driversSelectedIds.length
+      ? driversSelectedIds.map((cd) => ({
+          driverId: cd,
+          documents: createDocuments("driver", cd)
+        }))
+      : [{ driverId: null, documents: createDefaultDocuments("driver") }];
     return defaultDrivers;
   };
-  const { control, watch, register, getValues } = useForm<FormValues>({
+  const { control, watch, register, getValues, setValue, trigger } = useForm<FormValues>({
     defaultValues: {
-      vehicleForm: currentVehicle ?? null,
-      driverForm: createDefault()
+      vehicleForm: {
+        vehicleId: vehicleSelectedId ?? null,
+        documents: vehicleSelectedId
+          ? createDocuments("vehicle", vehicleSelectedId)
+          : createDefaultDocuments("vehicle")
+      },
+      driversForm: createDrivers()
     }
   });
-  const { fields, append, remove } = useFieldArray({
+  const {
+    fields: driversFields,
+    append,
+    remove
+  } = useFieldArray({
     control,
-    name: "driverForm"
+    name: "driversForm"
   });
-  const selectedVehicle = watch("vehicleForm");
-  const selectedDrivers = watch("driverForm");
 
   const formCurrentValues = getValues();
+  const selectedVehicle = watch("vehicleForm");
+  const selectedDrivers = watch("driversForm");
 
   const DRIVERS_MAX_QUANTITY = 5;
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState<boolean>(false);
@@ -86,19 +129,21 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
   }, []);
 
   useEffect(() => {
-    const { vehicleForm, driverForm } = formCurrentValues;
-    if (vehicleForm && driverForm[0].driverId !== null) {
+    console.log("formCurrentValues", formCurrentValues);
+    const { vehicleForm, driversForm } = formCurrentValues;
+    if (vehicleForm && driversForm[0].driverId !== null) {
       setIsNextStepActive(true);
     }
   }, [formCurrentValues]);
 
+  //falta agregar los documentos al submit
   const onSubmit = (data: FormValues) => {
-    const { vehicleForm, driverForm } = data;
-    vehicleForm && setVehicle(vehicleForm);
-    const driversIdsArray = driverForm
+    const { vehicleForm, driversForm } = data;
+    vehicleForm && setVehicleSelectedId(vehicleForm.vehicleId);
+    const driversIdsArray = driversForm
       .map((d) => d.driverId ?? null)
       .filter((driverId) => driverId !== null && driverId !== undefined);
-    setDrivers(driversIdsArray);
+    setDriversSelectedIds(driversIdsArray);
   };
 
   const handleSubmitDriverVehicleForm = () => {
@@ -110,39 +155,63 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
     handleSubmitDriverVehicleForm
   }));
 
-  function filterDrivers(indexField: number) {
+  function filterDrivers(driverIndex: number) {
     const selectedDriverIds = selectedDrivers
       .map((driver) => driver.driverId)
       .filter((id) => id !== null);
-    return drivers?.filter(
+    return driversOptions?.filter(
       (driver) =>
         !selectedDriverIds.includes(driver.id) ||
-        driver.id === selectedDrivers[indexField]?.driverId
+        driver.id === selectedDrivers[driverIndex]?.driverId
     );
   }
 
-  const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
-  useEffect(() => {
-    const docsWithLink =
-      documentsTypes
-        .filter((docs) => !docs.optional)
-        .map((dt, index) => ({
-          ...dt,
-          key: index,
-          file: undefined,
-          link: undefined,
-          expirationDate: dayjs()
-        })) || [];
-    setSelectedFiles(docsWithLink);
-  }, [documentsTypes]);
+  const handleOnChangeDocument = (fileToSave: any, driverIndex: number, documentIndex: number) => {
+    console.log("HANDLE IN CHANGE DOC", fileToSave, driverIndex, documentIndex);
+    const { file: rawFile } = fileToSave;
+    if (rawFile) {
+      const fileSizeInMB = rawFile.size / (1024 * 1024);
+      if (fileSizeInMB > 30) {
+        console.log(
+          "El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB."
+        );
+        return;
+      }
+      setValue(`driversForm.${driverIndex}.documents.${documentIndex}.file`, rawFile);
+      trigger(`driversForm.${driverIndex}.documents.${documentIndex}`);
+    }
+  };
 
+  const handleOnDeleteDocument = (driverIndex: number, documentIndex: number) => {
+    setValue(`driversForm.${driverIndex}.documents.${documentIndex}.file`, undefined);
+    trigger(`driversForm.${driverIndex}.documents.${documentIndex}`);
+  };
+  const handleOnChangeDocumentVehicle = (fileToSave: any, documentIndex: number) => {
+    const { file: rawFile } = fileToSave;
+    if (rawFile) {
+      const fileSizeInMB = rawFile.size / (1024 * 1024);
+      if (fileSizeInMB > 30) {
+        console.log(
+          "El archivo es demasiado grande. Por favor, sube un archivo de menos de 30 MB."
+        );
+        return;
+      }
+      setValue(`vehicleForm.documents.${documentIndex}.file`, rawFile);
+      trigger(`vehicleForm.documents.${documentIndex}`);
+    }
+  };
+
+  const handleOnDeleteDocumentVehicle = (documentIndex: number) => {
+    setValue(`vehicleForm.documents.${documentIndex}.file`, undefined);
+    trigger(`vehicleForm.documents.${documentIndex}`);
+  };
   return (
     <div className={styles.wrapper}>
       <p className={styles.sectionTitle}>Vehiculo</p>
       <div className={styles.container} style={{ gap: "6px" }}>
         <p className={styles.subtitle}>Seleccione el vehículo</p>
         <Controller
-          {...register(`vehicleForm`)}
+          {...register(`vehicleForm.vehicleId`)}
           control={control}
           render={({ field }) => {
             return (
@@ -154,7 +223,7 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
                 style={{ width: "25rem", height: "2.5rem" }}
                 optionLabelProp="label"
                 labelRender={(selectedValue) => (
-                  <VehicleRenderLabel vehicles={vehicles} selectedValue={selectedValue} />
+                  <VehicleRenderLabel vehicles={vehiclesOptions} selectedValue={selectedValue} />
                 )}
                 optionFilterProp="label"
                 filterOption={(input: string, option: any) => {
@@ -164,7 +233,7 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
                   return false;
                 }}
               >
-                {vehicles?.map((vehicle, index) => (
+                {vehiclesOptions?.map((vehicle, index) => (
                   <Option
                     key={`option-vehicle-${vehicle.id}-${index}`}
                     value={vehicle.id}
@@ -173,7 +242,7 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
                     <VehicleRenderOption
                       data={vehicle}
                       index={index}
-                      selectedVehicle={selectedVehicle}
+                      selectedVehicle={selectedVehicle.vehicleId}
                     />
                   </Option>
                 ))}
@@ -183,153 +252,139 @@ const VehicleAndDriverAsignation = forwardRef(function VehicleAndDriverAsignatio
         />
         <div className={styles.documentsTop}>
           <p className={styles.subtitle}>Documentos del vehículo</p>
-          <EditDocsButton
+          {/* <EditDocsButton
             onClick={() => setIsOpenModalDocuments(true)}
             text="Editar documentos"
             disabled={formMode === "view"}
-          />
+          /> */}
         </div>
-        <div className={styles.uploadContainer}>
-          {selectedFiles
-            .filter((sf) => MANDATORY_VEHICLE_DOCS.includes(sf.id))
-            .map((file) => (
-              <UploadDocumentButton
-                key={file.id}
-                title={file.description}
-                isMandatory={!file.optional}
-                aditionalData={file.id}
-                setFiles={() => {}}
-                files={file.file}
-                disabled
-                column
-              >
-                {file?.link ? (
-                  <UploadDocumentChild
-                    linkFile={file.link}
-                    nameFile={file.link.split("-").pop() ?? ""}
-                    onDelete={() => {}}
-                    showTrash={false}
-                  />
-                ) : undefined}
-              </UploadDocumentButton>
-            ))}
-        </div>
+        <VehicleDocumentFields
+          control={control}
+          register={register}
+          handleOnChangeDocument={handleOnChangeDocumentVehicle}
+          handleOnDeleteDocument={handleOnDeleteDocumentVehicle}
+          currentVehicle={selectedVehicle}
+        />
+        {/* <div className={styles.uploadContainer}>
+          {vehicleDocuments.map((file) => (
+            <UploadDocumentButton
+              key={file.id}
+              title={file.description}
+              isMandatory={true}
+              aditionalData={file.id}
+              setFiles={() => {}}
+              files={file.file}
+              disabled
+              column
+            >
+              {file?.link ? (
+                <UploadDocumentChild
+                  linkFile={file.link}
+                  nameFile={file.link.split("-").pop() ?? ""}
+                  onDelete={() => {}}
+                  showTrash={false}
+                />
+              ) : undefined}
+            </UploadDocumentButton>
+          ))}
+        </div> */}
       </div>
-      {fields.map((field, indexField: number) => (
-        <div key={`field-${field.id}-${indexField}`}>
-          <hr style={{ borderTop: "1px solid #dddddd" }}></hr>
-          <Flex style={{ width: "100%" }} justify="space-between">
-            <p className={styles.sectionTitle} style={{ marginTop: "2rem" }}>
-              Conductor {indexField !== 0 && indexField + 1}
-            </p>
-            {fields.length > 1 && (
-              <AddRemoveButton
-                type="remove"
-                onClick={() => remove(indexField)}
-                disabled={formMode === "view"}
-              />
-            )}
-          </Flex>
-          <div className={styles.container}>
-            <p className={styles.subtitle}>Seleccione el conductor</p>
-            <div className={styles.selector}>
-              <Controller
-                {...register(`driverForm.${indexField}.driverId`)}
-                control={control}
-                render={({ field }) => {
-                  return (
-                    <Select
-                      {...field}
-                      disabled={formMode === "view"}
-                      showSearch
-                      placeholder="Seleccion el conductor"
-                      style={{ width: "25rem", height: "2.5rem" }}
-                      optionLabelProp="label"
-                      labelRender={(selectedValue) => (
-                        <DriverRenderLabel selectedValue={selectedValue} drivers={drivers} />
-                      )}
-                      optionFilterProp="label"
-                      filterOption={(input: string, option: any) => {
-                        if (option) {
-                          return option.label?.toLowerCase().includes(input.toLowerCase());
-                        }
-                        return false;
-                      }}
-                    >
-                      {filterDrivers(indexField)?.map((driver, index) => (
-                        <Option
-                          key={`option-driver-${driver.id}-${index}`}
-                          value={driver.id}
-                          label={`${driver.name} ${driver.last_name} ${driver.phone}`}
-                        >
-                          <DriverRenderOption
-                            selectedDrivers={selectedDrivers}
-                            data={driver}
-                            index={index}
-                            selectIndex={indexField}
-                          />
-                        </Option>
-                      ))}
-                    </Select>
-                  );
-                }}
-              />
-              {indexField === fields.length - 1 && (
+      {driversFields.map((driver, driverIndex: number) => {
+        const currentDriver = watch(`driversForm.${driverIndex}`);
+        return (
+          <div key={`field-${driver.id}-${driverIndex}`}>
+            <hr style={{ borderTop: "1px solid #dddddd" }}></hr>
+            <Flex style={{ width: "100%" }} justify="space-between">
+              <p className={styles.sectionTitle} style={{ marginTop: "2rem" }}>
+                Conductor {driverIndex !== 0 && driverIndex + 1}
+              </p>
+              {driversFields.length > 1 && (
                 <AddRemoveButton
-                  type="add"
-                  onClick={() => append({ driverId: null })}
-                  disabled={fields.length === DRIVERS_MAX_QUANTITY || formMode === "view"}
-                  text="Agregar otro conductor"
+                  type="remove"
+                  onClick={() => remove(driverIndex)}
+                  disabled={formMode === "view"}
                 />
               )}
-            </div>
-            <div className={styles.documentsTop}>
-              <p className={styles.subtitle}>Documentos del conductor</p>
-              <EditDocsButton
+            </Flex>
+            <div className={styles.container}>
+              <p className={styles.subtitle}>Seleccione el conductor</p>
+              <div className={styles.selector}>
+                <Controller
+                  {...register(`driversForm.${driverIndex}.driverId`)}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <Select
+                        {...field}
+                        disabled={formMode === "view"}
+                        showSearch
+                        placeholder="Seleccion el conductor"
+                        style={{ width: "25rem", height: "2.5rem" }}
+                        optionLabelProp="label"
+                        labelRender={(selectedValue) => (
+                          <DriverRenderLabel
+                            selectedValue={selectedValue}
+                            drivers={driversOptions}
+                          />
+                        )}
+                        optionFilterProp="label"
+                        filterOption={(input: string, option: any) => {
+                          if (option) {
+                            return option.label?.toLowerCase().includes(input.toLowerCase());
+                          }
+                          return false;
+                        }}
+                      >
+                        {filterDrivers(driverIndex)?.map((driver, index) => (
+                          <Option
+                            key={`option-driver-${driver.id}-${index}`}
+                            value={driver.id}
+                            label={`${driver.name} ${driver.last_name} ${driver.phone}`}
+                          >
+                            <DriverRenderOption
+                              selectedDrivers={selectedDrivers}
+                              data={driver}
+                              index={index}
+                              selectIndex={driverIndex}
+                            />
+                          </Option>
+                        ))}
+                      </Select>
+                    );
+                  }}
+                />
+                {driverIndex === driversFields.length - 1 && (
+                  <AddRemoveButton
+                    type="add"
+                    onClick={() =>
+                      append({ driverId: null, documents: createDefaultDocuments("driver") })
+                    }
+                    disabled={driversFields.length === DRIVERS_MAX_QUANTITY || formMode === "view"}
+                    text="Agregar otro conductor"
+                  />
+                )}
+              </div>
+              <div className={styles.documentsTop}>
+                <p className={styles.subtitle}>Documentos del conductor</p>
+                {/* <EditDocsButton
                 onClick={() => setIsOpenModalDocuments(true)}
                 text="Editar documentos"
                 disabled={formMode === "view"}
+              /> */}
+              </div>
+
+              <DocumentFields
+                control={control}
+                register={register}
+                driverIndex={driverIndex}
+                handleOnChangeDocument={handleOnChangeDocument}
+                handleOnDeleteDocument={handleOnDeleteDocument}
+                currentDriver={currentDriver}
               />
             </div>
-            <div className={styles.uploadContainer}>
-              {selectedFiles
-                .filter((sf) => MANDATORY_DRIVERS_DOCS.includes(sf.id))
-                .map((file) => (
-                  <UploadDocumentButton
-                    key={file.id}
-                    title={file.description}
-                    isMandatory={!file.optional}
-                    aditionalData={file.id}
-                    setFiles={() => {}}
-                    files={file.file}
-                    disabled
-                    column
-                  >
-                    {file?.link ? (
-                      <UploadDocumentChild
-                        linkFile={file.link}
-                        nameFile={file.link.split("-").pop() ?? ""}
-                        onDelete={() => {}}
-                        showTrash={false}
-                      />
-                    ) : undefined}
-                  </UploadDocumentButton>
-                ))}
-            </div>
           </div>
-        </div>
-      ))}
-      <ModalDocuments
-        isOpen={isOpenModalDocuments}
-        mockFiles={selectedFiles}
-        setFiles={() => {}}
-        documentsType={documentsTypes}
-        isLoadingDocuments={false}
-        onClose={() => setIsOpenModalDocuments(false)}
-        handleChange={() => {}}
-        handleChangeExpirationDate={() => {}}
-        setSelectedFiles={() => {}}
-      />
+        );
+      })}
     </div>
   );
 });

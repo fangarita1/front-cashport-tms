@@ -1,30 +1,27 @@
 import { useFieldArray } from "react-hook-form";
-import { Flex } from "antd";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
 import UploadFileButton from "@/components/molecules/modals/ModalBillingAction/UploadFileButton/UploadFileButton";
-import styles from "./DocumentFields.module.scss";
-export function DocumentFields({
+import styles from "./VehicleDocumentsFields.module.scss";
+
+export function VehicleDocumentFields({
   control,
   register,
-  driverIndex,
   handleOnDeleteDocument,
   handleOnChangeDocument,
-  currentDriver
+  currentVehicle
 }: Readonly<{
   control: any;
   register: any;
-  driverIndex: number;
-  handleOnDeleteDocument: (driverIndex: number, documentIndex: number) => void;
-  handleOnChangeDocument: (fileToSave: any, driverIndex: number, documentIndex: number) => void;
-  currentDriver: any;
+  handleOnDeleteDocument: (documentIndex: number) => void;
+  handleOnChangeDocument: (fileToSave: any, documentIndex: number) => void;
+  currentVehicle: any;
 }>) {
   const { fields: documentFields } = useFieldArray<any>({
     control,
-    name: `driversForm.${driverIndex}.documents`
+    name: `vehicleForm.documents`
   });
   console.log("documentFields", documentFields);
-  console.log("currentDriver IN DOCS FIELDS", currentDriver);
 
   return (
     <div className={styles.uploadContainer}>
@@ -32,7 +29,7 @@ export function DocumentFields({
         if (document.url) {
           return (
             <UploadDocumentButton
-              key={`driver-${driverIndex}-doc-${documentIndex}`}
+              key={`vehicle-doc-${documentIndex}`}
               title={document.description}
               isMandatory={true}
               setFiles={() => {}}
@@ -51,12 +48,12 @@ export function DocumentFields({
         return (
           <UploadFileButton
             column={true}
-            key={`driver-${driverIndex}-doc-MT-${documentIndex}`}
+            key={`vehicle-doc-${documentIndex}`}
             title={document.description}
-            handleOnDelete={() => handleOnDeleteDocument(driverIndex, documentIndex)}
-            handleOnChange={(file) => handleOnChangeDocument(file, driverIndex, documentIndex)}
-            fileName={currentDriver?.documents?.[documentIndex]?.file?.name ?? undefined}
-            fileSize={currentDriver?.documents?.[documentIndex]?.file?.size ?? undefined}
+            handleOnDelete={() => handleOnDeleteDocument(documentIndex)}
+            handleOnChange={(file) => handleOnChangeDocument(file, documentIndex)}
+            fileName={currentVehicle?.documents?.[documentIndex]?.file?.name ?? undefined}
+            fileSize={currentVehicle?.documents?.[documentIndex]?.file?.size ?? undefined}
             isMandatory={true}
           />
         );

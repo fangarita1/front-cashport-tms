@@ -11,6 +11,7 @@ interface IVehicleOption {
   index: number;
 }
 function VehicleRenderOption({ data, index, selectedVehicle }: Readonly<IVehicleOption>) {
+  console.log("selectedVehicle", selectedVehicle, "data.id", data.id);
   return (
     <Flex vertical key={`vehicle-${data.id}-${index}`}>
       {index !== 0 && <hr style={{ borderTop: "1px solid #f7f7f7", margin: "0 0 0.5rem 0" }}></hr>}

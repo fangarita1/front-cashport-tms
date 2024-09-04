@@ -4,6 +4,7 @@ import AditionalInfo from "../AditionalInfo/AditionalInfo";
 import Materials from "../Materials/Materials";
 import styles from "./solicitationDetail.module.scss";
 import { ICarrierRequestContacts } from "@/types/logistics/schema";
+import { ICarrierRequestContacts } from "@/types/logistics/schema";
 import { Dispatch, SetStateAction } from "react";
 import { RouteMap } from "@/components/organisms/logistics/orders/DetailsOrderView/components/RouteMap/RouteMap";
 import { SummaryData } from "@/components/organisms/logistics/orders/DetailsOrderView/components/SummaryData/SummaryData";
@@ -15,6 +16,8 @@ dayjs.locale("es");
 dayjs.extend(utc);
 
 interface SolicitationDetailProps {
+  providerDetail: IAceptCarrierAPI | undefined;
+  dataCarga: DataCarga[];
   providerDetail: IAceptCarrierAPI | undefined;
   dataCarga: DataCarga[];
   persons?: ICarrierRequestContacts[];

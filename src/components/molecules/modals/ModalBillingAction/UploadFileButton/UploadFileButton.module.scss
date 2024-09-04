@@ -5,11 +5,15 @@
   gap: 20px;
 
   .titleDocument {
-      font-size: 0.9rem;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
   }
 
   .descriptionDocument {
-      font-size: 0.8rem;
-      font-style: italic;
+    font-size: 12px;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 18px;
   }
 }

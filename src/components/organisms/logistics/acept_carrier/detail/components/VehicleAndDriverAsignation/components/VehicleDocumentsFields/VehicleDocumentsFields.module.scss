@@ -1,0 +1,25 @@
+.uploadContainer {
+  display: grid;
+  gap: 1rem;
+}
+
+/* Para pantallas grandes (4 elementos en una fila) */
+@media (min-width: 1024px) {
+  .uploadContainer {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Para pantallas medianas (2 filas de 2 elementos) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .uploadContainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Para pantallas pequeñas (4 filas de 1 elemento) */
+@media (max-width: 767px) {
+  .uploadContainer {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
