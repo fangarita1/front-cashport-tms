@@ -107,7 +107,11 @@ export const NotificationsView = () => {
               )}
               <div
                 className="eyeIcon"
-                onClick={() => openModal("novelty", { noveltyId: item.incident_id ?? 0 })}
+                onClick={() => {
+                  if (item.notification_type_name === "Novedad") {
+                    openModal("novelty", { noveltyId: item.incident_id ?? 0 });
+                  }
+                }}
               >
                 <Eye size={28} />
               </div>
