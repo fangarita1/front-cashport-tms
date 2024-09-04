@@ -94,4 +94,59 @@
     }
     height: 40px;
   }
+
+  .evidenceContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    
+    .evidenceTitleContainer {
+      display: flex;
+      column-gap: 8px;
+      align-items: center;
+
+      .evidenceTitle {
+        color: #666;
+        font-size: 16px;
+        font-weight: 400;
+      }
+    }
+
+    .evidences {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      width: 70%;
+
+      .evidence {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        background-color: #F7F7F7;
+        border-radius: 8px;
+
+        .evidenceTitle {
+          color: #141414;
+          font-size: 14px;
+          font-weight: 400;
+        }
+      }
+      
+      .createEvidenceContainer {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        padding: 8px 16px;
+        cursor: pointer;
+
+
+        .createEvidence {
+          color: var(--Black, #141414);
+          font-size: 14px;
+          font-weight: 700;
+        }
+      }
+    }
+  }
 }
