@@ -17,30 +17,37 @@ export const FileDownloadModal: React.FC<InvoiceDownloadModalProps> = ({
 }) => {
   return (
     <Modal
-      title={title ? title : "Documento adjunto"}
-      className="wrapper"
+      title={
+        title ? (
+          <div className="title_modal_file_download">{title}</div>
+        ) : (
+          <div className="title_modal_file_download">Documento adjunto</div>
+        )
+      }
+      className="file-download-modal"
       open={isModalOpen}
-      footer={null}
+      footer={
+        <div className="footer">
+          <a
+            className="button-download"
+            download
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Descargar
+          </a>
+          <button type="button" className="button-check" onClick={() => onCloseModal(false)}>
+            Entendido
+          </button>
+        </div>
+      }
       onCancel={() => onCloseModal(false)}
     >
-      <div className="img">
-        <div className="bodyImg">
-          <img src={url} alt="Invoice" />
+      <div className="modal-content">
+        <div className="img-container">
+          <img src={url} alt="Document" />
         </div>
-      </div>
-      <div className="footer">
-        <a className="buttonDownload" download={url} href={url} target="_blank">
-          Descargar
-        </a>
-        <button
-          type="button"
-          className="buttonCheck"
-          onClick={() => {
-            onCloseModal(false);
-          }}
-        >
-          Entendido
-        </button>
       </div>
     </Modal>
   );

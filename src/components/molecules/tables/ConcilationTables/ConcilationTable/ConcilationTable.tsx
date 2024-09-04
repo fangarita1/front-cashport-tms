@@ -53,7 +53,11 @@ export const ConcilationTable = ({
       title: "Fecha",
       dataIndex: "create_at",
       key: "create_at",
-      render: (text) => <Text className="cell -alignRight">{formatDate(text)}</Text>,
+      render: (text, record) => (
+        <Text className="cell -alignRight">
+          {formatDate(record?.financialRecordDate?.toString())}
+        </Text>
+      ),
       sorter: (a, b) => Number(a.create_at) - Number(b.create_at),
       showSorterTooltip: false,
       align: "right",

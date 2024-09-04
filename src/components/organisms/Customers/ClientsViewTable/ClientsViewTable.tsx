@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Spin, TableProps, Button, Col, Flex, Row, Table, Typography } from "antd";
 import {
@@ -20,11 +20,11 @@ import { formatMoney } from "@/utils/utils";
 
 import "./ClientsViewTable.scss";
 import { useDebounce } from "@/hooks/useDeabouce";
-import UiSearchInput from "@/components/ui/search-input/search-input";
 import {
   FilterPortfolio,
   SelectedFilters
 } from "@/components/atoms/Filters/FilterPortfolio/FilterPortfolio";
+import OptimizedSearchComponent from "@/components/atoms/inputs/OptimizedSearchComponent/OptimizedSearchComponent";
 
 const { Text } = Typography;
 
@@ -203,17 +203,18 @@ export const ClientsViewTable = () => {
       )
     }
   ];
-  const handelSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = useCallback((query: string) => {
+    setTableData([]);
     setPage(1);
-    setSearchQuery(e.target.value);
-  };
+    setSearchQuery(query);
+  }, []);
 
   return (
     <main className="mainClientsTable">
       <div>
         <Flex justify="space-between" className="mainClientsTable_header">
           <Flex gap={"10px"}>
-            <UiSearchInput placeholder="Buscar clientes" onChange={(e) => handelSearch(e)} />
+            <OptimizedSearchComponent onSearch={handleSearch} />
             <FilterPortfolio setSelectedFilters={setFilters} />
             <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
           </Flex>
