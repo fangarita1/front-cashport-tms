@@ -259,7 +259,10 @@ export const ClientsProjectTable = ({
           <Flex gap={"0.625rem"}>
             <UiSearchInput
               placeholder="Buscar clientes"
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setPage(1);
+                setSearchQuery(e.target.value);
+              }}
             />
             <FilterClients setFilterClients={setFilterClients} />
             <DotsDropdown items={items} />{" "}
@@ -358,6 +361,13 @@ export const ClientsProjectTable = ({
     return (
       <main className="mainClientsProjectTable">
         <Flex justify="space-between" className="mainClientsProjectTable_header">
+          <UiSearchInput
+            placeholder="Buscar clientes"
+            onChange={(e) => {
+              setPage(1);
+              setSearchQuery(e.target.value);
+            }}
+          />
           <Flex>
             <FilterClients setFilterClients={setFilterClients} />
           </Flex>
@@ -374,7 +384,23 @@ export const ClientsProjectTable = ({
               ...client,
               key: client.nit
             }))}
-            pagination={{ pageSize: 8 }}
+            pagination={{
+              current: page,
+              pageSize: 50,
+              onChange: onChangePage,
+              total: data?.pagination?.totalRows,
+              position: ["none", "bottomRight"],
+              itemRender: (page, type, originalElement) => {
+                if (type === "prev") {
+                  return <Triangle size={".75rem"} weight="fill" className="prev" />;
+                } else if (type === "next") {
+                  return <Triangle size={".75rem"} weight="fill" className="next" />;
+                } else if (type === "page") {
+                  return <Flex className="pagination">{page}</Flex>;
+                }
+                return originalElement;
+              }
+            }}
             rowSelection={rowSelection}
             rowClassName={(record) => (selectedRowKeys.includes(record.nit) ? "selectedRow" : "")}
           />
