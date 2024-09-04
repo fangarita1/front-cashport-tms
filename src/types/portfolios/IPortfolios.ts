@@ -34,6 +34,7 @@ export interface IDataSection {
   dso: number;
   invoice_ages: IInvoiceAges[];
   quota: number;
+  percentages: IPercentages;
   aplication_payments: IApplicationPayments;
   payments_vs_invoices: IPaymentsVsInvoices[];
 }
@@ -77,4 +78,12 @@ interface IInvoiceAges {
   invoice_count: number;
   percentage: number;
   total: number;
+}
+
+interface IPercentages {
+  past_due_percentage: number;
+  unapplied_payments_percentage: number;
+  budget_percentage: number;
+  quota_percentage: number;
+  applied_payments_percentage: number;
 }
