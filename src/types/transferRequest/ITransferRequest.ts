@@ -7,6 +7,7 @@ export interface ITransferRequest {
   start_date: Date;
   end_date: Date;
   type: string;
+  total_value: number;
   description: string;
   created_at: Date;
 }

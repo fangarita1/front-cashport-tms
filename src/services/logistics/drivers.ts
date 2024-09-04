@@ -32,20 +32,22 @@ export const createDriverForm = (
 ) => {
   const form = new FormData();
   const body: any = generalData;
- 
-  body.logo = logo ? logo.map((file: any) => ({
-    docReference: file.docReference,
-    uid: file?.file?.uid,
-  })): undefined
 
-  const expiration = files.find(f=>!f.expirationDate && f.expiry);
+  body.logo = logo
+    ? logo.map((file: any) => ({
+        docReference: file.docReference,
+        uid: file?.file?.uid
+      }))
+    : undefined;
 
-  if(expiration){
+  const expiration = files.find((f) => !f.expirationDate && f.expiry);
+
+  if (expiration) {
     throw new Error(`El documento ${expiration.description} debe tener una fecha de vencimiento`);
   }
 
-  body.files = files
-  form.append("body", JSON.stringify({...body, rh: body.rhval as any}));
+  body.files = files;
+  form.append("body", JSON.stringify({ ...body, rh: body.rhval as any }));
   logo && form.append("logo", logo[0].file as unknown as File);
 
   files.forEach((file) => {
@@ -55,8 +57,8 @@ export const createDriverForm = (
       console.warn(`File with id ${file.id} is undefined.`);
     }
   });
-  return form
-}
+  return form;
+};
 
 export const updateDriver = async (
   generalData: IFormGeneralDriver,
@@ -64,7 +66,7 @@ export const updateDriver = async (
   files: DocumentCompleteType[]
 ): Promise<AxiosResponse<any, any>> => {
   try {
-    const form = createDriverForm(generalData, logo, files)
+    const form = createDriverForm(generalData, logo, files);
     const response = await axios.put(`${config.API_HOST}/driver/update`, form, {
       headers: {
         Accept: "application/json, text/plain, */*"
@@ -83,7 +85,7 @@ export const addDriver = async (
   files: DocumentCompleteType[]
 ): Promise<AxiosResponse<any, any>> => {
   try {
-    const form = createDriverForm(generalData, logo, files)
+    const form = createDriverForm(generalData, logo, files);
     const response = await axios.post(`${config.API_HOST}/driver/create`, form, {
       headers: {
         "content-type": "multipart/form-data",
@@ -95,4 +97,15 @@ export const addDriver = async (
     console.log("Error create Driver: ", error);
     throw new Error(error?.response?.data?.message || "Error al crear el conductor");
   }
+};
+
+export const updateDriverStatus = async (
+  id: string,
+  status: boolean
+): Promise<AxiosResponse<any, any>> => {
+  const response: GenericResponse = await API.put(`/driver/update-status/${id}`, {
+    status
+  });
+  if (response.success) return response.data;
+  throw new Error(response.message || "Error al actualizar el estado del conductor");
 };

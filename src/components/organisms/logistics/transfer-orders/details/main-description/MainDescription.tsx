@@ -67,7 +67,7 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
 
   const mapsAccessToken =
     "pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA";
-  const socket = io('https://ppdaeqfxju.us-east-2.awsapprunner.com');
+  
 
   const getState = (stateId: string) => {
     let getState = TransferOrdersState.find((f) => f.id === stateId);
@@ -122,11 +122,17 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
   };
 
   useEffect(() => {
+    const socket = io('https://ppdaeqfxju.us-east-2.awsapprunner.com');
     socket.on('changeLocation', (data) => {
       console.log('Ubicación recibida:', data);
       updateUserLocation(data)
     });
+    return () => {
+      socket.off('changeLocation');
+    };
+  }, []);
 
+  useEffect(() => {
     if (!mapContainerRef.current) return;
 
     mapboxgl.accessToken = mapsAccessToken;
@@ -187,6 +193,9 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
     // return () => {
     //   map.remove();
     // };
+    return () => {
+      map.remove();
+    };
   }, [transferRequest]);
 
   const timeLineItems = transferRequest

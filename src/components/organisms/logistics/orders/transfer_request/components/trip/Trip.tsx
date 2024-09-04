@@ -64,24 +64,24 @@ export default function Trip(props: TripProps) {
       title: "Telefono",
       dataIndex: "contact_number",
       key: "contact_number",
-      render: () => <Text>a</Text>,
-      sorter: (a, b) => a.contact_number - b.contact_number,
+      render: (text) => <Text>{text}</Text>,
+      sorter: (a, b) => a.contact_number.localeCompare(b.contact_number),
       showSorterTooltip: false
     },
     {
       title: "PSL",
-      key: "psl",
-      dataIndex: "psl",
+      key: "psl_desc",
+      dataIndex: "psl_desc",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => Number(a.id_psl) - Number(b.id_psl),
+      sorter: (a, b) =>a.psl_desc.localeCompare(b.psl_desc),
       showSorterTooltip: false
     },
     {
       title: "CC",
-      key: "id_cost_center",
-      dataIndex: "id_cost_center",
+      key: "cost_center_desc",
+      dataIndex: "cost_center_desc",
       render: (text) => <Text>{text}</Text>,
-      sorter: (a, b) => Number(a.id_cost_center) - Number(b.id_cost_center),
+      sorter: (a, b) => a.cost_center_desc.localeCompare(b.cost_center_desc),
       showSorterTooltip: false
     }
   ];
