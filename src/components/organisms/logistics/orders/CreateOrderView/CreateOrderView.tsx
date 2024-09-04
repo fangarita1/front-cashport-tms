@@ -128,15 +128,15 @@ export const CreateOrderView = () => {
   const origin = useRef<any>([]);
   const destination = useRef<any>([]);
   const [origenIzaje, setOrigenIzaje] = useState(false);
-  const [horasOrigenIzaje, setHorasOrigenIzaje] = useState<number>(1);
-  const [horasDestinoIzaje, setHorasDestinoIzaje] = useState<number>(1);
+  const [horasOrigenIzaje, setHorasOrigenIzaje] = useState<number>(0);
+  const [horasDestinoIzaje, setHorasDestinoIzaje] = useState<number>(0);
   const [destinoIzaje, setDestinoIzaje] = useState(false);
   const [fechaInicial, setFechaInicial] = useState<Dayjs | undefined>(undefined);
   const [horaInicial, setHoraInicial] = useState<Dayjs>();
   const [fechaFinal, setFechaFinal] = useState<Dayjs | undefined>(undefined);
   const [horaFinal, setHoraFinal] = useState<Dayjs>();
-  const [fechaInicialFlexible, setFechaInicialFlexible] = useState(-1);
-  const [fechaFinalFlexible, setFechaFinalFlexible] = useState(-1);
+  const [fechaInicialFlexible, setFechaInicialFlexible] = useState<number | null>(null);
+  const [fechaFinalFlexible, setFechaFinalFlexible] = useState<number | null>(null);
   const [company, setCompany] = useState(-1);
   const [client, setClient] = useState(-1);
   const [observation, setObservation] = useState<any>(null);
@@ -160,10 +160,10 @@ export const CreateOrderView = () => {
 
   useEffect(() => {
     if (!destinoIzaje) {
-      setHorasDestinoIzaje(1);
+      setHorasDestinoIzaje(0);
     }
     if (!origenIzaje) {
-      setHorasOrigenIzaje(1);
+      setHorasOrigenIzaje(0);
     }
   }, [origenIzaje, destinoIzaje]);
 
@@ -187,6 +187,7 @@ export const CreateOrderView = () => {
   const [routeInfo, setRouteInfo] = useState([]);
   const [distance, setDistance] = useState<any>(null);
   const [timetravel, setTimeTravel] = useState<any>(null);
+  const [timetravelInSecs, setTimeTravelInSecs] = useState<number | null>(null);
 
   const [expand, setExpand] = useState(false);
   const initialItemCount = 4;
@@ -197,8 +198,8 @@ export const CreateOrderView = () => {
 
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationOptions, setLocationOptions] = useState<any>([]);
-  const [locationOrigin, setLocationOrigin] = useState<ILocation>();
-  const [locationDestination, setLocationDestination] = useState<ILocation>();
+  const [locationOrigin, setLocationOrigin] = useState<ILocation | null>(null);
+  const [locationDestination, setLocationDestination] = useState<ILocation | null>(null);
 
   const handleToggleExpand = () => {
     setExpand(!expand);
@@ -425,41 +426,69 @@ export const CreateOrderView = () => {
   }, [typeactive, fechaInicial, fechaFinal, horaInicial, horaFinal]);
 
   useEffect(() => {
-    if (typeactive == "2") {
-      if (fechaInicial && horaInicial) {
-        const fechaFin = fechaInicial.hour(horaInicial.get("h")).add(horasOrigenIzaje, "h");
-        setHoraFinal(fechaFin);
-        setFechaFinal(fechaFin);
-      } else {
-        setHoraFinal(undefined);
-        setFechaFinal(undefined);
-      }
+    if (!fechaInicial || !horaInicial) {
+      setHoraFinal(undefined);
+      setFechaFinal(undefined);
+      return;
     }
-  }, [typeactive, fechaInicial, horaInicial, horasOrigenIzaje]);
+    const initialHour = horaInicial.get("h");
+    const initialMinute = horaInicial.get("m");
+    let fechaFin = fechaInicial.hour(initialHour).minute(initialMinute).add(horasOrigenIzaje, "h");
+
+    if (typeactive !== "2" && timetravelInSecs !== null) {
+      fechaFin = fechaFin.add(horasDestinoIzaje, "h").add(timetravelInSecs, "s");
+    }
+
+    setHoraFinal(fechaFin);
+    setFechaFinal(fechaFin);
+  }, [
+    typeactive,
+    fechaInicial,
+    horaInicial,
+    horasOrigenIzaje,
+    horasDestinoIzaje,
+    timetravelInSecs
+  ]);
 
   const calculateDuration = (duration: number) => {
     const hrs = getTravelDuration(duration);
     setTimeTravel(hrs + " Hrs");
+    setTimeTravelInSecs(duration);
   };
-  /* Tipo de viaje */
-  const handleTypeClick = (event: any) => {
-    //console.log(event);
-    setTypeActive(event.target.id);
+
+  const resetFormValues = () => {
     origin.current = [];
     destination.current = [];
     setRouteGeometry(null);
     setRouteInfo([]);
     setDistance(null);
     setTimeTravel(null);
-    if (event.target.id == "2") {
-      setOrigenIzaje(true);
-    } else {
-      setOrigenIzaje(false);
-    }
+    setTimeTravelInSecs(null);
+    setLocationOrigin(null);
+    setLocationDestination(null);
+    setHorasOrigenIzaje(0);
+    setHorasDestinoIzaje(0);
+    setFechaInicial(undefined);
+    setHoraInicial(undefined);
+    setHoraFinal(undefined);
+    setFechaFinal(undefined);
+    setOrigenIzaje(false);
+    setDestinoIzaje(false);
+    setFechaInicialFlexible(null);
+    setFechaFinalFlexible(null);
+  };
+
+  useEffect(() => {
+    resetFormValues();
+    if (typeactive == "2") setOrigenIzaje(true);
+  }, [typeactive]);
+
+  /* Tipo de viaje */
+  const handleTypeClick = (event: any) => {
+    setTypeActive(event.target.id);
   };
 
   /* Carga */
-
   const columnsCarga: TableProps<IMaterial>["columns"] = [
     {
       title: "Cantidad",
@@ -1410,14 +1439,14 @@ export const CreateOrderView = () => {
         isformvalid = false;
         messageApi.error("Hora Final es obligatorio");
       }
-      if (fechaInicialFlexible == -1) {
+      if (!fechaInicialFlexible) {
         setFechaInicialFlexibleValid(false);
         isformvalid = false;
         messageApi.error("Fecha Inicial Flexible es obligatorio");
       } else {
         setFechaInicialFlexibleValid(true);
       }
-      if (fechaFinalFlexible == -1) {
+      if (!fechaFinalFlexible) {
         setFechaFinalFlexibleValid(false);
         isformvalid = false;
         messageApi.error("Fecha Final Flexible es obligatorio");
@@ -1505,7 +1534,7 @@ export const CreateOrderView = () => {
     const fechaFinalToBody = fechaFinal?.hour(finhour).minute(finmin);
 
     const datato: ITransferOrder = {
-      id_start_location: locationOrigin ? locationOrigin.id : 0,
+      id_start_location: locationOrigin ? locationOrigin?.id : 0,
       id_end_location: locationDestination ? locationDestination?.id : 0,
       id: 0,
       id_user: 1,
@@ -1517,8 +1546,8 @@ export const CreateOrderView = () => {
       freight_origin_time: origenIzaje ? horasOrigenIzaje : undefined,
       freight_destination_time: destinoIzaje ? horasDestinoIzaje : undefined,
       rotation: "0",
-      start_date_flexible: fechaInicialFlexible,
-      end_date_flexible: fechaFinalFlexible,
+      start_date_flexible: fechaInicialFlexible ?? 0,
+      end_date_flexible: fechaFinalFlexible ?? 0,
       id_route: "",
       id_company: company,
       active: "true",
@@ -1663,6 +1692,7 @@ export const CreateOrderView = () => {
                 }
                 style={{ width: "100%" }}
                 onChange={onChangeOrigin}
+                value={locationOrigin?.id}
                 optionFilterProp="children"
                 filterOption={(input, option) =>
                   option!.children!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -1727,6 +1757,7 @@ export const CreateOrderView = () => {
                   }
                   style={{ width: "100%" }}
                   onChange={onChangeDestino}
+                  value={locationDestination?.id}
                   optionFilterProp="children"
                   filterOption={(input, option) =>
                     option!.children!.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -1790,6 +1821,7 @@ export const CreateOrderView = () => {
                         setFechaInicial(value);
                         setFechaInicialValid(true);
                       }}
+                      value={fechaInicial}
                       className={fechaInicialValid ? "dateInputForm" : "dateInputFormError"}
                     />
                     {!fechaInicialValid && (
@@ -1807,6 +1839,7 @@ export const CreateOrderView = () => {
                       hourStep={1}
                       needConfirm={false}
                       type={"time"}
+                      value={horaInicial}
                       onChange={(value) => {
                         setHoraInicial(value);
                         setHoraInicialValid(true);
@@ -1822,6 +1855,7 @@ export const CreateOrderView = () => {
                   </Col>
                   <Col span={8}>
                     <Select
+                      value={fechaInicialFlexible}
                       placeholder="Seleccione"
                       className={
                         fechaInicialFlexibleValid
@@ -1858,7 +1892,7 @@ export const CreateOrderView = () => {
                     <DatePicker
                       placeholder="Seleccione fecha"
                       disabledDate={disabledDate}
-                      disabled={typeactive == "2"}
+                      disabled={true}
                       value={fechaFinal}
                       onChange={(value) => {
                         //console.log('Selected Time: ', value);
@@ -1882,7 +1916,7 @@ export const CreateOrderView = () => {
                       format={"HH:mm"}
                       minuteStep={15}
                       needConfirm={false}
-                      disabled={typeactive == "2"}
+                      disabled={true}
                       hourStep={1}
                       type={"time"}
                       variant="filled"
@@ -1902,6 +1936,7 @@ export const CreateOrderView = () => {
                   </Col>
                   <Col span={8}>
                     <Select
+                      value={fechaFinalFlexible}
                       placeholder="Seleccione"
                       className={
                         fechaFinalFlexibleValid
@@ -1934,7 +1969,7 @@ export const CreateOrderView = () => {
               <Row className="divdistance" style={{ marginTop: "1rem" }}>
                 <Col span={12} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                   <Text>Distancia Total</Text>
-                  <Text>Tiempo Estimado</Text>
+                  <Text>{typeactive == "2" ? "Tiempo de izaje" : "Tiempo de desplazamiento"}</Text>
                 </Col>
                 <Col
                   span={12}
@@ -1946,7 +1981,7 @@ export const CreateOrderView = () => {
                   }}
                 >
                   <Text>{formatNumber(distance)} km</Text>
-                  <Text>{timetravel}</Text>
+                  <Text>{typeactive == "2" ? `${horasOrigenIzaje} Hrs` : timetravel}</Text>
                 </Col>
               </Row>
             )}
