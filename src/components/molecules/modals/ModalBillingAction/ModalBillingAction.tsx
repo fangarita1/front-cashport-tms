@@ -54,6 +54,7 @@ export default function ModalBillingAction(props: Readonly<PropsModal>) {
             idTR={idTR}
             totalValue={totalValue}
             messageApi={messageApi}
+            idBilling={idBilling}
           />
         );
       case ViewEnum.UPLOAD_INVOICE:
