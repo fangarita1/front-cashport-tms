@@ -379,7 +379,7 @@ const UploadInvoice = ({
         isConfirmDisabled={isEditable && isConfirmDisabled}
         titleConfirm={isEditable ? "Cargar facturas" : "Cerrar detalle"}
         onClose={onClose}
-        handleOk={() => (isEditable ? handleSubmit(onSubmit) : onClose())}
+        handleOk={() => (isEditable ? handleSubmit(onSubmit)() : onClose())}
         showLeftButton={isEditable}
       />
     </form>
