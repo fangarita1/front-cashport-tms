@@ -1,12 +1,16 @@
 import { FileObject } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import { Dayjs } from "dayjs";
 
+export interface FileObjectWithLink extends FileObject {
+  link?: string;
+}
+
 export interface Invoice {
   id?: string;
   date?: Dayjs | null;
   value: number;
-  pdfFile?: FileObject;
-  xmlFile?: FileObject;
+  pdfFile?: FileObjectWithLink;
+  xmlFile?: FileObjectWithLink;
 }
 export interface PreAutorizationInfo {
   idAuthorization: string;
@@ -21,4 +25,20 @@ export interface PA {
 }
 export interface UploadInvoiceForm {
   pas: PA[];
+}
+
+export interface IBillingInfoAPI {
+  id: number;
+  idTransferRequest: number;
+  idCarrier: number;
+  carrier: string;
+  startLocation: string;
+  endLocation: string;
+  startDate: string;
+  endDate: string;
+  serviceTypes: string;
+  fare: number;
+  statusDesc: string;
+  idStatus: string;
+  statusColor: string;
 }
