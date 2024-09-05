@@ -37,7 +37,7 @@ const Dashboard: FC<DashboardProps> = () => {
 
   const formattedQuota = formatMillionNumber(portfolioData?.quota);
   const quota = formatMoney(formattedQuota);
-  const quotaPercentage = portfolioData?.percentages?.quota_percentage;
+  const quotaPercentage = portfolioData?.percentages?.quota_percentage || "0";
 
   return (
     <div className={styles.wrapper}>
@@ -58,7 +58,7 @@ const Dashboard: FC<DashboardProps> = () => {
               unit="M"
               badgeText={
                 appliedPaymentPercentage && appliedPaymentPercentage > 0
-                  ? `${appliedPaymentPercentage}%`
+                  ? `${appliedPaymentPercentage.toFixed(1)}%`
                   : ""
               }
             />
@@ -67,8 +67,8 @@ const Dashboard: FC<DashboardProps> = () => {
               value={unappliedPayments}
               unit="M"
               badgeText={
-                unnappliedPaymentPercentage && unnappliedPaymentPercentage > 0
-                  ? `${unnappliedPaymentPercentage}%`
+                unnappliedPaymentPercentage && parseInt(unnappliedPaymentPercentage) > 0
+                  ? `${parseFloat(unnappliedPaymentPercentage).toFixed(1)}%`
                   : ""
               }
             />
@@ -80,7 +80,7 @@ const Dashboard: FC<DashboardProps> = () => {
               name="Cupo"
               value={quota}
               unit="M"
-              badgeText={`${quotaPercentage}%`}
+              badgeText={`${parseFloat(quotaPercentage).toFixed(1)}%`}
             />
           </div>
         </div>

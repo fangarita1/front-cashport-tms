@@ -81,9 +81,9 @@ interface IInvoiceAges {
 }
 
 interface IPercentages {
-  past_due_percentage: number;
-  unapplied_payments_percentage: number;
-  budget_percentage: number;
-  quota_percentage: number;
+  past_due_percentage: string;
+  unapplied_payments_percentage: string;
+  budget_percentage: string;
+  quota_percentage: string;
   applied_payments_percentage: number;
 }

@@ -15,12 +15,12 @@ const DashboardExpiredPortfolio: FC<DashboardExpiredPortfolioProps> = ({ classNa
     portfolioData?.data_wallet?.past_due_ammount
   );
   const pastDuePortfolio = formatMoney(formattedPastDuePortfolio);
-  const expiredPercentage = portfolioData?.percentages?.past_due_percentage;
+  const expiredPercentage = portfolioData?.percentages?.past_due_percentage || "0";
   return (
     <div className={`${styles.wrapper} ${className}`}>
       <DashboardGenericItem
         name="C. vencida"
-        badgeText={`${expiredPercentage}%`}
+        badgeText={`${parseFloat(expiredPercentage).toFixed(1)}%`}
         value={pastDuePortfolio}
         unit="M"
       />
