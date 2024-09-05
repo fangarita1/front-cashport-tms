@@ -77,6 +77,7 @@ export const ClientsTableModal = ({ setClientsKeys, selectedClientsKeys }: Props
     };
   }, []);
 
+  // eslint-disable-next-line no-unused-vars
   const initializeStates = useMemo(() => {
     if (selectedClientsKeys && selectedClientsKeys.length > 0) {
       setSelectedRowKeys(selectedClientsKeys);
@@ -180,9 +181,9 @@ export const ClientsTableModal = ({ setClientsKeys, selectedClientsKeys }: Props
   ];
 
   return (
-    <main className="mainClientsProjectTable">
+    <main className="clientsTableModal">
       {contextHolder}
-      <Flex justify="space-between" className="mainClientsProjectTable_header">
+      <Flex justify="flex-start" gap={"0.5rem"} className="clientsTableModal_header">
         <UiSearchInput
           placeholder="Buscar clientes"
           onChange={(e) => {
