@@ -7,7 +7,9 @@ import { Radioactive } from "@phosphor-icons/react";
 import { ICarrierRequestsListDetail } from "@/types/logistics/schema";
 import Link from "next/link";
 import { useProjects } from "@/hooks/useProjects";
-
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat);
 const { Text } = Typography;
 
 interface PropsCarrierTable {
@@ -16,7 +18,11 @@ interface PropsCarrierTable {
   loading: boolean;
 }
 
-export default function CarrierTable({ carrierData: data, setSelectedRows, loading }: PropsCarrierTable) {
+export default function CarrierTable({
+  carrierData: data,
+  setSelectedRows,
+  loading
+}: PropsCarrierTable) {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRow: any) => {
@@ -78,16 +84,12 @@ export default function CarrierTable({ carrierData: data, setSelectedRows, loadi
       dataIndex: ["start_date", "end_date"],
       render: (text, record) => (
         <Text>
-          {record.start_date} <br />{" "}
-          {record.end_date}
+          {record.start_date} <br /> {record.end_date}
         </Text>
       ),
-      sorter: (a, b) => {
-        if (new Date(a.start_date).getTime() === new Date(b.start_date).getTime()) {
-          return new Date(a.end_date).getTime() - new Date(b.end_date).getTime();
-        }
-        return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
-      },
+      sorter: (a, b) =>
+        dayjs(a.start_date, "DD/MM/YYYY HH:mm").valueOf() -
+        dayjs(b.start_date, "DD/MM/YYYY HH:mm").valueOf(),
       showSorterTooltip: false
     },
     {
@@ -110,17 +112,16 @@ export default function CarrierTable({ carrierData: data, setSelectedRows, loadi
       title: "Tiempo transcurido",
       key: "timeTraveled",
       dataIndex: "elapsedtime",
-      render: (text) => (
-        <Text>{calculateMinutesDifference(text)} min</Text>
-      ),
-      sorter: (a, b) => Number(a.elapsedtime) - Number(b.elapsedtime),
+      render: (text) => <Text>{calculateMinutesDifference(text)} min</Text>,
+      sorter: (a, b) =>
+        calculateMinutesDifference(a.elapsedtime) - calculateMinutesDifference(b.elapsedtime),
       showSorterTooltip: false
     },
     {
       title: "Valor",
       key: "value",
       dataIndex: "amount",
-      render: (amount) => <Text>{formatMoney(amount)}</Text>,
+      render: (amount) => <Text>{amount ? formatMoney(amount) : "$ 0"}</Text>,
       sorter: (a, b) => a.amount - b.amount,
       showSorterTooltip: false,
       align: "right"
