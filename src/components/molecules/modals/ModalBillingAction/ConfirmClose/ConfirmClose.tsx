@@ -10,18 +10,25 @@ interface ConfirmClose {
   setSelectedView: (value: SetStateAction<ViewEnum>) => void;
   onClose: () => void;
   idTR: number;
+  idBilling: number;
   totalValue: number;
   messageApi: MessageInstance;
 }
 
-const ConfirmClose = ({ setSelectedView, onClose, totalValue, idTR, messageApi }: ConfirmClose) => {
+const ConfirmClose = ({
+  setSelectedView,
+  onClose,
+  totalValue,
+  idTR,
+  messageApi,
+  idBilling
+}: ConfirmClose) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const aceptBilling = async () => {
     try {
       setIsLoading(true);
-      const response = await getAceptBilling(idTR);
-      console.log("aceptBilling", response);
+      const response = await getAceptBilling(idBilling);
       if (response) {
         messageApi?.open({
           type: "success",
