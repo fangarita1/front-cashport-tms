@@ -17,7 +17,6 @@ export const useClientGroup = (groupId: number) => {
   );
 
   const updateClientsGroup = async (clients: string[]) => {
-    console.log("modelDataPUT:", data);
     await updateGroup(groupId, clients, projectId);
     mutate();
   };

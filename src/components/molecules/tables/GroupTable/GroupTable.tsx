@@ -69,7 +69,7 @@ export const GroupTable = ({ dataClients }: PropsGroupTable) => {
   ];
 
   return (
-    <main className="mainClientsProjectTable">
+    <div className="detailsClientsGroupTable">
       <Table
         columns={columns}
         dataSource={dataClients?.map((client) => ({
@@ -78,6 +78,6 @@ export const GroupTable = ({ dataClients }: PropsGroupTable) => {
         }))}
         pagination={false}
       />
-    </main>
+    </div>
   );
 };
