@@ -24,6 +24,7 @@ export interface IInvoiceConcilation {
   difference_amount: number | null;
   accept_date: Date;
   id_erp: string;
+  financialRecordDate: Date;
   motive_id?: number | null;
 }
 

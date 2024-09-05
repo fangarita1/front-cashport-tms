@@ -276,5 +276,4 @@ const invoiceStates = [
   "Glosado",
   "Devolucion",
   "Anulada",
-  "Saldo",
 ];

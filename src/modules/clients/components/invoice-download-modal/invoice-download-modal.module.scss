@@ -1,96 +1,72 @@
-.wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.fileDownloadModal {
 
-  .header {
-    width: 600px;
+  .ant-modal-content {
+    max-height: 90vh;
     display: flex;
-    margin: 20px 0 20px 0;
     flex-direction: column;
-
-    .content {
-      gap: 4px;
-      display: flex;
-
-      .description {
-        font-size: 14px;
-        font-weight: 300;
-        color: #141414;
-        line-height: 20px;
-      }
-
-      .value {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #141414;
-        line-height: 20px;
-      }
-    }
+    padding: 20px 0px 0px 0px !important;
   }
 
-  .img {
-    width: 600px;
-    height: 500px;
+
+  .ant-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  .modal-content {
     display: flex;
-    border-radius: 8px;
-    align-items: center;
-    background: #F7F7F7;
-    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+  }
 
-    .bodyImg {
-      display: flex;
-      max-width: 80%;
-      max-height: 80%;
+  .img-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
 
-      img {
-        width: 100%;
-        height: 100%;
-      }
+    img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
     }
   }
 
   .footer {
-    gap: 16px;
     display: flex;
-    margin-top: 20px;
     justify-content: space-between;
+    padding: 16px 24px;
+    border-radius: 0 0 8px 8px;
+    background-color: #f0f0f0;
+    border-top: 1px solid #d9d9d9;
 
-    .buttonCheck {
+    .button-download,
+    .button-check {
       flex: 1;
-      display: flex;
-      cursor: pointer;
-      color: #141414;
+      padding: 12px 24px;
       font-size: 16px;
       font-weight: 600;
-      line-height: normal;
-      padding: 12px 24px;
       border-radius: 8px;
-      align-items: center;
-      background: #CBE71E;
-      justify-content: center;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
     }
 
-    .buttonDownload {
-      flex: 1;
-      display: flex;
-      font-size: 16px;
-      cursor: pointer;
+    .button-download {
       color: #141414;
-      font-weight: 600;
-      padding: 12px 24px;
-      border-radius: 8px;
-      line-height: normal;
-      align-items: center;
-      justify-content: center;
       border: 1px solid #141414;
-
-      a {
-        text-decoration: none;
-        color: #141414;
-      }
+      margin-right: 8px;
     }
 
-
+    .button-check {
+      color: #141414;
+      background: #CBE71E;
+      border: none;
+      margin-left: 8px;
+    }
   }
+}
+
+.title_modal_file_download {
+  padding: 0 24px;
 }

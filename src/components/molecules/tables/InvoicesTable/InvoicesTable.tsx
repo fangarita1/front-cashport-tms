@@ -218,7 +218,7 @@ export const InvoicesTable = ({
               />
             </Tooltip>
           )}
-          {record.novelty_info && (
+          {record.novelty_info?.incidentType && (
             <Tooltip
               title={
                 <div className="toolTip -priceDifference">
