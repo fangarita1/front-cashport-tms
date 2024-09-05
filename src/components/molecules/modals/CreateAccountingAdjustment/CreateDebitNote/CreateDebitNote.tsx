@@ -61,18 +61,20 @@ export const CreateDebitNote = ({ onClose, messageApi, projectIdParam, clientIdP
         date_of_issue:
           data.validity_range && data.validity_range[0]
             ? formatDateBars(data.validity_range[0].toISOString())
-            : "",
+            : formatDateBars(new Date().toISOString()),
         expiration_date: formatDateBars(data.expiration_date.toISOString()),
-        validity_range: {
-          start:
-            data.validity_range && data.validity_range[0]
-              ? formatDateBars(data.validity_range[0].toISOString())
-              : "",
-          end:
-            data.validity_range && data.validity_range[1]
-              ? formatDateBars(data.validity_range[1].toISOString())
-              : ""
-        },
+        validity_range: data.validity_range
+          ? {
+              start:
+                data.validity_range && data.validity_range[0]
+                  ? formatDateBars(data.validity_range[0].toISOString())
+                  : "",
+              end:
+                data.validity_range && data.validity_range[1]
+                  ? formatDateBars(data.validity_range[1].toISOString())
+                  : ""
+            }
+          : undefined,
         users_aproved: [142, 146], // TODO: users_aproved esta mal escrito ya que el back lo pide asi
         project_id: projectIdParam || "19",
         client_id: clientIdParam || "98765232"
