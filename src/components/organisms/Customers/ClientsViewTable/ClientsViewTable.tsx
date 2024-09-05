@@ -59,7 +59,7 @@ export const ClientsViewTable = () => {
   useEffect(() => {
     if (data?.data?.clientsPortfolio) {
       setTableData((prevData) => [...prevData, ...data.data.clientsPortfolio]);
-      setHasMore(data.data.clientsPortfolio.length > 449);
+      setHasMore(data.data.clientsPortfolio.length  > 49);
     } else if (data?.status === 200 && data?.message === "no rows") {
       setHasMore(false);
     }
@@ -301,7 +301,7 @@ export const ClientsViewTable = () => {
           {loading && page > 1 && <Spin />}
         </div>
       )}
-      {!hasMore && !loading && tableData.length > 0 && (
+      {!hasMore && !loading && tableData.length <= 0 && (
         <div style={{ textAlign: "center", padding: "20px" }}>
           <Text>No hay más datos para cargar</Text>
         </div>
