@@ -151,9 +151,12 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                             <div className={styles.date}>
                               {formatDatePlane(item?.event_date?.toString())}
                             </div>
-                            {item?.event_name === "Emision del ajuste" && item.cp_id && (
-                              <Flex gap={"4px"}>
-                                Cashport ID: <div className={styles.idAdjustment}>{item.cp_id}</div>
+                            {item?.event_name === "Emision del ajuste" && (
+                              <Flex gap={"4px"} className={styles.date}>
+                                Cashport ID:{" "}
+                                <div className={styles.idAdjustment}>
+                                  {item.id_financial_discount || item.cp_id}
+                                </div>
                               </Flex>
                             )}
                             {item.username && (
@@ -167,20 +170,30 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                                     <div className={styles.idAdjustment}>{item.cp_id}</div>
                                   </Flex>
                                 )}
-                                {item.ammount && (
-                                  <div
-                                    className={styles.name}
-                                  >{`Valor: ${formatMoney(item?.ammount ?? "0")}`}</div>
-                                )}
+                                <div
+                                  className={styles.name}
+                                >{`Valor: ${formatMoney(item?.amount ?? "0")}`}</div>
                                 <div className={styles.date}>comentarios</div>
                                 <div className={styles.date}>{item?.comments}</div>{" "}
                               </div>
                             ) : null}
+                            {item?.event_name === "Creacion de ajuste" ? (
+                              <div>
+                                {item.cp_id && item.id_financial_discount && (
+                                  <div className={styles.idAdjustment}>
+                                  {item.id_financial_discount || item.cp_id}
+                                </div>
+                                )}
+                                <div
+                                  className={styles.name}
+                                >{`Valor: ${formatMoney(item?.amount ?? "0")}`}</div>
+                              </div>
+                            ) : null}
                             {item?.event_name === "Legaliazcion de ajuste" ? (
                               <div>
-                                {item?.ammount && (
+                                {item?.amount && (
                                   <div className={styles.name}>
-                                    {`Valor: ${formatMoney(item?.ammount ?? "0")}`}
+                                    {`Valor: ${formatMoney(item?.amount ?? "0")}`}
                                   </div>
                                 )}
 
@@ -216,7 +229,7 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                                 </div>
                                 <div
                                   className={styles.name}
-                                >{`Valor: ${formatMoney(item?.ammount ?? "0")}`}</div>
+                                >{`Valor: ${formatMoney(item?.amount ?? "0")}`}</div>
                                 <Flex wrap gap={"2px"}>
                                   {item?.invoices?.map((invoice, index, arr) => {
                                     return (

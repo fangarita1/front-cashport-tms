@@ -270,4 +270,4 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
 
 export default WalletTabChangeStatusModal;
 
-const invoiceStates = ["Conciliada", "Sin conciliar", "Glosado", "Devolucion", "Anulada", "Saldo"];
+const invoiceStates = ["Conciliada", "Sin conciliar", "Glosado", "Devolucion", "Anulada"];

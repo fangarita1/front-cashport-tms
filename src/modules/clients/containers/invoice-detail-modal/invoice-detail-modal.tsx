@@ -157,9 +157,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
           <div className={styles.headerBody}>
             <div className={styles.title}>Trazabilidad</div>
             <div
-              className={`${styles.status} ${statusClass(invoiceData ? invoiceData?.results[0].status_name : "")}`}
+              className={`${styles.status} ${statusClass(invoiceData ? invoiceData?.results[0]?.status_name : "")}`}
             >
-              {invoiceData ? invoiceData?.results[0].status_name : ""}
+              {invoiceData ? invoiceData?.results[0]?.status_name : ""}
             </div>
           </div>
           <div className={styles.content}>
