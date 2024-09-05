@@ -16,14 +16,14 @@ import PaymentAgreementModal from "@/modules/clients/components/wallet-tab-payme
 import { ModalActionDiscountCredit } from "@/components/molecules/modals/ModalActionDiscountCredit/ModalActionDiscountCredit";
 import RadicationInvoice from "@/components/molecules/modals/Radication/RadicationInvoice";
 import RegisterNews from "@/components/molecules/modals/RegisterNews/RegisterNews";
-import { useSWRConfig } from "swr";
-import "./wallettab.scss";
 import { useModalDetail } from "@/context/ModalContext";
 import { useDebounce } from "@/hooks/useDeabouce";
 import {
   SelectedFiltersWallet,
   WalletTabFilter
 } from "@/components/atoms/Filters/FilterWalletTab/FilterWalletTab";
+
+import "./wallettab.scss";
 
 export const WalletTab = () => {
   const { openModal } = useModalDetail();
@@ -44,7 +44,6 @@ export const WalletTab = () => {
   const projectIdParam = extractSingleParam(params.projectId);
 
   const debouncedSearchQuery = useDebounce(search, 300);
-  const { mutate } = useSWRConfig();
   const [showActionDetailModal, setShowActionDetailModal] = useState<{
     isOpen: boolean;
     actionType: number;
@@ -59,7 +58,7 @@ export const WalletTab = () => {
   const clientId = clientIdParam ? parseInt(clientIdParam) : 0;
   const projectId = projectIdParam ? parseInt(projectIdParam) : 0;
 
-  const { data, isLoading } = useInvoices({
+  const { data, isLoading, mutate } = useInvoices({
     clientId: clientId || 0,
     projectId: projectId || 0,
     searchQuery: debouncedSearchQuery,
@@ -80,23 +79,25 @@ export const WalletTab = () => {
 
   const handleisGenerateActionOpen = () => {
     setisGenerateActionOpen(!isGenerateActionOpen);
-    mutate(`/invoice/client/${clientId}/project/${projectId}`);
+    mutate();
   };
 
   const handleActionInDetail = (invoice: IInvoice) => {
     setisGenerateActionOpen(!isGenerateActionOpen);
     setSelectedRows([invoice]);
-    mutate(`/invoice/client/${clientId}/project/${projectId}`);
+    mutate();
   };
 
   const onCloseModal = () => {
     setisGenerateActionOpen(!isGenerateActionOpen);
     setIsSelectOpen({ selected: 0 });
+    mutate();
   };
+
   const closeAllModal = () => {
     setIsSelectOpen({ selected: 0 });
     setSelectedRows([]);
-    mutate(`/invoice/client/${clientId}/project/${projectId}`);
+    mutate();
   };
 
   const handleOpenInvoiceDetail = (invoice: IInvoice) => {

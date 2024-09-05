@@ -232,7 +232,7 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
   return (
     <Modal
       className={styles.wrapper}
-      width="40%"
+      width="50%"
       open={isOpen}
       footer={
         <div className={styles.footer}>
@@ -270,11 +270,4 @@ const WalletTabChangeStatusModal: React.FC<Props> = ({
 
 export default WalletTabChangeStatusModal;
 
-const invoiceStates = [
-  "Conciliada",
-  "Sin conciliar",
-  "Glosado",
-  "Devolucion",
-  "Anulada",
-  "Saldo",
-];
+const invoiceStates = ["Conciliada", "Sin conciliar", "Glosado", "Devolucion", "Anulada", "Saldo"];
