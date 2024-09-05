@@ -38,23 +38,21 @@ interface IDocument {
 
 export interface IClient {
   billing_period: string;
-  billing_period_config: IBillingPeriodForm;
+  billing_period_config: IBillingPeriodForm | null;
   business_name: string;
   client_name: string;
   cliet_type: string;
   client_type_id: number;
   condition_payment: number;
   condition_payment_id: number;
-  documents: IDocument[];
+  documents: IDocument[] | null;
   document_type: string;
   email: string;
-  holding_id: number;
-  holding_name: string;
+  holding_id: number | null;
+  holding_name: string | null;
   is_deleted: number;
-  key: number;
-  locations: IClientLocation[];
+  locations: IClientLocation[] | null[];
   nit: number;
-  payment_condition: number;
   phone: string;
   project_id: number;
   radication_type: number;

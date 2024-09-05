@@ -13,6 +13,7 @@ interface PropsInvoicesTable {
   stateId: number;
   dataSingleInvoice: IInvoice[];
   setSelectedRows: Dispatch<SetStateAction<IInvoice[] | undefined>>;
+  // eslint-disable-next-line no-unused-vars
   openInvoiceDetail: (invoice: IInvoice) => void;
   selectedRows?: IInvoice[];
 }
@@ -117,7 +118,7 @@ export const InvoicesTable = ({
       title: "Pronto pago",
       key: "earlypay_date",
       dataIndex: "earlypay_date",
-      render: (text) => <Text className="cell -alignRight">{formatDate(text)}</Text>,
+      render: (date) => <Text className="cell -alignRight">{date ? formatDate(date) : "-"}</Text>,
       sorter: (a, b) => Date.parse(a.earlypay_date) - Date.parse(b.earlypay_date),
       showSorterTooltip: false,
       align: "right",
