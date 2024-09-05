@@ -13,6 +13,13 @@
     border-radius: 8px;
     gap: 0.5rem;
 
+    .select__container {
+        display: flex;
+        gap: 0.5rem;
+        width: 100%;
+        height: 100%;
+    }
+
     .searchBar__container {
         height: 48px;
         gap: 0.5rem;
@@ -35,10 +42,11 @@
                 &:hover {
                     border: solid 1px $dark-gray;
                 }
+
                 &__green {
                     background-color: #CBE71E;
                 }
-    
+
                 &__white {
                     background-color: #ffff;
                     border: solid 2px;

@@ -7,7 +7,6 @@ import { FinancialDiscount } from "@/types/financialDiscounts/IFinancialDiscount
 import { useFinancialDiscountDetail } from "@/hooks/useDetailAdjustment";
 import { ModalActionAdjusment } from "../modalActionAdjusment/ModalActionAdjusment";
 import { Button, Flex } from "antd";
-import { it } from "node:test";
 import { useModalDetail } from "@/context/ModalContext";
 
 interface ModalDetailAdjustmentProps {
