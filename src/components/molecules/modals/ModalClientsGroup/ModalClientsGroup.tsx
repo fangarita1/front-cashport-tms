@@ -2,13 +2,12 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Flex, message, Modal, Typography } from "antd";
 import { useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-import { ClientsProjectTable } from "@/components/molecules/tables/ClientsProjectTable/ClientsProjectTable";
 import { createGroup } from "@/services/groupClients/groupClients";
-
-import "./modalClientsGroup.scss";
-import { IClient } from "@/types/clients/IClients";
 import { useAppStore } from "@/lib/store/store";
 import { groupInfo } from "@/components/organisms/projects/ClientsGroupsProjectView/ClientsGroupsProjectView";
+import { ClientsTableModal } from "../../tables/ClientsTableModal/ClientsTableModal";
+
+import "./modalClientsGroup.scss";
 
 const { Text } = Typography;
 
@@ -34,7 +33,7 @@ export const ModalClientsGroup = ({
 }: CreateGroupProps) => {
   const [groupName, setGroupName] = useState("");
   const { ID } = useAppStore((state) => state.selectedProject);
-  const [selectedRows, setSelectedRows] = useState<IClient[]>([]);
+  const [clientsKeys, setClientsKeys] = useState<React.Key[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
   const {
     control,
@@ -54,15 +53,15 @@ export const ModalClientsGroup = ({
   };
 
   const onCreateGroup = () => {
-    if (selectedRows.length <= 0) {
+    if (clientsKeys.length <= 0) {
       messageApi.open({ type: "warning", content: "Selecciona clientes para añadir al grupo" });
       return;
     }
-    if (selectedRows.length > 0) {
+    if (clientsKeys.length > 0) {
       try {
         const group = {
           name: groupName,
-          clients: selectedRows.map((client: IClient) => client.nit)
+          clients: clientsKeys
         };
         createGroup(group, ID);
       } catch (error) {
@@ -72,16 +71,16 @@ export const ModalClientsGroup = ({
 
     setIsOpenModal(false);
     setGroupName("");
-    setSelectedRows([]);
+    setClientsKeys([]);
   };
 
   const onUpdateGroup = () => {
     if (!updateClientsGroup) return;
-    updateClientsGroup(selectedRows.map((client: IClient) => client.nit.toString()));
+    updateClientsGroup(clientsKeys.map((client) => client.toString()));
 
     setIsOpenModal(false);
     setGroupName("");
-    setSelectedRows([]);
+    setClientsKeys([]);
   };
 
   return (
@@ -149,9 +148,8 @@ export const ModalClientsGroup = ({
                 ? "Selecciona los clientes para añadir/quitar del grupo"
                 : "Selecciona los clientes para añadir al grupo"}
             </Text>
-            <ClientsProjectTable
-              placedIn="modal"
-              setSelectedRows={setSelectedRows}
+            <ClientsTableModal
+              setClientsKeys={setClientsKeys}
               selectedClientsKeys={selectedGroupInfo?.clientsIds}
             />
           </Flex>

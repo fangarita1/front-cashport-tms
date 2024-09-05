@@ -1,0 +1,118 @@
+@import "@styles/variables.scss";
+
+.mainClientsProjectTable {
+    width: 100%;
+    height: 100%;
+
+    .ant-table {
+        max-height: 500px !important;
+        overflow: scroll;
+        scrollbar-width: none;
+    }
+
+    .name {
+        border: none;
+        color: $link;
+        box-shadow: none;
+        padding: 0;
+        width: fit-content;
+        background-color: transparent;
+        text-decoration: underline;
+        font-size: 0.875rem;
+        text-align: left;
+
+        &:hover {
+            background-color: transparent;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+        &:active {
+            background-color: transparent;
+            opacity: 1;
+        }
+    }
+
+    .mainClientsProjectTable_header {
+        margin: 2rem 0;
+        padding-right: 1rem;
+        margin-top: 1rem;
+    }
+
+    .statusContainer {
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        width: fit-content;
+        border: 1px solid $active;
+
+        &__text {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    .statusContainerPending {
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        width: fit-content;
+        border: 1px solid $pending;
+        cursor: pointer;
+    }
+
+    .statusPending {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 1rem;
+        margin-right: 0.5rem;
+        background-color: $pending;
+    }
+
+    .statusActive {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 1rem;
+        margin-right: 0.5rem;
+        background-color: $active;
+    }
+
+    .inputSearch {
+        &::placeholder {
+            color: black !important;
+        }
+    }
+
+    .buttonNewProject {
+        background-color: $secondary;
+        color: black;
+        font-weight: 600;
+        box-shadow: none;
+        display: flex;
+        align-items: center;
+
+        &:hover {
+            background-color: $secondary !important;
+            opacity: 0.8;
+            color: black;
+        }
+    }
+
+    .selectedRow {
+        td {
+            background-color: inherit !important;
+        }
+    }
+}
+.next {
+    transform: rotate(90deg);
+}
+
+.prev {
+    transform: rotate(-90deg);
+}
+
+.pagination {
+    justify-content: center;
+}
+
+.container-table-of-ant {
+    max-height: 50vh;
+}
