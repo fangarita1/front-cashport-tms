@@ -68,6 +68,11 @@ export interface PreAuthorizationRequestData {
   link: string;
   createdAt: string; // Considera usar `Date` si conviertes el string a objeto Date
   createdBy: string;
+  idInvoice?: string;
+  invoiceDate: string;
+  invoiceFare?: number;
+  invoiceUrl?: string;
+  XMLUrl?: string;
 }
 
 export interface IPreauthorizedRequest {

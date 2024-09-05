@@ -363,6 +363,7 @@ export const TransferOrderDetails = () => {
         canEditForm={false}
         totalValue={billingList?.find((b) => b.id == billingId)?.subtotal ?? 0}
         messageApi={messageApi}
+        uploadInvoiceTitle={billingList?.find((b) => b.id == billingId)?.carrier}
       />
     </div>
   );

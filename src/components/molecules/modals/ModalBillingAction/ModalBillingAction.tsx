@@ -23,6 +23,7 @@ type PropsModal = {
   onClose: () => void;
   messageApi: MessageInstance;
   canEditForm?: boolean;
+  uploadInvoiceTitle?: string;
 };
 
 export default function ModalBillingAction(props: Readonly<PropsModal>) {
@@ -34,7 +35,8 @@ export default function ModalBillingAction(props: Readonly<PropsModal>) {
     totalValue,
     billingStatus,
     messageApi,
-    canEditForm = true
+    canEditForm = true,
+    uploadInvoiceTitle
   } = props;
   const [selectedView, setSelectedView] = useState<ViewEnum>(ViewEnum.SELECT);
 
@@ -84,7 +86,11 @@ export default function ModalBillingAction(props: Readonly<PropsModal>) {
           </Flex>
         );
       case ViewEnum.UPLOAD_INVOICE:
-        return <p className={styles.actionTitle}>Cargar facturas</p>;
+        return !canEditForm && uploadInvoiceTitle ? (
+          <p className={styles.actionTitle}>{uploadInvoiceTitle}</p>
+        ) : (
+          <p className={styles.actionTitle}>Cargar facturas</p>
+        );
       default:
         return "";
     }
