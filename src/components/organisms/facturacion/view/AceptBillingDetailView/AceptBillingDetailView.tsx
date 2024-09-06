@@ -187,6 +187,8 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
       status_id: incident.status,
       created_by: incident.user,
       quantity: incident.units,
+      overcost_id: 0,
+      unit_value: 0,
       evidences: [evidence]
     };
   }
