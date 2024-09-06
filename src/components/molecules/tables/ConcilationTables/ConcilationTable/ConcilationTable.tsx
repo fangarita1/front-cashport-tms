@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Select, Table, TableProps, Tooltip, Typography } from "antd";
 import { CheckCircle, Eye } from "phosphor-react";
 import "./concilationTable.scss";

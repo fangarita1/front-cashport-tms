@@ -46,8 +46,7 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
 
   const fetchRejectedNotifications = async (): Promise<Notification[]> => {
     const response = await API.get(`/notification/rejecteds/project/${projectId}/user`);
-    console.log(response.data);
-    
+
     return response.data;
   };
 
