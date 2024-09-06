@@ -21,6 +21,7 @@ import { IJourney, IIncident } from "@/types/logistics/schema";
 import { INovelty, IEvidence } from "@/types/novelty/INovelty";
 import { BillingStatusEnum } from "@/types/logistics/billing/billing";
 import { formatMoney, formatNumber } from "@/utils/utils";
+import { downloadCSVFromEndpoint } from "@/services/logistics/download_csv";
 
 const { Text } = Typography;
 
@@ -225,6 +226,11 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
   
   
 
+    const handleDownloadCsv = () => {
+      const endpoint = `logistic-billing/export-csv/${params.id}`;
+      downloadCSVFromEndpoint(endpoint, "billing.csv");
+    };
+
   return (
     <>
       {contextHolder}
@@ -235,6 +241,9 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
             <CaretLeft size={20} weight="bold" />
             <div>Detalle de TR {billingData?.billing?.idTransferRequest}</div>
           </Link>
+          <button className={styles.buttonDownload} onClick={handleDownloadCsv}>
+              Descargar CSV
+            </button>
           {canMakeAnAction && (
             <Button
               className={styles.actionBtn}
