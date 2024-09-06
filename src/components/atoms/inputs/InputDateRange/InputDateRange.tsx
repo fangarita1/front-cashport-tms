@@ -20,6 +20,7 @@ interface InputDateRangeProps {
   validationRules?: RegisterOptions;
   className?: string;
   isError?: boolean;
+  optional?: boolean;
 }
 
 export const InputDateRange = ({
@@ -33,12 +34,16 @@ export const InputDateRange = ({
   disabled,
   validationRules,
   className,
-  isError = false
+  isError = false,
+  optional = false
 }: InputDateRangeProps) => {
   const dateFormat = "YYYY/MM/DD";
   return (
     <Flex vertical className={`datePickerRangeContainer ${className}`}>
-      {!hiddenTitle && <p className="input-date-custom-title">{titleInput}</p>}
+      <Flex>
+        {!hiddenTitle && <p className="input-date-custom-title">{titleInput}</p>}
+        {optional && <p className="input-date-custom-title-option">*Opcional</p>}
+      </Flex>
       <Controller
         name={nameInput}
         rules={{ required: true, ...validationRules }}
