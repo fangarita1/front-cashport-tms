@@ -77,7 +77,8 @@ export const DrawerCreateBody: FC<IDrawerBodyProps> = ({
         noeltyTypeId: getNovelty?.id || null,
         quantity: novelty.quantity,
         observation: novelty.observation,
-        value: novelty.value
+        value: novelty.value,
+        overcostId: novelty.overcost_id
       });
     }
   }, [novelties]);

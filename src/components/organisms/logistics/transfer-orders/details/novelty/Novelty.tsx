@@ -18,6 +18,7 @@ interface INoveltyProps {
   transferJournies: ITransferJourney[];
   setTripId: (id: number) => void;
   setTripData: (data: { idCarrier: number; idVehicleType: number }) => void;
+  resetNovelty: () => void;
   handleOpenMTModal: () => void;
 }
 
@@ -28,6 +29,7 @@ export const Novelty: FC<INoveltyProps> = ({
   handleOpenCreateDrawer,
   setTripId,
   setTripData,
+  resetNovelty,
   handleOpenMTModal
 }) => {
   const [key, setKey] = useState<number | null>(null);
@@ -123,7 +125,13 @@ export const Novelty: FC<INoveltyProps> = ({
                         <NoveltyTable
                           novelties={trip.novelties}
                           openDrawer={() => openDrawer()}
-                          handleShowDetails={handleShowDetails}
+                          handleShowDetails={(t) => {
+                            setTripData({
+                              idCarrier: trip.id_provider,
+                              idVehicleType: trip.id_vehicle_type
+                            });
+                            handleShowDetails(t);
+                          }}
                         />
                         <Flex gap={8} justify="flex-end" align="flex-end">
                           <button
@@ -131,6 +139,10 @@ export const Novelty: FC<INoveltyProps> = ({
                             onClick={() => {
                               handleOpenMTModal();
                               setTripId(trip.id);
+                              setTripData({
+                                idCarrier: trip.id_provider,
+                                idVehicleType: trip.id_vehicle_type
+                              });
                             }}
                           >
                             <Receipt size={20} />
@@ -145,6 +157,7 @@ export const Novelty: FC<INoveltyProps> = ({
                                   idCarrier: trip.id_provider,
                                   idVehicleType: trip.id_vehicle_type
                                 });
+                                resetNovelty();
                               }}
                               className={styles.btn}
                               type="text"
