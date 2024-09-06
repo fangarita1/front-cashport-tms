@@ -173,7 +173,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                     (invoiceData?.results ?? []).map((item, index, arr) => {
                       return (
                         <div key={item.id} className={styles.mainStep}>
-                          <div className={`${styles.stepLine} ${styles.active}`} />
+                          <div
+                            className={`${styles.stepLine} ${index === arr.length - 1 ? styles.inactive : styles.active}`}
+                          />
                           <div className={`${styles.stepCircle} ${styles.active}`} />
                           <div className={styles.stepLabel}>
                             <div className={styles.cardInvoiceFiling}>
@@ -365,6 +367,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                 </div>
                               ) : (
                                 ""
+                              )}
+                              {item.comments && (
+                                <div className={styles.name}>Comentario: {item.comments}</div>
                               )}
                             </div>
                           </div>
