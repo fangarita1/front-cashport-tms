@@ -65,7 +65,7 @@ export const ClientsViewTable = () => {
     fetchPortfolios,
     {
       getNextPageParam: (lastPage, pages) => {
-        if (lastPage.data.clientsPortfolio.length < 50) return undefined;
+        if (lastPage?.data?.clientsPortfolio?.length < 50) return undefined;
         return pages.length + 1;
       }
     }
@@ -188,8 +188,8 @@ export const ClientsViewTable = () => {
     }
   ];
 
-  const flattenedData = data?.pages.flatMap((page) => page.data.clientsPortfolio) || [];
-  const grandTotal = data?.pages[0]?.data.grandTotal;
+  const flattenedData = data?.pages?.flatMap((page) => page?.data?.clientsPortfolio) || [];
+  const grandTotal = data?.pages[0]?.data?.grandTotal;
   return (
     <main className="mainClientsTable">
       <div>
