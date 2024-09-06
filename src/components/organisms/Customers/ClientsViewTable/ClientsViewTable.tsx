@@ -1,5 +1,5 @@
 "use client";
-import {  useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import Link from "next/link";
 import { Spin, TableProps, Button, Col, Flex, Row, Table, Typography } from "antd";
@@ -65,7 +65,8 @@ export const ClientsViewTable = () => {
     fetchPortfolios,
     {
       getNextPageParam: (lastPage, pages) => {
-        if (lastPage?.data?.clientsPortfolio?.length < 50) return undefined;
+        if (lastPage.message === "no rows" || lastPage?.data?.clientsPortfolio?.length < 50)
+          return undefined;
         return pages.length + 1;
       }
     }
@@ -188,8 +189,9 @@ export const ClientsViewTable = () => {
     }
   ];
 
-  const flattenedData = data?.pages?.flatMap((page) => page?.data?.clientsPortfolio) || [];
-  const grandTotal = data?.pages[0]?.data?.grandTotal;
+  const flattenedData = data?.pages.flatMap((page) => page?.data?.clientsPortfolio || []) || [];
+  const grandTotal = data?.pages[0]?.data?.grandTotal || {};
+  const noResults = data?.pages[0]?.message === "no rows";
   return (
     <main className="mainClientsTable">
       <div>
@@ -268,7 +270,7 @@ export const ClientsViewTable = () => {
         loading={status === "loading"}
         scroll={{ x: 1350 }}
         columns={columns as TableProps<any>["columns"]}
-        dataSource={flattenedData.map((data) => ({ ...data, key: data.client_id }))}
+        dataSource={flattenedData.map((data) => ({ ...data, key: data?.client_id }))}
         pagination={false}
         sticky={
           {
@@ -276,13 +278,16 @@ export const ClientsViewTable = () => {
             offsetScroll: 0
           } as any
         }
+        locale={{
+          emptyText: noResults ? "No se encontraron resultados" : "No hay datos disponibles"
+        }}
       />
-      {(hasNextPage || isFetchingNextPage) && (
+      {(hasNextPage || isFetchingNextPage) && !noResults && (
         <div ref={ref} style={{ textAlign: "center", padding: "20px" }}>
           {isFetchingNextPage ? <Spin /> : "Load More"}
         </div>
       )}
-      {!hasNextPage && status !== "loading" && flattenedData.length <= 0 && (
+      {!hasNextPage && status !== "loading" && flattenedData.length <= 0 && !noResults && (
         <div style={{ textAlign: "center", padding: "20px" }}>
           <Text>No hay más datos para cargar</Text>
         </div>
