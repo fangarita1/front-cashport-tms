@@ -1,5 +1,5 @@
 "use client";
-import { SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import {  useCallback, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import Link from "next/link";
 import { Spin, TableProps, Button, Col, Flex, Row, Table, Typography } from "antd";
@@ -15,7 +15,7 @@ import {
   MagnifyingGlassMinus
 } from "phosphor-react";
 import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
-import { usePortfolios } from "@/hooks/usePortfolios";
+
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
 import { formatMoney } from "@/utils/utils";
 
@@ -34,6 +34,7 @@ const { Text } = Typography;
 
 export const ClientsViewTable = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [filters, setFilters] = useState<SelectedFilters>({
     holding: [],
     clientGroup: []
@@ -44,12 +45,12 @@ export const ClientsViewTable = () => {
     isLoading: false,
     loadingId: 0
   });
-  
+
   const fetchPortfolios = async ({ pageParam = 1 }) => {
     const limit = 50;
     const holdingQuery = filters.holding.length > 0 ? `&holding=${filters.holding.join(",")}` : "";
-    const searchQueryParam = searchQuery
-      ? `&searchQuery=${encodeURIComponent(searchQuery.toLowerCase().trim())}`
+    const searchQueryParam = debouncedSearchQuery
+      ? `&searchQuery=${encodeURIComponent(debouncedSearchQuery.toLowerCase().trim())}`
       : "";
     const clientGroupQuery =
       filters.clientGroup.length > 0 ? `&client_group=${filters.clientGroup.join(",")}` : "";
@@ -60,7 +61,7 @@ export const ClientsViewTable = () => {
   };
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery(
-    ["portfolios", searchQuery, filters],
+    ["portfolios", debouncedSearchQuery, filters],
     fetchPortfolios,
     {
       getNextPageParam: (lastPage, pages) => {
