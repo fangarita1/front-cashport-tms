@@ -2,7 +2,7 @@ import useSWR from "swr";
 import { fetcher } from "@/utils/api/api";
 import { IClientsGroupsFull } from "@/types/clientsGroups/IClientsGroups";
 import { useAppStore } from "@/lib/store/store";
-import { changeGroupState, deleteGroups } from "@/services/groupClients/groupClients";
+import { changeGroupState, createGroup, deleteGroups } from "@/services/groupClients/groupClients";
 
 interface Props {
   page?: number;
@@ -50,11 +50,17 @@ export const useClientsGroups = ({
     mutate();
   };
 
+  const addGroup = async (group: { name: string; clients: React.Key[] }) => {
+    await createGroup(group, projectId);
+    mutate();
+  };
+
   return {
     data: data,
     loading: isLoading,
     error,
     deleteSelectedGroups,
-    changeGroupsState
+    changeGroupsState,
+    addGroup
   };
 };

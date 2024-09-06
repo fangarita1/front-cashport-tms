@@ -3,6 +3,7 @@ import config from "@/config";
 import { API, getIdToken } from "@/utils/api/api";
 import { GenericResponse } from "@/types/global/IGlobal";
 import { IClientsGroup, IClientsGroupsFull } from "@/types/clientsGroups/IClientsGroups";
+import { Key } from "react";
 
 export const getOneGroup = async (groupId: number, projectId: number) => {
   try {
@@ -15,7 +16,13 @@ export const getOneGroup = async (groupId: number, projectId: number) => {
   }
 };
 
-export const createGroup = async (data: any, id: number): Promise<any> => {
+export const createGroup = async (
+  data: {
+    name: string;
+    clients: Key[];
+  },
+  id: number
+): Promise<any> => {
   const modelData = {
     name: data.name,
     clients: data.clients,
@@ -117,7 +124,6 @@ export const changeGroupState = async (
   }
 };
 
-
 export const getClientGroups = async (
   projectId: number,
   name?: string,
@@ -129,14 +135,11 @@ export const getClientGroups = async (
     if (name) url += `&name=${encodeURIComponent(name)}`;
     if (status !== undefined) url += `&status=${status}`;
 
-    const response: AxiosResponse<IClientsGroupsFull> = await axios.get(
-      url,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+    const response: AxiosResponse<IClientsGroupsFull> = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    );
+    });
     return response;
   } catch (error) {
     return error as any;
