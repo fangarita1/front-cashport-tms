@@ -160,15 +160,11 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
           }
         }
       }
-      if (!allInvoicesHaveMotive) break;
     }
 
     setIsValid(allInvoicesHaveMotive);
   }, [invoices]);
 
-  useEffect(() => {
-    console.log("selet", selectedRows);
-  }, [selectedRows]);
 
   return (
     <div className="concilation_table">
