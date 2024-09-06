@@ -17,7 +17,7 @@ interface IformDiscount {
   motive: string;
   percentage: number;
   amount: number;
-  validity_range: Date[];
+  validity_range?: (Date | undefined)[];
   expiration_date: Date;
 }
 
@@ -35,18 +35,17 @@ const schema = yup.object().shape({
     .max(100, "El porcentaje no puede ser mayor al 100%")
     .required("Campo obligatorio"),
   amount: yup.number().min(0, "El valor no puede ser negativo").required("Campo obligatorio"),
-  validity_range: yup
-    .array()
-    .of(yup.date().required("Campo obligatorio"))
-    .min(2, "Debe seleccionar un rango de fechas")
-    .required("Campo obligatorio"),
-  expiration_date: yup
-    .date()
-    .required("Campo obligatorio")
-    .min(
-      yup.ref("validity_range[1]"),
-      "La fecha de expiración debe ser posterior al rango de vigencia"
-    )
+  validity_range: yup.array().of(yup.date()).optional(),
+  expiration_date: yup.lazy((value, context) => {
+    const validityRange = context.parent.validity_range;
+    return yup
+      .date()
+      .required("Campo obligatorio")
+      .min(
+        validityRange && validityRange.length > 0 ? validityRange[1] : new Date(),
+        "La fecha de expiración debe ser posterior al rango de vigencia"
+      );
+  })
 });
 
 export const CreateDiscount = ({ onClose, messageApi, projectIdParam, clientIdParam }: Props) => {
@@ -68,12 +67,23 @@ export const CreateDiscount = ({ onClose, messageApi, projectIdParam, clientIdPa
         motive: motives?.find((motive) => motive.name === data.motive)?.id || 1,
         ammount: data.amount,
         percentage: data.percentage,
-        date_of_issue: formatDateBars(data.validity_range[0].toISOString()),
+        date_of_issue:
+          data.validity_range && data.validity_range[0]
+            ? formatDateBars(data.validity_range[0].toISOString())
+            : formatDateBars(new Date().toISOString()),
         expiration_date: formatDateBars(data.expiration_date.toISOString()),
-        validity_range: {
-          start: formatDateBars(data.validity_range[0].toISOString()),
-          end: formatDateBars(data.validity_range[1].toISOString())
-        },
+        validity_range: data.validity_range
+          ? {
+              start:
+                data.validity_range && data.validity_range[0]
+                  ? formatDateBars(data.validity_range[0].toISOString())
+                  : "",
+              end:
+                data.validity_range && data.validity_range[1]
+                  ? formatDateBars(data.validity_range[1].toISOString())
+                  : ""
+            }
+          : undefined,
         users_aproved: [142, 146], // TODO: users_aproved esta mal escrito ya que el back lo pide asi
         project_id: projectIdParam || "19",
         client_id: clientIdParam || "98765232" // TODO: agregar cliente

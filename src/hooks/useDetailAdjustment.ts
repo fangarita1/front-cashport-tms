@@ -14,7 +14,7 @@ interface FinancialDiscountEvent {
   comments: string;
   event_date: string;
   is_deleted: number;
-  ammount: number;
+  amount: number;
   status: number;
   username: string | null;
   event_name: string;

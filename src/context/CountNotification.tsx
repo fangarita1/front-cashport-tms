@@ -1,4 +1,4 @@
-import create from "zustand";
+import { create } from "zustand";
 import { API } from "@/utils/api/api";
 
 interface NotificationStore {

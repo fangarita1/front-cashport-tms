@@ -1,15 +1,22 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import LabelCollapse from "@/components/ui/label-collapse";
 import UiSearchInput from "@/components/ui/search-input/search-input";
-import { Button, Collapse, Flex, message } from "antd";
+import { Button, Collapse, Flex, message, Select, Typography } from "antd";
 import { ConcilationTable } from "../ConcilationTable/ConcilationTable";
-import { InfoConcilation, InvoicesConcilation } from "@/types/concilation/concilation";
+import {
+  IInvoiceConcilation,
+  InfoConcilation,
+  InvoicesConcilation
+} from "@/types/concilation/concilation";
 import "./stateConcilationTable.scss";
 import { ModalEstimatedConcilation } from "@/components/molecules/modals/ModalEstimatedConcilation/ModalEstimatedConcilation";
 import InvoiceDetailModal from "@/modules/clients/containers/invoice-detail-modal";
 
 import RegisterNewsConcilation from "@/components/molecules/modals/RegisterNewsConcilation/RegisterNewsConcilation";
 import { useAppStore } from "@/lib/store/store";
+import { useInvoiceIncidentMotives } from "@/hooks/useInvoiceIncidentMotives";
+
+const { Text } = Typography;
 
 interface Props {
   invoices: InfoConcilation | undefined;
@@ -19,18 +26,19 @@ interface Props {
 
 export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props) => {
   const [messageApi, contextHolder] = message.useMessage();
-
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [IdErp, setIderp] = useState<string>("");
-  const [_, setIsDetailInvoiceModalOpen] = useState(false);
   const [isRegisterNewsOpen, setIsRegisterNewsOpen] = useState(false);
   const [isValid, setIsValid] = useState(false);
   const [showInvoiceDetailModal, setShowInvoiceDetailModal] = useState({
     isOpen: false,
     invoiceId: 0
   });
+  const [selectedRows, setSelectedRows] = useState<IInvoiceConcilation[] | undefined>(undefined);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const { ID } = useAppStore((state) => state.selectedProject);
+  const { data: motives, isLoading } = useInvoiceIncidentMotives();
 
   useEffect(() => {
     if (invoices) {
@@ -60,6 +68,57 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
           const category = updatedInvoices[categoryKey as keyof InfoConcilation];
           category.invoices = category.invoices.map((invoice) =>
             invoice.id === invoiceId ? { ...invoice, motive_id: motiveId } : invoice
+          );
+        }
+      }
+      setInvoices(updatedInvoices);
+    }
+  };
+  const handleRowSelection = (
+    newSelectedRowKeys: React.Key[],
+    newSelectedRows: IInvoiceConcilation[],
+    category: keyof InfoConcilation
+  ) => {
+    const currentCategoryInvoices = invoices?.[category].invoices || [];
+
+    // Determine which rows were deselected
+    const deselectedRows =
+      selectedRows?.filter(
+        (row) =>
+          currentCategoryInvoices.some((invoice) => invoice.id === row.id) &&
+          !newSelectedRows.some((newRow) => newRow.id === row.id)
+      ) || [];
+
+    // Remove deselected rows and add newly selected rows
+    const updatedSelectedRows = [
+      ...(selectedRows?.filter((row) => !deselectedRows.includes(row)) || []),
+      ...newSelectedRows.filter(
+        (row) => !selectedRows?.some((selectedRow) => selectedRow.id === row.id)
+      )
+    ];
+
+    // Update selectedRowKeys
+    const updatedSelectedRowKeys = Array.from(
+      new Set([
+        ...selectedRowKeys.filter((key) => !deselectedRows.some((row) => row.id === key)),
+        ...newSelectedRowKeys.filter((key) => !selectedRowKeys.includes(key))
+      ])
+    );
+
+    setSelectedRows(updatedSelectedRows);
+    setSelectedRowKeys(updatedSelectedRowKeys);
+  };
+
+  const addSelectMotiveToAll = (motiveId: number) => {
+    if (selectedRows && invoices) {
+      const updatedInvoices = { ...invoices };
+      const selectedIds = new Set(selectedRows.map((row) => row.id));
+
+      for (const categoryKey in updatedInvoices) {
+        if (Object.prototype.hasOwnProperty.call(updatedInvoices, categoryKey)) {
+          const category = updatedInvoices[categoryKey as keyof InfoConcilation];
+          category.invoices = category.invoices.map((invoice) =>
+            selectedIds.has(invoice.id) ? { ...invoice, motive_id: motiveId } : invoice
           );
         }
       }
@@ -101,11 +160,12 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
           }
         }
       }
-      if (!allInvoicesHaveMotive) break;
     }
 
     setIsValid(allInvoicesHaveMotive);
   }, [invoices]);
+
+
   return (
     <div className="concilation_table">
       {contextHolder}
@@ -139,6 +199,20 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
           >
             Guardar
           </Button>
+          <Select
+            placeholder="Seleccionar acción para todos"
+            loading={isLoading}
+            className="select__container"
+            options={motives?.map((motive) => ({ value: motive.id, label: motive.name })) || []}
+            onChange={(value) => addSelectMotiveToAll(value)}
+            style={{ width: "200px", marginRight: "10px" }}
+            disabled={!selectedRows || selectedRows.length === 0}
+          />
+          <Text type="secondary" style={{ fontSize: "12px" }}>
+            {selectedRows && selectedRows.length > 0
+              ? `Se aplicará a ${selectedRows.length} factura(s) seleccionada(s)`
+              : "Seleccione facturas para aplicar acción"}
+          </Text>
         </Flex>
       </Flex>
       <Collapse
@@ -163,6 +237,14 @@ export const StateConcilationTable = ({ invoices, clientId, setInvoices }: Props
                     setShowInvoiceDetailModal={setShowInvoiceDetailModal}
                     addSelectMotive={addSelectMotive}
                     setIderp={setIderp}
+                    onRowSelection={(newSelectedRowKeys, newSelectedRows) =>
+                      handleRowSelection(
+                        newSelectedRowKeys,
+                        newSelectedRows,
+                        key as keyof InfoConcilation
+                      )
+                    }
+                    selectedRowKeys={selectedRowKeys}
                   />
                 )
               }))

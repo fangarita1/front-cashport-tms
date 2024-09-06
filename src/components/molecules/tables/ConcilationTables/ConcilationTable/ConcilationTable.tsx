@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Select, Table, TableProps, Tooltip, Typography } from "antd";
 import { CheckCircle, Eye } from "phosphor-react";
 import "./concilationTable.scss";
@@ -10,26 +10,31 @@ const { Text } = Typography;
 
 interface PropsInvoicesTable {
   dataSingleInvoice: IInvoiceConcilation[];
-  setShowInvoiceDetailModal: Dispatch<
-    SetStateAction<{
-      isOpen: boolean;
-      invoiceId: number;
-    }>
-  >;
-  setIderp: Dispatch<SetStateAction<string>>;
-  // eslint-disable-next-line no-unused-vars
+  setShowInvoiceDetailModal: (params: { isOpen: boolean; invoiceId: number }) => void;
+  setIderp: (id: string) => void;
   addSelectMotive: (invoiceId: number, motiveId: number) => void;
+  onRowSelection: (selectedRowKeys: React.Key[], selectedRows: IInvoiceConcilation[]) => void;
+  selectedRowKeys: React.Key[];
 }
 
 export const ConcilationTable = ({
   setIderp,
   dataSingleInvoice: data,
   addSelectMotive,
-  setShowInvoiceDetailModal
+  setShowInvoiceDetailModal,
+  onRowSelection,
+  selectedRowKeys
 }: PropsInvoicesTable) => {
   const openInvoiceDetail = (invoiceId: number, id_erp?: string) => {
     setIderp(id_erp || "");
     setShowInvoiceDetailModal({ isOpen: true, invoiceId });
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[], newSelectedRows: IInvoiceConcilation[]) => {
+      onRowSelection(newSelectedRowKeys, newSelectedRows);
+    }
   };
 
   const { data: motives, isLoading } = useInvoiceIncidentMotives();
@@ -53,7 +58,11 @@ export const ConcilationTable = ({
       title: "Fecha",
       dataIndex: "create_at",
       key: "create_at",
-      render: (text) => <Text className="cell -alignRight">{formatDate(text)}</Text>,
+      render: (text, record) => (
+        <Text className="cell -alignRight">
+          {formatDate(record?.financialRecordDate?.toString())}
+        </Text>
+      ),
       sorter: (a, b) => Number(a.create_at) - Number(b.create_at),
       showSorterTooltip: false,
       align: "right",
@@ -107,6 +116,7 @@ export const ConcilationTable = ({
             onChange={(value) =>
               addSelectMotive(record.id, motives?.find((motive) => motive.name === value)?.id || 0)
             }
+            value={motives?.find((motive) => motive.id === record.motive_id)?.name}
             style={{ width: "100%" }}
           />
         </div>
@@ -155,6 +165,7 @@ export const ConcilationTable = ({
         className="concilationTable"
         columns={columns}
         pagination={false}
+        rowSelection={rowSelection}
         dataSource={data.map((data) => ({ ...data, key: data.id }))}
       />
     </>

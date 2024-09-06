@@ -82,7 +82,7 @@ export const ClientProjectForm = ({
             ? data?.locations[0]?.address
             : undefined,
         city:
-          data?.locations && data.locations.length > 0
+          data?.locations && data.locations.length > 0 && data?.locations[0] !== null
             ? {
                 value: data.locations[0].location_id,
                 label: data.locations[0].city
@@ -173,8 +173,8 @@ export const ClientProjectForm = ({
         data: finalData
       });
 
-      setClientDocuments(finalData.documents);
-      setBillingPeriod(finalData.billing_period_config);
+      setClientDocuments(finalData.documents || []);
+      setBillingPeriod(finalData.billing_period_config || undefined);
     };
     fetchClientData();
 

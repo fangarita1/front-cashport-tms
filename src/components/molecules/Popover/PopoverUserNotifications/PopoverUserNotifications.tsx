@@ -1,5 +1,5 @@
 import { Badge, List, Popover, Tabs, Spin, Flex } from "antd";
-import React from "react";
+import React, { useState, useCallback } from "react";
 import "./popoverUserNotifications.scss";
 import Link from "next/link";
 import { BellSimpleRinging, Envelope, Eye } from "phosphor-react";
@@ -7,9 +7,21 @@ import { timeAgo } from "@/utils/utils";
 import TabPane from "antd/es/tabs/TabPane";
 import { useModalDetail } from "@/context/ModalContext";
 import { useNotificationStore } from "@/context/CountNotification";
-import { useNotificationOpen } from "@/hooks/useNotificationOpen";
-import { useRejectedNotifications } from "@/hooks/useNotificationReject";
 import { markNotificationAsRead } from "@/services/notifications/notification";
+import { useQuery, useQueryClient } from "react-query";
+import { API } from "@/utils/api/api";
+
+interface Notification {
+  create_at: string;
+  notification_type_name: string;
+  client_name: string;
+  incident_id: number;
+  is_client_change: number;
+  client_update_changes: Record<string, any>;
+  days: string;
+  id: number;
+  is_read: number;
+}
 
 interface PopoverUserNotificationsProps {
   setIsPopoverVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,25 +36,55 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
 }) => {
   const { notificationCount, updateNotificationCount } = useNotificationStore();
   const { openModal } = useModalDetail();
+  const queryClient = useQueryClient();
+  const [shouldFetchData, setShouldFetchData] = useState(false);
 
-  const {
-    data: openNotifications,
-    isLoading: isLoadingOpen,
-    mutate: mutateOpenNotifications
-  } = useNotificationOpen(projectId);
-  const {
-    data: rejectedNotifications,
-    isLoading: isLoadingRejected,
-    mutate: mutateRejectedNotifications
-  } = useRejectedNotifications(projectId);
-
-  const handleVisibleChange = async (visible: boolean) => {
-    setIsPopoverVisible(visible);
-    if (visible) {
-      updateNotificationCount();
-      await markNotificationsAsRead();
-    }
+  const fetchOpenNotifications = async (): Promise<Notification[]> => {
+    const response = await API.get(`/notification/project/${projectId}/user`);
+    return response.data.data;
   };
+
+  const fetchRejectedNotifications = async (): Promise<Notification[]> => {
+    const response = await API.get(`/notification/rejecteds/project/${projectId}/user`);
+    return response.data.data;
+  };
+
+  const { data: openNotifications, isLoading: isLoadingOpen } = useQuery(
+    ["openNotifications", projectId],
+    fetchOpenNotifications,
+    {
+      enabled: shouldFetchData,
+      staleTime: Infinity, // Prevent auto-refetching
+      cacheTime: 0 // Don't cache the data
+    }
+  );
+
+  const { data: rejectedNotifications, isLoading: isLoadingRejected } = useQuery(
+    ["rejectedNotifications", projectId],
+    fetchRejectedNotifications,
+    {
+      enabled: shouldFetchData,
+      staleTime: Infinity, // Prevent auto-refetching
+      cacheTime: 0 // Don't cache the data
+    }
+  );
+
+  const handleVisibleChange = useCallback(
+    async (visible: boolean) => {
+      setIsPopoverVisible(visible);
+      if (visible) {
+        setShouldFetchData(true);
+        updateNotificationCount();
+        // Refetch notifications when popover opens
+        queryClient.invalidateQueries(["openNotifications", projectId]);
+        queryClient.invalidateQueries(["rejectedNotifications", projectId]);
+        setTimeout(markNotificationsAsRead, 500);
+      } else {
+        setShouldFetchData(false);
+      }
+    },
+    [setIsPopoverVisible, updateNotificationCount, queryClient, projectId]
+  );
 
   const markNotificationsAsRead = async () => {
     const allNotifications = [...(openNotifications || []), ...(rejectedNotifications || [])];
@@ -65,11 +107,13 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
     await Promise.allSettled(markPromises);
 
     // Refresh the notification lists after marking as read
-    await Promise.all([mutateOpenNotifications(), mutateRejectedNotifications()]);
+    queryClient.invalidateQueries(["openNotifications", projectId]);
+    queryClient.invalidateQueries(["rejectedNotifications", projectId]);
   };
 
-  const renderList = (data: any[], isLoading: boolean) => {
+  const renderList = (data: Notification[] | undefined, isLoading: boolean) => {
     if (isLoading) return <Spin />;
+    if (!data) return null;
     return (
       <List
         itemLayout="horizontal"
@@ -120,16 +164,16 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
       </div>
       <Tabs defaultActiveKey="1">
         <TabPane
-          tab={`Abiertos ${openNotifications && openNotifications?.length > 0 ? `(${openNotifications?.length})` : ""}`}
+          tab={`Abiertos ${openNotifications && openNotifications.length > 0 ? `(${openNotifications.length})` : ""}`}
           key="1"
         >
-          {renderList(openNotifications || [], isLoadingOpen)}
+          {renderList(openNotifications, isLoadingOpen)}
         </TabPane>
         <TabPane
-          tab={`Cerradas ${rejectedNotifications && rejectedNotifications?.length > 0 ? `(${rejectedNotifications.length})` : ""}`}
+          tab={`Cerradas ${rejectedNotifications && rejectedNotifications.length > 0 ? `(${rejectedNotifications.length})` : ""}`}
           key="2"
         >
-          {renderList(rejectedNotifications || [], isLoadingRejected)}
+          {renderList(rejectedNotifications, isLoadingRejected)}
         </TabPane>
       </Tabs>
     </div>

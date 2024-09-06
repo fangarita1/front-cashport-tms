@@ -29,7 +29,6 @@ const EvidenceModal = ({
   setIsSecondView,
   noComment = false
 }: EvidenceModalProps) => {
-  
   const isAttachButtonDisabled = !noComment
     ? !(commentary && selectedEvidence.length > 0)
     : selectedEvidence.length === 0;
@@ -86,7 +85,7 @@ const EvidenceModal = ({
               id="fileInput"
               style={{ display: "none" }}
               onChange={handleFileChange}
-              accept=".pdf,.png,.doc,.docx"
+              accept=".pdf, .png, .doc, .docx, .xls, .xlsx, .msg, .txt, .eml"
             />
           </>
         )}

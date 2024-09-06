@@ -195,9 +195,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
   ];
 
   const getFilters = async (): Promise<FilterOption[]> => {
-    return [
-      { id: "status", name: "Estado" }
-    ];
+    return [{ id: "status", name: "Estado" }];
   };
 
   const apiCallbacks = {

@@ -95,7 +95,7 @@ export const FilterPortfolio = ({ setSelectedFilters }: Props) => {
   return (
     <Cascader
       className="filterCascader"
-      style={{ width: "200px" }}
+      style={{ width: "120px", height: "46px" }}
       multiple
       size="large"
       removeIcon

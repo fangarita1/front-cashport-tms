@@ -35,7 +35,7 @@ export const createAccountingAdjustment = async (
     );
     return response.data;
   } catch (error) {
-    return error as any;
+    throw error;
   }
 };
 export const applyAccountingAdjustment = async (

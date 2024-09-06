@@ -1,5 +1,6 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import Link from "next/link";
 import { Spin, TableProps, Button, Col, Flex, Row, Table, Typography } from "antd";
 import {
@@ -14,94 +15,76 @@ import {
   MagnifyingGlassMinus
 } from "phosphor-react";
 import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
-import { usePortfolios } from "@/hooks/usePortfolios";
+
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
 import { formatMoney } from "@/utils/utils";
 
 import "./ClientsViewTable.scss";
 import { useDebounce } from "@/hooks/useDeabouce";
-import UiSearchInput from "@/components/ui/search-input/search-input";
 import {
   FilterPortfolio,
   SelectedFilters
 } from "@/components/atoms/Filters/FilterPortfolio/FilterPortfolio";
+import OptimizedSearchComponent from "@/components/atoms/inputs/OptimizedSearchComponent/OptimizedSearchComponent";
+import { fetcher } from "@/utils/api/api";
+import { useInfiniteQuery } from "react-query";
+import { useAppStore } from "@/lib/store/store";
 
 const { Text } = Typography;
 
 export const ClientsViewTable = () => {
-  const [page, setPage] = useState(1);
-  const [isComponentLoading, setIsComponentLoading] = useState(true);
-  const [tableData, setTableData] = useState<IClientsPortfolio[]>([]);
-  const [hasMore, setHasMore] = useState(true);
-  const loader = useRef(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [filters, setFilters] = useState<SelectedFilters>({
     holding: [],
     clientGroup: []
   });
-  useEffect(() => {
-    setIsComponentLoading(false);
-  }, []);
+  const { ID } = useAppStore((state) => state.selectedProject);
 
   const [loadingOpenPortfolio, setLoadingOpenPortfolio] = useState({
     isLoading: false,
     loadingId: 0
   });
 
-  const { data, loading, error } = usePortfolios({
-    page: page,
-    searchQuery: debouncedSearchQuery,
-    holding: filters.holding,
-    client_group: filters.clientGroup
+  const fetchPortfolios = async ({ pageParam = 1 }) => {
+    const limit = 50;
+    const holdingQuery = filters.holding.length > 0 ? `&holding=${filters.holding.join(",")}` : "";
+    const searchQueryParam = debouncedSearchQuery
+      ? `&searchQuery=${encodeURIComponent(debouncedSearchQuery.toLowerCase().trim())}`
+      : "";
+    const clientGroupQuery =
+      filters.clientGroup.length > 0 ? `&client_group=${filters.clientGroup.join(",")}` : "";
+
+    const pathKey = `/portfolio/client/project/${ID}?page=${pageParam}&limit=${limit}${holdingQuery}${searchQueryParam}${clientGroupQuery}`;
+
+    return fetcher(pathKey);
+  };
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery(
+    ["portfolios", debouncedSearchQuery, filters],
+    fetchPortfolios,
+    {
+      getNextPageParam: (lastPage, pages) => {
+        if (lastPage.message === "no rows" || lastPage?.data?.clientsPortfolio?.length < 50)
+          return undefined;
+        return pages.length + 1;
+      }
+    }
+  );
+
+  const { ref, inView } = useInView({
+    threshold: 0
   });
 
   useEffect(() => {
-    if (data?.data?.clientsPortfolio) {
-      setTableData((prevData) => [...prevData, ...data.data.clientsPortfolio]);
-      setHasMore(data.data.clientsPortfolio.length > 449);
-    } else if (data?.status === 200 && data?.message === "no rows") {
-      setHasMore(false);
+    if (inView && hasNextPage) {
+      fetchNextPage();
     }
-  }, [data]);
+  }, [inView, hasNextPage, fetchNextPage]);
 
-  useEffect(() => {
-    setPage(1);
-    setTableData([]);
-    setHasMore(true);
-  }, [debouncedSearchQuery, filters]);
-
-  const loadMoreData = useCallback(() => {
-    if (!loading && hasMore && !error) {
-      setPage((prevPage) => prevPage + 1);
-    }
-  }, [loading, hasMore, error]);
-
-  useEffect(() => {
-    const options = {
-      root: null,
-      rootMargin: "20px",
-      threshold: 1.0
-    };
-
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !loading) {
-        loadMoreData();
-      }
-    }, options);
-
-    const currentLoader = loader.current;
-
-    if (currentLoader) {
-      observer.observe(currentLoader);
-    }
-
-    return () => {
-      if (currentLoader) {
-        observer.unobserve(currentLoader);
-      }
-    };
-  }, [loadMoreData, loading]);
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
 
   const columns: TableProps<IClientsPortfolio>["columns"] = [
     {
@@ -189,7 +172,9 @@ export const ClientsViewTable = () => {
         <Link href={`/clientes/detail/${row.client_id}/project/${row.project_id}`}>
           <Button
             key={row.client_id}
-            onClick={() => setLoadingOpenPortfolio({ isLoading: true, loadingId: row.client_id })}
+            onClick={() => {
+              setLoadingOpenPortfolio({ isLoading: true, loadingId: row.client_id });
+            }}
             className="buttonSeeProject"
             icon={
               loadingOpenPortfolio.loadingId === row.client_id && loadingOpenPortfolio.isLoading ? (
@@ -203,17 +188,16 @@ export const ClientsViewTable = () => {
       )
     }
   ];
-  const handelSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPage(1);
-    setSearchQuery(e.target.value);
-  };
 
+  const flattenedData = data?.pages.flatMap((page) => page?.data?.clientsPortfolio || []) || [];
+  const grandTotal = data?.pages[0]?.data?.grandTotal || {};
+  const noResults = data?.pages[0]?.message === "no rows";
   return (
     <main className="mainClientsTable">
       <div>
         <Flex justify="space-between" className="mainClientsTable_header">
           <Flex gap={"10px"}>
-            <UiSearchInput placeholder="Buscar clientes" onChange={(e) => handelSearch(e)} />
+            <OptimizedSearchComponent onSearch={handleSearch} />
             <FilterPortfolio setSelectedFilters={setFilters} />
             <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
           </Flex>
@@ -224,49 +208,49 @@ export const ClientsViewTable = () => {
               <Col span={4}>
                 <CardsClients
                   title={"Total cartera"}
-                  total={data?.data?.grandTotal?.total_wallet || 0}
+                  total={grandTotal?.total_wallet || 0}
                   icon={<Money />}
-                  loading={loading}
+                  loading={status === "loading"}
                 />
               </Col>
               <Col span={4}>
                 <CardsClients
                   title={"C. vencida"}
-                  total={data?.data?.grandTotal?.total_past_due || 0}
+                  total={grandTotal?.total_past_due || 0}
                   icon={<CalendarX />}
-                  loading={loading}
+                  loading={status === "loading"}
                 />
               </Col>
               <Col span={4}>
                 <CardsClients
                   title={"Presupuesto"}
-                  total={data?.data?.grandTotal?.total_budget || 0}
+                  total={grandTotal?.total_budget || 0}
                   icon={<CalendarBlank />}
-                  loading={loading}
+                  loading={status === "loading"}
                 />
               </Col>
               <Col span={4}>
                 <CardsClients
                   title={"R. aplicado"}
-                  total={data?.data?.grandTotal?.applied_payments_ammount || 0}
+                  total={grandTotal?.applied_payments_ammount || 0}
                   icon={<Receipt />}
-                  loading={loading}
+                  loading={status === "loading"}
                 />
               </Col>
               <Col span={4}>
                 <CardsClients
                   title={"Pagos no ap."}
-                  total={data?.data?.grandTotal?.unapplied_payments_ammount || 0}
+                  total={grandTotal?.unapplied_payments_ammount || 0}
                   icon={<XCircle />}
-                  loading={loading}
+                  loading={status === "loading"}
                 />
               </Col>
               <Col span={4}>
                 <CardsClients
                   title={"Pagos no id."}
-                  total={data?.data?.grandTotal?.unidentified_payment_ammount || 0}
+                  total={grandTotal?.unidentified_payment_ammount || 0}
                   icon={<MagnifyingGlassMinus />}
-                  loading={loading}
+                  loading={status === "loading"}
                 />
               </Col>
             </Row>
@@ -274,19 +258,19 @@ export const ClientsViewTable = () => {
           <Col span={3}>
             <CardsClients
               title={"DSO"}
-              total={data?.data?.grandTotal?.dso || 0}
+              total={grandTotal?.dso || 0}
               icon={<Calendar />}
               notAMoneyValue
-              loading={loading}
+              loading={status === "loading"}
             />
           </Col>
         </Row>
       </div>
       <Table
-        loading={loading && page === 1}
+        loading={status === "loading"}
         scroll={{ x: 1350 }}
         columns={columns as TableProps<any>["columns"]}
-        dataSource={tableData.map((data) => ({ ...data, key: data.client_id }))}
+        dataSource={flattenedData.map((data) => ({ ...data, key: data?.client_id }))}
         pagination={false}
         sticky={
           {
@@ -294,13 +278,16 @@ export const ClientsViewTable = () => {
             offsetScroll: 0
           } as any
         }
+        locale={{
+          emptyText: noResults ? "No se encontraron resultados" : "No hay datos disponibles"
+        }}
       />
-      {hasMore && !loading && (
-        <div ref={loader} style={{ textAlign: "center", padding: "20px" }}>
-          {loading && page > 1 && <Spin />}
+      {(hasNextPage || isFetchingNextPage) && !noResults && (
+        <div ref={ref} style={{ textAlign: "center", padding: "20px" }}>
+          {isFetchingNextPage ? <Spin /> : "Load More"}
         </div>
       )}
-      {!hasMore && !loading && tableData.length > 0 && (
+      {!hasNextPage && status !== "loading" && flattenedData.length <= 0 && !noResults && (
         <div style={{ textAlign: "center", padding: "20px" }}>
           <Text>No hay más datos para cargar</Text>
         </div>
