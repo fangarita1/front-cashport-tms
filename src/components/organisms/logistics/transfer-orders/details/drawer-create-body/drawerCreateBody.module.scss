@@ -57,6 +57,9 @@
 
     .leftSection {
       width: 50%;
+      flex-direction: column;
+      row-gap: 24px;
+      display: flex;
     }
 
     .rightSection {
