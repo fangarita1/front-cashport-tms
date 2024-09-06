@@ -144,6 +144,7 @@ export const DrawerBody: FC<IDrawerBodyProps> = ({
               }
               return (
                 <a
+                  key={`evidence-${evidence.id}`}
                   className={styles.evidence}
                   download={evidence.url}
                   href={evidence.url}
