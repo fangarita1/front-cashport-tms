@@ -53,7 +53,7 @@ export const getAceptCarrierRequestById = async (id: string): Promise<any> => {
 export const getVehiclesByCarrierId = async (id: number): Promise<IListData> => {
   const token = await getIdToken();
   try {
-    const response: IListData = await axios.get(`${config.API_HOST}/vehicle/provider/${id}`, {
+    const response: IListData = await axios.get(`${config.API_HOST}/vehicle/provider-active/${id}`, {
       headers: {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "multipart/form-data",
@@ -70,7 +70,7 @@ export const getVehiclesByCarrierId = async (id: number): Promise<IListData> => 
 export const getDriverByCarrierId = async (id: number): Promise<IListData> => {
   const token = await getIdToken();
   try {
-    const response: IListData = await axios.get(`${config.API_HOST}/driver/provider/${id}`, {
+    const response: IListData = await axios.get(`${config.API_HOST}/driver/provider-active/${id}`, {
       headers: {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "multipart/form-data",

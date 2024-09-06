@@ -78,11 +78,11 @@ export const GroupLocationsTable = () => {
       width: "54px",
       dataIndex: "",
       render: (_, { id }) => (
-       {/* <Button
+       <Button
           href={`/logistics/configuration/grouplocations/${id}`}
           className="icon-detail"
           icon={<Eye size={20} />}
-        /> */}
+        />
       ),
     },
   ];
@@ -100,7 +100,7 @@ export const GroupLocationsTable = () => {
           />
           <Button
             className="options"
-            href="/logistics/configutarion/material"
+            href="/logistics/configuration/grouplocations"
             icon={<DotsThree size={"1.5rem"} />}
           />
         </Flex>
@@ -109,7 +109,7 @@ export const GroupLocationsTable = () => {
             type="primary"
             className="buttonNewProject"
             size="large"
-            href="/logistics/configuration/materials/new"
+            href="/logistics/configuration/grouplocations/new"
           >
             Nuevo grupo de ubicaciones
             {<Plus weight="bold" size={14} />}

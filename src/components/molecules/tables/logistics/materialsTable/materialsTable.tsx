@@ -39,6 +39,7 @@ export const MaterialsTable = () => {
       })
       .map((element: any) => ({
         id: element.id,
+        code_sku: element.code_sku,
         description: element.description,
         m3_volume: element.m3_volume,
         mt_height: element.mt_height,
@@ -55,6 +56,11 @@ export const MaterialsTable = () => {
       title: "Código",
       dataIndex: "id",
       key: "id",
+    },
+    {
+      title: "SKU",
+      dataIndex: "code_sku",
+      key: "code_sku",
     },
     {
       title: "Nombre",

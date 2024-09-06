@@ -522,7 +522,8 @@ export const LocationFormTab = ({
                       error={errors?.general?.state_id}
                       field={field}
                       loading={isLoadingStates}
-                      options={convertStatesToSelectOptions((statesData?.data.data as any) || [])}                                          
+                      options={convertStatesToSelectOptions((statesData?.data.data as any) || [])}       
+                      showSearch={true}
                       />
                     )}                    
                   /> 
@@ -542,7 +543,8 @@ export const LocationFormTab = ({
                       error={errors?.general?.city_id}
                       field={field}
                       loading={isLoadingCities}
-                      options={convertCitiesToSelectOptions((citiesData?.data.data as any) || [])}                                          
+                      options={convertCitiesToSelectOptions((citiesData?.data.data as any) || [])}
+                      showSearch={true}
                       />
                     )}                    
                   /> 
