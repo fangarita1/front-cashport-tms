@@ -75,7 +75,7 @@ export const TransferOrderDetails = () => {
     quantity: 0,
     observation: "",
     value: 0,
-    overcostId: undefined,
+    overcostId: undefined
   });
   const [formEvidences, setFormEvidences] = useState<File[]>([]);
 
@@ -124,6 +124,7 @@ export const TransferOrderDetails = () => {
             setTripId={(id: number) => setTripId(id)}
             handleOpenMTModal={handleOpenMTModal}
             setTripData={setTripData}
+            resetNovelty={() => setNovelty(null)}
           />
         );
       case NavEnum.VEHICLES:
@@ -184,7 +185,7 @@ export const TransferOrderDetails = () => {
       quantity: form.quantity,
       value: form.value,
       created_by: "Oscar Rincon",
-      overcostId: form.overcostId,
+      overcostId: form.overcostId || 0,
       evidences: []
     };
     try {
@@ -194,6 +195,7 @@ export const TransferOrderDetails = () => {
           observation: form.observation,
           quantity: form.quantity,
           value: form.value,
+          overcostId: form.overcostId || 0,
           evidences: [],
           novelty_type_id: Number(form.noeltyTypeId),
           trip_id: novelty.trip_id,
@@ -205,23 +207,26 @@ export const TransferOrderDetails = () => {
             noeltyTypeId: null || 0,
             quantity: 0,
             observation: "",
-            value: 0
+            value: 0,
+            overcostId: undefined
           });
           findNovelties();
         }
-      }
-      const create = await createNovelty(body);
-      if (create) {
-        await createNoveltyEvidences(create.id, formEvidences);
-        setOpenDrawer(false);
-        setForm({
-          noeltyTypeId: null || 0,
-          quantity: 0,
-          observation: "",
-          value: 0
-        });
-        setFormEvidences([]);
-        findNovelties();
+      } else {
+        const create = await createNovelty(body);
+        if (create) {
+          await createNoveltyEvidences(create.id, formEvidences);
+          setOpenDrawer(false);
+          setForm({
+            noeltyTypeId: null || 0,
+            quantity: 0,
+            observation: "",
+            value: 0,
+            overcostId: undefined
+          });
+          setFormEvidences([]);
+          findNovelties();
+        }
       }
     } catch (error) {
       console.error(error);
