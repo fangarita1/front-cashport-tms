@@ -56,12 +56,12 @@ const ConfigurationLayout = ({ children, params }: Props) => {
   };
 
   const onChange = (key: string) => {
-    if(key == 'materials') //default tab
-    {
+    if (key == "materials") {
+      //default tab
       router.push(`/logistics/configuration`);
-    }else{
+    } else {
       router.push(`/logistics/configuration/${key}/all`);
-    }    
+    }
   };
   const items: TabsProps["items"] = [
     {
@@ -74,26 +74,26 @@ const ConfigurationLayout = ({ children, params }: Props) => {
       label: "Usuarios",
       children: <></>
     },
-    {
-      key: "carriers",
-      label: "Proveedores",
-      children: <></>
-    },
+    // {
+    //   key: "carriers",
+    //   label: "Proveedores",
+    //   children: <></>
+    // },
     {
       key: "locations",
-      label: "Ubicacion",
-      children: <></>
-    },
-    {
-      key: "grouplocations",
-      label: "Grupos de Ubicaciones",
-      children: <></>
-    },
-    {
-      key: "secureroutes",
-      label: "Rutas de Seguridad",
+      label: "Ubicación",
       children: <></>
     }
+    // {
+    //   key: "grouplocations",
+    //   label: "Grupos de Ubicaciones",
+    //   children: <></>,
+    // },
+    // {
+    //   key: "secureroutes",
+    //   label: "Rutas de Seguridad",
+    //   children: <></>
+    // }
   ];
 
   return (
@@ -103,7 +103,7 @@ const ConfigurationLayout = ({ children, params }: Props) => {
         <Flex className="infoHeaderOrder">
           <Flex gap={"2rem"}>
             <Title level={2} className="titleName">
-            Configuración
+              Configuración
             </Title>
           </Flex>
           <Flex align="center" justify="space-between">
