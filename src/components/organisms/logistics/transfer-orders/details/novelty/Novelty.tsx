@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Button, Collapse, Flex, Tag, Typography } from "antd";
 import { CaretDown, Receipt, Truck } from "phosphor-react";
 import styles from "./novelty.module.scss";
@@ -15,8 +16,8 @@ interface INoveltyProps {
   handleShowDetails: (id: number) => void;
   handleOpenCreateDrawer: () => void;
   transferJournies: ITransferJourney[];
-  // eslint-disable-next-line no-unused-vars
   setTripId: (id: number) => void;
+  setTripData: (data: { idCarrier: number; idVehicleType: number }) => void;
   handleOpenMTModal: () => void;
 }
 
@@ -26,6 +27,7 @@ export const Novelty: FC<INoveltyProps> = ({
   transferJournies,
   handleOpenCreateDrawer,
   setTripId,
+  setTripData,
   handleOpenMTModal
 }) => {
   const [key, setKey] = useState<number | null>(null);
@@ -139,6 +141,10 @@ export const Novelty: FC<INoveltyProps> = ({
                               onClick={() => {
                                 handleOpenCreateDrawer();
                                 setTripId(trip.id);
+                                setTripData({
+                                  idCarrier: trip.id_provider,
+                                  idVehicleType: trip.id_vehicle_type
+                                });
                               }}
                               className={styles.btn}
                               type="text"

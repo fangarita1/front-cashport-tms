@@ -47,6 +47,7 @@ export interface IForm {
   quantity: number;
   observation: string;
   value: number;
+  overcostId?: number;
 }
 
 export const TransferOrderDetails = () => {
@@ -63,13 +64,18 @@ export const TransferOrderDetails = () => {
   const [transferJournies, setTransferJournies] = useState<ITransferJourney[]>();
   const [novelty, setNovelty] = useState<INovelty | null>(null);
   const [billingList, setBillingList] = useState<BillingByCarrier[]>([]);
+  const [tripData, setTripData] = useState<{ idCarrier: number; idVehicleType: number }>({
+    idCarrier: 0,
+    idVehicleType: 0
+  });
 
   const [tripId, setTripId] = useState<number | null>(null);
   const [form, setForm] = useState<IForm>({
     noeltyTypeId: null || 0,
     quantity: 0,
     observation: "",
-    value: 0
+    value: 0,
+    overcostId: undefined,
   });
   const [formEvidences, setFormEvidences] = useState<File[]>([]);
 
@@ -117,6 +123,7 @@ export const TransferOrderDetails = () => {
             transferJournies={transferJournies || []}
             setTripId={(id: number) => setTripId(id)}
             handleOpenMTModal={handleOpenMTModal}
+            setTripData={setTripData}
           />
         );
       case NavEnum.VEHICLES:
@@ -177,6 +184,7 @@ export const TransferOrderDetails = () => {
       quantity: form.quantity,
       value: form.value,
       created_by: "Oscar Rincon",
+      overcostId: form.overcostId,
       evidences: []
     };
     try {
@@ -336,6 +344,7 @@ export const TransferOrderDetails = () => {
             formEvidences={formEvidences}
             setFormEvidences={setFormEvidences}
             setForm={setForm}
+            tripData={tripData}
           />
         )}
       </Drawer>

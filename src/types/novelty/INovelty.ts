@@ -25,7 +25,8 @@ export interface INovelty {
   status_id: string;
   created_by: string;
   quantity: number;
-  evidences: IEvidence[]
+  unit_value: number;
+  evidences: IEvidence[];
 }
 
 export interface INoveltyEvidenceBody {
@@ -34,12 +35,18 @@ export interface INoveltyEvidenceBody {
 }
 
 export interface INoveltyBody {
-  id?: number; 
+  id?: number;
   observation: string;
   novelty_type_id: number;
   trip_id: number;
   quantity: number;
   value: number;
   created_by: string;
-  evidences?: INoveltyEvidenceBody[]
+  evidences?: INoveltyEvidenceBody[];
+}
+
+export interface IOvercost {
+  id: number;
+  description: string;
+  price: number;
 }
