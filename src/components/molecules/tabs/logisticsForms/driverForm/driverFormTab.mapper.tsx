@@ -7,6 +7,8 @@ import Title from "antd/es/typography/Title";
 import dayjs from "dayjs";
 import { SetStateAction } from "react";
 import { UseFormSetValue } from "react-hook-form";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 export type StatusForm = "review" | "create" | "edit";
 export interface DriverFormTabProps {
@@ -15,8 +17,8 @@ export interface DriverFormTabProps {
   disabled?: boolean;
   onEditProject?: () => void;
   onSubmitForm?: (data: any) => void;
-  onActiveProject?: () => void;
-  onDesactivateProject?: () => void;
+  onActiveProject?: () => Promise<void>;
+  onDesactivateProject?: () => Promise<void>;
   statusForm: "create" | "edit" | "review";
   params: {
     id: string;
@@ -58,7 +60,7 @@ export const dataToProjectFormData = (
       document: data.document,
       license: data?.licence || data.license,
       license_category: data.licence_category || "",
-      license_expiration: dayjs(data.license_expiration) as any,
+      license_expiration: dayjs.utc(data.license_expiration || data.licence_expiration) as any,
       name: data.name,
       last_name: data.last_name,
       emergency_number: data.emergency_number,

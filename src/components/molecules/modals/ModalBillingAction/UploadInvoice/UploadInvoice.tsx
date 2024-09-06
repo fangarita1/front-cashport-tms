@@ -9,7 +9,7 @@ import FooterButtons from "../FooterButtons/FooterButtons";
 import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
 import dayjs from "dayjs";
 import { getPreauthorizedInfo, sendInvoices } from "@/services/billings/billings";
-import { PA, UploadInvoiceForm } from "./controllers/uploadinvoice.types";
+import { IBillingInfoAPI, PA, UploadInvoiceForm } from "./controllers/uploadinvoice.types";
 import { defaultUploadInvoiceForm } from "./controllers/createDefault";
 import { UploadDocumentButton } from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
 import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
@@ -17,18 +17,30 @@ import { MessageInstance } from "antd/es/message/interface";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { uploadInvoiceFormSchema } from "./controllers/formSchema";
 import { PreAuthorizationRequestData } from "@/types/logistics/billing/billing";
+import { STATUS } from "@/utils/constants/globalConstants";
+import { formatNumber } from "@/utils/utils";
 
 interface UploadInvoice {
+  idBilling: number;
   idTR: number;
   onClose: () => void;
   messageApi: MessageInstance;
+  canEditForm?: boolean;
 }
-const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
+const UploadInvoice = ({
+  idTR,
+  idBilling,
+  onClose,
+  messageApi,
+  canEditForm = true
+}: UploadInvoice) => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
   const [preauthorizeds, setPreauthorizeds] = useState<PreAuthorizationRequestData[]>([]);
   const [defaultValues, setDefaultValues] = useState<UploadInvoiceForm>(defaultUploadInvoiceForm);
+  const [isEditable, setIsEditable] = useState(canEditForm);
+  const [billingInfo, setBillingInfo] = useState<IBillingInfoAPI | null>(null);
 
   const {
     control,
@@ -48,7 +60,10 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
   });
 
   //Create default with api data
-  function createDefaultValues(pasData: PreAuthorizationRequestData[]): UploadInvoiceForm {
+  function createDefaultValues(
+    pasData: PreAuthorizationRequestData[],
+    type: "invoice" | "preauthorization"
+  ): UploadInvoiceForm {
     const defaultValues: PA[] = pasData.map((pa) => ({
       info: {
         id: pa.id,
@@ -58,11 +73,11 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
         link: pa.link
       },
       invoice: {
-        id: "",
-        date: null,
+        id: type === "preauthorization" ? "" : pa.idInvoice,
+        date: type === "preauthorization" ? null : dayjs(pa.invoiceDate),
         value: pa.authorizationFare,
-        pdfFile: undefined,
-        xmlFile: undefined
+        pdfFile: type === "preauthorization" ? undefined : { link: pa.invoiceUrl },
+        xmlFile: type === "preauthorization" ? undefined : { link: pa.XMLUrl }
       }
     }));
     return {
@@ -82,9 +97,10 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
   async function getPreauthorized() {
     try {
       setIsLoading(true);
-      const response = await getPreauthorizedInfo(idTR);
+      const response = await getPreauthorizedInfo(idBilling);
       if (response) {
-        setPreauthorizeds(response);
+        setBillingInfo(response.billing);
+        setPreauthorizeds(response.authorizations);
       }
     } catch (error) {
       messageApi?.open({
@@ -99,7 +115,7 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
   async function sendForm(form: UploadInvoiceForm) {
     try {
       setIsLoading(true);
-      const response = await sendInvoices(form, idTR);
+      const response = await sendInvoices(form, idBilling);
       if (response) {
         messageApi?.open({
           type: "success",
@@ -167,13 +183,18 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
   useEffect(() => {
     if (!isInitialized) {
       getPreauthorized();
-      setIsInitialized(true);
+      setIsInitialized(false);
     }
   }, [isInitialized]);
 
   useEffect(() => {
     if (preauthorizeds && preauthorizeds.length > 0) {
-      const newDefaultValues = createDefaultValues(preauthorizeds);
+      let newDefaultValues;
+      if (billingInfo && billingInfo.idStatus === STATUS.BNG.FACTURADO) {
+        newDefaultValues = createDefaultValues(preauthorizeds, "invoice");
+      } else {
+        newDefaultValues = createDefaultValues(preauthorizeds, "preauthorization");
+      }
       setDefaultValues(newDefaultValues);
       reset(newDefaultValues);
     }
@@ -198,12 +219,21 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
               <b>Total preautorizado</b>
             </p>
             <p className={styles.subtitle}>
-              <b>{`$${totalPreAuthorized}`}</b>
+              <b>{`$${formatNumber(totalPreAuthorized, 2)}`}</b>
             </p>
           </Flex>
           <Flex justify="space-between">
-            <p className={styles.subtitle}>Pendiente facturación</p>
-            <p className={styles.subtitle}>{`$${pendingInvoiceValue}`}</p>
+            {billingInfo?.idStatus === STATUS.BNG.FACTURADO ? (
+              <>
+                <p className={styles.subtitle}>Total facturado</p>
+                <p className={styles.subtitle}>{`$${formatNumber(billingInfo?.fare, 2)}`}</p>
+              </>
+            ) : (
+              <>
+                <p className={styles.subtitle}>Pendiente facturación</p>
+                <p className={styles.subtitle}>{`$${formatNumber(pendingInvoiceValue, 2)}`}</p>
+              </>
+            )}
           </Flex>
         </Flex>
         <UiTabs
@@ -269,6 +299,7 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
               control={control}
               error={currentErrors?.invoice?.id}
               titleInput="Id Factura"
+              readOnly={!isEditable}
             />
             <InputDateForm
               key={`invoice.date-${selectedTab}`}
@@ -276,6 +307,7 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
               nameInput={`pas.${selectedTab}.invoice.date`}
               control={control}
               error={(currentErrors?.invoice?.date as FieldError) ?? undefined}
+              disabled={!isEditable}
             />
             <InputForm
               key={`invoice.value-${selectedTab}`}
@@ -287,31 +319,68 @@ const UploadInvoice = ({ idTR, onClose, messageApi }: UploadInvoice) => {
               titleInput="Valor"
             />
           </Flex>
-          <UploadFileButton
-            isMandatory={true}
-            key={`${selectedTab}.${currentInvoice.id}.pdf`}
-            title={"PDF Factura"}
-            handleOnDelete={() => handleOnDeleteDocument("pdfFile")}
-            handleOnChange={(file) => handleOnChangeDocument("pdfFile", file)}
-            fileName={currentInvoice?.pdfFile?.file?.name ?? undefined}
-            fileSize={currentInvoice?.pdfFile?.file?.size ?? undefined}
-          />
-          <UploadFileButton
-            isMandatory={false}
-            key={`${selectedTab}.${currentInvoice.id}.xml`}
-            title={"XML Factura"}
-            handleOnDelete={() => handleOnDeleteDocument("xmlFile")}
-            handleOnChange={(file) => handleOnChangeDocument("xmlFile", file)}
-            fileName={currentInvoice?.xmlFile?.file?.name ?? undefined}
-            fileSize={currentInvoice?.xmlFile?.file?.size ?? undefined}
-          />
+          {currentInvoice.pdfFile?.link ? (
+            <UploadDocumentButton
+              key={`${selectedTab}.${currentInvoice.id}.pdf`}
+              title={"PDF Factura"}
+              isMandatory={true}
+              setFiles={() => {}}
+              disabled
+            >
+              <UploadDocumentChild
+                linkFile={currentInvoice.pdfFile.link}
+                nameFile={currentInvoice.pdfFile.link.split("-").pop() ?? pasCodes[selectedTab]}
+                showTrash={false}
+                onDelete={() => {}}
+              />
+            </UploadDocumentButton>
+          ) : (
+            <UploadFileButton
+              isMandatory={true}
+              key={`${selectedTab}.${currentInvoice.id}.pdf`}
+              title={"PDF Factura"}
+              handleOnDelete={() => handleOnDeleteDocument("pdfFile")}
+              handleOnChange={(file) => handleOnChangeDocument("pdfFile", file)}
+              fileName={currentInvoice?.pdfFile?.file?.name ?? undefined}
+              fileSize={currentInvoice?.pdfFile?.file?.size ?? undefined}
+              disabled={!isEditable}
+            />
+          )}
+          {currentInvoice.xmlFile?.link ? (
+            <UploadDocumentButton
+              key={`${selectedTab}.${currentInvoice.id}.xml`}
+              title={"XML Factura"}
+              isMandatory={true}
+              setFiles={() => {}}
+              disabled
+            >
+              <UploadDocumentChild
+                linkFile={currentInvoice.xmlFile.link}
+                nameFile={currentInvoice.xmlFile.link.split("-").pop() ?? pasCodes[selectedTab]}
+                showTrash={false}
+                onDelete={() => {}}
+              />
+            </UploadDocumentButton>
+          ) : (
+            <UploadFileButton
+              isMandatory={false}
+              key={`${selectedTab}.${currentInvoice.id}.xml`}
+              title={"XML Factura"}
+              handleOnDelete={() => handleOnDeleteDocument("xmlFile")}
+              handleOnChange={(file) => handleOnChangeDocument("xmlFile", file)}
+              fileName={currentInvoice?.xmlFile?.file?.name ?? undefined}
+              fileSize={currentInvoice?.xmlFile?.file?.size ?? undefined}
+              disabled={!isEditable}
+            />
+          )}
         </Flex>
       </Flex>
       <FooterButtons
-        isConfirmDisabled={isConfirmDisabled}
-        titleConfirm="Cargar facturas"
+        isConfirmDisabled={isEditable && isConfirmDisabled}
+        titleConfirm={isEditable ? "Cargar facturas" : "Cerrar detalle"}
         onClose={onClose}
-        handleOk={handleSubmit(onSubmit)}
+        handleOk={() => (isEditable ? handleSubmit(onSubmit)() : onClose())}
+        showLeftButton={isEditable}
       />
     </form>
   );

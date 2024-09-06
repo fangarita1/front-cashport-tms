@@ -10,7 +10,8 @@ export function VehicleFields({
   selectedTab,
   handleOnDeleteDocument,
   handleOnChangeDocument,
-  currentCarrier
+  currentCarrier,
+  disabled = false
 }: Readonly<{
   control: any;
   register: any;
@@ -18,6 +19,7 @@ export function VehicleFields({
   handleOnDeleteDocument: (vehicleIndex: number, documentIndex: number) => void;
   handleOnChangeDocument: (fileToSave: any, vehicleIndex: number, documentIndex: number) => void;
   currentCarrier: ICarrier;
+  disabled?: boolean;
 }>) {
   const { fields: vehicleFields } = useFieldArray<FinalizeTripForm>({
     control,
@@ -37,6 +39,7 @@ export function VehicleFields({
             handleOnChangeDocument={handleOnChangeDocument}
             handleOnDeleteDocument={handleOnDeleteDocument}
             currentCarrier={currentCarrier}
+            disabled={disabled}
           />
         </Flex>
       ))}

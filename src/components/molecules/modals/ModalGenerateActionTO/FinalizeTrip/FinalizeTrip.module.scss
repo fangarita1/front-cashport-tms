@@ -3,13 +3,11 @@
   overflow-x: auto;
   white-space: nowrap; // Evita el salto de línea
 
-  &::-webkit-scrollbar {
-    height: 4px;
-  }
+  scrollbar-width: none; // Oculta la barra en Firefox
+  -ms-overflow-style: none; // Oculta la barra en IE y Edge
 
-  &::-webkit-scrollbar-thumb {
-    background-color: darkgrey;
-    border-radius: 10px;
+  &::-webkit-scrollbar {
+    display: none; // Oculta la barra en WebKit (Chrome, Safari, etc.)
   }
 
   .tab {

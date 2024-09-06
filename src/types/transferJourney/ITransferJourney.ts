@@ -13,6 +13,7 @@ export interface ITripJourney {
   trip_status_id: string;
   trip_status_color: string;
   novelties: INovelty[];
+  vehicle_type?: string;
 }
 
 export interface ITransferJourney {

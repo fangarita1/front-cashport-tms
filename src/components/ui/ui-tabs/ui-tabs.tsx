@@ -20,7 +20,7 @@ const UiTabs: FC<UiTabsProps> = ({ tabs, initialTabIndex = 0, className, onTabCl
     <div className={`${styles.tabs} ${className}`}>
       {tabs.map((tab, index) => (
         <div
-          key={`ui-tabs-tab-${tab}`}
+          key={`ui-tabs-tab-${tab}-${index}`}
           className={`${styles.tab} ${selectedTabIndex === index ? styles.active : ""}`}
           onClick={() => handleTabClick(index)}
         >

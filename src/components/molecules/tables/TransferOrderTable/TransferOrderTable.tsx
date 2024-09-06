@@ -10,6 +10,7 @@ import { FC } from "react";
 import dayjs from "dayjs";
 import { calculateMinutesDifference } from "@/utils/logistics/calculateMinutesDifference";
 import utc from "dayjs/plugin/utc";
+import { formatMoney } from "@/utils/utils";
 dayjs.extend(utc);
 
 const { Text } = Typography;
@@ -27,8 +28,8 @@ interface DataType {
     destination: string;
   };
   fechas: {
-    origin: string;
-    destination: string;
+    origin: Date;
+    destination: Date;
   };
   tipodeviaje: string;
   // vehiculos: {
@@ -40,7 +41,7 @@ interface DataType {
   //   destination: string;
   // };
   tiempodeviaje: string;
-  valor: string;
+  valor: number;
 }
 
 const columns = (showColumn: boolean, redirect?: string): TableColumnsType<DataType> => {
@@ -51,16 +52,18 @@ const columns = (showColumn: boolean, redirect?: string): TableColumnsType<DataT
         render: (text: string) => (
           <Text className="row-text">{calculateMinutesDifference(text)} min</Text>
         ),
-        sorter: {
-          multiple: 1
-        }
+        sorter: (a: any, b: any) =>
+          calculateMinutesDifference(a.tiempodeviaje) - calculateMinutesDifference(b.tiempodeviaje),
+        showSorterTooltip: false
       }
     : {};
   return [
     {
       title: "TR",
       dataIndex: "tr",
-      render: (text: string) => <Text className="row-text id">{text}</Text>
+      render: (text: string) => <Text className="row-text id">{text}</Text>,
+      sorter: (a, b) => Number(a.tr) - Number(b.tr),
+      showSorterTooltip: false
     },
     {
       title: "Origen y destino",
@@ -77,30 +80,27 @@ const columns = (showColumn: boolean, redirect?: string): TableColumnsType<DataT
           </div>
         </div>
       ),
-      sorter: {
-        multiple: 1
-      }
+      sorter: (a, b) => a.origendestino.origin.localeCompare(b.origendestino.origin),
+      showSorterTooltip: false
     },
     {
       title: "Fechas",
       dataIndex: "fechas",
       render: (text: { origin: string; destination: string }) => (
         <div className="textContainer">
-          <Text className="row-text">{text.origin}</Text>
-          <Text className="row-text">{text.destination}</Text>
+          <Text className="row-text">{`${dayjs.utc(text.origin).format("DD/MM/YY - HH:mm")} h`}</Text>
+          <Text className="row-text">{`${dayjs.utc(text.destination).format("DD/MM/YY - HH:mm")} h`}</Text>
         </div>
       ),
-      sorter: {
-        multiple: 1
-      }
+      sorter: (a, b) => dayjs(a.fechas.origin).valueOf() - dayjs(b.fechas.origin).valueOf(),
+      showSorterTooltip: false
     },
     {
       title: "Tipo de viaje",
       dataIndex: "tipodeviaje",
       render: (text: string) => <Text className="row-text">{text}</Text>,
-      sorter: {
-        multiple: 1
-      }
+      sorter: (a, b) => a.tipodeviaje.localeCompare(b.tipodeviaje),
+      showSorterTooltip: false
     },
     // {
     //   title: 'Vehículo(s)',
@@ -133,10 +133,11 @@ const columns = (showColumn: boolean, redirect?: string): TableColumnsType<DataT
     {
       title: "Valor",
       dataIndex: "valor",
-      render: (text: string) => <Text className="row-text value">{text}</Text>,
-      sorter: {
-        multiple: 1
-      }
+      render: (text: string) => (
+        <Text className="row-text value">{text ? formatMoney(text) : "$ 0"}</Text>
+      ),
+      sorter: (a, b) => Number(a.valor) - Number(b.valor),
+      showSorterTooltip: false
     },
     {
       title: "",
@@ -182,8 +183,8 @@ export const TransferOrdersTable: FC<ITransferOrdersTable> = ({
           destination: item.end_location
         },
         fechas: {
-          origin: `${dayjs.utc(item.start_date).format('DD/MM/YY - HH:mm')} h`,
-          destination: `${dayjs.utc(item.end_date).format('DD/MM/YY - HH:mm')} h`
+          origin: item.start_date,
+          destination: item.end_date
         },
         tipodeviaje: item.type,
         // vehiculos: {
@@ -195,7 +196,7 @@ export const TransferOrdersTable: FC<ITransferOrdersTable> = ({
         //   destination: '318 645 2849'
         // },
         tiempodeviaje: String(item.created_at),
-        valor: "$0.000.000",
+        valor: item?.total_value ?? 0,
         validator: {
           ismaterialsproblem: item.is_materials_problem,
           ispeopleproblem: item.is_people_problem,

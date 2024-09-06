@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
-import io from 'socket.io-client';
+import io from "socket.io-client";
 import "mapbox-gl/dist/mapbox-gl.css";
 import styles from "./mainDescription.module.scss";
 import { ConfigProvider, Dropdown, Timeline, Typography } from "antd";
@@ -11,6 +11,7 @@ import { TransferOrdersState } from "@/utils/constants/transferOrdersState";
 import dayjs from "dayjs";
 import { formatMoney } from "@/utils/utils";
 import utc from "dayjs/plugin/utc";
+import { getTravelDuration } from "@/utils/logistics/maps";
 dayjs.extend(utc);
 
 const Text = Typography;
@@ -52,8 +53,8 @@ interface ISocketData {
 }
 
 interface IMark {
-  socketInfo: ISocketData,
-  mark: mapboxgl.Marker | null
+  socketInfo: ISocketData;
+  mark: mapboxgl.Marker | null;
 }
 
 interface IMainDescriptionProps {
@@ -67,7 +68,6 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
 
   const mapsAccessToken =
     "pk.eyJ1IjoiamNib2JhZGkiLCJhIjoiY2x4aWgxejVsMW1ibjJtcHRha2xsNjcxbCJ9.CU7FHmPR635zv6_tl6kafA";
-  const socket = io('https://ppdaeqfxju.us-east-2.awsapprunner.com');
 
   const getState = (stateId: string) => {
     let getState = TransferOrdersState.find((f) => f.id === stateId);
@@ -91,7 +91,7 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
     }
 
     setSocketInfo((prevSocketInfo) => {
-      const getUser = prevSocketInfo.find(f => f.socketInfo.userId === data.userId);
+      const getUser = prevSocketInfo.find((f) => f.socketInfo.userId === data.userId);
 
       if (getUser) {
         return prevSocketInfo.map((item) => {
@@ -103,8 +103,8 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
                 ...item.socketInfo,
                 latitude: data.latitude,
                 longitude: data.longitude,
-                timestamp: data.timestamp,
-              },
+                timestamp: data.timestamp
+              }
             };
           }
           return item;
@@ -122,11 +122,17 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
   };
 
   useEffect(() => {
-    socket.on('changeLocation', (data) => {
-      console.log('Ubicación recibida:', data);
-      updateUserLocation(data)
+    const socket = io("https://ppdaeqfxju.us-east-2.awsapprunner.com");
+    socket.on("changeLocation", (data) => {
+      console.log("Ubicación recibida:", data);
+      updateUserLocation(data);
     });
+    return () => {
+      socket.off("changeLocation");
+    };
+  }, []);
 
+  useEffect(() => {
     if (!mapContainerRef.current) return;
 
     mapboxgl.accessToken = mapsAccessToken;
@@ -187,6 +193,9 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
     // return () => {
     //   map.remove();
     // };
+    return () => {
+      map.remove();
+    };
   }, [transferRequest]);
 
   const timeLineItems = transferRequest
@@ -227,9 +236,9 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
         };
       })
     : [];
-
-  const date = new Date();
-  date.setSeconds(transferRequest?.geometry?.duration ?? 0);
+  const milliseconds =
+    new Date(transferRequest?.end_date || "").getTime() -
+    new Date(transferRequest?.start_date || "").getTime();
 
   return (
     <div className={styles.mainDescription}>
@@ -307,7 +316,7 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
           {transferRequest && transferRequest?.geometry?.duration && (
             <div className={styles.card}>
               <Text className={styles.titleCard}>Tiempo</Text>
-              <Text className={styles.subtitleCard}>{date.toISOString().substr(11, 5)} h</Text>
+              <Text className={styles.subtitleCard}>{getTravelDuration(milliseconds / 1000)}</Text>
             </div>
           )}
         </div>

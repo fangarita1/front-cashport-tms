@@ -15,17 +15,34 @@ export enum ViewEnum {
 }
 
 type PropsModal = {
+  idBilling: number;
   idTR: number;
   totalValue: number;
-  billingStatus: BillingStatusEnum;
+  billingStatus?: BillingStatusEnum;
   isOpen: boolean;
   onClose: () => void;
   messageApi: MessageInstance;
+  canEditForm?: boolean;
+  uploadInvoiceTitle?: string;
 };
 
 export default function ModalBillingAction(props: Readonly<PropsModal>) {
-  const { isOpen, onClose, idTR, totalValue, billingStatus, messageApi } = props;
+  const {
+    isOpen,
+    onClose,
+    idBilling,
+    idTR,
+    totalValue,
+    billingStatus,
+    messageApi,
+    canEditForm = true,
+    uploadInvoiceTitle
+  } = props;
   const [selectedView, setSelectedView] = useState<ViewEnum>(ViewEnum.SELECT);
+
+  useEffect(() => {
+    if (isOpen && !canEditForm) setSelectedView(ViewEnum.UPLOAD_INVOICE);
+  }, [isOpen, canEditForm]);
 
   const renderView = () => {
     switch (selectedView) {
@@ -39,10 +56,19 @@ export default function ModalBillingAction(props: Readonly<PropsModal>) {
             idTR={idTR}
             totalValue={totalValue}
             messageApi={messageApi}
+            idBilling={idBilling}
           />
         );
       case ViewEnum.UPLOAD_INVOICE:
-        return <UploadInvoice idTR={idTR} onClose={onClose} messageApi={messageApi} />;
+        return (
+          <UploadInvoice
+            idTR={idTR}
+            idBilling={idBilling}
+            onClose={onClose}
+            messageApi={messageApi}
+            canEditForm={canEditForm}
+          />
+        );
       default:
         return <ActionList setSelectedView={setSelectedView} billingStatus={billingStatus} />;
     }
@@ -60,7 +86,11 @@ export default function ModalBillingAction(props: Readonly<PropsModal>) {
           </Flex>
         );
       case ViewEnum.UPLOAD_INVOICE:
-        return <p className={styles.actionTitle}>Cargar facturas</p>;
+        return !canEditForm && uploadInvoiceTitle ? (
+          <p className={styles.actionTitle}>{uploadInvoiceTitle}</p>
+        ) : (
+          <p className={styles.actionTitle}>Cargar facturas</p>
+        );
       default:
         return "";
     }

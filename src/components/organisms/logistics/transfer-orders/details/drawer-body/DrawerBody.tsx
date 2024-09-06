@@ -1,9 +1,10 @@
 import { CaretDoubleRight, ChartLineUp, Check, FileArrowDown, Files, MapTrifold, Money, NewspaperClipping, NotePencil, PencilLine, User, X } from 'phosphor-react';
 import styles from './drawerBody.module.scss';
 import { Button, Typography } from 'antd';
-import { FC } from 'react';
-import { INovelty } from '@/types/novelty/INovelty';
+import { FC, useState } from 'react';
+import { INovelty, INoveltyEvidenceBody } from '@/types/novelty/INovelty';
 import { formatMoney } from '@/utils/utils';
+import { FileDownloadModal } from '@/components/molecules/modals/FileDownloadModal/FileDownloadModal';
 
 const Text = Typography;
 
@@ -16,6 +17,14 @@ interface IDrawerBodyProps {
 }
 
 export const DrawerBody: FC<IDrawerBodyProps> = ({ onClose, novelty, approbeOrReject, handleEdit }) => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [evidence, setEvidence] = useState<INoveltyEvidenceBody | null>(null);
+
+  const handleOpenModal = (evidence: INoveltyEvidenceBody) => {
+    setEvidence(evidence);
+    setIsModalOpen(true);
+  }
+
   return (
     <div className={styles.mainDrawerBody}>
       <div onClick={onClose} className={styles.closeContainer}>
@@ -94,16 +103,33 @@ export const DrawerBody: FC<IDrawerBodyProps> = ({ onClose, novelty, approbeOrRe
           <Text className={styles.text}>{formatMoney(novelty?.value)}</Text>
           <Text className={styles.text}>{novelty?.observation}</Text>
           <div className={styles.evidenceContainer}>
-            {novelty?.evidences.map((evidence) => (
-              <div key={evidence.id} className={styles.evidence}>
-                <Text className={styles.evidenceTitle}>{evidence.name}</Text>
-                <FileArrowDown color='#141414' size={20} />
-              </div>
-            ))}
+            {novelty?.evidences.map((evidence) => {
+              const imageExtensions = ['jpg', 'jpeg', 'png'];
+              const extension = evidence.url.split('.').pop()?.toLowerCase();
+              if (extension && imageExtensions.includes(extension)) {
+                return (
+                  <div onClick={() => handleOpenModal(evidence)} key={evidence.id} className={styles.evidence}>
+                    <Text className={styles.evidenceTitle}>{evidence.name}</Text>
+                    <FileArrowDown color='#141414' size={20} />
+                  </div>
+                )
+              }
+              return (
+                <a className={styles.evidence} download={evidence.url} href={evidence.url} target="_blank">
+                  <Text className={styles.evidenceTitle}>{evidence.name}</Text>
+                  <FileArrowDown color='#141414' size={20} />
+                </a>
+              )
+            })}
           </div>
         </div>
       </div>
       <div className={styles.divider} />
+      <FileDownloadModal
+        isModalOpen={isModalOpen}
+        onCloseModal={setIsModalOpen}
+        url={evidence?.url ?? ""}
+      />
     </div>
   );
 }

@@ -4,7 +4,7 @@ import React, { useCallback, useState } from "react";
 import "../../../../../styles/_variables_logistics.css";
 import "./driverInfo.scss";
 import { DriverFormTab } from "@/components/molecules/tabs/logisticsForms/driverForm/driverFormTab";
-import { getDriverById, updateDriver } from "@/services/logistics/drivers";
+import { getDriverById, updateDriver, updateDriverStatus } from "@/services/logistics/drivers";
 import { IFormDriver } from "@/types/logistics/schema";
 import { StatusForm } from "@/components/molecules/tabs/logisticsForms/driverForm/driverFormTab.mapper";
 import { useRouter } from "next/navigation";
@@ -20,10 +20,10 @@ interface Props {
 
 export const DriverInfoView = ({ params }: Props) => {
   const [messageApi, contextHolder] = message.useMessage();
-  const [statusForm, setStatusForm]= useState<StatusForm>("review")
+  const [statusForm, setStatusForm] = useState<StatusForm>("review");
   const { push } = useRouter();
 
-  const handleFormState = useCallback((newFormState:StatusForm) => {
+  const handleFormState = useCallback((newFormState: StatusForm) => {
     setStatusForm(newFormState);
   }, []);
 
@@ -31,10 +31,11 @@ export const DriverInfoView = ({ params }: Props) => {
     return getDriverById(params.driverId);
   };
 
-  const { data, isLoading } = useSWR({ id: params, key: "1" }, fetcher,     
-    { revalidateIfStale:false,
-    revalidateOnFocus:false,
-    revalidateOnReconnect:false
+  const { data, isLoading, isValidating } = useSWR({ id: params, key: "1" }, fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    revalidateOnMount: true
   });
 
   const handleSubmitForm = async (data: IFormDriver) => {
@@ -59,14 +60,29 @@ export const DriverInfoView = ({ params }: Props) => {
       });
     }
   };
-
+  const handlechangeStatus = async (status: boolean) => {
+    try {
+      await updateDriverStatus(params.driverId, status);
+      messageApi.open({
+        type: "success",
+        content: "El conductor fue editado exitosamente."
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        messageApi.open({
+          type: "error",
+          content: error.message
+        });
+      }
+    }
+  };
 
   return (
     <>
       {contextHolder}
       <>
-      {isLoading ? (
-          <Spin/>
+        {isLoading || isValidating ? (
+          <Spin />
         ) : (
           <DriverFormTab
             onSubmitForm={handleSubmitForm}
@@ -74,6 +90,8 @@ export const DriverInfoView = ({ params }: Props) => {
             params={params}
             statusForm={statusForm}
             handleFormState={handleFormState}
+            onActiveProject={() => handlechangeStatus(true)}
+            onDesactivateProject={() => handlechangeStatus(false)}
           />
         )}
       </>

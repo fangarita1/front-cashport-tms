@@ -25,9 +25,7 @@ export const SelectInputForm = ({ placeholder = "Selecciona", error, field, sele
     <>
       <Select
         placeholder={placeholder}
-        className={
-            error ? "selectInputFormError" : "selectInputForm"
-        }
+        className={error ? "selectInputFormError" : "selectInputForm"}
         variant="borderless"
         optionLabelProp="label"
         {...field}
@@ -40,7 +38,9 @@ export const SelectInputForm = ({ placeholder = "Selecciona", error, field, sele
         }
       />
       {error && (
-        <Typography.Text type="danger" className="textMessageError">Campo es obligatorio *</Typography.Text>
+        <Typography.Text type="danger" className="textMessageError">
+          Campo es obligatorio *
+        </Typography.Text>
       )}
     </>
   );

@@ -6,6 +6,7 @@ import styles from "./BillingTable.module.scss";
 import { formatNumber } from "@/utils/utils";
 import TotalFooter from "./components/TotalFooter/TotalFooter";
 import { BillingByCarrier, BillingStatusEnum } from "@/types/logistics/billing/billing";
+import { STATUS } from "@/utils/constants/globalConstants";
 const { Text } = Typography;
 
 const getBgColor = (state: BillingStatusEnum) => {
@@ -90,7 +91,7 @@ export const BillingTable: FC<IBillingTableProps> = ({ supplierBillings, handleS
     {
       title: "",
       dataIndex: "id",
-      render: (id: number) => (
+      render: (id, record) => (
         <div className={styles.btnContainer}>
           <Button
             className={styles.btn}
@@ -98,6 +99,7 @@ export const BillingTable: FC<IBillingTableProps> = ({ supplierBillings, handleS
             size="middle"
             onClick={() => handleShowDetails(id)}
             icon={<Eye size={24} />}
+            disabled={![STATUS.BNG.FACTURADO, STATUS.BNG.PREAUTORIZADO].includes(record.idStatus)}
           />
         </div>
       )

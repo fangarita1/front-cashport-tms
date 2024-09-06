@@ -53,17 +53,13 @@ export const getAceptBilling = async (idBilling: number): Promise<boolean | unde
   }
 };
 
-export const getPreauthorizedInfo = async (
-  idBilling: number
-): Promise<PreAuthorizationRequestData[] | undefined> => {
+export const getPreauthorizedInfo = async (idBilling: number): Promise<any | undefined> => {
   try {
-    const response: GenericResponse<IPreauthorizedRequest> = await API.get(
+    const response: GenericResponse<any> = await API.get(
       `/logistic-billing/modal-invoice/${idBilling}`
     );
-
-    console.log("response getPreauthorizedInfo", response);
     if (response.data) {
-      return response?.data?.authorizations;
+      return response?.data;
     } else {
       console.log(`Error getPreauthorizedInfo: `);
     }

@@ -6,13 +6,26 @@ const FooterButtons = ({
   titleConfirm,
   isConfirmDisabled = false,
   onClose,
-  handleOk
+  handleOk,
+  showLeftButton = true
 }: {
   titleConfirm?: string;
   isConfirmDisabled?: boolean;
   onClose: () => void;
   handleOk: () => void;
+  showLeftButton?: boolean;
 }) => {
+  if (!showLeftButton)
+    return (
+      <Row style={{ width: "100%" }}>
+        <Col span={24} style={{ minHeight: 48 }}>
+          <PrincipalButton fullWidth onClick={handleOk} disabled={isConfirmDisabled}>
+            {titleConfirm ?? "Confirmar"}
+          </PrincipalButton>
+        </Col>
+      </Row>
+    );
+
   return (
     <Row style={{ width: "100%" }}>
       <Col span={12} style={{ paddingRight: 8, minHeight: 48 }}>
