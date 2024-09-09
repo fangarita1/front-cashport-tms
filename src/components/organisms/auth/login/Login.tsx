@@ -19,11 +19,10 @@ export const LoginView = () => {
           <div className={styles.login__title}>
             <Image
               className={styles.imageLogo}
-              src="/images/login/CashPort.png"
+              src="/images/login/LogoCashPort.svg"
               alt="Logo Company"
               preview={false}
             />
-            <h3>CashPort</h3>
           </div>
           {!resetPassword ? (
             <LoginForm setResetPassword={setResetPassword} />

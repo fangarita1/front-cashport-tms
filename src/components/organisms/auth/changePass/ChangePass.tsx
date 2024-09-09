@@ -15,11 +15,10 @@ export const ChangePass = () => {
           <div className={styles.changePass__title}>
             <Image
               className={styles.imageLogo}
-              src="/images/login/CashPort.png"
+              src="/images/login/LogoCashPort.svg"
               alt="Logo Company"
               preview={false}
             />
-            <h3>CashPort</h3>
           </div>
 
           <ChangePassForm />
