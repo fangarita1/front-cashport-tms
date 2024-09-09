@@ -9,6 +9,7 @@ import { Check, Eye, X } from "phosphor-react";
 import { useModalDetail } from "@/context/ModalContext";
 import { useNotificationOpen } from "@/hooks/useNotificationOpen";
 import { useRejectedNotifications } from "@/hooks/useNotificationReject";
+import { mutate } from "swr";
 
 const ListPanel = [
   { key: "opens", value: "Abiertas" },
@@ -26,17 +27,19 @@ interface Notification {
 }
 
 export const NotificationsView = () => {
-  const { openModal } = useModalDetail();
+  const { openModal, modalType } = useModalDetail();
   const projectId = 81; // Asegúrate de obtener el ID del proyecto correctamente
   const {
     data: openNotifications,
     isLoading: isLoadingOpen,
-    isError: isErrorOpen
+    isError: isErrorOpen,
+    mutate: mutateOpen
   } = useNotificationOpen(projectId);
   const {
     data: closedNotifications,
     isLoading: isLoadingClosed,
-    isError: isErrorClosed
+    isError: isErrorClosed,
+    mutate: mutateClosed
   } = useRejectedNotifications(projectId);
   const [filteredOpenNotifications, setFilteredOpenNotifications] = useState<Notification[]>([]);
   const [filteredClosedNotifications, setFilteredClosedNotifications] = useState<Notification[]>(
@@ -68,6 +71,12 @@ export const NotificationsView = () => {
       );
     }
   };
+  useEffect(() => {
+    if (modalType === null) {
+      mutateClosed();
+      mutateOpen();
+    }
+  }, [modalType]);
 
   const renderNotifications = (type: "opens" | "closed") => {
     const currentNotifications =
@@ -93,7 +102,7 @@ export const NotificationsView = () => {
               </p>
             </div>
             <Flex gap="1rem">
-              {type === "closed" && (
+              {/* {type === "closed" && (
                 <>
                   <div className="label__status">
                     <Check size={14} />
@@ -104,7 +113,7 @@ export const NotificationsView = () => {
                     Rechazar
                   </div>
                 </>
-              )}
+              )} */}
               <div
                 className="eyeIcon"
                 onClick={() => {

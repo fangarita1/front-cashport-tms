@@ -208,10 +208,12 @@
             .description {
                 display: flex;
                 flex-direction: column;
+                width: 100%;
 
                 .stepperContainer {
                     display: flex;
-                    justify-content: center;
+                    justify-content:  flex-start;
+                    width: 100%;
 
                     .stepperContent {
                         .mainStep {
@@ -300,7 +302,6 @@
                                 .cardInvoiceFiling {
                                     display: flex;
                                     flex-direction: column;
-                          
 
                                     .icons {
                                         display: flex;

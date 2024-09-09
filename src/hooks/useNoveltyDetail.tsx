@@ -12,6 +12,7 @@ interface IEvent {
 export interface IIncidentDetail {
   incident_id: number;
   invoice_id: number;
+  id_erp: string;
   evidence_comments: string;
   evidence_files: string[]; // You might want to define a more specific type
   date: string;
