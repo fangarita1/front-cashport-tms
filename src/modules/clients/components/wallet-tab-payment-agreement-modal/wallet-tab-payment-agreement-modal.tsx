@@ -47,6 +47,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
   const [isSecondView, setIsSecondView] = useState(false);
   const [tableData, setTableData] = useState<ITableData[]>([]);
   const [globalDate, setGlobalDate] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleOnChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCommentary(e.target.value);
@@ -57,6 +58,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
       return;
     }
 
+    setIsSubmitting(true);
     const adjustmentData = tableData.map((row) => ({
       invoice_id: row.id,
       date_agreement: (row.newDate && dayjs(row.newDate).format("DD-MM-YYYY")) || "",
@@ -78,6 +80,8 @@ const PaymentAgreementModal: React.FC<Props> = ({
       setSelectedEvidence([]);
     } catch (error) {
       messageShow.error("Error al crear el acuerdo de pago. Por favor, intente de nuevo.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -289,6 +293,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
           handleOnChangeTextArea={handleOnChangeTextArea}
           handleAttachEvidence={handleAttachEvidence}
           commentary={commentary}
+          isSubmitting={isSubmitting}
           setIsSecondView={setIsSecondView}
         />
       )}
