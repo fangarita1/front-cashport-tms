@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Flex, Modal } from "antd";
 import { CaretLeft, Plus } from "@phosphor-icons/react";
 import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
@@ -50,6 +50,7 @@ const RegisterNews = ({
   onCloseAllModals
 }: RegisterNewsProps) => {
   const { data: motives, isLoading, isError } = useInvoiceIncidentMotives();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     control,
@@ -123,6 +124,8 @@ const RegisterNews = ({
   };
 
   const onSubmit = async (data: IFormRegisterNews) => {
+    setIsSubmitting(true);
+
     try {
       await reportInvoiceIncident(
         invoiceSelected?.map((invoice) => invoice.id) || [],
@@ -137,6 +140,8 @@ const RegisterNews = ({
     } catch (error) {
       console.error("Error al registrar una novedad:", error);
       messageShow.error("Error al adjuntar la evidencia");
+    } finally {
+      setIsSubmitting(false);
     }
   };
   const handleClose = () => {
@@ -235,8 +240,9 @@ const RegisterNews = ({
           <Button
             className={`acceptButton ${isValid ? "acceptButton__green" : ""}`}
             htmlType="submit"
+            disabled={!isValid || isSubmitting}
           >
-            Adjuntar evidencia
+            {isSubmitting ? "Enviando..." : "Adjuntar evidencia"}
           </Button>
         </div>
       </form>

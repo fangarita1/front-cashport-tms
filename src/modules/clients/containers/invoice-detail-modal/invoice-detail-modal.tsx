@@ -179,7 +179,13 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                           <div className={`${styles.stepCircle} ${styles.active}`} />
                           <div className={styles.stepLabel}>
                             <div className={styles.cardInvoiceFiling}>
-                              <h5 className={styles.title}>
+                              <h5
+                                className={
+                                  item.event_type_name === "Vencimiento acuerdo de pago"
+                                    ? styles.title_red
+                                    : styles.title
+                                }
+                              >
                                 {getEventTitle(item.event_type_name)}
                               </h5>
                               <div className={styles.date}>
@@ -294,10 +300,19 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   >{`Valor: ${formatMoney(item.ammount)}`}</div>
                                   <div
                                     className={styles.name}
-                                    onClick={() => {
-                                      setIsModalAgreenOpen(true);
-                                    }}
                                   >{`Fecha de pago acordada: ${formatDatePlane(item.event_date?.toString())}`}</div>
+                                  <div className={styles.adjustment}>
+                                    ID del acuerdo:
+                                    <div
+                                      className={styles.idAdjustment}
+                                      onClick={() => {
+                                        setIsModalAgreenOpen(true);
+                                      }}
+                                    >
+                                      {" "}
+                                      {`${item.id}`}
+                                    </div>
+                                  </div>
                                 </div>
                               ) : (
                                 ""
@@ -308,7 +323,8 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                     <Envelope size={14} onClick={() => {}} />
                                   </div>
                                   <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                  <div className={styles.name}>{`Valor: ${""}`}</div>
+                                  <div className={styles.name}>{`Valor acordado: ${""}`}</div>
+                                  <div className={styles.name}>{`ID del acuerdo: ${item.id}`}</div>
                                 </div>
                               ) : (
                                 ""
@@ -323,9 +339,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   >
                                     <ArrowLineDown size={14} onClick={() => {}} />
                                   </div>
-                                  <div
-                                    className={styles.name}
-                                  >{`Responsable: ${item.user_name}`}</div>
+                                  <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
                                 </div>
                               ) : (
                                 ""
@@ -363,7 +377,8 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   </div>
                                   <div
                                     className={styles.name}
-                                  >{`Responsable: ${item.user_name}`}</div>
+                                  >{`Tipo novedad: ${item.type_incident}`}</div>
+                                  <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
                                 </div>
                               ) : (
                                 ""
