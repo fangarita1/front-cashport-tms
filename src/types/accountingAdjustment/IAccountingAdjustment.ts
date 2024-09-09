@@ -4,7 +4,6 @@ export interface DiscountRequestBody {
   ammount: number; //amount
   percentage: number;
   date_of_issue: string;
-  expiration_date: string;
   validity_range?: {
     start: string;
     end: string;

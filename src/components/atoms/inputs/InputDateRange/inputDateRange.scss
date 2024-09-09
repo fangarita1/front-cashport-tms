@@ -5,16 +5,23 @@
     flex-direction: column;
 
     .input-date-custom-title {
-        color: #909090;
+        color: $gray;
         font-size: 0.75rem;
         font-style: normal;
         font-weight: 600;
         line-height: normal;
         margin-bottom: 0.5rem;
+
+        &-option {
+            color: $gray;
+            font-size: 0.75rem;
+            font-weight: 300;
+            font-style: italic;
+        }
     }
 
     .dateInputForm {
-        background-color: #f7f7f7;
+        background-color: $background;
         border: none !important;
         padding: 0.71rem !important;
         font-size: 1rem;
@@ -24,18 +31,18 @@
             width: 100%;
 
             > input::placeholder {
-                color: #dddddd !important;
+                color: $dark-gray !important;
             }
 
             &:disabled {
-                background-color: #909090;
+                background-color: $gray;
                 color: $dark-gray !important;
             }
         }
 
         &__icon {
             font-size: 20px;
-            color: black;
+            color: $black;
         }
 
         .ant-picker-separator {
@@ -69,15 +76,15 @@
 }
 
 .ant-picker-cell-in-view.ant-picker-cell-range-start .ant-picker-cell-inner {
-    background-color: #cbe71e !important;
+    background-color: $secondary !important;
 }
 
 .ant-picker-cell-in-view.ant-picker-cell-range-end .ant-picker-cell-inner {
-    background-color: #cbe71e !important;
+    background-color: $secondary !important;
 }
 
 .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
-    border-color: #f7f7f7 !important;
+    border-color: $background !important;
 }
 
 .ant-picker-cell-in-view.ant-picker-cell-range-start:not(
@@ -88,5 +95,5 @@
 .ant-picker-time-panel-column
     > li.ant-picker-time-panel-cell-selected
     .ant-picker-time-panel-cell-inner {
-    background: #dddddd !important;
+    background: $dark-gray !important;
 }

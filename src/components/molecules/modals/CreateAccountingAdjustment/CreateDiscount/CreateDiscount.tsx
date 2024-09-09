@@ -18,7 +18,7 @@ interface IformDiscount {
   percentage: number;
   amount: number;
   validity_range?: (Date | undefined)[];
-  expiration_date: Date;
+  expedition_date: Date;
 }
 
 interface Props {
@@ -36,16 +36,7 @@ const schema = yup.object().shape({
     .required("Campo obligatorio"),
   amount: yup.number().min(0, "El valor no puede ser negativo").required("Campo obligatorio"),
   validity_range: yup.array().of(yup.date()).optional(),
-  expiration_date: yup.lazy((value, context) => {
-    const validityRange = context.parent.validity_range;
-    return yup
-      .date()
-      .required("Campo obligatorio")
-      .min(
-        validityRange && validityRange.length > 0 ? validityRange[1] : new Date(),
-        "La fecha de expiración debe ser posterior al rango de vigencia"
-      );
-  })
+  expedition_date: yup.date().required("Campo obligatorio")
 });
 
 export const CreateDiscount = ({ onClose, messageApi, projectIdParam, clientIdParam }: Props) => {
@@ -67,11 +58,7 @@ export const CreateDiscount = ({ onClose, messageApi, projectIdParam, clientIdPa
         motive: motives?.find((motive) => motive.name === data.motive)?.id || 1,
         ammount: data.amount,
         percentage: data.percentage,
-        date_of_issue:
-          data.validity_range && data.validity_range[0]
-            ? formatDateBars(data.validity_range[0].toISOString())
-            : formatDateBars(new Date().toISOString()),
-        expiration_date: formatDateBars(data.expiration_date.toISOString()),
+        date_of_issue: formatDateBars(data.expedition_date.toISOString()),
         validity_range: data.validity_range
           ? {
               start:
@@ -138,17 +125,18 @@ export const CreateDiscount = ({ onClose, messageApi, projectIdParam, clientIdPa
             customStyle={{ width: "100%" }}
           />
           <InputDateForm
-            titleInput="Fecha de expiración"
-            nameInput="expiration_date"
-            placeholder="Seleccionar fecha de expiración"
+            titleInput="Fecha de expedición"
+            nameInput="expedition_date"
+            placeholder="Seleccionar fecha de expedición"
             control={control}
-            error={errors.expiration_date}
+            error={errors.expedition_date}
           />
           <InputDateRange
             titleInput="Rango de vigencia"
             nameInput="validity_range"
             control={control}
             error={errors.validity_range as FieldError}
+            optional
           />
           <button
             type="button"
