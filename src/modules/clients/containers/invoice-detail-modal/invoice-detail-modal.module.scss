@@ -110,6 +110,13 @@
                 line-height: normal;
             }
 
+            .title_red {
+                font-size: 16px;
+                font-weight: 500;
+                color: #141414;
+                line-height: normal;
+            }
+
             .status {
                 color: #fff;
                 display: flex;
@@ -201,10 +208,12 @@
             .description {
                 display: flex;
                 flex-direction: column;
+                width: 100%;
 
                 .stepperContainer {
                     display: flex;
-                    justify-content: center;
+                    justify-content:  flex-start;
+                    width: 100%;
 
                     .stepperContent {
                         .mainStep {
@@ -293,7 +302,6 @@
                                 .cardInvoiceFiling {
                                     display: flex;
                                     flex-direction: column;
-                          
 
                                     .icons {
                                         display: flex;
@@ -317,6 +325,7 @@
 
                                         .idAdjustment {
                                             color: #0085ff;
+                                            cursor: pointer;
                                         }
                                     }
 

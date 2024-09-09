@@ -35,4 +35,5 @@ export interface IData {
   previous_status: string | null;
   project_id: number;
   client_id: number;
+  type_incident: string | null;
 }

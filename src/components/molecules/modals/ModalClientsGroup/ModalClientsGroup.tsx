@@ -2,8 +2,6 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Flex, message, Modal, Typography } from "antd";
 import { useForm } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-import { createGroup } from "@/services/groupClients/groupClients";
-import { useAppStore } from "@/lib/store/store";
 import { groupInfo } from "@/components/organisms/projects/ClientsGroupsProjectView/ClientsGroupsProjectView";
 import { ClientsTableModal } from "../../tables/ClientsTableModal/ClientsTableModal";
 
@@ -18,6 +16,8 @@ interface CreateGroupProps {
   selectedGroupInfo?: groupInfo;
   // eslint-disable-next-line no-unused-vars
   updateClientsGroup?: (clients: string[]) => Promise<void>;
+  // eslint-disable-next-line no-unused-vars
+  createGroup?: (group: { name: string; clients: React.Key[] }) => Promise<void>;
 }
 
 export type NameType = {
@@ -29,10 +29,10 @@ export const ModalClientsGroup = ({
   setIsOpenModal,
   isEditGroup,
   selectedGroupInfo,
-  updateClientsGroup
+  updateClientsGroup,
+  createGroup
 }: CreateGroupProps) => {
   const [groupName, setGroupName] = useState("");
-  const { ID } = useAppStore((state) => state.selectedProject);
   const [clientsKeys, setClientsKeys] = useState<React.Key[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
   const {
@@ -63,7 +63,7 @@ export const ModalClientsGroup = ({
           name: groupName,
           clients: clientsKeys
         };
-        createGroup(group, ID);
+        if (createGroup) createGroup(group);
       } catch (error) {
         console.warn(error);
       }

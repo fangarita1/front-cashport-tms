@@ -27,7 +27,7 @@ const DashboardSellsVsPayments: FC<DashboardSellsVsPaymentsProps> = ({ className
 
   const data2 = portfolioData?.payments_vs_invoices?.map((item) => {
     return {
-      name: capitalize(dayjs(item.month).utc().locale("es").format("MMMM")),
+      name: capitalize(dayjs(item.month).utc().locale("es").format("MMMM YY")),
       ventas: item.sales,
       pagos: item.payments
     };

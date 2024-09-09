@@ -19,7 +19,7 @@ const OptimizedSearchComponent: React.FC<OptimizedSearchComponentProps> = ({ onS
     onSearch(debouncedSearchQuery);
   }, [debouncedSearchQuery, onSearch]);
 
-  return <UiSearchInput placeholder={title ? title : "Buecar cliente"} onChange={handleSearch} />;
+  return <UiSearchInput placeholder={title ? title : "Buscar cliente"} onChange={handleSearch} />;
 };
 
 export default OptimizedSearchComponent;

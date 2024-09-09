@@ -26,6 +26,7 @@ interface ITableData {
   pending: number;
   agreedValue: string;
   newDate: string;
+  id_erp: string;
   [key: string]: any;
 }
 interface infoObject {
@@ -47,6 +48,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
   const [isSecondView, setIsSecondView] = useState(false);
   const [tableData, setTableData] = useState<ITableData[]>([]);
   const [globalDate, setGlobalDate] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleOnChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCommentary(e.target.value);
@@ -57,6 +59,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
       return;
     }
 
+    setIsSubmitting(true);
     const adjustmentData = tableData.map((row) => ({
       invoice_id: row.id,
       date_agreement: (row.newDate && dayjs(row.newDate).format("DD-MM-YYYY")) || "",
@@ -78,6 +81,8 @@ const PaymentAgreementModal: React.FC<Props> = ({
       setSelectedEvidence([]);
     } catch (error) {
       messageShow.error("Error al crear el acuerdo de pago. Por favor, intente de nuevo.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -158,8 +163,15 @@ const PaymentAgreementModal: React.FC<Props> = ({
     return current && current < dayjs().utc().startOf("day");
   };
 
-  const columns: TableProps<any>["columns"] = [
-    { title: "ID Factura", dataIndex: "id", key: "id" },
+  const columns: TableProps<ITableData>["columns"] = [
+    {
+      title: "ID Factura",
+      dataIndex: "id",
+      key: "id",
+      render: (text, record) => {
+        return <span>{record.id_erp}</span>;
+      }
+    },
     {
       title: "Emisión",
       dataIndex: "emission",
@@ -222,6 +234,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
           emission: invoice.financial_record_date,
           pending: invoice.current_value,
           agreedValue: invoice.current_value.toString(), // Inicializar con el valor pendiente
+          id_erp: invoice.id_erp,
           newDate: ""
         }))
       );
@@ -289,6 +302,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
           handleOnChangeTextArea={handleOnChangeTextArea}
           handleAttachEvidence={handleAttachEvidence}
           commentary={commentary}
+          isSubmitting={isSubmitting}
           setIsSecondView={setIsSecondView}
         />
       )}

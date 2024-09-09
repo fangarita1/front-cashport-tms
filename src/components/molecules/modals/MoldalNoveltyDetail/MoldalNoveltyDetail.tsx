@@ -19,7 +19,7 @@ interface MoldalNoveltyDetailProps {
   noveltyId: number;
 }
 
-const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({  onClose, noveltyId }) => {
+const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({ onClose, noveltyId }) => {
   const { data, isLoading } = useIncidentDetail({ incidentId: noveltyId }); // TODO CAMBIAR ESTO
   const [incidentData, setIncidentData] = useState<IIncidentDetail | null>(null);
   const [openResolveModal, setOpenResolveModal] = useState(false);
@@ -100,18 +100,14 @@ const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({  onClose, noveltyId
         aprobadores={[{ nombre: incidentData.approvers_users, estado: "pendiente" }]}
       />
       <InfoInvoice
-        FacturaID={incidentData.invoice_id.toString()}
+        FacturaID={incidentData.id_erp || ""}
         invoice_amount_difference={incidentData.invoice_amount_difference || 0}
         invoice_cashport_value={incidentData.invoice_cashport_value}
         invoice_client_value={incidentData.invoice_client_value}
       />
       <EvidenceSection
         evidenceComments={incidentData.evidence_comments}
-        evidenceFiles={incidentData.evidence_files.map((file) => ({
-          name: file.filename || "Unnamed File",
-          url: file.fileUrl || "",
-          created_at: file.uploadDate || new Date().toISOString()
-        }))}
+        evidenceFiles={incidentData.evidence_files}
       />
       <EventSection
         events={incidentData.events}

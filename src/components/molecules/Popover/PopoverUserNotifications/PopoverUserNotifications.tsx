@@ -41,12 +41,13 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
 
   const fetchOpenNotifications = async (): Promise<Notification[]> => {
     const response = await API.get(`/notification/project/${projectId}/user`);
-    return response.data.data;
+    return response.data;
   };
 
   const fetchRejectedNotifications = async (): Promise<Notification[]> => {
     const response = await API.get(`/notification/rejecteds/project/${projectId}/user`);
-    return response.data.data;
+
+    return response.data;
   };
 
   const { data: openNotifications, isLoading: isLoadingOpen } = useQuery(
@@ -131,7 +132,7 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
                 ) : null}
               </Flex>
               <p className="item__name">{item.client_name}</p>
-              <p className="item__date">{timeAgo(item.create_at)}</p>
+              <p className="item__date">{item.days}</p>
             </div>
             <div
               className="eyeIcon"
