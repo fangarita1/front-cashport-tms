@@ -49,7 +49,7 @@ const PaymentAgreementModal: React.FC<Props> = ({
   const [tableData, setTableData] = useState<ITableData[]>([]);
   const [globalDate, setGlobalDate] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-ß
+
   const handleOnChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCommentary(e.target.value);
   };
