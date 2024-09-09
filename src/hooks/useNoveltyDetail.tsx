@@ -13,7 +13,7 @@ export interface IIncidentDetail {
   incident_id: number;
   invoice_id: number;
   evidence_comments: string;
-  evidence_files: any[]; // You might want to define a more specific type
+  evidence_files: string[]; // You might want to define a more specific type
   date: string;
   invoice_amount_difference: number | null;
   incident_name: string;

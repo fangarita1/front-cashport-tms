@@ -1,29 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { IconLabel } from "@/components/atoms/IconLabel/IconLabel";
 import { FileText, PaperclipHorizontal } from "phosphor-react";
 import { Typography, Tag } from "antd";
 import "./evidencesection.scss";
+import InvoiceDownloadModal from "@/modules/clients/components/invoice-download-modal";
 
-const { Paragraph, Text } = Typography;
-
-interface EvidenceFile {
-  name: string;
-  url: string;
-  created_at: string;
-}
+const { Paragraph } = Typography;
 
 interface EvidenceSectionProps {
   evidenceComments: string;
-  evidenceFiles: EvidenceFile[];
+  evidenceFiles: string[];
 }
 
 export const EvidenceSection: React.FC<EvidenceSectionProps> = ({
   evidenceComments,
   evidenceFiles
 }) => {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const [urlStep, setUrlStep] = useState<string | undefined>(undefined);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleDocumentClick = (documentUrl: string) => {
+    const fileExtension = documentUrl?.split(".").pop()?.toLowerCase() ?? "";
+    if (["png", "jpg", "jpeg"].includes(fileExtension)) {
+      setUrlStep(documentUrl);
+      if (isModalOpen === false) setIsModalOpen(true);
+    } else {
+      window.open(documentUrl, "_blank");
+    }
   };
 
   return (
@@ -32,18 +35,31 @@ export const EvidenceSection: React.FC<EvidenceSectionProps> = ({
       <div className="evidence-content">
         <Paragraph>{evidenceComments}</Paragraph>
         <div className="attachments">
-          {evidenceFiles.map((file, index) => (
-            <Tag key={index} icon={<PaperclipHorizontal size={16} />} className="attachment-tag">
-              <div className="content-file">
-                <Text strong>{file.name}</Text>
-                <Text type="secondary" className="text-file">
-                  {formatDate(file.created_at)}
-                </Text>
-              </div>
-            </Tag>
-          ))}
+          {evidenceFiles.map((file, index) => {
+            const fileName = extractTextAfterLastSlash(file);
+            return (
+              <Tag
+                key={index}
+                icon={<PaperclipHorizontal size={16} />}
+                className="attachment-tag"
+                onClick={() => handleDocumentClick(file)}
+              >
+                <p className="fileName">{fileName}</p>
+              </Tag>
+            );
+          })}
         </div>
       </div>
+      <InvoiceDownloadModal
+        isModalOpen={isModalOpen}
+        handleCloseModal={setIsModalOpen}
+        url={urlStep}
+      />
     </div>
   );
+};
+
+const extractTextAfterLastSlash = (url: string): string => {
+  const lastSlashIndex = url.lastIndexOf("/");
+  return url.slice(lastSlashIndex + 1);
 };
