@@ -98,13 +98,11 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
 
   const handleDocumentClick = (documentUrl: string) => {
     const fileExtension = documentUrl?.split(".").pop()?.toLowerCase() ?? "";
-    if (fileExtension === "pdf") {
-      window.open(documentUrl, "_blank");
-    } else if (["png", "jpg", "jpeg"].includes(fileExtension)) {
+    if (["png", "jpg", "jpeg"].includes(fileExtension)) {
       setUrlStep(documentUrl);
       if (isModalOpen === false) setIsModalOpen(true);
     } else {
-      alert("Formato de archivo no soportado");
+      window.open(documentUrl, "_blank");
     }
   };
   const handelOpenAdjusmentDetail = (adjusmentId: number) => {

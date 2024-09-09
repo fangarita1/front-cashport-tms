@@ -73,13 +73,11 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
   };
   const handleDocumentClick = (documentUrl: string) => {
     const fileExtension = documentUrl?.split(".").pop()?.toLowerCase() ?? "";
-    if (fileExtension === "pdf") {
-      window.open(documentUrl, "_blank");
-    } else if (["png", "jpg", "jpeg"].includes(fileExtension)) {
+    if (["png", "jpg", "jpeg"].includes(fileExtension)) {
       setUrlStep(documentUrl);
       if (isModalOpen === false) setIsModalOpen(true);
     } else {
-      alert("Formato de archivo no soportado");
+      window.open(documentUrl, "_blank");
     }
   };
   const handelOpenInvoiceDetail = (invoice: number) => {
@@ -180,8 +178,8 @@ const ModalDetailAdjustment: FC<ModalDetailAdjustmentProps> = ({
                               <div>
                                 {item.cp_id && item.id_financial_discount && (
                                   <div className={styles.idAdjustment}>
-                                  {item.id_financial_discount || item.cp_id}
-                                </div>
+                                    {item.id_financial_discount || item.cp_id}
+                                  </div>
                                 )}
                                 <div
                                   className={styles.name}
