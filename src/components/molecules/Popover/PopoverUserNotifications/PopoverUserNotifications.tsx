@@ -132,7 +132,7 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
                 ) : null}
               </Flex>
               <p className="item__name">{item.client_name}</p>
-              <p className="item__date">{timeAgo(item.create_at)}</p>
+              <p className="item__date">{item.days}</p>
             </div>
             <div
               className="eyeIcon"

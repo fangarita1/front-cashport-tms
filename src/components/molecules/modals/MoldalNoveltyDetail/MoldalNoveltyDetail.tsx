@@ -100,7 +100,7 @@ const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({  onClose, noveltyId
         aprobadores={[{ nombre: incidentData.approvers_users, estado: "pendiente" }]}
       />
       <InfoInvoice
-        FacturaID={incidentData.invoice_id.toString()}
+        FacturaID={incidentData.id_erp || ""}
         invoice_amount_difference={incidentData.invoice_amount_difference || 0}
         invoice_cashport_value={incidentData.invoice_cashport_value}
         invoice_client_value={incidentData.invoice_client_value}
