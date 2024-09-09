@@ -39,7 +39,7 @@ export const InfoInvoice: React.FC<InfoInvoiceProps> = ({
           <Text strong>{formatCurrency(invoice_client_value)}</Text>
         </div>
         <div className="value-row difference">
-          <Text>Diferencia</Text>
+          <Text>Novedad</Text>
           <Text type="danger" strong>{formatCurrency(invoice_amount_difference)}</Text>
         </div>
       </div>
