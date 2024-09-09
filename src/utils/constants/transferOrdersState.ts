@@ -58,5 +58,20 @@ export const TransferOrdersState = [
     id: '49e6c46e-5a57-4a38-8b13-955bbffb7279',
     name: 'Legalizado',
     bgColor: '#A9BA43'
+  },
+  {
+    id: '40f8e08b-1e7b-4412-ba57-e62e7352b729',
+    name: 'Aceptadas',
+    bgColor: '#0085FF'
+  },
+  {
+    id: '089a3253-94dc-43ed-bff9-3c3c332b4be1',
+    name: 'Preautorizado',
+    bgColor: '#CBE71E'
+  },
+  {
+    id: 'b46233c0-0587-4a57-a452-adf5c5a70c11',
+    name: 'Facturado',
+    bgColor: '#FF6B00'
   }
 ]
