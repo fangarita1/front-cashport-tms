@@ -56,7 +56,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     setIsOpenModal(true);
   };
 
-  const { data, loading, deleteSelectedGroups, changeGroupsState } = useClientsGroups({
+  const { data, loading, deleteSelectedGroups, changeGroupsState, addGroup } = useClientsGroups({
     page,
     clients: filters.clients,
     subscribers: filters.subscribers,
@@ -275,7 +275,11 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
           />
         </div>
       )}
-      <ModalClientsGroup isOpen={isOpenModal} setIsOpenModal={setIsOpenModal} />
+      <ModalClientsGroup
+        isOpen={isOpenModal}
+        setIsOpenModal={setIsOpenModal}
+        createGroup={addGroup}
+      />
       <ModalChangeStatus
         isActiveStatus={true}
         isOpen={isOpenModalStatus}
