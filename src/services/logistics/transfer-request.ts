@@ -167,3 +167,17 @@ export const getTransferRequestDetail = async (
     throw error as any;
   }
 };
+
+export const updateTransferRequestStatus = async (id: number, statusId: string): Promise<boolean> => {
+  try {
+    const { success }: GenericResponse<ITransferRequestResponse> = await API.post(`/transfer-request/update-status`, {
+      transferRequestId: id,
+      statusId
+    });
+    if (success) return true;
+    return false
+  } catch (error) {
+    console.error("Error update request/update-status/: ", error);
+    throw error as any;
+  }
+}

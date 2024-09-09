@@ -15,7 +15,6 @@ import {
 } from "phosphor-react";
 import { getNoveltyTypes, getOvercosts } from "@/services/logistics/novelty";
 import { INovelty, INoveltyType } from "@/types/novelty/INovelty";
-import { noveltyQuantity } from "@/utils/constants/novelties";
 import { IForm } from "../Details";
 import { UploadFile } from "antd/lib";
 import { UploadChangeParam } from "antd/es/upload";
@@ -259,6 +258,33 @@ export const DrawerCreateBody: FC<IDrawerBodyProps> = ({
           <Text className={styles.evidenceTitle}>Evidencia</Text>
         </div>
         <div className={styles.evidences}>
+          {novelty?.evidences.map((evidence) => {
+            const imageExtensions = ["jpg", "jpeg", "png"];
+            const extension = evidence.url.split(".").pop()?.toLowerCase();
+            if (extension && imageExtensions.includes(extension)) {
+              return (
+                <div
+                  key={evidence.id}
+                  className={styles.evidence}
+                >
+                  <Text className={styles.evidenceTitle}>{evidence.name}</Text>
+                  <FileArrowDown color="#141414" size={20} />
+                </div>
+              );
+            }
+            return (
+              <a
+                key={`evidence-${evidence.id}`}
+                className={styles.evidence}
+                download={evidence.url}
+                href={evidence.url}
+                target="_blank"
+              >
+                <Text className={styles.evidenceTitle}>{evidence.name}</Text>
+                <FileArrowDown color="#141414" size={20} />
+              </a>
+            );
+          })}
           {formEvidences.map((file, index) => (
             <div key={`evidence-${index}`} className={styles.evidence}>
               <Text className={styles.evidenceTitle}>{file.name}</Text>
