@@ -110,6 +110,13 @@
                 line-height: normal;
             }
 
+            .title_red {
+                font-size: 16px;
+                font-weight: 500;
+                color: #141414;
+                line-height: normal;
+            }
+
             .status {
                 color: #fff;
                 display: flex;
@@ -317,6 +324,7 @@
 
                                         .idAdjustment {
                                             color: #0085ff;
+                                            cursor: pointer;
                                         }
                                     }
 
