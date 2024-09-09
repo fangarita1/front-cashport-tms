@@ -383,8 +383,11 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                               ) : (
                                 ""
                               )}
+
                               {item.comments && (
-                                <div className={styles.name}>Comentario: {item.comments}</div>
+                                <div className={styles.commentsContainer}>
+                                  <div className={styles.name}>Comentario: {item.comments}</div>
+                                </div>
                               )}
                             </div>
                           </div>
