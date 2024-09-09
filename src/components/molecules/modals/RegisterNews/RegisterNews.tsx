@@ -11,6 +11,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useInvoiceIncidentMotives } from "@/hooks/useInvoiceIncidentMotives";
 import { reportInvoiceIncident } from "@/services/accountingAdjustment/accountingAdjustment";
+import { InputFormMoney } from "@/components/atoms/inputs/InputFormMoney/InputFormMoney";
 
 interface RegisterNewsProps {
   isOpen: boolean;
@@ -30,6 +31,7 @@ interface IFormRegisterNews {
   motive: string;
   commentary: string;
   evidence: File[];
+  amount?: string;
 }
 
 const schema = yup.object().shape({
@@ -38,7 +40,8 @@ const schema = yup.object().shape({
   evidence: yup
     .array()
     .min(1, "Se requiere al menos un archivo de evidencia")
-    .required("La evidencia es requerida")
+    .required("La evidencia es requerida"),
+  amount: yup.string().optional()
 });
 
 const RegisterNews = ({
@@ -132,7 +135,8 @@ const RegisterNews = ({
         data.commentary,
         motives?.find((motive) => motive.name === data.motive)?.id.toString() || "",
         data.evidence,
-        clientId?.toString() || ""
+        clientId?.toString() || "",
+        data.amount ? data.amount : undefined
       );
       messageShow.success("Evidencia adjuntada con éxito");
       reset();
@@ -168,6 +172,15 @@ const RegisterNews = ({
             loading={isLoading}
             isError={isError}
             placeholder="Seleccionar motivo"
+          />
+          <InputFormMoney
+            titleInput="Monto novedad"
+            nameInput="amount"
+            control={control}
+            error={errors.amount}
+            placeholder="Ingresar monto"
+            typeInput="number"
+            customStyle={{ width: "100%" }}
           />
           <div />
         </div>

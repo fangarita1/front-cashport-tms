@@ -115,7 +115,8 @@ export const reportInvoiceIncident = async (
   comments: string,
   motiveId: string,
   files: File[] | null,
-  clientId: string
+  clientId: string,
+  amount?: string
 ): Promise<AxiosResponse<any>> => {
   const token = await getIdToken();
 
@@ -123,6 +124,7 @@ export const reportInvoiceIncident = async (
   formData.append("invoices_id", JSON.stringify(invoicesId));
   formData.append("comments", comments);
   formData.append("motive_id", motiveId);
+  if (amount) formData.append("amount", amount);
 
   if (files) {
     files.forEach((file) => {
