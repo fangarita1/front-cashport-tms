@@ -150,7 +150,7 @@ const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: PAtrip) => {
             <p className={styles.subtitle}>{`$${formatNumber(pendingPAValue, 2)}`}</p>
           </Flex>
           <Flex justify="flex-end">
-            <button className={styles.buttonDownload} onClick={handleDownloadCsv}>
+            <button className={styles.buttonDownload} onClick={handleDownloadCsv} type="button">
               Descargar CSV
             </button>
           </Flex>
