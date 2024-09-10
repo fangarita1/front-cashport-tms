@@ -23,20 +23,14 @@ export const FileDownloadModal: React.FC<InvoiceDownloadModalProps> = ({
     >
       <div className="img">
         <div className="bodyImg">
-          <img src={url} alt="Invoice" />
+          <img src={url} alt="Invoice" style={{ maxHeight: "400px", width: "auto" }} />
         </div>
       </div>
       <div className="footer">
         <a className="buttonDownload" download={url} href={url} target="_blank">
           Descargar
         </a>
-        <button
-          type="button"
-          className="buttonCheck"
-          onClick={() => {
-            console.log("Entendido");
-          }}
-        >
+        <button type="button" className="buttonCheck" onClick={() => onCloseModal(false)}>
           Entendido
         </button>
       </div>
