@@ -50,17 +50,15 @@ export const Completed: FC<ICompletedProps> = ({ search }) => {
     getTransferRequestAccepted();
   }, []);
 
-  const filteredData = transferRequest
-    .map((status) => {
-      const filteredItems = status.items.filter(
-        (item) =>
-          item.start_location.toLowerCase().includes(search.toLowerCase()) ||
-          item.end_location.toLowerCase().includes(search.toLowerCase())
-      );
+  const filteredData = transferRequest.map((status) => {
+    const filteredItems = status.items.filter(
+      (item) =>
+        item.start_location.toLowerCase().includes(search.toLowerCase()) ||
+        item.end_location.toLowerCase().includes(search.toLowerCase())
+    );
 
-      return { ...status, items: filteredItems };
-    })
-    .filter((status) => status.items.length > 0);
+    return { ...status, items: filteredItems };
+  });
 
   const renderItems: CollapseProps["items"] = filteredData.map((item, index) => {
     return {

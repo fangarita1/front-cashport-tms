@@ -50,19 +50,18 @@ export const InProcess: FC<IInProcessProps> = ({ search }) => {
     getTransferRequestAccepted();
   }, []);
 
-  const filteredData = transferRequest
-    .map((status) => {
-      const filteredItems = status.items.filter(
-        (item) =>
-          item.start_location.toLowerCase().includes(search.toLowerCase()) ||
-          item.end_location.toLowerCase().includes(search.toLowerCase())
-      );
+  const filteredData = transferRequest.map((status) => {
+    const filteredItems = status.items.filter(
+      (item) =>
+        item.start_location.toLowerCase().includes(search.toLowerCase()) ||
+        item.end_location.toLowerCase().includes(search.toLowerCase())
+    );
 
-      return { ...status, items: filteredItems };
-    })
-    .filter((status) => status.items.length > 0);
+    return { ...status, items: filteredItems };
+  });
 
   const renderItems: CollapseProps["items"] = filteredData.map((item, index) => {
+    const hasItems = item.items.length > 0;
     return {
       key: index,
       label: getTitile(item.statusId, item.items.length),
@@ -73,7 +72,7 @@ export const InProcess: FC<IInProcessProps> = ({ search }) => {
   if (isLoading)
     return (
       <div className={styles.emptyContainer}>
-        <Text className={styles.textEmpty}>No Content</Text>
+        <Text className={styles.textEmpty}>Loading...</Text>
       </div>
     );
 
