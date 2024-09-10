@@ -172,8 +172,8 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
     const evidence: IEvidence = {
       id: incident.id,
       novelty_id: incident.id,
-      name: incident.url_image.split("/").pop() || "Evidencia",
-      url: incident.url_image,
+      name: incident?.url_image?.split("/").pop() || "Evidencia",
+      url: incident?.url_image,
       created_at: new Date(),
       updated_at: new Date()
     };
