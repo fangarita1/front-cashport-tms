@@ -611,7 +611,7 @@ export const CreateOrderView = () => {
         dataPersons.length >= 1 ? (
           <Popconfirm
             title="Esta seguro de eliminar?"
-            onConfirm={() => handleDeletePerson(record.key)}
+            onConfirm={() => handleDeletePerson(record.id)}
           >
             <div
               style={{
@@ -619,7 +619,8 @@ export const CreateOrderView = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 height: 32,
-                width: 32
+                width: 32,
+                cursor: "pointer"
               }}
             >
               <Trash size={24} />
@@ -1370,8 +1371,10 @@ export const CreateOrderView = () => {
             </Col>
           </div>
         );
-
-        result.push({ value: item.description, label: strlabel });
+        result.push({
+          value: `${item.id} - ${item.name} - ${item.contact_number} - ${item.psl_desc} - ${item.cost_center_desc}`,
+          label: strlabel
+        });
       });
     }
     setOptionsPersons(result);
@@ -1383,24 +1386,16 @@ export const CreateOrderView = () => {
   }, [typeactive]);
 
   const filteredPersonsOptions = optionsPersons.filter(
-    (option: any) => !dataPersons.some((person) => person.name === option.value)
+    (option: any) => !dataPersons.some((person) => option?.value?.includes(String(person.id)))
   );
 
-  let personsIdx = 0;
   const addPerson = async (value: any) => {
-    personsIdx = personsIdx + 1;
-
-    value.key = requirementsIdx;
-
     const newvalue: ITransferOrderPersons = value;
-    //console.log(newvalue);
-    await setDataPersons((dataPersons) => [...dataPersons, newvalue]);
+    setDataPersons((dataPersons) => [...dataPersons, newvalue]);
   };
 
-  const handleDeletePerson = (key: React.Key) => {
-    console.log(key);
-    personsIdx = personsIdx - 1;
-    const newData = dataPersons.filter((item) => item.key !== key);
+  const handleDeletePerson = (id: number) => {
+    const newData = dataPersons.filter((item) => item.id !== id);
     setDataPersons(newData);
   };
 
@@ -2012,7 +2007,7 @@ export const CreateOrderView = () => {
         <div className="collapseByAction__label">
           <Package size={16} />
           <Title className="collapseByAction__label__text" level={4}>
-            Carga
+            {typeactive == "3" ? "Personas y Vehículos" : "Carga"}
           </Title>
         </div>
       ),
@@ -2068,10 +2063,10 @@ export const CreateOrderView = () => {
                       options={filteredPersonsOptions}
                       value={null}
                       style={{ width: "100%", height: "2.5rem" }}
-                      optionFilterProp="label"
+                      optionFilterProp="value"
                       filterOption={(input: string, option) => {
                         if (option) {
-                          return option.label.props.toLowerCase().includes(input.toLowerCase());
+                          return option.value.toLowerCase().includes(input.toLowerCase());
                         }
                         return false;
                       }}
@@ -2079,7 +2074,12 @@ export const CreateOrderView = () => {
                   </Col>
                   <Col span={12} />
                   <Col span={24}>
-                    <Table columns={columnsCargaPersonas} dataSource={dataPersons} />
+                    <Table
+                      columns={columnsCargaPersonas}
+                      dataSource={dataPersons}
+                      rowKey="id"
+                      pagination={false}
+                    />
                   </Col>
                 </Col>
               </Row>
