@@ -5,6 +5,7 @@ interface IEvent {
   approved_by: string | null;
   rejected_by: string | null;
   created_at: string;
+  created_by: string;
   comments: string;
   files: any[]; // You might want to define a more specific type for files
 }
@@ -38,7 +39,7 @@ interface UseIncidentDetailProps {
 }
 
 export const useIncidentDetail = (props: UseIncidentDetailProps) => {
-  const { data, isLoading } = useSWR<IIncidentDetailResponse>(
+  const { data, isLoading, mutate } = useSWR<IIncidentDetailResponse>(
     `/invoice/incident-detail/${props.incidentId}`,
     fetcher,
     {}
@@ -46,6 +47,7 @@ export const useIncidentDetail = (props: UseIncidentDetailProps) => {
 
   return {
     data: data?.data,
-    isLoading
+    isLoading,
+    mutate
   };
 };

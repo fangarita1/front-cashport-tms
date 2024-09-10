@@ -13,6 +13,7 @@ interface Event {
   approved_by: string | null;
   rejected_by: string | null;
   created_at: string;
+  created_by: string;
   comments: string;
   files: any[]; // You might want to define a more specific type for files
 }
@@ -21,12 +22,14 @@ interface EventSectionProps {
   events: Event[];
   incidentId?: string;
   currentUserAvatar: string;
+  mutate: () => void;
   messageApi: MessageInstance;
 }
 export const EventSection: React.FC<EventSectionProps> = ({
   events,
   currentUserAvatar,
   incidentId,
+  mutate,
   messageApi
 }) => {
   const [comment, setComment] = useState("");
@@ -38,7 +41,7 @@ export const EventSection: React.FC<EventSectionProps> = ({
   };
 
   const getEventUser = (event: Event) => {
-    return event.approved_by || event.rejected_by || "Unknown User";
+    return event.created_by || event.approved_by || event.rejected_by || "Unknown User";
   };
 
   const getEventAction = (event: Event) => {
@@ -58,7 +61,7 @@ export const EventSection: React.FC<EventSectionProps> = ({
       await addIncidentComment(incidentId || "1", { comments: comment });
       messageApi.success("Comentario agregado exitosamente");
       setComment("");
-      // You might want to refresh the events list here
+      mutate();
     } catch (error) {
       messageApi.error("Error al agregar el comentario");
       console.error("Error adding comment:", error);
