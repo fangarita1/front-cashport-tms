@@ -47,31 +47,17 @@ export const VehicleFormTab = ({
   statusForm = "review",
   onActiveVehicle = () => {},
   onDesactivateVehicle = () => {},
-  params
+  params,
+  documentsTypesList,
+  vehiclesTypesList,
+  isLoading
 }: VehicleFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [loading, setLoading] = useState(false);
+
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const [hasGPS, setHasGPS] = useState(data?.has_gps ||  false );
-  
-  const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
-    "1",
-    getDocumentsByEntityType,
-    { revalidateIfStale:false,
-      revalidateOnFocus:false,
-      revalidateOnReconnect:false
-    }
-  );
-  const { data: vehiclesTypesData, isLoading: loadingVicles } = useSWR(
-    "/vehicle/type",
-    getVehicleType,
-    { revalidateIfStale:false,
-      revalidateOnFocus:false,
-      revalidateOnReconnect:false
-    }
-  );
+  const [hasGPS, setHasGPS] = useState(data?.has_gps || false);
 
   const [images, setImages] = useState<ImageState[]>(
     Array(5).fill({ file: undefined, error: false })
@@ -91,26 +77,28 @@ export const VehicleFormTab = ({
   } = useForm<IFormVehicle>({
     defaultValues,
     disabled: statusForm === "review",
-    mode: 'onChange' 
+    mode: "onChange"
   });
+  const formValues = watch();
+  console.log("formValues", formValues);
   const { push } = useRouter();
-  const formImages = watch("images")
+  const formImages = watch("images");
 
   const hasImages = () => {
-    return (images.some(img=>img.file) || (formImages && formImages.length > 0))
-  }
+    return images.some((img) => img.file) || (formImages && formImages.length > 0);
+  };
   const isFormCompleted = () => {
-    return isValid && hasImages()
-  }
-  const isSubmitButtonEnabled = isFormCompleted() && !loading
+    return isValid && hasImages();
+  };
+  const isSubmitButtonEnabled = isFormCompleted() && !isLoading;
 
   useEffect(() => {
     if (!hasGPS) {
-      resetField('general.gps_user', { defaultValue: "" });
-      resetField('general.gps_password', { defaultValue: "" });
-      resetField('general.gps_link', { defaultValue: "" });
+      resetField("general.gps_user", { defaultValue: "" });
+      resetField("general.gps_password", { defaultValue: "" });
+      resetField("general.gps_link", { defaultValue: "" });
     }
-    trigger(['general.gps_user', 'general.gps_password', 'general.gps_link']);
+    trigger(["general.gps_user", "general.gps_password", "general.gps_link"]);
   }, [hasGPS, resetField, trigger]);
 
   useEffect(() => {
@@ -126,15 +114,15 @@ export const VehicleFormTab = ({
   const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
 
   useEffect(() => {
-    if (Array.isArray(documentsType)) {
-      const isFirstLoad = data?.documents?.length && selectedFiles.length === 0 
+    if (Array.isArray(documentsTypesList)) {
+      const isFirstLoad = data?.documents?.length && selectedFiles.length === 0;
       if (isFirstLoad) {
         const docsWithLink =
-          documentsType
+          documentsTypesList
             ?.filter((f) => data.documents?.find((d) => d.id_document_type === f.id))
             .map((f) => ({
               ...f,
-              file:  undefined,
+              file: undefined,
               link: data.documents?.find((d) => d.id_document_type === f.id)?.url_archive,
               expirationDate: dayjs(
                 data.documents?.find((d) => d.id_document_type === f.id)?.expiration_date
@@ -142,16 +130,18 @@ export const VehicleFormTab = ({
             })) || [];
         setSelectedFiles(docsWithLink);
       } else {
-        const documentsFiltered = documentsType?.filter((f) => !f?.optional || selectedFiles?.find((f2) => f2.id === f.id))
-        const docsWithFile =  documentsFiltered.map((f) => {
-            const prevFile = selectedFiles.find((f2) => f2.id === f.id);
-            return {
-              ...f,
-              link: prevFile?.link || undefined,
-              file: prevFile?.link ? undefined : files.find((f2) => f2.aditionalData === f.id)?.file,
-              expirationDate: prevFile?.expirationDate
-            };
-          });
+        const documentsFiltered = documentsTypesList?.filter(
+          (f) => !f?.optional || selectedFiles?.find((f2) => f2.id === f.id)
+        );
+        const docsWithFile = documentsFiltered.map((f) => {
+          const prevFile = selectedFiles.find((f2) => f2.id === f.id);
+          return {
+            ...f,
+            link: prevFile?.link || undefined,
+            file: prevFile?.link ? undefined : files.find((f2) => f2.aditionalData === f.id)?.file,
+            expirationDate: prevFile?.expirationDate
+          };
+        });
         if (docsWithFile?.length) {
           setSelectedFiles([...docsWithFile]);
         } else {
@@ -159,27 +149,26 @@ export const VehicleFormTab = ({
         }
       }
     }
-  }, [files, documentsType]);
+  }, [files, documentsTypesList]);
 
   useEffect(() => {
-    if (statusForm === "review"){
-      if (Array.isArray(documentsType)) {
-          const docsWithLink =
-            documentsType
-              ?.filter((f) => data?.documents?.find((d) => d.id_document_type === f.id))
-              .map((f) => ({
-                ...f,
-                file:  undefined,
-                link: data?.documents?.find((d) => d.id_document_type === f.id)?.url_archive,
-                expirationDate: dayjs(
-                  data?.documents?.find((d) => d.id_document_type === f.id)?.expiration_date
-                )
-              })) || [];
-          setSelectedFiles(docsWithLink);
+    if (statusForm === "review") {
+      if (Array.isArray(documentsTypesList)) {
+        const docsWithLink =
+          documentsTypesList
+            ?.filter((f) => data?.documents?.find((d) => d.id_document_type === f.id))
+            .map((f) => ({
+              ...f,
+              file: undefined,
+              link: data?.documents?.find((d) => d.id_document_type === f.id)?.url_archive,
+              expirationDate: dayjs(
+                data?.documents?.find((d) => d.id_document_type === f.id)?.expiration_date
+              )
+            })) || [];
+        setSelectedFiles(docsWithLink);
       }
     }
   }, [statusForm]);
-
 
   const handleChangeExpirationDate = (index: number, value: any) => {
     setSelectedFiles((prevState: any[]) => {
@@ -190,7 +179,7 @@ export const VehicleFormTab = ({
   };
 
   const handleChange = (value: string[]) => {
-    const sf = documentsType?.filter((file) => value.includes(file.id.toString()));
+    const sf = documentsTypesList?.filter((file) => value.includes(file.id.toString()));
     if (sf) {
       setSelectedFiles((prevState) => {
         return sf.map((file) => {
@@ -203,38 +192,33 @@ export const VehicleFormTab = ({
           };
         });
       });
-      
     }
   };
 
   const onSubmit = async (data: any) => {
     const hasImage = data.images.length > 0;
-    if (!hasImage){
+    if (!hasImage) {
       setImageError(true);
       return;
-    } 
+    }
     const vehicleData: any = {
       ...data.general,
       has_gps: hasGPS,
       id_carrier: Number(params.id) || 14
     };
-    const formImages = [...data.images]
-    _onSubmitVehicle(
-      vehicleData,
-      selectedFiles,
-      formImages,
-      setLoading,
-      setImageError,
-      onSubmitForm
-    )
+    const formImages = [...data.images];
+    _onSubmitVehicle(vehicleData, selectedFiles, formImages, setImageError, onSubmitForm);
     setImages(Array(5).fill({ file: undefined }));
   };
 
   const convertToSelectOptions = (vehicleTypes: VehicleType[]) => {
-    return vehicleTypes?.map((vehicleType) => ({
+    console.log("convertToSelectOptions vehicleTypes", vehicleTypes);
+    const newValues = vehicleTypes?.map((vehicleType) => ({
       value: vehicleType.description,
-      id: vehicleType.id,
+      id: Number(vehicleType.id)
     }));
+    console.log("convertToSelectOptions newValues", newValues);
+    return newValues;
   };
 
   return (
@@ -242,67 +226,69 @@ export const VehicleFormTab = ({
       {contextHolder}
       <form className="vehiclesFormTab" onSubmit={handleSubmit(onSubmit)}>
         <Flex component={"header"} className="headerProyectsForm">
-            <Link href={`/logistics/providers/${params.id}/vehicle`} passHref>
+          <Link href={`/logistics/providers/${params.id}/vehicle`} passHref>
+            <Button
+              type="text"
+              size="large"
+              className="buttonGoBack"
+              icon={<CaretLeft size={"1.45rem"} />}
+            >
+              Ver vehículos
+            </Button>
+          </Link>
+          <Flex gap={"1rem"}>
+            {statusForm === "review" && (
               <Button
-                type="text"
-                size="large"
-                className="buttonGoBack"
-                icon={<CaretLeft size={"1.45rem"} />}
+                className="buttons"
+                htmlType="button"
+                disabled={statusForm === "review"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsOpenModal(true);
+                }}
               >
-                Ver Vehiculos
+                Cambiar Estado
+                <ArrowsClockwise size={"1.2rem"} />
               </Button>
-            </Link>
-              <Flex gap={"1rem"}>
-              {(statusForm === "review") && (
-                <Button
-                  className="buttons"
-                  htmlType="button"
-                  disabled={statusForm === "review"}  
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setIsOpenModal(true);
-                  }}
-                >
-                  Cambiar Estado
-                  <ArrowsClockwise size={"1.2rem"} />
-                </Button>
-              )}
-              {statusForm === "review" ? (
-                <Button
-                  className="buttons -edit"
-                  htmlType="button"
-                  onClick={(e) => {
-                    handleFormState("edit")
-                    e.preventDefault();
-                  }}
-                >
-                  {validationButtonText(statusForm)}
-                  <Pencil size={"1.2rem"} />
-                </Button>
-              ) : (
-                ""
-              )}
-              {statusForm === "edit" ? (
-                <Button
-                  className="buttons -edit"
-                  htmlType="button"
-                  onClick={(e) => {
-                    handleFormState("review")
-                    e.preventDefault();
-                    reset()
-                    setHasGPS(data?.has_gps || false)
-                  }}
-                >
-                  {"Cancelar edición"}
-                </Button>
-              ) : (
-                ""
-              )}
-            </Flex>
+            )}
+            {statusForm === "review" ? (
+              <Button
+                className="buttons -edit"
+                htmlType="button"
+                onClick={(e) => {
+                  handleFormState("edit");
+                  e.preventDefault();
+                }}
+              >
+                {validationButtonText(statusForm)}
+                <Pencil size={"1.2rem"} />
+              </Button>
+            ) : (
+              ""
+            )}
+            {statusForm === "edit" ? (
+              <Button
+                className="buttons -edit"
+                htmlType="button"
+                onClick={(e) => {
+                  handleFormState("review");
+                  e.preventDefault();
+                  reset();
+                  setHasGPS(data?.has_gps || false);
+                }}
+              >
+                {"Cancelar edición"}
+              </Button>
+            ) : (
+              ""
+            )}
+          </Flex>
         </Flex>
         <Flex component={"main"} flex="3" vertical>
-          <Row gutter={[16,16]}>
-            <Col span={6}>  {/* Columna Fotos del Vehiculo */}
+          <Row gutter={[16, 16]}>
+            <Col span={6}>
+              {" "}
+              {/* Columna Fotos del Vehiculo */}
               <Title className="title" level={4}>
                 Fotos de vehículo
               </Title>
@@ -332,20 +318,22 @@ export const VehicleFormTab = ({
                     <Text className="textError">{"Al menos 1 imagen debe ser cargada *"}</Text>
                   )}
                 </Col>
-                </Row>
-                <Row gutter={16}>
+              </Row>
+              <Row gutter={16}>
                 {images.slice(1).map((image, index) => (
                   <Col xs={24} sm={12} lg={6} className="colfotomin" key={index + 1}>
                     <UploadImg
                       disabled={statusForm === "review"}
-                      imgDefault={formImages ? formImages[index+1]?.url_archive : undefined}
+                      imgDefault={formImages ? formImages[index + 1]?.url_archive : undefined}
                       setImgFile={(file) => {
-                      const currentUrlArchive = formImages ? formImages[index+1]?.url_archive : undefined; // obtener el valor actual de url_archive
+                        const currentUrlArchive = formImages
+                          ? formImages[index + 1]?.url_archive
+                          : undefined; // obtener el valor actual de url_archive
                         if (currentUrlArchive) {
                           (file as any).url_archive = currentUrlArchive;
-                          setValue(`images.${index+1}`, file);
+                          setValue(`images.${index + 1}`, file);
                         } else {
-                          setValue(`images.${index+1}`, file);
+                          setValue(`images.${index + 1}`, file);
                         }
                         setImages((prev) =>
                           prev.map((img, imgIndex) =>
@@ -361,27 +349,29 @@ export const VehicleFormTab = ({
                 ))}
               </Row>
             </Col>
-            <Col span={18} >  {/* Columna Informacion general */}
+            <Col span={18}>
+              {" "}
+              {/* Columna Informacion general */}
               <Title className="title" level={4}>
-                Informacion General
+                Información General
               </Title>
-              <Row gutter={[16,16]}>
-                <Col span={8}  className="selectButton">
+              <Row gutter={[16, 16]}>
+                <Col span={8} className="selectButton">
                   <Title className="title" level={5}>
-                    Tipo de Vehiculo
+                    Tipo de vehículo
                   </Title>
                   <Controller
                     name="general.id_vehicle_type"
                     control={control}
-                    disabled={statusForm === "review"} 
+                    disabled={statusForm === "review"}
                     rules={{ required: true }}
                     render={({ field }) => (
                       <SelectInputForm
-                      placeholder="Selecciona tipo de vehículo"
-                      error={errors?.general?.id_vehicle_type}
-                      field={field}
-                      loading={loadingVicles}
-                      options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
+                        placeholder="Selecciona tipo de vehículo"
+                        error={errors?.general?.id_vehicle_type}
+                        field={field}
+                        loading={isLoading}
+                        options={convertToSelectOptions(vehiclesTypesList || [])}
                       />
                     )}
                   />
@@ -391,7 +381,7 @@ export const VehicleFormTab = ({
                     titleInput="Placa"
                     nameInput="general.plate_number"
                     control={control}
-                    disabled={statusForm === "review"}  
+                    disabled={statusForm === "review"}
                     error={errors.general?.plate_number}
                   />
                 </Col>
@@ -400,7 +390,7 @@ export const VehicleFormTab = ({
                     titleInput="Marca"
                     nameInput="general.brand"
                     control={control}
-                    disabled={statusForm === "review"}  
+                    disabled={statusForm === "review"}
                     error={errors?.general?.brand}
                   />
                 </Col>
@@ -409,7 +399,7 @@ export const VehicleFormTab = ({
                     titleInput="Modelo"
                     nameInput="general.model"
                     control={control}
-                    disabled={statusForm === "review"}  
+                    disabled={statusForm === "review"}
                     error={errors?.general?.model}
                   />
                 </Col>
@@ -418,7 +408,7 @@ export const VehicleFormTab = ({
                     titleInput="Linea"
                     nameInput="general.line"
                     control={control}
-                    disabled={statusForm === "review"}  
+                    disabled={statusForm === "review"}
                     error={errors.general?.line}
                   />
                 </Col>
@@ -427,7 +417,7 @@ export const VehicleFormTab = ({
                     titleInput="Año"
                     nameInput="general.year"
                     control={control}
-                    disabled={statusForm === "review"}  
+                    disabled={statusForm === "review"}
                     error={undefined}
                     // error={errors.general?.year}
                   />
@@ -437,7 +427,7 @@ export const VehicleFormTab = ({
                     titleInput="Color"
                     nameInput="general.color"
                     control={control}
-                    disabled={statusForm === "review"}  
+                    disabled={statusForm === "review"}
                     error={errors.general?.color}
                   />
                 </Col>
@@ -446,7 +436,7 @@ export const VehicleFormTab = ({
                     titleInput="Ciudad"
                     nameInput="general.country"
                     control={control}
-                    disabled={statusForm === "review"}  
+                    disabled={statusForm === "review"}
                     error={errors.general?.country}
                   />
                 </Col>
@@ -459,9 +449,9 @@ export const VehicleFormTab = ({
                 style={{ marginTop: "2rem", marginBottom: "2rem" }}
               >
                 <Switch
-                  disabled={statusForm === 'review'}
+                  disabled={statusForm === "review"}
                   checked={hasGPS}
-                  onChange={()=>setHasGPS(!hasGPS)}
+                  onChange={() => setHasGPS(!hasGPS)}
                 />
                 <h5 className="ant-typography input-form-title">&nbsp;&nbsp;Equipado por GPS</h5>
               </Flex>
@@ -471,7 +461,7 @@ export const VehicleFormTab = ({
                     titleInput="Usuario"
                     nameInput="general.gps_user"
                     control={control}
-                    disabled={statusForm === "review" || !hasGPS} 
+                    disabled={statusForm === "review" || !hasGPS}
                     error={errors.general?.gps_user}
                   />
                 </Col>
@@ -480,8 +470,8 @@ export const VehicleFormTab = ({
                     titleInput="Contraseña"
                     nameInput="general.gps_password"
                     control={control}
-                    disabled={statusForm === "review" || !hasGPS} 
-                    error={errors.general?.gps_password }
+                    disabled={statusForm === "review" || !hasGPS}
+                    error={errors.general?.gps_password}
                   />
                 </Col>
                 <Col span={8}>
@@ -489,14 +479,16 @@ export const VehicleFormTab = ({
                     titleInput="Link"
                     nameInput="general.gps_link"
                     control={control}
-                    disabled={statusForm === "review"|| !hasGPS} 
-                    error={errors.general?.gps_link }
+                    disabled={statusForm === "review" || !hasGPS}
+                    error={errors.general?.gps_link}
                   />
                 </Col>
               </Row>
             </Col>
-          </Row>  
-          <Row gutter={[16,16]}> {/* Fila Informacion Adicional */}
+          </Row>
+          <Row gutter={[16, 16]}>
+            {" "}
+            {/* Fila Informacion Adicional */}
             <Col span={24}>
               <Title className="title" level={4}>
                 Informacion Adicional
@@ -506,28 +498,35 @@ export const VehicleFormTab = ({
                 titleInput=""
                 nameInput="general.aditional_info"
                 control={control}
-                validationRules={{required: false}}
-                disabled={statusForm === "review"} 
+                validationRules={{ required: false }}
+                disabled={statusForm === "review"}
                 error={errors.general?.aditional_info}
               />
             </Col>
           </Row>
-          <Row style={{marginTop: "2rem", marginBottom: "2rem"}}> {/* Fila Documentos */}
-              <Col span={8}>
-                <Title className="title" level={4}>
-                  Documentos
-                </Title>
-              </Col>
-              <Col span={8} offset={8} style={{display: "flex", justifyContent: "flex-end"}}>
-                {(statusForm === "create" || statusForm === "edit" ) && (
-                  <LoadDocumentsButton 
-                    text="Cargar documentos" 
-                    onClick={() => setIsOpenModalDocuments(true)}/>
-                )}
-              </Col>
-            <Row style={{marginTop: "1rem", width: "100%"}} >
+          <Row style={{ marginTop: "2rem", marginBottom: "2rem" }}>
+            {" "}
+            {/* Fila Documentos */}
+            <Col span={8}>
+              <Title className="title" level={4}>
+                Documentos
+              </Title>
+            </Col>
+            <Col span={8} offset={8} style={{ display: "flex", justifyContent: "flex-end" }}>
+              {(statusForm === "create" || statusForm === "edit") && (
+                <LoadDocumentsButton
+                  text="Cargar documentos"
+                  onClick={() => setIsOpenModalDocuments(true)}
+                />
+              )}
+            </Col>
+            <Row style={{ marginTop: "1rem", width: "100%" }}>
               {selectedFiles.map((file, index) => (
-                <Col span={12} key={`file-${file.id}`}  style={{ marginBottom: "16px", paddingRight: index % 2 === 0 ? "16px" : "0"  }}>
+                <Col
+                  span={12}
+                  key={`file-${file.id}`}
+                  style={{ marginBottom: "16px", paddingRight: index % 2 === 0 ? "16px" : "0" }}
+                >
                   <UploadDocumentButton
                     key={file.id}
                     title={file.description}
@@ -541,7 +540,7 @@ export const VehicleFormTab = ({
                       <UploadDocumentChild
                         linkFile={file.link}
                         nameFile={file.link.split("-").pop() ?? ""}
-                        onDelete={()=>{}}
+                        onDelete={() => {}}
                         showTrash={false}
                       />
                     ) : undefined}
@@ -550,15 +549,15 @@ export const VehicleFormTab = ({
               ))}
             </Row>
           </Row>
-            {["edit", "create"].includes(statusForm) && (
-              <Row justify={"end"}>
-                <SubmitFormButton
-                    text={validationButtonText(statusForm)}
-                    disabled={!isSubmitButtonEnabled}
-                    onClick={handleSubmit(onSubmit)}
-                />
-              </Row>
-            )}    
+          {["edit", "create"].includes(statusForm) && (
+            <Row justify={"end"}>
+              <SubmitFormButton
+                text={validationButtonText(statusForm)}
+                disabled={!isSubmitButtonEnabled}
+                onClick={handleSubmit(onSubmit)}
+              />
+            </Row>
+          )}
         </Flex>
       </form>
       <ModalChangeStatus
@@ -572,8 +571,8 @@ export const VehicleFormTab = ({
         isOpen={isOpenModalDocuments}
         mockFiles={selectedFiles}
         setFiles={setFiles}
-        documentsType={documentsType}
-        isLoadingDocuments={isLoadingDocuments}
+        documentsType={documentsTypesList}
+        isLoadingDocuments={isLoading}
         onClose={() => setIsOpenModalDocuments(false)}
         handleChange={handleChange}
         handleChangeExpirationDate={handleChangeExpirationDate}

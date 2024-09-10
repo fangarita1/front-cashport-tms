@@ -41,12 +41,12 @@ const ProviderInfoView = ({ children, params }: Props) => {
     },
     {
       key: "vehicle",
-      label: "Vehiculo",
+      label: "Vehículos",
       children: <></>
     },
     {
       key: "driver",
-      label: "Conductor",
+      label: "Conductores",
       children: <></>
     }
   ];

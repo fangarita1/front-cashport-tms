@@ -50,6 +50,7 @@ export default function CarrierTable({
       title: "CR",
       dataIndex: "id",
       key: "id",
+      width: "6%",
       render: (id) => (
         <Link
           href={`/logistics/acept_carrier/${id}`}
@@ -65,6 +66,7 @@ export default function CarrierTable({
       title: "Origen y destino",
       dataIndex: ["start_location", "end_location"],
       key: "departureArrival",
+      width: "25%",
       render: (text, record) => (
         <Text>
           <div>
@@ -151,16 +153,15 @@ export default function CarrierTable({
   ];
 
   return (
-    <>
-      <Table
-        style={{ width: "100%" }}
-        columns={columns}
-        dataSource={data.map((data) => ({ ...data, key: data.id }))}
-        rowSelection={rowSelection}
-        rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
-        pagination={false}
-        loading={loading}
-      />
-    </>
+    <Table
+      style={{ width: "100%" }}
+      columns={columns}
+      dataSource={data.map((data) => ({ ...data, key: data.id }))}
+      rowSelection={rowSelection}
+      rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
+      pagination={false}
+      loading={loading}
+      scroll={{ y: 260 }}
+    />
   );
 }

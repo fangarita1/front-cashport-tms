@@ -7,27 +7,6 @@
     height: 100%;
     background-color: $background;
 
-    .buttonGoBack {
-        display: flex;
-        align-items: center;
-        color: $secondary-gray;
-    }
-
-    .divider {
-        color: $secondary-gray;
-        font-size: 1.8rem;
-        margin: 0 0.5rem;
-    }
-
-    .icon {
-        color: $secondary-gray;
-    }
-
-    .rutesText {
-        color: $secondary-gray;
-        font-weight: 600;
-        cursor: pointer;
-    }
     .tabs {
         .tab {
             max-width: 100%;
@@ -39,41 +18,24 @@
     }
     .containerCreateOrder {
         width: 100%;
-        padding: 2rem;
+        padding: 1rem;
+        padding-left: 2rem;
         height: auto;
 
-        .titleName {
-            margin: auto;
-            font-weight: 600;
-            width: 398px;
-            height: 32px;
-            color: var(--Black, #141414);
-            line-height: 124%;
-            font-style: normal;
-            font-size: 24px;
-        }
-
-        .subtitleNit {
-            font-weight: 600;
-            margin: 1rem 0;
-        }
-
-        .imageProject {
-            margin: rem 0;
-        }
+   
     }
 
 
     .infoHeaderOrder {
         gap: 2rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
         justify-content: space-between;
     }
 
     .suppliersTabsContainer {
         width: 100%;
         height: auto;
-        padding: 1.5rem;
+        padding: 2rem;
         border-radius: 0.5rem;
         background-color: $white;
 

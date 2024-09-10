@@ -1,6 +1,12 @@
 import axios, { AxiosResponse } from "axios";
 import config from "@/config";
-import { IVehicle, IListDataVehiche, IListDataVehicheDetail, CustomFile } from "@/types/logistics/schema";
+import {
+  IVehicle,
+  IListDataVehiche,
+  IListDataVehicheDetail,
+  CustomFile,
+  DataVihicleType
+} from "@/types/logistics/schema";
 import { API } from "@/utils/api/api";
 import { GenericResponse } from "@/types/global/IGlobal";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
@@ -12,16 +18,13 @@ export const getAllVehicles = async ({ id }: { id: string }): Promise<any[]> => 
   else throw response;
 };
 
-export const getVehicleType = async (): Promise<IListDataVehiche> => {
+export const getVehicleType = async (): Promise<DataVihicleType> => {
   try {
-    const response: AxiosResponse<IListDataVehiche> = await axios.get(
-      `${config.API_HOST}/vehicle/type`,
-      {
-        headers: {
-          Accept: "application/json, text/plain, */*"
-        }
+    const response: AxiosResponse<any> = await axios.get(`${config.API_HOST}/vehicle/type`, {
+      headers: {
+        Accept: "application/json, text/plain, */*"
       }
-    );
+    });
 
     return response.data;
   } catch (error) {
@@ -46,14 +49,14 @@ export const getVehicleById = async (id: string): Promise<IListDataVehicheDetail
     return error as any;
   }
 };
-export const createVehicleForm =( 
+export const createVehicleForm = (
   data: IVehicle,
   files: DocumentCompleteType[],
   formImages: CustomFile[]
 ) => {
   const form = new FormData();
   const body: any = { ...data };
-  const hasImage = formImages.length > 0
+  const hasImage = formImages.length > 0;
   if (!hasImage) {
     throw new Error("At least one image file is required.");
   }
@@ -61,10 +64,10 @@ export const createVehicleForm =(
   body.images = formImages?.map((file: any, index) => ({
     docReference: file.docReference || `image${index + 1}`,
     uid: file?.uid,
-    url_archive: file?.url_archive,
+    url_archive: file?.url_archive
   }));
 
-  const expiration = files.find(f => !f.expirationDate && f.expiry);
+  const expiration = files.find((f) => !f.expirationDate && f.expiry);
   if (expiration) {
     throw new Error(`El documento ${expiration.description} debe tener una fecha de vencimiento`);
   }
@@ -89,8 +92,8 @@ export const createVehicleForm =(
     }
   });
 
-  return form
-}
+  return form;
+};
 
 export const addVehicle = async (
   data: IVehicle,
@@ -98,7 +101,7 @@ export const addVehicle = async (
   formImages: CustomFile[]
 ): Promise<AxiosResponse<any, any>> => {
   try {
-   const form = createVehicleForm(data, files, formImages)
+    const form = createVehicleForm(data, files, formImages);
     const response = await axios.post(`${config.API_HOST}/vehicle/create`, form, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -117,7 +120,7 @@ export const updateVehicle = async (
   formImages: CustomFile[]
 ): Promise<AxiosResponse<any, any>> => {
   try {
-    const form = createVehicleForm(data, files, formImages)
+    const form = createVehicleForm(data, files, formImages);
     const response = await axios.put(`${config.API_HOST}/vehicle/update`, form, {
       headers: {
         "Content-Type": "multipart/form-data",

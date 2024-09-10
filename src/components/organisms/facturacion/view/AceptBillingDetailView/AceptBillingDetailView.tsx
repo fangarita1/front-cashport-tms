@@ -1,15 +1,5 @@
 "use client";
-import {
-  Button,
-  Col,
-  ConfigProvider,
-  Flex,
-  message,
-  Modal,
-  Row,
-  Spin,
-  Typography
-} from "antd";
+import { Button, Col, ConfigProvider, Flex, message, Modal, Row, Spin, Typography } from "antd";
 import { CaretLeft, DotsThree, Truck, CraneTower, User } from "@phosphor-icons/react";
 import { getBillingDetailsById } from "@/services/billings/billings";
 import styles from "./AceptBillingDetailView.module.scss";
@@ -21,6 +11,7 @@ import { IJourney, IIncident } from "@/types/logistics/schema";
 import { INovelty, IEvidence } from "@/types/novelty/INovelty";
 import { BillingStatusEnum } from "@/types/logistics/billing/billing";
 import { formatMoney, formatNumber } from "@/utils/utils";
+import { BackButton } from "@/components/organisms/logistics/orders/DetailsOrderView/components/BackButton/BackButton";
 
 const { Text } = Typography;
 
@@ -79,9 +70,7 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
         </div>
         <div className={styles.resumItem}>
           <Text className={styles.text}>Conductor</Text>
-          <Text className={`${styles.text} ${styles.bold}`}>
-            {trip.drivers ?? "N/A"}
-          </Text>
+          <Text className={`${styles.text} ${styles.bold}`}>{trip.drivers ?? "N/A"}</Text>
         </div>
       </div>
       <div className={`${styles.resum} ${styles.right}`}>
@@ -95,22 +84,14 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
         </div>
         <div className={`${styles.resumItem} ${styles.right}`}>
           <Text className={`${styles.text} ${styles.bold}`}>Total</Text>
-          <Text className={`${styles.text} ${styles.bold}`}>
-            {formatMoney(trip.total || "0")}
-          </Text>
+          <Text className={`${styles.text} ${styles.bold}`}>{formatMoney(trip.total || "0")}</Text>
         </div>
       </div>
       <br />
     </div>
   );
 
-  const TitleComponent = ({
-    id,
-    journey
-  }: {
-    id: number;
-    journey: IJourney;
-  }) => {
+  const TitleComponent = ({ id, journey }: { id: number; journey: IJourney }) => {
     const getServiceTypeDescription = (id_service_type: number) => {
       switch (id_service_type) {
         case 1:
@@ -135,7 +116,7 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
         case 3:
           return <User size={27} color="#FFFFFF" weight="fill" />;
         case 4:
-          return <Truck size={27} color="#FFFFFF" weight="fill" />; 
+          return <Truck size={27} color="#FFFFFF" weight="fill" />;
         default:
           return <Truck size={27} color="#FFFFFF" weight="fill" />;
       }
@@ -145,9 +126,7 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
       <div className={styles.header}>
         <div className={styles.stateContainer}>
           {getServiceTypeIcon(journey.id_type_service)}
-          <Text className={styles.state}>
-            {getServiceTypeDescription(journey.id_type_service)}
-          </Text>
+          <Text className={styles.state}>{getServiceTypeDescription(journey.id_type_service)}</Text>
         </div>
         <div className={styles.fromto}>
           <div className={styles.fromtoContainer}>
@@ -164,8 +143,6 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
       </div>
     );
   };
-
-  
 
   function convertIncidentToNovelty(incident: IIncident): INovelty {
     const evidence: IEvidence = {
@@ -191,48 +168,39 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
     };
   }
 
-  const tripDetailsWithNovelties = billingData?.journeys.flatMap((journey: IJourney) => {
-    return [
-      <TitleComponent
-        key={`title-${journey.id}`}
-        id={journey.id}
-        journey={journey}
-      />,
-      ...journey.trips.flatMap((trip, index) => {
-        const allIncidents = trip.incidents.length > 0
-          ? trip.incidents.map(convertIncidentToNovelty)
-          : []; 
-  
-        return (
-          <div key={`trip-novelty-container-${trip.id}`} style={{ marginBottom: '56px' }}>
-            <TripHeader key={`trip-${trip.id}`} trip={trip} />
-            <NoveltyTable
-              key={`novelty-table-${trip.id}`}
-              novelties={allIncidents} 
-              openDrawer={() => {}}
-              handleShowDetails={() => {}}
-            />
-          </div>
-        );
-      })
-    ];
-  }) || [];
-  
-  
-  
-  
-  
+  const tripDetailsWithNovelties =
+    billingData?.journeys.flatMap((journey: IJourney) => {
+      return [
+        <TitleComponent key={`title-${journey.id}`} id={journey.id} journey={journey} />,
+        ...journey.trips.flatMap((trip, index) => {
+          const allIncidents =
+            trip.incidents.length > 0 ? trip.incidents.map(convertIncidentToNovelty) : [];
+
+          return (
+            <div key={`trip-novelty-container-${trip.id}`} style={{ marginBottom: "56px" }}>
+              <TripHeader key={`trip-${trip.id}`} trip={trip} />
+              <NoveltyTable
+                key={`novelty-table-${trip.id}`}
+                novelties={allIncidents}
+                openDrawer={() => {}}
+                handleShowDetails={() => {}}
+              />
+            </div>
+          );
+        })
+      ];
+    }) || [];
 
   return (
     <>
       {contextHolder}
-  
+
       <div className={styles.card}>
         <div className={styles.linkButtonsContainer}>
-          <Link href="/facturacion" className={styles.link}>
-            <CaretLeft size={20} weight="bold" />
-            <div>Detalle de TR {billingData?.billing?.idTransferRequest}</div>
-          </Link>
+          <BackButton
+            href="/facturacion"
+            title={`Detalle de TR ${billingData?.billing?.idTransferRequest}`}
+          />
           {canMakeAnAction && (
             <Button
               className={styles.actionBtn}
@@ -273,10 +241,8 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
                 </Col>
               </Row>
             </Flex>
-  
-            <div className={styles.container}>
-              {tripDetailsWithNovelties}
-            </div>
+
+            <div className={styles.container}>{tripDetailsWithNovelties}</div>
           </>
         )}
       </div>

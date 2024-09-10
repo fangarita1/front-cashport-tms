@@ -1,24 +1,11 @@
-//import { Metadata } from "next";
-//import DefaultTableConfigPage from "./page";
-
-//export const metadata: Metadata = {
-//  title: "Configuración",
-// description: "Configuración"
-//};
-//export default DefaultTableConfigPage;
-
-//export default function ConfigurationLayout({ children }: { children: React.ReactNode }) {
-//  return <>{children}</>;
-//}
-
 "use client";
 
-import { Flex, Typography, Row, Col, Tabs, TabsProps } from "antd";
+import { Flex, Row, Col, Tabs, TabsProps } from "antd";
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
 import { usePathname, useRouter } from "next/navigation";
-import "./configuration.scss";
-import "@/styles/_variables_logistics.css";
+import styles from "./configuration.module.scss";
+import { SectionTitle } from "@/components/atoms/SectionTitle/SectionTitle";
 
 interface Props {
   children?: React.ReactNode;
@@ -26,8 +13,6 @@ interface Props {
     id: string;
   };
 }
-
-const { Title } = Typography;
 
 const ConfigurationLayout = ({ children, params }: Props) => {
   const router = useRouter();
@@ -56,12 +41,12 @@ const ConfigurationLayout = ({ children, params }: Props) => {
   };
 
   const onChange = (key: string) => {
-    if(key == 'materials') //default tab
-    {
+    if (key == "materials") {
+      //default tab
       router.push(`/logistics/configuration`);
-    }else{
+    } else {
       router.push(`/logistics/configuration/${key}/all`);
-    }    
+    }
   };
   const items: TabsProps["items"] = [
     {
@@ -97,24 +82,20 @@ const ConfigurationLayout = ({ children, params }: Props) => {
   ];
 
   return (
-    <main className="mainCreateOrder">
+    <main className={styles.mainCreateOrder}>
       <SideBar />
-      <Flex vertical className="containerCreateOrder">
-        <Flex className="infoHeaderOrder">
-          <Flex gap={"2rem"}>
-            <Title level={2} className="titleName">
-            Configuración
-            </Title>
-          </Flex>
+      <Flex vertical className={styles.containerCreateOrder}>
+        <Flex className={styles.infoHeaderOrder}>
+          <SectionTitle title="Configuración" />
           <Flex align="center" justify="space-between">
             <NavRightSection />
           </Flex>
         </Flex>
         {/* ------------Main Info Order-------------- */}
-        <Flex className="suppliersTabsContainer">
+        <Flex className={styles.suppliersTabsContainer}>
           <Row style={{ width: "100%" }}>
             <Col span={24}>
-              <Tabs defaultActiveKey={getDefaultValue()} items={items} onChange={onChange}></Tabs>
+              <Tabs defaultActiveKey={getDefaultValue()} items={items} onChange={onChange} />
             </Col>
             {children}
           </Row>

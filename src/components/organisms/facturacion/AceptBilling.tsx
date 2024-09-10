@@ -2,7 +2,7 @@
 import { Flex } from "antd";
 import UiSearchInput from "@/components/ui/search-input/search-input";
 import AceptBillingView from "./view/AceptBillingView/AceptBillingView";
-import styles from "./AceptCarrier.module.scss";
+import styles from "./AceptBilling.module.scss";
 import { getAllBillingList } from "@/services/billings/billings";
 import { useEffect, useState } from "react";
 import { FilterProjects } from "@/components/atoms/Filters/FilterProjects/FilterProjects";
@@ -23,11 +23,11 @@ export default function AceptBilling() {
     const result = await getAllBillingList();
     setBillings(result);
     setLoading(false);
-  }
+  };
 
   return (
     <div className={styles.wrapper}>
-      <Flex className={styles.filters} gap={18}>
+      <Flex className={styles.filters} style={{ marginBottom: "0.5rem" }} gap={8}>
         <UiSearchInput
           placeholder="Buscar"
           onChange={(event) => {
@@ -38,9 +38,7 @@ export default function AceptBilling() {
         />
         <FilterProjects setSelecetedProjects={setSelectFilters} height="48" />
       </Flex>
-      <Flex vertical>
-        <AceptBillingView billings={billings} loading={loading}/>
-      </Flex>
+      <AceptBillingView billings={billings} loading={loading} />
     </div>
   );
 }

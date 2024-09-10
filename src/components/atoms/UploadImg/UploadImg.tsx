@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Flex, Spin, Typography, Upload, UploadProps, message } from "antd";
 import "./uploadimg.scss";
 import Image from "next/image";
@@ -6,12 +6,25 @@ interface Props {
   imgDefault?: string;
   setImgFile: Dispatch<SetStateAction<any>>;
   disabled?: boolean;
-  uploadInstructionsText?: string
+  uploadInstructionsText?: string;
+  resetTrigger?: boolean;
 }
 
-export const UploadImg = ({ disabled = false, imgDefault = "", setImgFile, uploadInstructionsText = "*Sube una imagen"}: Props) => {
+export const UploadImg = ({
+  disabled = false,
+  imgDefault = "",
+  setImgFile,
+  uploadInstructionsText = "*Sube una imagen",
+  resetTrigger = false
+}: Props) => {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>(imgDefault);
+  console.log("imgDefault", imgDefault);
+  console.log("IMAGEURL", imageUrl);
+
+  useEffect(() => {
+    if (resetTrigger) setImageUrl(imgDefault);
+  }, [resetTrigger]);
 
   // eslint-disable-next-line no-unused-vars
   const getBase64 = (img: any, callback: (url: string) => void) => {
@@ -64,16 +77,15 @@ export const UploadImg = ({ disabled = false, imgDefault = "", setImgFile, uploa
         disabled={disabled}
         customRequest={customRequest}
       >
-        {loading && <Spin />}
-        {imageUrl ? (
+        {loading ? (
+          <Spin />
+        ) : imageUrl ? (
           <Image src={imageUrl} alt="avatar" width={0} height={0} sizes="100vw" className="img" />
         ) : (
-          <Image src={"/images/watermark.svg"} alt="marca de agua" width={48} height={48} />
+          <Image src="/images/watermark.svg" alt="marca de agua" width={48} height={48} />
         )}
       </Upload>
-      <Typography.Text className="uploadText">
-        {uploadInstructionsText}
-      </Typography.Text>
+      <Typography.Text className="uploadText">{uploadInstructionsText}</Typography.Text>
     </Flex>
   );
 };
