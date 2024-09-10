@@ -161,7 +161,6 @@ export default function CarrierTable({
       rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
       pagination={false}
       loading={loading}
-      scroll={{ y: 260 }}
     />
   );
 }

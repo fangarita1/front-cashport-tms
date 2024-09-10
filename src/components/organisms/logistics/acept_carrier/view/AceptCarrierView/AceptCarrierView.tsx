@@ -22,7 +22,6 @@ export default function AceptCarrierView({ carriers, loading }: AceptCarrierView
       ) : (
         <CustomCollapse
           defaultActiveKey={"0"}
-          accordion
           items={
             carriers
               ? Object.entries(carriers).map(([key, carriersState]) => ({
