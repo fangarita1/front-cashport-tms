@@ -9,7 +9,7 @@ import { EventSection } from "./components/EventSection/EventSection";
 import { IIncidentDetail, useIncidentDetail } from "@/hooks/useNoveltyDetail";
 import ResolveNoveltyModal from "../ResolveNoveltyModal/ResolveNoveltyModal";
 import { approveIncident, rejectIncident } from "@/services/resolveNovelty/resolveNovelty";
-import { mutate } from "swr";
+// import { mutate } from "swr";
 
 const { Title } = Typography;
 
@@ -20,7 +20,7 @@ interface MoldalNoveltyDetailProps {
 }
 
 const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({ onClose, noveltyId }) => {
-  const { data, isLoading } = useIncidentDetail({ incidentId: noveltyId }); // TODO CAMBIAR ESTO
+  const { data, isLoading, mutate: mutateIncident } = useIncidentDetail({ incidentId: noveltyId }); // TODO CAMBIAR ESTO
   const [incidentData, setIncidentData] = useState<IIncidentDetail | null>(null);
   const [openResolveModal, setOpenResolveModal] = useState(false);
   const [isResolving, setIsResolving] = useState(true);
@@ -54,7 +54,7 @@ const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({ onClose, noveltyId 
         messageShow.success("Incidente rechazado exitosamente");
       }
       setOpenResolveModal(false);
-      mutate(`/invoice/incident-detail/${incidentData.invoice_id}`);
+      mutateIncident();
       onClose(); // Cierra el modal principal después de resolver/rechazar
     } catch (error) {
       console.error("Error al procesar el incidente:", error);
@@ -113,6 +113,7 @@ const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({ onClose, noveltyId 
         events={incidentData.events}
         incidentId={incidentData.incident_id.toString()}
         messageApi={messageShow}
+        mutate={() => mutateIncident()}
         currentUserAvatar="/path/to/current/user/avatar.jpg"
       />
       <ResolveNoveltyModal
