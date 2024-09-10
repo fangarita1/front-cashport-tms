@@ -12,6 +12,7 @@ import { INovelty, IEvidence } from "@/types/novelty/INovelty";
 import { BillingStatusEnum } from "@/types/logistics/billing/billing";
 import { formatMoney, formatNumber } from "@/utils/utils";
 import { BackButton } from "@/components/organisms/logistics/orders/DetailsOrderView/components/BackButton/BackButton";
+import { downloadCSVFromEndpoint } from "@/services/logistics/download_csv";
 
 const { Text } = Typography;
 
@@ -148,8 +149,8 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
     const evidence: IEvidence = {
       id: incident.id,
       novelty_id: incident.id,
-      name: incident.url_image.split("/").pop() || "Evidencia",
-      url: incident.url_image,
+      name: incident?.url_image?.split("/").pop() || "Evidencia",
+      url: incident?.url_image,
       created_at: new Date(),
       updated_at: new Date()
     };
@@ -164,6 +165,8 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
       status_id: incident.status,
       created_by: incident.user,
       quantity: incident.units,
+      overcost_id: 0,
+      unit_value: 0,
       evidences: [evidence]
     };
   }
@@ -191,6 +194,11 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
       ];
     }) || [];
 
+  const handleDownloadCsv = () => {
+    const endpoint = `logistic-billing/export-csv/${params.id}`;
+    downloadCSVFromEndpoint(endpoint, "billing.csv");
+  };
+
   return (
     <>
       {contextHolder}
@@ -199,8 +207,11 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
         <div className={styles.linkButtonsContainer}>
           <BackButton
             href="/facturacion"
-            title={`Detalle de TR ${billingData?.billing?.idTransferRequest}`}
+            title={`Detalle de TR ${billingData?.billing?.idTransferRequest ?? ""}`}
           />
+          <button className={styles.buttonDownload} onClick={handleDownloadCsv}>
+            Descargar CSV
+          </button>
           {canMakeAnAction && (
             <Button
               className={styles.actionBtn}

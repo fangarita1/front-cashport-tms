@@ -24,23 +24,23 @@ const mapStyles = {
 
 const items: MenuProps["items"] = [
   {
-    key: "1",
+    key: "0f7cccf5-1764-44c6-bb2a-874f419bc8f1",
     label: "Cargando"
   },
   {
-    key: "2",
+    key: "b9e5ce08-16a7-4880-88a5-ebca7737c55d",
     label: "En curso"
   },
   {
-    key: "3",
+    key: "780fa2f9-1b89-4d92-83dc-52de4c932056",
     label: "Descargando"
   },
   {
-    key: "4",
+    key: "9f37afd7-1852-457d-964b-378fa6150471",
     label: "Detenido"
   },
   {
-    key: "5",
+    key: "73ad61e3-395f-4ae4-8aef-9d24f3f917a9",
     label: "Stand by"
   }
 ];
@@ -59,9 +59,11 @@ interface IMark {
 
 interface IMainDescriptionProps {
   transferRequest: ITransferRequestDetail | null;
+  // eslint-disable-next-line no-unused-vars
+  handleChangeStatus: (statusId: string) => void;
 }
 
-export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) => {
+export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest, handleChangeStatus }) => {
   const [socketInfo, setSocketInfo] = useState<IMark[]>([]);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -262,7 +264,8 @@ export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest }) 
                 menu={{
                   items,
                   selectable: true,
-                  defaultSelectedKeys: [transferRequest?.status_id || ""]
+                  defaultSelectedKeys: [transferRequest?.status_id || ""],
+                  onClick: (item) => handleChangeStatus(item.key)
                 }}
               >
                 {getState(transferRequest?.status_id || "")}

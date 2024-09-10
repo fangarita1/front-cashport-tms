@@ -8,7 +8,7 @@ import { MainDescription } from "./main-description/MainDescription";
 import { Step } from "./step/Step";
 import { useEffect, useState } from "react";
 import { Novelty } from "./novelty/Novelty";
-import { getTransferRequestDetail } from "@/services/logistics/transfer-request";
+import { getTransferRequestDetail, updateTransferRequestStatus } from "@/services/logistics/transfer-request";
 import { useParams, useRouter } from "next/navigation";
 import { ITransferRequestDetail } from "@/types/transferRequest/ITransferRequest";
 import { DrawerBody } from "./drawer-body/DrawerBody";
@@ -30,6 +30,7 @@ import { BillingByCarrier } from "@/types/logistics/billing/billing";
 import ModalBillingMT from "@/components/molecules/modals/ModalBillingMT/ModalBillingMT";
 import { UploadFile } from "antd/lib";
 import ModalBillingAction from "@/components/molecules/modals/ModalBillingAction/ModalBillingAction";
+import { STORAGE_TOKEN } from '@/utils/constants/globalConstants';
 
 const Text = Typography;
 
@@ -47,6 +48,7 @@ export interface IForm {
   quantity: number;
   observation: string;
   value: number;
+  overcostId?: number;
 }
 
 export const TransferOrderDetails = () => {
@@ -63,13 +65,18 @@ export const TransferOrderDetails = () => {
   const [transferJournies, setTransferJournies] = useState<ITransferJourney[]>();
   const [novelty, setNovelty] = useState<INovelty | null>(null);
   const [billingList, setBillingList] = useState<BillingByCarrier[]>([]);
+  const [tripData, setTripData] = useState<{ idCarrier: number; idVehicleType: number }>({
+    idCarrier: 0,
+    idVehicleType: 0
+  });
 
   const [tripId, setTripId] = useState<number | null>(null);
   const [form, setForm] = useState<IForm>({
     noeltyTypeId: null || 0,
     quantity: 0,
     observation: "",
-    value: 0
+    value: 0,
+    overcostId: undefined
   });
   const [formEvidences, setFormEvidences] = useState<File[]>([]);
 
@@ -117,6 +124,8 @@ export const TransferOrderDetails = () => {
             transferJournies={transferJournies || []}
             setTripId={(id: number) => setTripId(id)}
             handleOpenMTModal={handleOpenMTModal}
+            setTripData={setTripData}
+            resetNovelty={() => setNovelty(null)}
           />
         );
       case NavEnum.VEHICLES:
@@ -170,13 +179,18 @@ export const TransferOrderDetails = () => {
   };
 
   const handleCreateNovelty = async () => {
+    const token = localStorage.getItem(STORAGE_TOKEN);
+    const payload = token!.split('.')[1];
+    const decodedPayload = JSON.parse(atob(payload));
+    
     const body = {
       observation: form.observation,
       novelty_type_id: form.noeltyTypeId!,
       trip_id: tripId!,
       quantity: form.quantity,
       value: form.value,
-      created_by: "Oscar Rincon",
+      created_by: decodedPayload.email || "",
+      overcostId: form.overcostId || 0,
       evidences: []
     };
     try {
@@ -186,39 +200,54 @@ export const TransferOrderDetails = () => {
           observation: form.observation,
           quantity: form.quantity,
           value: form.value,
+          overcostId: form.overcostId || 0,
           evidences: [],
           novelty_type_id: Number(form.noeltyTypeId),
           trip_id: novelty.trip_id,
           created_by: novelty.created_by
         });
         if (update) {
+          await createNoveltyEvidences(novelty.id, formEvidences);
           setOpenDrawer(false);
           setForm({
             noeltyTypeId: null || 0,
             quantity: 0,
             observation: "",
-            value: 0
+            value: 0,
+            overcostId: undefined
           });
+          setFormEvidences([]);
           findNovelties();
         }
-      }
-      const create = await createNovelty(body);
-      if (create) {
-        await createNoveltyEvidences(create.id, formEvidences);
-        setOpenDrawer(false);
-        setForm({
-          noeltyTypeId: null || 0,
-          quantity: 0,
-          observation: "",
-          value: 0
-        });
-        setFormEvidences([]);
-        findNovelties();
+      } else {
+        const create = await createNovelty(body);
+        if (create) {
+          await createNoveltyEvidences(create.id, formEvidences);
+          setOpenDrawer(false);
+          setForm({
+            noeltyTypeId: null || 0,
+            quantity: 0,
+            observation: "",
+            value: 0,
+            overcostId: undefined
+          });
+          setFormEvidences([]);
+          findNovelties();
+        }
       }
     } catch (error) {
       console.error(error);
     }
   };
+
+  const handleChangeStatus = async (statusId: string) => {
+    if (transferRequest) {
+      const updateStatus = await updateTransferRequestStatus(transferRequest?.id, statusId)
+      if (updateStatus) {
+        findDetails();
+      }
+    }
+  }
 
   const handleCloseDrawer = () => {
     setOpenDrawer(false);
@@ -282,7 +311,7 @@ export const TransferOrderDetails = () => {
               </Button>
             </div>
           </div>
-          <MainDescription transferRequest={transferRequest} />
+          <MainDescription handleChangeStatus={handleChangeStatus} transferRequest={transferRequest} />
           <Step step={transferRequest?.step || 1} />
         </div>
         <div className={styles.card}>
@@ -336,6 +365,7 @@ export const TransferOrderDetails = () => {
             formEvidences={formEvidences}
             setFormEvidences={setFormEvidences}
             setForm={setForm}
+            tripData={tripData}
           />
         )}
       </Drawer>
