@@ -19,8 +19,6 @@ export const UploadImg = ({
 }: Props) => {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>(imgDefault);
-  console.log("imgDefault", imgDefault);
-  console.log("IMAGEURL", imageUrl);
 
   useEffect(() => {
     if (resetTrigger) setImageUrl(imgDefault);
