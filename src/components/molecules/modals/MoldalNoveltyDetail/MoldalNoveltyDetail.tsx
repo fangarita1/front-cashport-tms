@@ -9,8 +9,6 @@ import { EventSection } from "./components/EventSection/EventSection";
 import { IIncidentDetail, useIncidentDetail } from "@/hooks/useNoveltyDetail";
 import ResolveNoveltyModal from "../ResolveNoveltyModal/ResolveNoveltyModal";
 import { approveIncident, rejectIncident } from "@/services/resolveNovelty/resolveNovelty";
-// import { mutate } from "swr";
-
 const { Title } = Typography;
 
 interface MoldalNoveltyDetailProps {
