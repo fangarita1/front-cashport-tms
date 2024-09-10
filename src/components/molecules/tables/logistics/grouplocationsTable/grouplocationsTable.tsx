@@ -4,7 +4,7 @@ import type { TableProps } from "antd";
 import { DotsThree, Eye, Plus, Triangle } from "phosphor-react";
 import "./grouplocationsTable.scss";
 import UiSearchInput from "@/components/ui/search-input";
-import { IGroupLocation} from "@/types/logistics/schema";
+import { IGroupLocation } from "@/types/logistics/schema";
 import { getAllGroupByLocation } from "@/services/logistics/locations";
 import useSWR from "swr";
 
@@ -15,12 +15,12 @@ export const GroupLocationsTable = () => {
   const [search, setSearch] = useState("");
   const [datasource, setDatasource] = useState<any[]>([]);
 
-  const { data: grouplocations, isLoading} = useSWR({}, getAllGroupByLocation, {
+  const { data: grouplocations, isLoading } = useSWR({}, getAllGroupByLocation, {
     onError: (error: any) => {
       console.error(error);
       message.error(error.message);
     },
-    refreshInterval: 30000,
+    refreshInterval: 30000
   });
 
   const onChangePage = (pagePagination: number) => {
@@ -28,18 +28,17 @@ export const GroupLocationsTable = () => {
   };
 
   useEffect(() => {
-    const data = grouplocations
-      ?.data.data.filter((element: any) => {
-        if (!search) return true;
-        return (
-          element.description.toLowerCase().includes(search.toLowerCase()) 
-        );
-      })
-      .map((element: any) => ({
-        id: element.id,
-        description: element.description,
-        active: element.active
-      })) || [];
+    const data =
+      grouplocations?.data?.data
+        ?.filter((element: any) => {
+          if (!search) return true;
+          return element.description.toLowerCase().includes(search.toLowerCase());
+        })
+        .map((element: any) => ({
+          id: element.id,
+          description: element.description,
+          active: element.active
+        })) || [];
     setDatasource(data);
   }, [grouplocations, search]);
 
@@ -47,12 +46,12 @@ export const GroupLocationsTable = () => {
     {
       title: "Código",
       dataIndex: "id",
-      key: "id",
+      key: "id"
     },
     {
       title: "Nombre",
       dataIndex: "description",
-      key: "description",
+      key: "description"
     },
     {
       title: "Estado",
@@ -70,7 +69,7 @@ export const GroupLocationsTable = () => {
             <Text>{active ? "Activo" : "Inactivo"}</Text>
           </Flex>
         </Flex>
-      ),
+      )
     },
     {
       title: "",
@@ -78,13 +77,13 @@ export const GroupLocationsTable = () => {
       width: "54px",
       dataIndex: "",
       render: (_, { id }) => (
-       <Button
+        <Button
           href={`/logistics/configuration/grouplocations/${id}`}
           className="icon-detail"
           icon={<Eye size={20} />}
         />
-      ),
-    },
+      )
+    }
   ];
 
   return (
@@ -117,30 +116,30 @@ export const GroupLocationsTable = () => {
         </Flex>
       </Flex>
       {!isLoading ? (
-      <Table
-        scroll={{ y: "61dvh", x: undefined }}
-        columns={columns as TableProps<any>["columns"]}
-        loading={isLoading}
-        pagination={{
-          pageSize: 25,
-          onChange: onChangePage,
-          showSizeChanger: false,
-          itemRender: (page, type, originalElement) => {
-            if (type === "prev") {
-              return <Triangle size={".75rem"} weight="fill" className="prev" />;
-            } else if (type === "next") {
-              return <Triangle size={".75rem"} weight="fill" className="next" />;
-            } else if (type === "page") {
-              return <Flex className="pagination">{page}</Flex>;
+        <Table
+          scroll={{ y: "61dvh", x: undefined }}
+          columns={columns as TableProps<any>["columns"]}
+          loading={isLoading}
+          pagination={{
+            pageSize: 25,
+            onChange: onChangePage,
+            showSizeChanger: false,
+            itemRender: (page, type, originalElement) => {
+              if (type === "prev") {
+                return <Triangle size={".75rem"} weight="fill" className="prev" />;
+              } else if (type === "next") {
+                return <Triangle size={".75rem"} weight="fill" className="next" />;
+              } else if (type === "page") {
+                return <Flex className="pagination">{page}</Flex>;
+              }
+              return originalElement;
             }
-            return originalElement;
-          },
-        }}
-        dataSource={datasource}
-      />
-    ) : (
-      <Spin />
-    )}
+          }}
+          dataSource={datasource}
+        />
+      ) : (
+        <Spin />
+      )}
     </div>
   );
 };
