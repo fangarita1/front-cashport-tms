@@ -15,38 +15,43 @@ export const CarrierTable = () => {
   const [search, setSearch] = useState("");
   const [datasource, setDatasource] = useState<any[]>([]);
 
-  const { data: carriers, isLoading } = useSWR({
-    key: "carriers",
-  }, getAllCarriers, {
-    onError: (error: any) => {
-      console.error(error);
-      message.error(error.message);
+  const { data: carriers, isLoading } = useSWR(
+    {
+      key: "carriers"
     },
-    refreshInterval: 30000,
-  });
+    getAllCarriers,
+    {
+      onError: (error: any) => {
+        console.error(error);
+        message.error(error.message);
+      },
+      refreshInterval: 30000
+    }
+  );
 
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);
   };
 
   useEffect(() => {
-    const data = carriers
-      ?.filter((element: any) => {
-        if (!search) return true;
-        return (
-          element.description.toLowerCase().includes(search.toLowerCase()) ||
-          element.nit.toLowerCase().includes(search.toLowerCase())
-        );
-      })
-      .map((element: any) => ({
-        id: element.id,
-        nit: element.nit,
-        name: element.description,
-        type: element.carrier_type,
-        vehicle: element.vehicles,
-        drivers: element.drivers,
-        status: element.active,
-      })) || [];
+    const data =
+      carriers
+        ?.filter((element: any) => {
+          if (!search) return true;
+          return (
+            element.description.toLowerCase().includes(search.toLowerCase()) ||
+            element.nit.toLowerCase().includes(search.toLowerCase())
+          );
+        })
+        .map((element: any) => ({
+          id: element.id,
+          nit: element.nit,
+          name: element.description,
+          type: element.carrier_type,
+          vehicle: element.vehicles,
+          drivers: element.drivers,
+          status: element.active
+        })) || [];
     setDatasource(data);
   }, [carriers, search]);
 
@@ -54,27 +59,27 @@ export const CarrierTable = () => {
     {
       title: "NIT",
       dataIndex: "nit",
-      key: "nit",
+      key: "nit"
     },
     {
       title: "Nombre",
       dataIndex: "name",
-      key: "name",
+      key: "name"
     },
     {
       title: "Tipo",
       dataIndex: "type",
-      key: "type",
+      key: "type"
     },
     {
       title: "Vehiculos",
       dataIndex: "vehicle",
-      key: "vehicle",
+      key: "vehicle"
     },
     {
       title: "Conductores",
       dataIndex: "drivers",
-      key: "drivers",
+      key: "drivers"
     },
     {
       title: "Estado",
@@ -92,7 +97,7 @@ export const CarrierTable = () => {
             <Text>{status ? "Activo" : "Inactivo"}</Text>
           </Flex>
         </Flex>
-      ),
+      )
     },
     {
       title: "",
@@ -105,14 +110,14 @@ export const CarrierTable = () => {
           className="icon-detail"
           icon={<Eye size={20} />}
         />
-      ),
-    },
+      )
+    }
   ];
 
   return (
     <div className="mainCarrierTable">
       <Flex justify="space-between" className="mainCarrierTable_header">
-        <Flex gap={"10px"}>
+        <Flex gap={8}>
           <UiSearchInput
             className="search"
             placeholder="Buscar"
@@ -144,7 +149,7 @@ export const CarrierTable = () => {
               return <Flex className="pagination">{page}</Flex>;
             }
             return originalElement;
-          },
+          }
         }}
         dataSource={datasource}
       />

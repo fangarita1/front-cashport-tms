@@ -18,7 +18,8 @@ import {
   Popconfirm,
   Divider,
   Space,
-  theme
+  theme,
+  Skeleton
 } from "antd";
 import React, { useRef, useEffect, useState } from "react";
 import { runes } from "runes2";
@@ -117,9 +118,10 @@ const { Title, Text } = Typography;
 const { useToken } = theme;
 
 export const CreateOrderView = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
-  const [isButtonDisabled, setButtonDisabled] = useState(false);
 
   /* Tipo de viaje */
   const [typeactive, setTypeActive] = useState("1");
@@ -152,6 +154,7 @@ export const CreateOrderView = () => {
 
   const [clientValid, setClientValid] = useState(true);
   const [companyValid, setCompanyValid] = useState(true);
+  const isButtonSubmitEnabled = !isLoading;
 
   const disabledDate: RangePickerProps["disabledDate"] = (current: any) => {
     // Can not select days before today
@@ -796,7 +799,7 @@ export const CreateOrderView = () => {
                 Largo {item.length}m - Ancho {item.width}m - Alto {item.height}m - Máximo{" "}
                 {item.kg_capacity}Tn
                 <br />
-                Cantidad disponibles: {item.available}
+                Vehículos {item.disponibility || 0} | Tarifas {item.rates || 0}
               </Text>
             </Col>
             <Col span={4} style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -1648,6 +1651,7 @@ export const CreateOrderView = () => {
     console.log("DATA PARA POST: ", data);
 
     try {
+      setIsLoading(true);
       const response = await addTransferOrder(
         datato,
         data?.files || ([] as DocumentCompleteType[])
@@ -1655,7 +1659,8 @@ export const CreateOrderView = () => {
       if (response.status === SUCCESS) {
         messageApi.open({
           type: "success",
-          content: "El viaje fue creado exitosamente."
+          content: "El viaje fue creado exitosamente.",
+          duration: 2
         });
         push("/logistics/orders/details/" + response.data.data.id);
       }
@@ -1665,6 +1670,8 @@ export const CreateOrderView = () => {
       } else {
         messageApi.error("Oops, hubo un error por favor intenta mas tarde.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
   /* acoordion */
@@ -2101,7 +2108,11 @@ export const CreateOrderView = () => {
                 </Col>
                 <Col span={12} />
                 <Col span={24}>
-                  <Table columns={columnsCargaVehiculo} dataSource={dataVehicles} />
+                  <Table
+                    columns={columnsCargaVehiculo}
+                    dataSource={dataVehicles}
+                    pagination={false}
+                  />
                 </Col>
               </Col>
             </Row>
@@ -2576,107 +2587,109 @@ export const CreateOrderView = () => {
               <NavRightSection />
             </Flex>
           </Flex>
-          {/* ------------Main Info Order-------------- */}
-          <Flex className="orderContainer">
-            <Row style={{ width: "100%" }}>
-              <Col span={24} style={{ marginBottom: "1.5rem" }}>
-                <Flex gap="middle">
-                  <button
-                    type="button"
-                    id={"1"}
-                    className={["tripTypes", typeactive === "1" ? "active" : undefined].join(" ")}
-                    onClick={handleTypeClick}
-                  >
-                    <div className="tripTypeIcons">
-                      <img
-                        className="icon"
-                        loading="lazy"
-                        alt=""
-                        src="/images/logistics/truck.svg"
-                        id={"1"}
-                        onClick={handleTypeClick}
-                      />
-                      <div className="text" id={"1"} onClick={handleTypeClick}>
-                        Carga
+          <Skeleton loading={isLoading}>
+            {/* ------------Main Info Order-------------- */}
+            <Flex className="orderContainer">
+              <Row style={{ width: "100%" }}>
+                <Col span={24} style={{ marginBottom: "1.5rem" }}>
+                  <Flex gap="middle">
+                    <button
+                      type="button"
+                      id={"1"}
+                      className={["tripTypes", typeactive === "1" ? "active" : undefined].join(" ")}
+                      onClick={handleTypeClick}
+                    >
+                      <div className="tripTypeIcons">
+                        <img
+                          className="icon"
+                          loading="lazy"
+                          alt=""
+                          src="/images/logistics/truck.svg"
+                          id={"1"}
+                          onClick={handleTypeClick}
+                        />
+                        <div className="text" id={"1"} onClick={handleTypeClick}>
+                          Carga
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    id={"2"}
-                    className={["tripTypes", typeactive === "2" ? "active" : undefined].join(" ")}
-                    onClick={handleTypeClick}
-                  >
-                    <div className="tripTypeIcons">
-                      <img
-                        className="icon"
-                        loading="lazy"
-                        alt=""
-                        src="/images/logistics/izaje.svg"
-                        id={"2"}
-                        onClick={handleTypeClick}
-                      />
-                      <div className="text" id={"2"} onClick={handleTypeClick}>
-                        Izaje
+                    </button>
+                    <button
+                      type="button"
+                      id={"2"}
+                      className={["tripTypes", typeactive === "2" ? "active" : undefined].join(" ")}
+                      onClick={handleTypeClick}
+                    >
+                      <div className="tripTypeIcons">
+                        <img
+                          className="icon"
+                          loading="lazy"
+                          alt=""
+                          src="/images/logistics/izaje.svg"
+                          id={"2"}
+                          onClick={handleTypeClick}
+                        />
+                        <div className="text" id={"2"} onClick={handleTypeClick}>
+                          Izaje
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    id={"3"}
-                    className={["tripTypes", typeactive === "3" ? "active" : undefined].join(" ")}
-                    onClick={handleTypeClick}
-                  >
-                    <div className="tripTypeIcons">
-                      <img
-                        className="icon"
-                        loading="lazy"
-                        alt=""
-                        src="/images/logistics/users.svg"
-                        id={"3"}
-                        onClick={handleTypeClick}
-                      />
-                      <div className="text" id={"3"} onClick={handleTypeClick}>
-                        Personal
+                    </button>
+                    <button
+                      type="button"
+                      id={"3"}
+                      className={["tripTypes", typeactive === "3" ? "active" : undefined].join(" ")}
+                      onClick={handleTypeClick}
+                    >
+                      <div className="tripTypeIcons">
+                        <img
+                          className="icon"
+                          loading="lazy"
+                          alt=""
+                          src="/images/logistics/users.svg"
+                          id={"3"}
+                          onClick={handleTypeClick}
+                        />
+                        <div className="text" id={"3"} onClick={handleTypeClick}>
+                          Personal
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                </Flex>
-              </Col>
-              <Col span={24}>
-                <Collapse
-                  className="collapseByAction"
-                  expandIconPosition="end"
-                  accordion={false}
-                  ghost
-                  items={actionsOptions}
-                  defaultActiveKey={["2"]}
-                />
-              </Col>
-              <Col
-                span={24}
-                style={{
-                  marginTop: "1.5rem",
-                  marginBottom: "1.5rem",
-                  display: "flex",
-                  justifyContent: "flex-end"
-                }}
-              >
-                <Flex gap="middle" align="flex-end">
-                  <Button
-                    disabled={isButtonDisabled}
-                    className="active"
-                    style={{ fontWeight: "bold" }}
-                    onClick={() => {
-                      onCreateOrder();
-                    }}
-                  >
-                    Confirmar
-                  </Button>
-                </Flex>
-              </Col>
-            </Row>
-          </Flex>
+                    </button>
+                  </Flex>
+                </Col>
+                <Col span={24}>
+                  <Collapse
+                    className="collapseByAction"
+                    expandIconPosition="end"
+                    accordion={false}
+                    ghost
+                    items={actionsOptions}
+                    defaultActiveKey={["2"]}
+                  />
+                </Col>
+                <Col
+                  span={24}
+                  style={{
+                    marginTop: "1.5rem",
+                    marginBottom: "1.5rem",
+                    display: "flex",
+                    justifyContent: "flex-end"
+                  }}
+                >
+                  <Flex gap="middle" align="flex-end">
+                    <Button
+                      disabled={!isButtonSubmitEnabled}
+                      className="active"
+                      style={{ fontWeight: "bold" }}
+                      onClick={() => {
+                        onCreateOrder();
+                      }}
+                    >
+                      Confirmar
+                    </Button>
+                  </Flex>
+                </Col>
+              </Row>
+            </Flex>
+          </Skeleton>
         </Flex>
       </main>
       <ModalDocuments

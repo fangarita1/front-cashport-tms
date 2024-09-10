@@ -74,6 +74,8 @@ import { TransferRequestFinish } from "@/types/logistics/transferRequest/transfe
 import { useForm } from "react-hook-form";
 import ModalSelectCarrierPricing from "./components/modals/ModalSelectCarrierPricing";
 import TrackingDrawer from "./components/tracking/TrackingDrawer";
+import { BackButton } from "../DetailsOrderView/components/BackButton/BackButton";
+import { TabEnum } from "../../transfer-orders/TransferOrders";
 
 const { Title, Text } = Typography;
 
@@ -761,7 +763,11 @@ export default function PricingTransferRequest({
       {contextHolder}
       <Flex className="mainCreateOrder">
         <Flex className="orderContainer">
-          <Flex style={{ flexDirection: "column" }}>
+          <Flex vertical>
+            <BackButton
+              href={`/logistics/transfer-orders?tab=${TabEnum.REQUESTS}`}
+              title={`Detalle de TR ${view !== "solicitation" ? id : ""}`}
+            />
             <Flex style={{ width: "100%", justifyContent: "center" }}>
               <Flex style={{ padding: "16px 0" }}>
                 <Flex className="stepper">

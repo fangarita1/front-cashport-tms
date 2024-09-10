@@ -68,6 +68,7 @@ export const DriverFormTab = ({
   );
 
   const [imageFile, setImageFile] = useState<any | undefined>(undefined);
+  const [resetTrigger, setResetTrigger] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -188,6 +189,7 @@ export const DriverFormTab = ({
   };
 
   const onSubmit = (data: any) => {
+    setResetTrigger(false);
     data.general.license_categorie = licencesOptions.find(
       (item) =>
         item.id === data.general.license_category || item.value === data.general.license_category
@@ -242,6 +244,7 @@ export const DriverFormTab = ({
                 onClick={(e) => {
                   handleFormState("edit");
                   e.preventDefault();
+                  setResetTrigger(false);
                 }}
               >
                 {validationButtonText(statusForm)}
@@ -257,6 +260,8 @@ export const DriverFormTab = ({
                 onClick={(e) => {
                   handleFormState("review");
                   e.preventDefault();
+                  setResetTrigger(true);
+                  setImageFile(undefined);
                   reset();
                 }}
               >
@@ -283,6 +288,7 @@ export const DriverFormTab = ({
                 }
                 setImgFile={setImageFile}
                 uploadInstructionsText="*Sube la foto del conductor"
+                resetTrigger={resetTrigger}
               />
               {imageError && (
                 <Text className="textError">{"foto del conductor es obligatorio *"}</Text>

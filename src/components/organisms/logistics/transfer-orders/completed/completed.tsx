@@ -1,10 +1,11 @@
 import { TransferOrdersState } from "@/utils/constants/transferOrdersState";
-import styles from './completed.module.scss';
-import { Collapse, CollapseProps, Typography } from "antd";
+import styles from "./completed.module.scss";
+import { CollapseProps, Typography } from "antd";
 import { TransferOrdersTable } from "@/components/molecules/tables/TransferOrderTable/TransferOrderTable";
 import { FC, useEffect, useState } from "react";
 import { ITransferRequestResponse } from "@/types/transferRequest/ITransferRequest";
 import { getFinishedTransferRequest } from "@/services/logistics/transfer-request";
+import CustomCollapse from "@/components/ui/custom-collapse/CustomCollapse";
 
 const Text = Typography;
 
@@ -21,15 +22,17 @@ export const Completed: FC<ICompletedProps> = ({ search }) => {
     return (
       <div className={styles.mainTitle}>
         <div className={styles.titleContainer}>
-          <div className={styles.textContainer} style={{ backgroundColor: getState?.bgColor }}>{getState?.name}</div>
+          <div className={styles.textContainer} style={{ backgroundColor: getState?.bgColor }}>
+            {getState?.name}
+          </div>
           <div className={`${styles.textContainer} ${styles.subTextContainer}`}>
             <span>TR</span>
             <span className={styles.number}>{number}</span>
           </div>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   const getTransferRequestAccepted = async () => {
     try {
@@ -41,34 +44,38 @@ export const Completed: FC<ICompletedProps> = ({ search }) => {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
     getTransferRequestAccepted();
-  }, [])
+  }, []);
 
-  const filteredData = transferRequest.map(status => {
-    const filteredItems = status.items.filter(item => 
-      item.start_location.toLowerCase().includes(search.toLowerCase()) || 
-      item.end_location.toLowerCase().includes(search.toLowerCase())
-    );
-    
-    return { ...status, items: filteredItems };
-  }).filter(status => status.items.length > 0);
+  const filteredData = transferRequest
+    .map((status) => {
+      const filteredItems = status.items.filter(
+        (item) =>
+          item.start_location.toLowerCase().includes(search.toLowerCase()) ||
+          item.end_location.toLowerCase().includes(search.toLowerCase())
+      );
 
-  const renderItems: CollapseProps['items'] = filteredData.map((item, index) => {
+      return { ...status, items: filteredItems };
+    })
+    .filter((status) => status.items.length > 0);
+
+  const renderItems: CollapseProps["items"] = filteredData.map((item, index) => {
     return {
       key: index,
       label: getTitile(item.statusId, item.items.length),
-      children: <TransferOrdersTable showColumn={false} items={item.items} />,
-    }
-  })
+      children: <TransferOrdersTable showColumn={false} items={item.items} />
+    };
+  });
 
-  if (isLoading) return (
-    <div className={styles.emptyContainer}>
-      <Text className={styles.textEmpty}>No Content</Text>
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div className={styles.emptyContainer}>
+        <Text className={styles.textEmpty}>No Content</Text>
+      </div>
+    );
 
-  return <Collapse ghost items={renderItems} defaultActiveKey={['0']} />
-}
+  return <CustomCollapse ghost items={renderItems} defaultActiveKey={["0"]} />;
+};

@@ -3,7 +3,7 @@ import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import styles from "./transferOrders.module.scss";
 import UiSearchInput from "@/components/ui/search-input/search-input";
 import { FilterProjects } from "@/components/atoms/Filters/FilterProjects/FilterProjects";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Request } from "./request/Request";
 import { InProcess } from "./in-process/InProcess";
 import { Completed } from "./completed/completed";
@@ -11,12 +11,12 @@ import { Button, Flex, message, Typography } from "antd";
 import Header from "../../header";
 import { DotsThree, Plus } from "phosphor-react";
 import { transferOrderMerge } from "@/services/logistics/transfer-request";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 
 const { Text } = Typography;
 
-enum TabEnum {
+export enum TabEnum {
   "REQUESTS" = "REQUESTS",
   "IN_PROCESS" = "IN_PROCESS",
   "COMPLETED" = "COMPLETED"
@@ -27,11 +27,20 @@ export const TransferOrders = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [ordersId, setOrdersId] = useState<number[]>([]);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [selectFilters, setSelectFilters] = useState({
     country: [] as string[],
     currency: [] as string[]
   });
-  const [tab, setTab] = useState<TabEnum>(TabEnum.IN_PROCESS);
+  const tabParam = searchParams.get("tab") as TabEnum | null;
+  const [tab, setTab] = useState<TabEnum>(tabParam || TabEnum.IN_PROCESS);
+
+  useEffect(() => {
+    // Actualizar el estado del tab si cambia el parámetro en la URL
+    if (tabParam && Object.values(TabEnum).includes(tabParam)) {
+      setTab(tabParam);
+    }
+  }, [tabParam]);
 
   const renderView = () => {
     switch (tab) {
@@ -82,7 +91,7 @@ export const TransferOrders = () => {
       <div className={styles.content}>
         <Header title="Ordenes de transferencia" />
         <div className={styles.card}>
-          <Flex justify="space-between">
+          <Flex justify="space-between" style={{ marginBottom: "1rem" }}>
             <div className={styles.filterContainer}>
               <UiSearchInput
                 className="search"
@@ -112,7 +121,7 @@ export const TransferOrders = () => {
               {<Plus weight="bold" size={14} />}
             </PrincipalButton>
           </Flex>
-          <div className={styles.tabContainer}>
+          <div className={styles.tabContainer} style={{ marginBottom: "0.5rem" }}>
             <Text
               onClick={() => setTab(TabEnum.REQUESTS)}
               className={`${styles.tab} ${tab === TabEnum.REQUESTS && styles.active}`}

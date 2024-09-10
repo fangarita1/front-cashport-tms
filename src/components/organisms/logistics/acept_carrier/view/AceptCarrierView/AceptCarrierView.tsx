@@ -5,6 +5,7 @@ import LabelCollapse from "@/components/ui/label-collapse";
 import CarrierTable from "@/components/molecules/tables/CarrierTable/CarrierTable";
 import styles from "./AceptCarrierView.module.scss";
 import { ICarriersRequestList } from "@/types/logistics/schema";
+import CustomCollapse from "@/components/ui/custom-collapse/CustomCollapse";
 
 interface AceptCarrierViewProps {
   carriers: ICarriersRequestList[];
@@ -15,13 +16,13 @@ export default function AceptCarrierView({ carriers, loading }: AceptCarrierView
   const [selectedRows, setSelectedRows] = useState<any[] | undefined>();
 
   return (
-    <Flex className={styles.wrapper}>
+    <Flex vertical className={styles.wrapper}>
       {loading ? (
         <Spin style={{ margin: "auto", padding: "200px" }} />
       ) : (
-        <Collapse
-          className={styles.collapses}
+        <CustomCollapse
           defaultActiveKey={"0"}
+          accordion
           items={
             carriers
               ? Object.entries(carriers).map(([key, carriersState]) => ({

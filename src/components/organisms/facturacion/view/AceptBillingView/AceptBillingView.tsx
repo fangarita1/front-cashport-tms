@@ -1,10 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Collapse, Flex } from "antd";
+import { Flex } from "antd";
 import LabelCollapse from "@/components/ui/label-collapse";
 import BillingTable from "@/components/molecules/tables/BillingTable/BillingTable";
 import styles from "./AceptBillingView.module.scss";
 import { IBillingsRequestList } from "@/types/logistics/billing/billing";
+import CustomCollapse from "@/components/ui/custom-collapse/CustomCollapse";
 
 interface AceptBillingViewProps {
   billings: IBillingsRequestList[];
@@ -15,8 +16,8 @@ export default function AceptBillingView({ billings, loading }: AceptBillingView
   const [selectedRows, setSelectedRows] = useState<any[] | undefined>();
 
   return (
-    <Flex className={styles.wrapper}>
-      <Collapse
+    <Flex vertical className={styles.wrapper}>
+      <CustomCollapse
         className={styles.collapses}
         defaultActiveKey={"0"}
         items={
