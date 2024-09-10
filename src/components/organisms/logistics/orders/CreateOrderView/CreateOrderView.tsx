@@ -2587,109 +2587,107 @@ export const CreateOrderView = () => {
               <NavRightSection />
             </Flex>
           </Flex>
-          <Skeleton loading={isLoading}>
-            {/* ------------Main Info Order-------------- */}
-            <Flex className="orderContainer">
-              <Row style={{ width: "100%" }}>
-                <Col span={24} style={{ marginBottom: "1.5rem" }}>
-                  <Flex gap="middle">
-                    <button
-                      type="button"
-                      id={"1"}
-                      className={["tripTypes", typeactive === "1" ? "active" : undefined].join(" ")}
-                      onClick={handleTypeClick}
-                    >
-                      <div className="tripTypeIcons">
-                        <img
-                          className="icon"
-                          loading="lazy"
-                          alt=""
-                          src="/images/logistics/truck.svg"
-                          id={"1"}
-                          onClick={handleTypeClick}
-                        />
-                        <div className="text" id={"1"} onClick={handleTypeClick}>
-                          Carga
-                        </div>
+          {/* ------------Main Info Order-------------- */}
+          <Flex className="orderContainer">
+            <Row style={{ width: "100%" }}>
+              <Col span={24} style={{ marginBottom: "1.5rem" }}>
+                <Flex gap="middle">
+                  <button
+                    type="button"
+                    id={"1"}
+                    className={["tripTypes", typeactive === "1" ? "active" : undefined].join(" ")}
+                    onClick={handleTypeClick}
+                  >
+                    <div className="tripTypeIcons">
+                      <img
+                        className="icon"
+                        loading="lazy"
+                        alt=""
+                        src="/images/logistics/truck.svg"
+                        id={"1"}
+                        onClick={handleTypeClick}
+                      />
+                      <div className="text" id={"1"} onClick={handleTypeClick}>
+                        Carga
                       </div>
-                    </button>
-                    <button
-                      type="button"
-                      id={"2"}
-                      className={["tripTypes", typeactive === "2" ? "active" : undefined].join(" ")}
-                      onClick={handleTypeClick}
-                    >
-                      <div className="tripTypeIcons">
-                        <img
-                          className="icon"
-                          loading="lazy"
-                          alt=""
-                          src="/images/logistics/izaje.svg"
-                          id={"2"}
-                          onClick={handleTypeClick}
-                        />
-                        <div className="text" id={"2"} onClick={handleTypeClick}>
-                          Izaje
-                        </div>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    id={"2"}
+                    className={["tripTypes", typeactive === "2" ? "active" : undefined].join(" ")}
+                    onClick={handleTypeClick}
+                  >
+                    <div className="tripTypeIcons">
+                      <img
+                        className="icon"
+                        loading="lazy"
+                        alt=""
+                        src="/images/logistics/izaje.svg"
+                        id={"2"}
+                        onClick={handleTypeClick}
+                      />
+                      <div className="text" id={"2"} onClick={handleTypeClick}>
+                        Izaje
                       </div>
-                    </button>
-                    <button
-                      type="button"
-                      id={"3"}
-                      className={["tripTypes", typeactive === "3" ? "active" : undefined].join(" ")}
-                      onClick={handleTypeClick}
-                    >
-                      <div className="tripTypeIcons">
-                        <img
-                          className="icon"
-                          loading="lazy"
-                          alt=""
-                          src="/images/logistics/users.svg"
-                          id={"3"}
-                          onClick={handleTypeClick}
-                        />
-                        <div className="text" id={"3"} onClick={handleTypeClick}>
-                          Personal
-                        </div>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    id={"3"}
+                    className={["tripTypes", typeactive === "3" ? "active" : undefined].join(" ")}
+                    onClick={handleTypeClick}
+                  >
+                    <div className="tripTypeIcons">
+                      <img
+                        className="icon"
+                        loading="lazy"
+                        alt=""
+                        src="/images/logistics/users.svg"
+                        id={"3"}
+                        onClick={handleTypeClick}
+                      />
+                      <div className="text" id={"3"} onClick={handleTypeClick}>
+                        Personal
                       </div>
-                    </button>
-                  </Flex>
-                </Col>
-                <Col span={24}>
-                  <Collapse
-                    className="collapseByAction"
-                    expandIconPosition="end"
-                    accordion={false}
-                    ghost
-                    items={actionsOptions}
-                    defaultActiveKey={["2"]}
-                  />
-                </Col>
-                <Col
-                  span={24}
-                  style={{
-                    marginTop: "1.5rem",
-                    marginBottom: "1.5rem",
-                    display: "flex",
-                    justifyContent: "flex-end"
-                  }}
-                >
-                  <Flex gap="middle" align="flex-end">
-                    <Button
-                      disabled={!isButtonSubmitEnabled}
-                      className="active"
-                      style={{ fontWeight: "bold" }}
-                      onClick={() => {
-                        onCreateOrder();
-                      }}
-                    >
-                      Confirmar
-                    </Button>
-                  </Flex>
-                </Col>
-              </Row>
-            </Flex>
-          </Skeleton>
+                    </div>
+                  </button>
+                </Flex>
+              </Col>
+              <Col span={24}>
+                <Collapse
+                  className="collapseByAction"
+                  expandIconPosition="end"
+                  accordion={false}
+                  ghost
+                  items={actionsOptions}
+                  defaultActiveKey={["2"]}
+                />
+              </Col>
+              <Col
+                span={24}
+                style={{
+                  marginTop: "1.5rem",
+                  marginBottom: "1.5rem",
+                  display: "flex",
+                  justifyContent: "flex-end"
+                }}
+              >
+                <Flex gap="middle" align="flex-end">
+                  <Button
+                    disabled={!isButtonSubmitEnabled}
+                    className="active"
+                    style={{ fontWeight: "bold" }}
+                    onClick={() => {
+                      onCreateOrder();
+                    }}
+                  >
+                    Confirmar
+                  </Button>
+                </Flex>
+              </Col>
+            </Row>
+          </Flex>
         </Flex>
       </main>
       <ModalDocuments
