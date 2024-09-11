@@ -63,7 +63,8 @@ const columns = (showColumn: boolean, redirect?: string): TableColumnsType<DataT
       dataIndex: "tr",
       render: (text: string) => <Text className="row-text id">{text}</Text>,
       sorter: (a, b) => Number(a.tr) - Number(b.tr),
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      sortDirections: ["descend", "ascend"]
     },
     {
       title: "Origen y destino",
