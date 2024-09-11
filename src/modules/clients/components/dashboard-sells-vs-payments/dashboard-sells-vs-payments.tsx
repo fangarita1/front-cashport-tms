@@ -12,7 +12,7 @@ import dayjs from "dayjs";
 import utcPlugin from "dayjs/plugin/utc";
 
 import { ClientDetailsContext } from "../../containers/client-details/client-details";
-import { capitalize } from "@/utils/utils";
+import { capitalize, formatMillionNumber, formatMoney } from "@/utils/utils";
 
 import styles from "./dashboard-sells-vs-payments.module.scss";
 
@@ -27,11 +27,28 @@ const DashboardSellsVsPayments: FC<DashboardSellsVsPaymentsProps> = ({ className
 
   const data2 = portfolioData?.payments_vs_invoices?.map((item) => {
     return {
-      name: capitalize(dayjs(item.month).utc().locale("es").format("MMMM YY")),
+      name: capitalize(dayjs(item.month).utc().locale("es").format("MMM YY")),
       ventas: item.sales,
       pagos: item.payments
     };
   });
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className={styles.customTooltip}>
+          <p>{label}</p>
+          {payload.map((item: any) => (
+            <p key={item.dataKey} style={{ color: item.color }}>
+              {item.name}: {formatMoney(item.value, true)}
+            </p>
+          ))}
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <div className={`${styles.wrapper} ${className}`}>
@@ -49,11 +66,14 @@ const DashboardSellsVsPayments: FC<DashboardSellsVsPaymentsProps> = ({ className
         </div>
       </div>
       <div className={styles.chart}>
-        <ResponsiveContainer className="TEEEEEEEEES">
-          <LineChart margin={{ right: 0, left: 20 }} barCategoryGap={10} data={data2} barSize={20}>
+        <ResponsiveContainer>
+          <LineChart margin={{ right: 15, left: 0 }} barCategoryGap={10} data={data2} barSize={20}>
             <XAxis padding={{ left: 20, right: 20 }} dataKey="name" scale="point" />
-            <YAxis padding={{ top: 6 }} />
-            <Tooltip />
+            <YAxis
+              padding={{ top: 10 }}
+              tickFormatter={(value) => formatMoney(formatMillionNumber(value), true) + "M"}
+            />
+            <Tooltip content={<CustomTooltip />} />
             <CartesianGrid strokeDasharray="3 3" />
             <Line type="monotone" dataKey="ventas" stroke="#0085FF" strokeWidth={4} />
             <Line type="monotone" dataKey="pagos" stroke="#CBE71E" strokeWidth={4} />
