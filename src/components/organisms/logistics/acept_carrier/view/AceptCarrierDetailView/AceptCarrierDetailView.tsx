@@ -253,7 +253,7 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
     <>
       {contextHolder}
       <Flex className={styles.wrapper}>
-        <BackButton href="/logistics/acept_carrier" title={`Detalle de TR ${params.id}`} />
+        <BackButton href="/logistics/acept_carrier" title={`Detalle de CR ${params.id}`} />
         <CustomStepper steps={steps} currentStepIndex={currentStepIndex} />
         <Skeleton active loading={isLoading}>
           <Flex className={styles.sectionWraper} style={{ marginBottom: "2rem" }}>
