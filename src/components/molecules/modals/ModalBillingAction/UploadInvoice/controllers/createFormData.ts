@@ -6,13 +6,15 @@ function createFormData(uploadForm: UploadInvoiceForm): FormData {
   const body = uploadForm.pas.map((pa: PA, paIndex: number) => {
     const invoice: Invoice = pa.invoice;
     const authorization: PreAutorizationInfo = pa.info;
+    const pdfFile = invoice.pdfFile?.file;
+    const xmlFile = invoice.xmlFile?.file;
     return {
       id: authorization.id,
       idInvoice: invoice.id?.toString(),
       date: dayjs(invoice.date).format("YYYY-MM-DD"),
       amount: invoice.value,
-      invoiceFile: `INVOICE-${paIndex}-PDF`,
-      xmlFile: `INVOICE-${paIndex}-XML`
+      invoiceFile: pdfFile ? `INVOICE-${paIndex}-PDF` : undefined,
+      xmlFile: xmlFile ? `INVOICE-${paIndex}-XML` : undefined
     };
   });
   formData.append("request", JSON.stringify({ invoice: [...body] }));

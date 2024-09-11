@@ -42,6 +42,10 @@ const items: MenuProps["items"] = [
   {
     key: "73ad61e3-395f-4ae4-8aef-9d24f3f917a9",
     label: "Stand by"
+  },
+  {
+    key: "ce946d35-381e-4bf3-a54a-4d38fb1b5e92",
+    label: "Por Legalizar"
   }
 ];
 
@@ -63,7 +67,10 @@ interface IMainDescriptionProps {
   handleChangeStatus: (statusId: string) => void;
 }
 
-export const MainDescription: FC<IMainDescriptionProps> = ({ transferRequest, handleChangeStatus }) => {
+export const MainDescription: FC<IMainDescriptionProps> = ({
+  transferRequest,
+  handleChangeStatus
+}) => {
   const [socketInfo, setSocketInfo] = useState<IMark[]>([]);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
