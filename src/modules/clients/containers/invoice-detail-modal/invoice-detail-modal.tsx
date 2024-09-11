@@ -112,12 +112,16 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
       projectId
     });
   };
+  const handelOpenNoveltyDetail = (noveltyId: number) => {
+    openModal("novelty", { noveltyId: noveltyId });
+  };
 
   return (
     <aside className={`${styles.wrapper} ${isOpen ? styles.show : styles.hide}`}>
       <InvoiceDownloadModal
         isModalOpen={isModalOpen}
         handleCloseModal={setIsModalOpen}
+        title="Imagen"
         url={urlStep}
       />
       <div>
@@ -377,6 +381,15 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                     className={styles.name}
                                   >{`Tipo novedad: ${item.type_incident}`}</div>
                                   <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                  <div className={styles.adjustment}>
+                                    ID del novedad:
+                                    <div
+                                      className={styles.idAdjustment}
+                                      onClick={() => item.id && handelOpenNoveltyDetail(item.id)}
+                                    >
+                                      {item.id}
+                                    </div>
+                                  </div>
                                 </div>
                               ) : (
                                 ""
