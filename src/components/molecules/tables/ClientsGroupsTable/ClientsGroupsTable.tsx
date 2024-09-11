@@ -142,7 +142,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
       key: "subcribers",
       dataIndex: "subcribers",
       sorter: (a, b) => (a.subscribers || 0) - (b.subscribers || 0),
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{text ? text : 0}</Text>
     },
     {
       title: "Ship To",
