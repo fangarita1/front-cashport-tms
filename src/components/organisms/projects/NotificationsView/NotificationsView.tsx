@@ -10,6 +10,7 @@ import { useModalDetail } from "@/context/ModalContext";
 import { useNotificationOpen } from "@/hooks/useNotificationOpen";
 import { useRejectedNotifications } from "@/hooks/useNotificationReject";
 import { mutate } from "swr";
+import { useAppStore } from "@/lib/store/store";
 
 const ListPanel = [
   { key: "opens", value: "Abiertas" },
@@ -28,7 +29,7 @@ interface Notification {
 
 export const NotificationsView = () => {
   const { openModal, modalType } = useModalDetail();
-  const projectId = 81; // Asegúrate de obtener el ID del proyecto correctamente
+  const { ID: projectId } = useAppStore((state) => state.selectedProject);
   const {
     data: openNotifications,
     isLoading: isLoadingOpen,
