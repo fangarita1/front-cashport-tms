@@ -21,6 +21,7 @@ interface Notification {
   days: string;
   id: number;
   is_read: number;
+  id_erp: string;
 }
 
 interface PopoverUserNotificationsProps {
@@ -123,8 +124,10 @@ export const PopoverUserNotifications: React.FC<PopoverUserNotificationsProps> =
           <List.Item>
             <div>
               <Flex gap={"8px"} align="center">
-                <p className="item__title">{item.notification_type_name} </p>
-
+                <p className="item__title">
+                  {item.notification_type_name}
+                  {item.id_erp && `-${item.id_erp}`}
+                </p>
                 {item.is_read === 0 ? (
                   <div className="item__read">
                     <Envelope size={11} />
