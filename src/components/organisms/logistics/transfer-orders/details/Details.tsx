@@ -179,7 +179,6 @@ export const TransferOrderDetails = () => {
   const approbeOrReject = async (id: number, isApprobe: boolean) => {
     const data = await aprobeOrRejectDetail(id, isApprobe);
     if (data) {
-      findNovelties();
       findDetails();
       setOpenDrawer(false);
     }
@@ -283,11 +282,17 @@ export const TransferOrderDetails = () => {
 
   useEffect(() => {
     findDetails();
-    findBilling();
   }, []);
 
   useEffect(() => {
+    if (!isModalVisible && !isModalBillingVisible) {
+      findDetails();
+    }
+  }, [isModalVisible, isModalBillingVisible]);
+
+  useEffect(() => {
     findNovelties();
+    findBilling();
   }, [transferRequest]);
 
   return (
