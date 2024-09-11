@@ -19,7 +19,6 @@ import CardsClients from "../../../molecules/modals/CardsClients/CardsClients";
 import { IClientsPortfolio } from "@/types/clients/IViewClientsTable";
 import { formatMoney } from "@/utils/utils";
 
-import "./ClientsViewTable.scss";
 import { useDebounce } from "@/hooks/useDeabouce";
 import {
   FilterPortfolio,
@@ -30,6 +29,8 @@ import { fetcher } from "@/utils/api/api";
 import { useInfiniteQuery } from "react-query";
 import { useAppStore } from "@/lib/store/store";
 
+import "./ClientsViewTable.scss";
+
 const { Text } = Typography;
 
 export const ClientsViewTable = () => {
@@ -39,6 +40,9 @@ export const ClientsViewTable = () => {
     holding: [],
     clientGroup: []
   });
+  const [flattenedData, setFlattenedData] = useState<IClientsPortfolio[]>([]);
+  const [grandTotal, setGrandTotal] = useState<any>({});
+  const [noResults, setNoResults] = useState<boolean>(false);
   const { ID } = useAppStore((state) => state.selectedProject);
 
   const [loadingOpenPortfolio, setLoadingOpenPortfolio] = useState({
@@ -61,7 +65,7 @@ export const ClientsViewTable = () => {
   };
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery(
-    ["portfolios", debouncedSearchQuery, filters],
+    ["portfolios", debouncedSearchQuery, filters, ID],
     fetchPortfolios,
     {
       getNextPageParam: (lastPage, pages) => {
@@ -189,9 +193,18 @@ export const ClientsViewTable = () => {
     }
   ];
 
-  const flattenedData = data?.pages.flatMap((page) => page?.data?.clientsPortfolio || []) || [];
-  const grandTotal = data?.pages[0]?.data?.grandTotal || {};
-  const noResults = data?.pages[0]?.message === "no rows";
+  useEffect(() => {
+    setFlattenedData(
+      data?.pages
+        .flatMap((page) => page?.data?.clientsPortfolio || [])
+        .filter(
+          (client, index, self) => self.findIndex((other) => other.id === client.id) === index
+        ) || []
+    );
+    setGrandTotal(data?.pages[0]?.data?.grandTotal || {});
+    setNoResults(data?.pages[0]?.message === "no rows");
+  }, [data]);
+
   return (
     <main className="mainClientsTable">
       <div>
