@@ -3,13 +3,13 @@ import { message } from "antd";
 import { useRouter } from "next/navigation";
 import "../../../../../../styles/_variables_logistics.css";
 import "./createGrouplocation.scss";
-import { MaterialFormTab } from "@/components/molecules/tabs/logisticsForms/materialForm/materialFormTab";
+import { GroupLocationFormTab } from "@/components/molecules/tabs/logisticsForms/grouplocationForm/grouplocationFormTab";
 import { addMaterial } from "@/services/logistics/materials";
 
 type Props = {
   params: {
     id: string;
-    materialId: string;
+    groupLocationId: string;
   };
 };
 
@@ -26,9 +26,9 @@ export const CreateGroupLocationView = ({ params }: Props) => {
       if (response && response.status === 200) {
         messageApi.open({
           type: "success",
-          content: `El material fue creada exitosamente.`
+          content: `El grupo de ubicaciones fue creado exitosamente.`
         });
-        push(`/logistics/configuration/materials/all`);//${response.data.data.id}
+        push(`/logistics/configuration/grouplocations/all`);//${response.data.data.id}
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -47,7 +47,7 @@ export const CreateGroupLocationView = ({ params }: Props) => {
   return (
     <>
       {contextHolder}
-      <MaterialFormTab
+      <GroupLocationFormTab
         onSubmitForm={handleSubmit}
         statusForm={"create"}
         params={params}

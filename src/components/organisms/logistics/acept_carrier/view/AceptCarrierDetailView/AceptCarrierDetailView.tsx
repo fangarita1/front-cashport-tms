@@ -28,6 +28,7 @@ import {
   Material,
   VehicleDocument
 } from "@/types/logistics/carrier/carrier";
+import { BackButton } from "../../../orders/DetailsOrderView/components/BackButton/BackButton";
 
 interface AceptCarrierDetailProps {
   params: { id: string };
@@ -252,10 +253,7 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
     <>
       {contextHolder}
       <Flex className={styles.wrapper}>
-        <Link href="/logistics/acept_carrier" className={styles.link}>
-          <CaretLeft size={20} weight="bold" />
-          <p className={`${styles.text} ${styles.strongText}`}>Detalle de TR {params.id}</p>
-        </Link>
+        <BackButton href="/logistics/acept_carrier" title={`Detalle de CR ${params.id}`} />
         <CustomStepper steps={steps} currentStepIndex={currentStepIndex} />
         <Skeleton active loading={isLoading}>
           <Flex className={styles.sectionWraper} style={{ marginBottom: "2rem" }}>

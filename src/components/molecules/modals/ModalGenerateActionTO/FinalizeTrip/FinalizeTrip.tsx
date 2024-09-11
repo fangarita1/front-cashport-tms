@@ -9,12 +9,13 @@ import { emptyForm, FinalizeTripForm } from "./controllers/finalizetrip.types";
 import TextArea from "antd/es/input/TextArea";
 import { VehicleFields } from "./components/VehicleFields";
 import { getCarriersTripsDetails, sendFinalizeTripAllCarriers } from "@/services/trips/trips";
+import { STATUS } from "@/utils/constants/globalConstants";
 
 interface FinalizeTrip {
   idTR: string;
   onClose: () => void;
   messageApi: MessageInstance;
-  statusTR?: string;
+  statusTrId?: string;
 }
 
 export interface IVehicleAPI {
@@ -28,13 +29,15 @@ export interface ICarrierAPI {
   vehicles: IVehicleAPI[];
 }
 
-const FinalizeTrip = ({ idTR, onClose, messageApi, statusTR = "" }: FinalizeTrip) => {
+const FinalizeTrip = ({ idTR, onClose, messageApi, statusTrId = "" }: FinalizeTrip) => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
   const [carriersInfo, setCarriersInfo] = useState<ICarrierAPI[]>([]);
   const [defaultValues, setDefaultValues] = useState<FinalizeTripForm>(emptyForm);
-  const hasAlreadyFinalized = statusTR == "Legalizado";
+  const hasAlreadyFinalized = statusTrId === STATUS.BNG.LEGALIZADO;
+  const [isEditable, setIsEditable] = useState(!hasAlreadyFinalized);
+
   const { control, handleSubmit, setValue, reset, watch, trigger, register } =
     useForm<FinalizeTripForm>({
       defaultValues
@@ -188,7 +191,7 @@ const FinalizeTrip = ({ idTR, onClose, messageApi, statusTR = "" }: FinalizeTrip
 
   const allVehiclesHaveDocs = validateVehiclesWithDocuments(formValues);
 
-  const isConfirmDisabled = !allVehiclesHaveDocs || hasAlreadyFinalized;
+  const isConfirmDisabled = !allVehiclesHaveDocs || !isEditable;
 
   if (isLoading) {
     return <Skeleton active loading={isLoading} />;
@@ -219,6 +222,7 @@ const FinalizeTrip = ({ idTR, onClose, messageApi, statusTR = "" }: FinalizeTrip
               handleOnChangeDocument={handleOnChangeDocument}
               handleOnDeleteDocument={handleOnDeleteDocument}
               currentCarrier={currentCarrier}
+              disabled={!isEditable}
             />
           </div>
         </Flex>
@@ -229,7 +233,7 @@ const FinalizeTrip = ({ idTR, onClose, messageApi, statusTR = "" }: FinalizeTrip
               placeholder="Escribe los comentarios adicionales"
               value={currentCarrier?.adittionalComment}
               style={{ minHeight: "40px" }}
-              disabled={false}
+              disabled={!isEditable}
               autoSize={{ minRows: 1, maxRows: 4 }}
               onChange={(event) => {
                 setValue(`carriers.${selectedTab}.adittionalComment`, event.target.value);

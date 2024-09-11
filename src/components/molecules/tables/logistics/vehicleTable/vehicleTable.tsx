@@ -30,21 +30,19 @@ export const VehicleTable = ({ params: { id } }: Props) => {
     setPage(pagePagination);
   };
   useEffect(() => {
-    const data = vehicles
-      ?.filter((element: any) => {
-        if (!search) return true;
-        return (
-          element.plate_number.toLowerCase().includes(search.toLowerCase()) ||
-          element.brand.toLowerCase().includes(search.toLowerCase()) ||
-          element.vehicle_type.toLowerCase().includes(search.toLowerCase()) ||
-          element.model.toLowerCase().includes(search.toLowerCase()) 
-        );
-      })
-      .map((e: any) => ({...e,
-        type: e.vehicle_type,
-        mark: e.brand,
-        plate: e.plate_number,
-      })) || [];
+    const data =
+      vehicles
+        ?.filter((element: any) => {
+          if (!search) return true;
+          return (
+            element.plate_number.toLowerCase().includes(search.toLowerCase()) ||
+            element.brand.toLowerCase().includes(search.toLowerCase()) ||
+            element.vehicle_type.toLowerCase().includes(search.toLowerCase()) ||
+            element.model.toLowerCase().includes(search.toLowerCase())
+          );
+        })
+        .map((e: any) => ({ ...e, type: e.vehicle_type, mark: e.brand, plate: e.plate_number })) ||
+      [];
     setDatasource(data);
   }, [vehicles, search]);
 
@@ -127,6 +125,7 @@ export const VehicleTable = ({ params: { id } }: Props) => {
           }
         }}
         dataSource={datasource}
+        rowKey="id"
       />
     </div>
   );

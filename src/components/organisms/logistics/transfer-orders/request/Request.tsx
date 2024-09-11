@@ -1,10 +1,11 @@
-import { Checkbox, Collapse, CollapseProps, Typography } from "antd";
+import { Checkbox, CollapseProps, Typography } from "antd";
 import styles from "./Request.module.scss";
 import { TransferOrdersState } from "@/utils/constants/transferOrdersState";
 import { TransferOrdersTable } from "@/components/molecules/tables/TransferOrderTable/TransferOrderTable";
 import { FC, useEffect, useState } from "react";
 import { getAcceptedTransferRequest } from "@/services/logistics/transfer-request";
 import { ITransferRequestResponse } from "@/types/transferRequest/ITransferRequest";
+import CustomCollapse from "@/components/ui/custom-collapse/CustomCollapse";
 
 const Text = Typography;
 
@@ -116,5 +117,5 @@ export const Request: FC<IRequestProps> = ({ search, handleCheckboxChange, order
     };
   });
 
-  return <Collapse ghost items={renderItems} defaultActiveKey={["0"]} />;
+  return <CustomCollapse ghost items={renderItems} defaultActiveKey={["0"]} />;
 };

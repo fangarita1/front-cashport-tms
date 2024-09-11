@@ -1,11 +1,18 @@
-import { IVehicle, VihicleDetail, IFormVehicle, ICertificates } from "@/types/logistics/schema";
+import {
+  IVehicle,
+  VihicleDetail,
+  IFormVehicle,
+  ICertificates,
+  IListDataVehiche,
+  VehicleType
+} from "@/types/logistics/schema";
 import { MessageInstance } from "antd/es/message/interface";
 import Title from "antd/es/typography/Title";
 import { SetStateAction } from "react";
 import { UseFormReset, UseFormSetValue } from "react-hook-form";
-import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
+import { CertificateType, DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 
-export type StatusForm = "review" | "create" | "edit"
+export type StatusForm = "review" | "create" | "edit";
 
 export interface VehicleFormTabProps {
   idVehicleForm?: string;
@@ -13,7 +20,7 @@ export interface VehicleFormTabProps {
   disabled?: boolean;
   onEditVehicle?: () => void;
   onSubmitForm?: (data: any) => void;
-  handleFormState?: (newFormState: StatusForm) => void
+  handleFormState?: (newFormState: StatusForm) => void;
   onActiveVehicle?: () => void;
   onDesactivateVehicle?: () => void;
   statusForm: "create" | "edit" | "review";
@@ -21,15 +28,20 @@ export interface VehicleFormTabProps {
     id: string;
     vehicleId: string;
   };
+  documentsTypesList: CertificateType[];
+  vehiclesTypesList: VehicleType[];
+  isLoading: boolean;
 }
 export interface VehicleImage {
-  id: number,
-  entity_type: number,
-  url_archive?: string,
-  file?: FileObject
+  id: number;
+  entity_type: number;
+  url_archive?: string;
+  file?: FileObject;
 }
 
-export type VehicleData = IVehicle & { licence?: string } & { documents?: ICertificates[] } & {images?: VehicleImage};
+export type VehicleData = IVehicle & { licence?: string } & { documents?: ICertificates[] } & {
+  images?: VehicleImage;
+};
 
 export interface FileObject {
   file: File;
@@ -37,7 +49,6 @@ export interface FileObject {
 }
 
 export const normalizeVehicleData = (data: any): any => {
-
   if (!data) return {};
 
   const documents = data.documents.map((doc: any) => ({
@@ -69,9 +80,9 @@ export const normalizeVehicleData = (data: any): any => {
       color: data.color,
       country: data.country.toString(),
       aditional_info: data.aditional_info,
-      gps_link: data.gps_link,
-      gps_user: data.gps_user,
-      gps_password: data.gps_password,
+      gps_link: data.gps_link === "undefined" ? "" : data.gps_link,
+      gps_user: data.gps_user === "undefined" ? "" : data.gps_user,
+      gps_password: data.gps_password === "undefined" ? "" : data.gps_password,
       active: data.active,
       created_at: new Date(data.created_at),
       created_by: data.created_by,
@@ -90,19 +101,14 @@ export const _onSubmitVehicle = (
   data: any,
   selectedFiles: DocumentCompleteType[],
   imageFiles: { docReference: string; file: File }[],
-  setloading: (value: SetStateAction<boolean>) => void,
   setImageError: (value: SetStateAction<boolean>) => void,
-  onSubmitForm: (data: any) => void,
+  onSubmitForm: (data: any) => void
 ) => {
-  setloading(true);
   try {
     setImageError(false);
-    onSubmitForm({...data, images: imageFiles, files: selectedFiles});
+    onSubmitForm({ ...data, images: imageFiles, files: selectedFiles });
   } catch (error) {
     console.warn({ error });
-  } finally {
-    setloading(false);
-
   }
 };
 

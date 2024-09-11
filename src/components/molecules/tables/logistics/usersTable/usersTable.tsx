@@ -20,7 +20,7 @@ export const UsersTable = () => {
       console.error(error);
       message.error(error.message);
     },
-    refreshInterval: 30000,
+    refreshInterval: 30000
   });
 
   const onChangePage = (pagePagination: number) => {
@@ -28,23 +28,24 @@ export const UsersTable = () => {
   };
 
   useEffect(() => {
-    const data = users
-      ?.data.data.filter((element: any) => {
-        if (!search) return true;
-        return (
-          element.user_name.toLowerCase().includes(search.toLowerCase()) ||
-          element.email.toLowerCase().includes(search.toLowerCase()) 
-        );
-      })
-      .map((element: any) => ({
-        id: element.id,
-        email: element.email,
-        phone: element.phone,
-        user_name: element.user_name,
-        active: element.active,
-        rol_name: element.rol_name,
-        carrier: element.carrier,
-      })) || [];
+    const data =
+      users?.data?.data
+        ?.filter((element: any) => {
+          if (!search) return true;
+          return (
+            element.user_name.toLowerCase().includes(search.toLowerCase()) ||
+            element.email.toLowerCase().includes(search.toLowerCase())
+          );
+        })
+        .map((element: any) => ({
+          id: element.id,
+          email: element.email,
+          phone: element.phone,
+          user_name: element.user_name,
+          active: element.active,
+          rol_name: element.rol_name,
+          carrier: element.carrier
+        })) || [];
     setDatasource(data);
   }, [users, search]);
 
@@ -52,22 +53,22 @@ export const UsersTable = () => {
     {
       title: "Nombre",
       dataIndex: "user_name",
-      key: "user_name",
+      key: "user_name"
     },
     {
       title: "Correo",
       dataIndex: "email",
-      key: "email",
+      key: "email"
     },
     {
       title: "Teléfono",
       dataIndex: "phone",
-      key: "phone",
+      key: "phone"
     },
     {
       title: "Rol",
       dataIndex: "rol_name",
-      key: "rol_name",
+      key: "rol_name"
     },
     {
       title: "Proveedor",
@@ -75,13 +76,11 @@ export const UsersTable = () => {
       key: "carrier",
       render: (_, { carrier }) => (
         <Flex>
-          <Flex
-            align="center"
-          >
+          <Flex align="center">
             <Text key={carrier?.id}>{carrier?.description}</Text>
           </Flex>
         </Flex>
-      ),
+      )
     },
     {
       title: "Estado",
@@ -99,7 +98,7 @@ export const UsersTable = () => {
             <Text>{active ? "Activo" : "Inactivo"}</Text>
           </Flex>
         </Flex>
-      ),
+      )
     },
     {
       title: "",
@@ -112,8 +111,8 @@ export const UsersTable = () => {
           className="icon-detail"
           icon={<Eye size={20} />}
         />
-      ),
-    },
+      )
+    }
   ];
 
   return (
@@ -146,30 +145,30 @@ export const UsersTable = () => {
         </Flex>
       </Flex>
       {!isLoading ? (
-      <Table
-        scroll={{ y: "61dvh", x: undefined }}
-        columns={columns as TableProps<any>["columns"]}
-        loading={isLoading}
-        pagination={{
-          pageSize: 25,
-          onChange: onChangePage,
-          showSizeChanger: false,
-          itemRender: (page, type, originalElement) => {
-            if (type === "prev") {
-              return <Triangle size={".75rem"} weight="fill" className="prev" />;
-            } else if (type === "next") {
-              return <Triangle size={".75rem"} weight="fill" className="next" />;
-            } else if (type === "page") {
-              return <Flex className="pagination">{page}</Flex>;
+        <Table
+          scroll={{ y: "61dvh", x: undefined }}
+          columns={columns as TableProps<any>["columns"]}
+          loading={isLoading}
+          pagination={{
+            pageSize: 25,
+            onChange: onChangePage,
+            showSizeChanger: false,
+            itemRender: (page, type, originalElement) => {
+              if (type === "prev") {
+                return <Triangle size={".75rem"} weight="fill" className="prev" />;
+              } else if (type === "next") {
+                return <Triangle size={".75rem"} weight="fill" className="next" />;
+              } else if (type === "page") {
+                return <Flex className="pagination">{page}</Flex>;
+              }
+              return originalElement;
             }
-            return originalElement;
-          },
-        }}
-        dataSource={datasource}
-      />
-    ) : (
-      <Spin />
-    )}
+          }}
+          dataSource={datasource}
+        />
+      ) : (
+        <Spin />
+      )}
     </div>
   );
 };

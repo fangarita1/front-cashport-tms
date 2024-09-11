@@ -15,38 +15,42 @@ export const MaterialsTable = () => {
   const [search, setSearch] = useState("");
   const [datasource, setDatasource] = useState<any[]>([]);
 
-  const { data: materials, isLoading } = useSWR({
-    key: "materials",
-  }, getAllMaterials, {
-    onError: (error: any) => {
-      console.error(error);
-      message.error(error.message);
+  const { data: materials, isLoading } = useSWR(
+    {
+      key: "materials"
     },
-    refreshInterval: 30000,
-  });
+    getAllMaterials,
+    {
+      onError: (error: any) => {
+        console.error(error);
+        message.error(error.message);
+      },
+      refreshInterval: 30000
+    }
+  );
 
   const onChangePage = (pagePagination: number) => {
     setPage(pagePagination);
   };
 
   useEffect(() => {
-    const data = materials
-      ?.data.data.filter((element: any) => {
-        if (!search) return true;
-        return (
-          element.description.toLowerCase().includes(search.toLowerCase()) 
-        );
-      })
-      .map((element: any) => ({
-        id: element.id,
-        description: element.description,
-        m3_volume: element.m3_volume,
-        mt_height: element.mt_height,
-        mt_width: element.mt_width,
-        mt_length: element.mt_length,
-        kg_weight: element.kg_weight,
-        active: element.active,
-      })) || [];
+    const data =
+      materials?.data?.data
+        ?.filter((element: any) => {
+          if (!search) return true;
+          return element.description.toLowerCase().includes(search.toLowerCase());
+        })
+        .map((element: any) => ({
+          id: element.id,
+          code_sku: element.code_sku,
+          description: element.description,
+          m3_volume: element.m3_volume,
+          mt_height: element.mt_height,
+          mt_width: element.mt_width,
+          mt_length: element.mt_length,
+          kg_weight: element.kg_weight,
+          active: element.active
+        })) || [];
     setDatasource(data);
   }, [materials, search]);
 
@@ -54,51 +58,56 @@ export const MaterialsTable = () => {
     {
       title: "Código",
       dataIndex: "id",
-      key: "id",
+      key: "id"
+    },
+    {
+      title: "SKU",
+      dataIndex: "code_sku",
+      key: "code_sku"
     },
     {
       title: "Nombre",
       dataIndex: "description",
-      key: "description",
+      key: "description"
     },
     {
-      title: 'Volumen',
-      dataIndex: 'm3_volume',
-      key: 'm3_volume',
-      render: (_, record) =>{
-        return (record.m3_volume? record.m3_volume:'') + ' m3';
+      title: "Volumen",
+      dataIndex: "m3_volume",
+      key: "m3_volume",
+      render: (_, record) => {
+        return (record.m3_volume ? record.m3_volume : "") + " m3";
       }
     },
     {
       title: "Alto",
       dataIndex: "mt_height",
       key: "mt_height",
-      render: (_, record) =>{
-        return (record.mt_height? record.mt_height:'') + ' m';
+      render: (_, record) => {
+        return (record.mt_height ? record.mt_height : "") + " m";
       }
     },
     {
       title: "Ancho",
       dataIndex: "mt_width",
       key: "mt_width",
-      render: (_, record) =>{
-        return (record.mt_width? record.mt_width:'') + ' m';
+      render: (_, record) => {
+        return (record.mt_width ? record.mt_width : "") + " m";
       }
     },
     {
       title: "Largo",
       dataIndex: "mt_length",
       key: "mt_length",
-      render: (_, record) =>{
-        return (record.mt_length? record.mt_length:'') + ' m';
+      render: (_, record) => {
+        return (record.mt_length ? record.mt_length : "") + " m";
       }
     },
     {
       title: "Peso",
       dataIndex: "kg_weight",
       key: "kg_weight",
-      render: (_, record) =>{
-        return (record.kg_weight? record.kg_weight:'') + ' kg';
+      render: (_, record) => {
+        return (record.kg_weight ? record.kg_weight : "") + " kg";
       }
     },
     {
@@ -117,7 +126,7 @@ export const MaterialsTable = () => {
             <Text>{active ? "Activo" : "Inactivo"}</Text>
           </Flex>
         </Flex>
-      ),
+      )
     },
     {
       title: "",
@@ -130,8 +139,8 @@ export const MaterialsTable = () => {
           className="icon-detail"
           icon={<Eye size={20} />}
         />
-      ),
-    },
+      )
+    }
   ];
 
   return (
@@ -164,30 +173,30 @@ export const MaterialsTable = () => {
         </Flex>
       </Flex>
       {!isLoading ? (
-      <Table
-        scroll={{ y: "61dvh", x: undefined }}
-        columns={columns as TableProps<any>["columns"]}
-        loading={isLoading}
-        pagination={{
-          pageSize: 25,
-          onChange: onChangePage,
-          showSizeChanger: false,
-          itemRender: (page, type, originalElement) => {
-            if (type === "prev") {
-              return <Triangle size={".75rem"} weight="fill" className="prev" />;
-            } else if (type === "next") {
-              return <Triangle size={".75rem"} weight="fill" className="next" />;
-            } else if (type === "page") {
-              return <Flex className="pagination">{page}</Flex>;
+        <Table
+          scroll={{ y: "61dvh", x: undefined }}
+          columns={columns as TableProps<any>["columns"]}
+          loading={isLoading}
+          pagination={{
+            pageSize: 25,
+            onChange: onChangePage,
+            showSizeChanger: false,
+            itemRender: (page, type, originalElement) => {
+              if (type === "prev") {
+                return <Triangle size={".75rem"} weight="fill" className="prev" />;
+              } else if (type === "next") {
+                return <Triangle size={".75rem"} weight="fill" className="next" />;
+              } else if (type === "page") {
+                return <Flex className="pagination">{page}</Flex>;
+              }
+              return originalElement;
             }
-            return originalElement;
-          },
-        }}
-        dataSource={datasource}
-      />
-    ) : (
-      <Spin />
-    )}
+          }}
+          dataSource={datasource}
+        />
+      ) : (
+        <Spin />
+      )}
     </div>
   );
 };

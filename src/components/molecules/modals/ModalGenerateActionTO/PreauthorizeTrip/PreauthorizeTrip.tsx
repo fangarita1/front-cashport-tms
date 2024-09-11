@@ -39,7 +39,7 @@ const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: PAtrip) => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     setValue,
     trigger
   } = useForm<PreauthorizeTripForm>({
@@ -122,7 +122,7 @@ const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: PAtrip) => {
   }
   const allPAHaveEvidence = getAllPAHaveEvidence();
   const pendingPAValue = totalValue - getAlreadyPreautorized();
-  const isFormCompleted = pendingPAValue === 0 && allPAHaveEvidence;
+  const isFormCompleted = pendingPAValue === 0 && allPAHaveEvidence && isValid;
 
   const handleDownloadCsv = () => {
     const endpoint = `logistic-billing/export-csv/${billingId}`;
@@ -150,7 +150,7 @@ const PreauthorizeTrip = ({ idTR, carrier, onClose, messageApi }: PAtrip) => {
             <p className={styles.subtitle}>{`$${formatNumber(pendingPAValue, 2)}`}</p>
           </Flex>
           <Flex justify="flex-end">
-            <button className={styles.buttonDownload} onClick={handleDownloadCsv}>
+            <button className={styles.buttonDownload} onClick={handleDownloadCsv} type="button">
               Descargar CSV
             </button>
           </Flex>

@@ -1,11 +1,11 @@
 "use client";
 
-import { CreateLocationView } from "@/components/organisms/logistics/configuration/locations/createLocation/createLocation";
+import { CreateGroupLocationView } from "@/components/organisms/logistics/configuration/grouplocations/createGrouplocation/createGrouplocation";
 
 function GroupLocationInfoPage() {
-  return <CreateLocationView params={{
+  return <CreateGroupLocationView params={{
     id: "",
-    locationId: ""
+    groupLocationId: ""
   }} />;
 }
 

@@ -4,12 +4,12 @@ export function createFormDataFinalizeTrip(form: EvidenceByVehicleForm): FormDat
   const formData = new FormData();
   const documentsMTs: { file: string }[] = [];
 
-  form.documents.forEach((document) => {
+  form.documents.forEach((document, index) => {
     if (document.file) {
       documentsMTs.push({
-        file: document.file.name
+        file: `MT-${index}`
       });
-      formData.append(`${document.file.name}`, document.file);
+      formData.append(`MT-${index}`, document.file);
     }
   });
   formData.append("request", JSON.stringify({ documentsMTs }));

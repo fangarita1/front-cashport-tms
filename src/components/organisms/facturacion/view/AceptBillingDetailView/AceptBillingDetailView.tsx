@@ -1,30 +1,17 @@
 "use client";
-import {
-  Button,
-  Col,
-  Collapse,
-  CollapseProps,
-  ConfigProvider,
-  Flex,
-  message,
-  Modal,
-  Row,
-  Spin,
-  Typography
-} from "antd";
-import { CaretDoubleRight, CaretDown, CaretLeft, DotsThree, Truck } from "phosphor-react";
+import { Button, Col, ConfigProvider, Flex, message, Modal, Row, Spin, Typography } from "antd";
+import { CaretLeft, DotsThree, Truck, CraneTower, User } from "@phosphor-icons/react";
 import { getBillingDetailsById } from "@/services/billings/billings";
 import styles from "./AceptBillingDetailView.module.scss";
 import { useState, useEffect } from "react";
 import { NoveltyTable } from "@/components/molecules/tables/NoveltyTable/Novelty";
-import { number } from "yup";
 import Link from "next/link";
 import ModalBillingAction from "@/components/molecules/modals/ModalBillingAction/ModalBillingAction";
 import { IJourney, IIncident } from "@/types/logistics/schema";
-import { ItemType } from "rc-collapse/es/interface";
 import { INovelty, IEvidence } from "@/types/novelty/INovelty";
 import { BillingStatusEnum } from "@/types/logistics/billing/billing";
 import { formatMoney, formatNumber } from "@/utils/utils";
+import { BackButton } from "@/components/organisms/logistics/orders/DetailsOrderView/components/BackButton/BackButton";
 
 const { Text } = Typography;
 
@@ -33,7 +20,6 @@ interface AceptBillingDetailProps {
 }
 
 export default function AceptBillingDetailView({ params }: AceptBillingDetailProps) {
-  const [key, setKey] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [billingData, setBillingData] = useState<any>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -43,6 +29,7 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
     ? billingStatus === BillingStatusEnum.PorAceptar ||
       billingStatus === BillingStatusEnum.Preautorizado
     : false;
+
   const [messageApi, contextHolder] = message.useMessage();
 
   const fetchBillingDetails = async () => {
@@ -51,8 +38,8 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
       const response = await getBillingDetailsById(params.id);
       if (response && response.journeys) {
         setBillingData(response);
-        setBillingStatus(response.billing.statusDesc);
         console.log(response);
+        setBillingStatus(response.billing.statusDesc);
       } else {
         console.error("No se encontraron detalles de facturación.");
       }
@@ -66,80 +53,103 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
     if (params.id && !isModalVisible) fetchBillingDetails();
   }, [params.id, isModalVisible]);
 
-  const TitleComponent = ({
-    state,
-    id,
-    journey
-  }: {
-    state: string;
-    id: number;
-    journey: IJourney;
-  }) => (
-    <div className={styles.header}>
-      <div className={styles.stateContainer}>
-        <Truck size={27} color="#FFFFFF" weight="fill" />
-        <Text className={styles.state}>{state}</Text>
-      </div>
-      <div className={styles.fromto}>
-        <div className={styles.fromtoContainer}>
-          <Text className={styles.title}>Origen</Text>
-          <Text className={styles.subtitle}>{journey.start_location_desc}</Text>
+  const TripHeader = ({ trip }: { trip: any }) => (
+    <div className={styles.resumContainer}>
+      <div className={styles.resum}>
+        <div className={styles.resumItem}>
+          <Text className={styles.text}>Vehículo</Text>
+          <Text className={`${styles.text} ${styles.bold}`}>
+            {trip.vehicle_type_desc} | {trip.plate_number ?? "N/A"}
+          </Text>
         </div>
-        <div className={`${styles.fromtoContainer} ${styles.right}`}>
-          <div className={styles.fromtoContainer}>
-            <Text className={styles.title}>Destino</Text>
-            <Text className={styles.subtitle}>{journey.end_location_desc}</Text>
-          </div>
-          <CaretDown className={`${styles.caret} ${id === key ? styles.rotate : ""}`} size={24} />
+        <div className={styles.resumItem}>
+          <Text className={styles.text}>Proveedor</Text>
+          <Text className={`${styles.text} ${styles.bold}`}>
+            {billingData?.billing.carrier ?? "N/A"}
+          </Text>
+        </div>
+        <div className={styles.resumItem}>
+          <Text className={styles.text}>Conductor</Text>
+          <Text className={`${styles.text} ${styles.bold}`}>{trip.drivers ?? "N/A"}</Text>
         </div>
       </div>
-      <div className={styles.resumContainer}>
-        <div className={styles.resum}>
-          <div className={styles.resumItem}>
-            <Text className={styles.text}>Vehículo</Text>
-            <Text className={`${styles.text} ${styles.bold}`}>
-              {journey.trips[0]?.vehicle_type_desc} | {journey.trips[0]?.plate_number ?? "N/A"}
-            </Text>
-          </div>
-          <div className={styles.resumItem}>
-            <Text className={styles.text}>Proveedor</Text>
-            <Text className={`${styles.text} ${styles.bold}`}>
-              {billingData?.billing.carrier ?? "N/A"}
-            </Text>
-          </div>
-          <div className={styles.resumItem}>
-            <Text className={styles.text}>Conductor</Text>
-            <Text className={`${styles.text} ${styles.bold}`}>
-              {journey.trips[0]?.drivers ?? "N/A"}
-            </Text>
-          </div>
+      <div className={`${styles.resum} ${styles.right}`}>
+        <div className={`${styles.resumItem} ${styles.right}`}>
+          <Text className={styles.text}>Tarifa base</Text>
+          <Text className={styles.text}>{formatMoney(trip.fare || "0")}</Text>
         </div>
-        <div className={`${styles.resum} ${styles.right}`}>
-          <div className={`${styles.resumItem} ${styles.right}`}>
-            <Text className={styles.text}>Tarifa base</Text>
-            <Text className={styles.text}>{formatMoney(journey.trips[0]?.fare || "0")}</Text>
-          </div>
-          <div className={`${styles.resumItem} ${styles.right}`}>
-            <Text className={styles.text}>Sobrecosto</Text>
-            <Text className={styles.text}>{formatMoney(journey.trips[0]?.overcost || "0")}</Text>
-          </div>
-          <div className={`${styles.resumItem} ${styles.right}`}>
-            <Text className={`${styles.text} ${styles.bold}`}>Total</Text>
-            <Text className={`${styles.text} ${styles.bold}`}>
-              {formatMoney(journey.trips[0]?.total || "0")}
-            </Text>
-          </div>
+        <div className={`${styles.resumItem} ${styles.right}`}>
+          <Text className={styles.text}>Sobrecosto</Text>
+          <Text className={styles.text}>{formatMoney(trip.overcost || "0")}</Text>
+        </div>
+        <div className={`${styles.resumItem} ${styles.right}`}>
+          <Text className={`${styles.text} ${styles.bold}`}>Total</Text>
+          <Text className={`${styles.text} ${styles.bold}`}>{formatMoney(trip.total || "0")}</Text>
         </div>
       </div>
+      <br />
     </div>
   );
+
+  const TitleComponent = ({ id, journey }: { id: number; journey: IJourney }) => {
+    const getServiceTypeDescription = (id_service_type: number) => {
+      switch (id_service_type) {
+        case 1:
+          return "Carga";
+        case 2:
+          return "Izaje";
+        case 3:
+          return "Personas";
+        case 4:
+          return "Aéreo";
+        default:
+          return "Desconocido";
+      }
+    };
+
+    const getServiceTypeIcon = (id_service_type: number) => {
+      switch (id_service_type) {
+        case 1:
+          return <Truck size={27} color="#FFFFFF" weight="fill" />;
+        case 2:
+          return <CraneTower size={27} color="#FFFFFF" weight="fill" />;
+        case 3:
+          return <User size={27} color="#FFFFFF" weight="fill" />;
+        case 4:
+          return <Truck size={27} color="#FFFFFF" weight="fill" />;
+        default:
+          return <Truck size={27} color="#FFFFFF" weight="fill" />;
+      }
+    };
+
+    return (
+      <div className={styles.header}>
+        <div className={styles.stateContainer}>
+          {getServiceTypeIcon(journey.id_type_service)}
+          <Text className={styles.state}>{getServiceTypeDescription(journey.id_type_service)}</Text>
+        </div>
+        <div className={styles.fromto}>
+          <div className={styles.fromtoContainer}>
+            <Text className={styles.title}>Origen</Text>
+            <Text className={styles.subtitle}>{journey.start_location_desc}</Text>
+          </div>
+          <div className={`${styles.fromtoContainer} ${styles.right}`}>
+            <div className={styles.fromtoContainer}>
+              <Text className={styles.title}>Destino</Text>
+              <Text className={styles.subtitle}>{journey.end_location_desc}</Text>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   function convertIncidentToNovelty(incident: IIncident): INovelty {
     const evidence: IEvidence = {
       id: incident.id,
       novelty_id: incident.id,
-      name: incident.url_image.split("/").pop() || "Evidencia",
-      url: incident.url_image,
+      name: incident?.url_image?.split("/").pop() || "Evidencia",
+      url: incident?.url_image,
       created_at: new Date(),
       updated_at: new Date()
     };
@@ -154,30 +164,33 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
       status_id: incident.status,
       created_by: incident.user,
       quantity: incident.units,
+      overcost_id: 0,
+      unit_value: 0,
       evidences: [evidence]
     };
   }
 
-  const collapseItems =
-    billingData?.journeys.map((journey: IJourney, index: number) => {
-      const allIncidents = journey.trips.reduce((acc: INovelty[], trip) => {
-        return [...acc, ...trip.incidents.map(convertIncidentToNovelty)];
-      }, []);
+  const tripDetailsWithNovelties =
+    billingData?.journeys.flatMap((journey: IJourney) => {
+      return [
+        <TitleComponent key={`title-${journey.id}`} id={journey.id} journey={journey} />,
+        ...journey.trips.flatMap((trip, index) => {
+          const allIncidents =
+            trip.incidents.length > 0 ? trip.incidents.map(convertIncidentToNovelty) : [];
 
-      return {
-        key: journey.id.toString(),
-        label: <TitleComponent state="Carga" id={index + 1} journey={journey} />,
-        children: (
-          <div>
-            <NoveltyTable
-              novelties={allIncidents}
-              openDrawer={() => {}}
-              handleShowDetails={() => {}}
-            />
-          </div>
-        ),
-        showArrow: false
-      };
+          return (
+            <div key={`trip-novelty-container-${trip.id}`} style={{ marginBottom: "56px" }}>
+              <TripHeader key={`trip-${trip.id}`} trip={trip} />
+              <NoveltyTable
+                key={`novelty-table-${trip.id}`}
+                novelties={allIncidents}
+                openDrawer={() => {}}
+                handleShowDetails={() => {}}
+              />
+            </div>
+          );
+        })
+      ];
     }) || [];
 
   return (
@@ -186,10 +199,10 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
 
       <div className={styles.card}>
         <div className={styles.linkButtonsContainer}>
-          <Link href="/facturacion" className={styles.link}>
-            <CaretLeft size={20} weight="bold" />
-            <div>Detalle de TR {billingData?.billing?.idTransferRequest}</div>
-          </Link>
+          <BackButton
+            href="/facturacion"
+            title={`Detalle de TR ${billingData?.billing?.idTransferRequest ?? ""}`}
+          />
           {canMakeAnAction && (
             <Button
               className={styles.actionBtn}
@@ -231,31 +244,19 @@ export default function AceptBillingDetailView({ params }: AceptBillingDetailPro
               </Row>
             </Flex>
 
-            <div className={styles.collapsableContainer}>
-              {collapseItems.map((item: ItemType) => (
-                <div key={item.key} className={styles.collapsable}>
-                  <Collapse
-                    onChange={(item) => setKey(Number(item[0]))}
-                    expandIconPosition="end"
-                    ghost
-                    items={[item]}
-                  />
-                </div>
-              ))}
-            </div>
+            <div className={styles.container}>{tripDetailsWithNovelties}</div>
           </>
         )}
-
-        <ModalBillingAction
-          isOpen={isModalVisible}
-          onClose={() => setIsModalVisible(false)}
-          idTR={billingData?.billing?.idTransferRequest ?? 0}
-          totalValue={billingData?.billing?.fare ?? 0}
-          billingStatus={billingData?.billing?.statusDesc}
-          messageApi={messageApi}
-          idBilling={billingData?.billing?.id}
-        />
       </div>
+      <ModalBillingAction
+        isOpen={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        idTR={billingData?.billing?.idTransferRequest ?? 0}
+        totalValue={billingData?.billing?.fare ?? 0}
+        billingStatus={billingData?.billing?.statusDesc}
+        messageApi={messageApi}
+        idBilling={billingData?.billing?.id}
+      />
     </>
   );
 }

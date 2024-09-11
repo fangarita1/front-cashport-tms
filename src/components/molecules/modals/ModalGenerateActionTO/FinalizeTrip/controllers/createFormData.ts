@@ -12,14 +12,14 @@ export function createFormData(form: FinalizeTripForm): FormData {
         Observation: carrier.adittionalComment
       });
     }
-    carrier.vehicles.forEach((vehicle) => {
-      vehicle.documents.forEach((document) => {
+    carrier.vehicles.forEach((vehicle, indexCarrier) => {
+      vehicle.documents.forEach((document, indexVehicle) => {
         if (document.file) {
           documentsMTs.push({
             tripId: vehicle.tripId,
-            file: document.file.name
+            file: `INVOICE-${indexCarrier}-${indexVehicle}`
           });
-          formData.append(`${document.file.name}`, document.file);
+          formData.append(`INVOICE-${indexCarrier}-${indexVehicle}`, document.file);
         }
       });
     });

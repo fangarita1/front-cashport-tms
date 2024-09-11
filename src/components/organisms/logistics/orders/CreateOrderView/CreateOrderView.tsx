@@ -18,7 +18,8 @@ import {
   Popconfirm,
   Divider,
   Space,
-  theme
+  theme,
+  Skeleton
 } from "antd";
 import React, { useRef, useEffect, useState } from "react";
 import { runes } from "runes2";
@@ -117,9 +118,10 @@ const { Title, Text } = Typography;
 const { useToken } = theme;
 
 export const CreateOrderView = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const { push } = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
-  const [isButtonDisabled, setButtonDisabled] = useState(false);
 
   /* Tipo de viaje */
   const [typeactive, setTypeActive] = useState("1");
@@ -152,6 +154,7 @@ export const CreateOrderView = () => {
 
   const [clientValid, setClientValid] = useState(true);
   const [companyValid, setCompanyValid] = useState(true);
+  const isButtonSubmitEnabled = !isLoading;
 
   const disabledDate: RangePickerProps["disabledDate"] = (current: any) => {
     // Can not select days before today
@@ -608,7 +611,7 @@ export const CreateOrderView = () => {
         dataPersons.length >= 1 ? (
           <Popconfirm
             title="Esta seguro de eliminar?"
-            onConfirm={() => handleDeletePerson(record.key)}
+            onConfirm={() => handleDeletePerson(record.id)}
           >
             <div
               style={{
@@ -616,7 +619,8 @@ export const CreateOrderView = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 height: 32,
-                width: 32
+                width: 32,
+                cursor: "pointer"
               }}
             >
               <Trash size={24} />
@@ -796,7 +800,7 @@ export const CreateOrderView = () => {
                 Largo {item.length}m - Ancho {item.width}m - Alto {item.height}m - Máximo{" "}
                 {item.kg_capacity}Tn
                 <br />
-                Cantidad disponibles: {item.available}
+                Vehículos {item.disponibility || 0} | Tarifas {item.rates || 0}
               </Text>
             </Col>
             <Col span={4} style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -1367,8 +1371,10 @@ export const CreateOrderView = () => {
             </Col>
           </div>
         );
-
-        result.push({ value: item.description, label: strlabel });
+        result.push({
+          value: `${item.id} - ${item.name} - ${item.contact_number} - ${item.psl_desc} - ${item.cost_center_desc}`,
+          label: strlabel
+        });
       });
     }
     setOptionsPersons(result);
@@ -1380,24 +1386,16 @@ export const CreateOrderView = () => {
   }, [typeactive]);
 
   const filteredPersonsOptions = optionsPersons.filter(
-    (option: any) => !dataPersons.some((person) => person.name === option.value)
+    (option: any) => !dataPersons.some((person) => option?.value?.includes(String(person.id)))
   );
 
-  let personsIdx = 0;
   const addPerson = async (value: any) => {
-    personsIdx = personsIdx + 1;
-
-    value.key = requirementsIdx;
-
     const newvalue: ITransferOrderPersons = value;
-    //console.log(newvalue);
-    await setDataPersons((dataPersons) => [...dataPersons, newvalue]);
+    setDataPersons((dataPersons) => [...dataPersons, newvalue]);
   };
 
-  const handleDeletePerson = (key: React.Key) => {
-    console.log(key);
-    personsIdx = personsIdx - 1;
-    const newData = dataPersons.filter((item) => item.key !== key);
+  const handleDeletePerson = (id: number) => {
+    const newData = dataPersons.filter((item) => item.id !== id);
     setDataPersons(newData);
   };
 
@@ -1648,6 +1646,7 @@ export const CreateOrderView = () => {
     console.log("DATA PARA POST: ", data);
 
     try {
+      setIsLoading(true);
       const response = await addTransferOrder(
         datato,
         data?.files || ([] as DocumentCompleteType[])
@@ -1655,7 +1654,8 @@ export const CreateOrderView = () => {
       if (response.status === SUCCESS) {
         messageApi.open({
           type: "success",
-          content: "El viaje fue creado exitosamente."
+          content: "El viaje fue creado exitosamente.",
+          duration: 2
         });
         push("/logistics/orders/details/" + response.data.data.id);
       }
@@ -1665,6 +1665,8 @@ export const CreateOrderView = () => {
       } else {
         messageApi.error("Oops, hubo un error por favor intenta mas tarde.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
   /* acoordion */
@@ -2005,7 +2007,7 @@ export const CreateOrderView = () => {
         <div className="collapseByAction__label">
           <Package size={16} />
           <Title className="collapseByAction__label__text" level={4}>
-            Carga
+            {typeactive == "3" ? "Personas y Vehículos" : "Carga"}
           </Title>
         </div>
       ),
@@ -2061,10 +2063,10 @@ export const CreateOrderView = () => {
                       options={filteredPersonsOptions}
                       value={null}
                       style={{ width: "100%", height: "2.5rem" }}
-                      optionFilterProp="label"
+                      optionFilterProp="value"
                       filterOption={(input: string, option) => {
                         if (option) {
-                          return option.label.props.toLowerCase().includes(input.toLowerCase());
+                          return option.value.toLowerCase().includes(input.toLowerCase());
                         }
                         return false;
                       }}
@@ -2072,7 +2074,12 @@ export const CreateOrderView = () => {
                   </Col>
                   <Col span={12} />
                   <Col span={24}>
-                    <Table columns={columnsCargaPersonas} dataSource={dataPersons} />
+                    <Table
+                      columns={columnsCargaPersonas}
+                      dataSource={dataPersons}
+                      rowKey="id"
+                      pagination={false}
+                    />
                   </Col>
                 </Col>
               </Row>
@@ -2101,7 +2108,11 @@ export const CreateOrderView = () => {
                 </Col>
                 <Col span={12} />
                 <Col span={24}>
-                  <Table columns={columnsCargaVehiculo} dataSource={dataVehicles} />
+                  <Table
+                    columns={columnsCargaVehiculo}
+                    dataSource={dataVehicles}
+                    pagination={false}
+                  />
                 </Col>
               </Col>
             </Row>
@@ -2664,7 +2675,7 @@ export const CreateOrderView = () => {
               >
                 <Flex gap="middle" align="flex-end">
                   <Button
-                    disabled={isButtonDisabled}
+                    disabled={!isButtonSubmitEnabled}
                     className="active"
                     style={{ fontWeight: "bold" }}
                     onClick={() => {

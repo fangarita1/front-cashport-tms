@@ -1,10 +1,23 @@
-import { CaretDoubleRight, ChartLineUp, Check, FileArrowDown, Files, MapTrifold, Money, NewspaperClipping, NotePencil, PencilLine, User, X } from 'phosphor-react';
-import styles from './drawerBody.module.scss';
-import { Button, Typography } from 'antd';
-import { FC, useState } from 'react';
-import { INovelty, INoveltyEvidenceBody } from '@/types/novelty/INovelty';
-import { formatMoney } from '@/utils/utils';
-import { FileDownloadModal } from '@/components/molecules/modals/FileDownloadModal/FileDownloadModal';
+import {
+  CaretDoubleRight,
+  ChartLineUp,
+  Check,
+  FileArrowDown,
+  Files,
+  MapTrifold,
+  Money,
+  NewspaperClipping,
+  NotePencil,
+  PencilLine,
+  User,
+  X
+} from "phosphor-react";
+import styles from "./drawerBody.module.scss";
+import { Button, Typography } from "antd";
+import { FC, useState } from "react";
+import { INovelty, INoveltyEvidenceBody } from "@/types/novelty/INovelty";
+import { formatMoney } from "@/utils/utils";
+import { FileDownloadModal } from "@/components/molecules/modals/FileDownloadModal/FileDownloadModal";
 
 const Text = Typography;
 
@@ -16,14 +29,19 @@ interface IDrawerBodyProps {
   handleEdit: () => void;
 }
 
-export const DrawerBody: FC<IDrawerBodyProps> = ({ onClose, novelty, approbeOrReject, handleEdit }) => {
+export const DrawerBody: FC<IDrawerBodyProps> = ({
+  onClose,
+  novelty,
+  approbeOrReject,
+  handleEdit
+}) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [evidence, setEvidence] = useState<INoveltyEvidenceBody | null>(null);
 
   const handleOpenModal = (evidence: INoveltyEvidenceBody) => {
     setEvidence(evidence);
     setIsModalOpen(true);
-  }
+  };
 
   return (
     <div className={styles.mainDrawerBody}>
@@ -37,28 +55,29 @@ export const DrawerBody: FC<IDrawerBodyProps> = ({ onClose, novelty, approbeOrRe
         </div>
         <div className={styles.btnContainer}>
           <div className={styles.mapBtn}>
-            <MapTrifold color='#666666' size={24} />
+            <MapTrifold color="#666666" size={24} />
             <Text className={styles.mapLabel}>Recorrido</Text>
           </div>
           <Button
             onClick={() => {
               if (novelty) {
-                approbeOrReject(novelty.id, false)
+                approbeOrReject(novelty.id, false);
               }
-            }}>
-            <X color='#141414' size={12} />
+            }}
+          >
+            <X color="#141414" size={12} />
             <Text className={styles.approbeLabel}>Rechazar</Text>
           </Button>
           <Button
             onClick={() => {
               if (novelty) {
-                approbeOrReject(novelty.id, true)
+                approbeOrReject(novelty.id, true);
               }
             }}
-            type='text'
+            type="text"
             className={styles.approbeBtn}
           >
-            <Check color='#141414' size={12} />
+            <Check color="#141414" size={12} />
             <Text className={styles.approbeLabel}>Aprobar</Text>
           </Button>
         </div>
@@ -67,27 +86,31 @@ export const DrawerBody: FC<IDrawerBodyProps> = ({ onClose, novelty, approbeOrRe
       <div className={styles.body}>
         <div className={styles.leftSection}>
           <div className={styles.bodyTitleContainer}>
-            <User color='#666666' size={20} />
+            <User color="#666666" size={20} />
             <Text className={styles.bodyTitle}>Creador</Text>
           </div>
           <div className={styles.bodyTitleContainer}>
-            <NewspaperClipping color='#666666' size={20} />
+            <NewspaperClipping color="#666666" size={20} />
             <Text className={styles.bodyTitle}>Tipo de novedad</Text>
           </div>
           <div className={styles.bodyTitleContainer}>
-            <ChartLineUp color='#666666' size={20} />
+            <ChartLineUp color="#666666" size={20} />
             <Text className={styles.bodyTitle}>Cantidad</Text>
           </div>
           <div className={styles.bodyTitleContainer}>
-            <Money color='#666666' size={20} />
-            <Text className={styles.bodyTitle}>Valor</Text>
+            <Money color="#666666" size={20} />
+            <Text className={styles.bodyTitle}>Valor unitario</Text>
           </div>
           <div className={styles.bodyTitleContainer}>
-            <NotePencil color='#666666' size={20} />
+            <Money color="#666666" size={20} />
+            <Text className={styles.bodyTitle}>Valor sobrecosto</Text>
+          </div>
+          <div className={styles.bodyTitleContainer}>
+            <NotePencil color="#666666" size={20} />
             <Text className={styles.bodyTitle}>Observaciones</Text>
           </div>
           <div className={`${styles.bodyTitleContainer} ${styles.evidence}`}>
-            <Files color='#666666' size={20} />
+            <Files color="#666666" size={20} />
             <Text className={styles.bodyTitle}>Evidencia</Text>
           </div>
         </div>
@@ -95,31 +118,42 @@ export const DrawerBody: FC<IDrawerBodyProps> = ({ onClose, novelty, approbeOrRe
           <div className={styles.editContainer}>
             <Text className={styles.text}>{novelty?.created_by}</Text>
             <div onClick={() => handleEdit()} className={styles.editBtn}>
-              <PencilLine color='#666666' size={20} />
+              <PencilLine color="#666666" size={20} />
             </div>
           </div>
           <Text className={styles.text}>{novelty?.novelty_type}</Text>
-          <Text className={styles.text}>{novelty?.quantity}h</Text>
-          <Text className={styles.text}>{formatMoney(novelty?.value)}</Text>
+          <Text className={styles.text}>{novelty?.quantity}</Text>
+          <Text className={styles.text}>{formatMoney(novelty?.unit_value) || "$0"}</Text>
+          <Text className={styles.text}>{formatMoney(novelty?.value) || "$0"}</Text>
           <Text className={styles.text}>{novelty?.observation}</Text>
           <div className={styles.evidenceContainer}>
             {novelty?.evidences.map((evidence) => {
-              const imageExtensions = ['jpg', 'jpeg', 'png'];
-              const extension = evidence.url.split('.').pop()?.toLowerCase();
+              const imageExtensions = ["jpg", "jpeg", "png"];
+              const extension = evidence.url.split(".").pop()?.toLowerCase();
               if (extension && imageExtensions.includes(extension)) {
                 return (
-                  <div onClick={() => handleOpenModal(evidence)} key={evidence.id} className={styles.evidence}>
+                  <div
+                    onClick={() => handleOpenModal(evidence)}
+                    key={evidence.id}
+                    className={styles.evidence}
+                  >
                     <Text className={styles.evidenceTitle}>{evidence.name}</Text>
-                    <FileArrowDown color='#141414' size={20} />
+                    <FileArrowDown color="#141414" size={20} />
                   </div>
-                )
+                );
               }
               return (
-                <a className={styles.evidence} download={evidence.url} href={evidence.url} target="_blank">
+                <a
+                  key={`evidence-${evidence.id}`}
+                  className={styles.evidence}
+                  download={evidence.url}
+                  href={evidence.url}
+                  target="_blank"
+                >
                   <Text className={styles.evidenceTitle}>{evidence.name}</Text>
-                  <FileArrowDown color='#141414' size={20} />
+                  <FileArrowDown color="#141414" size={20} />
                 </a>
-              )
+              );
             })}
           </div>
         </div>
@@ -132,4 +166,4 @@ export const DrawerBody: FC<IDrawerBodyProps> = ({ onClose, novelty, approbeOrRe
       />
     </div>
   );
-}
+};

@@ -5,6 +5,7 @@ export interface ITripJourney {
   id_journey: number;
   plate_number: string | null;
   provider: string;
+  id_provider: number;
   description: string;
   fare: number;
   surcharge: number;
@@ -13,6 +14,7 @@ export interface ITripJourney {
   trip_status_id: string;
   trip_status_color: string;
   novelties: INovelty[];
+  id_vehicle_type: number;
   vehicle_type?: string;
 }
 

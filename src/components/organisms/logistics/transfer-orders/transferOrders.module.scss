@@ -1,24 +1,25 @@
 .mainTransferOrders {
   display: flex;
   height: 100%;
+  
 
   .content {
     display: flex;
     width: 100%;
     flex-direction: column;
-    padding: 2rem;
-    padding-left: 2.5rem;
+    padding: 1rem;
+    padding-left: 2rem;
+    background-color: #f7f7f7;
 
     .card {
       display: flex;
       flex-direction: column;
-      padding: 1.5rem;
-      margin-top: 1.5rem;
-      row-gap: 2rem;
+      padding: 2rem;
+     // row-gap: 1rem;
+      margin-top: 1rem;
       background-color: #FFFFFF;
       border-radius: 15px;
       border: 1px solid #DDD;
-      box-shadow: -6px 6px 32px 0px rgba(0, 0, 0, 0.2);
 
       .filterContainer {
         display: flex;

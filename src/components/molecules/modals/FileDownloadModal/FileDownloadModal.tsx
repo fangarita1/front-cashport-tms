@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal } from "antd";
 import "./fileDownloadModal.scss";
+import Image from "next/image";
 
 interface InvoiceDownloadModalProps {
   isModalOpen: boolean;
@@ -20,23 +21,26 @@ export const FileDownloadModal: React.FC<InvoiceDownloadModalProps> = ({
       open={isModalOpen}
       footer={null}
       onCancel={() => onCloseModal(false)}
+      centered
     >
       <div className="img">
-        <div className="bodyImg">
-          <img src={url} alt="Invoice" />
+        <div className="imgContainer">
+          <Image
+            src={url}
+            alt="Invoice"
+            width={800} // required
+            height={800} // required
+            layout="intrinsic" // Se ajusta a las dimensiones
+            style={{ objectFit: "contain" }}
+            priority
+          />
         </div>
       </div>
       <div className="footer">
         <a className="buttonDownload" download={url} href={url} target="_blank">
           Descargar
         </a>
-        <button
-          type="button"
-          className="buttonCheck"
-          onClick={() => {
-            console.log("Entendido");
-          }}
-        >
+        <button type="button" className="buttonCheck" onClick={() => onCloseModal(false)}>
           Entendido
         </button>
       </div>

@@ -30,6 +30,10 @@ import styles from "./DetailsOrderView.module.scss";
 import { useMapbox } from "@/utils/logistics/useMapBox";
 import Persons from "../../acept_carrier/detail/components/Persons/Persons";
 import { DataCarga } from "@/types/logistics/carrier/carrier";
+import Link from "next/link";
+import { CaretLeft } from "phosphor-react";
+import { BackButton } from "./components/BackButton/BackButton";
+import { TabEnum } from "../../transfer-orders/TransferOrders";
 
 interface Props {
   idOrder: string;
@@ -70,7 +74,8 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
 
   useEffect(() => {
     loadTransferOrder();
-  });
+  }, []);
+
   function calculateTotalVolumeAndWeight(to: ITransferOrder) {
     let totalVolume = 0;
     let totalWeight = 0;
@@ -93,7 +98,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
     try {
       setLoading(true);
       const result = await getTransferOrderById(idOrder);
-      if (result.data.data.length > 0) {
+      if (result?.data?.data?.length > 0) {
         const to: ITransferOrder = result.data.data[0];
         setTransferOrder(to);
         setTripType(to.service_type_desc);
@@ -126,7 +131,17 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
         <Flex className={styles.wrapper} gap={"1.5rem"}>
           <Flex>
             <Col span={12} style={{ paddingRight: "0.625rem" }}>
-              <Flex className={styles.sectionContainer} style={{ width: "100%", height: "100%" }}>
+              <Flex
+                vertical
+                className={styles.sectionContainer}
+                style={{ width: "100%", height: "100%" }}
+              >
+                <Flex style={{ marginLeft: "1rem", marginTop: "1rem" }}>
+                  <BackButton
+                    title={`Detalle de TO ${transferOrder?.id ?? ""}`}
+                    href={`/logistics/transfer-orders?tab=${TabEnum.REQUESTS}`}
+                  />
+                </Flex>
                 <RouteMap title="Ruta" mapContainerRef={mapContainerRef} />
               </Flex>
             </Col>

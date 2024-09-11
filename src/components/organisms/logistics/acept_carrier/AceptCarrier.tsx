@@ -35,7 +35,7 @@ export default function AceptCarrier() {
 
   return (
     <div className={styles.wrapper}>
-      <Flex className={styles.filters} gap={18}>
+      <Flex className={styles.filters} gap={8} style={{ marginBottom: "0.5rem" }}>
         <UiSearchInput
           placeholder="Buscar"
           onChange={(event) => {
@@ -46,9 +46,7 @@ export default function AceptCarrier() {
         />
         <FilterProjects setSelecetedProjects={setSelectFilters} height="48" />
       </Flex>
-      <Flex vertical>
-        <AceptCarrierView carriers={carriers} loading={loading} />
-      </Flex>
+      <AceptCarrierView carriers={carriers} loading={loading} />
     </div>
   );
 }
