@@ -8,7 +8,10 @@ import { MainDescription } from "./main-description/MainDescription";
 import { Step } from "./step/Step";
 import { useEffect, useState } from "react";
 import { Novelty } from "./novelty/Novelty";
-import { getTransferRequestDetail, updateTransferRequestStatus } from "@/services/logistics/transfer-request";
+import {
+  getTransferRequestDetail,
+  updateTransferRequestStatus
+} from "@/services/logistics/transfer-request";
 import { useParams, useRouter } from "next/navigation";
 import { ITransferRequestDetail } from "@/types/transferRequest/ITransferRequest";
 import { DrawerBody } from "./drawer-body/DrawerBody";
@@ -30,7 +33,7 @@ import { BillingByCarrier } from "@/types/logistics/billing/billing";
 import ModalBillingMT from "@/components/molecules/modals/ModalBillingMT/ModalBillingMT";
 import { UploadFile } from "antd/lib";
 import ModalBillingAction from "@/components/molecules/modals/ModalBillingAction/ModalBillingAction";
-import { STORAGE_TOKEN } from '@/utils/constants/globalConstants';
+import { STATUS, STORAGE_TOKEN } from "@/utils/constants/globalConstants";
 
 const Text = Typography;
 
@@ -106,7 +109,11 @@ export const TransferOrderDetails = () => {
     }
     return true;
   }
-  const canFinalizeTrip = transferJournies ? canFinalizeJourney(transferJournies) : false;
+
+  const canFinalizeTrip = transferJournies
+    ? canFinalizeJourney(transferJournies) && transferRequest?.status_id == STATUS.BNG.POR_LEGALIZAR
+    : false;
+
   const handleBillingTableViewDetails = (id: number) => {
     setIsModalBillingVisible(true);
     setBillingId(id);
@@ -180,9 +187,9 @@ export const TransferOrderDetails = () => {
 
   const handleCreateNovelty = async () => {
     const token = localStorage.getItem(STORAGE_TOKEN);
-    const payload = token!.split('.')[1];
+    const payload = token!.split(".")[1];
     const decodedPayload = JSON.parse(atob(payload));
-    
+
     const body = {
       observation: form.observation,
       novelty_type_id: form.noeltyTypeId!,
@@ -242,12 +249,12 @@ export const TransferOrderDetails = () => {
 
   const handleChangeStatus = async (statusId: string) => {
     if (transferRequest) {
-      const updateStatus = await updateTransferRequestStatus(transferRequest?.id, statusId)
+      const updateStatus = await updateTransferRequestStatus(transferRequest?.id, statusId);
       if (updateStatus) {
         findDetails();
       }
     }
-  }
+  };
 
   const handleCloseDrawer = () => {
     setOpenDrawer(false);
@@ -311,7 +318,10 @@ export const TransferOrderDetails = () => {
               </Button>
             </div>
           </div>
-          <MainDescription handleChangeStatus={handleChangeStatus} transferRequest={transferRequest} />
+          <MainDescription
+            handleChangeStatus={handleChangeStatus}
+            transferRequest={transferRequest}
+          />
           <Step step={transferRequest?.step || 1} />
         </div>
         <div className={styles.card}>
@@ -376,7 +386,7 @@ export const TransferOrderDetails = () => {
         carriersData={billingList}
         messageApi={messageApi}
         canFinalizeTrip={canFinalizeTrip}
-        statusTR={transferRequest?.status}
+        statusTrId={transferRequest?.status_id}
       />
       <ModalBillingMT
         isOpen={isModalMTVisible}
