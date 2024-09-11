@@ -40,7 +40,7 @@ const DashboardSellsVsPayments: FC<DashboardSellsVsPaymentsProps> = ({ className
           <p>{label}</p>
           {payload.map((item: any) => (
             <p key={item.dataKey} style={{ color: item.color }}>
-              {item.name}: {formatMoney(item.value, true)}
+              {capitalize(item.name)}: {formatMoney(item.value, true)}
             </p>
           ))}
         </div>
