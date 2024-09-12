@@ -189,6 +189,15 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                 }
                               >
                                 {getEventTitle(item.event_type_name)}
+                                {"  "}
+                                {(item.event_type_name === "Generar nota de credito" ||
+                                  item.event_type_name === "Generar nota de debito") && (
+                                  <span
+                                    className={`${styles.tagLabel} ${item.is_legalized === 1 ? styles.tagLabelGreen : styles.tagLabelRed}`}
+                                  >
+                                    {item.is_legalized === 1 ? "Legalizada" : "Por legalizar"}
+                                  </span>
+                                )}
                               </h5>
                               <div className={styles.date}>
                                 {item.event_type_name === "Acuerdo de pago"

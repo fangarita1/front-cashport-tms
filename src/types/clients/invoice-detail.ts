@@ -35,5 +35,6 @@ export interface IData {
   previous_status: string | null;
   project_id: number;
   client_id: number;
+  is_legalized: number;
   type_incident: string | null;
 }
