@@ -10,16 +10,9 @@ import {
   DatePicker,
   TimePicker,
   Table,
-  TableProps,
-  AutoComplete,
   Input,
   InputNumber,
-  Button,
-  Popconfirm,
-  Divider,
-  Space,
-  theme,
-  Skeleton
+  Button
 } from "antd";
 import React, { useRef, useEffect, useState } from "react";
 import { runes } from "runes2";
@@ -48,16 +41,13 @@ import {
   CustomOptionType,
   IClient,
   ICompanyCode,
+  IDocumentCompleted,
   IFormTransferOrder,
   ILocation,
-  IMaterial,
   IOrderPsl,
   IOrderPslCostCenter,
   ITransferOrder,
   ITransferOrderContacts,
-  ITransferOrderOtherRequirements,
-  ITransferOrderPersons,
-  IVehicleType,
   PSLOptionType,
   TripType
 } from "@/types/logistics/schema";
@@ -80,10 +70,7 @@ import {
   Package,
   UserList,
   NewspaperClipping,
-  Trash,
-  CaretLeft,
-  CaretRight,
-  Phone
+  Trash
 } from "@phosphor-icons/react";
 
 import "../../../../../styles/_variables_logistics.css";
@@ -99,11 +86,7 @@ import { getOtherRequirements } from "@/services/logistics/other-requirements";
 import { getPsl } from "@/services/logistics/psl";
 import { auth } from "../../../../../../firebase";
 import useSWRInmutable from "swr/immutable";
-import { getDocumentsByEntityType } from "@/services/logistics/certificates";
-import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
-import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
-import { FileText, UserPlus } from "phosphor-react";
-import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
+import { Phone, UserPlus } from "phosphor-react";
 import { RangePickerProps } from "antd/es/date-picker";
 import ModalAddContact from "@/components/molecules/modals/ModalAddContact/ModalAddContact";
 import { getCompanyCodes } from "@/services/logistics/company-codes";
@@ -112,10 +95,17 @@ import { getTravelDuration } from "@/utils/logistics/maps";
 import CustomTimeSelector from "@/components/molecules/logistics/HourPicker/HourPicker";
 import { formatNumber } from "@/utils/utils";
 import MaterialTableFooter from "./components/MaterialTableFooter/MaterialTableFooter";
-import AddRemoveButton from "../../acept_carrier/detail/components/VehicleAndDriverAsignation/components/AddRemoveButton/AddRemoveButton";
+import { getCarrierDocumentsByMaterialsAndLocations } from "@/services/logistics/documents_by_materials_locations";
+import { useMaterialManagement } from "./controllers/hooks/useMaterialManagment";
+import { useVehicleManagement } from "./controllers/hooks/useVehicleManagment";
+import { usePersonManagement } from "./controllers/hooks/usePersonManagment";
+import createColumnsSuggestedVehicles from "./controllers/vehicles/columns";
+import createColumnsMaterials from "./controllers/materials/columns";
+import createColumnsPersons from "./controllers/persons/columns";
+import { useRequirementManagement } from "./controllers/hooks/useRequirementManagment";
+import createOtherRequirementsColumns from "./controllers/otherRequirements/columns";
 
 const { Title, Text } = Typography;
-const { useToken } = theme;
 
 export const CreateOrderView = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -124,7 +114,7 @@ export const CreateOrderView = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   /* Tipo de viaje */
-  const [typeactive, setTypeActive] = useState("1");
+  const [typeactive, setTypeactive] = useState("1");
 
   /* Agendamiento */
   const origin = useRef<any>([]);
@@ -170,14 +160,9 @@ export const CreateOrderView = () => {
     }
   }, [origenIzaje, destinoIzaje]);
 
-  const { data: documentsType, isLoading: isLoadingDocuments } = useSWRInmutable(
-    "0",
-    getDocumentsByEntityType
-  );
-  const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
   const [isOpenModalContacts, setIsOpenModalContacts] = useState(false);
 
-  const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<IDocumentCompleted[]>([]);
   const [files, setFiles] = useState<FileObject[] | any[]>([]);
 
   /* MAPBOX */
@@ -189,20 +174,38 @@ export const CreateOrderView = () => {
   const [routeGeometry, setRouteGeometry] = useState<any>(null);
   const [routeInfo, setRouteInfo] = useState([]);
   const [distance, setDistance] = useState<any>(null);
-  const [timetravel, setTimeTravel] = useState<any>(null);
-  const [timetravelInSecs, setTimeTravelInSecs] = useState<number | null>(null);
+  const [timetravel, setTimetravel] = useState<any>(null);
+  const [timetravelInSecs, setTimetravelInSecs] = useState<number | null>(null);
 
   const [expand, setExpand] = useState(false);
-  const initialItemCount = 4;
-  // const directions = routeInfo.length > 0 ? routeInfo[0]['legs'][0]['steps'] : [];
-  // const displayedDirections = expand
-  //   ? directions
-  //   : directions.slice(0, initialItemCount);
 
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationOptions, setLocationOptions] = useState<any>([]);
   const [locationOrigin, setLocationOrigin] = useState<ILocation | null>(null);
   const [locationDestination, setLocationDestination] = useState<ILocation | null>(null);
+
+  const [optionsMaterial, setOptionsMaterial] = useState<CustomOptionType[]>([]);
+
+  const { dataCarga, addMaterial, handleDeleteMaterial, handleQuantityMaterial } =
+    useMaterialManagement();
+
+  const { dataVehicles, setDataVehicles, addVehicle, handleDeleteVehicle, handleQuantityVehicle } =
+    useVehicleManagement();
+
+  const { dataPersons, setDataPersons, addPerson, handleDeletePerson } = usePersonManagement();
+
+  const { dataRequirements, addRequirement, handleDeleteRequirement, handleQuantityRequirement } =
+    useRequirementManagement();
+
+  const shouldFetch =
+    typeactive === "3"
+      ? locationOrigin && locationDestination
+      : locationOrigin && locationDestination && Array.isArray(dataCarga) && dataCarga.length > 0;
+
+  const { data: documentsType, isLoading: isLoadingDocuments } = useSWRInmutable(
+    shouldFetch ? ["carrierDocuments", locationOrigin, locationDestination, dataCarga] : null,
+    () => getCarrierDocumentsByMaterialsAndLocations(locationOrigin, locationDestination, dataCarga)
+  );
 
   const handleToggleExpand = () => {
     setExpand(!expand);
@@ -212,8 +215,6 @@ export const CreateOrderView = () => {
     accessToken: mapsAccessToken
   });
 
-  //console.log("routeInfo==>", routeInfo);
-
   useEffect(() => {
     loadLocations();
   }, []);
@@ -222,8 +223,6 @@ export const CreateOrderView = () => {
     if (locations.length > 0) return;
     const result = await getAllLocations();
     if (result?.data?.data?.length > 0) {
-      //console.log(result.data.data);
-
       const listlocations: any[] | ((prevState: ILocation[]) => ILocation[]) = [];
       const listlocationoptions: { label: any; value: any }[] = [];
 
@@ -237,29 +236,44 @@ export const CreateOrderView = () => {
     }
   };
 
-  useEffect(() => {
+  const setDefaultDocuments = () => {
     if (Array.isArray(documentsType)) {
-      const fileSelected = documentsType
-        ?.filter((f) => selectedFiles?.find((f2) => f2.id === f.id))
-        ?.map((f) => ({
-          ...f,
-          file: files.find((f2) => f2.aditionalData === f.id)?.file,
-          expirationDate: undefined
-        }));
+      const fileSelected = documentsType?.map((f) => ({
+        ...f,
+        file: undefined,
+        expirationDate: undefined
+      }));
       if (fileSelected?.length) {
         setSelectedFiles([...fileSelected]);
       } else {
         setSelectedFiles([]);
       }
     }
-  }, [files, documentsType]);
+  };
+
+  useEffect(() => {
+    setDefaultDocuments();
+  }, [documentsType]);
+
+  const setFilesInSelectedFiles = () => {
+    setSelectedFiles((prevFiles) => {
+      return prevFiles.map((prevFile) => ({
+        ...prevFile,
+        file: files.find((f2) => f2.aditionalData === prevFile.id_document_type)?.file,
+        expirationDate: undefined,
+        optional: false
+      }));
+    });
+  };
+
+  useEffect(() => {
+    setFilesInSelectedFiles();
+  }, [files]);
 
   // Cambia origen
   const onChangeOrigin = (value: any) => {
-    //console.log('origen:'+value);
-    locations.forEach(async (item, index) => {
+    locations.forEach(async (item) => {
       if (item.id == value) {
-        //console.log(item);
         setLocationOrigin(item);
         origin.current = [item.longitude, item.latitude];
         setOriginValid(true);
@@ -275,10 +289,8 @@ export const CreateOrderView = () => {
 
   // Cambia destino
   const onChangeDestino = async (value: any) => {
-    console.log("destino:" + value);
-    locations.forEach(async (item, index) => {
+    locations.forEach(async (item) => {
       if (item.id == value) {
-        //console.log(item);
         setLocationDestination(item);
         destination.current = [item.longitude, item.latitude];
         setdestinationValid(true);
@@ -372,9 +384,6 @@ export const CreateOrderView = () => {
     if (origin.current.length == 0 || destination.current.length == 0) return;
 
     try {
-      //console.log(origin);
-      //console.log(destination);
-
       const response = await axios.get(
         `https://api.mapbox.com/directions/v5/mapbox/driving/${origin.current[0]},${origin.current[1]};${destination.current[0]},${destination.current[1]}?steps=true&geometries=geojson&access_token=${mapsAccessToken}`
       );
@@ -455,8 +464,8 @@ export const CreateOrderView = () => {
 
   const calculateDuration = (duration: number) => {
     const hrs = getTravelDuration(duration);
-    setTimeTravel(hrs + " Hrs");
-    setTimeTravelInSecs(duration);
+    setTimetravel(hrs + " Hrs");
+    setTimetravelInSecs(duration);
   };
 
   const resetFormValues = () => {
@@ -465,8 +474,8 @@ export const CreateOrderView = () => {
     setRouteGeometry(null);
     setRouteInfo([]);
     setDistance(null);
-    setTimeTravel(null);
-    setTimeTravelInSecs(null);
+    setTimetravel(null);
+    setTimetravelInSecs(null);
     setLocationOrigin(null);
     setLocationDestination(null);
     setHorasOrigenIzaje(0);
@@ -488,159 +497,23 @@ export const CreateOrderView = () => {
 
   /* Tipo de viaje */
   const handleTypeClick = (event: any) => {
-    setTypeActive(event.target.id);
+    setTypeactive(event.target.id);
   };
 
   /* Carga */
-  const columnsCarga: TableProps<IMaterial>["columns"] = [
-    {
-      title: "Cantidad",
-      dataIndex: "quantity",
-      key: "quantity",
-      render: (_, record) =>
-        dataCarga.length >= 1 ? (
-          <Flex align="center">
-            <CaretLeft onClick={() => handleQuantityMaterial(record.key, "-")} />
-            &nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;
-            <CaretRight onClick={() => handleQuantityMaterial(record.key, "+")} />
-          </Flex>
-        ) : null
-    },
-    {
-      title: "SKU",
-      dataIndex: "sku",
-      key: "sku"
-    },
-    {
-      title: "Nombre",
-      dataIndex: "description",
-      key: "description"
-    },
-    {
-      title: "Volumen",
-      dataIndex: "m3_volume",
-      key: "m3_volume",
-      render: (_, record) => {
-        return record.m3_volume + " m3";
-      }
-    },
-    {
-      title: "Alto",
-      dataIndex: "mt_height",
-      key: "mt_height",
-      render: (_, record) => {
-        return record.mt_height + " m";
-      }
-    },
-    {
-      title: "Ancho",
-      dataIndex: "mt_width",
-      key: "mt_width",
-      render: (_, record) => {
-        return record.mt_width + " m";
-      }
-    },
-    {
-      title: "Largo",
-      dataIndex: "mt_length",
-      key: "mt_length",
-      render: (_, record) => {
-        return record.mt_length + " m";
-      }
-    },
-    {
-      title: "Peso",
-      dataIndex: "kg_weight",
-      key: "kg_weight",
-      render: (_, record) => {
-        return record.kg_weight + " kg";
-      }
-    },
-    {
-      title: "",
-      dataIndex: "alerts",
-      key: "alerts",
-      render: (_, record) =>
-        dataCarga.length >= 1 ? (
-          <Popconfirm
-            title="Esta seguro de eliminar?"
-            onConfirm={() => handleDeleteMaterial(record.key)}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: 32,
-                width: 32
-              }}
-            >
-              <Trash size={24} />
-            </div>
-          </Popconfirm>
-        ) : null
-    }
-  ];
+  const columnsCarga = createColumnsMaterials(
+    dataCarga,
+    handleQuantityMaterial,
+    handleDeleteMaterial
+  );
 
-  const columnsCargaPersonas: TableProps<ITransferOrderPersons>["columns"] = [
-    {
-      title: "Nombre",
-      dataIndex: "name",
-      key: "name"
-    },
-    {
-      title: "Teléfono",
-      dataIndex: "contact_number",
-      key: "contact_number"
-    },
-    {
-      title: "PSL",
-      dataIndex: "psl_desc",
-      key: "psl_desc"
-    },
-    {
-      title: "CC",
-      dataIndex: "cost_center_desc",
-      key: "cost_center_desc"
-    },
-    {
-      title: "",
-      dataIndex: "alerts",
-      key: "alerts",
-      render: (_, record) =>
-        dataPersons.length >= 1 ? (
-          <Popconfirm
-            title="Esta seguro de eliminar?"
-            onConfirm={() => handleDeletePerson(record.id)}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: 32,
-                width: 32,
-                cursor: "pointer"
-              }}
-            >
-              <Trash size={24} />
-            </div>
-          </Popconfirm>
-        ) : null
-    }
-  ];
-
-  const [optionsMaterial, setOptionsMaterial] = useState<CustomOptionType[]>([]);
-  const [dataCarga, setDataCarga] = useState<IMaterial[]>([]);
-
-  let cargaIdx = 0;
+  const columnsCargaPersonas = createColumnsPersons(dataPersons, handleDeletePerson);
 
   const loadMaterials = async () => {
     if (optionsMaterial !== undefined && optionsMaterial.length > 0) return;
 
     const res = await getAllMaterials();
     const result: any = [];
-    //console.log (res);
     if (res?.data?.data?.length > 0) {
       res.data.data.forEach((item) => {
         const strlabel = (
@@ -659,7 +532,6 @@ export const CreateOrderView = () => {
             </Col>
           </div>
         );
-
         result.push({ label: strlabel, value: item.description });
       });
     }
@@ -675,110 +547,14 @@ export const CreateOrderView = () => {
     (option: any) => !dataCarga.some((material) => material.description === option.value)
   );
 
-  const addMaterial = async (value: any) => {
-    cargaIdx = cargaIdx + 1;
-    console.log(cargaIdx);
-
-    value.quantity = 1;
-    value.key = cargaIdx;
-
-    const newvalue: IMaterial = value;
-    //busca si ya se selecciono previamente
-    let newData: IMaterial[] = [];
-    setDataCarga((prevdata) => {
-      newData = [...prevdata];
-      return prevdata;
-    });
-    let found = false;
-    newData.forEach((item) => {
-      if (item.id === newvalue.id) {
-        item.quantity = item.quantity + 1;
-        found = true;
-      }
-    });
-
-    if (found) {
-      setDataCarga(newData);
-    } else {
-      setDataCarga((dataCarga) => [...dataCarga, newvalue]);
-    }
-  };
-
-  const handleDeleteMaterial = (key: React.Key) => {
-    console.log(key);
-    cargaIdx = cargaIdx - 1;
-    const newData = dataCarga.filter((item) => item.key !== key);
-    setDataCarga(newData);
-  };
-
-  const handleQuantityMaterial = (key: React.Key, sign: string) => {
-    console.log(key);
-    const newData = [...dataCarga];
-    newData.forEach((item) => {
-      if (item.key === key) {
-        if (sign == "+") {
-          item.quantity = item.quantity + 1;
-        }
-        if (sign == "-") {
-          if (item.quantity === 1) return item.quantity;
-          item.quantity = item.quantity - 1;
-        }
-      }
-    });
-
-    setDataCarga(newData);
-  };
-
-  /* Vehiculos sugeridos */
-  const columnsCargaVehiculo: TableProps<IVehicleType>["columns"] = [
-    {
-      title: "Vehículo",
-      dataIndex: "description",
-      key: "description"
-    },
-    {
-      title: "Cantidad",
-      dataIndex: "quantity",
-      key: "quantity",
-      render: (_, record) =>
-        dataVehicles.length >= 1 ? (
-          <Flex align="center">
-            <CaretLeft onClick={() => handleQuantityVehicle(record.key, "-")} />
-            &nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;
-            <CaretRight onClick={() => handleQuantityVehicle(record.key, "+")} />
-          </Flex>
-        ) : null
-    },
-    {
-      title: "",
-      dataIndex: "alerts",
-      key: "alerts",
-      render: (_, record) =>
-        dataVehicles.length >= 1 ? (
-          <Popconfirm
-            title="Esta seguro de eliminar?"
-            onConfirm={() => handleDeleteVehicle(record.key)}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: 32,
-                width: 32
-              }}
-            >
-              <Trash size={24} />
-            </div>
-          </Popconfirm>
-        ) : null
-    }
-  ];
+  // /* Vehiculos sugeridos */
+  const columnsCargaVehiculo = createColumnsSuggestedVehicles(
+    dataVehicles,
+    handleQuantityVehicle,
+    handleDeleteVehicle
+  );
 
   const [optionsVehicles, setOptionsVehicles] = useState<CustomOptionType[]>([]);
-  const [dataVehicles, setDataVehicles] = useState<IVehicleType[]>([]);
-
-  let vehiclesIdx = 0;
 
   const loadSuggestedVehicles = async (typesActive: string[]) => {
     const promises = typesActive.map((type) => getSuggestedVehicles(type));
@@ -833,42 +609,6 @@ export const CreateOrderView = () => {
   const filteredVehiclesOptions = optionsVehicles.filter(
     (option: any) => !dataVehicles.some((vehicle) => vehicle.description === option.value)
   );
-
-  const addVehicle = async (value: any) => {
-    vehiclesIdx = vehiclesIdx + 1;
-
-    value.quantity = 1;
-    value.key = vehiclesIdx;
-
-    const newvalue: IVehicleType = value;
-    console.log(newvalue);
-    await setDataVehicles((dataVehicles) => [...dataVehicles, newvalue]);
-  };
-
-  const handleDeleteVehicle = (key: React.Key) => {
-    console.log(key);
-    vehiclesIdx = vehiclesIdx - 1;
-    const newData = dataVehicles.filter((item) => item.key !== key);
-    setDataVehicles(newData);
-  };
-
-  const handleQuantityVehicle = (key: React.Key, sign: string) => {
-    console.log(key);
-    const newData = [...dataVehicles];
-    newData.forEach((item) => {
-      if (item.key === key) {
-        if (sign == "+") {
-          item.quantity = item.quantity + 1;
-        }
-        if (sign == "-") {
-          if (item.quantity === 1) return item.quantity;
-          item.quantity = item.quantity - 1;
-        }
-      }
-    });
-
-    setDataVehicles(newData);
-  };
 
   /* Responsables */
   const dataPslDefault = [
@@ -957,7 +697,6 @@ export const CreateOrderView = () => {
         percent: 0
       };
     };
-    console.log(dataPsl);
     setDataPsl((prevDataPsl) =>
       prevDataPsl.map((item) =>
         item.key === key
@@ -1102,85 +841,21 @@ export const CreateOrderView = () => {
     });
   };
 
-  const handleChangeExpirationDate = (index: number, value: any) => {
-    setSelectedFiles((prevState: any[]) => {
-      const updatedFiles = [...prevState];
-      updatedFiles[index].expirationDate = value;
-      return updatedFiles;
-    });
-  };
-
-  const handleChange = (value: string[]) => {
-    const sf = documentsType?.filter((file) => value.includes(file.id.toString()));
-    if (sf) {
-      setSelectedFiles((prevState) => {
-        return sf.map((file) => ({
-          ...file,
-          file: prevState.find((f) => f.id === file.id)?.file,
-          expirationDate: prevState.find((f) => f.id === file.id)?.expirationDate
-        }));
-      });
-    }
-  };
-
   /*requerimientos adicionales*/
 
-  const columnsRequerimientosAdicionales: TableProps<ITransferOrderOtherRequirements>["columns"] = [
-    {
-      title: "Nombre",
-      dataIndex: "description",
-      key: "description"
-    },
-    {
-      title: "Cantidad",
-      dataIndex: "quantity",
-      key: "quantity",
-      render: (_, record) =>
-        dataRequirements.length >= 1 ? (
-          <Flex align="center">
-            <CaretLeft onClick={() => handleQuantityRequirement(record.key, "-")} />
-            &nbsp;&nbsp;{record.quantity}&nbsp;&nbsp;
-            <CaretRight onClick={() => handleQuantityRequirement(record.key, "+")} />
-          </Flex>
-        ) : null
-    },
-    {
-      title: "",
-      dataIndex: "alerts",
-      key: "alerts",
-      render: (_, record) =>
-        dataRequirements.length >= 1 ? (
-          <Popconfirm
-            title="Esta seguro de eliminar?"
-            onConfirm={() => handleDeleteRequirement(record.key)}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: 32,
-                width: 32
-              }}
-            >
-              <Trash size={24} />
-            </div>
-          </Popconfirm>
-        ) : null
-    }
-  ];
+  const columnsRequerimientosAdicionales = createOtherRequirementsColumns(
+    dataRequirements,
+    handleQuantityRequirement,
+    handleDeleteRequirement
+  );
 
   const [optionsRequirements, setOptionsRequirements] = useState<CustomOptionType[]>([]);
-  const [dataRequirements, setDataRequirements] = useState<ITransferOrderOtherRequirements[]>([]);
-
-  let requirementsIdx = 0;
 
   const loadRequirements = async () => {
     if (optionsRequirements !== undefined && optionsRequirements.length > 0) return;
 
     const res = await getOtherRequirements();
     const result: any = [];
-    //console.log (res);
     if (res?.data?.data?.length > 0) {
       res.data.data.forEach((item) => {
         const strlabel = (
@@ -1191,7 +866,7 @@ export const CreateOrderView = () => {
               </Text>
             </Col>
             <Col span={4} style={{ display: "flex", justifyContent: "flex-end" }}>
-              <button className="btnagregar active" onClick={() => addRequeriment(item)}>
+              <button className="btnagregar active" onClick={() => addRequirement(item)}>
                 Agregar
               </button>
             </Col>
@@ -1213,42 +888,6 @@ export const CreateOrderView = () => {
         (option) => !dataRequirements.some((req) => req.description === option.value)
       )
     : [];
-
-  const addRequeriment = async (value: any) => {
-    requirementsIdx = requirementsIdx + 1;
-
-    value.quantity = 1;
-    value.key = requirementsIdx;
-
-    const newvalue: ITransferOrderOtherRequirements = value;
-    //console.log(newvalue);
-    await setDataRequirements((dataRequirements) => [...dataRequirements, newvalue]);
-  };
-
-  const handleDeleteRequirement = (key: React.Key) => {
-    console.log(key);
-    requirementsIdx = requirementsIdx - 1;
-    const newData = dataRequirements.filter((item) => item.key !== key);
-    setDataRequirements(newData);
-  };
-
-  const handleQuantityRequirement = (key: React.Key, sign: string) => {
-    console.log(key);
-    const newData = [...dataRequirements];
-    newData.forEach((item) => {
-      if (item.key === key) {
-        if (sign == "+") {
-          item.quantity = item.quantity + 1;
-        }
-        if (sign == "-") {
-          if (item.quantity === 1) return item.quantity;
-          else item.quantity = item.quantity - 1;
-        }
-      }
-    });
-
-    setDataRequirements(newData);
-  };
 
   /* Datos de contacto */
   const [dataContacts, setDataContacts] = useState<ITransferOrderContacts[]>([]);
@@ -1292,7 +931,6 @@ export const CreateOrderView = () => {
   }, []);
 
   const updateContacts = (key: React.Key, field: "name" | "contact_number", ndata: string) => {
-    //console.log(key)
     const newData = [...dataContacts];
     newData.forEach((item) => {
       if (item.key === key) {
@@ -1343,7 +981,6 @@ export const CreateOrderView = () => {
   }, []);
 
   /* Datos de personas */
-  const [dataPersons, setDataPersons] = useState<ITransferOrderPersons[]>([]);
   const [optionsPersons, setOptionsPersons] = useState<CustomOptionType[]>([]);
 
   const loadPersons = async () => {
@@ -1388,16 +1025,6 @@ export const CreateOrderView = () => {
   const filteredPersonsOptions = optionsPersons.filter(
     (option: any) => !dataPersons.some((person) => option?.value?.includes(String(person.id)))
   );
-
-  const addPerson = async (value: any) => {
-    const newvalue: ITransferOrderPersons = value;
-    setDataPersons((dataPersons) => [...dataPersons, newvalue]);
-  };
-
-  const handleDeletePerson = (id: number) => {
-    const newData = dataPersons.filter((item) => item.id !== id);
-    setDataPersons(newData);
-  };
 
   /* Form Event Handlers */
   const onCreateOrder = async () => {
@@ -1506,7 +1133,6 @@ export const CreateOrderView = () => {
       checkPercentages(dataPsl);
       //datos de contacto
       dataContacts.forEach((contact) => {
-        //console.log(contact)
         if ((contact.contact_number == "" || contact.name == "") && contact.contact_type == 1) {
           isformvalid = false;
           messageApi.error("Debe registrar información del contacto de origen");
@@ -1518,7 +1144,7 @@ export const CreateOrderView = () => {
       });
     }
 
-    if (isformvalid == false) {
+    if (!isformvalid) {
       return;
     }
 
@@ -1636,7 +1262,6 @@ export const CreateOrderView = () => {
 
     //documentos
     datato.transfer_order_documents = [];
-
     // archivos
     const data: IFormTransferOrder = {
       body: datato,
@@ -1647,10 +1272,7 @@ export const CreateOrderView = () => {
 
     try {
       setIsLoading(true);
-      const response = await addTransferOrder(
-        datato,
-        data?.files || ([] as DocumentCompleteType[])
-      );
+      const response = await addTransferOrder(datato, data?.files || ([] as IDocumentCompleted[]));
       if (response.status === SUCCESS) {
         messageApi.open({
           type: "success",
@@ -1897,9 +1519,6 @@ export const CreateOrderView = () => {
                       disabled={true}
                       value={fechaFinal}
                       onChange={(value) => {
-                        //console.log('Selected Time: ', value);
-                        //console.log('Formatted Selected Time: ', dateString);
-                        //setFechaFinal(value);
                         setFechaFinal(value);
                         setFechaFinalValid(true);
                       }}
@@ -2044,6 +1663,7 @@ export const CreateOrderView = () => {
                       dataSource={dataCarga}
                       pagination={false}
                       footer={() => <MaterialTableFooter dataCarga={dataCarga} />}
+                      rowKey={"id"}
                     />
                   </Col>
                 </Col>
@@ -2077,7 +1697,7 @@ export const CreateOrderView = () => {
                     <Table
                       columns={columnsCargaPersonas}
                       dataSource={dataPersons}
-                      rowKey="id"
+                      rowKey={"id"}
                       pagination={false}
                     />
                   </Col>
@@ -2112,6 +1732,7 @@ export const CreateOrderView = () => {
                     columns={columnsCargaVehiculo}
                     dataSource={dataVehicles}
                     pagination={false}
+                    rowKey={"id"}
                   />
                 </Col>
               </Col>
@@ -2345,31 +1966,20 @@ export const CreateOrderView = () => {
             <Text className="locationLabels" style={{ display: "flex" }}>
               Documentos
             </Text>
-            <Row className="mainUploadDocuments">
+            <Row className="mainUploadDocuments" style={{ marginBottom: "1rem" }}>
               {selectedFiles.map((file) => (
-                <Col span={12} style={{ padding: "15px" }} key={`file-${file.id}`}>
+                <Col span={12} style={{ padding: "15px" }} key={`file-${file.id_document_type}`}>
                   <UploadDocumentButton
-                    key={file.id}
+                    key={file.id_document_type}
                     title={file.description}
                     isMandatory={!file.optional}
-                    aditionalData={file.id}
-                    setFiles={() => {}}
-                    files={file.file}
-                    disabled
-                  >
-                    {file?.link ? (
-                      <UploadDocumentChild
-                        linkFile={file.link}
-                        nameFile={file.link.split("-").pop() || ""}
-                        onDelete={() => {}}
-                        showTrash={false}
-                      />
-                    ) : undefined}
-                  </UploadDocumentButton>
+                    aditionalData={file.id_document_type}
+                    setFiles={setFiles}
+                  />
                 </Col>
               ))}
             </Row>
-            <Row>
+            {/* <Row>
               <Col span={24} className="text-right">
                 <Button
                   type="text"
@@ -2380,7 +1990,7 @@ export const CreateOrderView = () => {
                   <Text style={{ fontWeight: "bold" }}>Agregar otro documento</Text>
                 </Button>
               </Col>
-            </Row>
+            </Row> */}
             <Row style={{ marginBottom: "1rem" }}>
               <Col span={12}>
                 <Text className="locationLabels" style={{ display: "flex" }}>
@@ -2433,7 +2043,12 @@ export const CreateOrderView = () => {
             </Row>
             <Row style={{ marginBottom: "1rem" }}>
               <Col span={24}>
-                <Table columns={columnsRequerimientosAdicionales} dataSource={dataRequirements} />
+                <Table
+                  columns={columnsRequerimientosAdicionales}
+                  dataSource={dataRequirements}
+                  pagination={false}
+                  rowKey={"id"}
+                />
               </Col>
             </Row>
             <Row style={{ marginBottom: "1rem" }}>
@@ -2690,18 +2305,6 @@ export const CreateOrderView = () => {
           </Flex>
         </Flex>
       </main>
-      <ModalDocuments
-        isOpen={isOpenModalDocuments}
-        mockFiles={selectedFiles}
-        setFiles={setFiles}
-        documentsType={documentsType}
-        isLoadingDocuments={isLoadingDocuments}
-        onClose={() => setIsOpenModalDocuments(false)}
-        handleChange={handleChange}
-        handleChangeExpirationDate={handleChangeExpirationDate}
-        showExpiry={false}
-        allOptional={true}
-      />
       <ModalAddContact
         isOpen={isOpenModalContacts}
         onClose={() => setIsOpenModalContacts(false)}
