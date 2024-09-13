@@ -61,9 +61,17 @@ const columns = (showColumn: boolean, redirect?: string): TableColumnsType<DataT
     {
       title: "TR",
       dataIndex: "tr",
-      render: (text: string) => <Text className="row-text id">{text}</Text>,
+      render: (text: string) => (
+        <Link
+          className="row-text id"
+          href={`${redirect ?? "/logistics/transfer-orders/details"}/${text}`}
+        >
+          {text}
+        </Link>
+      ),
       sorter: (a, b) => Number(a.tr) - Number(b.tr),
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      sortDirections: ["descend", "ascend"]
     },
     {
       title: "Origen y destino",

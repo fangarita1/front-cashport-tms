@@ -2061,7 +2061,7 @@ export interface ITransferOrder {
 
 export interface IFormTransferOrder {
   body: ITransferOrder;
-  files?: DocumentCompleteType[];
+  files?: IDocumentCompleted[];
 }
 
 export interface ITransferOrderList {
@@ -2286,6 +2286,7 @@ export interface ITransferOrderPersons {
   psl_desc: string;
   id_cost_center: number;
   cost_center_desc: string;
+  quantity: number;
 }
 
 /**
@@ -3479,10 +3480,22 @@ export interface IUser {
   firebaseguid?: string;
   carrier: any;
   psl: any;
-  ACTIVE:string;
+  ACTIVE: string;
 }
 
 export interface IFormUser {
   general: IUser;
   logo?: FileObject[];
+}
+
+export interface IDocumentsAPI {
+  id_document_type: number;
+  description: string;
+  optional: boolean;
+}
+
+export interface IDocumentCompleted extends IDocumentsAPI {
+  link?: string;
+  file?: File;
+  expirationDate: any;
 }
