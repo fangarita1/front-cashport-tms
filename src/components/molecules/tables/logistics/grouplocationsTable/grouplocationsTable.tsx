@@ -97,11 +97,11 @@ export const GroupLocationsTable = () => {
               setSearch(event.target.value);
             }}
           />
-          <Button
+          {/* <Button
             className="options"
             href="/logistics/configuration/grouplocations"
             icon={<DotsThree size={"1.5rem"} />}
-          />
+          /> */}
         </Flex>
         <Flex justify="flex-end">
           <Button

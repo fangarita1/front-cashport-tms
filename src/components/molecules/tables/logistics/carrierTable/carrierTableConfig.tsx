@@ -123,11 +123,11 @@ export const CarrierTable = () => {
               }, 1000);
             }}
           />
-          <Button
+          {/* <Button
             className="options"
             href="/logistics/providers/provider"
             icon={<DotsThree size={"1.5rem"} />}
-          />
+          /> */}
           <Button
             type="primary"
             className="buttonNewProject"

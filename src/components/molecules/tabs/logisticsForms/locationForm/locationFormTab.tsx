@@ -564,7 +564,7 @@ export const LocationFormTab = ({
                       error={errors?.general?.location_type}
                       field={field}
                       loading={isLoadingLocationTypes}
-                      options={convertLocationTypesToSelectOptions((locationTypesData?.data.data as any) || [])}                                          
+                      options={convertLocationTypesToSelectOptions((locationTypesData?.data.data as any) || [])}      
                       />
                     )}                    
                   /> 
@@ -585,7 +585,8 @@ export const LocationFormTab = ({
                       field={field}
                       loading={isLoadingGroupLocation}
                       options={convertGroupLocationsToSelectOptions((groupLocationData?.data.data as any) || [])}
-                      allowClear={true}                
+                      allowClear={true}
+                      showSearch={true}
                       />
                     )}                    
                   /> 

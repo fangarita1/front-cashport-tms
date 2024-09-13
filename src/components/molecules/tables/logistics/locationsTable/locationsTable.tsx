@@ -111,11 +111,11 @@ export const LocationsTable = () => {
               setSearch(event.target.value);
             }}
           />
-          <Button
+          {/* <Button
             className="options"
             href="/logistics/providers/provider"
             icon={<DotsThree size={"1.5rem"} />}
-          />
+          /> */}
         </Flex>
         <Flex justify="flex-end">
           <Button

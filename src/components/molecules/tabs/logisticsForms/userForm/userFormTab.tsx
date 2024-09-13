@@ -304,8 +304,9 @@ export const UserFormTab = ({
                           placeholder="Selecciona Rol"
                           error={errors?.general?.rol_id}
                           field={field}
-                          loading={isLoadingRoles}
+                          loading={isLoadingRoles}                          
                           options={converRolestToSelectOptions((rolesType?.data.data as any) || [])}
+                          showSearch={true}
                         />
                       )}
                     />
@@ -329,6 +330,7 @@ export const UserFormTab = ({
                           loading={isLoadingCarriers}
                           options={converCarrierstToSelectOptions((carriersType?.data.data as any) || [])}
                           allowClear={true}
+                          showSearch={true}
                         />
                       )}
                     />
@@ -350,7 +352,8 @@ export const UserFormTab = ({
                           error={errors?.general?.psl_id}
                           field={field}
                           loading={isLoadingPsls}
-                          options={converPslstToSelectOptions((pslsType?.data.data as any) || [])}                          
+                          options={converPslstToSelectOptions((pslsType?.data.data as any) || [])}
+                          showSearch={true}
                         />
                       )}
                     />
@@ -372,6 +375,7 @@ export const UserFormTab = ({
                           error={errors?.general?.cost_center_id}
                           field={field}
                           options={costCenters}
+                          showSearch={true}
                         />
                       )}
                     />
