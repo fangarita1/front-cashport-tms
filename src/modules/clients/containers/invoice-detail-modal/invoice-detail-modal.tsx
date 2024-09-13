@@ -91,6 +91,8 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
         return "Radicación";
       case "Registrar novedad":
         return "Novedad";
+      case "Emision de factura":
+        return "Emisión de factura";
       default:
         return item;
     }
