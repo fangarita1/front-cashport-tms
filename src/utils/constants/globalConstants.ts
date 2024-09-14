@@ -37,6 +37,23 @@ export const STATUS = {
     PENDIENTE: "dadec8ad-3c5d-40f7-b5b2-42b0ad7cd4d7",
     ACEPTADA: "ab5034d3-dda6-4557-bf8c-e75ce6494097",
     RECHAZADA: "da258586-c04b-4603-bea5-f9bce49687e0"
+  },
+  TR: {
+    PROCESADO: 'a48b8b32-8699-4b6f-b56c-277238a656bc',
+    ESPERANDO_PROVEEDOR: 'a312eb37-9a20-4e46-a010-3ee8d5cb2d94',
+    SIN_INICIAR: 'd33e062f-51a5-457e-946e-a45cbbffbf95',
+    CARGANDO: '0f7cccf5-1764-44c6-bb2a-874f419bc8f1',
+    EN_CURSO: 'b9e5ce08-16a7-4880-88a5-ebca7737c55d',
+    DESCARGANDO: '780fa2f9-1b89-4d92-83dc-52de4c932056',
+    DETENIDO: '9f37afd7-1852-457d-964b-378fa6150471',
+    STAND_BY: '73ad61e3-395f-4ae4-8aef-9d24f3f917a9',
+    POR_LEGALIZAR: 'ce946d35-381e-4bf3-a54a-4d38fb1b5e92',
+    LEGALIZADO: '49e6c46e-5a57-4a38-8b13-955bbffb7279',
+  },
+  NOVELTY: {
+    PENDIENTE: '5bffe76c-2707-4088-bdff-1ae66701874b',
+    ACEPTADA: '81600787-0837-4d61-ae85-730642c52be0',
+    RECHAZADA: '2ff3d7bd-73c5-4d62-bce9-6fb163098f8f',
   }
 };
 
