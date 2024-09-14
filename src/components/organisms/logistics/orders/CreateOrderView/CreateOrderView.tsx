@@ -491,6 +491,10 @@ export const CreateOrderView = () => {
   };
 
   useEffect(() => {
+    if (fechaInicialFlexible !== null) setFechaFinalFlexible(fechaInicialFlexible);
+  }, [fechaInicialFlexible]);
+
+  useEffect(() => {
     resetFormValues();
     if (typeactive == "2") setOrigenIzaje(true);
   }, [typeactive]);
@@ -1559,6 +1563,7 @@ export const CreateOrderView = () => {
                     <Select
                       value={fechaFinalFlexible}
                       placeholder="Seleccione"
+                      disabled={true}
                       className={
                         fechaFinalFlexibleValid
                           ? "puntoOrigen dateInputForm"
