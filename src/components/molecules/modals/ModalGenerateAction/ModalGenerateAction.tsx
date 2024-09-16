@@ -9,7 +9,8 @@ import {
   LinkBreak,
   CaretRight,
   WarningDiamond,
-  HandTap
+  HandTap,
+  PaperPlaneTilt
 } from "@phosphor-icons/react";
 
 import "./modalgenerateaction.scss";
@@ -125,6 +126,13 @@ export const ModalGenerateAction = ({
           title="Concilación masiva"
           onClick={() => {
             router.push(`/conciliacion/${clientId}`);
+          }}
+        />
+        <ButtonGenerateAction
+          icon={<PaperPlaneTilt size={16} />}
+          title="Acta digital"
+          onClick={() => {
+            handleOpenModal(7);
           }}
         />
       </Flex>

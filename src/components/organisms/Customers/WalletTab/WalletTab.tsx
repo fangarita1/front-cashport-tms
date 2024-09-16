@@ -16,6 +16,7 @@ import PaymentAgreementModal from "@/modules/clients/components/wallet-tab-payme
 import { ModalActionDiscountCredit } from "@/components/molecules/modals/ModalActionDiscountCredit/ModalActionDiscountCredit";
 import RadicationInvoice from "@/components/molecules/modals/Radication/RadicationInvoice";
 import RegisterNews from "@/components/molecules/modals/RegisterNews/RegisterNews";
+import DigitalRecordModal from "@/components/molecules/modals/DigitalRecordModal/DigitalRecordModal";
 import { useModalDetail } from "@/context/ModalContext";
 import { useDebounce } from "@/hooks/useDeabouce";
 import {
@@ -246,6 +247,12 @@ export const WalletTab = () => {
         projectId={projectId}
         messageShow={messageShow}
         onCloseAllModals={closeAllModal}
+      />
+      {/* Aca el modal del acta digital */}
+      <DigitalRecordModal
+        isOpen={isSelectOpen.selected === 7}
+        onClose={onCloseModal}
+        messageShow={messageShow}
       />
     </>
   );
