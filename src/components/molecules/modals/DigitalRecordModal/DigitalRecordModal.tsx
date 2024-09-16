@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Flex, Modal } from "antd";
 import { MessageInstance } from "antd/es/message/interface";
 import { CaretLeft, Plus } from "@phosphor-icons/react";
@@ -13,6 +13,8 @@ import GeneralSearchSelect from "@/components/ui/general-search-select";
 import { IInvoice } from "@/types/invoices/IInvoices";
 
 import "./digitalRecordModal.scss";
+import { getDigitalRecordFormInfo } from "@/services/accountingAdjustment/accountingAdjustment";
+import { useAppStore } from "@/lib/store/store";
 
 interface DigitalRecordModalProps {
   isOpen: boolean;
@@ -28,11 +30,11 @@ interface infoObject {
   fileList: File[];
 }
 
-interface IFormDigitalRecordModal {
+export interface IFormDigitalRecordModal {
   forward_to: string[];
-  copy_to: string[];
+  copy_to?: string[];
   subject: string;
-  commentary: string;
+  comment: string;
   attachments: File[];
 }
 
@@ -43,6 +45,14 @@ const DigitalRecordModal = ({
   invoiceSelected,
   messageShow
 }: DigitalRecordModalProps) => {
+  const { ID: projectId } = useAppStore((state) => state.selectedProject);
+  const [recipients, setRecipients] = useState<
+    {
+      value: string;
+      label: string;
+    }[]
+  >([]);
+
   const {
     control,
     handleSubmit,
@@ -55,6 +65,19 @@ const DigitalRecordModal = ({
       attachments: []
     }
   });
+
+  useEffect(() => {
+    const fetchFormInfo = async () => {
+      try {
+        const response = await getDigitalRecordFormInfo(projectId);
+        setRecipients(response.usuarios);
+        setValue("subject", response.asunto);
+      } catch (error) {
+        console.error("Error getting digital record form info2", error);
+      }
+    };
+    fetchFormInfo();
+  }, [projectId]);
 
   const attachments = watch("attachments");
 
@@ -119,7 +142,7 @@ const DigitalRecordModal = ({
               field={field}
               title="Para"
               placeholder=""
-              options={test}
+              options={recipients}
               suffixIcon={null}
               showLabelAndValue
             />
@@ -129,15 +152,16 @@ const DigitalRecordModal = ({
         <Controller
           name="copy_to"
           control={control}
-          rules={{ required: true }}
+          rules={{ required: false }}
           render={({ field }) => (
             <GeneralSearchSelect
               errors={errors.copy_to}
               field={field}
               title="CC"
               placeholder=""
-              options={forwardToEmails}
+              options={recipients}
               suffixIcon={null}
+              showLabelAndValue
             />
           )}
         />
@@ -147,6 +171,22 @@ const DigitalRecordModal = ({
           control={control}
           nameInput="subject"
           error={errors.subject}
+          readOnly
+        />
+
+        <Controller
+          name="comment"
+          control={control}
+          render={({ field }) => (
+            <div className="digitalRecordModal__textArea">
+              <p className="digitalRecordModal__textArea__label">Observaciones</p>
+              <textarea
+                {...field}
+                placeholder="Ingresar un comentario"
+                style={errors.comment ? { borderColor: "red" } : {}}
+              />
+            </div>
+          )}
         />
 
         <div>
@@ -204,27 +244,12 @@ const DigitalRecordModal = ({
       <div className="digitalRecordModal__footer">
         <SecondaryButton onClick={onClose}>Cancelar</SecondaryButton>
 
-        <PrincipalButton onClick={handleSubmit(onSubmit)}>Enviar acta</PrincipalButton>
+        <PrincipalButton onClick={handleSubmit(onSubmit)} disabled={!isValid}>
+          Enviar acta
+        </PrincipalButton>
       </div>
     </Modal>
   );
 };
 
 export default DigitalRecordModal;
-
-const forwardToEmails = ["hola, mundo1", "hola, mundo2", "hola, mundo3"];
-
-const test = [
-  {
-    label: "Usuario 3",
-    value: "gabriel.bonilla@alleycorpsur.com"
-  },
-  {
-    label: "Luis",
-    value: "alex@casandrasoft.com"
-  },
-  {
-    label: "Enielys",
-    value: "enielys00+pruebaadmin@gmail.com"
-  }
-];

@@ -1,3 +1,4 @@
+import { IFormDigitalRecordModal } from "@/components/molecules/modals/DigitalRecordModal/DigitalRecordModal";
 import config from "@/config";
 import { DiscountRequestBody } from "@/types/accountingAdjustment/IAccountingAdjustment";
 import { GenericResponse } from "@/types/global/IGlobal";
@@ -219,6 +220,71 @@ export const legalizeFinancialDiscount = async (
   const response: GenericResponse = await API.post(
     `${config.API_HOST}/financial-discount/legalize/project/${projectId}/client/${clientId}`,
     discountData
+  );
+
+  return response;
+};
+
+interface User {
+  label: string;
+  value: string;
+}
+
+interface DigitalRecordResponse {
+  usuarios: User[];
+  asunto: string;
+}
+
+export const getDigitalRecordFormInfo = async (
+  projectId: number
+): Promise<DigitalRecordResponse> => {
+  const token = await getIdToken();
+
+  try {
+    const response: AxiosResponse<DigitalRecordResponse> = await axios.get(
+      `${config.API_HOST}/client/digital-record?projectId=${projectId}`,
+      {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error getting digital record form info", error);
+    throw error;
+  }
+};
+
+export const createDigitalRecord = async (
+  data: IFormDigitalRecordModal,
+  clientId: number,
+  invoicesIds: number[]
+): Promise<AxiosResponse<any>> => {
+  const token = await getIdToken();
+
+  const formData = new FormData();
+
+  formData.append("invoices_id", JSON.stringify(invoicesIds));
+  formData.append("forward_to", JSON.stringify(data.forward_to));
+  formData.append("copy_to", JSON.stringify(data.copy_to));
+  formData.append("subject", data.subject);
+  formData.append("comment", data.comment);
+  data.attachments.forEach((file) => {
+    formData.append("files", file);
+  });
+
+  const response: AxiosResponse<any> = await axios.post(
+    `${config.API_HOST}/invoice/digitalRecord/client/${clientId}`,
+    formData,
+    {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token}`
+      }
+    }
   );
 
   return response;

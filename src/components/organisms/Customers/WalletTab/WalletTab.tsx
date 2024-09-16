@@ -248,7 +248,6 @@ export const WalletTab = () => {
         messageShow={messageShow}
         onCloseAllModals={closeAllModal}
       />
-      {/* Aca el modal del acta digital */}
       <DigitalRecordModal
         isOpen={isSelectOpen.selected === 7}
         onClose={onCloseModal}
