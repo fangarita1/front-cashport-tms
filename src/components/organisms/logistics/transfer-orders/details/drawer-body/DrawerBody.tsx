@@ -18,6 +18,7 @@ import { FC, useState } from "react";
 import { INovelty, INoveltyEvidenceBody } from "@/types/novelty/INovelty";
 import { formatMoney } from "@/utils/utils";
 import { FileDownloadModal } from "@/components/molecules/modals/FileDownloadModal/FileDownloadModal";
+import { STATUS } from "@/utils/constants/globalConstants";
 
 const Text = Typography;
 
@@ -27,13 +28,15 @@ interface IDrawerBodyProps {
   // eslint-disable-next-line no-unused-vars
   approbeOrReject: (id: number, isApprobe: boolean) => void;
   handleEdit: () => void;
+  validateDisabled: boolean;
 }
 
 export const DrawerBody: FC<IDrawerBodyProps> = ({
   onClose,
   novelty,
   approbeOrReject,
-  handleEdit
+  handleEdit,
+  validateDisabled
 }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [evidence, setEvidence] = useState<INoveltyEvidenceBody | null>(null);
@@ -64,6 +67,7 @@ export const DrawerBody: FC<IDrawerBodyProps> = ({
                 approbeOrReject(novelty.id, false);
               }
             }}
+            disabled={validateDisabled || novelty?.status_id === STATUS.NOVELTY.RECHAZADA}
           >
             <X color="#141414" size={12} />
             <Text className={styles.approbeLabel}>Rechazar</Text>
@@ -76,6 +80,7 @@ export const DrawerBody: FC<IDrawerBodyProps> = ({
             }}
             type="text"
             className={styles.approbeBtn}
+            disabled={novelty?.status_id === STATUS.NOVELTY.ACEPTADA || novelty?.status_id === STATUS.NOVELTY.RECHAZADA}
           >
             <Check color="#141414" size={12} />
             <Text className={styles.approbeLabel}>Aprobar</Text>
@@ -117,7 +122,14 @@ export const DrawerBody: FC<IDrawerBodyProps> = ({
         <div className={styles.rightSection}>
           <div className={styles.editContainer}>
             <Text className={styles.text}>{novelty?.created_by}</Text>
-            <div onClick={() => handleEdit()} className={styles.editBtn}>
+            <div
+              onClick={() => {
+                if (novelty?.status_id !== STATUS.NOVELTY.ACEPTADA && novelty?.status_id !== STATUS.NOVELTY.RECHAZADA) {
+                  handleEdit()
+                }
+              }}
+              className={styles.editBtn}
+            >
               <PencilLine color="#666666" size={20} />
             </div>
           </div>

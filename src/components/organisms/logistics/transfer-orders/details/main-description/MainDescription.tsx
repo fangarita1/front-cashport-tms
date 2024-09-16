@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 import { formatMoney } from "@/utils/utils";
 import utc from "dayjs/plugin/utc";
 import { getTravelDuration } from "@/utils/logistics/maps";
+import { STATUS } from "@/utils/constants/globalConstants";
 dayjs.extend(utc);
 
 const Text = Typography;
@@ -268,6 +269,7 @@ export const MainDescription: FC<IMainDescriptionProps> = ({
             >
               <Dropdown
                 overlayClassName={styles.overlayDropDown}
+                disabled={transferRequest?.status_id === STATUS.TR.POR_LEGALIZAR}
                 menu={{
                   items,
                   selectable: true,
