@@ -1,6 +1,11 @@
 import { FC, useEffect, useState } from "react";
 import Link from "next/link";
 import { Button, Flex, MenuProps } from "antd";
+
+import { useAppStore } from "@/lib/store/store";
+import { deleteOrders, getAllOrders } from "@/services/commerce/commerce";
+import { useMessageApi } from "@/context/MessageContext";
+
 import UiSearchInput from "@/components/ui/search-input";
 import FilterDiscounts from "@/components/atoms/Filters/FilterDiscounts/FilterDiscounts";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
@@ -9,13 +14,11 @@ import LabelCollapse from "@/components/ui/label-collapse";
 import Collapse from "@/components/ui/collapse";
 import OrdersViewTable from "../../components/orders-view-table/orders-view-table";
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
+import { OrdersGenerateActionModal } from "../../components/orders-generate-action-modal/orders-generate-action-modal";
+
+import { IOrder } from "@/types/commerce/ICommerce";
 
 import styles from "./orders-view.module.scss";
-import { useAppStore } from "@/lib/store/store";
-import { deleteOrders, getAllOrders } from "@/services/commerce/commerce";
-import { IOrder } from "@/types/commerce/ICommerce";
-import { useMessageApi } from "@/context/MessageContext";
-
 interface IOrdersByCategory {
   status: string;
   color: string;
@@ -27,6 +30,7 @@ export const OrdersView: FC = () => {
   const { ID: projectId } = useAppStore((state) => state.selectedProject);
   const [ordersByCategory, setOrdersByCategory] = useState<IOrdersByCategory[]>();
   const [isOpenModalRemove, setIsOpenModalRemove] = useState<boolean>(false);
+  const [isGenerateActionModalOpen, setIsGenerateActionModalOpen] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState<IOrder[]>();
 
   const { showMessage } = useMessageApi();
@@ -51,12 +55,24 @@ export const OrdersView: FC = () => {
     fetchOrders();
   };
 
+  const handleisGenerateActionOpen = () => {
+    setIsGenerateActionModalOpen(!isGenerateActionModalOpen);
+  };
+
   const items: MenuProps["items"] = [
     {
       key: "1",
       label: (
         <Button className="buttonOutlined" onClick={() => setIsOpenModalRemove(true)}>
           Eliminar
+        </Button>
+      )
+    },
+    {
+      key: "2",
+      label: (
+        <Button className="buttonOutlined" onClick={() => setIsGenerateActionModalOpen(true)}>
+          Generar acción
         </Button>
       )
     }
@@ -107,6 +123,11 @@ export const OrdersView: FC = () => {
         isOpen={isOpenModalRemove}
         onClose={() => setIsOpenModalRemove(false)}
         onRemove={handleDeleteOrders}
+      />
+      <OrdersGenerateActionModal
+        isOpen={isGenerateActionModalOpen}
+        onClose={handleisGenerateActionOpen}
+        ordersId={selectedRows?.map((order) => order.id) || []}
       />
     </div>
   );
