@@ -6,6 +6,7 @@ export type ISelectedProject = {
   ID: number;
   NAME: string;
   LOGO: string;
+  rol_id: number;
   views_permissions?: IViewPermission[];
   action_permissions?: string[];
   isSuperAdmin?: boolean;

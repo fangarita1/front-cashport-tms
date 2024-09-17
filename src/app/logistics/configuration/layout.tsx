@@ -6,6 +6,11 @@ import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSect
 import { usePathname, useRouter } from "next/navigation";
 import styles from "./configuration.module.scss";
 import { SectionTitle } from "@/components/atoms/SectionTitle/SectionTitle";
+import { number } from "yup";
+import { TMS_COMPONENTS, TMSMODULES } from "@/utils/constants/globalConstants";
+import { checkUserComponentPermissions } from "@/utils/utils";
+import { useAppStore } from "@/lib/store/store";
+import { useEffect } from "react";
 
 interface Props {
   children?: React.ReactNode;
@@ -14,9 +19,23 @@ interface Props {
   };
 }
 
+const viewName: keyof typeof TMSMODULES = "TMS-Configuracion";
+
 const ConfigurationLayout = ({ children, params }: Props) => {
   const router = useRouter();
   const path = usePathname();
+
+  const { selectedProject: project, isHy } = useAppStore((state) => state);
+
+  useEffect(() => {
+    if (isHy) {
+      const checkFunction = ({ create_permission }: { create_permission: boolean }) =>
+        create_permission;
+      if (checkUserComponentPermissions(project, viewName, TMSMODULES[viewName], checkFunction)) {
+        router.push(`/logistics/configuration`);
+      }
+    }
+  }, [isHy, project]);
 
   const getDefaultValue = () => {
     if (path.includes("materials")) {
@@ -48,36 +67,44 @@ const ConfigurationLayout = ({ children, params }: Props) => {
       router.push(`/logistics/configuration/${key}/all`);
     }
   };
-  const items: TabsProps["items"] = [
+
+  const checkFunction = ({ create_permission }: { create_permission: boolean }) =>
+    create_permission;
+
+  const items: any[] = [
     {
       key: "materials",
       label: "Materiales",
-      children: <></>
+      children: <></>,
+      hidden: !checkUserComponentPermissions(
+        project,
+        viewName,
+        TMS_COMPONENTS[viewName]["MATERIALS"],
+        checkFunction
+      )
     },
     {
       key: "users",
       label: "Usuarios",
-      children: <></>
-    },
-    {
-      key: "carriers",
-      label: "Proveedores",
-      children: <></>
+      children: <></>,
+      disabled: false,
+      hidden: !checkUserComponentPermissions(
+        project,
+        viewName,
+        TMS_COMPONENTS[viewName]["USERS"],
+        checkFunction
+      )
     },
     {
       key: "locations",
-      label: "Ubicacion",
-      children: <></>
-    },
-    {
-      key: "grouplocations",
-      label: "Grupos de Ubicaciones",
-      children: <></>
-    },
-    {
-      key: "secureroutes",
-      label: "Rutas de Seguridad",
-      children: <></>
+      label: "Ubicación",
+      children: <></>,
+      hidden: !checkUserComponentPermissions(
+        project,
+        viewName,
+        TMS_COMPONENTS[viewName]["LOCATIONS"],
+        checkFunction
+      )
     }
   ];
 
@@ -95,7 +122,11 @@ const ConfigurationLayout = ({ children, params }: Props) => {
         <Flex className={styles.suppliersTabsContainer}>
           <Row style={{ width: "100%" }}>
             <Col span={24}>
-              <Tabs defaultActiveKey={getDefaultValue()} items={items} onChange={onChange} />
+              <Tabs
+                defaultActiveKey={getDefaultValue()}
+                items={items.filter((x: any) => !x.hidden)}
+                onChange={onChange}
+              />
             </Col>
             {children}
           </Row>
