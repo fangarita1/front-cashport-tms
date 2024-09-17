@@ -22,6 +22,7 @@ export const ModalProjectSelector = ({ isOpen, onClose }: Props) => {
       ID: project.ID,
       NAME: project.NAME,
       LOGO: project.LOGO,
+      rol_id: project.rol_id,
       views_permissions: project.views_permissions,
       action_permissions: project.action_permissions,
       isSuperAdmin: project.isSuperAdmin

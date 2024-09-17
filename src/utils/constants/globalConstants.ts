@@ -48,3 +48,22 @@ export const TMSMODULES = {
   "TMS-Facturacion": "/facturacion",
   "TMS-Configuracion": "/logistics/configuration"
 };
+
+export const TMS_COMPONENTS = {
+  ["TMS-Viajes"]: {
+    REQUESTS: "Solicitudes",
+    IN_PROCESS: "En curso",
+    COMPLETED: "Facturacion",
+    CREATE_TR: "Crear-TR"
+  },
+  ["TMS-Proveedores"]: {},
+  ["TMS-Dashboard"]: {},
+  ["TMS-AceptacionProveedor"]: {},
+  ["TMS-Facturacion"]: {},
+  ["TMS-Configuracion"]: {
+    CONFIGURATION: "Configuración",
+    MATERIALS: "Materiales",
+    USERS: "Usuarios",
+    LOCATIONS: "Ubicacion",
+  }
+};
