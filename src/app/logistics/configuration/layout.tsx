@@ -27,16 +27,6 @@ const ConfigurationLayout = ({ children, params }: Props) => {
 
   const { selectedProject: project, isHy } = useAppStore((state) => state);
 
-  useEffect(() => {
-    if (isHy) {
-      const checkFunction = ({ create_permission }: { create_permission: boolean }) =>
-        create_permission;
-      if (checkUserComponentPermissions(project, viewName, TMSMODULES[viewName], checkFunction)) {
-        router.push(`/logistics/configuration`);
-      }
-    }
-  }, [isHy, project]);
-
   const getDefaultValue = () => {
     if (path.includes("materials")) {
       return "materiasl";
