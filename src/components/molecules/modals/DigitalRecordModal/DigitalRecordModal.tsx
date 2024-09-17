@@ -85,11 +85,10 @@ const DigitalRecordModal = ({
   }, [projectId]);
 
   useEffect(() => {
-    return () => {
+    if (!isOpen) {
       reset();
-    };
-  }, [reset]);
-
+    }
+  }, [isOpen, reset]);
   const attachments = watch("attachments");
 
   const handleOnChangeDocument: any = (info: infoObject) => {
