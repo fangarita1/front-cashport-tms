@@ -193,14 +193,15 @@ export const ApplyAccountingAdjustment = ({
     try {
       const normalizedData = normalizarApplyValues(applyValues);
       const adjustmentData = JSON.stringify(normalizedData);
-      if (!selectedEvidence) return;
+      if (!selectedEvidence || !commentary) return;
       const typeAjustment = type === 2 ? 9 : type === 1 ? 10 : 11;
       const response = await applyAccountingAdjustment(
         adjustmentData,
         selectedEvidence,
         projectIdParam as string,
         clientIdParam as string,
-        typeAjustment
+        typeAjustment,
+        commentary
       );
       if (response.status === 200) {
         messageApi.open({
