@@ -193,7 +193,7 @@ export const ApplyAccountingAdjustment = ({
     try {
       const normalizedData = normalizarApplyValues(applyValues);
       const adjustmentData = JSON.stringify(normalizedData);
-      if (!selectedEvidence || !commentary) return;
+      if (!selectedEvidence) return;
       const typeAjustment = type === 2 ? 9 : type === 1 ? 10 : 11;
       const response = await applyAccountingAdjustment(
         adjustmentData,
