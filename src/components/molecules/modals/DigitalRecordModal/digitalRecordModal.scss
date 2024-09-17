@@ -37,6 +37,12 @@
         margin-bottom: 6px;
     }
 
+    &__files {
+        max-height: 120px;
+        overflow-y: scroll;
+        scrollbar-width: none;
+    }
+
     &__addDocument {
         display: flex;
         grid-column-start: 2;
@@ -45,7 +51,7 @@
         box-shadow: none !important;
         font-size: 0.75rem;
         padding: 0 !important;
-        margin-top: -0.5rem;
+        margin-top: 0rem;
         width: fit-content;
 
         &:hover {
@@ -75,7 +81,7 @@
             border-radius: 0.25rem;
             padding: 0.875rem 1rem;
             width: 100%;
-            min-height: 15rem;
+            min-height: 8rem;
             resize: none;
             font-family: inherit;
             font-size: 1rem;

@@ -3,6 +3,8 @@ import { Button, Flex, Modal } from "antd";
 import { MessageInstance } from "antd/es/message/interface";
 import { CaretLeft, Plus } from "@phosphor-icons/react";
 
+import { useAppStore } from "@/lib/store/store";
+import { getDigitalRecordFormInfo } from "@/services/accountingAdjustment/accountingAdjustment";
 import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
 import { useForm, Controller, FieldError } from "react-hook-form";
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
@@ -13,15 +15,13 @@ import GeneralSearchSelect from "@/components/ui/general-search-select";
 import { IInvoice } from "@/types/invoices/IInvoices";
 
 import "./digitalRecordModal.scss";
-import { getDigitalRecordFormInfo } from "@/services/accountingAdjustment/accountingAdjustment";
-import { useAppStore } from "@/lib/store/store";
 
 interface DigitalRecordModalProps {
   isOpen: boolean;
   onClose: () => void;
-  clientId?: number;
-  projectId?: number;
-  invoiceSelected?: IInvoice[];
+  clientId: number;
+  projectId: number;
+  invoiceSelected: IInvoice[] | undefined;
   messageShow: MessageInstance;
 }
 
@@ -30,9 +30,13 @@ interface infoObject {
   fileList: File[];
 }
 
+interface ISelect {
+  value: string;
+  label: string;
+}
 export interface IFormDigitalRecordModal {
-  forward_to: string[];
-  copy_to?: string[];
+  forward_to: ISelect[];
+  copy_to?: ISelect[];
   subject: string;
   comment: string;
   attachments: File[];
@@ -59,7 +63,8 @@ const DigitalRecordModal = ({
     formState: { errors, isValid },
     setValue,
     watch,
-    trigger
+    trigger,
+    reset
   } = useForm<IFormDigitalRecordModal>({
     defaultValues: {
       attachments: []
@@ -78,6 +83,12 @@ const DigitalRecordModal = ({
     };
     fetchFormInfo();
   }, [projectId]);
+
+  useEffect(() => {
+    return () => {
+      reset();
+    };
+  }, [reset]);
 
   const attachments = watch("attachments");
 
@@ -119,13 +130,20 @@ const DigitalRecordModal = ({
   };
 
   const onSubmit = async (data: IFormDigitalRecordModal) => {
-    console.log(data);
-    console.log(invoiceSelected);
-    console.log(clientId);
+    console.log("data ", data);
+    console.log("invoiceSelected", invoiceSelected);
+    console.log("clientId", clientId);
   };
 
   return (
-    <Modal className="digitalRecordModal" width="50%" footer={null} open={isOpen} closable={false}>
+    <Modal
+      className="digitalRecordModal"
+      width="50%"
+      footer={null}
+      open={isOpen}
+      closable={true}
+      destroyOnClose
+    >
       <button className="digitalRecordModal__goBackBtn" onClick={onClose}>
         <CaretLeft size="1.25rem" />
         Enviar acta digital
@@ -167,6 +185,7 @@ const DigitalRecordModal = ({
         />
 
         <InputForm
+          validationRules={{ required: true }}
           titleInput="Asunto"
           control={control}
           nameInput="subject"
@@ -177,12 +196,13 @@ const DigitalRecordModal = ({
         <Controller
           name="comment"
           control={control}
+          rules={{ required: true }}
           render={({ field }) => (
             <div className="digitalRecordModal__textArea">
               <p className="digitalRecordModal__textArea__label">Observaciones</p>
               <textarea
                 {...field}
-                placeholder="Ingresar un comentario"
+                placeholder=""
                 style={errors.comment ? { borderColor: "red" } : {}}
               />
             </div>
@@ -191,7 +211,7 @@ const DigitalRecordModal = ({
 
         <div>
           <p className="digitalRecordModal__titleInput">Adjuntos</p>
-          <Flex vertical gap="0.7rem">
+          <Flex className="digitalRecordModal__files" vertical gap="0.7rem">
             <DocumentButton
               key={attachments[0]?.name}
               title={attachments[0]?.name}
@@ -244,7 +264,10 @@ const DigitalRecordModal = ({
       <div className="digitalRecordModal__footer">
         <SecondaryButton onClick={onClose}>Cancelar</SecondaryButton>
 
-        <PrincipalButton onClick={handleSubmit(onSubmit)} disabled={!isValid}>
+        <PrincipalButton
+          onClick={handleSubmit(onSubmit)}
+          disabled={attachments.length === 0 || !isValid}
+        >
           Enviar acta
         </PrincipalButton>
       </div>
