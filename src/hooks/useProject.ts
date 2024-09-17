@@ -15,7 +15,7 @@ export const useProject = ({ id }: Props) => {
 
   useEffect(() => {
     if (!data?.data[0]) return;
-    setSelectProject(data?.data[0]);
+    setSelectProject({ rol_id: 0, ...data?.data[0] });
   }, [data, setSelectProject]);
 
   return {
