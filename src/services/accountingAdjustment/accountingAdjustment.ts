@@ -44,13 +44,13 @@ export const applyAccountingAdjustment = async (
   projectId: string,
   clientId: string,
   type: number,
-  comment: string
+  comment: string | undefined
 ): Promise<AxiosResponse<any>> => {
   const token = await getIdToken();
   const formData = new FormData();
   formData.append("adjustment_data", adjustmentData);
   formData.append("type", type.toString());
-  formData.append("comment", comment);
+  if (comment) formData.append("comment", comment);
   if (docFiles) {
     docFiles.forEach((file) => {
       formData.append("doc", file);
