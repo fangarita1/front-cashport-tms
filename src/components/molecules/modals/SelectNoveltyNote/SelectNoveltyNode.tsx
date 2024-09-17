@@ -33,7 +33,7 @@ export const SelectNoveltyNode: React.FC<Props> = ({
     );
   };
 
-  const concatData = data?.[0].financial_discounts
+  const concatData = data?.[0]?.financial_discounts
   return (
     <div className="acn-modalContent">
       <Flex vertical className="acn-content-modal-select-note">
