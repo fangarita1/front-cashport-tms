@@ -47,7 +47,7 @@ interface DataType {
 const columns = (showColumn: boolean, redirect?: string): TableColumnsType<DataType> => {
   const timeToTrip = showColumn
     ? {
-        title: "Tiempo de viaje",
+        title: "Tiempo transcurrido",
         dataIndex: "tiempodeviaje",
         render: (text: string) => (
           <Text className="row-text">{calculateMinutesDifference(text)} min</Text>
