@@ -106,7 +106,15 @@ export default function ModalBillingAction(props: Readonly<PropsModal>) {
     <Modal
       width={698}
       title={renderTitle()}
-      styles={{ body: { maxHeight: "32rem", overflowY: "auto", paddingTop: 24 } }}
+      styles={{
+        body: {
+          maxHeight: "85vh",
+          overflowY: "auto",
+          paddingTop: 24,
+          scrollbarWidth: "none" /* Firefox */,
+          msOverflowStyle: "none" /* Internet Explorer 10+ */
+        }
+      }}
       centered
       open={isOpen}
       onClose={() => onClose()}
