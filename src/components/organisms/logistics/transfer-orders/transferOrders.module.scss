@@ -1,50 +1,26 @@
-.mainTransferOrders {
+
+.filterContainer {
   display: flex;
-  height: 100%;
-  
+  column-gap: 0.5rem;
+}
 
-  .content {
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    padding: 1rem;
-    padding-left: 2rem;
-    background-color: #f7f7f7;
+.tabContainer {
+  display: flex;
+  column-gap: 2rem;
+  border-bottom: 1px solid #DDD;
+}
 
-    .card {
-      display: flex;
-      flex-direction: column;
-      padding: 2rem;
-     // row-gap: 1rem;
-      margin-top: 1rem;
-      background-color: #FFFFFF;
-      border-radius: 15px;
-      border: 1px solid #DDD;
+.tab {
+  padding-bottom: 4px;
+  color: #DDD;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
 
-      .filterContainer {
-        display: flex;
-        column-gap: 0.5rem;
-      }
-
-      .tabContainer {
-        display: flex;
-        column-gap: 2rem;
-        border-bottom: 1px solid #DDD;
-
-        .tab {
-          padding-bottom: 4px;
-          color: #DDD;
-          font-size: 16px;
-          font-weight: 600;
-          cursor: pointer;
-
-          &.active {
-            color: #141414;
-            font-weight: 700;
-            border-bottom: 1px solid #141414;
-          }
-        }
-      }
-    }
+  &.active {
+    color: #141414;
+    font-weight: 700;
+    border-bottom: 1px solid #141414;
   }
 }
+

@@ -11,6 +11,8 @@ import OrdersViewTable from "../../components/orders-view-table/orders-view-tabl
 import { ModalRemove } from "@/components/molecules/modals/ModalRemove/ModalRemove";
 
 import styles from "./orders-view.module.scss";
+import CustomCollapse from "@/components/ui/custom-collapse/CustomCollapse";
+import Container from "@/components/atoms/Container/Container";
 
 export const OrdersView: FC = () => {
   const [isOpenModalRemove, setIsOpenModalRemove] = useState<boolean>(false);
@@ -33,41 +35,38 @@ export const OrdersView: FC = () => {
   ];
 
   return (
-    <div className={styles.ordersView}>
-      <h2 className={styles.title}>Mis pedidos</h2>
-      <Flex className={styles.FlexContainer} vertical>
-        <Flex className={styles.header}>
-          <UiSearchInput
-            placeholder="Buscar"
-            onChange={(event) => {
-              setTimeout(() => {
-                console.info(event.target.value);
-              }, 1000);
-            }}
-          />
-          <FilterDiscounts />
-          <DotsDropdown items={items} />
-          <Link href="/comercio/pedido" className={styles.ctaButton}>
-            <PrincipalButton>Crear orden</PrincipalButton>
-          </Link>
-        </Flex>
-        <Collapse
-          items={mockOrders?.map((order) => ({
-            key: order.status_id,
-            label: (
-              <LabelCollapse
-                status={order.status}
-                quantity={order.orders.length}
-                color={order.color}
-                removeIcons
-              />
-            ),
-            children: (
-              <OrdersViewTable dataSingleOrder={order.orders} setSelectedRows={setSelectedRows} />
-            )
-          }))}
+    <Container>
+      <Flex className={styles.header}>
+        <UiSearchInput
+          placeholder="Buscar"
+          onChange={(event) => {
+            setTimeout(() => {
+              console.info(event.target.value);
+            }, 1000);
+          }}
         />
+        <FilterDiscounts />
+        <DotsDropdown items={items} />
+        <Link href="/comercio/pedido" className={styles.ctaButton}>
+          <PrincipalButton>Crear orden</PrincipalButton>
+        </Link>
       </Flex>
+      <CustomCollapse
+        items={mockOrders?.map((order) => ({
+          key: order.status_id,
+          label: (
+            <LabelCollapse
+              status={order.status}
+              quantity={order.orders.length}
+              color={order.color}
+              removeIcons
+            />
+          ),
+          children: (
+            <OrdersViewTable dataSingleOrder={order.orders} setSelectedRows={setSelectedRows} />
+          )
+        }))}
+      />
       <ModalRemove
         isMassiveAction={true}
         name="pedidos"
@@ -75,7 +74,7 @@ export const OrdersView: FC = () => {
         onClose={() => setIsOpenModalRemove(false)}
         onRemove={handleDeleteOrders}
       />
-    </div>
+    </Container>
   );
 };
 

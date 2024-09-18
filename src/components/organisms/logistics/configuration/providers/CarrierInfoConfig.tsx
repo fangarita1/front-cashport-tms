@@ -1,12 +1,4 @@
-import {
-  Flex,
-  Typography,
-  message,
-  Row,
-  Col,
-  TabsProps,
-  Tabs,
-} from "antd";
+import { Flex, Typography, message, Row, Col, TabsProps, Tabs } from "antd";
 import React, { useEffect, useState, useContext } from "react";
 
 // components
@@ -19,7 +11,6 @@ import { IListData, ILocation } from "@/types/logistics/schema";
 import { getAllLocations } from "@/services/logistics/locations";
 
 import { useRouter } from "next/navigation";
-
 
 import "../../../../../styles/_variables_logistics.css";
 
@@ -35,7 +26,7 @@ export const CarrierInfoConfigView = () => {
   const [routeInfo, setRouteInfo] = useState([]);
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationOptions, setLocationOptions] = useState<any>([]);
-  const [value, setValue] = useState('4');
+  const [value, setValue] = useState("4");
 
   const onChange = (key: string) => {
     setValue(key);
@@ -66,12 +57,12 @@ export const CarrierInfoConfigView = () => {
     {
       key: "4",
       label: "Proveedores",
-      children: <><CarrierTable></CarrierTable></>
+      children: <CarrierTable />
     },
     {
       key: "5",
       label: "Ubicacion",
-      children: <><LocationsTable></LocationsTable></>
+      children: <LocationsTable />
     },
     {
       key: "6",
@@ -126,7 +117,7 @@ export const CarrierInfoConfigView = () => {
           <Flex className="orderContainer">
             <Row style={{ width: "100%" }}>
               <Col span={24}>
-              <Tabs defaultActiveKey={value} items={items} onChange={onChange}></Tabs>
+                <Tabs defaultActiveKey={value} items={items} onChange={onChange}></Tabs>
               </Col>
             </Row>
           </Flex>

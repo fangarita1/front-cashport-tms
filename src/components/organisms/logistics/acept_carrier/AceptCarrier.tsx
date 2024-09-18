@@ -6,6 +6,7 @@ import styles from "./AceptCarrier.module.scss";
 import { getAceptCarrierRequestList } from "@/services/logistics/acept_carrier";
 import { useEffect, useState } from "react";
 import { FilterProjects } from "@/components/atoms/Filters/FilterProjects/FilterProjects";
+import Container from "@/components/atoms/Container/Container";
 
 export default function AceptCarrier() {
   const [carriers, setCarriers] = useState<any[]>([]);
@@ -34,7 +35,7 @@ export default function AceptCarrier() {
   };
 
   return (
-    <div className={styles.wrapper}>
+    <Container>
       <Flex className={styles.filters} gap={8} style={{ marginBottom: "0.5rem" }}>
         <UiSearchInput
           placeholder="Buscar"
@@ -47,6 +48,6 @@ export default function AceptCarrier() {
         <FilterProjects setSelecetedProjects={setSelectFilters} height="48" />
       </Flex>
       <AceptCarrierView carriers={carriers} loading={loading} />
-    </div>
+    </Container>
   );
 }

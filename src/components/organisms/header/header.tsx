@@ -9,9 +9,10 @@ import { PopoverUserNotifications } from "@/components/molecules/Popover/Popover
 
 interface HeaderProps {
   title: string;
+  showNotifications?: boolean;
 }
 
-const Header: FC<HeaderProps> = ({ title }) => {
+const Header: FC<HeaderProps> = ({ title, showNotifications = false }) => {
   const router = useRouter();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -19,20 +20,18 @@ const Header: FC<HeaderProps> = ({ title }) => {
     <header className={styles.wrapper}>
       <h1 className={styles.title}>{title}</h1>
       <div className={styles.actions}>
-        <PopoverUserNotifications
-          setIsPopoverVisible={setIsModalVisible}
-          isPopoverVisible={isModalVisible}
-        />
+        {showNotifications && (
+          <PopoverUserNotifications
+            setIsPopoverVisible={setIsModalVisible}
+            isPopoverVisible={isModalVisible}
+          />
+        )}
         <div className={styles.profile}>
           <Avatar icon={<User />} />
           <Popover
             placement="bottomRight"
             trigger="click"
-            content={
-              <>
-                <Button onClick={() => logOut(router)}>Cerrar Sesion</Button>
-              </>
-            }
+            content={<Button onClick={() => logOut(router)}>Cerrar sesión</Button>}
           >
             <CaretDown className={styles.arrow} />
           </Popover>

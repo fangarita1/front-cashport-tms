@@ -138,7 +138,7 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
               >
                 <Flex style={{ marginLeft: "1rem", marginTop: "1rem" }}>
                   <BackButton
-                    title={`Detalle de TO ${transferOrder?.id ?? ""}`}
+                    title={`Detalle de TO ${transferOrder?.id ?? idOrder}`}
                     href={`/logistics/transfer-orders?tab=${TabEnum.REQUESTS}`}
                   />
                 </Flex>

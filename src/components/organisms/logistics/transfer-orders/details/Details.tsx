@@ -1,9 +1,7 @@
 /* eslint-disable no-unused-vars */
-import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import styles from "./details.module.scss";
-import Header from "@/components/organisms/header";
 import { CaretDoubleRight, CaretLeft, DotsThree } from "phosphor-react";
-import { Button, Drawer, message, Typography } from "antd";
+import { Button, Drawer, Flex, message, Typography } from "antd";
 import { MainDescription } from "./main-description/MainDescription";
 import { Step } from "./step/Step";
 import { useEffect, useState } from "react";
@@ -31,9 +29,8 @@ import { BillingTable } from "./billing-table/BillingTable";
 import { getBillingByTransferRequest } from "@/services/logistics/billing_list";
 import { BillingByCarrier } from "@/types/logistics/billing/billing";
 import ModalBillingMT from "@/components/molecules/modals/ModalBillingMT/ModalBillingMT";
-import { UploadFile } from "antd/lib";
 import ModalBillingAction from "@/components/molecules/modals/ModalBillingAction/ModalBillingAction";
-import { STATUS, STORAGE_TOKEN } from '@/utils/constants/globalConstants';
+import { STATUS, STORAGE_TOKEN } from "@/utils/constants/globalConstants";
 
 const Text = Typography;
 
@@ -91,11 +88,15 @@ export const TransferOrderDetails = () => {
     STATUS.BNG.POR_ACEPTAR,
     STATUS.BNG.ACEPTADAS,
     STATUS.BNG.PREAUTORIZADO,
-    STATUS.BNG.FACTURADO,
-  ]
+    STATUS.BNG.FACTURADO
+  ];
 
-  const validateDisabled = transferRequest ? validateDisabledByStatus.includes(transferRequest.status_id) : false
-  const validateCreateDisabled = transferRequest ? [...validateDisabledByStatus, STATUS.TR.POR_LEGALIZAR].includes(transferRequest.status_id) : false
+  const validateDisabled = transferRequest
+    ? validateDisabledByStatus.includes(transferRequest.status_id)
+    : false;
+  const validateCreateDisabled = transferRequest
+    ? [...validateDisabledByStatus, STATUS.TR.POR_LEGALIZAR].includes(transferRequest.status_id)
+    : false;
 
   const findNoveltyDetail = async (id: number) => {
     setIsCreateNovelty(false);
@@ -308,61 +309,58 @@ export const TransferOrderDetails = () => {
   }, [transferRequest]);
 
   return (
-    <div className={styles.mainTransferOrdersDetails}>
-      <SideBar />
-      <div className={styles.content}>
-        {contextHolder}
-        <Header title="Resumen del viaje" />
-        <div className={styles.card}>
-          <div className={styles.titleContainer}>
-            <div onClick={() => router.back()} className={styles.backContainer}>
-              <CaretLeft size={24} />
-              <Text className={styles.title}>Datos del viaje</Text>
-            </div>
-            <div className={styles.btnContainer}>
-              <Button
-                className={styles.actionBtn}
-                type="text"
-                size="large"
-                onClick={() => setIsModalVisible(true)}
-              >
-                <DotsThree size={24} />
-                <Text className={styles.text}>Generar acción</Text>
-              </Button>
-              <Button className={styles.tranckingBtn} type="text" size="large">
-                <Text className={styles.text}>Tracking</Text>
-                <CaretDoubleRight size={24} />
-              </Button>
-            </div>
+    <Flex vertical>
+      {contextHolder}
+      <div className={styles.card}>
+        <div className={styles.titleContainer}>
+          <div onClick={() => router.back()} className={styles.backContainer}>
+            <CaretLeft size={24} />
+            <Text className={styles.title}>Datos del viaje</Text>
           </div>
-          <MainDescription
-            handleChangeStatus={handleChangeStatus}
-            transferRequest={transferRequest}
-          />
-          <Step step={transferRequest?.step || 1} />
-        </div>
-        <div className={styles.card}>
-          <div className={styles.navContainer}>
-            <Text
-              onClick={() => setNav(NavEnum.NOVELTY)}
-              className={`${styles.nav} ${nav === NavEnum.NOVELTY && styles.active}`}
+          <div className={styles.btnContainer}>
+            <Button
+              className={styles.actionBtn}
+              type="text"
+              size="large"
+              onClick={() => setIsModalVisible(true)}
             >
-              Novedades
-            </Text>
-            {/* <Text onClick={() => setNav(NavEnum.VEHICLES)} className={`${styles.nav} ${nav === NavEnum.VEHICLES && styles.active}`}>Vehículos</Text>
+              <DotsThree size={24} />
+              <Text className={styles.text}>Generar acción</Text>
+            </Button>
+            <Button className={styles.tranckingBtn} type="text" size="large">
+              <Text className={styles.text}>Tracking</Text>
+              <CaretDoubleRight size={24} />
+            </Button>
+          </div>
+        </div>
+        <MainDescription
+          handleChangeStatus={handleChangeStatus}
+          transferRequest={transferRequest}
+        />
+        <Step step={transferRequest?.step || 1} />
+      </div>
+      <div className={styles.card} style={{ marginTop: "2rem" }}>
+        <div className={styles.navContainer}>
+          <Text
+            onClick={() => setNav(NavEnum.NOVELTY)}
+            className={`${styles.nav} ${nav === NavEnum.NOVELTY && styles.active}`}
+          >
+            Novedades
+          </Text>
+          {/* <Text onClick={() => setNav(NavEnum.VEHICLES)} className={`${styles.nav} ${nav === NavEnum.VEHICLES && styles.active}`}>Vehículos</Text>
             <Text onClick={() => setNav(NavEnum.MATERIALS)} className={`${styles.nav} ${nav === NavEnum.MATERIALS && styles.active}`}>Materiales</Text>
             <Text onClick={() => setNav(NavEnum.DOCUMENTS)} className={`${styles.nav} ${nav === NavEnum.DOCUMENTS && styles.active}`}>Documentos</Text>
             <Text onClick={() => setNav(NavEnum.PSL)} className={`${styles.nav} ${nav === NavEnum.PSL && styles.active}`}>PSL</Text> */}
-            <Text
-              onClick={() => setNav(NavEnum.BILLING)}
-              className={`${styles.nav} ${nav === NavEnum.BILLING && styles.active}`}
-            >
-              Facturación
-            </Text>
-          </div>
-          <div>{renderView()}</div>
+          <Text
+            onClick={() => setNav(NavEnum.BILLING)}
+            className={`${styles.nav} ${nav === NavEnum.BILLING && styles.active}`}
+          >
+            Facturación
+          </Text>
         </div>
+        <div>{renderView()}</div>
       </div>
+
       <Drawer
         placement="right"
         open={openDrawer}
@@ -423,6 +421,6 @@ export const TransferOrderDetails = () => {
         messageApi={messageApi}
         uploadInvoiceTitle={billingList?.find((b) => b.id == billingId)?.carrier}
       />
-    </div>
+    </Flex>
   );
 };

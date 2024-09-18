@@ -20,6 +20,7 @@ import { useAppStore } from "@/lib/store/store";
 import redirectModal from "@/components/molecules/modals/redirectModal/RedirectModal";
 import "./ClientsViewTable.scss";
 import useStore from "@/lib/hook/useStore";
+import Container from "@/components/atoms/Container/Container";
 
 const { Text } = Typography;
 
@@ -149,7 +150,7 @@ export const ClientsViewTable = () => {
   ];
 
   return (
-    <main className="mainClientsTable">
+    <Container>
       <Flex justify="space-between" className="mainClientsTable_header">
         <Flex gap={"10px"}>
           <Button size="large" icon={<DotsThree size={"1.5rem"} />} />
@@ -224,6 +225,6 @@ export const ClientsViewTable = () => {
         }}
         dataSource={data?.data?.clientsPortfolio.map((data) => ({ ...data, key: data.client_id }))}
       />
-    </main>
+    </Container>
   );
 };

@@ -14,14 +14,6 @@
     display: flex;
     align-items: center;
 }
-.mainProjectsTable {
-    width: 100%;
-    height: 95%;
-    padding-bottom: 0;
-    margin-top: 1.5rem;
-    padding: 1rem 2rem;
-    border-radius: 15px;
-    box-shadow: -6px 6px 32px 0px rgba(0, 0, 0, 0.2);
 
     .next {
         transform: rotate(90deg);
@@ -36,7 +28,7 @@
     }
 
     .mainProjectsTable_header {
-        margin: 1rem 0;
+        margin-bottom: 1rem;
 
         .search {
             width: 400px;
@@ -109,11 +101,11 @@
         gap: 10px;
         display: flex;
         color: black;
-        box-shadow: none;
+        box-shadow: none !important;
         font-weight: 600;
         padding: 12px 24px;
         align-items: center;
-        background-color: $secondary;
+        background-color: $secondary !important;
 
         &:hover {
             background-color: $secondary !important;
@@ -125,4 +117,4 @@
     .imageWithoutImage {
         background-color: $secondary !important;
     }
-}
+

@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 
 import "./createproject.scss";
 import { IFormProject } from "@/types/projects/IFormProject";
+import Container from "@/components/atoms/Container/Container";
 
 const { Title } = Typography;
 
@@ -80,32 +81,14 @@ export const CreateProjectView = () => {
   ];
 
   return (
-    <>
+    <Container>
       {contextHolder}
-      <main className="mainCreateProject">
-        <SideBar />
-        <Flex vertical className="containerCreateProject">
-          <Flex className="infoHeaderProject">
-            <Flex gap={"2rem"}>
-              <Title level={2} className="titleName">
-                Crear Proyecto
-              </Title>
-            </Flex>
-            <Flex component={"navbar"} align="center" justify="space-between">
-              <NavRightSection />
-            </Flex>
-          </Flex>
-          {/* ------------Main Info Project-------------- */}
-          <Flex className="tabsContainer">
-            <Tabs
-              style={{ width: "100%", height: "100%" }}
-              defaultActiveKey="1"
-              items={items}
-              size="large"
-            />
-          </Flex>
-        </Flex>
-      </main>
-    </>
+      <Tabs
+        style={{ width: "100%", height: "100%" }}
+        defaultActiveKey="1"
+        items={items}
+        size="large"
+      />
+    </Container>
   );
 };

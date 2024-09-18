@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import AceptCarrierWrapper from "@/components/organisms/logistics/acept_carrier/wrapper/AceptCarrierWrapper";
+import ViewWrapper from "@/components/organisms/ViewWrapper/ViewWrapper";
 
 export const metadata: Metadata = {
   title: "Ordenes de transferencia",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <AceptCarrierWrapper>{children}</AceptCarrierWrapper>;
+  return <ViewWrapper headerTitle="Aceptación proveedor">{children}</ViewWrapper>;
 }

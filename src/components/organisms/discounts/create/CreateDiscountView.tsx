@@ -32,55 +32,49 @@ export function CreateDiscountView({ params }: Props) {
   } = useCreateDiscountView({ params });
 
   return (
-    <>
+    <Flex vertical className={styles.mainCreateDiscount} gap={"2rem"}>
       {contextHolder}
-      <Flex className={styles.mainCreateDiscount}>
-        <HeaderDiscountType
+      <HeaderDiscountType
+        selectedType={selectedType}
+        handleClick={handleClick}
+        discountId={discountId}
+      />
+      {commonDiscount.includes(selectedType) && (
+        <DefinitionDiscounts
+          form={form}
           selectedType={selectedType}
-          handleClick={handleClick}
           discountId={discountId}
+          statusForm={statusForm}
+          handleChangeStatusForm={handleChangeStatusForm}
+          loadingMain={loading}
         />
-        {commonDiscount.includes(selectedType) && (
-          <DefinitionDiscounts
-            form={form}
-            selectedType={selectedType}
-            discountId={discountId}
-            statusForm={statusForm}
-            handleChangeStatusForm={handleChangeStatusForm}
-            loadingMain={loading}
-          />
+      )}
+      {annualDiscount.includes(selectedType) && (
+        <AnnualDiscountDefinition
+          form={form}
+          selectedType={selectedType}
+          setFiles={setFiles}
+          statusForm={statusForm}
+          handleChangeStatusForm={handleChangeStatusForm}
+          loadingMain={loading}
+          handleUpdateContract={handleUpdateContract}
+        />
+      )}
+      <Flex justify="space-between" style={{ paddingBottom: "1rem" }}>
+        <Link href="/descuentos" passHref legacyBehavior>
+          <Button
+            style={{ height: "100%", backgroundColor: "#d3d3d3" }}
+            className={styles.buttonEdit}
+          >
+            Volver a la lista
+          </Button>
+        </Link>
+        {statusForm !== "review" && (
+          <PrincipalButton className={styles.button} onClick={handleExecCallback} loading={loading}>
+            {discountId ? "Guardar Descuento" : "Crear Descuento"}
+          </PrincipalButton>
         )}
-        {annualDiscount.includes(selectedType) && (
-          <AnnualDiscountDefinition
-            form={form}
-            selectedType={selectedType}
-            setFiles={setFiles}
-            statusForm={statusForm}
-            handleChangeStatusForm={handleChangeStatusForm}
-            loadingMain={loading}
-            handleUpdateContract={handleUpdateContract}
-          />
-        )}
-        <Flex gap={20} justify="space-between">
-          <Link href="/descuentos" passHref legacyBehavior>
-            <Button
-              style={{ height: "100%", backgroundColor: "#d3d3d3" }}
-              className={styles.buttonEdit}
-            >
-              Volver a la lista
-            </Button>
-          </Link>
-          {statusForm !== "review" && (
-            <PrincipalButton
-              className={styles.button}
-              onClick={handleExecCallback}
-              loading={loading}
-            >
-              {discountId ? "Guardar Descuento" : "Crear Descuento"}
-            </PrincipalButton>
-          )}
-        </Flex>
       </Flex>
-    </>
+    </Flex>
   );
 }
