@@ -42,6 +42,14 @@
         gap: 1rem;
     }
 
+    .semi-bold {
+        font-weight: 600; // Esto es menos intenso que el 700 (bold) estándar
+    }
+
+    .text_conciliation {
+        display: block; // Esto asegura que cada label esté en su propia línea
+        margin-bottom: 0.5rem; // Añade un poco de espacio entre las líneas
+    }
 
     .button__action__text {
         height: 2.5rem;
