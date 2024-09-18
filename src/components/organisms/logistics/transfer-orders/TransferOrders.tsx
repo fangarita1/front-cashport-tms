@@ -9,8 +9,11 @@ import { InProcess } from "./in-process/InProcess";
 import { Completed } from "./completed/completed";
 import { Button, Empty, Flex, message, Typography } from "antd";
 import Header from "../../header";
-import { DotsThree, Plus } from "phosphor-react";
-import { transferOrderMerge } from "@/services/logistics/transfer-request";
+import { DotsThree, FileArrowDown, Plus } from "phosphor-react";
+import {
+  downloadCsvTransferOrders,
+  transferOrderMerge
+} from "@/services/logistics/transfer-request";
 import { useRouter, useSearchParams } from "next/navigation";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import ProtectedComponent from "@/components/molecules/protectedComponent/ProtectedComponent";
@@ -32,6 +35,7 @@ export const TransferOrders = () => {
   const [search, setSearch] = useState<string>("");
   const { selectedProject: project, isHy } = useAppStore((state) => state);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loadingCsv, setLoadingCsv] = useState<boolean>(false);
   const [ordersId, setOrdersId] = useState<number[]>([]);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -43,11 +47,13 @@ export const TransferOrders = () => {
   const [tab, setTab] = useState<TabEnum>();
 
   useEffect(() => {
-    if (isHy) { // if the zustand store is hydrated
+    if (isHy) {
+      // if the zustand store is hydrated
       const checkFunction = ({ create_permission }: { create_permission: boolean }) =>
         create_permission;
       // Actualizar el estado del tab si cambia el parámetro en la URL
-      if (tabParam && Object.values(TabEnum).includes(tabParam)) { // if the tabParam is valid and exists in the TabEnum
+      if (tabParam && Object.values(TabEnum).includes(tabParam)) {
+        // if the tabParam is valid and exists in the TabEnum
         if (
           checkUserComponentPermissions(
             project,
@@ -55,9 +61,11 @@ export const TransferOrders = () => {
             TMS_COMPONENTS[viewName][tabParam],
             checkFunction
           )
-        ) { // if the user has the required permissions to access the tabParam
+        ) {
+          // if the user has the required permissions to access the tabParam
           setTab(tabParam);
-        } else { // else, set the tab to the first valid tab
+        } else {
+          // else, set the tab to the first valid tab
           const valid = Object.values(TabEnum).find((tab) =>
             checkUserComponentPermissions(
               project,
@@ -68,7 +76,8 @@ export const TransferOrders = () => {
           );
           if (valid) setTab(valid as TabEnum);
         }
-      } else {// if the tabParam is not valid, set the tab to the first valid tab (first validate "IN_PROCESS")
+      } else {
+        // if the tabParam is not valid, set the tab to the first valid tab (first validate "IN_PROCESS")
         const valid = [TabEnum.IN_PROCESS, ...Object.values(TabEnum)].find((tab) =>
           checkUserComponentPermissions(
             project,
@@ -119,6 +128,17 @@ export const TransferOrders = () => {
     );
   };
 
+  const downloadCsvOrders = async () => {
+    setLoadingCsv(true);
+    try {
+      await downloadCsvTransferOrders();
+    } catch (error) {
+      if (error instanceof Error) message.open({ content: error.message, type: "error" });
+      else message.open({ content: "Error al realizar la operación", type: "error" });
+    }
+    setLoadingCsv(false);
+  };
+
   return (
     <div className={styles.mainTransferOrders}>
       <SideBar />
@@ -148,6 +168,19 @@ export const TransferOrders = () => {
                   loading={isLoading}
                 >
                   Generar TR
+                </PrincipalButton>
+              </ProtectedComponent>
+              <ProtectedComponent
+                componentName={TMS_COMPONENTS[viewName].DOWNLOAD_SHEET}
+                viewName={viewName}
+              >
+                <PrincipalButton
+                  type="default"
+                  icon={<FileArrowDown size={"1.5rem"} />}
+                  onClick={downloadCsvOrders}
+                  loading={loadingCsv}
+                >
+                  Descargar Ordenes
                 </PrincipalButton>
               </ProtectedComponent>
             </div>

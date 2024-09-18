@@ -129,6 +129,7 @@ export interface IAceptCarrierAPI {
   geometry: Geometry[];
   carrier_request_persons: any[]; // Asumiendo que es un array vacío o podría ser un array de algún tipo de objeto
   observation?: string;
+  special_instructions?: string;
   id_service_type: number;
   fee_description?: string;
 }

@@ -19,6 +19,7 @@ import {
   ITransferRequestDetail,
   ITransferRequestResponse
 } from "@/types/transferRequest/ITransferRequest";
+import { downloadCSVFromEndpoint } from "./download_csv";
 
 {
   /*export const transferOrderMerge = async (orders: number[]) => {
@@ -124,7 +125,9 @@ export const finishTransferRequest = async (data: TransferRequestFinish) => {
 
 export const getAcceptedTransferRequest = async (): Promise<ITransferRequestResponse[]> => {
   try {
-    const response: GenericResponse<ITransferRequestResponse[]> = await API.get(`/transfer-request/transfer-request-order`);
+    const response: GenericResponse<ITransferRequestResponse[]> = await API.get(
+      `/transfer-request/transfer-request-order`
+    );
     if (response.success) return response.data;
     return [];
   } catch (error) {
@@ -135,7 +138,9 @@ export const getAcceptedTransferRequest = async (): Promise<ITransferRequestResp
 
 export const getOnRouteTransferRequest = async (): Promise<ITransferRequestResponse[]> => {
   try {
-    const response: GenericResponse<ITransferRequestResponse[]> = await API.get(`/transfer-request/transfer-request-on-route`);
+    const response: GenericResponse<ITransferRequestResponse[]> = await API.get(
+      `/transfer-request/transfer-request-on-route`
+    );
     if (response.success) return response.data;
     return [];
   } catch (error) {
@@ -146,7 +151,9 @@ export const getOnRouteTransferRequest = async (): Promise<ITransferRequestRespo
 
 export const getFinishedTransferRequest = async (): Promise<ITransferRequestResponse[]> => {
   try {
-    const response: GenericResponse<ITransferRequestResponse[]> = await API.get(`/transfer-request/transfer-request-finished`);
+    const response: GenericResponse<ITransferRequestResponse[]> = await API.get(
+      `/transfer-request/transfer-request-finished`
+    );
     if (response.success) return response.data;
     return [];
   } catch (error) {
@@ -159,7 +166,9 @@ export const getTransferRequestDetail = async (
   id: number
 ): Promise<ITransferRequestDetail | {}> => {
   try {
-    const { success, data }: GenericResponse<ITransferRequestResponse> = await API.get(`/transfer-request/details/${id}`);
+    const { success, data }: GenericResponse<ITransferRequestResponse> = await API.get(
+      `/transfer-request/details/${id}`
+    );
     if (success) return data;
     return {};
   } catch (error) {
@@ -168,16 +177,26 @@ export const getTransferRequestDetail = async (
   }
 };
 
-export const updateTransferRequestStatus = async (id: number, statusId: string): Promise<boolean> => {
+export const updateTransferRequestStatus = async (
+  id: number,
+  statusId: string
+): Promise<boolean> => {
   try {
-    const { success }: GenericResponse<ITransferRequestResponse> = await API.post(`/transfer-request/update-status`, {
-      transferRequestId: id,
-      statusId
-    });
+    const { success }: GenericResponse<ITransferRequestResponse> = await API.post(
+      `/transfer-request/update-status`,
+      {
+        transferRequestId: id,
+        statusId
+      }
+    );
     if (success) return true;
-    return false
+    return false;
   } catch (error) {
     console.error("Error update request/update-status/: ", error);
     throw error as any;
   }
-}
+};
+
+export const downloadCsvTransferOrders = async () => {
+ await downloadCSVFromEndpoint(`transfer-order/download-orders`, "transfer orders.csv");
+};

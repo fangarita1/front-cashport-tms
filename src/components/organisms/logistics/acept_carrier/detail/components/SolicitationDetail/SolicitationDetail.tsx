@@ -63,6 +63,11 @@ export default function SolicitationDetail({
               needLiftingOrigin={false}
               needLiftingDestination={false}
               travelTypeDesc={providerDetail?.service_type ?? ""}
+              user_creator={{
+                user_email: providerDetail?.created_by || "",
+                user_name: "",
+                show: false
+              }}
               start_location={providerDetail?.start_location ?? ""}
               end_location={providerDetail?.end_location ?? ""}
               start_date_flexible={"Exacto"}
@@ -83,6 +88,7 @@ export default function SolicitationDetail({
         documents={providerDetail?.carrier_request_documents ?? []}
         contacts={providerDetail?.carrier_request_contacts ?? []}
         setIsNextStepActive={setIsNextStepActive}
+        specialInstructions={providerDetail?.special_instructions}
       />
       {service_type !== "Personas" && (
         <Flex vertical className={styles.materialsWrapper} style={{ width: "100%" }}>

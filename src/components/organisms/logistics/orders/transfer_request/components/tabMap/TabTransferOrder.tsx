@@ -49,6 +49,11 @@ export default function TabTransferOrder({ orderRequest }: PricingStepOneProps) 
               freight_destination_time={orderRequest?.freight_destination_time}
               freight_origin_time={orderRequest?.freight_origin_time}
               travelTypeDesc={orderRequest?.service_type_desc ?? ""}
+              user_creator={{
+                user_email: orderRequest?.created_by || "",
+                user_name: orderRequest?.created_by_user || "",
+                show: true
+              }}
               vehiclesSuggested={orderRequest?.transfer_order_vehicles}
               start_location={orderRequest?.start_location?.description ?? ""}
               end_location={orderRequest?.end_location?.description ?? ""}
@@ -63,8 +68,14 @@ export default function TabTransferOrder({ orderRequest }: PricingStepOneProps) 
               start_date_hour={dayjs.utc(orderRequest?.start_date).format("HH:mm") ?? ""}
               end_date={dayjs.utc(orderRequest?.end_date).format("YYYY-MM-DD")}
               end_date_hour={dayjs.utc(orderRequest?.end_date).format("HH:mm") ?? ""}
-              volume={orderRequest?.transfer_order_material?.reduce((acc, curr) => acc + curr.material[0].m3_volume, 0)}
-              weight={orderRequest?.transfer_order_material?.reduce((acc, curr) => acc + curr.material[0].kg_weight, 0)}
+              volume={orderRequest?.transfer_order_material?.reduce(
+                (acc, curr) => acc + curr.material[0].m3_volume,
+                0
+              )}
+              weight={orderRequest?.transfer_order_material?.reduce(
+                (acc, curr) => acc + curr.material[0].kg_weight,
+                0
+              )}
             />
           </Flex>
         </Col>
