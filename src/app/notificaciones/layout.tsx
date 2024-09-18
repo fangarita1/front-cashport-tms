@@ -6,9 +6,5 @@ export const metadata: Metadata = {
   description: "notificaciones por usuario"
 };
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <ViewWrapper headerTitle="Notificaciones" showNotifications>
-      {children}
-    </ViewWrapper>
-  );
+  return <ViewWrapper headerTitle="Notificaciones">{children}</ViewWrapper>;
 }

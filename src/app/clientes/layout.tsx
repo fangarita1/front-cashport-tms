@@ -14,11 +14,7 @@ interface ClientsLayoutProps {
 }
 
 const ClientsLayout: FC<ClientsLayoutProps> = ({ children }) => {
-  return (
-    <ViewWrapper headerTitle="Clientes" showNotifications>
-      {children}
-    </ViewWrapper>
-  );
+  return <ViewWrapper headerTitle="Clientes">{children}</ViewWrapper>;
 };
 
 export default ClientsLayout;
