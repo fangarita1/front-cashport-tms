@@ -606,7 +606,7 @@ export const CreateOrderView = () => {
   useEffect(() => {
     setDataVehicles([]);
     const needLifting = origenIzaje || destinoIzaje;
-    if (typeactive == "2" || (typeactive == "1" && needLifting)) {
+    if (typeactive == "1" && needLifting) {
       loadSuggestedVehicles(["1", "2"]);
     } else loadSuggestedVehicles([typeactive]);
   }, [typeactive, origenIzaje, destinoIzaje]);
