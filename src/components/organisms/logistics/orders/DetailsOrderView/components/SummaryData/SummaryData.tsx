@@ -24,6 +24,11 @@ interface SummaryDataProps {
   end_date_hour: string;
   freight_origin_time?: number;
   freight_destination_time?: number;
+  user_creator: {
+    user_name: string;
+    user_email: string;
+    show: boolean;
+  };
 }
 
 export const SummaryData = ({
@@ -33,6 +38,7 @@ export const SummaryData = ({
   timetravel,
   volume,
   weight,
+  user_creator,
   peopleQuantity,
   travelTypeDesc,
   vehiclesSuggested,
@@ -76,6 +82,36 @@ export const SummaryData = ({
             {!!weight && <p className={styles.subtitle}>{formatNumber(weight)} kg</p>}
           </Col>
         </Row>
+      )}
+      {user_creator.show && (
+        <>
+          <Row>
+            <Col
+              span={12}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                gap: "0.5rem"
+              }}
+            >
+              <p className={styles.subtitleReg}>Usuario creador</p>
+            </Col>
+            <Col
+              span={12}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.5rem",
+                alignItems: "flex-end"
+              }}
+            >
+              <p className={styles.bodyStrong}>{user_creator.user_name}</p>
+              <p className={styles.bodyStrong}>{user_creator.user_email}</p>
+            </Col>
+          </Row>
+          <Divider className={styles.divider} />
+        </>
       )}
       <Row>
         <Col span={12} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
