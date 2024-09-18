@@ -7,9 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <ViewWrapper headerTitle="Resumen del viaje" showNotifications>
-      {children}
-    </ViewWrapper>
-  );
+  return <ViewWrapper headerTitle="Resumen del viaje">{children}</ViewWrapper>;
 }
