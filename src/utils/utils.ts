@@ -2,6 +2,7 @@ import config from "@/config";
 import { ISelectedProject } from "@/lib/slices/createProjectSlice";
 import { IChanel } from "@/types/bre/IBRE";
 import { CountryCode } from "@/types/global/IGlobal";
+import { IComponentPermission } from "@/types/userPermissions/IUserPermissions";
 
 interface Subline {
   id: number;
@@ -352,12 +353,13 @@ export function formatNumber(num: number | string, decimals = 0) {
 
   const entireNumber = Math.floor(parsedNum);
   const formattedThousands = entireNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  const rest = (parsedNum - entireNumber);
+  const rest = parsedNum - entireNumber;
 
   // Convertir el número a una cadena y usar el método replace para añadir separadores de miles
-  return decimals ? `${formattedThousands},${Math.floor(Math.pow(10, decimals) * rest)}` : formattedThousands;
+  return decimals
+    ? `${formattedThousands},${Math.floor(Math.pow(10, decimals) * rest)}`
+    : formattedThousands;
 }
-
 
 export const checkUserViewPermissions = (
   selectedProject: ISelectedProject | undefined,
@@ -374,6 +376,47 @@ export const checkUserViewPermissions = (
     return false;
   }
 
-
   return viewPermissions.some((permission) => permission.page_name === view);
+};
+
+/**
+ * Verifie if the user has the required permissions to access a component.
+ * the function return the result of the checkFunction
+ *
+ * @param selectedProject {ISelectedProject | undefined}
+ * @param view {string}
+ * @param component {string}
+ * @param checkFunction {(permission: IComponentPermission) => boolean}
+ * @returns {boolean}
+ */
+export const checkUserComponentPermissions = (
+  selectedProject: ISelectedProject | undefined,
+  view: string,
+  component: string,
+  // eslint-disable-next-line no-unused-vars
+  checkFunction: (permission: IComponentPermission) => boolean
+): boolean => {
+  if (config.isLogistics && !view?.includes("TMS")) return false;
+  if (!selectedProject) return false;
+  if (selectedProject.isSuperAdmin) {
+    return true;
+  }
+
+  const viewPermissions = selectedProject.views_permissions;
+  if (!viewPermissions) {
+    return false;
+  }
+  
+  const haveViewPermission = viewPermissions.find((permission) => permission.page_name === view);
+  if (!haveViewPermission) {
+    return false;
+  }
+  console.log(view, component, "asd");
+  const componentPermission = haveViewPermission?.components.find(
+    (permission) => permission.component_name === component
+  );
+  if (!componentPermission) {
+    return false;
+  }
+  return checkFunction(componentPermission);
 };

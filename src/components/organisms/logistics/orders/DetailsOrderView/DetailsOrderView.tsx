@@ -155,6 +155,11 @@ export const DetailsOrderView = ({ idOrder = "" }: Props) => {
                   needLiftingOrigin={transferOrder?.start_freight_equipment}
                   needLiftingDestination={transferOrder?.end_freight_equipment}
                   travelTypeDesc={transferOrder?.service_type_desc ?? ""}
+                  user_creator={{
+                    user_email: transferOrder?.created_by || "",
+                    user_name: transferOrder?.created_by_user || "",
+                    show: true
+                  }}
                   vehiclesSuggested={transferOrder?.transfer_order_vehicles}
                   start_location={transferOrder?.start_location?.description ?? ""}
                   end_location={transferOrder?.end_location?.description ?? ""}

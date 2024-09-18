@@ -63,6 +63,11 @@ export default function SolicitationDetail({
               needLiftingOrigin={false}
               needLiftingDestination={false}
               travelTypeDesc={providerDetail?.service_type ?? ""}
+              user_creator={{
+                user_email: providerDetail?.created_by || "",
+                user_name: "",
+                show: false
+              }}
               start_location={providerDetail?.start_location ?? ""}
               end_location={providerDetail?.end_location ?? ""}
               start_date_flexible={"Exacto"}

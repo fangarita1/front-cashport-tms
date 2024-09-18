@@ -1620,6 +1620,7 @@ export interface ITransferOrderRequest {
   active: boolean;
   created_at: string;
   created_by: string;
+  created_by_user?: string;
   modified_at: string;
   modified_by: string;
   observation: string;
@@ -2032,6 +2033,7 @@ export interface ITransferOrder {
   active: string;
   created_at?: string | null | undefined;
   created_by?: string | null | undefined;
+  created_by_user?: string;
   modified_at?: string | null | undefined;
   modified_by?: string | null | undefined;
   observation: string | null | undefined;

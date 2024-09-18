@@ -20,6 +20,7 @@ interface INoveltyProps {
   setTripData: (data: { idCarrier: number; idVehicleType: number }) => void;
   resetNovelty: () => void;
   handleOpenMTModal: () => void;
+  validateDisabled: boolean;
 }
 
 export const Novelty: FC<INoveltyProps> = ({
@@ -30,7 +31,8 @@ export const Novelty: FC<INoveltyProps> = ({
   setTripId,
   setTripData,
   resetNovelty,
-  handleOpenMTModal
+  handleOpenMTModal,
+  validateDisabled
 }) => {
   const [key, setKey] = useState<number | null>(null);
 
@@ -160,6 +162,7 @@ export const Novelty: FC<INoveltyProps> = ({
                                 resetNovelty();
                               }}
                               className={styles.btn}
+                              disabled={validateDisabled}
                               type="text"
                               size="large"
                             >

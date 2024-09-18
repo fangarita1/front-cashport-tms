@@ -1,7 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import styles from "./details.module.scss";
-import Header from "@/components/organisms/header";
 import { CaretDoubleRight, CaretLeft, DotsThree } from "phosphor-react";
 import { Button, Drawer, Flex, message, Typography } from "antd";
 import { MainDescription } from "./main-description/MainDescription";
@@ -31,10 +29,8 @@ import { BillingTable } from "./billing-table/BillingTable";
 import { getBillingByTransferRequest } from "@/services/logistics/billing_list";
 import { BillingByCarrier } from "@/types/logistics/billing/billing";
 import ModalBillingMT from "@/components/molecules/modals/ModalBillingMT/ModalBillingMT";
-import { UploadFile } from "antd/lib";
 import ModalBillingAction from "@/components/molecules/modals/ModalBillingAction/ModalBillingAction";
 import { STATUS, STORAGE_TOKEN } from "@/utils/constants/globalConstants";
-import Container from "@/components/atoms/Container/Container";
 
 const Text = Typography;
 
@@ -87,6 +83,21 @@ export const TransferOrderDetails = () => {
   const { id } = useParams();
   const router = useRouter();
 
+  const validateDisabledByStatus = [
+    STATUS.TR.LEGALIZADO,
+    STATUS.BNG.POR_ACEPTAR,
+    STATUS.BNG.ACEPTADAS,
+    STATUS.BNG.PREAUTORIZADO,
+    STATUS.BNG.FACTURADO
+  ];
+
+  const validateDisabled = transferRequest
+    ? validateDisabledByStatus.includes(transferRequest.status_id)
+    : false;
+  const validateCreateDisabled = transferRequest
+    ? [...validateDisabledByStatus, STATUS.TR.POR_LEGALIZAR].includes(transferRequest.status_id)
+    : false;
+
   const findNoveltyDetail = async (id: number) => {
     setIsCreateNovelty(false);
     const data = await getNoveltyDetail(id);
@@ -134,6 +145,7 @@ export const TransferOrderDetails = () => {
             handleOpenMTModal={handleOpenMTModal}
             setTripData={setTripData}
             resetNovelty={() => setNovelty(null)}
+            validateDisabled={validateCreateDisabled}
           />
         );
       case NavEnum.VEHICLES:
@@ -368,6 +380,7 @@ export const TransferOrderDetails = () => {
             novelty={novelty}
             handleEdit={handleEdit}
             approbeOrReject={approbeOrReject}
+            validateDisabled={validateDisabled}
           />
         ) : (
           <DrawerCreateBody

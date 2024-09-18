@@ -15,7 +15,7 @@ export async function downloadCSVFromEndpoint(endpoint: string, filename: string
     const csvData = response.data;
 
     // Crear un Blob con los datos CSV
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([`\uFEFF${csvData}`], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.href = url;

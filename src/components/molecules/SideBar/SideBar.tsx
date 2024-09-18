@@ -64,6 +64,7 @@ export const SideBar = () => {
             ID: project.project_id,
             NAME: project.name,
             LOGO: project.logo ? project.logo : "",
+            rol_id: project.rol_id,
             views_permissions: project.views_permissions,
             action_permissions: project.action_permissions,
             isSuperAdmin: project.is_super_admin
@@ -75,6 +76,7 @@ export const SideBar = () => {
             ID: response?.data[0].project_id,
             NAME: response?.data[0].name,
             LOGO: response?.data[0].logo ? response?.data[0].logo : "",
+            rol_id: response?.data[0].rol_id,
             views_permissions: response?.data[0].views_permissions,
             action_permissions: response?.data[0].action_permissions,
             isSuperAdmin: response?.data[0].is_super_admin
