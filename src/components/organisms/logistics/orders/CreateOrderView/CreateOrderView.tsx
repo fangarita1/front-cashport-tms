@@ -104,6 +104,7 @@ import createColumnsMaterials from "./controllers/materials/columns";
 import createColumnsPersons from "./controllers/persons/columns";
 import { useRequirementManagement } from "./controllers/hooks/useRequirementManagment";
 import createOtherRequirementsColumns from "./controllers/otherRequirements/columns";
+import Container from "@/components/atoms/Container/Container";
 
 const { Title, Text } = Typography;
 
@@ -575,7 +576,7 @@ export const CreateOrderView = () => {
           <div style={{ display: "flex", alignItems: "center" }}>
             <Col span={20}>
               <Text>
-                <b>{item.description}</b>
+                <b>{item?.description}</b>
                 <br />
                 Largo {item.length}m - Ancho {item.width}m - Alto {item.height}m - Máximo{" "}
                 {item.kg_capacity}Tn
@@ -2192,129 +2193,114 @@ export const CreateOrderView = () => {
   ];
 
   return (
-    <>
+    <Container>
       {contextHolder}
-      <main className="mainCreateOrder">
-        <SideBar />
-        <Flex vertical className="containerCreateOrder">
-          <Flex className="infoHeaderOrder">
-            <Flex gap={"2rem"}>
-              <Title level={2} className="titleName">
-                Crear Nuevo Viaje
-              </Title>
-            </Flex>
-            <Flex component={"navbar"} align="center" justify="space-between">
-              <NavRightSection />
-            </Flex>
-          </Flex>
-          {/* ------------Main Info Order-------------- */}
-          <Flex className="orderContainer">
-            <Row style={{ width: "100%" }}>
-              <Col span={24} style={{ marginBottom: "1.5rem" }}>
-                <Flex gap="middle">
-                  <button
-                    type="button"
+      {/* ------------Main Info Order-------------- */}
+      <Flex className="orderContainer">
+        <Row style={{ width: "100%" }}>
+          <Col span={24} style={{ marginBottom: "1.5rem" }}>
+            <Flex gap="middle">
+              <button
+                type="button"
+                id={"1"}
+                className={["tripTypes", typeactive === "1" ? "active" : undefined].join(" ")}
+                onClick={handleTypeClick}
+              >
+                <div className="tripTypeIcons">
+                  <img
+                    className="icon"
+                    loading="lazy"
+                    alt=""
+                    src="/images/logistics/truck.svg"
                     id={"1"}
-                    className={["tripTypes", typeactive === "1" ? "active" : undefined].join(" ")}
                     onClick={handleTypeClick}
-                  >
-                    <div className="tripTypeIcons">
-                      <img
-                        className="icon"
-                        loading="lazy"
-                        alt=""
-                        src="/images/logistics/truck.svg"
-                        id={"1"}
-                        onClick={handleTypeClick}
-                      />
-                      <div className="text" id={"1"} onClick={handleTypeClick}>
-                        Carga
-                      </div>
-                    </div>
-                  </button>
-                  <button
-                    type="button"
+                  />
+                  <div className="text" id={"1"} onClick={handleTypeClick}>
+                    Carga
+                  </div>
+                </div>
+              </button>
+              <button
+                type="button"
+                id={"2"}
+                className={["tripTypes", typeactive === "2" ? "active" : undefined].join(" ")}
+                onClick={handleTypeClick}
+              >
+                <div className="tripTypeIcons">
+                  <img
+                    className="icon"
+                    loading="lazy"
+                    alt=""
+                    src="/images/logistics/izaje.svg"
                     id={"2"}
-                    className={["tripTypes", typeactive === "2" ? "active" : undefined].join(" ")}
                     onClick={handleTypeClick}
-                  >
-                    <div className="tripTypeIcons">
-                      <img
-                        className="icon"
-                        loading="lazy"
-                        alt=""
-                        src="/images/logistics/izaje.svg"
-                        id={"2"}
-                        onClick={handleTypeClick}
-                      />
-                      <div className="text" id={"2"} onClick={handleTypeClick}>
-                        Izaje
-                      </div>
-                    </div>
-                  </button>
-                  <button
-                    type="button"
+                  />
+                  <div className="text" id={"2"} onClick={handleTypeClick}>
+                    Izaje
+                  </div>
+                </div>
+              </button>
+              <button
+                type="button"
+                id={"3"}
+                className={["tripTypes", typeactive === "3" ? "active" : undefined].join(" ")}
+                onClick={handleTypeClick}
+              >
+                <div className="tripTypeIcons">
+                  <img
+                    className="icon"
+                    loading="lazy"
+                    alt=""
+                    src="/images/logistics/users.svg"
                     id={"3"}
-                    className={["tripTypes", typeactive === "3" ? "active" : undefined].join(" ")}
                     onClick={handleTypeClick}
-                  >
-                    <div className="tripTypeIcons">
-                      <img
-                        className="icon"
-                        loading="lazy"
-                        alt=""
-                        src="/images/logistics/users.svg"
-                        id={"3"}
-                        onClick={handleTypeClick}
-                      />
-                      <div className="text" id={"3"} onClick={handleTypeClick}>
-                        Personal
-                      </div>
-                    </div>
-                  </button>
-                </Flex>
-              </Col>
-              <Col span={24}>
-                <Collapse
-                  className="collapseByAction"
-                  expandIconPosition="end"
-                  accordion={false}
-                  ghost
-                  items={actionsOptions}
-                  defaultActiveKey={["2"]}
-                />
-              </Col>
-              <Col
-                span={24}
-                style={{
-                  marginTop: "1.5rem",
-                  marginBottom: "1.5rem",
-                  display: "flex",
-                  justifyContent: "flex-end"
+                  />
+                  <div className="text" id={"3"} onClick={handleTypeClick}>
+                    Personal
+                  </div>
+                </div>
+              </button>
+            </Flex>
+          </Col>
+          <Col span={24}>
+            <Collapse
+              className="collapseByAction"
+              expandIconPosition="end"
+              accordion={false}
+              ghost
+              items={actionsOptions}
+              defaultActiveKey={["2"]}
+            />
+          </Col>
+          <Col
+            span={24}
+            style={{
+              marginTop: "1.5rem",
+              marginBottom: "1.5rem",
+              display: "flex",
+              justifyContent: "flex-end"
+            }}
+          >
+            <Flex gap="middle" align="flex-end">
+              <Button
+                disabled={!isButtonSubmitEnabled}
+                className="active"
+                style={{ fontWeight: "bold" }}
+                onClick={() => {
+                  onCreateOrder();
                 }}
               >
-                <Flex gap="middle" align="flex-end">
-                  <Button
-                    disabled={!isButtonSubmitEnabled}
-                    className="active"
-                    style={{ fontWeight: "bold" }}
-                    onClick={() => {
-                      onCreateOrder();
-                    }}
-                  >
-                    Confirmar
-                  </Button>
-                </Flex>
-              </Col>
-            </Row>
-          </Flex>
-        </Flex>
-      </main>
+                Confirmar
+              </Button>
+            </Flex>
+          </Col>
+        </Row>
+      </Flex>
       <ModalAddContact
         isOpen={isOpenModalContacts}
         onClose={() => setIsOpenModalContacts(false)}
         setDataContacts={setDataContacts}
       />
-    </>
+    </Container>
   );
 };

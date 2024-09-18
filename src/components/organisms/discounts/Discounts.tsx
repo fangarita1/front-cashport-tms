@@ -10,6 +10,7 @@ import DropdownDiscount from "@/components/molecules/dropdown/discount/DropdownD
 import { ModalDeleteDiscount } from "@/components/molecules/modals/modalDeleteDiscount/ModalDeleteDiscount";
 import Link from "next/link";
 import ButtonHeader from "@/components/atoms/buttons/buttonHeader/ButtonHeader";
+import Container from "@/components/atoms/Container/Container";
 
 export default function Discounts() {
   const [messageApi, messageContex] = message.useMessage();
@@ -26,42 +27,40 @@ export default function Discounts() {
     handleDeactivate
   } = useDiscount({ messageApi });
   return (
-    <>
+    <Container>
       {messageContex}
-      <Flex className={styles.FlexContainer} vertical gap={20}>
-        <Flex gap={20} justify="space-between" wrap="wrap">
-          <Flex className={styles.header} gap={"10px"}>
-            <UiSearchInput placeholder="Buscar" onChange={handleChangeSearch} />
-            <FilterDiscounts handleChangeActive={handleChangeActive} />
-            <DropdownDiscount
-              disableDelete={!data.some((item) => item.checked)}
-              handleDeleteDiscount={modalDelete.handleOpen}
-            />
-          </Flex>
-          <Flex vertical style={{ width: "fit-content" }}>
-            <Link href="/descuentos/create" passHref legacyBehavior>
-              <ButtonHeader>Crear descuento</ButtonHeader>
-            </Link>
-          </Flex>
+      <Flex gap={20} className={styles.header}>
+        <Flex className={styles.headerFilters} gap={"10px"}>
+          <UiSearchInput placeholder="Buscar" onChange={handleChangeSearch} />
+          <FilterDiscounts handleChangeActive={handleChangeActive} />
+          <DropdownDiscount
+            disableDelete={!data.some((item) => item.checked)}
+            handleDeleteDiscount={modalDelete.handleOpen}
+          />
         </Flex>
-        <Table
-          scroll={{ y: "61dvh", x: undefined }}
-          columns={discountsColumns({
-            handleSelect: handleSelectToDelete,
-            handleDeactivate: handleDeactivate
-          })}
-          dataSource={data}
-          loading={loading}
-          pagination={{
-            pageSize: 25,
-            showSizeChanger: false,
-            total: res?.pagination.totalPages || 0,
-            onChange: handleChangePage,
-            itemRender: TablePaginator,
-            current: page
-          }}
-        />
+        <Flex vertical style={{ width: "fit-content" }}>
+          <Link href="/descuentos/create" passHref legacyBehavior>
+            <ButtonHeader>Crear descuento</ButtonHeader>
+          </Link>
+        </Flex>
       </Flex>
+      <Table
+        scroll={{ y: "61dvh", x: undefined }}
+        columns={discountsColumns({
+          handleSelect: handleSelectToDelete,
+          handleDeactivate: handleDeactivate
+        })}
+        dataSource={data}
+        loading={loading}
+        pagination={{
+          pageSize: 25,
+          showSizeChanger: false,
+          total: res?.pagination.totalPages || 0,
+          onChange: handleChangePage,
+          itemRender: TablePaginator,
+          current: page
+        }}
+      />
       {/* -----------------Modals----------------- */}
       <ModalDeleteDiscount
         isOpen={modalDelete.isOpen}
@@ -69,6 +68,6 @@ export default function Discounts() {
         onClose={modalDelete.handleClose}
         onRemove={modalDelete.removeDiscountAction}
       />
-    </>
+    </Container>
   );
 }

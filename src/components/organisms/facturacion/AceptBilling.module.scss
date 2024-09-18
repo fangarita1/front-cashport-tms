@@ -9,9 +9,9 @@
   overflow-y: auto;
   border-radius: 0.5rem;
   border: 1px solid $dark-gray;
-  .filters {
-    display: flex;
-    align-items: center;
-    height: 48px;
-  }
+}
+.filters {
+  display: flex;
+  align-items: center;
+  height: 48px;
 }

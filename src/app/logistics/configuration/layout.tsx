@@ -1,12 +1,8 @@
 "use client";
-
-import { Flex, Row, Col, Tabs, TabsProps } from "antd";
-import { SideBar } from "@/components/molecules/SideBar/SideBar";
-import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSection";
+import { Tabs } from "antd";
 import { usePathname, useRouter } from "next/navigation";
-import styles from "./configuration.module.scss";
-import { SectionTitle } from "@/components/atoms/SectionTitle/SectionTitle";
-import { number } from "yup";
+import ViewWrapper from "@/components/organisms/ViewWrapper/ViewWrapper";
+import Container from "@/components/atoms/Container/Container";
 import { TMS_COMPONENTS, TMSMODULES } from "@/utils/constants/globalConstants";
 import { checkUserComponentPermissions } from "@/utils/utils";
 import { useAppStore } from "@/lib/store/store";
@@ -99,30 +95,16 @@ const ConfigurationLayout = ({ children, params }: Props) => {
   ];
 
   return (
-    <main className={styles.mainCreateOrder}>
-      <SideBar />
-      <Flex vertical className={styles.containerCreateOrder}>
-        <Flex className={styles.infoHeaderOrder}>
-          <SectionTitle title="Configuración" />
-          <Flex align="center" justify="space-between">
-            <NavRightSection />
-          </Flex>
-        </Flex>
-        {/* ------------Main Info Order-------------- */}
-        <Flex className={styles.suppliersTabsContainer}>
-          <Row style={{ width: "100%" }}>
-            <Col span={24}>
-              <Tabs
-                defaultActiveKey={getDefaultValue()}
-                items={items.filter((x: any) => !x.hidden)}
-                onChange={onChange}
-              />
-            </Col>
-            {children}
-          </Row>
-        </Flex>
-      </Flex>
-    </main>
+    <ViewWrapper headerTitle="Configuración">
+      <Container>
+        <Tabs
+          defaultActiveKey={getDefaultValue()}
+          items={items.filter((x: any) => !x.hidden)}
+          onChange={onChange}
+        />
+        {children}
+      </Container>
+    </ViewWrapper>
   );
 };
 

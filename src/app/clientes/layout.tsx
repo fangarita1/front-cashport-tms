@@ -1,5 +1,6 @@
 import { SideBar } from "@/components/molecules/SideBar/SideBar";
 import Header from "@/components/organisms/header";
+import ViewWrapper from "@/components/organisms/ViewWrapper/ViewWrapper";
 import { Metadata } from "next";
 import { FC, ReactNode } from "react";
 
@@ -14,13 +15,9 @@ interface ClientsLayoutProps {
 
 const ClientsLayout: FC<ClientsLayoutProps> = ({ children }) => {
   return (
-    <div className="page">
-      <SideBar />
-      <div className="mainContent">
-        <Header title="Clientes" />
-        {children}
-      </div>
-    </div>
+    <ViewWrapper headerTitle="Clientes" showNotifications>
+      {children}
+    </ViewWrapper>
   );
 };
 

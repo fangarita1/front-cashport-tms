@@ -1,21 +1,14 @@
 import { Metadata } from "next";
-import Notification from "./page";
-import Header from "@/components/organisms/header";
-import { SideBar } from "@/components/molecules/SideBar/SideBar";
+import ViewWrapper from "@/components/organisms/ViewWrapper/ViewWrapper";
 
 export const metadata: Metadata = {
   title: "Notificaciones",
   description: "notificaciones por usuario"
 };
-const NotificationLayout = () => {
+export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="page">
-      <SideBar />
-      <div className="mainContent">
-        <Header title="Notificationes" />
-        <Notification />
-      </div>
-    </div>
+    <ViewWrapper headerTitle="Notificaciones" showNotifications>
+      {children}
+    </ViewWrapper>
   );
-};
-export default NotificationLayout;
+}

@@ -56,7 +56,6 @@ export const CreateOrderView: FC = () => {
       }}
     >
       <div className={styles.ordersView}>
-        <h2 className={styles.title}>Crear orden</h2>
         {!client?.name ? (
           <SearchClient />
         ) : (
