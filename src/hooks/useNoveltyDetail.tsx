@@ -26,6 +26,7 @@ export interface IIncidentDetail {
   invoice_client_value: number;
   approvers_users: string;
   events: IEvent[];
+  is_rejected: number;
 }
 
 interface IIncidentDetailResponse {
