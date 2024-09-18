@@ -6,6 +6,8 @@ type Props = {
   id_type_service: number;
   start_location_desc: string;
   end_location_desc: string;
+  is_community?: boolean;
+  community_name?: string;
   tag: any;
   openTabs: number[];
   setOpenTabs: any;
@@ -15,10 +17,12 @@ export default function JourneyCollapse({
   id_type_service,
   start_location_desc,
   end_location_desc,
+  is_community = false,
+  community_name,
   openTabs,
   setOpenTabs,
   tag
-}: Props) {
+}: Readonly<Props>) {
   const handleChange = () => {
     if (openTabs.includes(index)) {
       setOpenTabs(openTabs.filter((a) => a !== index));
@@ -38,6 +42,8 @@ export default function JourneyCollapse({
           start_location_desc={start_location_desc}
           end_location_desc={end_location_desc}
           handleChange={handleChange}
+          community_name={community_name}
+          is_community={is_community}
         />
       ),
       showArrow: false,
