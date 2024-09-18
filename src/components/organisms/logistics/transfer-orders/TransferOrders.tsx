@@ -13,6 +13,7 @@ import { DotsThree, Plus } from "phosphor-react";
 import { transferOrderMerge } from "@/services/logistics/transfer-request";
 import { useRouter, useSearchParams } from "next/navigation";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
+import Container from "@/components/atoms/Container/Container";
 
 const { Text } = Typography;
 
@@ -86,64 +87,58 @@ export const TransferOrders = () => {
   };
 
   return (
-    <div className={styles.mainTransferOrders}>
-      <SideBar />
-      <div className={styles.content}>
-        <Header title="Ordenes de transferencia" />
-        <div className={styles.card}>
-          <Flex justify="space-between" style={{ marginBottom: "1rem" }}>
-            <div className={styles.filterContainer}>
-              <UiSearchInput
-                className="search"
-                placeholder="Buscar"
-                onChange={(event) => {
-                  setSearch(event.target.value);
-                }}
-              />
-              <FilterProjects setSelecetedProjects={setSelectFilters} />
-              <PrincipalButton
-                type="default"
-                icon={<DotsThree size={"1.5rem"} />}
-                disabled={ordersId.length === 0}
-                onClick={handleCreateTransferRequest}
-                loading={isLoading}
-              >
-                Generar TR
-              </PrincipalButton>
-            </div>
-            <PrincipalButton
-              type="primary"
-              className="buttonNewProject"
-              size="large"
-              href="/logistics/orders/new"
-            >
-              Crear Nuevo Viaje
-              {<Plus weight="bold" size={14} />}
-            </PrincipalButton>
-          </Flex>
-          <div className={styles.tabContainer} style={{ marginBottom: "0.5rem" }}>
-            <Text
-              onClick={() => setTab(TabEnum.REQUESTS)}
-              className={`${styles.tab} ${tab === TabEnum.REQUESTS && styles.active}`}
-            >
-              Solicitudes
-            </Text>
-            <Text
-              onClick={() => setTab(TabEnum.IN_PROCESS)}
-              className={`${styles.tab} ${tab === TabEnum.IN_PROCESS && styles.active}`}
-            >
-              En curso
-            </Text>
-            <Text
-              onClick={() => setTab(TabEnum.COMPLETED)}
-              className={`${styles.tab} ${tab === TabEnum.COMPLETED && styles.active}`}
-            >
-              Finalizados
-            </Text>
-          </div>
-          <div>{renderView()}</div>
+    <Container>
+      <Flex justify="space-between" style={{ marginBottom: "1rem" }}>
+        <div className={styles.filterContainer}>
+          <UiSearchInput
+            className="search"
+            placeholder="Buscar"
+            onChange={(event) => {
+              setSearch(event.target.value);
+            }}
+          />
+          <FilterProjects setSelecetedProjects={setSelectFilters} />
+          <PrincipalButton
+            type="default"
+            icon={<DotsThree size={"1.5rem"} />}
+            disabled={ordersId.length === 0}
+            onClick={handleCreateTransferRequest}
+            loading={isLoading}
+          >
+            Generar TR
+          </PrincipalButton>
         </div>
+        <PrincipalButton
+          type="primary"
+          className="buttonNewProject"
+          size="large"
+          href="/logistics/orders/new"
+        >
+          Crear Nuevo Viaje
+          {<Plus weight="bold" size={14} />}
+        </PrincipalButton>
+      </Flex>
+      <div className={styles.tabContainer} style={{ marginBottom: "0.5rem" }}>
+        <Text
+          onClick={() => setTab(TabEnum.REQUESTS)}
+          className={`${styles.tab} ${tab === TabEnum.REQUESTS && styles.active}`}
+        >
+          Solicitudes
+        </Text>
+        <Text
+          onClick={() => setTab(TabEnum.IN_PROCESS)}
+          className={`${styles.tab} ${tab === TabEnum.IN_PROCESS && styles.active}`}
+        >
+          En curso
+        </Text>
+        <Text
+          onClick={() => setTab(TabEnum.COMPLETED)}
+          className={`${styles.tab} ${tab === TabEnum.COMPLETED && styles.active}`}
+        >
+          Finalizados
+        </Text>
       </div>
-    </div>
+      <div>{renderView()}</div>
+    </Container>
   );
 };

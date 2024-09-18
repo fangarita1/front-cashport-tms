@@ -7,6 +7,7 @@ import FiltersNotifications from "@/components/atoms/Filters/FiltersNotification
 import { formatDateAndTime } from "@/utils/utils";
 import { Check, Eye, X } from "phosphor-react";
 import { notifications } from "./mockdata";
+import Container from "@/components/atoms/Container/Container";
 
 const ListPanel = [
   { key: "pending", value: "Pendientes" },
@@ -65,7 +66,7 @@ export const NotificationsView = () => {
   };
 
   return (
-    <div className="notificationView">
+    <Container>
       <Tabs
         defaultActiveKey="1"
         style={{ height: 220 }}
@@ -92,6 +93,6 @@ export const NotificationsView = () => {
           };
         })}
       />
-    </div>
+    </Container>
   );
 };

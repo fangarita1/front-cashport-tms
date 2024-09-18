@@ -1,12 +1,5 @@
 @import "@styles/variables.scss";
 
-.mainClientsTable {
-    width: 100%;
-    background-color: $white;
-    padding-bottom: 0;
-    margin-top: 1.5rem;
-    padding: 1rem 2rem;
-    border-radius: 0.5rem;
 
     .ant-table-cell {
         white-space: nowrap;
@@ -56,4 +49,3 @@
             color: black !important;
         }
     }
-}

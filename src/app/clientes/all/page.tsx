@@ -3,11 +3,7 @@
 import { ClientsViewTable } from "@/components/organisms/Customers/ClientsViewTable/ClientsViewTable";
 
 function ClientsPage() {
-  return (
-    <>
-      <ClientsViewTable />
-    </>
-  );
+  return <ClientsViewTable />;
 }
 
 export default ClientsPage;

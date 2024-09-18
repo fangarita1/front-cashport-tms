@@ -6,6 +6,8 @@ import { NavRightSection } from "@/components/atoms/NavRightSection/NavRightSect
 import { usePathname, useRouter } from "next/navigation";
 import "./provider.scss";
 import "@/styles/_variables_logistics.css";
+import ViewWrapper from "@/components/organisms/ViewWrapper/ViewWrapper";
+import Container from "@/components/atoms/Container/Container";
 
 interface Props {
   children?: React.ReactNode;
@@ -52,30 +54,12 @@ const ProviderInfoView = ({ children, params }: Props) => {
   ];
 
   return (
-    <main className="mainCreateOrder">
-      <SideBar />
-      <Flex vertical className="containerCreateOrder">
-        <Flex className="infoHeaderOrder">
-          <Flex gap={"2rem"}>
-            <Title level={2} className="titleName">
-              Proveedores
-            </Title>
-          </Flex>
-          <Flex align="center" justify="space-between">
-            <NavRightSection />
-          </Flex>
-        </Flex>
-        {/* ------------Main Info Order-------------- */}
-        <Flex className="suppliersTabsContainer">
-          <Row style={{ width: "100%" }}>
-            <Col span={24}>
-              <Tabs defaultActiveKey={getDefaultValue()} items={items} onChange={onChange}></Tabs>
-            </Col>
-            {children}
-          </Row>
-        </Flex>
-      </Flex>
-    </main>
+    <ViewWrapper headerTitle="Proveedores">
+      <Container>
+        <Tabs defaultActiveKey={getDefaultValue()} items={items} onChange={onChange} />
+        {children}
+      </Container>
+    </ViewWrapper>
   );
 };
 

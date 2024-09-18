@@ -1,8 +1,11 @@
+import ViewWrapper from "@/components/organisms/ViewWrapper/ViewWrapper";
 import { Metadata } from "next";
-import CreateOrderView from "./page";
+import { ReactNode } from "react";
 export const metadata: Metadata = {
   title: "Crear Pedido",
   description: "Crear Pedido"
 };
 
-export default CreateOrderView;
+export default function PedidoLayout({ children }: Readonly<{ children: ReactNode }>) {
+  return <ViewWrapper headerTitle="Crear orden">{children}</ViewWrapper>;
+}

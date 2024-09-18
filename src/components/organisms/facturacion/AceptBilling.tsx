@@ -6,6 +6,7 @@ import styles from "./AceptBilling.module.scss";
 import { getAllBillingList } from "@/services/billings/billings";
 import { useEffect, useState } from "react";
 import { FilterProjects } from "@/components/atoms/Filters/FilterProjects/FilterProjects";
+import Container from "@/components/atoms/Container/Container";
 
 export default function AceptBilling() {
   const [billings, setBillings] = useState<any[]>([]);
@@ -26,7 +27,7 @@ export default function AceptBilling() {
   };
 
   return (
-    <div className={styles.wrapper}>
+    <Container>
       <Flex className={styles.filters} style={{ marginBottom: "0.5rem" }} gap={8}>
         <UiSearchInput
           placeholder="Buscar"
@@ -39,6 +40,6 @@ export default function AceptBilling() {
         <FilterProjects setSelecetedProjects={setSelectFilters} height="48" />
       </Flex>
       <AceptBillingView billings={billings} loading={loading} />
-    </div>
+    </Container>
   );
 }

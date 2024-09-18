@@ -12,6 +12,8 @@ import "./projectstable.scss";
 import UiSearchInput from "@/components/ui/search-input";
 import { countries } from "@/utils/countries";
 import { DotsDropdown } from "@/components/atoms/DotsDropdown/DotsDropdown";
+import Container from "@/components/atoms/Container/Container";
+import SecondaryButton from "@/components/atoms/buttons/secondaryButton/SecondaryButton";
 
 const { Text } = Typography;
 
@@ -56,7 +58,7 @@ export const ProjectTable = () => {
     }
   }, [error]);
   return (
-    <main className="mainProjectsTable">
+    <Container>
       {contextHolder}
       <Flex justify="space-between" className="mainProjectsTable_header">
         <Flex gap={"10px"}>
@@ -99,7 +101,7 @@ export const ProjectTable = () => {
         }}
         dataSource={projects}
       />
-    </main>
+    </Container>
   );
 };
 
