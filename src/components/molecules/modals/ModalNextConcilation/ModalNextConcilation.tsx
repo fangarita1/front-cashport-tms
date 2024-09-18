@@ -27,8 +27,19 @@ export const ModalNextConcilation = ({ visible, onClose, changeView, invoices }:
         </div>
         <h2>¡Cartera conciliada!</h2>
         <h3>El {calculatePercentage(invoices).toFixed(2)}% de la cartera fue conciliada</h3>
-        {invoices && invoices.reconciled_invoices.invoices.length > 0 && (
-          <p> {invoices?.invoices_with_differences.quantity} facturas con diferencia de precios</p>
+        {invoices && (
+          <>
+            <p className="text_conciliation">
+              Factura conciliadas: {invoices.reconciled_invoices.invoices.length}
+            </p>
+            <p className="text_conciliation">
+              Facturas con diferencia de precios:{" "}
+              {invoices.invoices_with_differences.invoices.length}
+            </p>
+            <p className="text_conciliation">
+              Facturas no cargadas: {invoices.invoices_not_found?.invoices?.length}
+            </p>
+          </>
         )}
 
         <div className="button-row">
