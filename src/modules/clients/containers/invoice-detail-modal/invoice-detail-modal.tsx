@@ -251,12 +251,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                     ID del ajuste:
                                     <div
                                       className={styles.idAdjustment}
-                                      onClick={() =>
-                                        item.financial_discount_id &&
-                                        handelOpenAdjusmentDetail(item.financial_discount_id)
-                                      }
+                                      onClick={() => item.id && handelOpenAdjusmentDetail(item.id)}
                                     >
-                                      {item.financial_discount_id ?? "N/A"}
+                                      {item.id ?? "N/A"}
                                     </div>
                                   </div>
                                 </div>
