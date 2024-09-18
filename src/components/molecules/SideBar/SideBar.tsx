@@ -85,7 +85,11 @@ export const SideBar = () => {
         <button className="logoContainer" onClick={() => setModalProjectSelectorOpen(true)}>
           {LOGO ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img alt="logo company" src={LOGO.trim()} className="logoContainer__image" />
+            <img
+              alt="logo company"
+              src={`${LOGO.trim()}?v=${new Date().getTime()}`}
+              className="logoContainer__image"
+            />
           ) : (
             <Avatar shape="square" className="imageWithoutImage" size={50} icon={<Clipboard />} />
           )}
