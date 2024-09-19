@@ -22,6 +22,8 @@ export interface JourneyTripPricing {
   end_location_desc: string;
   id_type_service: number;
   trips: TripCarriersPricing[];
+  community_name?: string;
+  is_community?: boolean;
 }
 
 export interface TripCarriersPricing {

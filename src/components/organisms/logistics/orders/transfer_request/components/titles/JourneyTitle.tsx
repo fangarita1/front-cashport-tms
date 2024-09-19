@@ -1,6 +1,7 @@
 import { CraneTower } from "@phosphor-icons/react";
 import { Typography } from "antd";
 import { CaretDown, Truck, User } from "phosphor-react";
+import CommunityIcon from "../communityIcon/CommunityIcon";
 
 const { Text } = Typography;
 
@@ -11,6 +12,8 @@ type Props = {
   start_location_desc: string;
   end_location_desc: string;
   handleChange: () => void;
+  is_community?: boolean;
+  community_name?: string;
 };
 const TitleComponent = ({
   id_type_service,
@@ -18,6 +21,8 @@ const TitleComponent = ({
   isOpen,
   start_location_desc,
   end_location_desc,
+  is_community = false,
+  community_name,
   handleChange
 }: Props) => {
   const serviceType =
@@ -30,15 +35,15 @@ const TitleComponent = ({
   return (
     <div className="collapseHeader" onClick={() => handleChange()}>
       <div className="collapseJustify">
-        <div className="collapseStateContainer">
-          {serviceType.icon}
-          <Text className="collapseState">{serviceType.title}</Text>
+        <div style={{ display: "flex", gap: 16 }}>
+          <div className="collapseStateContainer">
+            {serviceType.icon}
+            <Text className="collapseState">{serviceType.title}</Text>
+          </div>
+          {is_community && <CommunityIcon communityName={community_name} withTooltip />}
         </div>
         <div>
-          <CaretDown
-            className={`collapseCaret ${isOpen && "collapseRotate"}`}
-            size={24}
-          />
+          <CaretDown className={`collapseCaret ${isOpen && "collapseRotate"}`} size={24} />
         </div>
       </div>
       <div className="collapseFromTo">

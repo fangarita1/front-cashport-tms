@@ -20,6 +20,8 @@ interface VehiclesSelectionProps {
   id_type_service: number;
   journey: ITransferRequestJourneyInfo;
   setIsNextStepActive: React.Dispatch<React.SetStateAction<boolean>>;
+  is_community?: boolean;
+  community_name?: string;
 }
 
 const VehiclesSelection: FC<VehiclesSelectionProps> = ({
@@ -30,7 +32,9 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
   end_location_desc,
   id_type_service,
   journey,
-  setIsNextStepActive
+  setIsNextStepActive,
+  is_community = false,
+  community_name
 }) => {
   const { data, isLoading: isLoadingVehicles } = useSWR(
     { id_journey },
@@ -269,6 +273,8 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
       tag={tag}
       openTabs={openTabs}
       setOpenTabs={setOpenTabs}
+      is_community={is_community}
+      community_name={community_name}
     />
   );
 };

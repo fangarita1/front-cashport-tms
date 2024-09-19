@@ -874,6 +874,8 @@ export default function PricingTransferRequest({
                       end_location_desc={a.end_location_desc}
                       id_type_service={a.id_type_service}
                       setIsNextStepActive={setIsNextStepActive}
+                      is_community={a.is_community}
+                      community_name={a.community_name}
                     />
                   ))}
                 </Flex>

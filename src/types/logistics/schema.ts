@@ -1594,6 +1594,8 @@ export interface ITrackingResponse extends ITrackingPartial {
   start_location_desc: string;
   end_location_desc: string;
   type_service_desc: string;
+  is_community?: boolean;
+  community_name?: string;
 }
 
 /**
@@ -1940,6 +1942,8 @@ export interface ITransferRequestJourneyInfo {
   start_location_desc: string;
   end_location_desc: string;
   trips: IVehiclesPricingTrips[];
+  is_community?: boolean;
+  community_name?: string;
 }
 /**
  * Exposes all fields present in transfer_request_journey_review as a typescript
