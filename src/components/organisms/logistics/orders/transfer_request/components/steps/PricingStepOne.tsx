@@ -1,4 +1,9 @@
-import { IMaterial, ITransferOrderPersons, ITransferOrderRequest, ITransferOrdersRequest } from "@/types/logistics/schema";
+import {
+  IMaterial,
+  ITransferOrderPersons,
+  ITransferOrderRequest,
+  ITransferOrdersRequest
+} from "@/types/logistics/schema";
 import { Button, Col, Collapse, Flex, Row, Table, TableProps, Tabs, Typography } from "antd";
 import TabTransferOrder from "../tabMap/TabTransferOrder";
 import { Radioactive } from "@phosphor-icons/react";
@@ -230,7 +235,7 @@ export default function PricingStepOne({ ordersId, orders }: Readonly<PricingSte
           )}
           {orderRequest?.id_service_type == 3 && (
             <>
-            {console.log(orderRequest.transfer_order_persons)}
+              {console.log(orderRequest.transfer_order_persons)}
               <Table
                 columns={columnsCargaPersonas}
                 dataSource={
@@ -250,33 +255,17 @@ export default function PricingStepOne({ ordersId, orders }: Readonly<PricingSte
         <Tabs defaultActiveKey={String(ordersId[0])}>
           {ordersId.map((a) => (
             <TabPane key={a} tab={<h4>{a}</h4>} style={{ padding: "24px 0" }}>
-              <Flex style={{ width: "100%", flexDirection: "column" }} className="contentRow">
-                <Flex style={{ padding: "24px 0", flexDirection: "column" }}>
-                  <Flex>
-                    <h5
-                      style={{
-                        fontWeight: "600",
-                        fontSize: "24px",
-                        lineHeight: "32px"
-                      }}
-                    >
-                      {a}
-                    </h5>
-                  </Flex>
-                </Flex>
-
-                <Flex style={{ flexDirection: "column" }}>
-                  <Collapse
-                    defaultActiveKey={"0"}
-                    className="collapseByAction"
-                    style={{ width: "100%" }}
-                    expandIconPosition="end"
-                    accordion={false}
-                    bordered={false}
-                    ghost
-                    items={actionsOptions(orders?.orders.find((ord) => ord.id === a))}
-                  />
-                </Flex>
+              <Flex style={{ flexDirection: "column" }}>
+                <Collapse
+                  defaultActiveKey={"0"}
+                  className="collapseByAction"
+                  style={{ width: "100%" }}
+                  expandIconPosition="end"
+                  accordion={false}
+                  bordered={false}
+                  ghost
+                  items={actionsOptions(orders?.orders.find((ord) => ord.id === a))}
+                />
               </Flex>
             </TabPane>
           ))}
