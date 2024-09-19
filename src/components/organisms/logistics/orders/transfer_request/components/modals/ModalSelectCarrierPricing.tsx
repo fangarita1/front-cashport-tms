@@ -14,6 +14,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import useSWR from "swr";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import CommunityIcon from "../communityIcon/CommunityIcon";
 dayjs.extend(utc);
 
 const { Title, Text } = Typography;
@@ -275,12 +276,17 @@ export default function ModalSelectCarrierPricing({
                     ?.replace(",", " -")}
                 </Text>
               </Flex>
-              <div className={styles.stBox}>
-                {serviceType(journey?.id_type_service || 0).icon}
-                <Text className={styles.stContent}>
-                  {serviceType(journey?.id_type_service || 0).title}
-                </Text>
-              </div>
+              <Flex gap={10}>
+                {journey?.is_community && (
+                  <CommunityIcon communityName={journey?.community_name} withTooltip />
+                )}
+                <div className={styles.stBox}>
+                  {serviceType(journey?.id_type_service || 0).icon}
+                  <Text className={styles.stContent}>
+                    {serviceType(journey?.id_type_service || 0).title}
+                  </Text>
+                </div>
+              </Flex>
             </Flex>
             <Flex gap={24} vertical align="start" style={{ width: "100%" }}>
               <Text>
