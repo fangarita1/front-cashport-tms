@@ -28,9 +28,15 @@ export const ClientDetailsContext = createContext<ClientDetailsContextType>(
 );
 
 export const ClientDetails: FC<ClientDetailsProps> = () => {
-  const { portfolioData } = useClientDetails();
+  const { portfolioData, setMutate } = useClientDetails();
   const [showInvoiceActionsModal, setShowInvoiceActionsModal] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<InvoiceAction>(InvoiceAction.GenerateAction);
+
+  const onChangeTab = (activeKey: string) => {
+    if (activeKey === "1") {
+      setMutate((prev) => !prev);
+    }
+  };
 
   const items = [
     {
@@ -102,7 +108,7 @@ export const ClientDetails: FC<ClientDetailsProps> = () => {
             </Flex>
           </Flex>
 
-          <UiTab tabs={items} sticky />
+          <UiTab tabs={items} sticky onChangeTab={onChangeTab} />
         </Flex>
       </main>
       {showInvoiceActionsModal && <InvoiceActionsModal />}
