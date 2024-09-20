@@ -16,6 +16,7 @@ export interface ITimeLine {
   id: number;
   description: string;
   end_date: Date;
+  start_date: Date;
   location: string;
 }
 
