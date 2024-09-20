@@ -1138,13 +1138,13 @@ export const CreateOrderView = () => {
       checkPercentages(dataPsl);
       //datos de contacto
       dataContacts.forEach((contact) => {
-        if ((contact.contact_number == "" || contact.name == "") && contact.contact_type == 1) {
+        if (contact.contact_number.length === 0 || contact.name.length === 0) {
+          const type = contact.contact_type == 1 ? "origen" : "destino";
           isformvalid = false;
-          messageApi.error("Debe registrar información del contacto de origen");
-        }
-        if ((contact.contact_number == "" || contact.name == "") && contact.contact_type == 2) {
+          messageApi.error(`Debe registrar información del contacto de ${type}`);
+        } else if (contact.contact_number.length < 10) {
           isformvalid = false;
-          messageApi.error("Debe registrar información del contacto de destino");
+          messageApi.error(`Los números de teléfono deben contener 10 dígitos`);
         }
       });
     }
@@ -2099,26 +2099,38 @@ export const CreateOrderView = () => {
                             />
                           </Col>
                           <Col span={12}>
-                            <Input
-                              placeholder="Teléfono: 000 000 0000"
-                              className="puntoOrigen dateInputForm"
-                              key={contact.key}
-                              value={contact.contact_number}
-                              onChange={(e) => {
-                                updateContacts(contact.key, "contact_number", e.target.value);
-                              }}
-                              onKeyPress={(event) => {
-                                if (!/[0-9]/.test(event.key)) {
-                                  event.preventDefault();
-                                }
-                              }}
-                              count={{
-                                show: true,
-                                max: 10,
-                                strategy: (txt) => runes(txt).length,
-                                exceedFormatter: (txt, { max }) => runes(txt).slice(0, max).join("")
-                              }}
-                            />
+                            <div>
+                              <Input
+                                placeholder="Teléfono: 000 000 0000"
+                                className="puntoOrigen dateInputForm"
+                                key={contact.key}
+                                value={contact.contact_number}
+                                onChange={(e) => {
+                                  const { value: inputValue } = e.target;
+                                  const reg = /^-?\d*(\.\d*)?$/;
+                                  if (
+                                    reg.test(inputValue) ||
+                                    inputValue === "" ||
+                                    inputValue === "-"
+                                  ) {
+                                    updateContacts(contact.key, "contact_number", inputValue);
+                                  }
+                                }}
+                                count={{
+                                  show: true,
+                                  max: 10,
+                                  strategy: (txt) => runes(txt).length,
+                                  exceedFormatter: (txt, { max }) =>
+                                    runes(txt).slice(0, max).join("")
+                                }}
+                              />
+                              {contact.contact_number.length < 10 &&
+                                contact.contact_number.length > 0 && (
+                                  <div style={{ color: "red", marginTop: "5px" }}>
+                                    {"El número debe contener 10 dígitos"}
+                                  </div>
+                                )}
+                            </div>
                           </Col>
                         </Row>
                       ))}
@@ -2143,26 +2155,38 @@ export const CreateOrderView = () => {
                             />
                           </Col>
                           <Col span={12}>
-                            <Input
-                              placeholder="Teléfono: 000 000 0000"
-                              className="puntoOrigen dateInputForm"
-                              key={contact.key}
-                              value={contact.contact_number}
-                              onChange={(e) => {
-                                updateContacts(contact.key, "contact_number", e.target.value);
-                              }}
-                              onKeyPress={(event) => {
-                                if (!/[0-9]/.test(event.key)) {
-                                  event.preventDefault();
-                                }
-                              }}
-                              count={{
-                                show: true,
-                                max: 10,
-                                strategy: (txt) => runes(txt).length,
-                                exceedFormatter: (txt, { max }) => runes(txt).slice(0, max).join("")
-                              }}
-                            />
+                            <div>
+                              <Input
+                                placeholder="Teléfono: 000 000 0000"
+                                className="puntoOrigen dateInputForm"
+                                key={contact.key}
+                                value={contact.contact_number}
+                                onChange={(e) => {
+                                  const { value: inputValue } = e.target;
+                                  const reg = /^-?\d*(\.\d*)?$/;
+                                  if (
+                                    reg.test(inputValue) ||
+                                    inputValue === "" ||
+                                    inputValue === "-"
+                                  ) {
+                                    updateContacts(contact.key, "contact_number", inputValue);
+                                  }
+                                }}
+                                count={{
+                                  show: true,
+                                  max: 10,
+                                  strategy: (txt) => runes(txt).length,
+                                  exceedFormatter: (txt, { max }) =>
+                                    runes(txt).slice(0, max).join("")
+                                }}
+                              />
+                              {contact.contact_number.length < 10 &&
+                                contact.contact_number.length > 0 && (
+                                  <div style={{ color: "red", marginTop: "5px" }}>
+                                    {"El número debe contener 10 dígitos"}
+                                  </div>
+                                )}
+                            </div>
                           </Col>
                         </Row>
                       ))}
