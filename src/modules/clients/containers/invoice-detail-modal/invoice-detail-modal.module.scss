@@ -110,6 +110,13 @@
                 line-height: normal;
             }
 
+            .title_red {
+                font-size: 16px;
+                font-weight: 500;
+                color: #141414;
+                line-height: normal;
+            }
+
             .status {
                 color: #fff;
                 display: flex;
@@ -201,26 +208,35 @@
             .description {
                 display: flex;
                 flex-direction: column;
+                width: 100%;
 
                 .stepperContainer {
                     display: flex;
-                    justify-content: center;
+                    justify-content: flex-start;
+                    width: 100%;
 
                     .stepperContent {
                         .mainStep {
-                            height: 120px;
+                            min-height: 120px;
                             display: flex;
                             column-gap: 10px;
                             position: relative;
-                            border-bottom: 10px;
+                            padding-bottom: 20px;
+                            padding-left: 5px;
+
 
                             &:last-child {
-                                height: auto;
+                                min-height: auto;
+                                padding-bottom: 0;
                             }
 
                             .stepLine {
                                 width: 1px;
-                                height: 100%;
+                                position: absolute;
+                                top: 10px;
+                                bottom: 0;
+                                left: -1px;
+
                                 background-color: #dddddd;
 
                                 &.active {
@@ -229,10 +245,10 @@
                                 }
 
                                 &.inactive {
-                                    background-color: transparent;
-                                    border-left: 1px dashed transparent;
+                                    display: none;
                                 }
                             }
+
 
                             .stepCircle {
                                 top: 0px;
@@ -291,10 +307,10 @@
                                         display: flex;
                                         padding: 6px;
                                         cursor: pointer;
-                                        margin-top: -44px;
+                                        margin-top: -46px;
                                         border-radius: 4px;
                                         position: absolute;
-                                        margin-left: -50px;
+                                        margin-left: -44px;
                                         background: #f7f7f7;
                                     }
 
@@ -309,6 +325,7 @@
 
                                         .idAdjustment {
                                             color: #0085ff;
+                                            cursor: pointer;
                                         }
                                     }
 
@@ -455,4 +472,28 @@
             }
         }
     }
+
+    .tagLabel {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        padding: 4px 8px;
+        margin-left: 4px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 18px;
+        color: #141414;
+
+    }
+
+    .tagLabelGreen {
+        background-color: #cbe61e;
+    }
+
+    .tagLabelRed {
+        background-color: #f7f7f7;
+    }
+
 }

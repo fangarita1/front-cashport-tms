@@ -4,7 +4,7 @@ import { Button, Table, TableProps, Tooltip, Typography } from "antd";
 import { IInvoice } from "@/types/invoices/IInvoices";
 import { CheckCircle, Eye, Handshake, Warning, WarningCircle } from "phosphor-react";
 import "./invoicestable.scss";
-import { daysLeft, formatDate, formatMoney } from "@/utils/utils";
+import { calculateDaysDifference, daysLeft, formatDate, formatMoney } from "@/utils/utils";
 import dayjs from "dayjs";
 
 const { Text } = Typography;
@@ -13,6 +13,7 @@ interface PropsInvoicesTable {
   stateId: number;
   dataSingleInvoice: IInvoice[];
   setSelectedRows: Dispatch<SetStateAction<IInvoice[] | undefined>>;
+  // eslint-disable-next-line no-unused-vars
   openInvoiceDetail: (invoice: IInvoice) => void;
   selectedRows?: IInvoice[];
 }
@@ -117,7 +118,7 @@ export const InvoicesTable = ({
       title: "Pronto pago",
       key: "earlypay_date",
       dataIndex: "earlypay_date",
-      render: (text) => <Text className="cell -alignRight">{formatDate(text)}</Text>,
+      render: (date) => <Text className="cell -alignRight">{date ? formatDate(date) : "-"}</Text>,
       sorter: (a, b) => Date.parse(a.earlypay_date) - Date.parse(b.earlypay_date),
       showSorterTooltip: false,
       align: "right",
@@ -134,7 +135,14 @@ export const InvoicesTable = ({
               <p>Fecha de vencimiento</p>
               <strong>{formatDate(text)}</strong>
               <p>
-                Condición de pago <strong> {daysLeft(text)} días</strong>
+                Condición de pago{" "}
+                <strong>
+                  {calculateDaysDifference(
+                    new Date(record?.financial_record_date),
+                    new Date(record?.expiration_date)
+                  )}{" "}
+                  días
+                </strong>
               </p>
             </div>
           }
@@ -218,7 +226,7 @@ export const InvoicesTable = ({
               />
             </Tooltip>
           )}
-          {record.novelty_info && (
+          {record.novelty_info?.incidentType && (
             <Tooltip
               title={
                 <div className="toolTip -priceDifference">
@@ -273,7 +281,11 @@ export const InvoicesTable = ({
         dataSource={data.map((data) => ({ ...data, key: data.id }))}
         rowSelection={rowSelection}
         rowClassName={(record) => (selectedRowKeys.includes(record.id) ? "selectedRow" : "")}
-        pagination={false}
+        pagination={{
+          pageSize: 25,
+          showSizeChanger: false
+        }}
+        size="small"
       />
     </>
   );

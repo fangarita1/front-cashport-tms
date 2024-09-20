@@ -2,7 +2,7 @@ import axios from "axios";
 import config from "@/config";
 import { auth } from "../../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-
+import { useNotificationStore } from "@/context/CountNotification";
 export async function getIdToken(forceRefresh?: boolean) {
   const user = auth.currentUser;
   if (user) {
@@ -16,8 +16,9 @@ export async function getIdToken(forceRefresh?: boolean) {
     });
   }
 }
-const instance = (token: string) =>
-  axios.create({
+
+const instance = (token: string) => {
+  const AxiosIntance = axios.create({
     baseURL: config.API_HOST,
     timeout: 10000,
     headers: {
@@ -26,6 +27,26 @@ const instance = (token: string) =>
       Authorization: `Bearer ${token}`
     }
   });
+
+  AxiosIntance.interceptors.response.use(
+    async (response) => {
+      if (!response.config.url?.includes("/notification/count")) {
+        try {
+          await useNotificationStore.getState().updateNotificationCount();
+        } catch (error) {
+          console.error("Error updating notification count:", error);
+        }
+      }
+      return response;
+    },
+    (error) => {
+      console.error("Interceptor error:", error);
+      return Promise.reject(error);
+    }
+  );
+
+  return AxiosIntance;
+};
 
 export const fetcher = async (url: string) => {
   const token = (await getIdToken(false)) as string;

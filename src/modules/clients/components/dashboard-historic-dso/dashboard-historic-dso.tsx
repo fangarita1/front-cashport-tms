@@ -2,6 +2,7 @@ import { FC, useContext, useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import styles from "./dashboard-historic-dso.module.scss";
 import { ClientDetailsContext } from "../../containers/client-details/client-details";
+import dayjs from "dayjs";
 
 interface DashboardHistoricDsoProps {
   className?: string;
@@ -20,7 +21,10 @@ type historic_dso = {
 
 const DashboardHistoricDso: FC<DashboardHistoricDsoProps> = ({ className }) => {
   const { portfolioData } = useContext(ClientDetailsContext);
-  const history_dso = portfolioData?.history_dso.historic;
+  const history_dso = portfolioData?.payments_vs_invoices?.map((month) => ({
+    dso: month.dso,
+    date: month.month
+  }));
 
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
@@ -57,14 +61,17 @@ const DashboardHistoricDso: FC<DashboardHistoricDsoProps> = ({ className }) => {
     // Assign actual DSO values from the dataset
     if (history_dso) {
       history_dso.forEach((item: historic_dso) => {
-        const itemDate = new Date(item.date);
-        const itemMonth = itemDate.getMonth(); // Get month index from date string
+        const itemDate = dayjs(item.date).utc();
+        const itemMonth = itemDate.month(); // Get month index from date string
         const foundIndex = initialData.findIndex((data) => data.month === itemMonth + 1);
         if (foundIndex !== -1) {
           initialData[foundIndex].value = item.dso;
         }
       });
     }
+
+    // delete the months six months before the current month
+    initialData.splice(0, 6);
 
     setData(initialData);
   }, [portfolioData]);

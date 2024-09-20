@@ -91,6 +91,8 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
         return "Radicación";
       case "Registrar novedad":
         return "Novedad";
+      case "Emision de factura":
+        return "Emisión de factura";
       default:
         return item;
     }
@@ -98,13 +100,11 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
 
   const handleDocumentClick = (documentUrl: string) => {
     const fileExtension = documentUrl?.split(".").pop()?.toLowerCase() ?? "";
-    if (fileExtension === "pdf") {
-      window.open(documentUrl, "_blank");
-    } else if (["png", "jpg", "jpeg"].includes(fileExtension)) {
+    if (["png", "jpg", "jpeg"].includes(fileExtension)) {
       setUrlStep(documentUrl);
       if (isModalOpen === false) setIsModalOpen(true);
     } else {
-      alert("Formato de archivo no soportado");
+      window.open(documentUrl, "_blank");
     }
   };
   const handelOpenAdjusmentDetail = (adjusmentId: number) => {
@@ -114,12 +114,16 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
       projectId
     });
   };
+  const handelOpenNoveltyDetail = (noveltyId: number) => {
+    openModal("novelty", { noveltyId: noveltyId });
+  };
 
   return (
     <aside className={`${styles.wrapper} ${isOpen ? styles.show : styles.hide}`}>
       <InvoiceDownloadModal
         isModalOpen={isModalOpen}
         handleCloseModal={setIsModalOpen}
+        title="Imagen"
         url={urlStep}
       />
       <div>
@@ -157,9 +161,9 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
           <div className={styles.headerBody}>
             <div className={styles.title}>Trazabilidad</div>
             <div
-              className={`${styles.status} ${statusClass(invoiceData ? invoiceData?.results[0].status_name : "")}`}
+              className={`${styles.status} ${statusClass(invoiceData ? invoiceData?.results[0]?.status_name : "")}`}
             >
-              {invoiceData ? invoiceData?.results[0].status_name : ""}
+              {invoiceData ? invoiceData?.results[0]?.status_name : ""}
             </div>
           </div>
           <div className={styles.content}>
@@ -173,12 +177,29 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                     (invoiceData?.results ?? []).map((item, index, arr) => {
                       return (
                         <div key={item.id} className={styles.mainStep}>
-                          <div className={`${styles.stepLine} ${styles.active}`} />
+                          <div
+                            className={`${styles.stepLine} ${index === arr.length - 1 ? styles.inactive : styles.active}`}
+                          />
                           <div className={`${styles.stepCircle} ${styles.active}`} />
                           <div className={styles.stepLabel}>
                             <div className={styles.cardInvoiceFiling}>
-                              <h5 className={styles.title}>
+                              <h5
+                                className={
+                                  item.event_type_name === "Vencimiento acuerdo de pago"
+                                    ? styles.title_red
+                                    : styles.title
+                                }
+                              >
                                 {getEventTitle(item.event_type_name)}
+                                {"  "}
+                                {(item.event_type_name === "Generar nota de credito" ||
+                                  item.event_type_name === "Generar nota de debito") && (
+                                  <span
+                                    className={`${styles.tagLabel} ${item.is_legalized === 1 ? styles.tagLabelGreen : styles.tagLabelRed}`}
+                                  >
+                                    {item.is_legalized === 1 ? "Legalizada" : "Por legalizar"}
+                                  </span>
+                                )}
                               </h5>
                               <div className={styles.date}>
                                 {item.event_type_name === "Acuerdo de pago"
@@ -230,9 +251,12 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                     ID del ajuste:
                                     <div
                                       className={styles.idAdjustment}
-                                      onClick={() => item.id && handelOpenAdjusmentDetail(item.id)}
+                                      onClick={() =>
+                                        item.financial_discount_id &&
+                                        handelOpenAdjusmentDetail(item.financial_discount_id)
+                                      }
                                     >
-                                      {item.id ?? "N/A"}
+                                      {item.financial_discount_id ?? "N/A"}
                                     </div>
                                   </div>
                                 </div>
@@ -292,10 +316,19 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   >{`Valor: ${formatMoney(item.ammount)}`}</div>
                                   <div
                                     className={styles.name}
-                                    onClick={() => {
-                                      setIsModalAgreenOpen(true);
-                                    }}
                                   >{`Fecha de pago acordada: ${formatDatePlane(item.event_date?.toString())}`}</div>
+                                  <div className={styles.adjustment}>
+                                    ID del acuerdo:
+                                    <div
+                                      className={styles.idAdjustment}
+                                      onClick={() => {
+                                        setIsModalAgreenOpen(true);
+                                      }}
+                                    >
+                                      {" "}
+                                      {`${item.id}`}
+                                    </div>
+                                  </div>
                                 </div>
                               ) : (
                                 ""
@@ -306,7 +339,8 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                     <Envelope size={14} onClick={() => {}} />
                                   </div>
                                   <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
-                                  <div className={styles.name}>{`Valor: ${""}`}</div>
+                                  <div className={styles.name}>{`Valor acordado: ${""}`}</div>
+                                  <div className={styles.name}>{`ID del acuerdo: ${item.id}`}</div>
                                 </div>
                               ) : (
                                 ""
@@ -321,9 +355,7 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   >
                                     <ArrowLineDown size={14} onClick={() => {}} />
                                   </div>
-                                  <div
-                                    className={styles.name}
-                                  >{`Responsable: ${item.user_name}`}</div>
+                                  <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
                                 </div>
                               ) : (
                                 ""
@@ -361,10 +393,26 @@ const InvoiceDetailModal: FC<InvoiceDetailModalProps> = ({
                                   </div>
                                   <div
                                     className={styles.name}
-                                  >{`Responsable: ${item.user_name}`}</div>
+                                  >{`Tipo novedad: ${item.type_incident}`}</div>
+                                  <div className={styles.name}>{`Acción: ${item.user_name}`}</div>
+                                  <div className={styles.adjustment}>
+                                    ID del novedad:
+                                    <div
+                                      className={styles.idAdjustment}
+                                      onClick={() => item.id && handelOpenNoveltyDetail(item.id)}
+                                    >
+                                      {item.id}
+                                    </div>
+                                  </div>
                                 </div>
                               ) : (
                                 ""
+                              )}
+
+                              {item.comments && (
+                                <div className={styles.commentsContainer}>
+                                  <div className={styles.name}>Comentario: {item.comments}</div>
+                                </div>
                               )}
                             </div>
                           </div>

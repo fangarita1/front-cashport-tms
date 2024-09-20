@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Flex, Modal } from "antd";
 import { CaretLeft, Plus } from "@phosphor-icons/react";
 import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
@@ -66,6 +66,7 @@ const RadicationInvoice = ({
       evidence: []
     }
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const evidence = watch("evidence");
 
@@ -107,6 +108,7 @@ const RadicationInvoice = ({
   };
 
   const onSubmit = async (data: IFormRadicationInvoice) => {
+    setIsSubmitting(true);
     try {
       const radicationData = {
         invoices_id: invoiceSelected?.map((invoice) => invoice.id) as number[], // Asumiendo que tienes el ID de la factura
@@ -122,6 +124,8 @@ const RadicationInvoice = ({
     } catch (error) {
       console.error("Error al radicar la factura:", error);
       messageShow.error("Error al radicar la factura");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -129,7 +133,7 @@ const RadicationInvoice = ({
     <Modal className="contentRegisterNews" width="50%" footer={null} open={isOpen} closable={false}>
       <button className="contentRegisterNews__header" onClick={onClose}>
         <CaretLeft size="1.25rem" />
-        <h4>Registrar novedad</h4>
+        <h4>Radiación</h4>
       </button>
       <p className="contentRegisterNews__description">
         Adjunta la evidencia e ingresa un comentario
@@ -197,7 +201,7 @@ const RadicationInvoice = ({
                   id="fileInput"
                   style={{ display: "none" }}
                   onChange={handleFileChange}
-                  accept=".pdf,.png,.doc,.docx"
+                  accept=".pdf, .png, .doc, .docx, .xls, .xlsx, .msg, .txt, .eml"
                 />
               </>
             )}
@@ -227,8 +231,9 @@ const RadicationInvoice = ({
           <Button
             className={`acceptButton ${isValid ? "acceptButton__green" : ""}`}
             htmlType="submit"
+            disabled={isSubmitting}
           >
-            Adjuntar evidencia
+            {isSubmitting ? "Enviando..." : "Adjuntar evidencia"}
           </Button>
         </div>
       </form>

@@ -36,7 +36,7 @@ export interface IInvoice {
   document_type_id: number;
   client_id: number;
   earlypay_date: string;
-  financial_status: string;
+  accept_date: string | null;
   ajust_value: number;
   id_erp: string;
   expiration_days: number;

@@ -53,15 +53,17 @@ export const SelectAccountingAdjustment = ({
     ];
     if (data) {
       setDateSelect(
-        concatData.map((item) => ({
-          id: item.id,
-          current_value: item.current_value,
-          selected: selectedRows.some((row) => row.id === item.id),
-          motive_name: item.motive_name,
-          percentage: item.percentage,
-          intialAmount: item.initial_value,
-          cp_id: item.cp_id
-        }))
+        concatData
+          .sort((a, b) => Date.parse(b.create_at) - Date.parse(a.create_at))
+          .map((item) => ({
+            id: item.id,
+            current_value: item.current_value,
+            selected: selectedRows.some((row) => row.id === item.id),
+            motive_name: item.motive_name,
+            percentage: item.percentage,
+            intialAmount: item.initial_value,
+            cp_id: item.cp_id
+          }))
       );
     }
   }, [data, selectedRows]);

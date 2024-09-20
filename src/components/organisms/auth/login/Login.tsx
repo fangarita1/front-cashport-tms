@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Flex, Image } from "antd";
-
+import { Flex } from "antd";
+import { LogoCashport } from "@/components/atoms/logoCashport/LogoCashport";
 import { LoginForm } from "../../forms/LoginForm/LoginForm";
 import { InfoCardLogin } from "@/components/molecules/login/InfoCardLogin/InfoCardLogin";
 import { RestartPassword } from "@/components/molecules/login/RestarPassword/RestartPassword";
@@ -17,13 +17,7 @@ export const LoginView = () => {
       <Flex className={styles.loginSection} align="center" justify="center" vertical>
         <Flex className={styles.login} vertical align="center" justify="space-between">
           <div className={styles.login__title}>
-            <Image
-              className={styles.imageLogo}
-              src="/images/login/CashPort.png"
-              alt="Logo Company"
-              preview={false}
-            />
-            <h3>CashPort</h3>
+            <LogoCashport width={370} />
           </div>
           {!resetPassword ? (
             <LoginForm setResetPassword={setResetPassword} />

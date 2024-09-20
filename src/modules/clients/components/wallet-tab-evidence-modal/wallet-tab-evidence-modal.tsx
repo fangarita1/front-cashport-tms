@@ -16,6 +16,7 @@ type EvidenceModalProps = {
   commentary?: string;
   setIsSecondView: React.Dispatch<React.SetStateAction<boolean>>;
   noComment?: boolean;
+  isSubmitting?: boolean;
 };
 
 const EvidenceModal = ({
@@ -27,9 +28,9 @@ const EvidenceModal = ({
   handleAttachEvidence,
   commentary,
   setIsSecondView,
+  isSubmitting,
   noComment = false
 }: EvidenceModalProps) => {
-  
   const isAttachButtonDisabled = !noComment
     ? !(commentary && selectedEvidence.length > 0)
     : selectedEvidence.length === 0;
@@ -86,7 +87,7 @@ const EvidenceModal = ({
               id="fileInput"
               style={{ display: "none" }}
               onChange={handleFileChange}
-              accept=".pdf,.png,.doc,.docx"
+              accept=".pdf, .png, .doc, .docx, .xls, .xlsx, .msg, .txt, .eml"
             />
           </>
         )}
@@ -100,10 +101,10 @@ const EvidenceModal = ({
         </Button>
         <Button
           onClick={handleAttachEvidence}
-          disabled={isAttachButtonDisabled}
+          disabled={isAttachButtonDisabled || isSubmitting}
           className={styles.acceptButton}
         >
-          Adjuntar evidencia
+          {isSubmitting ? "Enviando..." : "Adjuntar evidencia"}
         </Button>
       </div>
     </div>

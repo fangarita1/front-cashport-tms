@@ -1,10 +1,11 @@
-import { Flex, Image } from "antd";
+import { Flex } from "antd";
 
 import { InfoCardLogin } from "@/components/molecules/login/InfoCardLogin/InfoCardLogin";
 import { ChangePassForm } from "@/components/molecules/login/ChangePassForm/ChangePassForm";
 import { ContactUsButton } from "@/components/atoms/buttons/contactUsButton/ContactUsButton";
 
 import styles from "./changePass.module.scss";
+import { LogoCashport } from "@/components/atoms/logoCashport/LogoCashport";
 
 export const ChangePass = () => {
   return (
@@ -13,13 +14,7 @@ export const ChangePass = () => {
       <Flex className={styles.changeSection} align="center" justify="center" vertical>
         <Flex className={styles.changePass} vertical align="center" justify="space-between">
           <div className={styles.changePass__title}>
-            <Image
-              className={styles.imageLogo}
-              src="/images/login/CashPort.png"
-              alt="Logo Company"
-              preview={false}
-            />
-            <h3>CashPort</h3>
+            <LogoCashport width={370} />
           </div>
 
           <ChangePassForm />

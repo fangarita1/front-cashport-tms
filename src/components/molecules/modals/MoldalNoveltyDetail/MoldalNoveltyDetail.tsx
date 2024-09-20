@@ -9,8 +9,6 @@ import { EventSection } from "./components/EventSection/EventSection";
 import { IIncidentDetail, useIncidentDetail } from "@/hooks/useNoveltyDetail";
 import ResolveNoveltyModal from "../ResolveNoveltyModal/ResolveNoveltyModal";
 import { approveIncident, rejectIncident } from "@/services/resolveNovelty/resolveNovelty";
-import { mutate } from "swr";
-
 const { Title } = Typography;
 
 interface MoldalNoveltyDetailProps {
@@ -19,8 +17,8 @@ interface MoldalNoveltyDetailProps {
   noveltyId: number;
 }
 
-const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({ isOpen, onClose, noveltyId }) => {
-  const { data, isLoading } = useIncidentDetail({ incidentId: 227712 }); // TODO CAMBIAR ESTO
+const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({ onClose, noveltyId }) => {
+  const { data, isLoading, mutate: mutateIncident } = useIncidentDetail({ incidentId: noveltyId }); // TODO CAMBIAR ESTO
   const [incidentData, setIncidentData] = useState<IIncidentDetail | null>(null);
   const [openResolveModal, setOpenResolveModal] = useState(false);
   const [isResolving, setIsResolving] = useState(true);
@@ -48,14 +46,14 @@ const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({ isOpen, onClose, no
 
     try {
       if (isResolving) {
-        await approveIncident(incidentData.invoice_id, 227712, actionData); // TODO CAMBIAR ESTO
+        await approveIncident(incidentData.invoice_id, noveltyId, actionData); // TODO CAMBIAR ESTO
         messageShow.success("Incidente aprobado exitosamente");
       } else {
-        await rejectIncident(incidentData.invoice_id, 227712, actionData); // TODO CAMBIAR ESTO
+        await rejectIncident(incidentData.invoice_id, noveltyId, actionData); // TODO CAMBIAR ESTO
         messageShow.success("Incidente rechazado exitosamente");
       }
       setOpenResolveModal(false);
-      mutate(`/invoice/incident-detail/${incidentData.invoice_id}`);
+      mutateIncident();
       onClose(); // Cierra el modal principal después de resolver/rechazar
     } catch (error) {
       console.error("Error al procesar el incidente:", error);
@@ -80,18 +78,21 @@ const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({ isOpen, onClose, no
             <CaretDoubleRight />
           </button>
         </div>
+
         <div className="header">
           <Title level={4}>{incidentData.incident_name}</Title>
-          <div className="header-buttons">
-            <Button onClick={() => handleOpenResolveModal(false)}>
-              <X />
-              Rechazar
-            </Button>
-            <Button type="primary" onClick={() => handleOpenResolveModal(true)}>
-              <Check />
-              Resolver
-            </Button>
-          </div>
+          {incidentData.is_rejected !== 1 && incidentData.is_rejected !== 0 && (
+            <div className="header-buttons">
+              <Button onClick={() => handleOpenResolveModal(false)}>
+                <X />
+                Rechazar
+              </Button>
+              <Button type="primary" onClick={() => handleOpenResolveModal(true)}>
+                <Check />
+                Resolver
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       <InfoSection
@@ -101,23 +102,20 @@ const MoldalNoveltyDetail: FC<MoldalNoveltyDetailProps> = ({ isOpen, onClose, no
         aprobadores={[{ nombre: incidentData.approvers_users, estado: "pendiente" }]}
       />
       <InfoInvoice
-        FacturaID={incidentData.invoice_id.toString()}
+        FacturaID={incidentData.id_erp || ""}
         invoice_amount_difference={incidentData.invoice_amount_difference || 0}
         invoice_cashport_value={incidentData.invoice_cashport_value}
         invoice_client_value={incidentData.invoice_client_value}
       />
       <EvidenceSection
         evidenceComments={incidentData.evidence_comments}
-        evidenceFiles={incidentData.evidence_files.map((file) => ({
-          name: file.filename || "Unnamed File",
-          url: file.fileUrl || "",
-          created_at: file.uploadDate || new Date().toISOString()
-        }))}
+        evidenceFiles={incidentData.evidence_files}
       />
       <EventSection
         events={incidentData.events}
         incidentId={incidentData.incident_id.toString()}
         messageApi={messageShow}
+        mutate={() => mutateIncident()}
         currentUserAvatar="/path/to/current/user/avatar.jpg"
       />
       <ResolveNoveltyModal

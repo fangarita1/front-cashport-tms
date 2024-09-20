@@ -74,6 +74,16 @@
         }
     }
 
+    .item__read {
+        border-radius: 50%;
+        width: 15px;
+        height: 15px;
+        background-color: #CBE71E;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1px;
+    }
 
 }
 

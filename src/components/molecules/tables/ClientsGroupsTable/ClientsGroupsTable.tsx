@@ -56,7 +56,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
     setIsOpenModal(true);
   };
 
-  const { data, loading, deleteSelectedGroups, changeGroupsState } = useClientsGroups({
+  const { data, loading, deleteSelectedGroups, changeGroupsState, addGroup } = useClientsGroups({
     page,
     clients: filters.clients,
     subscribers: filters.subscribers,
@@ -142,7 +142,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
       key: "subcribers",
       dataIndex: "subcribers",
       sorter: (a, b) => (a.subscribers || 0) - (b.subscribers || 0),
-      render: (text) => <Text>{text}</Text>
+      render: (text) => <Text>{text ? text : 0}</Text>
     },
     {
       title: "Ship To",
@@ -195,9 +195,7 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
   ];
 
   const getFilters = async (): Promise<FilterOption[]> => {
-    return [
-      { id: "status", name: "Estado" }
-    ];
+    return [{ id: "status", name: "Estado" }];
   };
 
   const apiCallbacks = {
@@ -277,7 +275,11 @@ export const ClientsGroupsTable = ({ setShowGroupDetails }: PropsClientsGroupsTa
           />
         </div>
       )}
-      <ModalClientsGroup isOpen={isOpenModal} setIsOpenModal={setIsOpenModal} />
+      <ModalClientsGroup
+        isOpen={isOpenModal}
+        setIsOpenModal={setIsOpenModal}
+        createGroup={addGroup}
+      />
       <ModalChangeStatus
         isActiveStatus={true}
         isOpen={isOpenModalStatus}

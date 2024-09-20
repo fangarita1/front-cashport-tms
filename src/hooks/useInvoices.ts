@@ -28,7 +28,7 @@ export const useInvoices = ({
   channels,
   searchQuery,
   page = 1,
-  limit = 50,
+  limit = 50
 }: Props) => {
   const pageQuery = `page=${page}`;
   const limitQuery = `&limit=${limit}`;
@@ -50,11 +50,12 @@ export const useInvoices = ({
 
   const pathKey = `/invoice/client/${clientId}/project/${projectId}?${pageQuery}${limitQuery}${paymentAgreementQuery}${radicationTypeQuery}${linesQuery}${zonesQuery}${channelsQuery}${searchQueryParam}${sublinesQuery}`;
 
-  const { data, error } = useSWR<IInvoices>(pathKey, fetcher);
+  const { data, error, mutate } = useSWR<IInvoices>(pathKey, fetcher);
 
   return {
     data: data?.data,
     isLoading: !error && !data,
-    error
+    error,
+    mutate
   };
 };

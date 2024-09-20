@@ -35,7 +35,7 @@ export const createAccountingAdjustment = async (
     );
     return response.data;
   } catch (error) {
-    return error as any;
+    throw error;
   }
 };
 export const applyAccountingAdjustment = async (
@@ -43,12 +43,14 @@ export const applyAccountingAdjustment = async (
   docFiles: File[] | null,
   projectId: string,
   clientId: string,
-  type: number
+  type: number,
+  comment: string | undefined
 ): Promise<AxiosResponse<any>> => {
   const token = await getIdToken();
   const formData = new FormData();
   formData.append("adjustment_data", adjustmentData);
   formData.append("type", type.toString());
+  if (comment) formData.append("comment", comment);
   if (docFiles) {
     docFiles.forEach((file) => {
       formData.append("doc", file);
@@ -115,7 +117,8 @@ export const reportInvoiceIncident = async (
   comments: string,
   motiveId: string,
   files: File[] | null,
-  clientId: string
+  clientId: string,
+  amount?: string
 ): Promise<AxiosResponse<any>> => {
   const token = await getIdToken();
 
@@ -123,6 +126,7 @@ export const reportInvoiceIncident = async (
   formData.append("invoices_id", JSON.stringify(invoicesId));
   formData.append("comments", comments);
   formData.append("motive_id", motiveId);
+  if (amount) formData.append("amount", amount);
 
   if (files) {
     files.forEach((file) => {

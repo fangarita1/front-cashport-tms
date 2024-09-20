@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Flex, Modal } from "antd";
 import { CaretLeft, Plus } from "@phosphor-icons/react";
 import { DocumentButton } from "@/components/atoms/DocumentButton/DocumentButton";
@@ -11,6 +11,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useInvoiceIncidentMotives } from "@/hooks/useInvoiceIncidentMotives";
 import { reportInvoiceIncident } from "@/services/accountingAdjustment/accountingAdjustment";
+import { InputFormMoney } from "@/components/atoms/inputs/InputFormMoney/InputFormMoney";
 
 interface RegisterNewsProps {
   isOpen: boolean;
@@ -30,6 +31,7 @@ interface IFormRegisterNews {
   motive: string;
   commentary: string;
   evidence: File[];
+  amount?: string;
 }
 
 const schema = yup.object().shape({
@@ -38,7 +40,8 @@ const schema = yup.object().shape({
   evidence: yup
     .array()
     .min(1, "Se requiere al menos un archivo de evidencia")
-    .required("La evidencia es requerida")
+    .required("La evidencia es requerida"),
+  amount: yup.string().optional()
 });
 
 const RegisterNews = ({
@@ -50,6 +53,7 @@ const RegisterNews = ({
   onCloseAllModals
 }: RegisterNewsProps) => {
   const { data: motives, isLoading, isError } = useInvoiceIncidentMotives();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     control,
@@ -123,13 +127,16 @@ const RegisterNews = ({
   };
 
   const onSubmit = async (data: IFormRegisterNews) => {
+    setIsSubmitting(true);
+
     try {
       await reportInvoiceIncident(
         invoiceSelected?.map((invoice) => invoice.id) || [],
         data.commentary,
         motives?.find((motive) => motive.name === data.motive)?.id.toString() || "",
         data.evidence,
-        clientId?.toString() || ""
+        clientId?.toString() || "",
+        data.amount ? data.amount : undefined
       );
       messageShow.success("Evidencia adjuntada con éxito");
       reset();
@@ -137,6 +144,8 @@ const RegisterNews = ({
     } catch (error) {
       console.error("Error al registrar una novedad:", error);
       messageShow.error("Error al adjuntar la evidencia");
+    } finally {
+      setIsSubmitting(false);
     }
   };
   const handleClose = () => {
@@ -163,6 +172,15 @@ const RegisterNews = ({
             loading={isLoading}
             isError={isError}
             placeholder="Seleccionar motivo"
+          />
+          <InputFormMoney
+            titleInput="Monto novedad"
+            nameInput="amount"
+            control={control}
+            error={errors.amount}
+            placeholder="Ingresar monto"
+            typeInput="number"
+            customStyle={{ width: "100%" }}
           />
           <div />
         </div>
@@ -211,7 +229,7 @@ const RegisterNews = ({
                   id="fileInput"
                   style={{ display: "none" }}
                   onChange={handleFileChange}
-                  accept=".pdf,.png,.doc,.docx"
+                  accept=".pdf, .png, .doc, .docx, .xls, .xlsx, .msg, .txt, .eml"
                 />
               </>
             )}
@@ -235,8 +253,9 @@ const RegisterNews = ({
           <Button
             className={`acceptButton ${isValid ? "acceptButton__green" : ""}`}
             htmlType="submit"
+            disabled={!isValid || isSubmitting}
           >
-            Adjuntar evidencia
+            {isSubmitting ? "Enviando..." : "Adjuntar evidencia"}
           </Button>
         </div>
       </form>

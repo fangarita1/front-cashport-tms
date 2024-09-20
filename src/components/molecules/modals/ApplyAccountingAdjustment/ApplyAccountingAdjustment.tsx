@@ -68,7 +68,7 @@ export const ApplyAccountingAdjustment = ({
   const [openEvidenceModal, setOpenEvidenceModal] = useState(false);
   const [selectedEvidence, setSelectedEvidence] = useState<File[]>([]);
   const [commentary, setCommentary] = useState<string | undefined>();
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     setCurrentInvoices(
       invoiceSelected.map((invoice) => ({
@@ -189,6 +189,7 @@ export const ApplyAccountingAdjustment = ({
   };
 
   const handleAttachEvidence = async () => {
+    setIsSubmitting(true);
     try {
       const normalizedData = normalizarApplyValues(applyValues);
       const adjustmentData = JSON.stringify(normalizedData);
@@ -199,7 +200,8 @@ export const ApplyAccountingAdjustment = ({
         selectedEvidence,
         projectIdParam as string,
         clientIdParam as string,
-        typeAjustment
+        typeAjustment,
+        commentary
       );
       if (response.status === 200) {
         messageApi.open({
@@ -215,6 +217,8 @@ export const ApplyAccountingAdjustment = ({
         content: "Error al aplicar el ajuste contable"
       });
       console.error("Error applying accounting adjustment:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -311,6 +315,7 @@ export const ApplyAccountingAdjustment = ({
           handleOnChangeTextArea={handleOnChangeTextArea}
           commentary={commentary}
           setIsSecondView={setOpenEvidenceModal}
+          isSubmitting={isSubmitting}
           noComment
         />
       </Modal>

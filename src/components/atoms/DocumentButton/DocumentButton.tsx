@@ -26,7 +26,7 @@ interface Props {
 export const DocumentButton = ({
   title = "file",
   fileName = "Seleccionar archivo",
-  fileSize = "PDF, Word, PNG (Tamaño max 30mb)",
+  fileSize = "PDF, Word, PNG, XLS, MSG, EML (Tamaño max 30mb)",
   handleOnChange,
   handleOnDrop,
   handleOnDelete,
@@ -38,7 +38,7 @@ export const DocumentButton = ({
     name: title,
     onChange: handleOnChange,
     onDrop: handleOnDrop,
-    accept: ".pdf, .png, .doc, .docx",
+    accept: ".pdf, .png, .doc, .docx, .xls, .xlsx, .msg,  .eml",
     showUploadList: false,
     customRequest: () => {
       return;
@@ -46,7 +46,7 @@ export const DocumentButton = ({
     beforeUpload: (file) => {
       const reader = new FileReader();
 
-      reader.onload = (e) => {};
+      reader.onload = () => {};
       reader.readAsText(file);
 
       // Prevent upload
@@ -57,7 +57,12 @@ export const DocumentButton = ({
   };
 
   if (typeof fileSize !== "string") {
-    fileSize = `${(fileSize / (1024 * 1024)).toFixed(2)} MB`;
+    const fileSizeMB = fileSize / (1024 * 1024);
+    if (fileSizeMB < 1) {
+      fileSize = `${(fileSize / 1024).toFixed(2)} KB`;
+    } else {
+      fileSize = `${fileSizeMB.toFixed(2)} MB`;
+    }
   }
 
   return (
