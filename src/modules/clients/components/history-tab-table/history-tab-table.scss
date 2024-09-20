@@ -1,0 +1,51 @@
+@import "@styles/variables.scss";
+
+.historyTable {
+    margin-top: 1rem;
+
+    .ant-table-column-title {
+        font-size: 1rem;
+        margin: 0.5rem 0;
+    }
+
+    .ant-table-tbody {
+        overflow-x: hidden;
+
+        &-virtual-scrollbar-horizontal {
+            display: none;
+        }
+    }
+
+    .ant-table-container {
+        table {
+            .ant-table-cell {
+                padding-top: 0.4rem;
+                padding-bottom: 0.4rem;
+            }
+        }
+    }
+
+    .cell {
+        display: inline-block;
+    }
+
+    .eyeButton {
+        background-color: $background;
+
+        &:hover {
+            background-color: $dark-gray !important;
+        }
+    }
+
+    .pagination {
+        justify-content: center;
+    }
+
+    .next {
+        transform: rotate(90deg);
+    }
+
+    .prev {
+        transform: rotate(-90deg);
+    }
+}
