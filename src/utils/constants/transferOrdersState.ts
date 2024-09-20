@@ -1,3 +1,5 @@
+import { STATUS } from "./globalConstants";
+
 export const TransferOrdersState = [
   {
     id: 'd33e062f-51a5-457e-946e-a45cbbffbf95',
@@ -30,22 +32,27 @@ export const TransferOrdersState = [
     bgColor: '#3D3D3D'
   },
   {
-    id: '00ce0b06-71b8-4981-861f-b4fa100dbd25',
+    id: STATUS.TO.PROCESANDO,
     name: 'Procesando',
     bgColor: '#969696'
   },
   {
-    id: 'a312eb37-9a20-4e46-a010-3ee8d5cb2d94',
+    id: STATUS.TO.PROCESADO,
+    name: 'TO Procesado',
+    bgColor: '#A9BA43'
+  },
+  {
+    id: STATUS.TR.ESPERANDO_PROVEEDOR,
     name: 'Esperando proveedor',
     bgColor: '#ED171F'
   },
   {
-    id: 'a48b8b32-8699-4b6f-b56c-277238a656bc',
+    id: STATUS.TR.PROCESADO,
     name: 'Procesado',
     bgColor: '#0085FF'
   },
   {
-    id: '9f5ba87c-8736-4367-8077-3b914d2ee711',
+    id: STATUS.TO.SIN_PROCESAR,
     name: 'Sin procesar',
     bgColor: '#000000'
   },
