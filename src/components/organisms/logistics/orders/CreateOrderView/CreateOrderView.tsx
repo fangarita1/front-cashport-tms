@@ -501,8 +501,8 @@ export const CreateOrderView = () => {
   }, [typeactive]);
 
   /* Tipo de viaje */
-  const handleTypeClick = (event: any) => {
-    setTypeactive(event.target.id);
+  const handleTypeClick = (id: "1" | "2" | "3") => {
+    setTypeactive(id);
   };
 
   /* Carga */
@@ -2202,62 +2202,34 @@ export const CreateOrderView = () => {
             <Flex gap="middle">
               <button
                 type="button"
-                id={"1"}
                 className={["tripTypes", typeactive === "1" ? "active" : undefined].join(" ")}
-                onClick={handleTypeClick}
+                onClick={() => handleTypeClick("1")}
               >
                 <div className="tripTypeIcons">
-                  <img
-                    className="icon"
-                    loading="lazy"
-                    alt=""
-                    src="/images/logistics/truck.svg"
-                    id={"1"}
-                    onClick={handleTypeClick}
-                  />
-                  <div className="text" id={"1"} onClick={handleTypeClick}>
-                    Carga
-                  </div>
+                  <img className="icon" loading="lazy" alt="" src="/images/logistics/truck.svg" />
+                  <div className="text">Carga</div>
                 </div>
               </button>
               <button
                 type="button"
                 id={"2"}
                 className={["tripTypes", typeactive === "2" ? "active" : undefined].join(" ")}
-                onClick={handleTypeClick}
+                onClick={() => handleTypeClick("2")}
               >
                 <div className="tripTypeIcons">
-                  <img
-                    className="icon"
-                    loading="lazy"
-                    alt=""
-                    src="/images/logistics/izaje.svg"
-                    id={"2"}
-                    onClick={handleTypeClick}
-                  />
-                  <div className="text" id={"2"} onClick={handleTypeClick}>
-                    Izaje
-                  </div>
+                  <img className="icon" loading="lazy" alt="" src="/images/logistics/izaje.svg" />
+                  <div className="text">Izaje</div>
                 </div>
               </button>
               <button
                 type="button"
                 id={"3"}
                 className={["tripTypes", typeactive === "3" ? "active" : undefined].join(" ")}
-                onClick={handleTypeClick}
+                onClick={() => handleTypeClick("3")}
               >
                 <div className="tripTypeIcons">
-                  <img
-                    className="icon"
-                    loading="lazy"
-                    alt=""
-                    src="/images/logistics/users.svg"
-                    id={"3"}
-                    onClick={handleTypeClick}
-                  />
-                  <div className="text" id={"3"} onClick={handleTypeClick}>
-                    Personal
-                  </div>
+                  <img className="icon" loading="lazy" alt="" src="/images/logistics/users.svg" />
+                  <div className="text">Personal</div>
                 </div>
               </button>
             </Flex>
