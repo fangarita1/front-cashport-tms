@@ -500,7 +500,7 @@ export const CreateOrderView = () => {
     if (typeactive == "2") setOrigenIzaje(true);
   }, [typeactive]);
 
-  /* Tipo de viaje */
+  /* Tipo de viaje  */
   const handleTypeClick = (id: "1" | "2" | "3") => {
     setTypeactive(id);
   };
