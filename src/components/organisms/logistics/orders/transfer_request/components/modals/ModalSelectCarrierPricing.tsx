@@ -199,7 +199,7 @@ export default function ModalSelectCarrierPricing({
       footer={
         <Footer
           view={view}
-          handleCancel={() => {}}
+          handleCancel={() => handleModalCarrier(false)}
           handleSubmit={handleSubmitForm}
           isSubmitting={isSubmitting}
           disabledContinue={!isConfirmEnabled()}
