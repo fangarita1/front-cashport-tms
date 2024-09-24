@@ -23,7 +23,7 @@ export interface JourneyTripPricing {
   id_type_service: number;
   trips: TripCarriersPricing[];
   community_name?: string;
-  is_community?: boolean;
+  is_community?: 0 | 1;
 }
 
 export interface TripCarriersPricing {
@@ -65,7 +65,7 @@ export interface Journey {
   end_location_desc: string;
   id_type_service: number;
   community_name?: string;
-  is_community: boolean;
+  is_community: 0 | 1;
 }
 
 export interface MockedTrip {
