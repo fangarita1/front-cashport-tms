@@ -45,3 +45,30 @@ export interface CarriersPricing {
   nit: string;
   fee_description: string;
 }
+
+export interface CarriersPricingModal extends CarriersPricing {
+  checked?: boolean;
+}
+
+export interface Trip {
+  id_trip: number;
+  vehicle_type: number;
+  vehicle_type_desc: string;
+  carriers_pricing: CarriersPricingModal[];
+}
+
+export interface Journey {
+  id_journey: number;
+  start_date: string;
+  end_date: string;
+  start_location_desc: string;
+  end_location_desc: string;
+  id_type_service: number;
+  community_name?: string;
+  is_community: boolean;
+}
+
+export interface MockedTrip {
+  trip: Trip;
+  journey: Omit<JourneyTripPricing, "trips">;
+}

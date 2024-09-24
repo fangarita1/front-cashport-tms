@@ -31,6 +31,7 @@
     border-radius: 4px;
     font-size: 1rem;
     color: $black !important;
+    margin-bottom: 1.5rem;
     strong {
         font-weight: bold !important;
     }
@@ -52,3 +53,33 @@
         font-weight: 700;
     }
 }
+.searchBar {
+    max-width: 100%;
+    height: 48px;
+}
+.scrollableTabsUI {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap; // Evita el salto de línea
+  
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+  
+    &::-webkit-scrollbar-thumb {
+      background-color: darkgrey;
+      border-radius: 10px;
+    }
+  
+    .tab {
+      flex-shrink: 0;
+      padding: 10px 20px; // Ajusta el padding según la necesidad
+      cursor: pointer; // Hace que el ratón cambie a mano cuando se pasa sobre las pestañas
+      box-sizing: border-box; // Incluye el padding en el cálculo del ancho del elemento
+      border: 1px solid transparent;
+  
+      &:hover {
+        border-color: rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
