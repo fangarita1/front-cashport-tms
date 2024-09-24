@@ -1,23 +1,29 @@
 import styles from "./ModalSelectCarrierPricing.module.scss";
-import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import { sendCarrierRequest } from "@/services/logistics/carrier-request";
 import { getTransferRequestPricing } from "@/services/logistics/transfer-request";
-import { SendCarrierRequest } from "@/types/logistics/carrier/carrier";
 import { ITransferRequestJourneyReview } from "@/types/logistics/schema";
-import { JourneyTripPricing } from "@/types/logistics/trips/TripsSchema";
-import { CraneTower } from "@phosphor-icons/react";
-import { Checkbox, Flex, message, Modal, Spin, Tabs, TabsProps, Typography } from "antd";
+import {
+  CarriersPricingModal,
+  JourneyTripPricing,
+  MockedTrip
+} from "@/types/logistics/trips/TripsSchema";
+import { Checkbox, Flex, message, Modal, Spin, Typography } from "antd";
 import { useParams } from "next/navigation";
-import { Truck, User } from "phosphor-react";
 import { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
 import useSWR from "swr";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import CommunityIcon from "../communityIcon/CommunityIcon";
+import UiSearchInput from "@/components/ui/search-input";
+import { FilterProjects } from "@/components/atoms/Filters/FilterProjects/FilterProjects";
+import UiTabs from "@/components/ui/ui-tabs";
+import CarrierPriceCard from "./components/CarrierPriceCard/CarrierPriceCard";
+import { convertToSendCarrierRequest, getServiceType } from "./utils/utils";
+import { Footer } from "./components/Footer/Footer";
+import { Header } from "./components/Header/Header";
 dayjs.extend(utc);
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 type Props = {
   open: boolean;
   // eslint-disable-next-line no-unused-vars
@@ -33,11 +39,15 @@ export default function ModalSelectCarrierPricing({
   mutateStepthree,
   view,
   setView
-}: Props) {
+}: Readonly<Props>) {
   const params = useParams();
   const id = parseInt(params.id as string);
-  const [selectedTab, setSelectedTab] = useState("0");
-  const [journey, setJourney] = useState<Omit<JourneyTripPricing, "trips">>();
+  const [selectedTabIndex, setSelectedTabIndex] = useState<number>(0);
+  const [selectedTripId, setSelectedTripId] = useState<number | null>(null);
+  const [tripsList, setTripsList] = useState<MockedTrip[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
   const { data, isLoading, isValidating } = useSWR(
     { idTransferRequest: id, open },
     ({ idTransferRequest, open }) =>
@@ -49,192 +59,152 @@ export default function ModalSelectCarrierPricing({
       revalidateOnMount: false
     }
   );
-  const {
-    control,
-    handleSubmit,
-    formState: { isSubmitting }
-  } = useForm<SendCarrierRequest>();
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "carrierRequest"
-  });
 
   useEffect(() => {
-    remove();
-    if (data?.length && open) setSelectedTab(data[0].trips[0].id_trip.toString());
+    if (tripsList && tripsList.length > 0) {
+      setSelectedTripId(tripsList?.[selectedTabIndex]?.trip?.id_trip);
+    }
+  }, [selectedTabIndex, tripsList]);
+
+  useEffect(() => {
+    setSearchTerm("");
   }, [open]);
 
-  const handleSubmitForm = async (data: SendCarrierRequest) => {
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setTripsList(
+        data.flatMap((journey) =>
+          journey.trips.map((trip) => {
+            const j = { ...journey, trips: undefined };
+            delete j.trips;
+            return {
+              trip: { ...trip, checked: false },
+              journey: j as Omit<JourneyTripPricing, "trips">
+            };
+          })
+        )
+      );
+    }
+  }, [data]);
+
+  const selectedTrip = tripsList[selectedTabIndex];
+  const journey = selectedTrip?.journey;
+
+  const filteredPricing =
+    selectedTrip?.trip?.carriers_pricing?.filter((pricing) => {
+      const { description, fee_description, price } = pricing;
+      return (
+        (description && description.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (fee_description && fee_description.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (price && price.toString().includes(searchTerm))
+      );
+    }) || [];
+
+  const handleSubmitForm = async () => {
     try {
-      const response = await sendCarrierRequest(data);
-      if (response) handleModalCarrier(false);
-      mutateStepthree(response.journey);
-      if (view === "vehicles") setView("carrier");
+      setIsSubmitting(true);
+      const formatedData = convertToSendCarrierRequest(tripsList, id);
+      const response = await sendCarrierRequest(formatedData);
+      if (response) {
+        setIsSubmitting(false);
+        handleModalCarrier(false);
+        mutateStepthree(response.journey);
+        if (view === "vehicles") setView("carrier");
+      }
     } catch (error) {
+      setIsSubmitting(false);
       if (error instanceof Error) message.error(error.message);
       else message.error("Error al enviar solicitud");
     }
   };
 
-  const Header = () => (
-    <>
-      <Title level={4}>Proveedores</Title>
-      <Text style={{ fontSize: "0.8rem" }}>
-        Selecciones los proveedores a los que les enviará la solicitud de los viajes creados
-      </Text>
-    </>
-  );
-  const Footer = () => (
-    <Flex gap={24} justify="center" className={styles.Footer}>
-      <PrincipalButton
-        type="default"
-        fullWidth
-        onClick={() => handleModalCarrier(false)}
-        disabled={isSubmitting}
-      >
-        Cancelar
-      </PrincipalButton>
-      <PrincipalButton
-        fullWidth
-        disabled={
-          view === "carrier"
-            ? !fields.length
-            : !dataFlated.every(({ trip }) => fields.some((x) => x.id_trip === trip.id_trip))
-        }
-        loading={isSubmitting}
-        onClick={handleSubmit(handleSubmitForm)}
-      >
-        {view === "carrier" ? "Enviar solicitudes" : "Siguiente"}
-      </PrincipalButton>
-    </Flex>
-  );
-  const dataFlated =
-    data?.flatMap((journey) =>
-      journey.trips.map((trip) => {
-        const j = { ...journey, trips: undefined };
-        delete j.trips;
-        return { trip, journey: j as Omit<JourneyTripPricing, "trips"> };
-      })
-    ) || [];
-  useEffect(() => {
-    if (data?.length) setSelectedTab(data[0].trips[0].id_trip.toString());
-  }, [data]);
-  useEffect(() => {
-    setJourney(dataFlated.find((x) => x.trip.id_trip.toString() === selectedTab)?.journey);
-  }, [selectedTab]);
-
-  const handleCheck = (id_trip: number, id_carrier_pricing: number, id_carrier: number) => {
-    console.log(id_trip, id_carrier_pricing, id_carrier);
-    const index = fields.findIndex(
-      (x) => x.id_trip === id_trip && x.id_pricing === id_carrier_pricing
-    );
-    const trip = dataFlated.find((x) => x.trip.id_trip === id_trip);
-    const price = trip?.trip.carriers_pricing.find(
-      (x) => x.id_carrier_pricing === id_carrier_pricing
-    );
-    console.log(price);
-    if (index === -1 && trip) {
-      append({
-        id_trip,
-        id_carrier,
-        fare: price?.price || 0,
-        id_pricing: price?.id_carrier_pricing || 0,
-        id_transfer_request: id,
-        id_vehicle_type: trip.trip.vehicle_type
-      });
-    } else {
-      remove(index);
-    }
-  };
-  const handleSelectAll = (id_trip: number) => {
-    const trip = dataFlated.find((x) => x.trip.id_trip === id_trip);
-    if (trip) {
-      trip.trip.carriers_pricing.forEach((carrier) => {
-        const index = fields.findIndex(
-          (x) => x.id_trip === id_trip && x.id_carrier === carrier.id_carrier
-        );
-        if (index === -1) {
-          append({
-            id_trip,
-            id_carrier: carrier.id_carrier,
-            fare: carrier.price || 0,
-            id_pricing: carrier.id_carrier_pricing,
-            id_transfer_request: id,
-            id_vehicle_type: trip.trip.vehicle_type
-          });
-        }
-      });
-    }
-  };
-
-  const items: TabsProps["items"] = dataFlated.map(({ trip }) => ({
-    label: (
-      <div className={selectedTab === trip.id_trip.toString() ? "" : "activeTab"}>
-        {trip.vehicle_type_desc}
-      </div>
-    ),
-    key: trip.id_trip.toString(),
-    children: (
-      <Flex vertical gap={24} className={styles.tripCarrierPricing}>
-        <Checkbox
-          checked={
-            fields.filter((x) => x.id_trip === trip.id_trip).length === trip.carriers_pricing.length
-          }
-          style={{ marginLeft: "0.5rem" }}
-          onChange={() => handleSelectAll(trip.id_trip)}
-        >
-          <Text style={{ fontWeight: "500" }}>Seleccionar todos</Text>
-        </Checkbox>
-        {trip.carriers_pricing.map((carrier) => (
-          <Flex
-            className={styles.checks}
-            justify="space-between"
-            gap={24}
-            key={`carrrier-${carrier.id_carrier_pricing}-${trip.id_trip}`}
-          >
-            <Flex align="center" gap={8} justify="center">
-              <Checkbox
-                id={`checkbox-${carrier.id_carrier_pricing}-${trip.id_trip}`}
-                checked={fields.some(
-                  (x) => x.id_trip === trip.id_trip && x.id_pricing === carrier.id_carrier_pricing
-                )}
-                onChange={() =>
-                  handleCheck(trip.id_trip, carrier.id_carrier_pricing, carrier.id_carrier)
+  const handleCheck = (id_carrier_pricing: number, id_carrier: number, isChecked: boolean) => {
+    setTripsList((prevTrips) =>
+      prevTrips.map((trip) => {
+        if (trip.trip.id_trip === selectedTripId) {
+          return {
+            ...trip,
+            trip: {
+              ...trip.trip,
+              carriers_pricing: trip.trip.carriers_pricing.map((carrier) => {
+                if (
+                  carrier.id_carrier_pricing === id_carrier_pricing &&
+                  carrier.id_carrier === id_carrier
+                ) {
+                  return {
+                    ...carrier,
+                    checked: !isChecked
+                  };
                 }
-              ></Checkbox>
-              <label htmlFor={`checkbox-${carrier.id_carrier_pricing}-${trip.id_trip}`}>
-                <Flex vertical style={{ cursor: "pointer" }}>
-                  <Text style={{ fontWeight: "600", fontSize: "1rem" }}>{carrier.description}</Text>
-                  <Text style={{ fontSize: "1rem", fontWeight: "500", color: "#666666" }}>
-                    {carrier.fee_description}
-                  </Text>
-                </Flex>
-              </label>
-            </Flex>
-            <Flex gap={8} vertical align="end" justify="center">
-              <Text style={{ fontSize: "1.2rem" }}>${carrier.price?.toLocaleString("es-CO")}</Text>
-              <Text style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                {carrier.disponibility} <Truck size={16} weight="fill" />
-              </Text>
-            </Flex>
-          </Flex>
-        ))}
-      </Flex>
-    )
-  }));
-  const serviceType = (id_type_service: number) =>
-    id_type_service === 1
-      ? { title: "Carga", icon: <Truck size={27} color="#FFFFFF" weight="fill" /> }
-      : id_type_service === 2
-        ? { title: "Izaje", icon: <CraneTower size={27} color="#FFFFFF" weight="fill" /> }
-        : { title: "Personal", icon: <User size={27} color="#FFFFFF" weight="fill" /> };
+                return carrier;
+              })
+            }
+          };
+        }
+        return trip;
+      })
+    );
+  };
+
+  const handleMasiveCheck = (newState: boolean) => {
+    setTripsList((prevTrips) =>
+      prevTrips.map((trip) => {
+        if (trip.trip.id_trip === selectedTripId) {
+          return {
+            ...trip,
+            trip: {
+              ...trip.trip,
+              carriers_pricing: trip.trip.carriers_pricing.map((carrier) => {
+                return {
+                  ...carrier,
+                  checked: newState
+                };
+              })
+            }
+          };
+        }
+        return trip;
+      })
+    );
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchTerm(value);
+  };
+
+  const checkIfAllSelectedInTrip = (): boolean => {
+    const currentTrip = selectedTrip?.trip;
+    return currentTrip?.carriers_pricing?.every((carrier) => carrier.checked);
+  };
+
+  const isConfirmEnabled = () => {
+    if (view === "vehicles") {
+      return tripsList.every((t) =>
+        t.trip.carriers_pricing.some((pricing: CarriersPricingModal) => pricing.checked)
+      );
+    } else
+      return tripsList.some((t) =>
+        t.trip.carriers_pricing.some((pricing: CarriersPricingModal) => pricing.checked)
+      );
+  };
+
   return (
     <Modal
       title={<Header />}
       open={open}
       onCancel={() => handleModalCarrier(false)}
       width={686}
-      footer={<Footer />}
+      centered
+      footer={
+        <Footer
+          view={view}
+          handleCancel={() => {}}
+          handleSubmit={handleSubmitForm}
+          isSubmitting={isSubmitting}
+          disabledContinue={!isConfirmEnabled()}
+        />
+      }
     >
       {isLoading || isValidating ? (
         <Flex justify="center" align="center" style={{ minHeight: "300px" }}>
@@ -242,9 +212,9 @@ export default function ModalSelectCarrierPricing({
         </Flex>
       ) : (
         <div className="scrollableTabGlobalCss">
-          <Flex gap={24} className={styles.header} vertical align="center">
+          <Flex gap={8} className={styles.header} vertical align="center">
             <Flex gap={24} align="center" justify="space-between" style={{ width: "100%" }}>
-              <Flex gap={16} vertical>
+              <Flex gap={8} vertical>
                 <Text>
                   <strong>Fecha inicio</strong>{" "}
                   {dayjs
@@ -281,14 +251,14 @@ export default function ModalSelectCarrierPricing({
                   <CommunityIcon communityName={journey?.community_name} withTooltip />
                 )}
                 <div className={styles.stBox}>
-                  {serviceType(journey?.id_type_service || 0).icon}
+                  {getServiceType(journey?.id_type_service || 0).icon}
                   <Text className={styles.stContent}>
-                    {serviceType(journey?.id_type_service || 0).title}
+                    {getServiceType(journey?.id_type_service || 0).title}
                   </Text>
                 </div>
               </Flex>
             </Flex>
-            <Flex gap={24} vertical align="start" style={{ width: "100%" }}>
+            <Flex gap={8} vertical align="start" style={{ width: "100%" }}>
               <Text>
                 <strong>Origen</strong> {journey?.start_location_desc}
               </Text>
@@ -297,14 +267,42 @@ export default function ModalSelectCarrierPricing({
               </Text>
             </Flex>
           </Flex>
-          <Tabs
-            size="large"
-            style={{ fontWeight: "600" }}
-            defaultActiveKey={selectedTab}
-            activeKey={selectedTab}
-            items={items}
-            onChange={(index) => setSelectedTab(index)}
+          <UiTabs
+            tabs={tripsList.map((mt) => mt.trip.vehicle_type_desc)}
+            onTabClick={(index) => setSelectedTabIndex(index)}
+            initialTabIndex={0}
+            className={styles.scrollableTabsUI}
           />
+          <Flex
+            justify="space-between"
+            gap={24}
+            style={{ marginTop: "1rem", marginBottom: "1.5rem" }}
+          >
+            <UiSearchInput
+              className={styles.searchBar}
+              placeholder="Buscar"
+              onChange={handleSearchChange}
+            />
+            <FilterProjects setSelecetedProjects={() => {}} height={"48"} />
+          </Flex>
+          <Flex vertical gap={8} className={styles.tripCarrierPricing} key={selectedTripId ?? 0}>
+            <Checkbox
+              checked={checkIfAllSelectedInTrip()}
+              style={{ marginLeft: "0.5rem" }}
+              onChange={(e) => handleMasiveCheck(e.target.checked)}
+            >
+              <Text style={{ fontWeight: "500" }}>Seleccionar todos</Text>
+            </Checkbox>
+            {filteredPricing?.map((carrier, index) => (
+              <CarrierPriceCard
+                key={`trip-${selectedTripId}-carrier-${carrier?.id_carrier_pricing}-${index}`}
+                carrier={carrier}
+                currentTripId={selectedTripId}
+                isChecked={carrier?.checked ?? false}
+                handleCheck={handleCheck}
+              />
+            ))}
+          </Flex>
         </div>
       )}
     </Modal>
