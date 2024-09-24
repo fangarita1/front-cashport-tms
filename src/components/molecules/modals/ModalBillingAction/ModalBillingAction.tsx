@@ -1,6 +1,6 @@
-import { Flex, Modal } from "antd";
+import React, { useEffect, useState } from "react";
 import { CaretLeft, X } from "phosphor-react";
-import { useEffect, useState } from "react";
+import { Flex, Modal } from "antd";
 import styles from "./ModalBillingAction.module.scss";
 import ActionList from "./ActionList/ActionList";
 import ConfirmClose from "./ConfirmClose/ConfirmClose";
