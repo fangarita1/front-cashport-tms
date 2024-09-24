@@ -20,7 +20,7 @@ interface VehiclesSelectionProps {
   id_type_service: number;
   journey: ITransferRequestJourneyInfo;
   setIsNextStepActive: React.Dispatch<React.SetStateAction<boolean>>;
-  is_community?: boolean;
+  is_community?: 0 | 1;
   community_name?: string;
 }
 
@@ -33,7 +33,7 @@ const VehiclesSelection: FC<VehiclesSelectionProps> = ({
   id_type_service,
   journey,
   setIsNextStepActive,
-  is_community = false,
+  is_community = 0,
   community_name
 }) => {
   const { data, isLoading: isLoadingVehicles } = useSWR(

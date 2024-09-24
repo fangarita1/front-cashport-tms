@@ -247,7 +247,7 @@ export default function ModalSelectCarrierPricing({
                 </Text>
               </Flex>
               <Flex gap={10}>
-                {journey?.is_community && (
+                {!!journey?.is_community && (
                   <CommunityIcon communityName={journey?.community_name} withTooltip />
                 )}
                 <div className={styles.stBox}>

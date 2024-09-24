@@ -6,7 +6,7 @@ type Props = {
   id_type_service: number;
   start_location_desc: string;
   end_location_desc: string;
-  is_community?: boolean;
+  is_community?: 0 | 1;
   community_name?: string;
   tag: any;
   openTabs: number[];
@@ -17,7 +17,7 @@ export default function JourneyCollapse({
   id_type_service,
   start_location_desc,
   end_location_desc,
-  is_community = false,
+  is_community = 0,
   community_name,
   openTabs,
   setOpenTabs,

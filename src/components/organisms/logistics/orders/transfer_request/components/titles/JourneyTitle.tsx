@@ -12,7 +12,7 @@ type Props = {
   start_location_desc: string;
   end_location_desc: string;
   handleChange: () => void;
-  is_community?: boolean;
+  is_community?: 0 | 1;
   community_name?: string;
 };
 const TitleComponent = ({
@@ -21,7 +21,7 @@ const TitleComponent = ({
   isOpen,
   start_location_desc,
   end_location_desc,
-  is_community = false,
+  is_community = 0,
   community_name,
   handleChange
 }: Props) => {
@@ -40,7 +40,7 @@ const TitleComponent = ({
             {serviceType.icon}
             <Text className="collapseState">{serviceType.title}</Text>
           </div>
-          {is_community && <CommunityIcon communityName={community_name} withTooltip />}
+          {!!is_community && <CommunityIcon communityName={community_name} withTooltip />}
         </div>
         <div>
           <CaretDown className={`collapseCaret ${isOpen && "collapseRotate"}`} size={24} />

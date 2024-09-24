@@ -39,7 +39,7 @@ export const mockedTrips: any[] = [
       end_location_desc: "VILLAVICENCIO",
       id_type_service: 1,
       community_name: "",
-      is_community: true
+      is_community: 1
     }
   },
   {
@@ -82,7 +82,7 @@ export const mockedTrips: any[] = [
       end_location_desc: "VILLAVICENCIO",
       id_type_service: 1,
       community_name: "",
-      is_community: true
+      is_community: 1
     }
   },
   {
@@ -125,7 +125,7 @@ export const mockedTrips: any[] = [
       end_location_desc: "MEDELLÍN",
       id_type_service: 2,
       community_name: "",
-      is_community: false
+      is_community: 0
     }
   }
 ];

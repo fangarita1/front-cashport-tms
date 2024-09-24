@@ -1594,7 +1594,7 @@ export interface ITrackingResponse extends ITrackingPartial {
   start_location_desc: string;
   end_location_desc: string;
   type_service_desc: string;
-  is_community?: boolean;
+  is_community?: 0 | 1;
   community_name?: string;
 }
 
@@ -1942,7 +1942,7 @@ export interface ITransferRequestJourneyInfo {
   start_location_desc: string;
   end_location_desc: string;
   trips: IVehiclesPricingTrips[];
-  is_community?: boolean;
+  is_community?: 0 | 1;
   community_name?: string;
 }
 /**
