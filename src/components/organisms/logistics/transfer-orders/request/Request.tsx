@@ -13,9 +13,17 @@ interface IRequestProps {
   search: string;
   handleCheckboxChange: (id: number, checked: boolean) => void;
   ordersId: number[];
+  trsIds: number[];
+  handleCheckboxChangeTR: (id: number, checked: boolean) => void;
 }
 
-export const Request: FC<IRequestProps> = ({ search, handleCheckboxChange, ordersId }) => {
+export const Request: FC<IRequestProps> = ({
+  search,
+  handleCheckboxChange,
+  ordersId,
+  trsIds,
+  handleCheckboxChangeTR
+}) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [transferRequest, setTransferRequest] = useState<ITransferRequestResponse[]>([]);
 
@@ -99,10 +107,20 @@ export const Request: FC<IRequestProps> = ({ search, handleCheckboxChange, order
       };
       redirect = "/logistics/orders/details";
     }
-    if (
-      item.statusId === TransferOrdersState.find((f) => f.name === "Esperando proveedor")?.id ||
-      item.statusId === TransferOrdersState.find((f) => f.name === "Procesado")?.id
-    ) {
+    if (item.statusId === TransferOrdersState.find((f) => f.name === "Procesado")?.id) {
+      aditionalRow = {
+        title: "",
+        dataIndex: "checkbox",
+        render: (_: any, { tr }: any) => (
+          <Checkbox
+            checked={trsIds.includes(tr)}
+            onChange={(e) => handleCheckboxChangeTR(tr, e.target.checked)}
+          />
+        )
+      };
+      redirect = "/logistics/transfer-request/";
+    }
+    if (item.statusId === TransferOrdersState.find((f) => f.name === "Esperando proveedor")?.id) {
       redirect = "/logistics/transfer-request/";
     }
     if (item.statusId === TransferOrdersState.find((f) => f.name === "Procesando")?.id) {
