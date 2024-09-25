@@ -198,5 +198,27 @@ export const updateTransferRequestStatus = async (
 };
 
 export const downloadCsvTransferOrders = async () => {
- await downloadCSVFromEndpoint(`transfer-order/download-orders`, "transfer orders.csv");
+  await downloadCSVFromEndpoint(`transfer-order/download-orders`, "transfer orders.csv");
+};
+
+export const deleteOrders = async (trIds: number[], toIds: number[]): Promise<any> => {
+  try {
+    const customConfig = {
+      data: {
+        transferRequestIds: trIds,
+        transferOrderIds: toIds
+      }
+    };
+    const response: GenericResponse<any> = await API.delete(
+      `/transfer-request/delete-to-tr`,
+      customConfig
+    );
+    if (response.success) return response.data;
+  } catch (error) {
+    let errorMsg;
+    if (error instanceof Error) {
+      errorMsg = error?.message;
+    } else errorMsg = "Error al borrar servicios, intente nuevamente";
+    throw new Error(errorMsg);
+  }
 };
