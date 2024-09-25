@@ -1,47 +1,45 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Flex, Form, Row, Typography } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
-
 // components
+import { Button, Col, Flex, Form, Row, Typography } from "antd";
 import { ModalChangeStatus } from "@/components/molecules/modals/ModalChangeStatus/ModalChangeStatus";
 import { UploadImg } from "@/components/atoms/UploadImg/UploadImg";
-
 import { InputForm } from "@/components/atoms/inputs/InputForm/InputForm";
-
+import MultiSelectTags from "@/components/ui/multi-select-tags/MultiSelectTags";
+import InputPhone from "@/components/atoms/inputs/InputPhone/InputPhone";
+import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
+import {
+  FileObject,
+  UploadDocumentButton
+} from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
+import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
+import SubmitFormButton from "@/components/atoms/SubmitFormButton/SubmitFormButton";
+import LoadDocumentsButton from "@/components/atoms/LoadDocumentsButton/LoadDocumentsButton";
+import { SelectInputForm } from "@/components/molecules/logistics/SelectInputForm/SelectInputForm";
+import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
+import Link from "next/link";
+//types
+import { IFormDriver, VehicleType } from "@/types/logistics/schema";
+import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
+//styles
 import "./driverformtab.scss";
+//icons
+import { ArrowsClockwise, CaretLeft, Pencil } from "phosphor-react";
+//utils
 import {
   _onSubmit,
   dataToProjectFormData,
   validationButtonText,
   DriverFormTabProps
 } from "./driverFormTab.mapper";
-import { IFormDriver, VehicleType } from "@/types/logistics/schema";
-import { InputDateForm } from "@/components/atoms/inputs/InputDate/InputDateForm";
-
-import {
-  FileObject,
-  UploadDocumentButton
-} from "@/components/atoms/UploadDocumentButton/UploadDocumentButton";
-
-import useSWR from "swr";
-import { getDocumentsByEntityType } from "@/services/logistics/certificates";
-import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
-import ModalDocuments from "@/components/molecules/modals/ModalDocuments/ModalDocuments";
-import { getVehicleType } from "@/services/logistics/vehicle";
-import Link from "next/link";
 import dayjs from "dayjs";
-import UploadDocumentChild from "@/components/atoms/UploadDocumentChild/UploadDocumentChild";
-import SubmitFormButton from "@/components/atoms/SubmitFormButton/SubmitFormButton";
-import LoadDocumentsButton from "@/components/atoms/LoadDocumentsButton/LoadDocumentsButton";
-import { SelectInputForm } from "@/components/molecules/logistics/SelectInputForm/SelectInputForm";
 import {
   bloodTypesOptions,
   documentTypesOptions,
   glassesOptions,
   licencesOptions
 } from "../formSelectOptions";
-import MultiSelectTags from "@/components/ui/multi-select-tags/MultiSelectTags";
+import runes from "runes2";
 
 const { Title, Text } = Typography;
 
@@ -53,38 +51,30 @@ export const DriverFormTab = ({
   onActiveProject = async () => {},
   onDesactivateProject = async () => {},
   params,
-  handleFormState = () => {}
+  handleFormState = () => {},
+  documentsTypesList,
+  vehiclesTypesList,
+  isLoadingSubmit,
+  messageApi
 }: DriverFormTabProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenModalDocuments, setIsOpenModalDocuments] = useState(false);
-  const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
-    "2",
-    getDocumentsByEntityType
-  );
-
-  const { data: vehiclesTypesData, isLoading: loadingVicles } = useSWR(
-    "/vehicle/type",
-    getVehicleType
-  );
-
   const [imageFile, setImageFile] = useState<any | undefined>(undefined);
   const [resetTrigger, setResetTrigger] = useState<boolean>(false);
-  const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const [selectedFiles, setSelectedFiles] = useState<DocumentCompleteType[]>([]);
 
   const defaultValues =
-    statusForm === "create"
-      ? {}
-      : dataToProjectFormData(data, (vehiclesTypesData?.data as any) || []);
+    statusForm === "create" ? {} : dataToProjectFormData(data, vehiclesTypesList || []);
   const {
     watch,
     getValues,
     control,
     handleSubmit,
     reset,
-    formState: { errors, isValid }
+    formState: { errors, isValid },
+    trigger
   } = useForm<IFormDriver>({
     defaultValues,
     disabled: statusForm === "review"
@@ -93,17 +83,28 @@ export const DriverFormTab = ({
   const isFormCompleted = () => {
     return isValid && (imageFile || getValues("general.photo"));
   };
-  const isSubmitButtonEnabled = isFormCompleted() && !loading;
+  const isSubmitButtonEnabled = isFormCompleted();
+  const phoneValue = watch("general.phone");
+  const emergencyContactNumberValue = watch("general.emergency_number");
+
   /*archivos*/
+  useEffect(() => {
+    if (phoneValue?.toString()?.length > 0) {
+      trigger("general.phone");
+    }
+    if (emergencyContactNumberValue?.toString()?.length > 0) {
+      trigger("general.emergency_number");
+    }
+  }, [phoneValue, emergencyContactNumberValue]);
 
   const [files, setFiles] = useState<(FileObject & { aditionalData?: any })[]>([]);
 
   useEffect(() => {
-    if (Array.isArray(documentsType)) {
+    if (Array.isArray(documentsTypesList)) {
       const isFirstLoad = data?.documents?.length && selectedFiles.length === 0;
       if (isFirstLoad) {
         const docsWithLink =
-          documentsType
+          documentsTypesList
             ?.filter((f) => data.documents?.find((d) => d.id_document_type === f.id))
             .map((f) => ({
               ...f,
@@ -115,7 +116,7 @@ export const DriverFormTab = ({
             })) || [];
         setSelectedFiles(docsWithLink);
       } else {
-        const documentsFiltered = documentsType?.filter(
+        const documentsFiltered = documentsTypesList?.filter(
           (f) => !f?.optional || selectedFiles?.find((f2) => f2.id === f.id)
         );
         const docsWithFile = documentsFiltered.map((f) => {
@@ -134,13 +135,13 @@ export const DriverFormTab = ({
         }
       }
     }
-  }, [files, documentsType]);
+  }, [files, documentsTypesList]);
 
   useEffect(() => {
     if (statusForm === "review") {
-      if (Array.isArray(documentsType)) {
+      if (Array.isArray(documentsTypesList)) {
         const docsWithLink =
-          documentsType
+          documentsTypesList
             ?.filter((f) => data?.documents?.find((d) => d.id_document_type === f.id))
             .map((f) => ({
               ...f,
@@ -172,7 +173,7 @@ export const DriverFormTab = ({
   };
 
   const handleChange = (value: string[]) => {
-    const sf = documentsType?.filter((file) => value.includes(file.id.toString()));
+    const sf = documentsTypesList?.filter((file) => value.includes(file.id.toString()));
     if (sf) {
       setSelectedFiles((prevState) => {
         return sf.map((file) => {
@@ -202,8 +203,6 @@ export const DriverFormTab = ({
       data,
       selectedFiles,
       imageFile ? [{ docReference: "imagen", file: imageFile }] : undefined,
-      setImageError,
-      setLoading,
       onSubmitForm
     );
   };
@@ -380,11 +379,31 @@ export const DriverFormTab = ({
                   />
                 </Col>
                 <Col span={8}>
-                  <InputForm
-                    titleInput="Telefono"
-                    nameInput="general.phone"
+                  <InputPhone
+                    name="general.phone"
                     control={control}
+                    titleInput="Telefono"
+                    placeholder="Ingrese un teléfono"
                     error={errors?.general?.phone}
+                    validationRules={{
+                      required: "El número de teléfono es obligatorio",
+                      minLength: {
+                        value: 10,
+                        message: "El número debe tener al menos 10 dígitos"
+                      },
+                      maxLength: {
+                        value: 10,
+                        message: "El número no puede tener más de 10 dígitos"
+                      }
+                    }}
+                    count={{
+                      show: statusForm !== "review",
+                      max: 10,
+                      strategy: (txt: any) => runes(txt).length,
+                      exceedFormatter: (txt: any, { max }: { max: number }): string => {
+                        return runes(txt).slice(0, max).join("");
+                      }
+                    }}
                   />
                 </Col>
                 <Col span={8}>
@@ -482,7 +501,7 @@ export const DriverFormTab = ({
                   placeholder="Seleccione vehiculos"
                   title="Vehículos que está autorizados a manejar"
                   errors={errors?.general?.vehicle_type}
-                  options={convertToSelectOptions((vehiclesTypesData?.data as any) || [])}
+                  options={convertToSelectOptions(vehiclesTypesList || [])}
                   disabled={statusForm === "review"}
                 />
               )}
@@ -504,16 +523,29 @@ export const DriverFormTab = ({
                   />
                 </Col>
                 <Col span={6}>
-                  <InputForm
-                    typeInput="tel"
-                    titleInput="Telefono"
-                    nameInput="general.emergency_number"
+                  <InputPhone
+                    name="general.emergency_number"
                     control={control}
+                    titleInput="Telefono"
+                    placeholder="Ingrese un teléfono"
                     error={errors?.general?.emergency_number}
                     validationRules={{
-                      pattern: {
-                        value: /^\+?\d+$/,
-                        message: "Solo se permiten números y un signo '+' al comienzo"
+                      required: "Obligatorio",
+                      minLength: {
+                        value: 10,
+                        message: "El número debe tener al menos 10 dígitos"
+                      },
+                      maxLength: {
+                        value: 10,
+                        message: "El número no puede tener más de 10 dígitos"
+                      }
+                    }}
+                    count={{
+                      show: statusForm !== "review",
+                      max: 10,
+                      strategy: (txt: any) => runes(txt).length,
+                      exceedFormatter: (txt: any, { max }: { max: number }): string => {
+                        return runes(txt).slice(0, max).join("");
                       }
                     }}
                   />
@@ -569,8 +601,9 @@ export const DriverFormTab = ({
           {["edit", "create"].includes(statusForm) && (
             <Row justify={"end"}>
               <SubmitFormButton
+                loading={isLoadingSubmit}
+                disabled={isLoadingSubmit || !isSubmitButtonEnabled}
                 text={validationButtonText(statusForm)}
-                disabled={!isSubmitButtonEnabled}
                 onClick={handleSubmit(onSubmit)}
               />
             </Row>
@@ -596,8 +629,8 @@ export const DriverFormTab = ({
         isOpen={isOpenModalDocuments}
         mockFiles={selectedFiles}
         setFiles={setFiles}
-        documentsType={documentsType}
-        isLoadingDocuments={isLoadingDocuments}
+        documentsType={documentsTypesList}
+        isLoadingDocuments={false}
         onClose={() => setIsOpenModalDocuments(false)}
         handleChange={handleChange}
         handleChangeExpirationDate={handleChangeExpirationDate}

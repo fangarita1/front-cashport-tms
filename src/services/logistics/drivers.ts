@@ -74,8 +74,11 @@ export const updateDriver = async (
     });
     return response;
   } catch (error) {
-    console.log("Error update Driver: ", error);
-    return error as any;
+    let errorMsg;
+    if (error instanceof Error) {
+      errorMsg = error?.message;
+    } else errorMsg = "Error al actualizar el conductor";
+    throw new Error(errorMsg);
   }
 };
 
@@ -94,8 +97,11 @@ export const addDriver = async (
     });
     return response;
   } catch (error: any) {
-    console.log("Error create Driver: ", error);
-    throw new Error(error?.response?.data?.message || "Error al crear el conductor");
+    let errorMsg;
+    if (error instanceof Error) {
+      errorMsg = error?.message;
+    } else errorMsg = "Error al crear el conductor";
+    throw new Error(errorMsg);
   }
 };
 
