@@ -6,6 +6,7 @@ import { FC, useEffect, useState } from "react";
 import { getAcceptedTransferRequest } from "@/services/logistics/transfer-request";
 import { ITransferRequestResponse } from "@/types/transferRequest/ITransferRequest";
 import CustomCollapse from "@/components/ui/custom-collapse/CustomCollapse";
+import { STATUS } from "@/utils/constants/globalConstants";
 
 const Text = Typography;
 
@@ -81,10 +82,11 @@ export const Request: FC<IRequestProps> = ({
 
   // Array con los IDs de estado en el orden deseado
   const ORDERED_STATE_IDS = [
-    "9f5ba87c-8736-4367-8077-3b914d2ee711", // Sin procesar
-    "00ce0b06-71b8-4981-861f-b4fa100dbd25", // Procesando
-    "a48b8b32-8699-4b6f-b56c-277238a656bc", // Procesado
-    "a312eb37-9a20-4e46-a010-3ee8d5cb2d94" // Esperando proveedor
+    STATUS.TO.SIN_PROCESAR, // Sin procesar
+    STATUS.TO.PROCESANDO, // Procesando
+    STATUS.TO.PROCESADO, // Procesando
+    STATUS.TR.PROCESADO, // Procesado
+    STATUS.TR.ESPERANDO_PROVEEDOR // Esperando proveedor
   ];
 
   const sortedFilteredData = filteredData.toSorted((a, b) => {
