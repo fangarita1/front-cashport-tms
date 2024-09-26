@@ -1,4 +1,4 @@
-import { Checkbox, CollapseProps, Typography } from "antd";
+import { Checkbox, CollapseProps, Spin, Typography } from "antd";
 import styles from "./Request.module.scss";
 import { TransferOrdersState } from "@/utils/constants/transferOrdersState";
 import { TransferOrdersTable } from "@/components/molecules/tables/TransferOrderTable/TransferOrderTable";
@@ -7,6 +7,7 @@ import { getAcceptedTransferRequest } from "@/services/logistics/transfer-reques
 import { ITransferRequestResponse } from "@/types/transferRequest/ITransferRequest";
 import CustomCollapse from "@/components/ui/custom-collapse/CustomCollapse";
 import { STATUS } from "@/utils/constants/globalConstants";
+import Loader from "@/components/atoms/loaders/loader";
 
 const Text = Typography;
 
@@ -64,7 +65,7 @@ export const Request: FC<IRequestProps> = ({
   if (isLoading)
     return (
       <div className={styles.emptyContainer}>
-        <Text className={styles.textEmpty}>No Content</Text>
+        <Spin size="large" />
       </div>
     );
 
