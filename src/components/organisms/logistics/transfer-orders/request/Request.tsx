@@ -126,7 +126,8 @@ export const Request: FC<IRequestProps> = ({
     if (item.statusId === TransferOrdersState.find((f) => f.name === "Esperando proveedor")?.id) {
       redirect = "/logistics/transfer-request/";
     }
-    if (item.statusId === TransferOrdersState.find((f) => f.name === "Procesando")?.id) {
+    const statusToDetailsTO = [STATUS.TO.SIN_PROCESAR, STATUS.TO.PROCESANDO, STATUS.TO.PROCESADO];
+    if (statusToDetailsTO.includes(item.statusId)) {
       redirect = "/logistics/orders/details";
     }
     return {
