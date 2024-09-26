@@ -17,6 +17,7 @@ interface IRequestProps {
   ordersId: number[];
   trsIds: number[];
   handleCheckboxChangeTR: (id: number, checked: boolean) => void;
+  modalState: boolean;
 }
 
 export const Request: FC<IRequestProps> = ({
@@ -24,7 +25,8 @@ export const Request: FC<IRequestProps> = ({
   handleCheckboxChange,
   ordersId,
   trsIds,
-  handleCheckboxChangeTR
+  handleCheckboxChangeTR,
+  modalState
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [transferRequest, setTransferRequest] = useState<ITransferRequestResponse[]>([]);
@@ -57,6 +59,12 @@ export const Request: FC<IRequestProps> = ({
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    if (!modalState) {
+      getTransferRequestAccepted();
+    }
+  }, [modalState]);
 
   useEffect(() => {
     getTransferRequestAccepted();

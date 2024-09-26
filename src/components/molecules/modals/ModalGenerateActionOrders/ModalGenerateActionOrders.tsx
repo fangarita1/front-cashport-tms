@@ -58,6 +58,7 @@ export default function ModalGenerateActionOrders(props: Readonly<PropsModalGene
     try {
       await deleteOrders(trsIds, ordersId);
       message.open({ content: "Operación realizada con éxito", type: "success" });
+      onClose();
     } catch (error) {
       if (error instanceof Error) message.open({ content: error.message, type: "error" });
       else message.open({ content: "Error al realizar la operación", type: "error" });
