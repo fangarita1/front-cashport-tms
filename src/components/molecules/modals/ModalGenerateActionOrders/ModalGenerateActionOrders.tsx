@@ -60,7 +60,8 @@ export default function ModalGenerateActionOrders(props: Readonly<PropsModalGene
       message.open({ content: "Operación realizada con éxito", type: "success" });
       onClose();
     } catch (error) {
-      if (error instanceof Error) message.open({ content: error.message, type: "error" });
+      if (error instanceof Error)
+        message.open({ content: error.message, type: "error", duration: 5 });
       else message.open({ content: "Error al realizar la operación", type: "error" });
     } finally {
       setIsLoading(false);
