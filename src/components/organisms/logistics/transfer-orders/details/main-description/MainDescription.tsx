@@ -13,7 +13,7 @@ import { formatMoney } from "@/utils/utils";
 import utc from "dayjs/plugin/utc";
 import { getTravelDuration } from "@/utils/logistics/maps";
 import { STATUS } from "@/utils/constants/globalConstants";
-import "dayjs/locale/es-US";
+import "dayjs/locale/es-us";
 dayjs.extend(utc).locale("es-US");
 
 const Text = Typography;
