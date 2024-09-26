@@ -149,3 +149,14 @@ a {
         }
     }
 }
+
+.mapboxgl-popup-content {
+    background-color: #1F2228 !important;
+    border-radius: 10px !important;
+    padding: 25px !important;
+}
+
+.mapboxgl-popup-tip {
+    border-bottom-color: #1F2228 !important;
+    border-top-color: #1F2228 !important;
+}
