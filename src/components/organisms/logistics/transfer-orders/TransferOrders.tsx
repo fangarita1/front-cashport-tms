@@ -6,19 +6,16 @@ import { useEffect, useState } from "react";
 import { Request } from "./request/Request";
 import { InProcess } from "./in-process/InProcess";
 import { Completed } from "./completed/completed";
-import { Empty, Flex, message, Typography } from "antd";
-import { DotsThree, FileArrowDown, Plus } from "phosphor-react";
-import {
-  downloadCsvTransferOrders,
-  transferOrderMerge
-} from "@/services/logistics/transfer-request";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Empty, Flex, Typography } from "antd";
+import { DotsThree, Plus } from "phosphor-react";
+import { useSearchParams } from "next/navigation";
 import PrincipalButton from "@/components/atoms/buttons/principalButton/PrincipalButton";
 import Container from "@/components/atoms/Container/Container";
 import ProtectedComponent from "@/components/molecules/protectedComponent/ProtectedComponent";
 import { TMS_COMPONENTS, TMSMODULES } from "@/utils/constants/globalConstants";
 import { useAppStore } from "@/lib/store/store";
 import { checkUserComponentPermissions } from "@/utils/utils";
+import ModalGenerateActionOrders from "@/components/molecules/modals/ModalGenerateActionOrders/ModalGenerateActionOrders";
 
 const { Text } = Typography;
 
@@ -33,10 +30,9 @@ const viewName: keyof typeof TMSMODULES = "TMS-Viajes";
 export const TransferOrders = () => {
   const [search, setSearch] = useState<string>("");
   const { selectedProject: project, isHy } = useAppStore((state) => state);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [loadingCsv, setLoadingCsv] = useState<boolean>(false);
   const [ordersId, setOrdersId] = useState<number[]>([]);
-  const router = useRouter();
+  const [trsIds, setTrsIds] = useState<number[]>([]);
+
   const searchParams = useSearchParams();
   const [selectFilters, setSelectFilters] = useState({
     country: [] as string[],
@@ -44,6 +40,7 @@ export const TransferOrders = () => {
   });
   const tabParam = searchParams.get("tab") as TabEnum | null;
   const [tab, setTab] = useState<TabEnum>();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (isHy) {
@@ -90,6 +87,17 @@ export const TransferOrders = () => {
     }
   }, [tabParam, isHy, project]);
 
+  const handleCheckboxChange = (id: number, checked: boolean) => {
+    setOrdersId((prevOrdersId) =>
+      checked ? [...prevOrdersId, id] : prevOrdersId.filter((orderId) => orderId !== id)
+    );
+  };
+  const handleCheckboxChangeTR = (id: number, checked: boolean) => {
+    setTrsIds((prevTRsIds) =>
+      checked ? [...prevTRsIds, id] : prevTRsIds.filter((TRid) => TRid !== id)
+    );
+  };
+
   const renderView = () => {
     switch (tab) {
       case TabEnum.REQUESTS:
@@ -98,6 +106,9 @@ export const TransferOrders = () => {
             search={search}
             handleCheckboxChange={handleCheckboxChange}
             ordersId={ordersId}
+            trsIds={trsIds}
+            handleCheckboxChangeTR={handleCheckboxChangeTR}
+            modalState={isModalOpen}
           />
         );
       case TabEnum.IN_PROCESS:
@@ -107,35 +118,6 @@ export const TransferOrders = () => {
       default:
         return <Empty />;
     }
-  };
-  const handleCreateTransferRequest = async () => {
-    const queryParam = ordersId.join(",");
-    setIsLoading(true);
-    try {
-      await transferOrderMerge(ordersId);
-      message.open({ content: "Operación realizada con éxito", type: "success" });
-      router.push(`transfer-request/create/${queryParam}`);
-    } catch (error) {
-      if (error instanceof Error) message.open({ content: error.message, type: "error" });
-      else message.open({ content: "Error al realizar la operación", type: "error" });
-    }
-    setIsLoading(false);
-  };
-  const handleCheckboxChange = (id: number, checked: boolean) => {
-    setOrdersId((prevOrdersId) =>
-      checked ? [...prevOrdersId, id] : prevOrdersId.filter((orderId) => orderId !== id)
-    );
-  };
-
-  const downloadCsvOrders = async () => {
-    setLoadingCsv(true);
-    try {
-      await downloadCsvTransferOrders();
-    } catch (error) {
-      if (error instanceof Error) message.open({ content: error.message, type: "error" });
-      else message.open({ content: "Error al realizar la operación", type: "error" });
-    }
-    setLoadingCsv(false);
   };
 
   return (
@@ -150,34 +132,15 @@ export const TransferOrders = () => {
             }}
           />
           <FilterProjects setSelecetedProjects={setSelectFilters} />
-          <ProtectedComponent
-            componentName={TMS_COMPONENTS[viewName].CREATE_TR}
-            viewName={viewName}
-            checkFunction={({ create_permission }) => create_permission}
+          <PrincipalButton
+            type="default"
+            icon={<DotsThree size={"1.5rem"} />}
+            disabled={false}
+            loading={false}
+            onClick={() => setIsModalOpen(true)}
           >
-            <PrincipalButton
-              type="default"
-              icon={<DotsThree size={"1.5rem"} />}
-              disabled={ordersId.length === 0}
-              onClick={handleCreateTransferRequest}
-              loading={isLoading}
-            >
-              Generar TR
-            </PrincipalButton>
-          </ProtectedComponent>
-          <ProtectedComponent
-            componentName={TMS_COMPONENTS[viewName].DOWNLOAD_SHEET}
-            viewName={viewName}
-          >
-            <PrincipalButton
-              type="default"
-              icon={<FileArrowDown size={"1.5rem"} />}
-              onClick={downloadCsvOrders}
-              loading={loadingCsv}
-            >
-              Descargar Ordenes
-            </PrincipalButton>
-          </ProtectedComponent>
+            Generar acción
+          </PrincipalButton>
         </div>
         <ProtectedComponent
           componentName={TMS_COMPONENTS[viewName].REQUESTS}
@@ -222,6 +185,12 @@ export const TransferOrders = () => {
         </ProtectedComponent>
       </div>
       <div>{isHy && renderView()}</div>
+      <ModalGenerateActionOrders
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        ordersId={ordersId}
+        trsIds={trsIds}
+      />
     </Container>
   );
 };

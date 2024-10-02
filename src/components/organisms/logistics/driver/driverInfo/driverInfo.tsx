@@ -1,5 +1,5 @@
 "use client";
-import { Typography, message, Spin } from "antd";
+import { message, Skeleton } from "antd";
 import React, { useCallback, useState } from "react";
 import "../../../../../styles/_variables_logistics.css";
 import "./driverInfo.scss";
@@ -10,6 +10,8 @@ import { StatusForm } from "@/components/molecules/tabs/logisticsForms/driverFor
 import { useRouter } from "next/navigation";
 import { DocumentCompleteType } from "@/types/logistics/certificate/certificate";
 import useSWR from "swr";
+import { getDocumentsByEntityType } from "@/services/logistics/certificates";
+import { getVehicleType } from "@/services/logistics/vehicle";
 
 interface Props {
   params: {
@@ -22,6 +24,7 @@ export const DriverInfoView = ({ params }: Props) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [statusForm, setStatusForm] = useState<StatusForm>("review");
   const { push } = useRouter();
+  const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
 
   const handleFormState = useCallback((newFormState: StatusForm) => {
     setStatusForm(newFormState);
@@ -41,23 +44,38 @@ export const DriverInfoView = ({ params }: Props) => {
   const handleSubmitForm = async (data: IFormDriver) => {
     data.general.company_id = params.id;
     try {
+      setIsLoadingSubmit(true);
       const response = await updateDriver(
         data.general,
         data.logo as any,
         data?.files as DocumentCompleteType[]
       );
       if (response.status === 200) {
-        messageApi.open({
-          type: "success",
-          content: "El conductor fue editado exitosamente."
-        });
-        push(`/logistics/providers/${params.id}/driver`);
+        messageApi
+          .open({
+            type: "success",
+            content: "El conductor fue editado exitosamente."
+          })
+          .then(() => {
+            push(`/logistics/providers/${params.id}/driver`);
+          });
       }
     } catch (error) {
-      messageApi.open({
-        type: "error",
-        content: "Oops, hubo un error por favor intenta mas tarde."
-      });
+      if (error instanceof Error) {
+        messageApi.open({
+          type: "error",
+          content: error.message,
+          duration: 3
+        });
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "Oops, hubo un error por favor intenta mas tarde.",
+          duration: 3
+        });
+      }
+    } finally {
+      setIsLoadingSubmit(false);
     }
   };
   const handlechangeStatus = async (status: boolean) => {
@@ -65,7 +83,8 @@ export const DriverInfoView = ({ params }: Props) => {
       await updateDriverStatus(params.driverId, status);
       messageApi.open({
         type: "success",
-        content: "El conductor fue editado exitosamente."
+        content: "El conductor fue editado exitosamente.",
+        duration: 2
       });
     } catch (error) {
       if (error instanceof Error) {
@@ -76,25 +95,37 @@ export const DriverInfoView = ({ params }: Props) => {
       }
     }
   };
-
+  const { data: documentsType, isLoading: isLoadingDocuments } = useSWR(
+    "2",
+    getDocumentsByEntityType,
+    { revalidateIfStale: false, revalidateOnFocus: false, revalidateOnReconnect: false }
+  );
+  const { data: vehiclesTypesData, isLoading: isLoadingVehicles } = useSWR(
+    "/vehicle/type",
+    getVehicleType,
+    { revalidateIfStale: false, revalidateOnFocus: false, revalidateOnReconnect: false }
+  );
   return (
     <>
       {contextHolder}
-      <>
-        {isLoading || isValidating ? (
-          <Spin />
-        ) : (
-          <DriverFormTab
-            onSubmitForm={handleSubmitForm}
-            data={data?.data?.data[0]}
-            params={params}
-            statusForm={statusForm}
-            handleFormState={handleFormState}
-            onActiveProject={() => handlechangeStatus(true)}
-            onDesactivateProject={() => handlechangeStatus(false)}
-          />
-        )}
-      </>
+      <Skeleton
+        active
+        loading={isLoadingDocuments || isLoadingVehicles || isLoading || isValidating}
+      >
+        <DriverFormTab
+          onSubmitForm={handleSubmitForm}
+          data={data?.data?.data[0]}
+          params={params}
+          statusForm={statusForm}
+          handleFormState={handleFormState}
+          onActiveProject={() => handlechangeStatus(true)}
+          onDesactivateProject={() => handlechangeStatus(false)}
+          documentsTypesList={documentsType ?? []}
+          vehiclesTypesList={vehiclesTypesData?.data ?? []}
+          isLoadingSubmit={isLoadingSubmit}
+          messageApi={messageApi}
+        />
+      </Skeleton>
     </>
   );
 };

@@ -3,7 +3,7 @@ import mapboxgl from "mapbox-gl";
 import io from "socket.io-client";
 import "mapbox-gl/dist/mapbox-gl.css";
 import styles from "./mainDescription.module.scss";
-import { ConfigProvider, Dropdown, Timeline, Typography } from "antd";
+import { ConfigProvider, Dropdown, Flex, Timeline, Typography } from "antd";
 import { CaretDown, Shuffle, WarningCircle } from "phosphor-react";
 import { MenuProps } from "antd/lib";
 import { ITransferRequestDetail } from "@/types/transferRequest/ITransferRequest";
@@ -13,7 +13,8 @@ import { formatMoney } from "@/utils/utils";
 import utc from "dayjs/plugin/utc";
 import { getTravelDuration } from "@/utils/logistics/maps";
 import { STATUS } from "@/utils/constants/globalConstants";
-dayjs.extend(utc);
+import "dayjs/locale/es-us";
+dayjs.extend(utc).locale("es-US");
 
 const Text = Typography;
 
@@ -208,44 +209,37 @@ export const MainDescription: FC<IMainDescriptionProps> = ({
     };
   }, [transferRequest]);
 
-  const timeLineItems = transferRequest
-    ? transferRequest?.timeLine.map((item, index) => {
-        if (index === 0 || index + 1 === transferRequest?.timeLine.length) {
-          return {
-            dot: (
-              <div className={styles.bigDot}>
-                <div className={styles.littleDot} />
-              </div>
-            ),
-            children: (
-              <div className={styles.dotChildrenContainer}>
-                <div className={styles.leftChildren}>
-                  <Text className={styles.dotTitle}>{item.description}</Text>
-                  <Text className={styles.dotText}>{item.location}</Text>
-                </div>
+  const timeLineItems =
+    transferRequest?.timeLine.map((item, index) => {
+      return {
+        dot:
+          index === 0 || index + 1 === transferRequest?.timeLine.length ? (
+            <div className={styles.bigDot}>
+              <div className={styles.littleDot} />
+            </div>
+          ) : (
+            <div className={styles.dot} />
+          ),
+        children: (
+          <div className={styles.dotChildrenContainer}>
+            <div className={styles.leftChildren}>
+              <Text className={styles.dotTitle}>{item.description}</Text>
+              <Text className={styles.dotText}>{item.location}</Text>
+            </div>
+            <Flex vertical gap={2}>
+              <Text className={styles.dotText}>
+                {dayjs.utc(item.start_date).format("DD MMMM YYYY - HH:mm")}
+              </Text>
+              {item.start_date !== item.end_date && (
                 <Text className={styles.dotText}>
                   {dayjs.utc(item.end_date).format("DD MMMM YYYY - HH:mm")}
                 </Text>
-              </div>
-            )
-          };
-        }
-        return {
-          dot: <div className={styles.dot} />,
-          children: (
-            <div className={styles.dotChildrenContainer}>
-              <div className={styles.leftChildren}>
-                <Text className={styles.dotTitle}>{item.description}</Text>
-                <Text className={styles.dotText}>{item.location}</Text>
-              </div>
-              <Text className={styles.dotText}>
-                {dayjs.utc(item.end_date).format("DD MMMM YYYY - HH:mm")}
-              </Text>
-            </div>
-          )
-        };
-      })
-    : [];
+              )}
+            </Flex>
+          </div>
+        )
+      };
+    }) || [];
   const milliseconds =
     new Date(transferRequest?.end_date || "").getTime() -
     new Date(transferRequest?.start_date || "").getTime();

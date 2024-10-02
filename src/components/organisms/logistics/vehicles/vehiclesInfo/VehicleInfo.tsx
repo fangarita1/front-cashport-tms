@@ -89,7 +89,10 @@ export const VehicleInfoView = ({ isEdit = false, idParam = "", params }: Props)
       {contextHolder}
       <Flex className="vehicleFormContainer">
         <Row style={{ width: "100%" }}>
-          <Skeleton loading={isLoading || isValidating || isLoadingDocuments || isLoadingVehicles}>
+          <Skeleton
+            active
+            loading={isLoading || isValidating || isLoadingDocuments || isLoadingVehicles}
+          >
             <VehicleFormTab
               statusForm={statusForm}
               handleFormState={handleFormState}

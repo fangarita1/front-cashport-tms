@@ -740,6 +740,8 @@ export interface ICarriersRequestList {
  */
 export interface ICarrierRequestsListDetail {
   id: number;
+  order_nro: number;
+  id_transfer_request: number;
   service_type: string;
   start_date: string;
   end_date: string;
