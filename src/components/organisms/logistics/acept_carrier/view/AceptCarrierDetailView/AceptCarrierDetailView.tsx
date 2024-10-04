@@ -150,15 +150,15 @@ export default function AceptCarrierDetailView({ params }: Readonly<AceptCarrier
   ) => {
     try {
       setIsLoading(true);
-      await putEditCarrierRequest(carrierId, requestId, vehicleId, driverIds);
-      messageApi.open({
-        content: "Editado correctamente"
+      const res = await putEditCarrierRequest(carrierId, requestId, vehicleId, driverIds);
+      message.open({
+        type: "success",
+        content: res.message
       });
       router.push("/logistics/acept_carrier");
     } catch (error) {
-      messageApi.open({
-        content: "Hubo un problema editando la orden"
-      });
+      if (error instanceof Error) messageApi.error(error.message);
+      else messageApi.error("Hubo un problema editando la orden");
     } finally {
       setIsLoading(false);
     }
