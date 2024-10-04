@@ -47,7 +47,7 @@ export default function CarrierTable({
 
   const columns: TableProps<ICarrierRequestsListDetail>["columns"] = [
     {
-      title: "CR",
+      title: "TR",
       dataIndex: "id",
       key: "id",
       width: "6%",
