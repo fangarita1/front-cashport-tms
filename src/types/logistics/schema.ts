@@ -740,6 +740,8 @@ export interface ICarriersRequestList {
  */
 export interface ICarrierRequestsListDetail {
   id: number;
+  order_nro: number;
+  id_transfer_request: number;
   service_type: string;
   start_date: string;
   end_date: string;
@@ -1975,6 +1977,7 @@ export interface TripCarriersPricing {
 
 export interface CarriersPricing {
   carrier: string;
+  order_nro: number;
   plate_number: string;
   id_vehicle: number;
   driver: string;
