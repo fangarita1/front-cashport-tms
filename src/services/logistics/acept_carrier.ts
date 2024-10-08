@@ -196,19 +196,14 @@ export const putEditCarrierRequest = async (
   id_carrier_request: string,
   id_vehicle: string,
   id_drivers: string[]
-): Promise<IListData> => {
-  try {
-    const body = {
-      id_carrier: id_carrier,
-      id_carrier_request: id_carrier_request,
-      id_vehicle: id_vehicle,
-      id_drivers: id_drivers
-    };
-
-    const response: IListData = await API.put(`/carrier/request/edit`, body);
-    return response;
-  } catch (error) {
-    console.log("Error get getTransferRequestById: ", error);
-    return error as any;
-  }
+) => {
+  const body = {
+    id_carrier: id_carrier,
+    id_carrier_request: id_carrier_request,
+    id_vehicle: id_vehicle,
+    id_drivers: id_drivers
+  };
+  const response: GenericResponse = await API.put(`/carrier/request/edit`, body);
+  if (response.success) return response;
+  throw new Error(response?.message || "Error al editar la solicitud de carga");
 };
