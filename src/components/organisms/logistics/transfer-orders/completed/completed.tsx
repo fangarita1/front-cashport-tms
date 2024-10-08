@@ -54,7 +54,8 @@ export const Completed: FC<ICompletedProps> = ({ search }) => {
     const filteredItems = status.items.filter(
       (item) =>
         item.start_location.toLowerCase().includes(search.toLowerCase()) ||
-        item.end_location.toLowerCase().includes(search.toLowerCase())
+        item.end_location.toLowerCase().includes(search.toLowerCase()) ||
+        item.id.toString().includes(search.toLowerCase())
     );
 
     return { ...status, items: filteredItems };
