@@ -95,7 +95,7 @@ export const Request: FC<IRequestProps> = ({
     STATUS.TO.SIN_PROCESAR, // Sin procesar
     STATUS.TO.PROCESANDO, // Procesando
     STATUS.TO.PROCESADO, // Procesando
-    STATUS.TR.PROCESADO, // Procesado
+    STATUS.TR.ASIGNANDO_VEHICULO, // Procesado
     STATUS.TR.ESPERANDO_PROVEEDOR // Esperando proveedor
   ];
 

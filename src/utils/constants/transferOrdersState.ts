@@ -47,8 +47,8 @@ export const TransferOrdersState = [
     bgColor: '#ED171F'
   },
   {
-    id: STATUS.TR.PROCESADO,
-    name: 'Procesado',
+    id: STATUS.TR.ASIGNANDO_VEHICULO,
+    name: 'Asignando vehículo',
     bgColor: '#0085FF'
   },
   {
