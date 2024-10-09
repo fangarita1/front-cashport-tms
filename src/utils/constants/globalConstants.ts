@@ -16,7 +16,7 @@ export const SUCCESS = 200;
 export const STATUS = {
   TO: {
     SIN_PROCESAR: "9f5ba87c-8736-4367-8077-3b914d2ee711",
-    ASIGNANDO_VEHICULO: "00ce0b06-71b8-4981-861f-b4fa100dbd25",
+    PROCESANDO: "00ce0b06-71b8-4981-861f-b4fa100dbd25",
     PROCESADO: "56859d8f-2345-4df2-b811-2371905d80a0"
   },
   CR: {
@@ -39,7 +39,7 @@ export const STATUS = {
     RECHAZADA: "da258586-c04b-4603-bea5-f9bce49687e0"
   },
   TR: {
-    PROCESADO: "a48b8b32-8699-4b6f-b56c-277238a656bc",
+    ASIGNANDO_VEHICULO: "a48b8b32-8699-4b6f-b56c-277238a656bc",
     ESPERANDO_PROVEEDOR: "a312eb37-9a20-4e46-a010-3ee8d5cb2d94",
     SIN_INICIAR: "d33e062f-51a5-457e-946e-a45cbbffbf95",
     CARGANDO: "0f7cccf5-1764-44c6-bb2a-874f419bc8f1",
