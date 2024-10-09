@@ -119,7 +119,8 @@ export const Request: FC<IRequestProps> = ({
       };
       redirect = "/logistics/orders/details";
     }
-    if (item.statusId === TransferOrdersState.find((f) => f.name === "Procesado")?.id) {
+    const trDeleteable = [STATUS.TR.ASIGNANDO_VEHICULO];
+    if (trDeleteable.includes(item.statusId)) {
       aditionalRow = {
         title: "",
         dataIndex: "checkbox",
