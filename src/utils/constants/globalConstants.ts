@@ -16,7 +16,7 @@ export const SUCCESS = 200;
 export const STATUS = {
   TO: {
     SIN_PROCESAR: "9f5ba87c-8736-4367-8077-3b914d2ee711",
-    PROCESANDO: "00ce0b06-71b8-4981-861f-b4fa100dbd25",
+    ASIGNANDO_VEHICULO: "00ce0b06-71b8-4981-861f-b4fa100dbd25",
     PROCESADO: "56859d8f-2345-4df2-b811-2371905d80a0"
   },
   CR: {

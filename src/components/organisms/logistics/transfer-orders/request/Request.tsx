@@ -93,7 +93,7 @@ export const Request: FC<IRequestProps> = ({
   // Array con los IDs de estado en el orden deseado
   const ORDERED_STATE_IDS = [
     STATUS.TO.SIN_PROCESAR, // Sin procesar
-    STATUS.TO.PROCESANDO, // Procesando
+    STATUS.TO.ASIGNANDO_VEHICULO, // Procesando
     STATUS.TO.PROCESADO, // Procesando
     STATUS.TR.PROCESADO, // Procesado
     STATUS.TR.ESPERANDO_PROVEEDOR // Esperando proveedor
@@ -135,7 +135,7 @@ export const Request: FC<IRequestProps> = ({
     if (item.statusId === TransferOrdersState.find((f) => f.name === "Esperando proveedor")?.id) {
       redirect = "/logistics/transfer-request/";
     }
-    const statusToDetailsTO = [STATUS.TO.SIN_PROCESAR, STATUS.TO.PROCESANDO, STATUS.TO.PROCESADO];
+    const statusToDetailsTO = [STATUS.TO.SIN_PROCESAR, STATUS.TO.ASIGNANDO_VEHICULO, STATUS.TO.PROCESADO];
     if (statusToDetailsTO.includes(item.statusId)) {
       redirect = "/logistics/orders/details";
     }
